@@ -9,5 +9,6 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxt/test-utils'
-  ]
+  ],
+  css:['bulma/css/bulma.min.css']
 })
