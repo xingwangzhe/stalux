@@ -1,7 +1,7 @@
 <template>
   <div>
-    <!-- <NuxtRouteAnnouncer />
-    <NuxtWelcome /> -->
-    <testea/>
+<NuxtLayout >
+  <testea/>
+</NuxtLayout>
   </div>
 </template>
