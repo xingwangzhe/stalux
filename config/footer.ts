@@ -45,7 +45,6 @@ export default {
         {
             ref: '揪蝉',
             url: 'https://docs.jiuchan.org/',
-            icon: 'https://docs.jiuchan.org/static/logo.svg'
         },
         {
             ref: '博客录',
