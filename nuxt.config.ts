@@ -12,7 +12,6 @@ export default defineNuxtConfig({
   css:['bulma/css/bulma.min.css',
     '~/assets/css/fonts.css',
     '@fortawesome/fontawesome-free/css/all.min.css',
-    '~/assets/css/transitions.css' // 添加过渡动画CSS
   ],
   
   // 添加全局页面过渡设置

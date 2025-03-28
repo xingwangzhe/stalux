@@ -12,7 +12,6 @@
           </span>
         </div>
       </header>
-      
       <!-- 渲染内容 -->
       <ContentRenderer :value="data" />
     </article>
@@ -20,15 +19,28 @@
 </template>
 
 <script setup>
+// 从路由获取slug参数Collections } from '@nuxt/content'
+
 // 从路由获取slug参数
-const { slug } = useRoute().params;
+const route = useRoute();
+const { slug } = route.params;
 
-// 将slug数组转为路径
-const path = Array.isArray(slug) ? `/${slug.join('/')}` : '/';
+// 检查是否在根路径
+const isRoot = route.path === '/';
 
-// 获取文章内容
+// 如果是根路径，重定向到posts页面
+if (isRoot) {
+  await navigateTo('/posts');
+}
+
+// 将slug数组转为路径 - 修复根路径问题
+const path = Array.isArray(slug) && slug.length > 0 
+  ? `/posts/${slug.join('/')}` 
+  : '/posts'; 
+
+// 获取文章内容}).findOne();
 const { data, pending, error } = await useAsyncData(`content-${path}`, () => {
-  return queryContent().where({ _path: path }).findOne();
+  return queryCollection('content').path(route.path).first()
 });
 
 // 如果没有找到内容，显示404
