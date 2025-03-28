@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'DouyinSans';
+  src: url('../fonts/DouyinSansBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 如果需要定义不同字重或样式，可以添加多个 @font-face */
+@font-face {
+  font-family: 'DouyinSans';
+  src: url('../fonts/DouyinSansBold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 可以在此添加使用字体的全局样式 */
+body {
+  font-family: 'DouyinSans', sans-serif;
+}

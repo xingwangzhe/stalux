@@ -10,5 +10,7 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     '@nuxt/test-utils'
   ],
-  css:['bulma/css/bulma.min.css']
+  css:['bulma/css/bulma.min.css',
+    '~/assets/css/fonts.css',
+  ]
 })
