@@ -22,3 +22,11 @@ logs
 .env
 .env.*
 !.env.example
+
+# 忽略所有 posts 下的 Markdown 文件
+content/posts/*.md
+
+# 但保留特定的文件（用 ! 来取消忽略）
+!content/posts/1.md
+!content/posts/2.md
+!content/posts/3.md
