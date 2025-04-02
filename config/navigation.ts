@@ -7,7 +7,7 @@ export default [
   },
   {
     title: '归档',
-    link: 'archives',
+    link: '/archives',
     icon: 'fa-archive'
   },
   {
