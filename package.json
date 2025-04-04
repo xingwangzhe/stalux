@@ -1,43 +1,21 @@
 {
-  "name": "nuxt-app",
-  "private": true,
+  "name": "stalux",
+  "description": "A VuePress project",
+  "version": "0.0.1",
+  "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "docs:build": "vuepress build docs",
+    "docs:clean-dev": "vuepress dev docs --clean-cache",
+    "docs:dev": "vuepress dev docs",
+    "docs:update-package": "pnpm dlx vp-update"
   },
-  "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.7.2",
-    "@nuxt/content": "3.4.0",
-    "@nuxt/eslint": "1.2.0",
-    "@nuxt/image": "1.10.0",
-    "@nuxt/scripts": "0.11.5",
-    "@nuxt/test-utils": "3.17.2",
-    "@unhead/vue": "^2.0.2",
-    "bulma": "^1.0.3",
-    "eslint": "^9.0.0",
-    "nuxt": "^3.16.1",
-    "vite-plugin-vue-tracer": "^0.1.3",
+  "devDependencies": {
+    "@vuepress/bundler-vite": "2.0.0-rc.20",
+    "@vuepress/theme-default": "2.0.0-rc.88",
+    "sass-embedded": "^1.86.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
-  },
-  "onlyBuiltDependencies": [
-    "@parcel/watcher",
-    "@sentry/cli",
-    "better-sqlite3",
-    "esbuild",
-    "sharp"
-  ],
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "better-sqlite3",
-      "esbuild",
-      "sharp",
-      "vue-demi"
-    ]
+    "vuepress": "2.0.0-rc.20",
+    "@vuepress/plugin-blog": "2.0.0-rc.86"
   }
 }
