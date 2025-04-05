@@ -1,24 +1,34 @@
-# build output
-dist/
-# generated types
-.astro/
-
-# dependencies
+# 依赖目录
 node_modules/
+vendor/
 
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# VitePress 构建输出
+.vitepress/dist/
+.vitepress/cache/
+dist/
+cache/
 
+# 日志文件
+*.log
+logs/
 
-# environment variables
+# 环境变量文件
 .env
-.env.production
+.env.local
 
-# macOS-specific files
-.DS_Store
-
-# jetbrains setting folder
+# IDE 配置
 .idea/
+.vscode/
+*.sublime-*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+.temp
+.tmp
+.cache/
+
+# Vite 相关
+.vite/
