@@ -3,10 +3,12 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "concurrently \"astro dev\" \"nodemon api/index.js\"",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "api": "node api/index.js",
+    "api:dev": "nodemon api/index.js"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.3",
@@ -14,6 +16,13 @@
     "@astrojs/sitemap": "^3.3.0",
     "@astrojs/vue": "^5.0.9",
     "astro": "^5.6.1",
+    "body-parser": "^2.2.0",
+    "concurrently": "^9.1.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "nodemon": "^3.1.9",
     "vue": "^3.5.13"
   }
 }
