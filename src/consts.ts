@@ -6,6 +6,7 @@ export const SITE_DESCRIPTION = 'Welcome to my website!';
 
 export const site = {
     title:'sitename',
-    description: '描述啊'
+    description: '描述啊',
+    url: 'www.baidu.com'
 
 }
