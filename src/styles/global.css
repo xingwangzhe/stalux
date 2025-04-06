@@ -1,0 +1,31 @@
+/*
+  The CSS in this style tag is based off of Bear Blog's default CSS.
+  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
+  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
+ */
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+ul, ol {
+	list-style: none;
+}
+
+/* 其他样式清除 */
+address, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
+	display: block;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote::before, blockquote::after, q::before, q::after {
+	content: "";
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
