@@ -1,34 +1,24 @@
-# 依赖目录
-node_modules/
-vendor/
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
 
-# VitePress 构建输出
-.vitepress/dist/
-.vitepress/cache/
-dist/
-cache/
+# Node dependencies
+node_modules
 
-# 日志文件
+# Logs
+logs
 *.log
-logs/
 
-# 环境变量文件
-.env
-.env.local
-
-# IDE 配置
-.idea/
-.vscode/
-*.sublime-*
-
-# 系统文件
+# Misc
 .DS_Store
-Thumbs.db
+.fleet
+.idea
 
-# 临时文件
-.temp
-.tmp
-.cache/
-
-# Vite 相关
-.vite/
+# Local env files
+.env
+.env.*
+!.env.example
