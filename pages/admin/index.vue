@@ -122,14 +122,14 @@ const fetchArticles = async () => {
     console.log('查询结果:', data.value)
     
     if (data.value && Array.isArray(data.value)) {
-      articles.value = data.value.map((article: any) => {
+      articles.value = data.value.map((article) => {
         let path = ''
         console.log('处理文章:', article)
         if (article._path) {
           const parts = article._path.split('/')
           path = parts[parts.length - 1].replace(/\.md$/, '')
         }
-        
+
         return {
           title: article.title || '无标题',
           path: path,

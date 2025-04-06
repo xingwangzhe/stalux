@@ -242,12 +242,12 @@ const fetchExistingTags = async () => {
       existingTags.value.clear()
       existingCategories.value.clear()
       
-      data.value.forEach((article: any) => {
-        if(Array.isArray(article.tags)) {
-          article.tags.forEach((tag: string) => existingTags.value.add(tag))
+      data.value.forEach((item) => {
+        if (Array.isArray(item.tags)) {
+          item.tags.forEach((tag: string) => existingTags.value.add(tag))
         }
-        if(Array.isArray(article.categories)) {
-          article.categories.forEach((category: string) => existingCategories.value.add(category))
+        if (Array.isArray(item.categories)) {
+          item.categories.forEach((category: string) => existingCategories.value.add(category))
         }
       })
       
@@ -277,7 +277,7 @@ const loadArticle = async (filePath: string) => {
     fileName.value = `${filePath}.md`
     
     // 使用 queryCollection API 加载文章
-    const { data: article } = await useAsyncData(`article-${filePath}`, () => {
+    const { data } = await useAsyncData(`article-${filePath}`, () => {
       return queryCollection<BlogCollectionItem>('blog')
         .where({ _file: { $regex: `/${filePath}\\.md$` } })
         .findOne()
@@ -285,26 +285,27 @@ const loadArticle = async (filePath: string) => {
       fresh: true
     })
     
-    console.log('文章加载结果:', article.value)
+    console.log('文章加载结果:', data.value)
     
-    if (article.value) {
+    if (data.value) {
+      const article = data.value
       // 设置元数据
       metadata.value = {
-        title: article.value.title || '',
-        date: article.value.date || new Date().toISOString().split('T')[0],
-        updated: article.value.updated || '',
-        abbrlink: article.value.abbrlink || '',
-        tags: article.value.tags || [],
-        categories: article.value.categories || []
+        title: article.title || '',
+        date: article.date || new Date().toISOString().split('T')[0],
+        updated: article.updated || '',
+        abbrlink: article.abbrlink || '',
+        tags: article.tags || [],
+        categories: article.categories || []
       }
       
       // 如果存在内容则设置
-      if (article.value.body && article.value.body.text) {
-        content.value = article.value.body.text
-      } else if (article.value.body && typeof article.value.body === 'string') {
-        content.value = article.value.body
+      if (article.body && article.body.text) {
+        content.value = article.body.text
+      } else if (article.body && typeof article.body === 'string') {
+        content.value = article.body
       } else {
-        console.warn('文章内容不存在或格式不正确:', article.value)
+        console.warn('文章内容不存在或格式不正确:', article)
       }
     } else {
       console.warn('未找到文章:', filePath)
