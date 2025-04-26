@@ -27,6 +27,7 @@
     "multer": "^1.4.5-lts.2",
     "nodemon": "^3.1.9",
     "stylus": "^0.64.0",
+    "vite-plugin-imagemin": "^0.6.1",
     "vue": "^3.5.13"
   }
 }

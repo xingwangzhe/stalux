@@ -78,4 +78,9 @@ const { title, date, updated, abbrlink} = Astro.props;
 		</main>
 		<Footer />
 	</body>
+	<script>
+		// 使用 ES 模块导入语法引入脚本，确保打包工具可以正确处理
+		import '../scripts/background.ts';
+	  </script>
 </html>
+
