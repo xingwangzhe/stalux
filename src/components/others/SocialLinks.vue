@@ -1,7 +1,7 @@
 <template>
   <div class="social-links" :aria-label="ariaLabel">
     <ul>
-      <li v-for="item in safeMediaLinks" :key="item.url">
+      <li class="socila_links" v-for="item in safeMediaLinks" :key="item.url">
         <a 
           :href="item.url" 
           target="_blank" 
@@ -9,7 +9,7 @@
           rel="noopener noreferrer" 
           :title="item.title"
         >
-          <i :class="`fa-brands fa-${normalizeIconName(item.icon)}`" aria-hidden="true"></i>
+          <i :class="`fa-brands fa-${item.icon}`" aria-hidden="true"></i>
           <span class="sr-only">{{ item.title }}</span>
         </a>
       </li>
@@ -17,36 +17,38 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SocialLinks',
-  props: {
-    mediaLinks: {
-      type: Array,
-      default: () => [],
-    },
-    ariaLabel: {
-      type: String,
-      default: '社交媒体链接'
-    }
-  },
-  computed: {
-    safeMediaLinks() {
-      // 确保 mediaLinks 是一个数组且每个项目都有必要的属性
-      return Array.isArray(this.mediaLinks) ? this.mediaLinks.filter(item => 
-        item && item.url && item.title && item.icon
-      ) : [];
-    }
-  },
-  methods: {
-    normalizeIconName(icon) {
-      if (!icon) return 'link';
-      // 处理特殊情况
-      if (icon === 'bilibili') return 'bilibili';
-      return icon;
-    }
-  }
-}
+<script lang="ts" setup>
+import { computed, onMounted } from 'vue';
+import { animate } from 'animejs';
+onMounted(()=>{
+  animate('.socila_links',{
+    y: [
+        { to: '-2.75rem', ease: 'outExpo', duration: 600 },
+        { to: 0, ease: 'outBounce', duration: 800, delay: 100 }
+      ],
+      rotate: {
+        from: '-1turn',
+        delay: 0
+      },
+      delay: (_, i) => i * 50, // Function based value
+      ease: 'inOutCirc',
+      loopDelay: 1000,
+      loop: true
+});
+})
+const props = defineProps<{
+  mediaLinks: Array<any>,
+  ariaLabel?: string
+}>();
+
+
+const safeMediaLinks = computed(() => {
+  // 确保 mediaLinks 是一个数组且每个项目都有必要的属性
+  return Array.isArray(props.mediaLinks) 
+    ? props.mediaLinks.filter(item => item && item.url && item.title && item.icon) 
+    : [];
+});
+
 </script>
 
 <style scoped>

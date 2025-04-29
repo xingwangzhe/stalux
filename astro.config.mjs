@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import vue from '@astrojs/vue';
-
 // https://astro.build/config
 export default defineConfig({
     // 站点URL，用于生成sitemap和规范链接

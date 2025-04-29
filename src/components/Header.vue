@@ -1,5 +1,4 @@
 <template>
-    <div class="title"><h1>{{ siteTitle }}</h1></div>
     <nav class="nav">
         <ul>
             <li v-for="item in navItems" :key="item.path">
@@ -10,30 +9,20 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import { site } from '../consts';
 import { config_site } from '../_config';
 
-export default {
-    name: 'Header',
-    computed: {
-        navItems() {
-            return config_site.nav || site.nav || [];
-        },
-        siteTitle() {
-            return config_site.title || site.title || 'Blog';
-        }
-    }
-}
+const navItems = computed(() => {
+    return config_site.nav || site.nav || [];
+});
+
+const siteTitle = computed(() => {
+    return config_site.title || site.title || 'Blog';
+});
 </script>
 
 <style scoped>
-.title {
-    font-size: 2.0rem;
-    display: flex;
-    justify-content: center;
-    text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190);
-}
-
 .nav {
     width: 60%;
     margin: 20px auto;

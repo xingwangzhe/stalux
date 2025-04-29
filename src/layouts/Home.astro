@@ -39,6 +39,7 @@ const avatarImage = config_avatar || avatar;
         import '../scripts/background.ts';
     </script>
     <body>
+        <div class="title"><h1>{ config_site.title||site.title||'Stalux'}</h1></div>
         <Header />
         <AuthorCard 
             author={config_site.author} 
