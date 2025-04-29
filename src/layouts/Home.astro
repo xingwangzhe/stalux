@@ -2,6 +2,7 @@
 import { site } from '../consts' 
 import { config_site } from '../_config'
 import Head from '../components/Head.vue'
+import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import { Image } from 'astro:assets';
 import avatar from '../../public/avatar.jpg';
@@ -9,6 +10,8 @@ import config_avatar from '../images/avtar.jpg';
 import '../styles/home.styl'
 import Clock from '../components/others/Clock.vue'
 import SocialLinks from '../components/others/SocialLinks.vue'
+import TextTyping from '../components/others/TextTyping.vue'
+import AuthorCard from '../components/others/AuthorCard.vue'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 ---
 <!DOCTYPE html>
@@ -31,26 +34,13 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
     />
     <script>
         import '../scripts/background.ts';
-        import '../scripts/textyping.ts';
     </script>
     <body>
-        <div class="title"><h1>{config_site.title}</h1></div>
-        <div class="nav">
-            <ul>
-                {config_site.nav.map((item) => (
-                    <li><a href={item.path}>{item.title}</a></li>
-                ))}
-            </ul>
-        </div>
-        <div class="card">
-            <div class="auther">
-                <Image class="avatar" src={config_avatar || avatar}  alt="Author avatar" />
-                <div class="name"><h2>{config_site.author}</h2></div>
-                <SocialLinks client:load mediaLinks={config_site.medialinks} />
-            </div>
-        </div>
-        <div id="textyping">
-        </div>
+        <Header />
+        <AuthorCard author={config_site.author} avatarPath={config_avatar || avatar.src}>
+            <SocialLinks client:load mediaLinks={config_site.medialinks} slot="social-links" />
+        </AuthorCard>
+        <TextTyping client:load />
         <Clock client:load format="24hour" showDate={true} updateInterval={1000} />
     </body>
     <Footer/>

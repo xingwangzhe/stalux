@@ -92,14 +92,25 @@ onBeforeUnmount(() => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 60%;
+    margin: 20px auto;
+    padding: 15px 0;
+    background-color: rgba(0, 0, 0, 0.021);
+    backdrop-filter: blur(25px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.226);
 }
+
 .clock {
     font-size: 3.0rem;
     font-weight: normal;
+    text-shadow: 0.1rem 0.1rem 0.2rem rgb(1, 162, 190);
 }
+
 .date {
-    font-size: 3.5rem;
-    font-weight: bold;
+    font-size: 1.8rem;
     margin-bottom: 0.5rem;
+    text-shadow: 0.1rem 0.1rem 0.2rem rgb(1, 162, 190);
 }
 </style>
