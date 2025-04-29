@@ -1,12 +1,13 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { site } from '../consts';
+import { config_site } from '../_config';
 
 export async function GET(context) {
 	const posts = await getCollection('blog');
 	return rss({
-		title: SITE_TITLE,
-		description: SITE_DESCRIPTION,
+		title: config_site.title|| site.title,
+		description: config_site.description || site.description,
 		site: context.site,
 		items: posts.map((post) => ({
 			...post.data,

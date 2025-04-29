@@ -1,26 +1,6 @@
 ---
 import '../styles/global.styl';
-import Head from '../components/Head.vue';
-import { site } from "../consts";
-import Main from '../components/Main.vue';
-import Footer from '../components/Footer.vue';
-import Header from '../components/Header.vue';
-
-const title = "首页";
-const description = "这是首页的描述";
+import Home from '../layouts/Home.astro';
 ---
-<html lang="zh-cn">
-  <head>
-    <Head title={title} description={description} url={site.url} />
-  </head>
-  <body>
-    <Header/>
-    <Main/>
-    <Footer/>
-  </body>
-  
-<script>
-  // 使用 ES 模块导入语法引入脚本
-  import '../scripts/background.ts';
-</script>
-</html>
+
+<Home />

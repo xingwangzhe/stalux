@@ -1,0 +1,39 @@
+---
+import { site } from '../consts' 
+import { config_site } from '../_config'
+import Head from '../components/Head.vue'
+import Footer from '../components/Footer.vue'
+---
+<!DOCTYPE html>
+<html lang={config_site.lang !== undefined ? config_site.lang : (site.lang || '')}>
+    <Head
+        title={config_site.title !== undefined ? config_site.title : (site.title || '')}
+        description={config_site.description !== undefined ? config_site.description : (site.description || '')}
+        url={config_site.url !== undefined ? config_site.url : (site.url || '')}
+        keywords={config_site.keywords !== undefined ? config_site.keywords : (site.keywords || '')}
+        author={config_site.author !== undefined ? config_site.author : (site.author || '')}
+        lang={config_site.lang !== undefined ? config_site.lang : (site.lang || '')}
+        locale={config_site.locale !== undefined ? config_site.locale : (site.locale || '')}
+        siteName={config_site.siteName !== undefined ? config_site.siteName : (site.siteName || '')}
+        favicon={config_site.favicon !== undefined ? config_site.favicon : (site.favicon || '')}
+        appleTouchIcon={config_site.appleTouchIcon !== undefined ? config_site.appleTouchIcon : (site.appleTouchIcon || '')}
+        ogImage={config_site.ogImage !== undefined ? config_site.ogImage : (site.ogImage || '')}
+        twitterImage={config_site.twitterImage !== undefined ? config_site.twitterImage : (site.twitterImage || '')}
+        twitterCreator={config_site.twitterCreator !== undefined ? config_site.twitterCreator : (site.twitterCreator || '')}
+        structuredData={config_site.structuredData !== undefined ? config_site.structuredData : (site.structuredData || '')}
+    />
+    <script>
+        import '../scripts/background.ts';
+    </script>
+    <style lang="stylus" scoped>
+        @import '../styles/home.styl'
+    </style>
+    <body>
+        <div class="card">
+        <div class="auther">
+         <p>nihao</p>
+        </div>
+        </div>
+    </body>
+    <Footer/>
+</html>
