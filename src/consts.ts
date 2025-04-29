@@ -33,4 +33,14 @@ export const site = {
     ], 
 
     textyping:['这是我的世界', '默认打字效果'], // 打字机效果文字
+
+    medialinks: [
+        { title: 'Github', url: 'https://github.com/', icon: 'github'},
+        { title: 'Bilibili', url: 'https://space.bilibili.com/', icon: 'bilibili'},
+        { title: 'Twitter', url: 'https://x.com/', icon: 'x-twitter'},
+        { title: 'Weibo', url: 'https://weibo.com/', icon: 'weibo'},
+        { title: 'QQ', url: 'https://qm.qq.com/', icon: 'qq'},
+        { title: 'Telegram', url: 'https://t.me/', icon: 'telegram'},
+        { title: 'Discord', url: 'https://discord.gg/', icon: 'discord'},
+    ]
 }

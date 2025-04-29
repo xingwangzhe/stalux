@@ -34,15 +34,13 @@ export const config_site = {
             "name": "作者名称"
         }
     }),
-    //
-    //
     // 站点导航配置
     nav: [
         { title: 'home', path: '/' },
         { title: 'about', path: '/about'},
-    ], 
+    ],
 
-    textyping:
+    textyping: // 打字机效果文字
     [
         'Free for free, not free for charge!', 
         '因为我姓王,所以姓王者',
@@ -50,5 +48,15 @@ export const config_site = {
         'F12看看?',
         'Hello World!',
         
-    ], // 打字机效果文字
+    ],
+    // 社媒链接
+    medialinks: [
+        { title: 'Github', url: 'https://github.com/', icon: 'github'},
+        { title: 'Bilibili', url: 'https://space.bilibili.com/', icon: 'bilibili'},
+        { title: 'Twitter', url: 'https://x.com/', icon: 'x-twitter'},
+        { title: 'Weibo', url: 'https://weibo.com/', icon: 'weibo'},
+        { title: 'QQ', url: 'https://qm.qq.com/', icon: 'qq'},
+        { title: 'Telegram', url: 'https://t.me/', icon: 'telegram'},
+        { title: 'Discord', url: 'https://discord.gg/', icon: 'discord'},
+    ]
 }

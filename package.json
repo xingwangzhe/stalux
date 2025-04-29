@@ -6,27 +6,19 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "api": "node api/index.js",
-    "api:dev": "nodemon api/index.js"
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/mdx": "4.2.5",
     "@astrojs/rss": "^4.0.11",
     "@astrojs/sitemap": "3.3.1",
     "@astrojs/vue": "5.0.11",
-    "astro": "5.7.5",
-    "body-parser": "^2.2.0",
-    "concurrently": "^9.1.2",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "astro": "5.7.8",
     "gray-matter": "^4.0.3",
     "lightningcss": "^1.29.3",
     "md-editor-v3": "^5.5.0",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.2",
     "stylus": "^0.64.0",
-    "vite-plugin-imagemin": "^0.6.1",
     "vue": "^3.5.13"
   }
 }
