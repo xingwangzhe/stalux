@@ -26,5 +26,11 @@ export const site = {
     // 高级SEO技术 - 增强搜索结果展示，但复杂度较高
     structuredData: JSON.stringify({                    // 可选: 结构化数据，提升特殊搜索结果展示
 
-    })
+    }),
+    nav: [
+        { title: 'home', path: '/' },
+        { title: 'about', path: '/about'},
+    ], 
+
+    textyping:['这是我的世界', '默认打字效果'], // 打字机效果文字
 }

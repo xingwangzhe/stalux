@@ -1,6 +1,6 @@
 export const config_site = {
     // 核心SEO必要配置
-    title: 'sitename',                                  // 必要: 页面标题，SEO最重要因素
+    title: '姓王者的博客',                                  // 必要: 页面标题，SEO最重要因素
     description: '描述啊',                              // 必要: 网站描述，影响搜索结果展示和CTR
     url: 'https://www.baidu.com',                       // 必要: 网站URL，需完整包含https
     
@@ -9,7 +9,7 @@ export const config_site = {
     lang: 'zh-CN',                                      // 重要: 有助于地区搜索引擎理解内容
     
     // 可选配置 - 有一定SEO价值但非必需
-    author: '作者名称',                                 // 可选: 内容创作者信息
+    author: '姓王者',                                 // 可选: 内容创作者信息
     locale: 'zh_CN',                                    // 可选: 内容的区域设置
     siteName: '站点名称',                               // 可选: 站点名称，用于品牌构建
     
@@ -33,5 +33,22 @@ export const config_site = {
             "@type": "Person",
             "name": "作者名称"
         }
-    })
+    }),
+    //
+    //
+    // 站点导航配置
+    nav: [
+        { title: 'home', path: '/' },
+        { title: 'about', path: '/about'},
+    ], 
+
+    textyping:
+    [
+        'Free for free, not free for charge!', 
+        '因为我姓王,所以姓王者',
+        '任意键在哪?',
+        'F12看看?',
+        'Hello World!',
+        
+    ], // 打字机效果文字
 }
