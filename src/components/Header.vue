@@ -37,11 +37,6 @@ export default {
 .nav {
     width: 60%;
     margin: 20px auto;
-    background-color: rgba(0, 0, 0, 0.021);
-    backdrop-filter: blur(25px);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.226);
     padding: 10px 0;
 }
 
@@ -62,14 +57,11 @@ export default {
     font-size: 1.2rem;
     color: inherit;
     padding: 8px 15px;
-    border-radius: 5px;
     transition: all 0.3s ease;
     text-shadow: 0.1rem 0.1rem 0.2rem rgb(1, 162, 190);
 }
 
 .nav a:hover {
-    background-color: rgba(0, 255, 255, 0.2);
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
 }
 </style>

@@ -73,16 +73,13 @@ export default {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
   transition: all 0.3s ease;
   color: #ffffff;
   text-decoration: none;
 }
 
 .social-links a:hover {
-  background-color: rgba(0, 255, 255, 0.2);
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
 }
 
 .social-links i {
@@ -105,6 +102,5 @@ export default {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
-  border-width: 0;
 }
 </style>
