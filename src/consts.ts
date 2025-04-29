@@ -1,39 +1,55 @@
-//默认配置
 export const site = {
-    // 核心SEO必要配置 - 这些配置对SEO有最直接影响
-    title: 'sitename',                                  // 必要: 网站标题，SEO最关键因素
-    description: '描述啊',                              // 必要: 网站描述，影响搜索摘要和点击率
-    url: 'https://nihao.needhelp.com',                  // 必要: 完整URL，包含https
+    // 核心SEO必要配置
+    title: '姓王者的博客',                                  // 必要: 页面标题，SEO最重要因素
+    description: '描述啊',                              // 必要: 网站描述，影响搜索结果展示和CTR
+    url: 'https://www.baidu.com',                       // 必要: 网站URL，需完整包含https
     
-    // 重要但可选的配置 - 提供明显SEO价值
-    keywords: '关键词',                                 // 重要: 虽然权重降低，但仍有参考价值
-    lang: 'zh-CN',                                      // 重要: 有助于地区性搜索引擎优化
+    // 重要但非必须的配置
+    keywords: '关键词',                                 // 重要: 关键词，虽然权重下降但仍有参考价值
+    lang: 'zh-CN',                                      // 重要: 有助于地区搜索引擎理解内容
     
-    // 次要SEO配置 - 有特定场景的SEO价值
-    author: '作者名称',                                 // 可选: 对某些垂直领域有辅助价值
-    locale: 'zh_CN',                                    // 可选: 用于国际化站点的语言区域标识
-    siteName: '站点名称',                               // 可选: 有助于品牌构建
+    // 可选配置 - 有一定SEO价值但非必需
+    author: '姓王者',                                 // 可选: 内容创作者信息
+    locale: 'zh_CN',                                    // 可选: 内容的区域设置
+    siteName: '站点名称',                               // 可选: 站点名称，用于品牌构建
     
-    // 资源文件 - 主要用于用户体验，间接SEO价值
-    favicon: '',                            // 可选: 浏览器标签页图标
-    appleTouchIcon: '',            // 可选: iOS设备主屏图标
+    // 资源文件配置 - 用户体验相关，间接SEO价值
+    favicon: '/favicon.ico',                            // 可选: 网站图标
+    appleTouchIcon: '/apple-touch-icon.png',            // 可选: iOS设备添加到主屏的图标
+    avatarPath: 'public/avatar.jpg', 
+    // 社交媒体优化配置 - 主要针对社交分享，非核心SEO
+    ogImage: 'https://www.baidu.com/og-image.jpg',      // 可选: 社交媒体分享图片
+    twitterImage: 'https://www.baidu.com/twitter-image.jpg', // 可选: Twitter分享图片
+    twitterCreator: '@yourTwitterHandle',               // 可选: Twitter账号，仅Twitter流量有价值时需要
     
-    // 社交分享优化 - 对社交媒体流量有价值，但非核心SEO
-    ogImage: '', // 可选: 社交平台分享图片
-    twitterImage: '', // 可选: 若Twitter不是目标平台可省略
-    twitterCreator: '',               // 可选: 国内站点可忽略此配置
-    
-    // 高级SEO技术 - 增强搜索结果展示，但复杂度较高
-    structuredData: JSON.stringify({                    // 可选: 结构化数据，提升特殊搜索结果展示
-
+    // 高级SEO配置 - 有助于富结果展示，但实现复杂
+    structuredData: JSON.stringify({                    // 可选: 结构化数据，可提升特殊搜索结果展示
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "sitename",
+        "url": "https://www.baidu.com",
+        "description": "描述啊",
+        "author": {
+            "@type": "Person",
+            "name": "作者名称"
+        }
     }),
+    // 站点导航配置
     nav: [
         { title: 'home', path: '/' },
         { title: 'about', path: '/about'},
-    ], 
+    ],
 
-    textyping:['这是我的世界', '默认打字效果'], // 打字机效果文字
-
+    textyping: // 打字机效果文字
+    [
+        'Free for free, not free for charge!', 
+        '因为我姓王,所以姓王者',
+        '任意键在哪?',
+        'F12看看?',
+        'Hello World!',
+        
+    ],
+    // 社媒链接
     medialinks: [
         { title: 'Github', url: 'https://github.com/', icon: 'github'},
         { title: 'Bilibili', url: 'https://space.bilibili.com/', icon: 'bilibili'},

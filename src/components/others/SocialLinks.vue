@@ -1,7 +1,7 @@
 <template>
   <div class="social-links" :aria-label="ariaLabel">
     <ul>
-      <li class="socila_links" v-for="item in safeMediaLinks" :key="item.url">
+      <li class="socila_icon" v-for="item in safeMediaLinks" :key="item.url">
         <a 
           :href="item.url" 
           target="_blank" 
@@ -19,9 +19,9 @@
 
 <script lang="ts" setup>
 import { computed, onMounted } from 'vue';
-import { animate } from 'animejs';
+import { animate,waapi} from 'animejs';
 onMounted(()=>{
-  animate('.socila_links',{
+  animate('.socila_icon',{
     y: [
         { to: '-2.75rem', ease: 'outExpo', duration: 600 },
         { to: 0, ease: 'outBounce', duration: 800, delay: 100 }
@@ -54,8 +54,9 @@ const safeMediaLinks = computed(() => {
 <style scoped>
 .social-links {
   display: flex;
-  margin-left: auto;
-  margin-right: 15px;
+  justify-content: center;
+  align-items: center;
+  margin: 25px auto;
 }
 
 .social-links ul {

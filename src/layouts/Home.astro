@@ -6,7 +6,6 @@ import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import { Image } from 'astro:assets';
 import avatar from '../../public/avatar.jpg';
-import config_avatar from '../images/avtar.jpg';
 import '../styles/home.styl'
 import Clock from '../components/others/Clock.vue'
 import SocialLinks from '../components/others/SocialLinks.vue'
@@ -15,7 +14,8 @@ import AuthorCard from '../components/others/AuthorCard.astro'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 
 // 确保头像路径有效，提供回退机制
-const avatarImage = config_avatar || avatar;
+
+const avatarImage = config_site.avatarPath || site.avatarPath;
 ---
 <!DOCTYPE html>
 <html lang={config_site.lang !== undefined ? config_site.lang : (site.lang || '')}>
@@ -42,18 +42,15 @@ const avatarImage = config_avatar || avatar;
         <div class="title"><h1>{ config_site.title||site.title||'Stalux'}</h1></div>
         <Header />
         <AuthorCard 
-            author={config_site.author} 
+            author={config_site.author || site.author } 
             avatarPath={avatarImage}
             avatarWidth={100}
             avatarHeight={100}
         >
-            {/* 使用 slot 分隔 Vue hydration，避免不匹配 */}
-            <div slot="social-links">
-                <SocialLinks client:only="vue" mediaLinks={config_site.medialinks || []} />
-            </div>
         </AuthorCard>
         <TextTyping client:idle />
         <Clock client:idle format="24hour" showDate={true} updateInterval={1000} />
+        <SocialLinks client:only="vue" mediaLinks={config_site.medialinks || []} />
     </body>
     <Footer/>
 </html>

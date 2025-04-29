@@ -8,7 +8,7 @@
     </nav>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { computed } from 'vue';
 import { site } from '../consts';
 import { config_site } from '../_config';
