@@ -62,7 +62,7 @@ onMounted(() => {
 #textyping {
     position: relative;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     margin: 20px auto;
     width: 60%;
     min-height: 2rem;

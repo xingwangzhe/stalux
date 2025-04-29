@@ -1,7 +1,7 @@
 <template>
   <div class="social-links" :aria-label="ariaLabel">
     <ul>
-      <li v-for="item in mediaLinks" :key="item.url">
+      <li v-for="item in safeMediaLinks" :key="item.url">
         <a 
           :href="item.url" 
           target="_blank" 
@@ -9,7 +9,7 @@
           rel="noopener noreferrer" 
           :title="item.title"
         >
-          <i  :class="`fa-brands fa-${normalizeIconName(item.icon)}`" aria-hidden="true"></i>
+          <i :class="`fa-brands fa-${normalizeIconName(item.icon)}`" aria-hidden="true"></i>
           <span class="sr-only">{{ item.title }}</span>
         </a>
       </li>
@@ -23,33 +23,27 @@ export default {
   props: {
     mediaLinks: {
       type: Array,
-      required: true,
-      validator: (value) => {
-        return value.every(item => 
-          item.url && 
-          item.title && 
-          item.icon
-        );
-      }
+      default: () => [],
     },
     ariaLabel: {
       type: String,
       default: '社交媒体链接'
     }
   },
+  computed: {
+    safeMediaLinks() {
+      // 确保 mediaLinks 是一个数组且每个项目都有必要的属性
+      return Array.isArray(this.mediaLinks) ? this.mediaLinks.filter(item => 
+        item && item.url && item.title && item.icon
+      ) : [];
+    }
+  },
   methods: {
-    // 规范化图标名称，处理特殊情况
-    normalizeIconName(iconName) {
-      const iconMap = {
-        'x-twitter': 'twitter', // x-twitter 仍使用 twitter 图标
-        'qq': 'qq',
-        'weibo': 'weibo',
-        'github': 'github',
-        'telegram': 'telegram',
-        'discord': 'discord'
-      };
-      
-      return iconMap[iconName] || iconName; // 如果没有特殊映射，使用原名
+    normalizeIconName(icon) {
+      if (!icon) return 'link';
+      // 处理特殊情况
+      if (icon === 'bilibili') return 'bilibili';
+      return icon;
     }
   }
 }
@@ -57,21 +51,20 @@ export default {
 
 <style scoped>
 .social-links {
+  display: flex;
   margin-left: auto;
+  margin-right: 15px;
 }
 
 .social-links ul {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .social-links li {
-  margin: 0;
+  margin: 0 5px;
 }
 
 .social-links a {
