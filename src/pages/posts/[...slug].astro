@@ -18,5 +18,5 @@ const markdownContent = post.body;
 ---
 
 <BlogPost {...post.data}>
-	<MdRenderer content={markdownContent} theme="vuepress" client:load />
+	<MdRenderer content={markdownContent||''} theme="vuepress" client:idle />
 </BlogPost>
