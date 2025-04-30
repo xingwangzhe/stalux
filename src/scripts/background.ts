@@ -1,8 +1,8 @@
 /**
  * 随机背景图片实现
  * 每次加载页面时随机选择一张背景图片进行平铺
+ * 样式已移至 global.styl 实现解耦
  */
-
 // 背景图片总数
 const TOTAL_PATTERNS = 42;
 
@@ -11,22 +11,14 @@ function selectRandomBackground(): void {
   // 生成1到TOTAL_PATTERNS的随机整数
   const randomNum = Math.floor(Math.random() * TOTAL_PATTERNS) + 1;
   
-  // 创建一个伪元素作为背景层
-  const bgElement = document.createElement('div');
-  bgElement.style.position = 'fixed';
-  bgElement.style.top = '0';
-  bgElement.style.left = '0';
-  bgElement.style.width = '100%';
-  bgElement.style.height = '100%';
-  bgElement.style.zIndex = '-1';
-  bgElement.style.opacity = '0.5';
-  bgElement.style.backgroundImage = `url('/images/background/pattern-${randomNum}.min.svg')`;
-  bgElement.style.backgroundRepeat = 'repeat';
-  bgElement.style.backgroundSize = 'auto';
-  bgElement.style.backgroundPosition = 'center';
-  bgElement.style.pointerEvents = 'none';  
-  bgElement.className = 'fade-in-background';
-  document.body.appendChild(bgElement);
+  // 直接设置 body 元素的背景图片
+  document.body.style.backgroundImage = `url('/images/background/pattern-${randomNum}.min.svg')`;
+  
+  // 添加类名以应用 global.styl 中定义的样式
+  document.body.classList.add('has-bg-pattern', 'fade-in-background');
+  
+  // 可选: 添加数据属性，便于其他地方可能的样式定制
+  document.body.setAttribute('data-bg-pattern', randomNum.toString());
 }
 
 // 页面加载完成后执行
