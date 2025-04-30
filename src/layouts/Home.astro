@@ -8,10 +8,10 @@ import { Image } from 'astro:assets';
 import avatar from '../../public/avatar.jpg';
 import '../styles/home.styl'
 import Clock from '../components/others/Clock.vue'
-import SocialLinks from '../components/others/SocialLinks.vue'
+import SocialLinks from '../components/others/SocialLinks.astro'
 import TextTyping from '../components/others/TextTyping.vue'
 import AuthorCard from '../components/others/AuthorCard.astro'
-import '@fortawesome/fontawesome-free/css/all.min.css'
+
 
 // 确保头像路径有效，提供回退机制
 
@@ -53,7 +53,7 @@ const avatarImage = config_site.avatarPath || site.avatarPath;
                 </AuthorCard>
                 <TextTyping client:idle />
                 <Clock client:idle format="24hour" showDate={true} updateInterval={1000} />
-                <SocialLinks client:only="vue" mediaLinks={config_site.medialinks || []} />
+                <SocialLinks mediaLinks={config_site.medialinks || site.medialinks || []} />
             </div>
         </div>
         <Footer/>

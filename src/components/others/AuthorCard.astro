@@ -70,6 +70,8 @@ const {
   height: 100px;
   border-radius: 50%;
   overflow: hidden;
+  border: 2px solid rgba(1, 162, 190, 0.5);
+  box-shadow: 0 0 15px rgba(1, 162, 190, 0.2);
 }
 
 .avatar {
@@ -77,6 +79,17 @@ const {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.avatar-container:hover .avatar {
+  transform: rotate(360deg) scale(1.05);
+  box-shadow: 0 0 20px rgba(1, 162, 190, 0.4);
+}
+
+.avatar-container:not(:hover) .avatar {
+  transition: transform 0.8s ease;
+  transform: rotate(0deg);
 }
 
 /* 响应式样式调整 */

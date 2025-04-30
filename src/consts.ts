@@ -1,7 +1,8 @@
 export const site = {
     // 核心SEO必要配置
     title: '姓王者的博客',                                  // 必要: 页面标题，SEO最重要因素
-    description: '描述啊',                              // 必要: 网站描述，影响搜索结果展示和CTR
+    description: '姓王者的个人技术博客，分享前端开发、React、TypeScript、JavaScript等领域的学习心得和实践经验。这里有丰富的教程、最佳实践和解决方案，帮助开发者提升技术能力和解决实际问题。欢迎访问交流学习！',  // 必要: 网站描述，150-160字符最佳SEO长度
+    link_description: '优质技术博客交换友情链接，互惠共赢提升网站流量和用户体验。期待与同领域高质量内容创作者建立长期合作关系。',  // 必要: 友链描述，清晰表达价值主张
     url: 'https://www.baidu.com',                       // 必要: 网站URL，需完整包含https
     
     // 重要但非必须的配置
@@ -38,6 +39,7 @@ export const site = {
     nav: [
         { title: 'home', path: '/' },
         { title: 'about', path: '/about'},
+        { title: 'links', path: '/links'},
     ],
 
     textyping: // 打字机效果文字
@@ -54,9 +56,30 @@ export const site = {
         { title: 'Github', url: 'https://github.com/', icon: 'github'},
         { title: 'Bilibili', url: 'https://space.bilibili.com/', icon: 'bilibili'},
         { title: 'Twitter', url: 'https://x.com/', icon: 'x-twitter'},
-        { title: 'Weibo', url: 'https://weibo.com/', icon: 'weibo'},
+        { title: 'Weibo', url: 'https://weibo.com/', icon: 'sinaweibo'},
         { title: 'QQ', url: 'https://qm.qq.com/', icon: 'qq'},
         { title: 'Telegram', url: 'https://t.me/', icon: 'telegram'},
         { title: 'Discord', url: 'https://discord.gg/', icon: 'discord'},
+    ],
+
+    friendlinks: [
+        { 
+            title: 'Astro', 
+            url: 'https://astro.build/',
+            avatar: 'https://astro.build/favicon.svg', 
+            description: 'The web framework for content-driven websites' 
+        },
+        { 
+            title: 'Vue', 
+            url: 'https://cn.vuejs.org/',
+            avatar: 'https://cn.vuejs.org/logo.svg', 
+            description: '易学易用，性能出色，适用场景丰富的 Web 前端框架。' 
+        },
+        { 
+            title: 'MDN Web Docs', 
+            url: 'https://developer.mozilla.org/',
+            avatar: 'https://developer.mozilla.org/favicon.ico', 
+            description: '提供开放网络技术相关的信息，是开发者的宝贵资源' 
+        },
     ]
 }

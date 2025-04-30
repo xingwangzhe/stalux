@@ -1,0 +1,201 @@
+---
+/**
+ * SocialLinks 社交媒体链接组件
+ * 
+ * 使用 simple-icons 库实现按需导入和构建时优化
+ * 在 Astro 中，可以充分利用静态站点生成的特点，
+ * 仅导入实际使用的图标，减小最终打包体积
+ */
+
+// 导入 simple-icons 中需要使用的特定图标
+import type { SimpleIcon } from 'simple-icons';
+import * as simpleIcons from 'simple-icons';
+
+interface MediaLink {
+  title: string;
+  url: string;
+  icon: string;
+}
+
+interface Props {
+  mediaLinks: MediaLink[];
+  ariaLabel?: string;
+}
+
+const { mediaLinks = [], ariaLabel = "Social Media Links" } = Astro.props;
+
+// 在构建时获取图标
+function getIconByTitle(iconName: string): SimpleIcon | undefined {
+  // 处理特殊情况
+  if (iconName === 'x-twitter') {
+    return simpleIcons.siX;
+  }
+  
+  // 标准化名称为 simple-icons 的格式 (去除非字母数字字符，转换为小写)
+  const normalizedName = iconName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  
+  // 尝试使用 simple-icons 的命名约定获取图标
+  const iconKey = `si${normalizedName.charAt(0).toUpperCase() + normalizedName.slice(1)}`;
+  return (simpleIcons as any)[iconKey];
+}
+---
+
+<div class="social-links" aria-label={ariaLabel}>
+  <ul>
+    {mediaLinks.map((item) => {
+      const icon = getIconByTitle(item.icon);
+      return (
+        <li class="socila_icon">
+          <a
+            href={item.url}
+            target="_blank"
+            aria-label={item.title}
+            rel="noopener noreferrer"
+            title={item.title}
+          >
+            {icon ? (
+              <div class="icon-container">
+                <svg 
+                  role="img" 
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <title>{icon.title}</title>
+                  <path d={icon.path}></path>
+                </svg>
+              </div>
+            ) : (
+              <span class="custom-icon">{item.icon.charAt(0).toUpperCase()}</span>
+            )}
+            <span class="sr-only">{item.title}</span>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</div>
+
+<style>
+.social-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 25px auto;
+  width: 90%;
+  max-width: 800px;
+}
+
+.social-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 10px;
+}
+
+.social-links li {
+  margin: 5px;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  color: #ffffff;
+  text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.social-links a:hover {
+  transform: translateY(-3px);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.social-links i {
+  font-size: 1.5rem;
+}
+
+/* 为bilibili自定义图标 */
+.custom-icon {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* 添加svg图标的样式 */
+.icon-container svg {
+  width: 24px;
+  height: 24px;
+  font-size: 1.5rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .social-links {
+    margin: 20px auto;
+  }
+  
+  .social-links ul {
+    gap: 5px;
+  }
+  
+  .social-links a {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-links a {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .social-links i, .icon-container svg {
+    font-size: 1.2rem;
+  }
+}
+</style>
+
+<script>
+// 在 Astro 组件中添加客户端交互动画
+// 注意: 这个脚本只会在客户端执行
+import { animate } from 'animejs';
+document.addEventListener('DOMContentLoaded', () => {
+    animate('.socila_icon',{
+    y: [
+        { to: '-2.75rem', ease: 'outExpo', duration: 600 },
+        { to: 0, ease: 'outBounce', duration: 800, delay: 100 }
+      ],
+      rotate: {
+        from: '-1turn',
+        delay: 0
+      },
+      delay: (_, i) => i * 50, // Function based value
+      ease: 'inOutCirc',
+      loopDelay: 1000,
+      loop: true
+});
+});
+</script>

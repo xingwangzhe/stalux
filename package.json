@@ -13,12 +13,12 @@
     "@astrojs/rss": "^4.0.11",
     "@astrojs/sitemap": "3.3.1",
     "@astrojs/vue": "5.0.11",
-    "@fortawesome/fontawesome-free": "^6.7.2",
     "animejs": "^4.0.2",
     "astro": "5.7.8",
     "gray-matter": "^4.0.3",
     "lightningcss": "^1.29.3",
     "md-editor-v3": "^5.5.0",
+    "simple-icons": "^14.12.3",
     "stylus": "^0.64.0",
     "vue": "^3.5.13"
   }
