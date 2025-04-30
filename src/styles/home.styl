@@ -26,3 +26,53 @@
 .float-animation {
   animation: float 6s ease-in-out infinite;
 }
+
+// Home布局样式
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.main-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  font-size: 2.0rem;
+  display: flex;
+  justify-content: center;
+  text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190);
+}
+
+@media (max-width: 768px) {
+  .title h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 95%;
+    padding: 0 10px;
+  }
+  
+  .title h1 {
+    font-size: 1.5rem;
+  }
+}
