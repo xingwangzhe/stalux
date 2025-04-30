@@ -1,7 +1,7 @@
-// 此文件现在只包含全局样式或共享的基础样式
+// 此文件只包含全局样式或共享的基础样式
 // 组件特定的样式已迁移到各自的组件中
 
-// 共享的卡片样式属性（如果有多处使用）
+// 共享的卡片样式属性
 .glass-card {
   background-color: rgba(0, 0, 0, 0.021);
   backdrop-filter: blur(25px);
@@ -10,7 +10,7 @@
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.226);
 }
 
-// 全局动画效果或其他共享样式
+// 全局动画效果
 @keyframes float {
   0% {
     transform: translateY(0);
@@ -25,10 +25,4 @@
 
 .float-animation {
   animation: float 6s ease-in-out infinite;
-}
-.title {
-    font-size: 2.0rem;
-    display: flex;
-    justify-content: center;
-    text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190);
 }

@@ -8,7 +8,7 @@
 // 页脚组件逻辑
 </script>
 
-<style>
+<style scoped>
 .site-footer {
   width: 100%;
   padding: 1rem 0;
