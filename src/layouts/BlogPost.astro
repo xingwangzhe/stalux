@@ -5,87 +5,20 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
 type Props = CollectionEntry<'posts'>['data'];
 const { title, date, updated, abbrlink} = Astro.props;
+import '../styles/blog.styl'
+import '../styles/global.styl'
 ---
 
 <html lang="zh-CN">
-	<head>
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 90%;
-				max-width: 720px;
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-			
-			/* 响应式调整 */
-			@media (max-width: 768px) {
-				.prose {
-					width: 95%;
-					padding: 0.75em;
-				}
-				
-				.title {
-					margin-bottom: 0.75em;
-					padding: 0.75em 0;
-				}
-				
-				.title h1 {
-					font-size: 1.8rem;
-				}
-			}
-
-			@media (max-width: 480px) {
-				.prose {
-					width: 100%;
-					padding: 0.5em;
-				}
-				
-				.title {
-					margin-bottom: 0.5em;
-					padding: 0.5em 0;
-				}
-				
-				.title h1 {
-					font-size: 1.5rem;
-				}
-			}
-		</style>
-	</head>
-
+	<Head 
+		title={title}
+		description={title}
+		author="站点作者"
+	/>
 	<body>
 		<Header />
 		<main>
+			<div class="main-wrapper">
 			<article>
 				<div class="hero-image">
 				</div>
@@ -107,12 +40,12 @@ const { title, date, updated, abbrlink} = Astro.props;
 					<slot />
 				</div>
 			</article>
+			</div>
 		</main>
 		<Footer />
 	</body>
 	<script>
-		// 使用 ES 模块导入语法引入脚本，确保打包工具可以正确处理
 		import '../scripts/background.ts';
-	  </script>
+	</script>
 </html>
 
