@@ -6,7 +6,7 @@ export const config_site = {
     url: 'https://www.baidu.com',                       // 必要: 网站URL，需完整包含https
     
     // 重要但非必须的配置
-    keywords: '关键词',                                 // 重要: 关键词，虽然权重下降但仍有参考价值
+    keywords: '关键的关键词',                                 // 重要: 关键词，虽然权重下降但仍有参考价值
     lang: 'zh-CN',                                      // 重要: 有助于地区搜索引擎理解内容
     
     // 可选配置 - 有一定SEO价值但非必需
