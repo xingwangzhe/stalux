@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeUnmount, watchEffect } from 'vue';
+import { ref, computed, onBeforeUnmount, watchEffect, onMounted } from 'vue';
 
 /**
  * Clock Component Props:
@@ -34,7 +34,8 @@ const props = defineProps({
     }
 });
 
-const time = ref(new Date());
+// 初始值为空或固定值，避免服务器和客户端渲染不一致
+const time = ref(new Date('2000-01-01T00:00:00')); 
 let timer = null;
 
 // 格式化时间显示
@@ -62,19 +63,21 @@ function updateTime() {
     time.value = new Date();
 }
 
-// 直接在组件定义时启动计时器，不依赖于onMounted
-// 初始更新一次时间
-updateTime();
-
-// 创建定时器
-timer = setInterval(updateTime, props.updateInterval);
-
-// 如果updateInterval属性变化，重新设置定时器
-watchEffect(() => {
-    if (timer) {
-        clearInterval(timer);
-    }
+// 使用 onMounted 钩子，确保只在客户端执行
+onMounted(() => {
+    // 组件挂载后更新时间
+    updateTime();
+    
+    // 创建定时器
     timer = setInterval(updateTime, props.updateInterval);
+    
+    // 如果updateInterval属性变化，重新设置定时器
+    watchEffect(() => {
+        if (timer) {
+            clearInterval(timer);
+        }
+        timer = setInterval(updateTime, props.updateInterval);
+    });
 });
 
 onBeforeUnmount(() => {

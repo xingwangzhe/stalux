@@ -16,7 +16,7 @@ export const config_site = {
     // 资源文件配置 - 用户体验相关，间接SEO价值
     favicon: '/favicon.ico',                            // 可选: 网站图标
     appleTouchIcon: '/apple-touch-icon.png',            // 可选: iOS设备添加到主屏的图标
-    avatarPath: 'avatar.jpg',                          // 可选: 自定义头像路径，不提供则使用默认头像
+    avatarPath: 'avatar.webp',                          // 可选: 自定义头像路径，不提供则使用默认头像
     
     // 社交媒体优化配置 - 主要针对社交分享，非核心SEO
     ogImage: 'https://www.baidu.com/og-image.jpg',      // 可选: 社交媒体分享图片
