@@ -22,7 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
-
+src/_config.ts
 # others
 src/content/posts/
 public/images/

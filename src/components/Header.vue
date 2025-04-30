@@ -14,7 +14,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { site } from '../consts';
-import { config_site } from '../_config';
+import { config_site } from '../utils/config-adapter';
 
 const navItems = computed(() => {
     return config_site.nav || site.nav || [];

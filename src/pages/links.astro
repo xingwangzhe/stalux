@@ -1,7 +1,7 @@
 ---
 import LinksLayout from "../layouts/Links.astro";
 import {site } from '../consts'
-import { config_site } from '../_config' 
+import { config_site } from '../utils/config-adapter' 
 ---
 
 <LinksLayout links={config_site.friendlinks||site.friendlinks}>

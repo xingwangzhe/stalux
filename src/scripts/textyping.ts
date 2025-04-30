@@ -1,5 +1,5 @@
 import { site } from "../consts";
-import { config_site } from "../_config";
+import { config_site } from "../utils/config-adapter";
 
 document.addEventListener("DOMContentLoaded", () => {
     const textTypingElement = document.getElementById("textyping");
