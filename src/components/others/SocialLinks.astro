@@ -179,9 +179,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
 </style>
 
 <script>
-// 在 Astro 组件中添加客户端交互动画
-// 注意: 这个脚本只会在客户端执行
-import { animate } from 'animejs';
+import  { animate }  from 'animejs';
 document.addEventListener('DOMContentLoaded', () => {
     animate('.socila_icon',{
     y: [

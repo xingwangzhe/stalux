@@ -16,6 +16,11 @@ const {
   avatarHeight = 100, 
   author = config_site.author || site.author || 'Author' 
 } = Astro.props;
+
+// 定义不同设备的图像尺寸
+const mobileSizes = 70; // 移动设备图片尺寸
+const tabletSizes = 80; // 平板设备图片尺寸
+const desktopSizes = 100; // 桌面设备图片尺寸
 ---
 
 <div class="card">
@@ -28,6 +33,14 @@ const {
           class="avatar"
           width={avatarWidth}
           height={avatarHeight}
+          loading="eager"
+          decoding="async"
+          srcset={`${avatarPath}?w=${mobileSizes} ${mobileSizes}w, 
+                   ${avatarPath}?w=${tabletSizes} ${tabletSizes}w, 
+                   ${avatarPath}?w=${desktopSizes} ${desktopSizes}w`}
+          sizes="(max-width: 480px) ${mobileSizes}px, 
+                 (max-width: 768px) ${tabletSizes}px, 
+                 ${desktopSizes}px"
         />
       ) : (
         <Image 
@@ -36,6 +49,8 @@ const {
           class="avatar"
           width={avatarWidth}
           height={avatarHeight}
+          densities={[1, 1.5, 2]}
+          loading="eager"
         />
       )}
     </div>
