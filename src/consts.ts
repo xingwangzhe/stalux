@@ -1,18 +1,18 @@
 export const site = {
     // 核心SEO必要配置
-    title: '姓王者的博客',                                  // 必要: 页面标题，SEO最重要因素
-    description: '姓王者的个人技术博客，分享前端开发、React、TypeScript、JavaScript等领域的学习心得和实践经验。这里有丰富的教程、最佳实践和解决方案，帮助开发者提升技术能力和解决实际问题。欢迎访问交流学习！',  // 必要: 网站描述，150-160字符最佳SEO长度
+    title: 'Stalux',                                  // 必要: 页面标题，SEO最重要因素
+    description: '博客主题Stalux',  // 必要: 网站描述，150-160字符最佳SEO长度
     link_description: '优质技术博客交换友情链接，互惠共赢提升网站流量和用户体验。期待与同领域高质量内容创作者建立长期合作关系。',  // 必要: 友链描述，清晰表达价值主张
-    url: 'https://www.baidu.com',                       // 必要: 网站URL，需完整包含https
+    url: 'https://stalux.needhelp.icu',                       // 必要: 网站URL，需完整包含https
     
     // 重要但非必须的配置
     keywords: '关键词',                                 // 重要: 关键词，虽然权重下降但仍有参考价值
     lang: 'zh-CN',                                      // 重要: 有助于地区搜索引擎理解内容
     
     // 可选配置 - 有一定SEO价值但非必需
-    author: '姓王者',                                 // 可选: 内容创作者信息
+    author: 'xingwangzhe',                                 // 可选: 内容创作者信息
     locale: 'zh_CN',                                    // 可选: 内容的区域设置
-    siteName: '站点名称',                               // 可选: 站点名称，用于品牌构建
+    siteName: 'Stalux',                               // 可选: 站点名称，用于品牌构建
     
     // 资源文件配置 - 用户体验相关，间接SEO价值
     favicon: '/favicon.ico',                            // 可选: 网站图标
@@ -37,9 +37,10 @@ export const site = {
     }),
     // 站点导航配置
     nav: [
-        { title: 'home', path: '/' },
-        { title: 'about', path: '/about'},
-        { title: 'links', path: '/links'},
+        { title: 'home', path: '/', icon: 'home' },
+        { title: 'about', path: '/about', icon: 'user' },
+        { title: 'links', path: '/links', icon: 'link' },
+        { title: 'archives', path: '/archives', icon: 'archive' },
     ],
 
     textyping: // 打字机效果文字

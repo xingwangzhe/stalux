@@ -1,5 +1,4 @@
 ---
-import { site } from '../../consts';
 import { config_site } from '../../utils/config-adapter';
 import { Image }  from 'astro:assets';
 
@@ -14,7 +13,7 @@ const {
   avatarPath, 
   avatarWidth = 100, 
   avatarHeight = 100, 
-  author = config_site.author || site.author || 'Author' 
+  author = config_site.author
 } = Astro.props;
 
 // 定义不同设备的图像尺寸

@@ -1,11 +1,10 @@
-import { site } from "../consts";
 import { config_site } from "../utils/config-adapter";
 
 document.addEventListener("DOMContentLoaded", () => {
     const textTypingElement = document.getElementById("textyping");
     if(!textTypingElement) return;
 
-    const texts = config_site.textyping || site.textyping ||[site.title, site.description];
+    const texts = config_site.textyping;
     let currentTextIndex = Math.floor(Math.random() * texts.length);
     let currentCharIndex = 0;
     let isDeleting = false;

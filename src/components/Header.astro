@@ -1,0 +1,195 @@
+---
+import { config_site } from '../utils/config-adapter';
+// @ts-ignore
+import * as feather from 'feather-icons';
+
+// TypeScript类型定义
+interface NavItem {
+  title: string;
+  path: string;
+  icon?: string;
+}
+
+// 获取导航配置
+const navItems: NavItem[] = config_site.nav;
+
+// 从feather图标库获取图标的辅助函数
+function getIconSvg(iconName: string): string {
+  if (!iconName) return '';
+  
+  try {
+    const icon = feather.icons[iconName];
+    return icon ? icon.toSvg({
+      width: 20,
+      height: 20,
+      'stroke-width': 2,
+      class: 'nav-icon'
+    }) : '';
+  } catch (error) {
+    console.error(`Icon '${iconName}' not found in feather-icons`);
+    return '';
+  }
+}
+---
+
+<nav class="nav">
+  <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="导航菜单">
+    <Fragment set:html={feather.icons['menu'].toSvg({
+      width: 24,
+      height: 24,
+      class: 'menu-icon'
+    })} />
+  </button>
+
+  <ul id="nav-menu">
+    {navItems.map((item) => (
+      <li>
+        <a href={item.path} class="nav-link">
+          {item.icon && (
+            <span class="nav-icon-container" set:html={getIconSvg(item.icon)} />
+          )}
+          <span>{item.title}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+.nav {
+  width: 100%;
+  max-width: 960px;
+  margin: 20px auto;
+  padding: 10px 0;
+  position: relative;
+}
+
+.nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav li {
+  margin: 0 15px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: inherit;
+  padding: 8px 15px;
+  transition: all 0.3s ease;
+  text-shadow: 0.1rem 0.1rem 0.2rem rgb(1, 162, 190);
+}
+
+.nav-link:hover {
+  transform: translateY(-3px);
+}
+
+.nav-icon-container {
+  display: inline-flex;
+  margin-right: 6px;
+}
+
+.nav-icon {
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  z-index: 100;
+  padding: 5px;
+  transition: transform 0.3s ease;
+}
+
+.mobile-menu-toggle .menu-icon {
+  stroke: white;
+  stroke-width: 2;
+}
+
+.mobile-menu-toggle:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .nav {
+    width: 100%;
+    margin: 10px auto;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .nav ul {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: rgba(32, 32, 32, 0.95);
+    padding: 20px 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 99;
+  }
+  
+  .nav ul.active {
+    display: flex;
+  }
+  
+  .nav li {
+    margin: 10px 0;
+    text-align: center;
+  }
+  
+  .nav-link {
+    justify-content: center;
+    padding: 12px 0;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-link {
+    font-size: 1rem;
+  }
+}
+</style>
+
+<script>
+// 移动端菜单交互逻辑
+document.addEventListener('DOMContentLoaded', () => {
+  const menuToggle = document.getElementById('mobile-menu-toggle');
+  const navMenu = document.getElementById('nav-menu');
+  
+  if (menuToggle && navMenu) {
+    menuToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+    
+    // 点击菜单项后关闭菜单
+    const menuItems = navMenu.querySelectorAll('a');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          navMenu.classList.remove('active');
+        }
+      });
+    });
+  }
+});
+</script>

@@ -4,11 +4,10 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import { site } from "../../consts";
 import { config_site } from "../../utils/config-adapter";
 
 // 获取配置的文字
-const texts = computed(() => config_site.textyping || site.textyping || [site.title, site.description]);
+const texts = computed(() => config_site.textyping);
 
 // 状态变量
 const displayText = ref('');

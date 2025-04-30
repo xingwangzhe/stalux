@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Head from '../components/Head.vue';
-import Header from '../components/Header.vue';
+import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
 type Props = CollectionEntry<'posts'>['data'];
 const { title, date, updated, abbrlink} = Astro.props;
