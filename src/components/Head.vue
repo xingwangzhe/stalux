@@ -22,7 +22,7 @@
     
     <link rel="icon" :href="favicon || '/favicon.ico'" sizes="32x32" />
     <link rel="apple-touch-icon" :href="appleTouchIcon || '/apple-touch-icon.ico'" sizes="180x180" />
-    <description>{{ description }}</description>
+    <!-- 移除了非标准的description标签 -->
     
     <meta name="twitter:card" content="summary_large_image" v-if="twitterImage || ogImage" />
     <meta name="twitter:title" :content="title" v-if="twitterImage || ogImage" />
@@ -31,6 +31,9 @@
     <meta name="twitter:creator" :content="twitterCreator" v-if="twitterCreator" />
     
     <script type="application/ld+json" v-if="structuredData">{{ structuredData }}</script>
+    
+    <!-- 添加插槽，确保它是函数式的 -->
+    <slot v-if="false"></slot>
   </head>
 </template>
 <script lang="ts" setup>
