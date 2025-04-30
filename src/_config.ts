@@ -78,7 +78,13 @@ export const config_site = {
             title: 'MDN Web Docs', 
             url: 'https://developer.mozilla.org/',
             avatar: 'https://developer.mozilla.org/favicon.ico', 
-            description: '提供开放网络技术相关的信息，是开发者的宝贵资源' 
+            description: 'Documenting web technologies, including CSS, HTML, and JavaScript, since 2005.' 
         },
+        {
+            title: 'Simple Icons',
+            url: 'https://simpleicons.org/',
+            avatar: 'https://simpleicons.org/favicon.ico',
+            description: '流行品牌的 3282 SVG 图标'
+        }
     ]
 }
