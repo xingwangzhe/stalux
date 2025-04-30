@@ -4,6 +4,38 @@
 	box-sizing: border-box;
 	text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190);    
 }
+
+// 自定义滚动条样式
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: #2a2a2a;
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #4a4a4a;
+	border-radius: 4px;
+	transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #5a5a5a;
+}
+
+::-webkit-scrollbar-corner {
+	background: #2a2a2a;
+}
+
+// Firefox 滚动条样式
+html {
+	scrollbar-width: thin;
+	scrollbar-color: #4a4a4a #2a2a2a;
+}
+
 ul, ol {
 	list-style: none;
 }
