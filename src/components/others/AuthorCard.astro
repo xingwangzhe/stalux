@@ -78,4 +78,38 @@ const {
   height: 100%;
   object-fit: cover;
 }
+
+/* 响应式样式调整 */
+@media (max-width: 768px) {
+  .card {
+    width: 90%;
+    margin: 30px auto;
+  }
+  
+  .auther {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .name {
+    margin: 15px 0 10px;
+  }
+  
+  .avatar-container {
+    margin: 0;
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .avatar-container {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .name {
+    font-size: 1.2rem;
+  }
+}
 </style>

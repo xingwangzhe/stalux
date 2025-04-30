@@ -57,32 +57,40 @@ const safeMediaLinks = computed(() => {
   justify-content: center;
   align-items: center;
   margin: 25px auto;
+  width: 90%;
+  max-width: 800px;
 }
 
 .social-links ul {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   list-style: none;
   padding: 0;
   margin: 0;
+  gap: 10px;
 }
 
 .social-links li {
-  margin: 0 5px;
+  margin: 5px;
 }
 
 .social-links a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   transition: all 0.3s ease;
   color: #ffffff;
   text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .social-links a:hover {
   transform: translateY(-3px);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .social-links i {
@@ -105,5 +113,32 @@ const safeMediaLinks = computed(() => {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .social-links {
+    margin: 20px auto;
+  }
+  
+  .social-links ul {
+    gap: 5px;
+  }
+  
+  .social-links a {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-links a {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .social-links i {
+    font-size: 1.2rem;
+  }
 }
 </style>

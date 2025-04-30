@@ -64,10 +64,15 @@ onMounted(() => {
     text-align: center;
     font-size: 2.5rem;
     margin: 20px auto;
-    width: 60%;
+    width: 90%;
+    max-width: 800px;
     min-height: 2rem;
+    padding: 0 15px;
     color: #ffffff;
     text-shadow: 0.1rem 0.1rem 0.2rem rgb(1, 162, 190);
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 
 #textyping::after {
@@ -79,5 +84,20 @@ onMounted(() => {
 @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    #textyping {
+        font-size: 2rem;
+        margin: 15px auto;
+    }
+}
+
+@media (max-width: 480px) {
+    #textyping {
+        font-size: 1.5rem;
+        margin: 10px auto;
+    }
 }
 </style>

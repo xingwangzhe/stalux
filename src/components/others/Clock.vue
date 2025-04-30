@@ -95,7 +95,8 @@ onBeforeUnmount(() => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 60%;
+    width: 90%;
+    max-width: 800px;
     margin: 20px auto;
     padding: 15px 0;
 }
@@ -110,5 +111,30 @@ onBeforeUnmount(() => {
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
     text-shadow: 0.1rem 0.1rem 0.2rem rgb(1, 162, 190);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .clock-container {
+        padding: 10px 0;
+    }
+    
+    .clock {
+        font-size: 2.5rem;
+    }
+    
+    .date {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .clock {
+        font-size: 2rem;
+    }
+    
+    .date {
+        font-size: 1.2rem;
+    }
 }
 </style>

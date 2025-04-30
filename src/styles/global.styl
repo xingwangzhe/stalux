@@ -29,6 +29,20 @@ body {
 	position: relative;
 	min-height: 100vh;
 	overflow-x: hidden;
+	font-size: 16px; /* 基础字体大小 */
+}
+
+/* 响应式文字大小 */
+@media (max-width: 768px) {
+	body {
+		font-size: 14px;
+	}
+}
+
+@media (max-width: 480px) {
+	body {
+		font-size: 12px;
+	}
 }
 
 /* 为背景容器添加一些基础样式 */
@@ -53,4 +67,47 @@ a {
 
 .fade-in {
 	animation: fadeIn 1s ease-in-out forwards;
+}
+
+/* 响应式容器 */
+.container {
+	width: 90%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 15px;
+}
+
+/* 响应式网格系统 */
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0 -15px;
+}
+
+.col {
+	flex: 1;
+	padding: 0 15px;
+}
+
+/* 媒体查询断点 */
+@media (max-width: 992px) {
+	.row {
+		flex-direction: column;
+	}
+	
+	.col {
+		width: 100%;
+		margin-bottom: 20px;
+	}
+}
+
+/* 移动端触摸优化 */
+@media (max-width: 768px) {
+	a, button {
+		min-height: 44px; /* 提供足够大的触摸区域 */
+		min-width: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
 }
