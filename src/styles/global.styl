@@ -2,7 +2,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190); ;    
+	text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190);    
 }
 ul, ol {
 	list-style: none;
@@ -26,6 +26,14 @@ table {
 body {
 	color: #fff;
 	background-color: #202020;
+	position: relative;
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+/* 为背景容器添加一些基础样式 */
+#background-container {
+	pointer-events: none; /* 确保背景不会拦截鼠标事件 */
 }
 
 /* 去除所有链接的默认下划线样式 */
@@ -33,6 +41,7 @@ a {
 	text-decoration: none;
 }
 
+/* 保留基本的淡入动画，用于其他元素 */
 @keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -43,11 +52,5 @@ a {
 }
 
 .fade-in {
-	animation: fadeIn 0.5s ease-in-out forwards;
-}
-
-/* For background elements specifically */
-.fade-in-background {
-	opacity: 0;
 	animation: fadeIn 1s ease-in-out forwards;
 }
