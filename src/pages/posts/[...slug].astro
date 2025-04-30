@@ -1,7 +1,7 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
-import MdRenderer from '../../components/MdRenderer.vue';
+import { render } from 'astro:content';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
@@ -13,10 +13,9 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<'posts'>;
 
 const post = Astro.props;
-// 直接获取原始Markdown内容
-const markdownContent = post.body;
+const { Content } = await render(post);
 ---
 
 <BlogPost {...post.data}>
-	<MdRenderer content={markdownContent||''} theme="vuepress" client:idle />
+	<Content />
 </BlogPost>
