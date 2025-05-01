@@ -1,7 +1,44 @@
 ---
 import type { MarkdownHeading } from 'astro';
 import Clock from '../components/others/Clock.vue';
-const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.props;
+const { tags = [] as string[], categories = [] as any[], headings = [] as MarkdownHeading[] } = Astro.props;
+
+// 为分类生成扁平化路径和显示文本
+function generateCategoryPaths(categories: any[]) {
+  const result: { path: string; display: string; level: number }[] = [];
+  
+  function traverse(category: any, parentPath = '', level = 0) {
+    // 确保category是对象且有name属性
+    if (!category || typeof category !== 'object' || !category.name) {
+      console.error('无效的分类对象:', category);
+      return;
+    }
+    
+    const currentPath = parentPath ? `${parentPath}/${category.name}` : category.name;
+    
+    // 添加当前分类
+    result.push({
+      path: `/categories/${currentPath}`,
+      display: category.name,
+      level: level
+    });
+    
+    // 递归处理子分类 - 使用next
+    if (category.next && Array.isArray(category.next)) {
+      category.next.forEach((child: any) => {
+        traverse(child, currentPath, level + 1);
+      });
+    }
+  }
+  
+  if (Array.isArray(categories)) {
+    categories.forEach(category => traverse(category));
+  }
+  
+  return result;
+}
+
+const flattenedCategories = categories && Array.isArray(categories) ? generateCategoryPaths(categories) : [];
 ---
 
 <sidebar class="right-sidebar">
@@ -39,9 +76,22 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
   <!-- 文章分类部分 -->
   <div class="sidebar-section categories">
     <h3>文章分类</h3>
-    <div class="tag-cloud">
-      <a href="/categories/博客" class="category">博客</a>
-      <!-- 这里可以用 Astro 动态生成分类列表 -->
+    <div class="category-tree">
+      {flattenedCategories && flattenedCategories.length > 0 ? (
+        flattenedCategories.map((cat) => (
+          <a href={cat.path} class={`category level-${cat.level}`}>
+            {cat.level > 0 && '└ '}
+            {cat.display}
+          </a>
+        ))
+      ) : (
+        <div class="no-categories">暂无分类</div>
+      )}
+    </div>
+    
+    {/* 调试输出 */}
+    <div class="debug" style="display: none;">
+      <pre>{JSON.stringify(categories, null, 2)}</pre>
     </div>
   </div>
   
@@ -279,12 +329,44 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
     background-color: rgba(255, 255, 255, 0.1);
   }
 
+  .category.level-0 {
+    font-weight: bold;
+  }
+  
+  .category.level-1 {
+    margin-left: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .category.level-2 {
+    margin-left: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+  
+  .category.level-3 {
+    margin-left: 2.25rem;
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+
   .tag:hover, .category:hover {
     background-color: rgba(255, 255, 255, 0.25);
     transform: translateY(-2px);
   }
 
   .no-tags {
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+
+  /* 分类树样式 */
+  .category-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .no-categories {
     color: rgba(255, 255, 255, 0.6);
     font-style: italic;
     font-size: 0.9rem;

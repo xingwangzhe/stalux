@@ -7,7 +7,7 @@ import Footer from '../components/Footer.vue';
 type Props = CollectionEntry<'posts'>['data'] & {
   headings?: MarkdownHeading[];
 };
-const { title, date, updated, tags, headings = [] } = Astro.props;
+const { title, date, updated, tags, categories, headings = [] } = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
 import LeftSiderbar from './LeftSiderbar.astro';
@@ -49,7 +49,7 @@ import RightSiderbar from './RightSiderbar.astro';
 						<slot />
 					</div>
 				</article>
-				<RightSiderbar {tags} {headings} />
+				<RightSiderbar {tags} {categories} {headings} />
 			</div>
 		</main>
 		<Footer />
