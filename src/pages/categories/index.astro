@@ -23,109 +23,170 @@ function extractNestedCategories(posts: any[]) {
   interface CategoryNode {
     name: string;
     path: string;
-    count: number;
+    count: number; // 属于该分类的文章数量
     children: Record<string, CategoryNode>;
-    posts: Array<{ slug: string; title: string }>;
+    posts: Array<{ slug: string; title: string }>; // 存储该分类直接关联的文章
   }
 
   // 定义分类树类型
   type CategoryTree = Record<string, CategoryNode>;
 
-  // 处理文章分类并构建嵌套结构
-  function processCategory(categories: any[], post: { slug: any; data: { title: any; }; }, parent: CategoryNode | null = null, level = 0) {
-    if (!categories || !Array.isArray(categories) || level >= 3) return;
-    
-    categories.forEach(category => {
-      let catName, subcategories;
+  // 初始化所有分类节点
+  function initializeCategories(posts: any[]) {
+    // 递归收集所有分类路径并创建节点
+    function collectCategoryPaths(categories: any[], parentPath = '', tree: CategoryTree = categoryTree) {
+      if (!categories || !Array.isArray(categories)) return;
       
-      // 处理字符串格式的分类
-      if (typeof category === 'string') {
-        catName = category;
-        subcategories = null;
-      }
-      // 处理有name属性的对象格式
-      else if (category && typeof category === 'object' && category.name) {
-        catName = category.name;
-        subcategories = category.subcategories && Array.isArray(category.subcategories) 
-          ? category.subcategories 
-          : null;
-      }
-      // 处理key-array格式 {'category': [subcategories]}
-      else if (category && typeof category === 'object') {
-        const keys = Object.keys(category);
-        if (keys.length > 0) {
-          catName = keys[0];
-          subcategories = Array.isArray(category[catName]) ? category[catName] : null;
+      categories.forEach(category => {
+        // 处理字符串格式的分类
+        if (typeof category === 'string') {
+          const catName = category;
+          const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+          
+          if (!tree[catName]) {
+            tree[catName] = {
+              name: catName,
+              path: currentPath,
+              count: 0,
+              children: {},
+              posts: []
+            };
+          }
+          return;
         }
-      }
-      
-      if (!catName) return;
-      
-      // 定义当前处理的分类树
-      const tree = parent ? parent.children : categoryTree;
-      
-      // 生成分类路径 - 与Categories.astro组件逻辑一致
-      const parentPath = parent ? parent.path : '';
-      const fullPath = generateCategoryPath(catName, parentPath);
-      
-      // 如果分类不存在，则创建
-      if (!tree[catName]) {
-        tree[catName] = {
-          name: catName,
-          path: fullPath, // 使用与组件一致的路径生成方式
-          count: 0,
-          children: {},
-          posts: [] // 存储该分类直接关联的文章
-        };
-      }
-      
-      // 增加计数并添加文章
-      tree[catName].count++;
-      if (post && !tree[catName].posts.find((p: { slug: any; }) => p.slug === post.slug)) {
-        tree[catName].posts.push({
-          slug: post.slug,
-          title: post.data.title || post.slug
-        });
-      }
-      
-      // 如果有子分类且层级小于3，则递归处理
-      if (subcategories && level < 2) {
-        processCategory(subcategories, post, tree[catName], level + 1);
-      }
-    });
-  }
-  
-  // 处理每篇文章的分类
-  posts.forEach((post: { slug: any; data: { categories: any; title: any; }; }) => {
-    if (post.data.categories) {
-      processCategory(post.data.categories, post);
-    }
-  });
-  
-  // 计算每个分类的总文章数（包括子分类）
-  function calculateTotalCounts(tree: Record<string, CategoryNode>) {
-    Object.values(tree).forEach((category: CategoryNode) => {
-      if (Object.keys(category.children).length > 0) {
-        calculateTotalCounts(category.children);
+
+        // 处理有name属性的对象格式
+        if (category && typeof category === 'object' && category.name) {
+          const catName = category.name;
+          const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+          
+          if (!tree[catName]) {
+            tree[catName] = {
+              name: catName,
+              path: currentPath,
+              count: 0,
+              children: {},
+              posts: []
+            };
+          }
+          
+          // 递归处理子分类
+          if (category.subcategories && Array.isArray(category.subcategories)) {
+            collectCategoryPaths(category.subcategories, currentPath, tree[catName].children);
+          }
+          return;
+        }
         
-        // 计算子分类的文章总数
-        Object.values(category.children).forEach(child => {
-          category.count += child.count;
-          // 避免重复计算直接关联的文章
-          child.posts.forEach((post: { slug: any; title: string; }) => {
-            if (!category.posts.find((p: { slug: any; }) => p.slug === post.slug)) {
-              category.posts.push({
-                slug: post.slug,
-                title: post.title
-              });
+        // 处理key-array格式 {'category': [subcategories]}
+        if (category && typeof category === 'object') {
+          const keys = Object.keys(category);
+          if (keys.length > 0) {
+            const catName = keys[0];
+            const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+            
+            if (!tree[catName]) {
+              tree[catName] = {
+                name: catName,
+                path: currentPath,
+                count: 0,
+                children: {},
+                posts: []
+              };
             }
-          });
-        });
+            
+            // 递归处理子分类
+            const subCategories = category[catName];
+            if (Array.isArray(subCategories)) {
+              collectCategoryPaths(subCategories, currentPath, tree[catName].children);
+            }
+          }
+        }
+      });
+    }
+
+    // 初始化目录树结构
+    posts.forEach(post => {
+      if (post.data.categories) {
+        const categories = Array.isArray(post.data.categories) 
+          ? post.data.categories 
+          : [post.data.categories];
+        collectCategoryPaths(categories);
       }
     });
   }
+
+  // 判断文章是否属于特定分类路径
+  function isPostInCategory(post: { data: { categories: any; }; }, targetPath: string) {
+    if (!post.data.categories || !Array.isArray(post.data.categories)) return false;
+    
+    // 构建文章分类的所有路径
+    const postCategoryPaths: string[] = [];
+    
+    function buildPostCategoryPaths(categories: any[], parentPath = '') {
+      categories.forEach((category: { [x: string]: any; name?: any; subcategories?: any; }) => {
+        if (typeof category === 'string') {
+          postCategoryPaths.push(parentPath ? `${parentPath}/${category}` : category);
+        } else if (category && typeof category === 'object' && category.name) {
+          const catName = category.name;
+          const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+          postCategoryPaths.push(currentPath);
+          
+          if (category.subcategories && Array.isArray(category.subcategories)) {
+            buildPostCategoryPaths(category.subcategories, currentPath);
+          }
+        } else if (category && typeof category === 'object') {
+          const keys = Object.keys(category);
+          if (keys.length > 0) {
+            const catName = keys[0];
+            const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+            postCategoryPaths.push(currentPath);
+            
+            const subCategories = category[catName];
+            if (Array.isArray(subCategories)) {
+              buildPostCategoryPaths(subCategories, currentPath);
+            }
+          }
+        }
+      });
+    }
+    
+    buildPostCategoryPaths(post.data.categories);
+    
+    // 检查文章分类路径是否包含目标路径
+    return postCategoryPaths.some(path => path === targetPath);
+  }
+
+  // 计算每个分类的文章数量
+  function calculateCategoryCounts() {
+    // 递归处理所有分类节点
+    function processNode(node: CategoryNode, nodePath: string) {
+      // 计算直接属于该分类的文章数量
+      const postsInCategory = posts.filter(post => isPostInCategory(post, nodePath));
+      node.count = postsInCategory.length;
+      
+      // 为文章添加元数据
+      node.posts = postsInCategory.map(post => ({
+        slug: post.slug,
+        title: post.data.title || post.slug
+      }));
+      
+      // 递归处理子分类
+      Object.entries(node.children).forEach(([childName, childNode]) => {
+        processNode(childNode, childNode.path);
+      });
+    }
+    
+    // 处理顶级分类
+    Object.entries(categoryTree).forEach(([catName, node]) => {
+      processNode(node, node.path);
+    });
+  }
   
-  calculateTotalCounts(categoryTree);
+  // 初始化分类树结构
+  initializeCategories(posts);
+  
+  // 计算每个分类的文章数量
+  calculateCategoryCounts();
   
   return categoryTree;
 }
@@ -136,7 +197,7 @@ const categoryTree = extractNestedCategories(processedPosts);
 // 排序函数，将分类按文章数量降序排列
 function sortCategoriesByCount(categories: ArrayLike<unknown> | { [s: string]: unknown; }) {
   interface CategoryNode {
-sortedChildren: CategoryNode[];
+    sortedChildren: CategoryNode[];
     name: string;
     path: string;
     count: number;
@@ -195,27 +256,27 @@ const pageTitle = '文章分类 | ' + config_site.title;
                 </div>
                 <div class="category-content">
                   <h2 class="category-name">{category.name}</h2>
-                  <div class="category-count">{category.count} 篇文章</div>
+                  <div class="category-count">{category.posts.length} 篇文章</div>
                 </div>
               </a>
               
               <!-- 二级子分类 -->
               {category.sortedChildren?.length > 0 && (
                 <div class="subcategories level-2">
-                  {category.sortedChildren.map((subCategory: { sortedChildren: any[]; path: any; name: unknown; count: unknown; }) => (
+                  {category.sortedChildren.map((subCategory: { sortedChildren: any[]; path: any; name: unknown; posts: any[]; }) => (
                     <div class={`subcategory-card ${subCategory.sortedChildren?.length ? 'has-children' : ''}`}>
                       <a href={`/categories/${subCategory.path}`} class="subcategory-header">
                         <h3 class="subcategory-name">{subCategory.name}</h3>
-                        <div class="subcategory-count">{subCategory.count} 篇文章</div>
+                        <div class="subcategory-count">{subCategory.posts.length} 篇文章</div>
                       </a>
                       
                       <!-- 三级子分类 (伪平铺) -->
                       {subCategory.sortedChildren?.length > 0 && (
                         <div class="subcategories level-3">
-                          {subCategory.sortedChildren.map((thirdLevelCategory: { path: any; name: unknown; count: unknown; }) => (
+                          {subCategory.sortedChildren.map((thirdLevelCategory: { path: any; name: unknown; posts: any[]; }) => (
                             <a href={`/categories/${thirdLevelCategory.path}`} class="third-level-category">
                               {thirdLevelCategory.name} 
-                              <span class="third-level-count">({thirdLevelCategory.count})</span>
+                              <span class="third-level-count">({thirdLevelCategory.posts.length})</span>
                             </a>
                           ))}
                         </div>
