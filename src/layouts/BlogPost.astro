@@ -4,7 +4,7 @@ import type { MarkdownHeading } from 'astro';
 import Head from '../components/Head.vue';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
-
+import '../styles/layouts/BlogPost.styl';
 // 正确定义Props类型
 interface Props {
     title: string;
@@ -67,18 +67,5 @@ import RightSiderbar from './RightSiderbar.astro';
 	</script>
 	
 	<!-- 添加响应式视口设置 -->
-	<style is:global>
-		@media (max-width: 768px) {
-			html {
-				font-size: 95%;
-			}
-		}
-		
-		@media (max-width: 480px) {
-			html {
-				font-size: 90%;
-			}
-		}
-	</style>
 </html>
 
