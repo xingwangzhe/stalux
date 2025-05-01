@@ -3,11 +3,21 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import vue from '@astrojs/vue';
-
+import astroExpressiveCode from 'astro-expressive-code'
 // https://astro.build/config
 export default defineConfig({
     site: 'https://example.com',
-    integrations: [mdx(), sitemap(), vue(),],
+    integrations: [sitemap(), vue(),astroExpressiveCode({
+        // You can set configuration options here
+        themes: ['dark-plus', 'github-light'],
+        styleOverrides: {
+          // You can also override styles
+          borderRadius: '0.5rem',
+          frames: {
+            shadowColor: '#124',
+          },
+        },
+      }),],
     vite: {
         css: {
           transformer: "lightningcss",
