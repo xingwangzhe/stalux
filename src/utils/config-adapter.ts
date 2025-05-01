@@ -16,7 +16,7 @@ try {
  * @param source 源对象（用户配置）
  * @returns 合并后的新对象
  */
-function deepMerge(target, source) {
+function deepMerge(target:any, source:any) {
   if (!source) return target;
   
   // 创建目标对象的副本
