@@ -1,6 +1,6 @@
 ---
-// 右侧边栏组件 - 使用 remark-toc 显示文章目录
-// 不需要接收 headings 参数，因为目录由 remark-toc 在文章内容中生成
+import type { MarkdownHeading } from 'astro';
+const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.props;
 ---
 
 <sidebar class="right-sidebar">
@@ -8,6 +8,29 @@
     <h2 class="toc-title">文章目录</h2>
     <div class="toc-message">
       目录将显示在文章中的 "contents" 标题下
+    </div>
+  </div>
+  
+  <!-- 文章分类部分 -->
+  <div class="sidebar-section categories">
+    <h3>文章分类</h3>
+    <div class="tag-cloud">
+      <a href="/categories/博客" class="category">博客</a>
+      <!-- 这里可以用 Astro 动态生成分类列表 -->
+    </div>
+  </div>
+  
+  <!-- 文章标签部分 -->
+  <div class="sidebar-section tags">
+    <h3>文章标签</h3>
+    <div class="tag-cloud">
+      {tags && tags.length > 0 ? (
+        tags.map((tag :string) => (
+          <a href={`/tags/${tag}`} class="tag">{tag}</a>
+        ))
+      ) : (
+        <div class="no-tags">暂无标签</div>
+      )}
     </div>
   </div>
 </sidebar>
@@ -23,15 +46,16 @@
     overflow-y: auto;
   }
 
-  .toc-container {
+  .toc-container, .sidebar-section {
     background-color: rgba(0, 0, 0, 0.192);
     border-radius: 8px;
     padding: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
     background-color: rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
   }
 
-  .toc-title {
+  .toc-title, .sidebar-section h3 {
     margin-top: 0;
     margin-bottom: 0.8rem;
     font-size: 1.2rem;
@@ -44,6 +68,34 @@
     color: rgba(255, 255, 255, 0.8);
     font-size: 0.9rem;
     font-style: italic;
+  }
+
+  /* 标签云样式 */
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag, .category {
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .tag:hover, .category:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .no-tags {
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    font-size: 0.9rem;
   }
 
   @media (max-width: 1024px) {

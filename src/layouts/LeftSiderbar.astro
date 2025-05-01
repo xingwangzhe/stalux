@@ -63,13 +63,7 @@ const {
                 <!-- 这里可以用 Astro 动态生成最近文章列表 -->
             </ul>
         </div>
-        <div class="sidebar-section categories">
-            <h3>文章分类</h3>
-            <div class="tag-cloud">
-                <a href="/categories/博客" class="tag">博客</a>
-                <!-- 这里可以用 Astro 动态生成分类列表 -->
-            </div>
-        </div>
+        <!-- 文章分类已迁移至右侧边栏 -->
 </sidebar>
 
 <style>
@@ -134,25 +128,7 @@ const {
         text-decoration: underline;
     }
 
-    .tag-cloud {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .tag {
-        border-radius: 4px;
-        padding: 0.2rem 0.5rem;
-        font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .tag:hover {
-        background-color: rgba(255, 255, 255, 0.25);
-        transform: translateY(-2px);
-    }
+    /* 标签云相关样式已迁移至右侧边栏 */
 
     @media (max-width: 1024px) {
         .left-sidebar {

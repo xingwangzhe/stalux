@@ -4,7 +4,7 @@ import Head from '../components/Head.vue';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
 type Props = CollectionEntry<'posts'>['data'];
-const { title, date, updated } = Astro.props;
+const { title, date, updated, tags } = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
 import LeftSiderbar from './LeftSiderbar.astro';
@@ -46,7 +46,7 @@ import RightSiderbar from './RightSiderbar.astro';
 						<slot />
 					</div>
 				</article>
-				<RightSiderbar />
+				<RightSiderbar {tags} />
 			</div>
 		</main>
 		<Footer />
