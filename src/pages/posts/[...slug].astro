@@ -2,7 +2,7 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
-
+import dayjs from 'dayjs';
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
 	return posts.map((post) => ({
@@ -13,7 +13,21 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<'posts'>;
 
 const post = Astro.props;
-const { Content } = await render(post);
+const { Content , remarkPluginFrontmatter } = await render(post);
+const createDate = dayjs(remarkPluginFrontmatter.date)
+  .format("YYYY-MM-DD HH:mm:ss");
+const updateDate = dayjs(remarkPluginFrontmatter.updated)
+  .format("YYYY-MM-DD HH:mm:ss");
+post.data.date = typeof post.data.date === 'string' && post.data.date.trim() !== '' 
+	? post.data.date 
+	: post.data.date instanceof Date 
+		? dayjs(post.data.date).format("YYYY-MM-DD HH:mm:ss") 
+		: createDate;
+post.data.updated = typeof post.data.updated === 'string' && post.data.updated.trim() !== ''
+	? post.data.updated
+	: post.data.updated instanceof Date
+		? dayjs(post.data.updated).format("YYYY-MM-DD HH:mm:ss")
+		: updateDate;
 ---
 
 <BlogPost {...post.data}>

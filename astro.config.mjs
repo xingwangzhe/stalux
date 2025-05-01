@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import vue from '@astrojs/vue';
 import astroExpressiveCode from 'astro-expressive-code'
+import {remarkModifiedTime} from './src/utils/remark-modified-time.mjs';
 // https://astro.build/config
 export default defineConfig({
     site: 'https://example.com',
@@ -26,5 +27,8 @@ export default defineConfig({
     // 禁用开发工具栏
     devToolbar: {
         enabled: false,
+    },
+    markdown: {
+      remarkPlugins: [remarkModifiedTime],
     },
 });

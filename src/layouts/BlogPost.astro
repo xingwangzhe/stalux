@@ -4,7 +4,7 @@ import Head from '../components/Head.vue';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
 type Props = CollectionEntry<'posts'>['data'];
-const { title, date, updated, abbrlink} = Astro.props;
+const { title, date, updated } = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
 ---
@@ -19,27 +19,30 @@ import '../styles/global.styl'
 		<Header />
 		<main>
 			<div class="main-wrapper">
-			<article>
-				<div class="hero-image">
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<!-- <FormattedDate date={date} /> -->
-							{
-								updated && (
-									<div class="last-updated-on">
-										{/* Last updated on <FormattedDate date={updated} /> */}
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+				<article>
+					<div class="hero-image">
+						<!-- 如果有特色图片可以在这里添加 -->
 					</div>
-					<slot />
-				</div>
-			</article>
+					<div class="prose">
+						<div class="title">
+							<h1>{title}</h1>
+							<div class="date">
+								{date && (
+									<div class="published-on">
+										发布时间：<time datetime={date.toString()}>{date}</time>
+									</div>
+								)}
+								{updated && (
+									<div class="last-updated-on">
+										更新时间：<time datetime={updated.toString()}>{updated}</time>
+									</div>
+								)}
+							</div>
+							<hr />
+						</div>
+						<slot />
+					</div>
+				</article>
 			</div>
 		</main>
 		<Footer />
@@ -47,5 +50,20 @@ import '../styles/global.styl'
 	<script>
 		import '../scripts/background.ts';
 	</script>
+	
+	<!-- 添加响应式视口设置 -->
+	<style is:global>
+		@media (max-width: 768px) {
+			html {
+				font-size: 95%;
+			}
+		}
+		
+		@media (max-width: 480px) {
+			html {
+				font-size: 90%;
+			}
+		}
+	</style>
 </html>
 

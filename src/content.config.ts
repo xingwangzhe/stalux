@@ -6,9 +6,9 @@ const posts = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		// 接受日期字符串或 Date 对象
-		date: z.union([z.string(), z.coerce.date()]),
+		date: z.union([z.string(), z.coerce.date()]).optional(),
 		// 更新时间可选，接受日期字符串或 Date 对象
-		updated: z.union([z.string(), z.coerce.date()]),
+		updated: z.union([z.string(), z.coerce.date()]).optional(),
 		tags: z.array(z.string()).optional(),
 		categories: z.array(z.string()).optional(),
 		abbrlink: z.union([z.string(), z.number()])
