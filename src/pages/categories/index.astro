@@ -11,71 +11,127 @@ import { processFrontmatter } from '../../utils/process-frontmatter';
 const allPosts = await getCollection('posts');
 const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
-// 提取并组织所有分类
-function extractCategories(posts) {
-  const categoryMap = {};
+// 提取并组织所有分类，构建三级嵌套结构
+function extractNestedCategories(posts) {
+  const categoryTree = {};
 
-  // 扁平化所有类别并计算文章数量
-  function traverseCategories(categories, post) {
-    if (!categories || !Array.isArray(categories)) return;
+  // 生成分类的URL路径，保持与Categories.astro组件一致的逻辑
+  function generateCategoryPath(categoryName, parentPath = '') {
+    return parentPath ? `${parentPath}/${categoryName}` : categoryName;
+  }
+
+  // 处理文章分类并构建嵌套结构
+  function processCategory(categories, post, parent = null, level = 0) {
+    if (!categories || !Array.isArray(categories) || level >= 3) return;
     
     categories.forEach(category => {
+      let catName, subcategories;
+      
       // 处理字符串格式的分类
       if (typeof category === 'string') {
-        if (!categoryMap[category]) {
-          categoryMap[category] = { count: 0, path: category };
-        }
-        categoryMap[category].count++;
-        return;
+        catName = category;
+        subcategories = null;
       }
-
       // 处理有name属性的对象格式
-      if (category && typeof category === 'object' && category.name) {
-        const catName = category.name;
-        if (!categoryMap[catName]) {
-          categoryMap[catName] = { count: 0, path: catName };
-        }
-        categoryMap[catName].count++;
-        
-        // 递归处理子分类
-        if (category.subcategories && Array.isArray(category.subcategories)) {
-          traverseCategories(category.subcategories, post);
-        }
-        return;
+      else if (category && typeof category === 'object' && category.name) {
+        catName = category.name;
+        subcategories = category.subcategories && Array.isArray(category.subcategories) 
+          ? category.subcategories 
+          : null;
       }
-      
       // 处理key-array格式 {'category': [subcategories]}
-      if (category && typeof category === 'object') {
+      else if (category && typeof category === 'object') {
         const keys = Object.keys(category);
         if (keys.length > 0) {
-          const catName = keys[0];
-          if (!categoryMap[catName]) {
-            categoryMap[catName] = { count: 0, path: catName };
-          }
-          categoryMap[catName].count++;
-          
-          // 递归处理子分类
-          const subCategories = category[catName];
-          if (Array.isArray(subCategories)) {
-            traverseCategories(subCategories, post);
-          }
+          catName = keys[0];
+          subcategories = Array.isArray(category[catName]) ? category[catName] : null;
         }
+      }
+      
+      if (!catName) return;
+      
+      // 定义当前处理的分类树
+      const tree = parent ? parent.children : categoryTree;
+      
+      // 生成分类路径 - 与Categories.astro组件逻辑一致
+      const parentPath = parent ? parent.path : '';
+      const fullPath = generateCategoryPath(catName, parentPath);
+      
+      // 如果分类不存在，则创建
+      if (!tree[catName]) {
+        tree[catName] = {
+          name: catName,
+          path: fullPath, // 使用与组件一致的路径生成方式
+          count: 0,
+          children: {},
+          posts: [] // 存储该分类直接关联的文章
+        };
+      }
+      
+      // 增加计数并添加文章
+      tree[catName].count++;
+      if (post && !tree[catName].posts.find(p => p.slug === post.slug)) {
+        tree[catName].posts.push({
+          slug: post.slug,
+          title: post.data.title || post.slug
+        });
+      }
+      
+      // 如果有子分类且层级小于3，则递归处理
+      if (subcategories && level < 2) {
+        processCategory(subcategories, post, tree[catName], level + 1);
       }
     });
   }
   
   // 处理每篇文章的分类
   posts.forEach(post => {
-    traverseCategories(post.data.categories, post);
+    if (post.data.categories) {
+      processCategory(post.data.categories, post);
+    }
   });
   
-  return categoryMap;
+  // 计算每个分类的总文章数（包括子分类）
+  function calculateTotalCounts(tree) {
+    Object.values(tree).forEach(category => {
+      if (Object.keys(category.children).length > 0) {
+        calculateTotalCounts(category.children);
+        
+        // 计算子分类的文章总数
+        Object.values(category.children).forEach(child => {
+          category.count += child.count;
+          // 避免重复计算直接关联的文章
+          child.posts.forEach(post => {
+            if (!category.posts.find(p => p.slug === post.slug)) {
+              category.posts.push(post);
+            }
+          });
+        });
+      }
+    });
+  }
+  
+  calculateTotalCounts(categoryTree);
+  
+  return categoryTree;
 }
 
-const categoryMap = extractCategories(processedPosts);
-const sortedCategories = Object.entries(categoryMap)
-  .sort(([, catA], [, catB]) => catB.count - catA.count) // 按文章数量降序排序
-  .map(([name, { count, path }]) => ({ name, count, path }));
+// 获取所有分类并按文章数量排序
+const categoryTree = extractNestedCategories(processedPosts);
+
+// 排序函数，将分类按文章数量降序排列
+function sortCategoriesByCount(categories) {
+  return Object.entries(categories)
+    .sort(([, catA], [, catB]) => catB.count - catA.count)
+    .map(([, category]) => {
+      if (Object.keys(category.children).length > 0) {
+        category.sortedChildren = sortCategoriesByCount(category.children);
+      }
+      return category;
+    });
+}
+
+const sortedCategories = sortCategoriesByCount(categoryTree);
 
 // 页面标题
 const pageTitle = '文章分类 | ' + config_site.title;
@@ -103,18 +159,47 @@ const pageTitle = '文章分类 | ' + config_site.title;
         <p class="page-description">按主题分类浏览</p>
       </div>
 
+      <!-- 主分类卡片网格 -->
       <div class="categories-grid">
         {sortedCategories.length > 0 ? (
-          sortedCategories.map(({ name, count, path }) => (
-            <a href={`/categories/${path}`} class="category-card">
-              <h2 class="category-name">{name}</h2>
-              <div class="category-count">{count} 篇文章</div>
-              <div class="category-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                </svg>
-              </div>
-            </a>
+          sortedCategories.map((category) => (
+            <div class={`category-card level-1 ${category.sortedChildren?.length ? 'has-children' : ''}`}>
+              <a href={`/categories/${category.path}`} class="category-header">
+                <h2 class="category-name">{category.name}</h2>
+                <div class="category-count">{category.count} 篇文章</div>
+                <div class="category-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+              </a>
+              
+              {/* 二级子分类 */}
+              {category.sortedChildren?.length > 0 && (
+                <div class="subcategories level-2">
+                  {category.sortedChildren.map((subCategory) => (
+                    <div class={`subcategory-card ${subCategory.sortedChildren?.length ? 'has-children' : ''}`}>
+                      <a href={`/categories/${subCategory.path}`} class="subcategory-header">
+                        <h3 class="subcategory-name">{subCategory.name}</h3>
+                        <div class="subcategory-count">{subCategory.count} 篇文章</div>
+                      </a>
+                      
+                      {/* 三级子分类 (伪平铺) */}
+                      {subCategory.sortedChildren?.length > 0 && (
+                        <div class="subcategories level-3">
+                          {subCategory.sortedChildren.map((thirdLevelCategory) => (
+                            <a href={`/categories/${thirdLevelCategory.path}`} class="third-level-category">
+                              {thirdLevelCategory.name} 
+                              <span class="third-level-count">({thirdLevelCategory.count})</span>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           ))
         ) : (
           <div class="no-categories">暂无分类</div>
@@ -156,13 +241,14 @@ const pageTitle = '文章分类 | ' + config_site.title;
 
 .categories-grid {
   display: grid
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
-  gap: 1.5rem
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))
+  gap: 1.8rem
   padding: 1rem
-  max-width: 1000px
+  max-width: 1200px
   margin: 0 auto
 }
 
+// 一级分类卡片
 .category-card {
   position: relative
   display: flex
@@ -171,10 +257,13 @@ const pageTitle = '文章分类 | ' + config_site.title;
   background-color: rgba(255, 255, 255, 0.05)
   border-radius: 0.8rem
   border: 1px solid rgba(255, 255, 255, 0.1)
-  text-decoration: none
   color: #ffffff
   transition: all 0.3s ease
   overflow: hidden
+  
+  &.has-children {
+    padding-bottom: 2rem
+  }
   
   &::before {
     content: ""
@@ -190,10 +279,10 @@ const pageTitle = '文章分类 | ' + config_site.title;
   }
   
   &:hover {
-    transform: translateY(-5px)
-    background-color: rgba(255, 255, 255, 0.1)
+    transform: translateY(-3px)
+    background-color: rgba(255, 255, 255, 0.08)
     border-color: rgba(1, 162, 190, 0.5)
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2)
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3)
     
     &::before {
       transform: translateX(100%)
@@ -206,11 +295,25 @@ const pageTitle = '文章分类 | ' + config_site.title;
   }
 }
 
+.category-header {
+  display: block
+  text-decoration: none
+  color: #ffffff
+  position: relative
+  padding-bottom: 0.5rem
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1)
+  margin-bottom: 1rem
+}
+
 .category-name {
   font-size: 1.5rem
   margin: 0 0 0.5rem 0
   position: relative
   z-index: 2
+  background: linear-gradient(45deg, #fff, rgba(1, 162, 190, 0.9))
+  -webkit-background-clip: text
+  -webkit-text-fill-color: transparent
+  background-clip: text
 }
 
 .category-count {
@@ -222,11 +325,88 @@ const pageTitle = '文章分类 | ' + config_site.title;
 
 .category-icon {
   position: absolute
-  bottom: 1rem
-  right: 1rem
+  top: 0.5rem
+  right: 0.5rem
   opacity: 0.5
   transition: all 0.3s ease
   color: rgba(1, 162, 190, 0.7)
+}
+
+// 二级分类
+.subcategories.level-2 {
+  margin-top: 0.5rem
+  position: relative
+}
+
+.subcategory-card {
+  margin-bottom: 1rem
+  padding: 0.5rem 0.8rem
+  background: rgba(255, 255, 255, 0.03)
+  border-radius: 0.5rem
+  border-left: 2px solid rgba(1, 162, 190, 0.4)
+  transition: all 0.3s ease
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.06)
+    border-left-color: rgba(1, 162, 190, 0.8)
+  }
+  
+  &.has-children {
+    padding-bottom: 1rem
+  }
+}
+
+.subcategory-header {
+  text-decoration: none
+  color: #ffffff
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding-bottom: 0.3rem
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.1)
+}
+
+.subcategory-name {
+  font-size: 1.2rem
+  margin: 0
+  color: rgba(255, 255, 255, 0.9)
+}
+
+.subcategory-count {
+  font-size: 0.85rem
+  color: rgba(1, 162, 190, 0.9)
+}
+
+// 三级分类（伪平铺）
+.subcategories.level-3 {
+  margin-top: 0.5rem
+  padding: 0.5rem
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+  background: rgba(0, 0, 0, 0.2)
+  border-radius: 0.3rem
+}
+
+.third-level-category {
+  text-decoration: none
+  color: rgba(255, 255, 255, 0.8)
+  font-size: 0.9rem
+  padding: 0.3rem 0.6rem
+  background: rgba(255, 255, 255, 0.05)
+  border-radius: 0.3rem
+  transition: all 0.2s ease
+  
+  &:hover {
+    background: rgba(1, 162, 190, 0.2)
+    color: #ffffff
+  }
+}
+
+.third-level-count {
+  font-size: 0.8rem
+  color: rgba(1, 162, 190, 0.9)
+  margin-left: 0.3rem
 }
 
 .no-categories {
@@ -253,7 +433,7 @@ const pageTitle = '文章分类 | ' + config_site.title;
   }
   
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr))
     gap: 1rem
   }
   
@@ -263,6 +443,11 @@ const pageTitle = '文章分类 | ' + config_site.title;
   
   .category-name {
     font-size: 1.3rem
+  }
+  
+  .subcategories.level-3 {
+    flex-direction: column
+    gap: 0.3rem
   }
 }
 
@@ -284,6 +469,10 @@ const pageTitle = '文章分类 | ' + config_site.title;
   
   .category-name {
     font-size: 1.2rem
+  }
+  
+  .subcategory-name {
+    font-size: 1.1rem
   }
 }
 </style>
