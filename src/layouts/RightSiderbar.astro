@@ -7,27 +7,61 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
 function generateCategoryPaths(categories: any[]) {
   const result: { path: string; display: string; level: number }[] = [];
   
+  // 处理单个分类项，支持字符串和对象两种格式
   function traverse(category: any, parentPath = '', level = 0) {
-    // 确保category是对象且有name属性
-    if (!category || typeof category !== 'object' || !category.name) {
-      console.error('无效的分类对象:', category);
+    // 处理字符串格式的分类
+    if (typeof category === 'string') {
+      const currentPath = parentPath ? `${parentPath}/${category}` : category;
+      result.push({
+        path: `/categories/${currentPath}`,
+        display: category,
+        level: level
+      });
       return;
     }
     
-    const currentPath = parentPath ? `${parentPath}/${category.name}` : category.name;
-    
-    // 添加当前分类
-    result.push({
-      path: `/categories/${currentPath}`,
-      display: category.name,
-      level: level
-    });
-    
-    // 递归处理子分类 - 使用next
-    if (category.next && Array.isArray(category.next)) {
-      category.next.forEach((child: any) => {
-        traverse(child, currentPath, level + 1);
-      });
+    // 处理对象格式的分类（带有name和next属性）
+    if (category && typeof category === 'object') {
+      // 如果有name属性，按照原来的方式处理
+      if (category.name) {
+        const currentPath = parentPath ? `${parentPath}/${category.name}` : category.name;
+        result.push({
+          path: `/categories/${currentPath}`,
+          display: category.name,
+          level: level
+        });
+        
+        // 递归处理子分类
+        if (category.next && Array.isArray(category.next)) {
+          category.next.forEach((child: any) => {
+            traverse(child, currentPath, level + 1);
+          });
+        }
+      } 
+      // 处理无标识符嵌套的情况
+      else {
+        // 获取第一个键作为分类名
+        const keys = Object.keys(category);
+        if (keys.length > 0) {
+          const categoryName = keys[0];
+          const subCategories = category[categoryName];
+          
+          // 添加当前分类
+          const currentPath = parentPath ? `${parentPath}/${categoryName}` : categoryName;
+          result.push({
+            path: `/categories/${currentPath}`,
+            display: categoryName,
+            level: level
+          });
+          
+          // 递归处理子分类
+          if (Array.isArray(subCategories)) {
+            subCategories.forEach((child: any) => {
+              traverse(child, currentPath, level + 1);
+            });
+          }
+        }
+      }
     }
   }
   
