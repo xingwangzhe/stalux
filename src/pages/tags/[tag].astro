@@ -16,7 +16,7 @@ export async function getStaticPaths() {
   const allTags = new Set();
   processedPosts.forEach(post => {
     const tags = post.data.tags || [];
-    tags.forEach(tag:any => {
+    tags.forEach((tag: any) => {
       if (tag.trim()) {
         allTags.add(tag);
       }
@@ -39,7 +39,7 @@ const taggedPosts = processedPosts.filter(post =>
 ).sort((a, b) => {
   // 按日期降序排序
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
   return dateB - dateA;
 });
 
@@ -91,7 +91,7 @@ const pageTitle = `标签: ${tag} | ${config_site.title}`;
                 </a>
                 {post.data.tags && post.data.tags.length > 0 && (
                   <div class="post-tags">
-                    {post.data.tags.map(postTag:any => (
+                    {post.data.tags.map((postTag: any) => (
                       <a href={`/tags/${postTag}`} class={`post-tag ${postTag === tag ? 'current' : ''}`}>
                         {postTag}
                       </a>
