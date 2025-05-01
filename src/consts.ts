@@ -40,6 +40,8 @@ export const site = {
         { title: 'about', path: '/about', icon: 'user' },
         { title: 'links', path: '/links', icon: 'link' },
         { title: 'archives', path: '/archives', icon: 'archive' },
+        { title: 'tags', path: '/tags', icon: 'tag' },
+        { title: 'categories', path: '/categories', icon: 'folder' },
     ],
 
     textyping: // 打字机效果文字

@@ -1,0 +1,289 @@
+---
+import { getCollection } from 'astro:content';
+import Head from '../../components/Head.vue';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.vue';
+import { config_site } from '../../utils/config-adapter';
+import '../../../src/styles/global.styl';
+import { processFrontmatter } from '../../utils/process-frontmatter';
+
+// 获取文章集合
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+
+// 提取并组织所有分类
+function extractCategories(posts) {
+  const categoryMap = {};
+
+  // 扁平化所有类别并计算文章数量
+  function traverseCategories(categories, post) {
+    if (!categories || !Array.isArray(categories)) return;
+    
+    categories.forEach(category => {
+      // 处理字符串格式的分类
+      if (typeof category === 'string') {
+        if (!categoryMap[category]) {
+          categoryMap[category] = { count: 0, path: category };
+        }
+        categoryMap[category].count++;
+        return;
+      }
+
+      // 处理有name属性的对象格式
+      if (category && typeof category === 'object' && category.name) {
+        const catName = category.name;
+        if (!categoryMap[catName]) {
+          categoryMap[catName] = { count: 0, path: catName };
+        }
+        categoryMap[catName].count++;
+        
+        // 递归处理子分类
+        if (category.subcategories && Array.isArray(category.subcategories)) {
+          traverseCategories(category.subcategories, post);
+        }
+        return;
+      }
+      
+      // 处理key-array格式 {'category': [subcategories]}
+      if (category && typeof category === 'object') {
+        const keys = Object.keys(category);
+        if (keys.length > 0) {
+          const catName = keys[0];
+          if (!categoryMap[catName]) {
+            categoryMap[catName] = { count: 0, path: catName };
+          }
+          categoryMap[catName].count++;
+          
+          // 递归处理子分类
+          const subCategories = category[catName];
+          if (Array.isArray(subCategories)) {
+            traverseCategories(subCategories, post);
+          }
+        }
+      }
+    });
+  }
+  
+  // 处理每篇文章的分类
+  posts.forEach(post => {
+    traverseCategories(post.data.categories, post);
+  });
+  
+  return categoryMap;
+}
+
+const categoryMap = extractCategories(processedPosts);
+const sortedCategories = Object.entries(categoryMap)
+  .sort(([, catA], [, catB]) => catB.count - catA.count) // 按文章数量降序排序
+  .map(([name, { count, path }]) => ({ name, count, path }));
+
+// 页面标题
+const pageTitle = '文章分类 | ' + config_site.title;
+---
+
+<!DOCTYPE html>
+<html lang={config_site.lang}>
+  <Head 
+    title={pageTitle}
+    description="所有文章分类列表，按主题分类索引"
+    author={config_site.author}
+    url={config_site.url + '/categories/'}
+  >
+    <!-- 添加 noindex 元标记，防止搜索引擎索引 -->
+    <meta name="robots" content="noindex, nofollow" slot="head" />
+  </Head>
+  <body>
+    <script>
+      import '../../scripts/background.ts';
+    </script>
+    <Header />
+    <main class="categories-container">
+      <div class="page-header">
+        <h1 class="page-title">文章分类</h1>
+        <p class="page-description">按主题分类浏览</p>
+      </div>
+
+      <div class="categories-grid">
+        {sortedCategories.length > 0 ? (
+          sortedCategories.map(({ name, count, path }) => (
+            <a href={`/categories/${path}`} class="category-card">
+              <h2 class="category-name">{name}</h2>
+              <div class="category-count">{count} 篇文章</div>
+              <div class="category-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+            </a>
+          ))
+        ) : (
+          <div class="no-categories">暂无分类</div>
+        )}
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style lang="stylus">
+.categories-container {
+  max-width: 1200px
+  margin: 0 auto
+  padding: 2rem 1rem
+  min-height: calc(100vh - 200px)
+}
+
+.page-header {
+  text-align: center
+  margin-bottom: 3rem
+  
+  .page-title {
+    font-size: 2.5rem
+    margin-bottom: 1rem
+    background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9))
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
+    background-clip: text
+  }
+  
+  .page-description {
+    font-size: 1.1rem
+    color: rgba(255, 255, 255, 0.8)
+    max-width: 600px
+    margin: 0 auto
+  }
+}
+
+.categories-grid {
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
+  gap: 1.5rem
+  padding: 1rem
+  max-width: 1000px
+  margin: 0 auto
+}
+
+.category-card {
+  position: relative
+  display: flex
+  flex-direction: column
+  padding: 1.5rem
+  background-color: rgba(255, 255, 255, 0.05)
+  border-radius: 0.8rem
+  border: 1px solid rgba(255, 255, 255, 0.1)
+  text-decoration: none
+  color: #ffffff
+  transition: all 0.3s ease
+  overflow: hidden
+  
+  &::before {
+    content: ""
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background: linear-gradient(120deg, rgba(255,255,255,0), rgba(255,255,255,0.05), rgba(255,255,255,0))
+    transform: translateX(-100%)
+    transition: transform 0.6s
+    z-index: 1
+  }
+  
+  &:hover {
+    transform: translateY(-5px)
+    background-color: rgba(255, 255, 255, 0.1)
+    border-color: rgba(1, 162, 190, 0.5)
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2)
+    
+    &::before {
+      transform: translateX(100%)
+    }
+    
+    .category-icon {
+      transform: rotate(10deg) scale(1.1)
+      opacity: 0.9
+    }
+  }
+}
+
+.category-name {
+  font-size: 1.5rem
+  margin: 0 0 0.5rem 0
+  position: relative
+  z-index: 2
+}
+
+.category-count {
+  font-size: 0.9rem
+  color: rgba(1, 162, 190, 0.9)
+  position: relative
+  z-index: 2
+}
+
+.category-icon {
+  position: absolute
+  bottom: 1rem
+  right: 1rem
+  opacity: 0.5
+  transition: all 0.3s ease
+  color: rgba(1, 162, 190, 0.7)
+}
+
+.no-categories {
+  text-align: center
+  grid-column: 1 / -1
+  padding: 3rem 1rem
+  color: rgba(255, 255, 255, 0.7)
+  font-size: 1.2rem
+  background-color: rgba(0, 0, 0, 0.1)
+  border-radius: 0.5rem
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    margin-bottom: 2rem
+    
+    .page-title {
+      font-size: 2rem
+    }
+    
+    .page-description {
+      font-size: 1rem
+    }
+  }
+  
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
+    gap: 1rem
+  }
+  
+  .category-card {
+    padding: 1.2rem
+  }
+  
+  .category-name {
+    font-size: 1.3rem
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-container {
+    padding: 1.5rem 0.8rem
+  }
+  
+  .page-header {
+    .page-title {
+      font-size: 1.8rem
+    }
+  }
+  
+  .categories-grid {
+    grid-template-columns: 1fr
+    padding: 0.5rem
+  }
+  
+  .category-name {
+    font-size: 1.2rem
+  }
+}
+</style>

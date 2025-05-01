@@ -2,39 +2,25 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
-import dayjs from 'dayjs';
+import { processFrontmatter } from '../../utils/process-frontmatter';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
-	return Promise.all(
+	const processedPosts = await Promise.all(
 		posts.map(async (post) => {
-			const { remarkPluginFrontmatter } = await render(post);
-			const finalAbbrlink = post.data.abbrlink || remarkPluginFrontmatter.abbrlink;
-			const createDate = dayjs(remarkPluginFrontmatter.date)
-				.format("YYYY-MM-DD HH:mm:ss");
-			const updateDate = dayjs(remarkPluginFrontmatter.updated)
-				.format("YYYY-MM-DD HH:mm:ss");
-			post.data.date = typeof post.data.date === 'string' && post.data.date.trim() !== '' 
-				? post.data.date 
-				: post.data.date instanceof Date 
-					? dayjs(post.data.date).format("YYYY-MM-DD HH:mm:ss") 
-					: createDate;
-			post.data.updated = typeof post.data.updated === 'string' && post.data.updated.trim() !== ''
-				? post.data.updated
-				: post.data.updated instanceof Date
-					? dayjs(post.data.updated).format("YYYY-MM-DD HH:mm:ss")
-					: updateDate;
+			const processedPost = await processFrontmatter(post);
 			return {
-				params: { slug: finalAbbrlink },
-				props: post,
+				params: { slug: processedPost.data.abbrlink },
+				props: processedPost,
 			};
 		})
 	);
+	return processedPosts;
 }
 type Props = CollectionEntry<'posts'>;
 
 const post = Astro.props;
-const { Content,headings } = await render(post);
+const { Content, headings } = await render(post);
 ---
 
 <BlogPost {...post.data} headings={headings}>

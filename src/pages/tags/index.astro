@@ -1,0 +1,255 @@
+---
+import { getCollection } from 'astro:content';
+import Head from '../../components/Head.vue';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.vue';
+import { config_site } from '../../utils/config-adapter';
+import '../../../src/styles/global.styl';
+import { processFrontmatter } from '../../utils/process-frontmatter';
+
+// 获取文章集合
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+
+// 提取所有标签并计算数量
+const tagCounts = processedPosts.reduce((acc, post) => {
+  const tags = post.data.tags || [];
+  tags.forEach(tag => {
+    if (tag.trim()) {
+      acc[tag] = (acc[tag] || 0) + 1;
+    }
+  });
+  return acc;
+}, {});
+
+// 转换为排序后的数组
+const sortedTags = Object.entries(tagCounts)
+  .sort(([, countA], [, countB]) => countB - countA) // 按数量降序排序
+  .map(([tag, count]) => ({ tag, count }));
+
+// 页面标题
+const pageTitle = '标签云 | ' + config_site.title;
+---
+
+<!DOCTYPE html>
+<html lang={config_site.lang}>
+  <Head 
+    title={pageTitle}
+    description="所有文章标签列表"
+    author={config_site.author}
+    url={config_site.url + '/tags/'}
+  >
+    <!-- 添加 noindex 元标记，防止搜索引擎索引 -->
+    <meta name="robots" content="noindex, nofollow" slot="head" />
+  </Head>
+  <body>
+    <script>
+      import '../../scripts/background.ts';
+    </script>
+    <Header />
+    <main class="tags-container">
+      <div class="page-header">
+        <h1 class="page-title">标签云</h1>
+        <p class="page-description">探索不同主题的文章标签</p>
+      </div>
+
+      <div class="tags-cloud">
+        {sortedTags.length > 0 ? (
+          sortedTags.map(({ tag, count }) => (
+            <a href={`/tags/${tag}`} class="tag-item" data-count={count}>
+              <span class="tag-name">{tag}</span>
+              <span class="tag-count">{count}</span>
+            </a>
+          ))
+        ) : (
+          <div class="no-tags">暂无标签</div>
+        )}
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style lang="stylus">
+.tags-container {
+  max-width: 1200px
+  margin: 0 auto
+  padding: 2rem 1rem
+  min-height: calc(100vh - 200px)
+}
+
+.page-header {
+  text-align: center
+  margin-bottom: 3rem
+  
+  .page-title {
+    font-size: 2.5rem
+    margin-bottom: 1rem
+    background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9))
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
+    background-clip: text
+  }
+  
+  .page-description {
+    font-size: 1.1rem
+    color: rgba(255, 255, 255, 0.8)
+    max-width: 600px
+    margin: 0 auto
+  }
+}
+
+.tags-cloud {
+  display: flex
+  flex-wrap: wrap
+  gap: 1rem
+  justify-content: center
+  padding: 1rem
+  max-width: 900px
+  margin: 0 auto
+}
+
+.tag-item {
+  position: relative
+  display: flex
+  align-items: center
+  padding: 0.5rem 1rem
+  border-radius: 2rem
+  background-color: rgba(255, 255, 255, 0.1)
+  color: #ffffff
+  text-decoration: none
+  transition: all 0.3s ease
+  border: 1px solid rgba(255, 255, 255, 0.2)
+  overflow: hidden
+  
+  &::before {
+    content: ""
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background: linear-gradient(120deg, rgba(255,255,255,0), rgba(255,255,255,0.1), rgba(255,255,255,0))
+    transform: translateX(-100%)
+    transition: transform 0.6s
+    z-index: 1
+  }
+  
+  &:hover {
+    transform: translateY(-3px)
+    background-color: rgba(1, 162, 190, 0.2)
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2)
+    border-color: rgba(1, 162, 190, 0.5)
+    
+    &::before {
+      transform: translateX(100%)
+    }
+  }
+  
+  // 根据标签数量调整大小
+  &[data-count="1"] {
+    font-size: 0.9rem
+    padding: 0.3rem 0.8rem
+  }
+  
+  &[data-count="2"] {
+    font-size: 1rem
+    padding: 0.4rem 0.9rem
+  }
+  
+  &[data-count="3"] {
+    font-size: 1.1rem
+    padding: 0.5rem 1rem
+  }
+  
+  &[data-count^="4"], &[data-count^="5"] {
+    font-size: 1.2rem
+    padding: 0.6rem 1.1rem
+  }
+  
+  &[data-count^="6"], &[data-count^="7"], &[data-count^="8"], &[data-count^="9"] {
+    font-size: 1.3rem
+    padding: 0.7rem 1.2rem
+  }
+  
+  &[data-count^="10"] {
+    font-size: 1.4rem
+    padding: 0.8rem 1.3rem
+    font-weight: bold
+  }
+}
+
+.tag-name {
+  position: relative
+  z-index: 2
+}
+
+.tag-count {
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  min-width: 24px
+  height: 24px
+  padding: 0 8px
+  border-radius: 12px
+  background-color: rgba(1, 162, 190, 0.3)
+  font-size: 0.8em
+  margin-left: 6px
+  position: relative
+  z-index: 2
+  transition: background-color 0.3s
+}
+
+.no-tags {
+  color: rgba(255, 255, 255, 0.6)
+  font-size: 1.2rem
+  font-style: italic
+  padding: 2rem
+  text-align: center
+  width: 100%
+  background-color: rgba(0, 0, 0, 0.1)
+  border-radius: 8px
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    .page-title {
+      font-size: 2rem
+    }
+    
+    .page-description {
+      font-size: 1rem
+    }
+  }
+  
+  .tags-cloud {
+    gap: 0.75rem
+    padding: 0.5rem
+  }
+  
+  .tag-item {
+    padding: 0.4rem 0.9rem
+    font-size: 0.9rem
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    margin-bottom: 2rem
+    
+    .page-title {
+      font-size: 1.8rem
+    }
+  }
+  
+  .tags-cloud {
+    gap: 0.5rem
+    padding: 0.3rem
+  }
+  
+  .tag-item {
+    padding: 0.3rem 0.8rem
+    font-size: 0.8rem
+  }
+}
+</style>

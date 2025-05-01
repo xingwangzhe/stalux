@@ -1,0 +1,402 @@
+---
+import { getCollection } from 'astro:content';
+import Head from '../../components/Head.vue';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.vue';
+import { config_site } from '../../utils/config-adapter';
+import '../../../src/styles/global.styl';
+import { processFrontmatter } from '../../utils/process-frontmatter';
+import dayjs from 'dayjs';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('posts');
+  const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+
+  // 提取所有分类路径
+  const categoryPaths = new Set();
+  
+  // 递归收集所有分类路径
+  function collectCategoryPaths(categories, parentPath = '') {
+    if (!categories || !Array.isArray(categories)) return;
+    
+    categories.forEach(category => {
+      // 处理字符串格式的分类
+      if (typeof category === 'string') {
+        const currentPath = parentPath ? `${parentPath}/${category}` : category;
+        categoryPaths.add(currentPath);
+        return;
+      }
+
+      // 处理有name属性的对象格式
+      if (category && typeof category === 'object' && category.name) {
+        const catName = category.name;
+        const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+        categoryPaths.add(currentPath);
+        
+        // 递归处理子分类
+        if (category.subcategories && Array.isArray(category.subcategories)) {
+          collectCategoryPaths(category.subcategories, currentPath);
+        }
+        return;
+      }
+      
+      // 处理key-array格式 {'category': [subcategories]}
+      if (category && typeof category === 'object') {
+        const keys = Object.keys(category);
+        if (keys.length > 0) {
+          const catName = keys[0];
+          const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+          categoryPaths.add(currentPath);
+          
+          // 递归处理子分类
+          const subCategories = category[catName];
+          if (Array.isArray(subCategories)) {
+            collectCategoryPaths(subCategories, currentPath);
+          }
+        }
+      }
+    });
+  }
+  
+  // 处理每篇文章的分类
+  processedPosts.forEach(post => {
+    collectCategoryPaths(post.data.categories);
+  });
+  
+  // 生成静态路径
+  return Array.from(categoryPaths).map(path => ({
+    params: { path: path.split('/') },
+    props: { categoryPath: path }
+  }));
+}
+
+const { categoryPath } = Astro.props;
+const pathSegments = categoryPath.split('/');
+const currentCategory = pathSegments[pathSegments.length - 1];
+
+// 获取此分类及其子分类下的文章
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+
+// 判断文章是否属于当前分类或其子分类
+function isPostInCategory(post, targetPath) {
+  if (!post.data.categories || !Array.isArray(post.data.categories)) return false;
+  
+  // 构建文章分类的所有路径
+  const postCategoryPaths = [];
+  
+  function buildPostCategoryPaths(categories, parentPath = '') {
+    categories.forEach(category => {
+      if (typeof category === 'string') {
+        postCategoryPaths.push(parentPath ? `${parentPath}/${category}` : category);
+      } else if (category && typeof category === 'object' && category.name) {
+        const catName = category.name;
+        const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+        postCategoryPaths.push(currentPath);
+        
+        if (category.subcategories && Array.isArray(category.subcategories)) {
+          buildPostCategoryPaths(category.subcategories, currentPath);
+        }
+      } else if (category && typeof category === 'object') {
+        const keys = Object.keys(category);
+        if (keys.length > 0) {
+          const catName = keys[0];
+          const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
+          postCategoryPaths.push(currentPath);
+          
+          const subCategories = category[catName];
+          if (Array.isArray(subCategories)) {
+            buildPostCategoryPaths(subCategories, currentPath);
+          }
+        }
+      }
+    });
+  }
+  
+  buildPostCategoryPaths(post.data.categories);
+  
+  // 检查文章分类路径是否包含目标路径
+  return postCategoryPaths.some(path => path === targetPath);
+}
+
+// 过滤属于当前分类的文章
+const categoryPosts = processedPosts.filter(post => isPostInCategory(post, categoryPath))
+  .sort((a, b) => {
+    // 按日期降序排序
+    const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
+    const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+    return dateB - dateA;
+  });
+
+// 页面标题
+const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
+---
+
+<!DOCTYPE html>
+<html lang={config_site.lang}>
+  <Head 
+    title={pageTitle}
+    description={`"${currentCategory}" 分类下的所有文章`}
+    author={config_site.author}
+    url={config_site.url + '/categories/' + categoryPath}
+  >
+    <!-- 添加 noindex 元标记，防止搜索引擎索引 -->
+    <meta name="robots" content="noindex, nofollow" slot="head" />
+  </Head>
+  <body>
+    <script>
+      import '../../scripts/background.ts';
+    </script>
+    <Header />
+    <main class="category-detail-container">
+      <div class="page-header">
+        <h1 class="page-title">
+          <span class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </span>
+          {pathSegments.map((segment, index) => (
+            <>
+              {index > 0 && <span class="breadcrumb-separator">/</span>}
+              <span class={`breadcrumb-item ${index === pathSegments.length - 1 ? 'current' : ''}`}>
+                {segment}
+              </span>
+            </>
+          ))}
+        </h1>
+        <p class="page-description">共找到 {categoryPosts.length} 篇相关文章</p>
+        <a href="/categories/" class="back-link">返回分类列表</a>
+      </div>
+
+      <div class="post-list-container">
+        {categoryPosts.length > 0 ? (
+          <ul class="post-list">
+            {categoryPosts.map(post => (
+              <li class="post-item">
+                <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
+                  <div class="post-date">
+                    {dayjs(post.data.date).format('YYYY-MM-DD')}
+                  </div>
+                  <h2 class="post-title">{post.data.title}</h2>
+                </a>
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="post-tags">
+                    {post.data.tags.map(tag => (
+                      <a href={`/tags/${tag}`} class="post-tag">
+                        {tag}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="no-posts">未找到与分类 "{currentCategory}" 相关的文章</div>
+        )}
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style lang="stylus">
+.category-detail-container {
+  max-width: 1200px
+  margin: 0 auto
+  padding: 2rem 1rem
+  min-height: calc(100vh - 200px)
+}
+
+.page-header {
+  text-align: center
+  margin-bottom: 3rem
+  
+  .page-title {
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-wrap: wrap
+    font-size: 2.5rem
+    margin-bottom: 1rem
+  }
+  
+  .category-icon {
+    display: inline-flex
+    margin-right: 0.5rem
+    color: rgba(1, 162, 190, 0.9)
+    stroke: currentColor
+  }
+  
+  .breadcrumb-separator {
+    margin: 0 0.3rem
+    color: rgba(255, 255, 255, 0.5)
+  }
+  
+  .breadcrumb-item {
+    background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255, 255, 255, 0.7))
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
+    background-clip: text
+    
+    &.current {
+      background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9))
+      -webkit-background-clip: text
+      -webkit-text-fill-color: transparent
+      background-clip: text
+    }
+  }
+  
+  .page-description {
+    font-size: 1.1rem
+    color: rgba(255, 255, 255, 0.8)
+    max-width: 600px
+    margin: 0 auto 1rem
+  }
+  
+  .back-link {
+    display: inline-block
+    padding: 0.4rem 1rem
+    border-radius: 2rem
+    background-color: rgba(255, 255, 255, 0.1)
+    color: #ffffff
+    text-decoration: none
+    transition: all 0.3s ease
+    font-size: 0.9rem
+    
+    &:hover {
+      background-color: rgba(1, 162, 190, 0.2)
+      transform: translateY(-2px)
+    }
+  }
+}
+
+.post-list-container {
+  max-width: 900px
+  margin: 0 auto
+  padding: 1rem
+}
+
+.post-list {
+  list-style: none
+  padding: 0
+  margin: 0
+}
+
+.post-item {
+  margin-bottom: 1.5rem
+  padding: 1.5rem
+  background-color: rgba(255, 255, 255, 0.05)
+  border-radius: 0.5rem
+  transition: all 0.3s ease
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1)
+    transform: translateY(-3px)
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2)
+  }
+}
+
+.post-link {
+  display: block
+  text-decoration: none
+  color: #ffffff
+  margin-bottom: 0.8rem
+}
+
+.post-date {
+  color: rgba(1, 162, 190, 0.9)
+  font-size: 0.9rem
+  margin-bottom: 0.5rem
+}
+
+.post-title {
+  font-size: 1.4rem
+  margin: 0
+  line-height: 1.3
+  transition: color 0.2s
+  
+  &:hover {
+    color: rgba(1, 162, 190, 0.9)
+  }
+}
+
+.post-tags {
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+  margin-top: 1rem
+}
+
+.post-tag {
+  font-size: 0.8rem
+  padding: 0.25rem 0.6rem
+  background-color: rgba(255, 255, 255, 0.1)
+  border-radius: 1rem
+  color: rgba(255, 255, 255, 0.8)
+  text-decoration: none
+  transition: all 0.2s
+  
+  &:hover {
+    background-color: rgba(1, 162, 190, 0.2)
+    color: #ffffff
+  }
+}
+
+.no-posts {
+  text-align: center
+  padding: 3rem 1rem
+  color: rgba(255, 255, 255, 0.7)
+  font-size: 1.2rem
+  background-color: rgba(0, 0, 0, 0.1)
+  border-radius: 0.5rem
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    .page-title {
+      font-size: 2rem
+    }
+    
+    .page-description {
+      font-size: 1rem
+    }
+  }
+  
+  .post-list-container {
+    padding: 0.5rem
+  }
+  
+  .post-item {
+    padding: 1.2rem
+    margin-bottom: 1rem
+  }
+  
+  .post-title {
+    font-size: 1.2rem
+  }
+}
+
+@media (max-width: 480px) {
+  .category-detail-container {
+    padding: 1.5rem 0.8rem
+  }
+  
+  .page-header {
+    margin-bottom: 2rem
+    
+    .page-title {
+      font-size: 1.6rem
+    }
+  }
+  
+  .post-item {
+    padding: 1rem
+  }
+  
+  .post-title {
+    font-size: 1.1rem
+  }
+}
+</style>
