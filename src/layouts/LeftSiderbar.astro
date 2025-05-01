@@ -48,12 +48,11 @@ const {
               )}
                 </div>
                 <div class="author-info">
-                <div class="author-info">
                     <h2 class="author-name">{config_site.author}</h2>
                     <p class="author-description">{config_site.description}</p>
                 </div>
-            </div>
         </div>
+    </div>
         <div class="sidebar-section">
             <SocialLinks mediaLinks={config_site.medialinks.slice(0, 4)} /> <!-- 限制显示数量 -->
         </div>
@@ -71,7 +70,6 @@ const {
                 <!-- 这里可以用 Astro 动态生成分类列表 -->
             </div>
         </div>
-    </div>
 </sidebar>
 
 <style>
@@ -83,6 +81,7 @@ const {
         height: fit-content;
         max-height: calc(100vh - 40px);
         overflow-y: auto;
+        
     }
 
     .sidebar-container {
@@ -94,7 +93,8 @@ const {
     .sidebar-section {
         border-radius: 8px;
         padding: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+        background-color: rgba(0, 0, 0, 0.1);
     }
 
     .sidebar-section h3 {

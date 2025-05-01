@@ -87,6 +87,12 @@ export const site = {
             url: 'https://simpleicons.org/',
             avatar: 'https://simpleicons.org/favicon.ico',
             description: '流行品牌的 3282 SVG 图标'
+        },
+        {
+            title: 'Feather',
+            url: 'https://feathericons.com/',
+            avatar: 'https://feathericons.com/favicon.ico',
+            description: 'Beautifully simple open-source icons'
         }
     ]
 }
