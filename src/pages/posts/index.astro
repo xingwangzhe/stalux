@@ -2,98 +2,65 @@
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue'; // Ensure this file exists or update the path
 import { getCollection } from 'astro:content';
-// import FormattedDate from '../../components/FormattedDate.astro';
+import {config_site} from '../../utils/config-adapter';
+import Head from '../../components/Head.vue';
+import { render } from 'astro:content';
+import dayjs from 'dayjs';
+const postsPromises = (await getCollection('posts')).map(async (post) => {
+	const { remarkPluginFrontmatter } = await render(post);
+	const abbrlink = post.data.abbrlink || remarkPluginFrontmatter.abbrlink;
+	const createDate = dayjs(remarkPluginFrontmatter.date)
+		.format("YYYY-MM-DD HH:mm:ss");
+	const updateDate = dayjs(remarkPluginFrontmatter.updated)
+		.format("YYYY-MM-DD HH:mm:ss");
+	
+	// Create a new object with the processed data
+	return {
+		...post,
+		data: {
+			...post.data,
+			abbrlink,
+			date: typeof post.data.date === 'string' && post.data.date.trim() !== '' 
+				? post.data.date 
+				: post.data.date instanceof Date 
+					? dayjs(post.data.date).format("YYYY-MM-DD HH:mm:ss") 
+					: createDate,
+			updated: typeof post.data.updated === 'string' && post.data.updated.trim() !== ''
+				? post.data.updated
+				: post.data.updated instanceof Date
+					? dayjs(post.data.updated).format("YYYY-MM-DD HH:mm:ss")
+					: updateDate
+		}
+	};
+});
 
-const posts = (await getCollection('posts')).sort(
-	(a, b) => {
-		const aTime = typeof a.data.date === 'string' && a.data.date.trim() !== '' 
-			? new Date(a.data.date).getTime() 
-			: a.data.date instanceof Date 
-				? a.data.date.getTime() 
-				: 0;
-		const bTime = typeof b.data.date === 'string' && b.data.date.trim() !== '' 
-			? new Date(b.data.date).getTime() 
-			: b.data.date instanceof Date 
-				? b.data.date.getTime() 
-				: 0;
-		return bTime - aTime;
-	}
-);
+// Resolve all promises before sorting
+const posts = await Promise.all(postsPromises);
+
+// Sort the resolved posts
+const sortedPosts = posts.sort((a, b) => {
+	const aTime = typeof a.data.date === 'string' && a.data.date.trim() !== '' 
+		? new Date(a.data.date).getTime() 
+		: a.data.date instanceof Date 
+			? a.data.date.getTime() 
+			: 0;
+	const bTime = typeof b.data.date === 'string' && b.data.date.trim() !== '' 
+		? new Date(b.data.date).getTime() 
+		: b.data.date instanceof Date 
+			? b.data.date.getTime() 
+			: 0;
+	return bTime - aTime;
+});
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
+<html lang={config_site.lang}>
+	<Head 
+		title={config_site.title}
+		description={config_site.description}
+		author={config_site.author}
+	/>
+	<link rel="stylesheet" href="/styles/global.styl" />
 	<body>
 		<Header />
 		<main>
@@ -102,7 +69,7 @@ const posts = (await getCollection('posts')).sort(
 					{
 						posts.map((post) => (
 							<li>
-								<a href={`/blog/${post.id}/`}>
+								<a href={`/posts/${post.data.abbrlink}/`}>
 									{/* <img width={720} height={360} src={post.data.heroImage} alt="" /> */}
 									<h4 class="title">{post.data.title}</h4>
 									<p class="date">
