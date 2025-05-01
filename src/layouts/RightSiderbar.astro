@@ -1,9 +1,15 @@
 ---
 import type { MarkdownHeading } from 'astro';
+import Clock from '../components/others/Clock.vue';
 const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.props;
 ---
 
 <sidebar class="right-sidebar">
+  <!-- 添加时钟组件到最上方 -->
+  <div class="clock-section">
+    <Clock client:idle format="24hour" showDate={true} updateInterval={1000} />
+  </div>
+  
   <div class="toc-container">
     <div class="toc-header">
       <h2 class="toc-title">文章目录</h2>
@@ -119,6 +125,17 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
     height: fit-content;
     max-height: calc(100vh - 40px);
     overflow-y: auto;
+  }
+
+  /* 时钟部分样式 */
+  .clock-section {
+    background-color: rgba(0, 0, 0, 0.192);
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+    background-color: rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    text-align: center;
   }
 
   .toc-container, .sidebar-section {
