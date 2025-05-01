@@ -11,7 +11,7 @@ const posts = defineCollection({
 		updated: z.union([z.string(), z.coerce.date()]).optional(),
 		tags: z.array(z.string()).optional(),
 		categories: z.array(z.string()).optional(),
-		abbrlink: z.union([z.string(), z.number()])
+		abbrlink: z.union([z.string(), z.number()]).optional(),
 	}),
 });
 

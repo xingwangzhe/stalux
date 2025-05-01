@@ -3,6 +3,7 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
 import dayjs from 'dayjs';
+
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
 	return posts.map((post) => ({
@@ -18,6 +19,7 @@ const createDate = dayjs(remarkPluginFrontmatter.date)
   .format("YYYY-MM-DD HH:mm:ss");
 const updateDate = dayjs(remarkPluginFrontmatter.updated)
   .format("YYYY-MM-DD HH:mm:ss");
+const Abbrlink = remarkPluginFrontmatter.abbrlink;
 post.data.date = typeof post.data.date === 'string' && post.data.date.trim() !== '' 
 	? post.data.date 
 	: post.data.date instanceof Date 
@@ -28,6 +30,7 @@ post.data.updated = typeof post.data.updated === 'string' && post.data.updated.t
 	: post.data.updated instanceof Date
 		? dayjs(post.data.updated).format("YYYY-MM-DD HH:mm:ss")
 		: updateDate;
+post.data.abbrlink = post.data.abbrlink || Abbrlink;
 ---
 
 <BlogPost {...post.data}>

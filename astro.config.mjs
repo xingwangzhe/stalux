@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import vue from '@astrojs/vue';
 import astroExpressiveCode from 'astro-expressive-code'
 import {remarkModifiedTime} from './src/utils/remark-modified-time.mjs';
+import { remarkModifiedAbbrlink } from './src/utils/remark-modified-abbrlink.mjs';
 // https://astro.build/config
 export default defineConfig({
     site: 'https://example.com',
@@ -29,6 +30,6 @@ export default defineConfig({
         enabled: false,
     },
     markdown: {
-      remarkPlugins: [remarkModifiedTime],
+      remarkPlugins: [remarkModifiedTime,remarkModifiedAbbrlink],
     },
 });
