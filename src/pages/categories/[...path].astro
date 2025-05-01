@@ -18,7 +18,7 @@ export async function getStaticPaths() {
   const categoryPaths = new Set();
   
   // 递归收集所有分类路径
-  function collectCategoryPaths(categories, parentPath = '') {
+  function collectCategoryPaths(categories: any[], parentPath = '') {
     if (!categories || !Array.isArray(categories)) return;
     
     categories.forEach(category => {
@@ -99,14 +99,14 @@ const allPosts = await getCollection('posts');
 const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
 // 判断文章是否属于当前分类或其子分类
-function isPostInCategory(post, targetPath) {
+function isPostInCategory(post: { data: { categories: any; }; }, targetPath: string) {
   if (!post.data.categories || !Array.isArray(post.data.categories)) return false;
   
   // 构建文章分类的所有路径
-  const postCategoryPaths = [];
+  const postCategoryPaths: string[] = [];
   
-  function buildPostCategoryPaths(categories, parentPath = '') {
-    categories.forEach(category => {
+  function buildPostCategoryPaths(categories: any[], parentPath = '') {
+    categories.forEach((category: { [x: string]: any; name?: any; subcategories?: any; }) => {
       if (typeof category === 'string') {
         postCategoryPaths.push(parentPath ? `${parentPath}/${category}` : category);
       } else if (category && typeof category === 'object' && category.name) {
