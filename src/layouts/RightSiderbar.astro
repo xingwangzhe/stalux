@@ -1,78 +1,10 @@
 ---
 import type { MarkdownHeading } from 'astro';
 import Clock from '../components/others/Clock.vue';
+import Categories from '../components/others/Categories.astro';
+import Tags from '../components/others/Tags.astro';
+
 const { tags = [] as string[], categories = [] as any[], headings = [] as MarkdownHeading[] } = Astro.props;
-
-// 为分类生成扁平化路径和显示文本
-function generateCategoryPaths(categories: any[]) {
-  const result: { path: string; display: string; level: number }[] = [];
-  
-  // 处理单个分类项，支持字符串和对象两种格式
-  function traverse(category: any, parentPath = '', level = 0) {
-    // 处理字符串格式的分类
-    if (typeof category === 'string') {
-      const currentPath = parentPath ? `${parentPath}/${category}` : category;
-      result.push({
-        path: `/categories/${currentPath}`,
-        display: category,
-        level: level
-      });
-      return;
-    }
-    
-    // 处理对象格式的分类（带有name和next属性）
-    if (category && typeof category === 'object') {
-      // 如果有name属性，按照原来的方式处理
-      if (category.name) {
-        const currentPath = parentPath ? `${parentPath}/${category.name}` : category.name;
-        result.push({
-          path: `/categories/${currentPath}`,
-          display: category.name,
-          level: level
-        });
-        
-        // 递归处理子分类
-        if (category.next && Array.isArray(category.next)) {
-          category.next.forEach((child: any) => {
-            traverse(child, currentPath, level + 1);
-          });
-        }
-      } 
-      // 处理无标识符嵌套的情况
-      else {
-        // 获取第一个键作为分类名
-        const keys = Object.keys(category);
-        if (keys.length > 0) {
-          const categoryName = keys[0];
-          const subCategories = category[categoryName];
-          
-          // 添加当前分类
-          const currentPath = parentPath ? `${parentPath}/${categoryName}` : categoryName;
-          result.push({
-            path: `/categories/${currentPath}`,
-            display: categoryName,
-            level: level
-          });
-          
-          // 递归处理子分类
-          if (Array.isArray(subCategories)) {
-            subCategories.forEach((child: any) => {
-              traverse(child, currentPath, level + 1);
-            });
-          }
-        }
-      }
-    }
-  }
-  
-  if (Array.isArray(categories)) {
-    categories.forEach(category => traverse(category));
-  }
-  
-  return result;
-}
-
-const flattenedCategories = categories && Array.isArray(categories) ? generateCategoryPaths(categories) : [];
 ---
 
 <sidebar class="right-sidebar">
@@ -84,13 +16,13 @@ const flattenedCategories = categories && Array.isArray(categories) ? generateCa
   <div class="toc-container">
     <div class="toc-header">
       <h2 class="toc-title">文章目录</h2>
-      <button id="toc-toggle" class="toc-toggle" aria-label="折叠目录">
+      <button id="toc-toggle" class="section-toggle" aria-label="折叠目录">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
           <path fill="currentColor" d="M7 10l5 5 5-5z"></path>
         </svg>
       </button>
     </div>
-    <div id="toc-content" class="toc-content">
+    <div id="toc-content" class="section-content">
       {headings && headings.length > 0 ? (
         <ul class="toc-list">
           {headings.map((heading:any) => (
@@ -106,47 +38,14 @@ const flattenedCategories = categories && Array.isArray(categories) ? generateCa
       )}
     </div>
   </div>
-  
-  <!-- 文章分类部分 -->
-  <div class="sidebar-section categories">
-    <h3>文章分类</h3>
-    <div class="category-tree">
-      {flattenedCategories && flattenedCategories.length > 0 ? (
-        flattenedCategories.map((cat) => (
-          <a href={cat.path} class={`category level-${cat.level}`}>
-            {cat.level > 0 && '└ '}
-            {cat.display}
-          </a>
-        ))
-      ) : (
-        <div class="no-categories">暂无分类</div>
-      )}
-    </div>
-    
-    {/* 调试输出 */}
-    <div class="debug" style="display: none;">
-      <pre>{JSON.stringify(categories, null, 2)}</pre>
-    </div>
-  </div>
-  
-  <!-- 文章标签部分 -->
-  <div class="sidebar-section tags">
-    <h3>文章标签</h3>
-    <div class="tag-cloud">
-      {tags && tags.length > 0 ? (
-        tags.map((tag :string) => (
-          <a href={`/tags/${tag}`} class="tag">{tag}</a>
-        ))
-      ) : (
-        <div class="no-tags">暂无标签</div>
-      )}
-    </div>
-  </div>
+  <Categories categories={categories} />
+  <Tags tags={tags} />
 </sidebar>
 
 <script>
   // 目录折叠/展开功能
   document.addEventListener('DOMContentLoaded', () => {
+    // 为目录添加事件监听
     const tocToggle = document.getElementById('toc-toggle');
     const tocContent = document.getElementById('toc-content');
     
@@ -231,7 +130,7 @@ const flattenedCategories = categories && Array.isArray(categories) ? generateCa
     text-align: center;
   }
 
-  .toc-container, .sidebar-section {
+  .toc-container {
     background-color: rgba(0, 0, 0, 0.192);
     border-radius: 8px;
     padding: 1rem;
@@ -240,7 +139,7 @@ const flattenedCategories = categories && Array.isArray(categories) ? generateCa
     margin-bottom: 1.5rem;
   }
   
-  /* 目录标题和折叠按钮 */
+  /* 目录标题和折叠按钮样式 */
   .toc-header {
     display: flex;
     justify-content: space-between;
@@ -256,7 +155,7 @@ const flattenedCategories = categories && Array.isArray(categories) ? generateCa
     color: rgba(255, 255, 255, 0.9);
   }
 
-  .toc-toggle {
+  .section-toggle {
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.7);
@@ -268,34 +167,26 @@ const flattenedCategories = categories && Array.isArray(categories) ? generateCa
     transition: transform 0.3s ease;
   }
 
-  .toc-toggle:hover {
+  .section-toggle:hover {
     color: rgba(255, 255, 255, 1);
   }
   
-  .toc-toggle.collapsed {
+  .section-toggle.collapsed {
     transform: rotate(-90deg);
   }
   
-  .toc-content {
+  /* 可折叠内容的通用样式 */
+  .section-content {
     max-height: 500px;
     overflow-y: auto;
     /* 默认过渡时间在JS中动态设置 */
     opacity: 1;
   }
   
-  .toc-content.collapsed {
+  .section-content.collapsed {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-  }
-
-  .sidebar-section h3 {
-    margin-top: 0;
-    margin-bottom: 0.8rem;
-    font-size: 1.2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 0.5rem;
-    color: rgba(255, 255, 255, 0.9);
   }
 
   .toc-message {
@@ -345,66 +236,6 @@ const flattenedCategories = categories && Array.isArray(categories) ? generateCa
   .toc-item-h4 { margin-left: 2.25rem; font-size: 0.9em; }
   .toc-item-h5 { margin-left: 3rem; font-size: 0.85em; }
   .toc-item-h6 { margin-left: 3.75rem; font-size: 0.8em; }
-
-  /* 标签云样式 */
-  .tag-cloud {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .tag, .category {
-    border-radius: 4px;
-    padding: 0.2rem 0.5rem;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.9);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .category.level-0 {
-    font-weight: bold;
-  }
-  
-  .category.level-1 {
-    margin-left: 0.75rem;
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-  
-  .category.level-2 {
-    margin-left: 1.5rem;
-    background-color: rgba(255, 255, 255, 0.06);
-  }
-  
-  .category.level-3 {
-    margin-left: 2.25rem;
-    background-color: rgba(255, 255, 255, 0.04);
-  }
-
-  .tag:hover, .category:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-  }
-
-  .no-tags {
-    color: rgba(255, 255, 255, 0.6);
-    font-style: italic;
-    font-size: 0.9rem;
-  }
-
-  /* 分类树样式 */
-  .category-tree {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .no-categories {
-    color: rgba(255, 255, 255, 0.6);
-    font-style: italic;
-    font-size: 0.9rem;
-  }
 
   @media (max-width: 1024px) {
     .right-sidebar {

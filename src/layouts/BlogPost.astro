@@ -4,9 +4,17 @@ import type { MarkdownHeading } from 'astro';
 import Head from '../components/Head.vue';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
-type Props = CollectionEntry<'posts'>['data'] & {
-  headings?: MarkdownHeading[];
-};
+
+// 正确定义Props类型
+interface Props {
+    title: string;
+    date?: string | Date;
+    updated?: string | Date;
+    tags?: string[];
+    categories?: any[]; // 添加categories属性
+    headings?: MarkdownHeading[];
+}
+
 const { title, date, updated, tags, categories, headings = [] } = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
@@ -35,12 +43,12 @@ import RightSiderbar from './RightSiderbar.astro';
 							<div class="date">
 								{date && (
 									<div class="published-on">
-										发布时间：<time datetime={date.toString()}>{date}</time>
+										发布时间：<time>{date instanceof Date ? date.toLocaleDateString() : date}</time>
 									</div>
 								)}
 								{updated && (
 									<div class="last-updated-on">
-										更新时间：<time datetime={updated.toString()}>{updated}</time>
+										更新时间：<time>{updated instanceof Date ? updated.toLocaleDateString() : updated}</time>
 									</div>
 								)}
 							</div>
