@@ -7,6 +7,8 @@ type Props = CollectionEntry<'posts'>['data'];
 const { title, date, updated } = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
+import LeftSiderbar from './LeftSiderbar.astro';
+import RightSiderbar from './RightSiderbar.astro';
 ---
 
 <html lang="zh-CN">
@@ -18,8 +20,9 @@ import '../styles/global.styl'
 	<body>
 		<Header />
 		<main>
-			<div class="main-wrapper">
-				<article>
+			<div class="main-content">
+				<LeftSiderbar />
+				<article class="article-content">
 					<div class="hero-image">
 						<!-- 如果有特色图片可以在这里添加 -->
 					</div>
@@ -43,6 +46,7 @@ import '../styles/global.styl'
 						<slot />
 					</div>
 				</article>
+				<RightSiderbar />
 			</div>
 		</main>
 		<Footer />

@@ -1,69 +1,223 @@
 // 博客页面样式
 
 // 主内容区样式
-main 
-  width: calc(100% - 2em)
-  max-width: 100%
-  margin: 0
+main {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
 
-// 头图样式
-.hero-image 
-  width: 100%
-  
-  img 
-    display: block
-    margin: 0 auto
-    border-radius: 12px
-    box-shadow: var(--box-shadow)
+// 三栏布局
+.main-content {
+  display: flex;
+  min-height: 100vh;
+  gap: 5rem;
+  position: relative;
+  margin: 1rem auto;
+}
 
 // 文章内容区
-.prose 
-  width: 90%
-  max-width: 720px
-  margin: auto
-  padding: 1em
-  //color: rgb(var(--gray-dark))
+.article-content {
+  flex: 1;
+  min-width: 0; // 解决Flexbox内容溢出问题
+}
+// 侧边栏共同样式
+.left-sidebar,
+.right-sidebar {
+  flex: 0.3;
+  min-width: 0; // 防止溢出
+}
+
+// 头图样式
+.hero-image {
+  width: 100%;
+  margin-bottom: 1rem;
+  
+  img {
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-height: 400px;
+    object-fit: cover;
+  }
+}
+
+// 文章内容区
+.prose {
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  
+  // 文章排版增强
+  p {
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  
+  h2, h3, h4 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.5rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  h4 {
+    font-size: 1.3rem;
+  }
+  
+  ul, ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  li {
+    margin-bottom: 0.5rem;
+  }
+  
+  blockquote {
+    border-left: 4px solid rgba(1, 162, 190, 0.8);
+    padding-left: 1rem;
+    margin-left: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+  
+  a {
+    color: rgba(1, 162, 190, 1);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px dashed rgba(1, 162, 190, 0.5);
+  }
+  
+  a:hover {
+    border-bottom-style: solid;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin: 2rem auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    overflow-x: auto;
+    display: block;
+  }
+  
+  table th, table td {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.75rem;
+    text-align: left;
+  }
+  
+  table th {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
 
 // 标题样式  
-.title 
-  margin-bottom: 1em
-  padding: 1em 0
-  text-align: center
-  line-height: 1
+.title {
+  margin-bottom: 2rem;
+  text-align: center;
+  line-height: 1.3;
   
-  h1 
-    margin: 0 0 0.5em 0
+  h1 {
+    margin: 0 0 1rem 0;
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(1, 162, 190, 0.9));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
 
 // 日期样式
-.date 
-  margin-bottom: 0.5em
-  //color: rgb(var(--gray))
+.date {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
 
 // 更新日期样式  
-.last-updated-on 
-  font-style: italic
+.last-updated-on {
+  font-style: italic;
+}
+
+// 代码块样式增强
+.expressive-code {
+  margin: 2rem 0;
+  
+  .frame {
+    border-radius: 8px;
+  }
+}
 
 // 响应式调整
-@media (max-width: 768px) 
-  .prose 
-    width: 95%
-    padding: 0.75em
+@media (max-width: 1200px) {
+  .prose {
+    padding: 1.5rem;
+  }
   
-  .title 
-    margin-bottom: 0.75em
-    padding: 0.75em 0
-    
-    h1 
-      font-size: 1.8rem
+  .title h1 {
+    font-size: 2.2rem;
+  }
+}
 
-@media (max-width: 480px) 
-  .prose 
-    width: 100%
-    padding: 0.5em
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    margin: 1rem auto;
+  }
   
-  .title 
-    margin-bottom: 0.5em
-    padding: 0.5em 0
-    
-    h1 
-      font-size: 1.5rem
+  .prose {
+    padding: 1rem;
+  }
+  
+  .title h1 {
+    font-size: 1.8rem;
+  }
+  
+  .date {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 0 0.5rem;
+  }
+  
+  .prose {
+    padding: 0.8rem;
+  }
+  
+  .title h1 {
+    font-size: 1.5rem;
+  }
+}

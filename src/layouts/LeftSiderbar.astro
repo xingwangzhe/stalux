@@ -1,0 +1,193 @@
+---
+import { config_site } from "../utils/config-adapter";
+import avatar from '../images/avatar.webp';
+import SocialLinks from "../components/others/SocialLinks.astro";
+import { Image }  from 'astro:assets';
+const avatarPath = config_site.avatarPath || avatar;
+// 定义不同设备的图像尺寸
+const mobileSizes = 70; // 移动设备图片尺寸
+const tabletSizes = 80; // 平板设备图片尺寸
+const desktopSizes = 100; // 桌面设备图片尺寸
+const { 
+  avatarWidth = 100, 
+  avatarHeight = 100, 
+  author = config_site.author
+} = Astro.props;
+---
+
+<sidebar class="left-sidebar">
+    <div class="sidebar-container">
+        <div class="sidebar-section author-card">
+            <div class="author">
+                <div class="avatar-container">
+                {typeof avatarPath === 'string' ? (
+                <img 
+                  src={avatarPath} 
+                  alt={`${author} avatar`} 
+                  class="avatar"
+                  width={avatarWidth}
+                  height={avatarHeight}
+                  loading="eager"
+                  decoding="async"
+                  srcset={`${avatarPath}?w=${mobileSizes} ${mobileSizes}w, 
+                           ${avatarPath}?w=${tabletSizes} ${tabletSizes}w, 
+                           ${avatarPath}?w=${desktopSizes} ${desktopSizes}w`}
+                  sizes="(max-width: 480px) ${mobileSizes}px, 
+                         (max-width: 768px) ${tabletSizes}px, 
+                         ${desktopSizes}px"
+                />
+              ) : (
+                <Image 
+                  src={avatarPath} 
+                  alt={`${author} avatar`} 
+                  class="avatar"
+                  width={avatarWidth}
+                  height={avatarHeight}
+                  loading="eager"
+                />
+              )}
+                </div>
+                <div class="author-info">
+                <div class="author-info">
+                    <h2 class="author-name">{config_site.author}</h2>
+                    <p class="author-description">{config_site.description}</p>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-section">
+            <SocialLinks mediaLinks={config_site.medialinks.slice(0, 4)} /> <!-- 限制显示数量 -->
+        </div>
+        <div class="sidebar-section recent-posts">
+            <h3>最近文章</h3>
+            <ul>
+                <li><a href="/posts/d83cc174">nihao</a></li>
+                <!-- 这里可以用 Astro 动态生成最近文章列表 -->
+            </ul>
+        </div>
+        <div class="sidebar-section categories">
+            <h3>文章分类</h3>
+            <div class="tag-cloud">
+                <a href="/categories/博客" class="tag">博客</a>
+                <!-- 这里可以用 Astro 动态生成分类列表 -->
+            </div>
+        </div>
+    </div>
+</sidebar>
+
+<style>
+    .left-sidebar {
+        width: 250px;
+        padding: 1.5rem 0.5rem;
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+    }
+
+    .sidebar-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sidebar-section {
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-section h3 {
+        margin-top: 0;
+        margin-bottom: 0.8rem;
+        font-size: 1.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .recent-posts ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .recent-posts li {
+        margin-bottom: 0.5rem;
+        padding: 0.3rem 0;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .recent-posts li:last-child {
+        border-bottom: none;
+    }
+
+    .recent-posts a {
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.8);
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+    }
+
+    .recent-posts a:hover {
+        color: rgba(255, 255, 255, 1);
+        text-decoration: underline;
+    }
+
+    .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tag {
+        border-radius: 4px;
+        padding: 0.2rem 0.5rem;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .tag:hover {
+        background-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 1024px) {
+        .left-sidebar {
+            width: 200px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .left-sidebar {
+            display: none; /* 在移动设备上隐藏左侧边栏 */
+        }
+    }
+    .avatar {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        transition: transform 0.6s ease;
+        }
+
+    .avatar-container:hover .avatar {
+    transform: rotate(360deg) scale(1.05);
+    box-shadow: 0 0 20px rgba(1, 162, 190, 0.4);
+    }
+
+    .avatar-container:not(:hover) .avatar {
+    transition: transform 0.8s ease;
+    transform: rotate(0deg);
+    }
+    
+    .author {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+</style>

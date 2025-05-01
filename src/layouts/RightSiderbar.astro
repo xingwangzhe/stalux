@@ -1,0 +1,60 @@
+---
+// 右侧边栏组件 - 使用 remark-toc 显示文章目录
+// 不需要接收 headings 参数，因为目录由 remark-toc 在文章内容中生成
+---
+
+<sidebar class="right-sidebar">
+  <div class="toc-container">
+    <h2 class="toc-title">文章目录</h2>
+    <div class="toc-message">
+      目录将显示在文章中的 "contents" 标题下
+    </div>
+  </div>
+</sidebar>
+
+<style>
+  .right-sidebar {
+    width: 250px;
+    padding: 1.5rem 0.5rem;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
+
+  .toc-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .toc-title {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    font-size: 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .toc-message {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 1024px) {
+    .right-sidebar {
+      width: 200px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .right-sidebar {
+      display: none; /* 在移动设备上隐藏右侧边栏 */
+    }
+  }
+</style>

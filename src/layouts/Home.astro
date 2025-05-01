@@ -5,16 +5,13 @@ import Head from '../components/Head.vue'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.vue'
 import { Image } from 'astro:assets';
-import avatar from '../../public/avatar.jpg';
+import avatar from '../images/avatar.webp';
 import '../styles/home.styl'
 import Clock from '../components/others/Clock.vue'
 import SocialLinks from '../components/others/SocialLinks.astro'
 import TextTyping from '../components/others/TextTyping.vue'
 import AuthorCard from '../components/others/AuthorCard.astro'
-
-
-// 确保头像路径有效，提供回退机制
-const avatarImage = config_site.avatarPath;
+const avatarImage = config_site.avatarPath || avatar 
 ---
 <!DOCTYPE html>
 <html lang={config_site.lang}>

@@ -2,7 +2,6 @@ export const site = {
     // 核心SEO必要配置
     title: 'Stalux',                                  // 必要: 页面标题，SEO最重要因素
     description: '博客主题Stalux',  // 必要: 网站描述，150-160字符最佳SEO长度
-    link_description: '优质技术博客交换友情链接，互惠共赢提升网站流量和用户体验。期待与同领域高质量内容创作者建立长期合作关系。',  // 必要: 友链描述，清晰表达价值主张
     url: 'https://stalux.needhelp.icu',                       // 必要: 网站URL，需完整包含https
     
     // 重要但非必须的配置
@@ -17,7 +16,7 @@ export const site = {
     // 资源文件配置 - 用户体验相关，间接SEO价值
     favicon: '/favicon.ico',                            // 可选: 网站图标
     appleTouchIcon: '/apple-touch-icon.png',   
-    avatarPath: 'src/images/avatar.jpg'  ,       // 可选: iOS设备添加到主屏的图标
+   // avatarPath: 'src/images/avatar.webp'  ,       // 可选: iOS设备添加到主屏的图标
     // 社交媒体优化配置 - 主要针对社交分享，非核心SEO
     ogImage: 'https://www.baidu.com/og-image.jpg',      // 可选: 社交媒体分享图片
     twitterImage: 'https://www.baidu.com/twitter-image.jpg', // 可选: Twitter分享图片
@@ -62,7 +61,8 @@ export const site = {
         { title: 'Telegram', url: 'https://t.me/', icon: 'telegram'},
         { title: 'Discord', url: 'https://discord.gg/', icon: 'discord'},
     ],
-
+    friendlinks_title: '友情链接', // 友链标题
+    friendlinks_description: '优质技术博客交换友情链接，互惠共赢提升网站流量和用户体验。期待与同领域高质量内容创作者建立长期合作关系。',  // 必要: 友链描述，清晰表达价值主张
     friendlinks: [
         { 
             title: 'Astro', 
