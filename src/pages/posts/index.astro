@@ -5,7 +5,19 @@ import { getCollection } from 'astro:content';
 // import FormattedDate from '../../components/FormattedDate.astro';
 
 const posts = (await getCollection('posts')).sort(
-	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+	(a, b) => {
+		const aTime = typeof a.data.date === 'string' && a.data.date.trim() !== '' 
+			? new Date(a.data.date).getTime() 
+			: a.data.date instanceof Date 
+				? a.data.date.getTime() 
+				: 0;
+		const bTime = typeof b.data.date === 'string' && b.data.date.trim() !== '' 
+			? new Date(b.data.date).getTime() 
+			: b.data.date instanceof Date 
+				? b.data.date.getTime() 
+				: 0;
+		return bTime - aTime;
+	}
 );
 ---
 
