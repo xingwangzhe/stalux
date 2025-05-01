@@ -5,20 +5,29 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
 
 <sidebar class="right-sidebar">
   <div class="toc-container">
-    <h2 class="toc-title">文章目录</h2>
-    {headings && headings.length > 0 ? (
-      <ul class="toc-list">
-        {headings.map((heading:any) => (
-          <li class={`toc-item toc-item-h${heading.depth}`}>
-            <a href={`#${heading.slug}`}>{heading.text}</a>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <div class="toc-message">
-        暂无目录
-      </div>
-    )}
+    <div class="toc-header">
+      <h2 class="toc-title">文章目录</h2>
+      <button id="toc-toggle" class="toc-toggle" aria-label="折叠目录">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+          <path fill="currentColor" d="M7 10l5 5 5-5z"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="toc-content" class="toc-content">
+      {headings && headings.length > 0 ? (
+        <ul class="toc-list">
+          {headings.map((heading:any) => (
+            <li class={`toc-item toc-item-h${heading.depth}`}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="toc-message">
+          暂无目录
+        </div>
+      )}
+    </div>
   </div>
   
   <!-- 文章分类部分 -->
@@ -45,6 +54,62 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
   </div>
 </sidebar>
 
+<script>
+  // 目录折叠/展开功能
+  document.addEventListener('DOMContentLoaded', () => {
+    const tocToggle = document.getElementById('toc-toggle');
+    const tocContent = document.getElementById('toc-content');
+    
+    if (tocToggle && tocContent) {
+      tocToggle.addEventListener('click', () => {
+        const isCollapsing = !tocContent.classList.contains('collapsed');
+        
+        // 根据是折叠还是展开来设置不同的过渡时间
+        if (isCollapsing) {
+          // 快速折叠 (250ms)
+          tocContent.style.transition = 'max-height 0.25s ease, opacity 0.25s ease';
+        } else {
+          // 缓慢展开 (600ms)
+          tocContent.style.transition = 'max-height 0.6s ease, opacity 0.6s ease';
+        }
+        
+        tocContent.classList.toggle('collapsed');
+        tocToggle.classList.toggle('collapsed');
+      });
+    }
+    
+    // 添加平滑滚动功能
+    const tocLinks = document.querySelectorAll('.toc-item a');
+    
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault(); // 阻止默认行为
+        
+        const targetId = link.getAttribute('href')?.substring(1); // 去掉 # 号
+        if (!targetId) return;
+        
+        const targetElement = document.getElementById(targetId);
+        if (!targetElement) return;
+        
+        // 获取目标元素的位置
+        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+        
+        // 添加一点偏移量，让标题不会太靠近页面顶部
+        const offset = 80;
+        
+        // 平滑滚动到目标位置
+        window.scrollTo({
+          top: targetPosition - offset,
+          behavior: 'smooth'
+        });
+        
+        // 更新 URL，但不引起页面跳转
+        history.pushState(null, '', `#${targetId}`);
+      });
+    });
+  });
+</script>
+
 <style>
   .right-sidebar {
     width: 250px;
@@ -64,8 +129,57 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
     background-color: rgba(0, 0, 0, 0.1);
     margin-bottom: 1.5rem;
   }
+  
+  /* 目录标题和折叠按钮 */
+  .toc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.5rem;
+  }
 
-  .toc-title, .sidebar-section h3 {
+  .toc-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .toc-toggle {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+  }
+
+  .toc-toggle:hover {
+    color: rgba(255, 255, 255, 1);
+  }
+  
+  .toc-toggle.collapsed {
+    transform: rotate(-90deg);
+  }
+  
+  .toc-content {
+    max-height: 500px;
+    overflow-y: auto;
+    /* 默认过渡时间在JS中动态设置 */
+    opacity: 1;
+  }
+  
+  .toc-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-section h3 {
     margin-top: 0;
     margin-bottom: 0.8rem;
     font-size: 1.2rem;
@@ -89,6 +203,12 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
 
   .toc-item {
     margin-bottom: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+
+  .toc-item:hover {
+    background-color: rgba(255, 255, 255, 0.15);
   }
 
   .toc-item a {
@@ -100,11 +220,12 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding: 0.2rem 0.4rem; /* 为链接添加内边距，让hover效果更明显 */
   }
 
   .toc-item a:hover {
     color: rgba(255, 255, 255, 1);
-    text-decoration: underline;
+    text-decoration: none; /* 移除下划线效果 */
   }
 
   /* 不同级别标题的缩进 */
