@@ -1,21 +1,22 @@
 ---
 import type { MarkdownHeading } from 'astro';
 import Clock from '../components/others/Clock.vue';
-import Categories from '../components/others/Categories.astro';
+import SidebarCategories from '../components/categories/SidebarCategories.astro';
 import Tags from '../components/others/Tags.astro';
 
 const { tags = [] as string[], categories = [] as any[], headings = [] as MarkdownHeading[] } = Astro.props;
 ---
 
 <sidebar class="right-sidebar">
-  <!-- 添加时钟组件到最上方 -->
+  <!-- 时钟组件 -->
   <div class="clock-section">
     <Clock client:idle format="24hour" showDate={true} updateInterval={1000} />
   </div>
   
-  <div class="toc-container">
-    <div class="toc-header">
-      <h2 class="toc-title">文章目录</h2>
+  <!-- 文章目录部分 -->
+  <div class="sidebar-section toc-container">
+    <div class="section-header">
+      <h2 class="section-title">文章目录</h2>
       <button id="toc-toggle" class="section-toggle" aria-label="折叠目录">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
           <path fill="currentColor" d="M7 10l5 5 5-5z"></path>
@@ -32,18 +33,22 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
           ))}
         </ul>
       ) : (
-        <div class="toc-message">
+        <div class="no-content-message">
           暂无目录
         </div>
       )}
     </div>
   </div>
-  <Categories categories={categories} />
+  
+  <!-- 使用新的侧边栏分类组件 -->
+  <SidebarCategories categories={categories} />
+  
+  <!-- 复用标签组件 -->
   <Tags tags={tags} />
 </sidebar>
 
 <script>
-  // 目录折叠/展开功能
+  // 文章目录折叠/展开功能
   document.addEventListener('DOMContentLoaded', () => {
     // 为目录添加事件监听
     const tocToggle = document.getElementById('toc-toggle');
@@ -53,7 +58,7 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
       tocToggle.addEventListener('click', () => {
         const isCollapsing = !tocContent.classList.contains('collapsed');
         
-        // 根据是折叠还是展开来设置不同的过渡时间
+        // 与分类和标签组件保持一致的过渡时间
         if (isCollapsing) {
           // 快速折叠 (250ms)
           tocContent.style.transition = 'max-height 0.25s ease, opacity 0.25s ease';
@@ -130,7 +135,8 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
   text-align: center
 }
 
-.toc-container {
+/* 侧边栏通用部分样式 - 与Categories.astro组件保持一致 */
+.sidebar-section {
   background-color: rgba(0, 0, 0, 0.192)
   border-radius: 8px
   padding: 1rem
@@ -139,20 +145,20 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
   margin-bottom: 1.5rem
 }
 
-/* 目录标题和折叠按钮样式 */
-.toc-header {
+/* 标题和折叠按钮样式 - 与Categories.astro组件保持一致 */
+.section-header {
   display: flex
   justify-content: space-between
   align-items: center
   margin-bottom: 0.8rem
   border-bottom: 1px solid rgba(255, 255, 255, 0.2)
   padding-bottom: 0.5rem
-}
-
-.toc-title {
-  margin: 0
-  font-size: 1.2rem
-  color: rgba(255, 255, 255, 0.9)
+  
+  .section-title {
+    margin: 0
+    font-size: 1.2rem
+    color: rgba(255, 255, 255, 0.9)
+  }
 }
 
 .section-toggle {
@@ -175,12 +181,26 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
   }
 }
 
-/* 可折叠内容的通用样式 */
+/* 可折叠内容的通用样式 - 与Categories.astro组件保持一致 */
 .section-content {
   max-height: 500px
   overflow-y: auto
-  /* 默认过渡时间在JS中动态设置 */
   opacity: 1
+  scrollbar-width: thin
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent
+  
+  &::-webkit-scrollbar {
+    width: 6px
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3)
+    border-radius: 3px
+  }
   
   &.collapsed {
     max-height: 0
@@ -189,10 +209,13 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
   }
 }
 
-.toc-message {
-  color: rgba(255, 255, 255, 0.8)
-  font-size: 0.9rem
+/* 无内容时的提示样式 */
+.no-content-message {
+  color: rgba(255, 255, 255, 0.6)
   font-style: italic
+  font-size: 0.9rem
+  padding: 0.5rem
+  text-align: center
 }
 
 /* 目录列表样式 */
@@ -220,11 +243,11 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
     overflow: hidden
     text-overflow: ellipsis
     white-space: nowrap
-    padding: 0.2rem 0.4rem /* 为链接添加内边距，让hover效果更明显 */
+    padding: 0.2rem 0.4rem
     
     &:hover {
       color: rgba(255, 255, 255, 1)
-      text-decoration: none /* 移除下划线效果 */
+      text-decoration: none
     }
   }
 }

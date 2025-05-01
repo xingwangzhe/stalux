@@ -1,0 +1,49 @@
+---
+import type { CategoryNode } from './CategoryUtils';
+
+interface Props {
+  category: CategoryNode;
+  currentPath: string;
+  isChild?: boolean;
+  isGrandchild?: boolean;
+}
+
+const { category, currentPath, isChild = false, isGrandchild = false } = Astro.props;
+const isCurrentCategory = category.path === currentPath;
+---
+
+{!isChild && !isGrandchild ? (
+  <!-- 根分类节点 -->
+  <a 
+    href={`/categories/${category.path}`} 
+    class={`post-category root-category ${isCurrentCategory ? 'current-category' : ''}`}
+    title={`${category.path}`}
+  >
+    <span class="tree-indicator">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </span>
+    {category.name}
+  </a>
+) : isChild ? (
+  <!-- 子分类节点 -->
+  <a 
+    href={`/categories/${category.path}`} 
+    class={`post-category child-category level-${category.level} ${isCurrentCategory ? 'current-category' : ''}`}
+    title={`${category.path}`}
+  >
+    <span class="branch-node"></span>
+    {category.name}
+  </a>
+) : (
+  <!-- 孙分类节点 -->
+  <a 
+    href={`/categories/${category.path}`} 
+    class={`post-category grandchild-category level-${category.level} ${isCurrentCategory ? 'current-category' : ''}`}
+    title={`${category.path}`}
+  >
+    <span class="branch-node small"></span>
+    {category.name}
+  </a>
+)}
