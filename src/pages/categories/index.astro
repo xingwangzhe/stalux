@@ -145,8 +145,8 @@ const pageTitle = '文章分类 | ' + config_site.title;
     author={config_site.author}
     url={config_site.url + '/categories/'}
   >
-    <!-- 添加 noindex 元标记，防止搜索引擎索引 -->
-    <meta name="robots" content="noindex, nofollow" slot="head" />
+    <!-- 使用新的 robots 插槽来替换默认的 robots meta 标签 -->
+    <meta name="robots" content="noindex, nofollow" slot="robots" />
   </Head>
   <body>
     <script>
@@ -174,7 +174,7 @@ const pageTitle = '文章分类 | ' + config_site.title;
                 </div>
               </a>
               
-              {/* 二级子分类 */}
+              <!-- 二级子分类 -->
               {category.sortedChildren?.length > 0 && (
                 <div class="subcategories level-2">
                   {category.sortedChildren.map((subCategory) => (
@@ -184,7 +184,7 @@ const pageTitle = '文章分类 | ' + config_site.title;
                         <div class="subcategory-count">{subCategory.count} 篇文章</div>
                       </a>
                       
-                      {/* 三级子分类 (伪平铺) */}
+                      <!-- 三级子分类 (伪平铺) -->
                       {subCategory.sortedChildren?.length > 0 && (
                         <div class="subcategories level-3">
                           {subCategory.sortedChildren.map((thirdLevelCategory) => (
@@ -225,7 +225,7 @@ const pageTitle = '文章分类 | ' + config_site.title;
   .page-title {
     font-size: 2.5rem
     margin-bottom: 1rem
-    background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9))
+    background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7))
     -webkit-background-clip: text
     -webkit-text-fill-color: transparent
     background-clip: text
@@ -310,7 +310,7 @@ const pageTitle = '文章分类 | ' + config_site.title;
   margin: 0 0 0.5rem 0
   position: relative
   z-index: 2
-  background: linear-gradient(45deg, #fff, rgba(1, 162, 190, 0.9))
+  background: linear-gradient(45deg, #fff, #fff)
   -webkit-background-clip: text
   -webkit-text-fill-color: transparent
   background-clip: text
@@ -318,18 +318,9 @@ const pageTitle = '文章分类 | ' + config_site.title;
 
 .category-count {
   font-size: 0.9rem
-  color: rgba(1, 162, 190, 0.9)
+  color: #ffffff
   position: relative
   z-index: 2
-}
-
-.category-icon {
-  position: absolute
-  top: 0.5rem
-  right: 0.5rem
-  opacity: 0.5
-  transition: all 0.3s ease
-  color: rgba(1, 162, 190, 0.7)
 }
 
 // 二级分类
@@ -369,12 +360,12 @@ const pageTitle = '文章分类 | ' + config_site.title;
 .subcategory-name {
   font-size: 1.2rem
   margin: 0
-  color: rgba(255, 255, 255, 0.9)
+  color: #ffffff
 }
 
 .subcategory-count {
   font-size: 0.85rem
-  color: rgba(1, 162, 190, 0.9)
+  color: #ffffff
 }
 
 // 三级分类（伪平铺）
@@ -390,7 +381,7 @@ const pageTitle = '文章分类 | ' + config_site.title;
 
 .third-level-category {
   text-decoration: none
-  color: rgba(255, 255, 255, 0.8)
+  color: #ffffff
   font-size: 0.9rem
   padding: 0.3rem 0.6rem
   background: rgba(255, 255, 255, 0.05)
@@ -398,14 +389,14 @@ const pageTitle = '文章分类 | ' + config_site.title;
   transition: all 0.2s ease
   
   &:hover {
-    background: rgba(1, 162, 190, 0.2)
+    background: rgba(255, 255, 255, 0.1)
     color: #ffffff
   }
 }
 
 .third-level-count {
   font-size: 0.8rem
-  color: rgba(1, 162, 190, 0.9)
+  color: #ffffff
   margin-left: 0.3rem
 }
 

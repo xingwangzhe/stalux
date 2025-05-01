@@ -15,7 +15,7 @@ const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter
 // 按日期排序
 const sortedPosts = processedPosts.sort((a, b) => {
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
   return dateB - dateA;
 });
 
@@ -55,12 +55,11 @@ const pageTitle = '文章归档 | ' + config_site.title;
 <html lang={config_site.lang}>
   <Head 
     title={pageTitle}
-    description="按时间顺序归档的所有文章列表"
+    description="按时间归档的文章列表"
     author={config_site.author}
     url={config_site.url + '/archives/'}
+    noindex={true}
   >
-    <!-- 添加 noindex 元标记，防止搜索引擎索引 -->
-    <meta name="robots" content="noindex, nofollow" slot="head" />
   </Head>
   <body>
     <script>

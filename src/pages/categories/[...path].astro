@@ -29,7 +29,7 @@ export async function getStaticPaths() {
 
       // 处理有name属性的对象格式
       if (category && typeof category === 'object' && category.name) {
-        const catName = category.name;
+        const catName = String(category.name); // 确保是字符串
         const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
         categoryPaths.add(currentPath);
         
@@ -44,7 +44,7 @@ export async function getStaticPaths() {
       if (category && typeof category === 'object') {
         const keys = Object.keys(category);
         if (keys.length > 0) {
-          const catName = keys[0];
+          const catName = String(keys[0]); // 确保是字符串
           const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
           categoryPaths.add(currentPath);
           
@@ -60,14 +60,32 @@ export async function getStaticPaths() {
   
   // 处理每篇文章的分类
   processedPosts.forEach(post => {
-    collectCategoryPaths(post.data.categories);
+    if (post.data.categories) {
+      // 检查类型，确保 categories 是数组
+      const categories = Array.isArray(post.data.categories) 
+        ? post.data.categories 
+        : [String(post.data.categories)]; // 如果不是数组，转换为字符串数组
+      
+      collectCategoryPaths(categories);
+    }
   });
   
   // 生成静态路径
-  return Array.from(categoryPaths).map(path => ({
-    params: { path: path.split('/') },
-    props: { categoryPath: path }
-  }));
+  return Array.from(categoryPaths).map(path => {
+    // 确保路径是字符串
+    const pathStr = String(path);
+    
+    // 关键修复：为 rest 参数格式提供一个字符串而不是数组
+    return {
+      params: { 
+        // 对于 [...path] rest 参数，Astro 期望一个字符串而不是数组
+        path: pathStr
+      },
+      props: { 
+        categoryPath: pathStr
+      }
+    };
+  });
 }
 
 const { categoryPath } = Astro.props;
@@ -119,12 +137,163 @@ function isPostInCategory(post, targetPath) {
   return postCategoryPaths.some(path => path === targetPath);
 }
 
+// 修改分类提取函数，支持深层嵌套并收集超过3层的子分类
+function extractCategoryTrees(categories) {
+  // 用于存储分类路径与其对应完整对象的映射
+  const categoryMap = new Map();
+  // 记录根分类，作为不同分类树的起点
+  const rootCategories = [];
+  // 收集超过3层的深层分类
+  const deepNestedCategories = [];
+  
+  function buildCategoryPath(node, parentPath = '', level = 0) {
+    if (!node) return null;
+    
+    // 处理不同类型的分类节点
+    if (typeof node === 'string') {
+      const path = parentPath ? `${parentPath}/${node}` : node;
+      const category = { 
+        name: node, 
+        path, 
+        isRoot: !parentPath, 
+        children: [],
+        level: level
+      };
+      
+      categoryMap.set(path, category);
+      
+      // 根分类（第0层）
+      if (level === 0) {
+        rootCategories.push(category);
+      }
+      // 超过3层的嵌套分类，收集到平铺列表
+      else if (level >= 3) {
+        deepNestedCategories.push(category);
+      }
+      
+      return { path, category };
+    }
+    
+    if (node && typeof node === 'object' && node.name) {
+      const name = node.name;
+      const path = parentPath ? `${parentPath}/${name}` : name;
+      const category = {
+        name,
+        path,
+        isRoot: level === 0,
+        children: [],
+        level: level
+      };
+      
+      categoryMap.set(path, category);
+      
+      if (level === 0) {
+        rootCategories.push(category);
+      } 
+      else if (level >= 3) {
+        deepNestedCategories.push(category);
+      }
+      
+      // 处理子分类
+      if (node.subcategories && Array.isArray(node.subcategories)) {
+        node.subcategories.forEach(subcat => {
+          const result = buildCategoryPath(subcat, path, level + 1);
+          if (result && result.category) {
+            // 只在前3层嵌套中添加子分类关系
+            if (level < 2) {
+              category.children.push(result.category);
+            }
+          }
+        });
+      }
+      
+      return { path, category };
+    }
+    
+    if (node && typeof node === 'object') {
+      const keys = Object.keys(node);
+      if (keys.length > 0) {
+        const name = keys[0];
+        const path = parentPath ? `${parentPath}/${name}` : name;
+        const category = {
+          name,
+          path,
+          isRoot: level === 0,
+          children: [],
+          level: level
+        };
+        
+        categoryMap.set(path, category);
+        
+        if (level === 0) {
+          rootCategories.push(category);
+        }
+        else if (level >= 3) {
+          deepNestedCategories.push(category);
+        }
+        
+        // 处理子分类
+        const subCategories = node[name];
+        if (Array.isArray(subCategories)) {
+          subCategories.forEach(subcat => {
+            const result = buildCategoryPath(subcat, path, level + 1);
+            if (result && result.category) {
+              // 只在前3层嵌套中添加子分类关系
+              if (level < 2) {
+                category.children.push(result.category);
+              }
+            }
+          });
+        }
+        
+        return { path, category };
+      }
+    }
+    
+    return null;
+  }
+  
+  // 构建分类树
+  if (Array.isArray(categories)) {
+    categories.forEach(cat => buildCategoryPath(cat));
+  } else if (categories) {
+    buildCategoryPath(categories);
+  }
+  
+  // 根据某些条件对分类树进行排序
+  rootCategories.sort((a, b) => {
+    // 优先按子分类数量排序
+    if (a.children.length !== b.children.length) {
+      return b.children.length - a.children.length;
+    }
+    // 然后按名称字母顺序排序
+    return a.name.localeCompare(b.name);
+  });
+  
+  // 对深层嵌套分类按层级和名称排序
+  deepNestedCategories.sort((a, b) => {
+    if (a.level !== b.level) {
+      return a.level - b.level; // 按层级升序排序
+    }
+    return a.name.localeCompare(b.name); // 同层级按名称排序
+  });
+  
+  // 将当前分类路径添加到输出中
+  const result = {
+    trees: rootCategories,
+    allCategories: Array.from(categoryMap.values()),
+    deepNestedCategories: deepNestedCategories
+  };
+  
+  return result;
+}
+
 // 过滤属于当前分类的文章
 const categoryPosts = processedPosts.filter(post => isPostInCategory(post, categoryPath))
   .sort((a, b) => {
     // 按日期降序排序
     const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-    const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+    const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
     return dateB - dateA;
   });
 
@@ -140,8 +309,8 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
     author={config_site.author}
     url={config_site.url + '/categories/' + categoryPath}
   >
-    <!-- 添加 noindex 元标记，防止搜索引擎索引 -->
-    <meta name="robots" content="noindex, nofollow" slot="head" />
+    <!-- 使用robots插槽来自定义robots设置 -->
+    <meta name="robots" content="noindex, nofollow" slot="robots" />
   </Head>
   <body>
     <script>
@@ -156,14 +325,24 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
             </svg>
           </span>
-          {pathSegments.map((segment, index) => (
-            <>
-              {index > 0 && <span class="breadcrumb-separator">/</span>}
+          <!-- 使用 Astro 原生方式处理面包屑导航 -->
+          {pathSegments.map((segment, index) => {
+            if (index > 0) {
+              return (
+                <span>
+                  <span class="breadcrumb-separator">/</span>
+                  <span class={`breadcrumb-item ${index === pathSegments.length - 1 ? 'current' : ''}`}>
+                    {segment}
+                  </span>
+                </span>
+              );
+            }
+            return (
               <span class={`breadcrumb-item ${index === pathSegments.length - 1 ? 'current' : ''}`}>
                 {segment}
               </span>
-            </>
-          ))}
+            );
+          })}
         </h1>
         <p class="page-description">共找到 {categoryPosts.length} 篇相关文章</p>
         <a href="/categories/" class="back-link">返回分类列表</a>
@@ -172,25 +351,104 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
       <div class="post-list-container">
         {categoryPosts.length > 0 ? (
           <ul class="post-list">
-            {categoryPosts.map(post => (
-              <li class="post-item">
-                <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
-                  <div class="post-date">
-                    {dayjs(post.data.date).format('YYYY-MM-DD')}
-                  </div>
-                  <h2 class="post-title">{post.data.title}</h2>
-                </a>
-                {post.data.tags && post.data.tags.length > 0 && (
-                  <div class="post-tags">
-                    {post.data.tags.map(tag => (
-                      <a href={`/tags/${tag}`} class="post-tag">
-                        {tag}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </li>
-            ))}
+            {categoryPosts.map(post => {
+              // 提取文章分类的树状结构
+              const categoriesData = extractCategoryTrees(
+                Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories]
+              );
+              
+              return (
+                <li class="post-item">
+                  <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
+                    <div class="post-date">
+                      {dayjs(post.data.date).format('YYYY-MM-DD')}
+                    </div>
+                    <h2 class="post-title">{post.data.title}</h2>
+                  </a>
+                  
+                  {categoriesData.trees.length > 0 && (
+                    <div class="post-categories">
+                      <span class="categories-label">分类：</span>
+                      <div class="category-trees-container">
+                        {/* 显示前3层分类树 */}
+                        {categoriesData.trees.map((rootCategory, treeIndex) => (
+                          <div class="category-tree">
+                            {/* 渲染根分类 (第1层) */}
+                            <a 
+                              href={`/categories/${rootCategory.path}`} 
+                              class={`post-category root-category ${rootCategory.path === categoryPath ? 'current-category' : ''}`}
+                              title={`${rootCategory.path}`}
+                            >
+                              <span class="tree-indicator">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                              </span>
+                              {rootCategory.name}
+                            </a>
+                            
+                            {/* 渲染子分类 (第2层) */}
+                            {rootCategory.children.length > 0 && (
+                              <div class="subcategories-container">
+                                {rootCategory.children.map((child, index) => (
+                                  <div class="subcategory-branch">
+                                    <a 
+                                      href={`/categories/${child.path}`} 
+                                      class={`post-category child-category level-${child.level} ${child.path === categoryPath ? 'current-category' : ''}`}
+                                      title={`${child.path}`}
+                                    >
+                                      <span class="branch-node"></span>
+                                      {child.name}
+                                    </a>
+                                    
+                                    {/* 渲染孙分类 (第3层) */}
+                                    {child.children.length > 0 && (
+                                      <div class="grandchildren-container">
+                                        {child.children.map((grandchild) => (
+                                          <div class="grandchild-branch">
+                                            <a 
+                                              href={`/categories/${grandchild.path}`} 
+                                              class={`post-category grandchild-category level-${grandchild.level} ${grandchild.path === categoryPath ? 'current-category' : ''}`}
+                                              title={`${grandchild.path}`}
+                                            >
+                                              <span class="branch-node small"></span>
+                                              {grandchild.name}
+                                            </a>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        
+                        {/* 显示深层嵌套分类（第4-9层）作为平铺标签 */}
+                        {categoriesData.deepNestedCategories && categoriesData.deepNestedCategories.length > 0 && (
+                          <div class="deep-nested-categories">
+                            <div class="deep-nested-label">更深层级:</div>
+                            <div class="deep-nested-tags">
+                              {categoriesData.deepNestedCategories.map((deepCategory) => (
+                                <a 
+                                  href={`/categories/${deepCategory.path}`} 
+                                  class={`post-category deep-category level-${deepCategory.level} ${deepCategory.path === categoryPath ? 'current-category' : ''}`}
+                                  title={`${deepCategory.path}`}
+                                >
+                                  <span class="level-dot"></span>
+                                  {deepCategory.name}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <div class="no-posts">未找到与分类 "{currentCategory}" 相关的文章</div>
@@ -318,7 +576,7 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
   transition: color 0.2s
   
   &:hover {
-    color: rgba(1, 162, 190, 0.9)
+    color: #ffffff
   }
 }
 
@@ -344,13 +602,153 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
   }
 }
 
-.no-posts {
-  text-align: center
-  padding: 3rem 1rem
+/* 分类树样式 - 优化为横向布局 */
+.post-categories {
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+  margin-top: 1rem
   color: rgba(255, 255, 255, 0.7)
-  font-size: 1.2rem
-  background-color: rgba(0, 0, 0, 0.1)
-  border-radius: 0.5rem
+  font-size: 0.9rem
+}
+
+.categories-label {
+  margin-bottom: 0.3rem
+  opacity: 0.8
+  font-weight: 500
+}
+
+.category-trees-container {
+  display: flex
+  flex-wrap: wrap
+  gap: 1rem
+  align-items: flex-start
+}
+
+.category-tree {
+  position: relative
+  margin-bottom: 0.5rem
+  padding: 0.5rem
+  background: rgba(0, 0, 0, 0.1)
+  border-radius: 0.4rem
+  min-width: 200px
+  max-width: 280px
+  border: 1px solid rgba(1, 162, 190, 0.1)
+}
+
+.post-category {
+  display: inline-flex
+  align-items: center
+  font-size: 0.85rem
+  padding: 0.25rem 0.6rem
+  border-radius: 0.3rem
+  text-decoration: none
+  transition: all 0.25s ease
+  position: relative
+  max-width: 100%
+  backdrop-filter: blur(2px)
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+  color: #ffffff
+
+  &.root-category {
+    background: linear-gradient(135deg, rgba(1, 162, 190, 0.2), rgba(1, 162, 190, 0.15))
+    color: #ffffff
+  }
+  
+  &.current-category {
+    background: linear-gradient(135deg, rgba(1, 162, 190, 0.35), rgba(1, 162, 190, 0.25))
+    box-shadow: 0 0 0 1px rgba(1, 162, 190, 0.4), 0 1px 5px rgba(1, 162, 190, 0.15)
+    color: #ffffff
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, rgba(1, 162, 190, 0.3), rgba(1, 162, 190, 0.2))
+    color: #ffffff
+  }
+}
+
+/* 深层嵌套的分类样式（平铺伪标签） */
+.deep-nested-categories {
+  margin-top: 0.5rem
+  width: 100%
+  background: rgba(0, 0, 0, 0.05)
+  border-radius: 0.4rem
+  padding: 0.5rem
+  border: 1px dashed rgba(1, 162, 190, 0.2)
+}
+
+.deep-nested-label {
+  font-size: 0.8rem
+  opacity: 0.7
+  margin-bottom: 0.3rem
+  font-style: italic
+}
+
+.deep-nested-tags {
+  display: flex
+  flex-wrap: wrap
+  gap: 0.35rem
+}
+
+.deep-category {
+  font-size: 0.75rem
+  padding: 0.15rem 0.4rem
+  background: rgba(22, 80, 100, 0.1)
+  border-radius: 0.3rem
+  position: relative
+  color: #ffffff
+  
+  &:hover {
+    background: rgba(1, 162, 190, 0.2)
+    color: #ffffff
+  }
+  
+  &.level-3 {
+    background: rgba(22, 80, 100, 0.1)
+  }
+  
+  &.level-4 {
+    background: rgba(26, 70, 90, 0.11)
+  }
+  
+  &.level-5 {
+    background: rgba(30, 60, 80, 0.12)
+  }
+  
+  &.level-6 {
+    background: rgba(34, 50, 70, 0.13)
+  }
+  
+  &.level-7 {
+    background: rgba(38, 40, 60, 0.14)
+  }
+  
+  &.level-8 {
+    background: rgba(42, 30, 50, 0.15)
+  }
+}
+
+.level-dot {
+  display: inline-block
+  width: 0.2rem
+  height: 0.2rem
+  background: rgba(1, 162, 190, 0.6)
+  border-radius: 50%
+  margin-right: 0.25rem
+}
+
+// 响应式调整
+@media (max-width: 768px) {
+  .category-tree {
+    min-width: 100%
+    max-width: 100%
+  }
+  
+  .post-category {
+    max-width: 100%
+  }
 }
 
 @media (max-width: 768px) {

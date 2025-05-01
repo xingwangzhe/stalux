@@ -4,7 +4,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ title }}</title> 
     <meta name="description" :content="description" />
-    <meta name="robots" content="index, follow" />
+    <slot name="title" v-if="false"></slot>
+    
+    <!-- 使用插槽允许自定义 robots meta 标签，否则根据noindex属性设置 -->
+    <slot name="robots">
+      <meta name="robots" :content="noindex ? 'noindex, nofollow' : 'index, follow'" />
+    </slot>
     
     <meta name="keywords" :content="keywords" v-if="keywords" />
     <meta name="author" :content="author" />
@@ -32,8 +37,8 @@
     
     <script type="application/ld+json" v-if="structuredData">{{ structuredData }}</script>
     
-    <!-- 添加插槽，确保它是函数式的 -->
-    <slot v-if="false"></slot>
+    <!-- 通用插槽，用于添加其他head元素 -->
+    <slot name="head"></slot>
   </head>
 </template>
 <script lang="ts" setup>
@@ -52,5 +57,6 @@ const props = defineProps<{
   locale?: string;
   siteName?: string;
   structuredData?: string;
+  noindex?: boolean; // 新增属性：用于控制页面是否被索引
 }>();
 </script>

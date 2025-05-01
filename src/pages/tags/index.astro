@@ -38,9 +38,8 @@ const pageTitle = '标签云 | ' + config_site.title;
     description="所有文章标签列表"
     author={config_site.author}
     url={config_site.url + '/tags/'}
+    noindex={true}
   >
-    <!-- 添加 noindex 元标记，防止搜索引擎索引 -->
-    <meta name="robots" content="noindex, nofollow" slot="head" />
   </Head>
   <body>
     <script>
