@@ -6,9 +6,19 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
 <sidebar class="right-sidebar">
   <div class="toc-container">
     <h2 class="toc-title">文章目录</h2>
-    <div class="toc-message">
-      目录将显示在文章中的 "contents" 标题下
-    </div>
+    {headings && headings.length > 0 ? (
+      <ul class="toc-list">
+        {headings.map((heading:any) => (
+          <li class={`toc-item toc-item-h${heading.depth}`}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div class="toc-message">
+        暂无目录
+      </div>
+    )}
   </div>
   
   <!-- 文章分类部分 -->
@@ -69,6 +79,41 @@ const { tags = [] as string[], headings = [] as MarkdownHeading[] } = Astro.prop
     font-size: 0.9rem;
     font-style: italic;
   }
+  
+  /* 目录列表样式 */
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-item {
+    margin-bottom: 0.5rem;
+  }
+
+  .toc-item a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .toc-item a:hover {
+    color: rgba(255, 255, 255, 1);
+    text-decoration: underline;
+  }
+
+  /* 不同级别标题的缩进 */
+  .toc-item-h1 { margin-left: 0; }
+  .toc-item-h2 { margin-left: 0.75rem; }
+  .toc-item-h3 { margin-left: 1.5rem; }
+  .toc-item-h4 { margin-left: 2.25rem; font-size: 0.9em; }
+  .toc-item-h5 { margin-left: 3rem; font-size: 0.85em; }
+  .toc-item-h6 { margin-left: 3.75rem; font-size: 0.8em; }
 
   /* 标签云样式 */
   .tag-cloud {
