@@ -17,7 +17,7 @@ const {
 
 <sidebar class="left-sidebar">
     <div class="sidebar-container">
-        <div class="sidebar-section author-card" id="author-card-container">
+        <div class="sidebar-section author-card fade-in-left delay-100" id="author-card-container">
             <div class="author">
                 <div class="avatar-container">
                 {typeof avatarPath === 'string' ? (
@@ -53,10 +53,10 @@ const {
                 </div>
         </div>
     </div>
-        <div class="sidebar-section">
+        <div class="sidebar-section fade-in-left delay-200">
             <SocialLinks mediaLinks={config_site.medialinks.slice(0, 4)} /> <!-- 限制显示数量 -->
         </div>
-        <div class="sidebar-section recent-posts">
+        <div class="sidebar-section recent-posts fade-in-left delay-300">
             <h3>最近文章</h3>
             <ul>
                 <li><a href="/posts/d83cc174">nihao</a></li>
@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   padding: 1rem
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753)
   background-color: rgba(0, 0, 0, 0.1)
+  animation: fade-in-left 0.5s ease forwards
   
   h3 {
     margin-top: 0
@@ -356,5 +357,32 @@ document.addEventListener('DOMContentLoaded', () => {
     line-height: 1.4
     word-wrap: break-word
   }
+}
+
+@keyframes fade-in-left {
+  from {
+    opacity: 0
+    transform: translateX(-20px)
+  }
+  to {
+    opacity: 1
+    transform: translateX(0)
+  }
+}
+
+.fade-in-left {
+  animation: fade-in-left 0.5s ease forwards
+}
+
+.delay-100 {
+  animation-delay: 0.1s
+}
+
+.delay-200 {
+  animation-delay: 0.2s
+}
+
+.delay-300 {
+  animation-delay: 0.3s
 }
 </style>

@@ -8,7 +8,17 @@
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.226);
+  animation: fadeInUp 0.8s ease-in-out forwards;
+  opacity: 0;
 }
+
+// 为不同的卡片设置不同的延迟
+.glass-card:nth-child(1) { animation-delay: 0.1s; }
+.glass-card:nth-child(2) { animation-delay: 0.2s; }
+.glass-card:nth-child(3) { animation-delay: 0.3s; }
+.glass-card:nth-child(4) { animation-delay: 0.4s; }
+.glass-card:nth-child(5) { animation-delay: 0.5s; }
+.glass-card:nth-child(n+6) { animation-delay: 0.6s; }
 
 // 全局动画效果
 @keyframes float {
@@ -35,7 +45,6 @@ html, body {
   overflow-x: hidden;
 }
 
-
 .container {
   width: 90%;
   max-width: 1200px;
@@ -52,6 +61,9 @@ html, body {
   display: flex;
   justify-content: center;
   text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190);
+  animation: fadeInUp 0.8s ease-in-out forwards;
+  opacity: 0;
+  animation-delay: 0.1s;
 }
 
 @media (max-width: 768px) {

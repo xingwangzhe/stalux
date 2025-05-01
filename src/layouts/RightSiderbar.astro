@@ -9,12 +9,12 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
 
 <sidebar class="right-sidebar">
   <!-- 时钟组件 -->
-  <div class="clock-section">
+  <div class="clock-section fade-in-right delay-100">
     <Clock client:idle format="24hour" showDate={true} updateInterval={1000} />
   </div>
   
   <!-- 文章目录部分 -->
-  <div class="sidebar-section toc-container">
+  <div class="sidebar-section toc-container fade-in-right delay-200">
     <div class="section-header">
       <h2 class="section-title">文章目录</h2>
       <button id="toc-toggle" class="section-toggle" aria-label="折叠目录">
@@ -259,6 +259,38 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
 .toc-item-h4 { margin-left: 2.25rem; font-size: 0.9em }
 .toc-item-h5 { margin-left: 3rem; font-size: 0.85em }
 .toc-item-h6 { margin-left: 3.75rem; font-size: 0.8em }
+
+@keyframes fade-in-right {
+  from {
+    opacity: 0
+    transform: translateX(20px)
+  }
+  to {
+    opacity: 1
+    transform: translateX(0)
+  }
+}
+
+.fade-in-right {
+  animation: fade-in-right 0.8s ease forwards
+  opacity: 0
+}
+
+.delay-100 {
+  animation-delay: 0.1s
+}
+
+.delay-200 {
+  animation-delay: 0.2s
+}
+
+.delay-300 {
+  animation-delay: 0.3s
+}
+
+.delay-400 {
+  animation-delay: 0.4s
+}
 
 @media (max-width: 1024px) {
   .right-sidebar {

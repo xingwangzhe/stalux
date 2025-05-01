@@ -23,6 +23,8 @@ main {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753)
   background-color: rgba(0, 0, 0, 0.1)
   border-radius: 12px
+  animation: fadeInUp 0.8s ease-in-out forwards
+  opacity: 0
 }
 
 // 侧边栏共同样式
@@ -32,10 +34,26 @@ main {
   min-width: 0 // 防止溢出
 }
 
+// 左侧边栏特定动画
+.left-sidebar {
+  animation: fadeInLeft 0.8s ease-in-out forwards
+  opacity: 0
+  animation-delay: 0.2s
+}
+
+// 右侧边栏特定动画
+.right-sidebar {
+  animation: fadeInRight 0.8s ease-in-out forwards
+  opacity: 0
+  animation-delay: 0.2s
+}
+
 // 头图样式
 .hero-image {
   width: 100%
   margin-bottom: 1rem
+  animation: fadeIn 1s ease-in-out forwards
+  opacity: 0
   
   img {
     display: block
@@ -144,6 +162,9 @@ main {
   margin-bottom: 2rem
   text-align: center
   line-height: 1.3
+  animation: fadeInUp 0.8s ease-in-out forwards
+  opacity: 0
+  animation-delay: 0.1s
   
   h1 {
     margin: 0 0 1rem 0
@@ -164,6 +185,9 @@ main {
   margin: 1rem 0
   color: rgba(255, 255, 255, 0.7)
   font-size: 0.9rem
+  animation: fadeInUp 0.8s ease-in-out forwards
+  opacity: 0
+  animation-delay: 0.2s
 }
 
 // 更新日期样式  
