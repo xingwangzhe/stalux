@@ -184,177 +184,177 @@ const organizedCategories = flattenedCategories;
   </div>
 </div>
 
-<style>
-  .sidebar-section {
-    background-color: rgba(0, 0, 0, 0.192);
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
-    background-color: rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
-  }
+<style lang="stylus">
+.sidebar-section {
+  background-color: rgba(0, 0, 0, 0.192)
+  border-radius: 8px
+  padding: 1rem
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753)
+  background-color: rgba(0, 0, 0, 0.1)
+  margin-bottom: 1.5rem
   
   .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.8rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 0.5rem;
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 0.8rem
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+    padding-bottom: 0.5rem
+    
+    h3 {
+      margin: 0
+      font-size: 1.2rem
+      color: rgba(255, 255, 255, 0.9)
+    }
   }
   
-  .sidebar-section h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.9);
-  }
-
   .section-toggle {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
+    background: none
+    border: none
+    color: rgba(255, 255, 255, 0.7)
+    cursor: pointer
+    padding: 0
+    display: flex
+    align-items: center
+    justify-content: center
+    transition: transform 0.3s ease
+    
+    &:hover {
+      color: rgba(255, 255, 255, 1)
+    }
+    
+    &.collapsed {
+      transform: rotate(-90deg)
+    }
   }
+}
 
-  .section-toggle:hover {
-    color: rgba(255, 255, 255, 1);
+.section-content {
+  max-height: 500px
+  overflow-y: auto
+  opacity: 1
+  transition: max-height 0.3s ease, opacity 0.3s ease
+  scrollbar-width: thin
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent
+  
+  &::-webkit-scrollbar {
+    width: 6px
   }
   
-  .section-toggle.collapsed {
-    transform: rotate(-90deg);
+  &::-webkit-scrollbar-track {
+    background: transparent
   }
   
-  .section-content {
-    max-height: 500px;
-    overflow-y: auto;
-    opacity: 1;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3)
+    border-radius: 3px
   }
   
-  .section-content::-webkit-scrollbar {
-    width: 6px;
+  &.collapsed {
+    max-height: 0
+    opacity: 0
+    overflow: hidden
   }
-  
-  .section-content::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  .section-content::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
-  }
-  
-  .section-content.collapsed {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-  }
-  
-  .category-tree {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    padding: 0.2rem;
-  }
-  
-  .category {
-    position: relative;
-    display: flex;
-    align-items: center;
-    border-radius: 4px;
-    padding: 0.25rem 0.4rem;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.9);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    margin-bottom: 0.1rem;
-    overflow: hidden;
-  }
+}
 
-  .category .indent {
-    color: rgba(255, 255, 255, 0.5);
-    font-family: monospace;
-    margin-right: 0.2rem;
-    white-space: pre;
-    letter-spacing: -0.5px;
+.category-tree {
+  display: flex
+  flex-direction: column
+  gap: 0.35rem
+  padding: 0.2rem
+}
+
+.category {
+  position: relative
+  display: flex
+  align-items: center
+  border-radius: 4px
+  padding: 0.25rem 0.4rem
+  font-size: 0.85rem
+  color: rgba(255, 255, 255, 0.9)
+  text-decoration: none
+  transition: all 0.2s ease
+  margin-bottom: 0.1rem
+  overflow: hidden
+  
+  .indent {
+    color: rgba(255, 255, 255, 0.5)
+    font-family: monospace
+    margin-right: 0.2rem
+    white-space: pre
+    letter-spacing: -0.5px
   }
   
-  .category .category-name {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    position: relative;
-    z-index: 1;
+  .category-name {
+    flex: 1
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+    position: relative
+    z-index: 1
   }
-
+  
   /* 不同层级的颜色和样式 */
-  .category.level-0 {
-    font-weight: 600;
-    border-left: 2px solid rgba(255, 168, 70, 0.7);
+  &.level-0 {
+    font-weight: 600
+    border-left: 2px solid rgba(255, 168, 70, 0.7)
   }
   
-  .category.level-1 {
-    border-left: 2px solid rgba(114, 137, 218, 0.7);
+  &.level-1 {
+    border-left: 2px solid rgba(114, 137, 218, 0.7)
   }
   
-  .category.level-2 {
-    border-left: 2px solid rgba(70, 200, 120, 0.7);
+  &.level-2 {
+    border-left: 2px solid rgba(70, 200, 120, 0.7)
   }
   
-  .category.level-3 {
-    border-left: 2px solid rgba(220, 100, 150, 0.7);
+  &.level-3 {
+    border-left: 2px solid rgba(220, 100, 150, 0.7)
   }
   
   /* 悬停效果 */
-  .category:hover {
-    background-color: rgba(255, 255, 255, 0.18);
-    transform: translateX(2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .category:hover .indent {
-    color: rgba(255, 255, 255, 0.8);
-  }
-  
-  .category:hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-      rgba(255, 255, 255, 0) 0%, 
-      rgba(255, 255, 255, 0.05) 50%,
-      rgba(255, 255, 255, 0) 100%);
-    z-index: 0;
-    animation: shine 1s ease-in-out;
-  }
-  
-  @keyframes shine {
-    0% {
-      transform: translateX(-100%);
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.18)
+    transform: translateX(2px)
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+    
+    .indent {
+      color: rgba(255, 255, 255, 0.8)
     }
-    100% {
-      transform: translateX(100%);
+    
+    &::before {
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 100%)
+      z-index: 0
+      animation: shine 1s ease-in-out
     }
   }
+}
 
-  .no-categories {
-    color: rgba(255, 255, 255, 0.6);
-    font-style: italic;
-    font-size: 0.9rem;
-    padding: 0.5rem;
-    text-align: center;
+.no-categories {
+  color: rgba(255, 255, 255, 0.6)
+  font-style: italic
+  font-size: 0.9rem
+  padding: 0.5rem
+  text-align: center
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%)
   }
+  100% {
+    transform: translateX(100%)
+  }
+}
 </style>
 
 <script>

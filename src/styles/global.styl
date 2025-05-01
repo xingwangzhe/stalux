@@ -1,152 +1,162 @@
+// 全局样式 - 使用 Stylus 嵌套语法
+
+// 基础重置样式
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	//text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190);    
+  margin: 0
+  padding: 0
+  box-sizing: border-box
+  //text-shadow: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190)    
 }
 
 // 自定义滚动条样式
 ::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
+  width: 8px
+  height: 8px
 }
 
 ::-webkit-scrollbar-track {
-	background: #2a2a2a;
-	border-radius: 4px;
+  background: #2a2a2a
+  border-radius: 4px
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #4a4a4a;
-	border-radius: 4px;
-	transition: background 0.3s;
-}
-
-::-webkit-scrollbar-thumb:hover {
-	background: #5a5a5a;
+  background: #4a4a4a
+  border-radius: 4px
+  transition: background 0.3s
+  
+  &:hover {
+    background: #5a5a5a
+  }
 }
 
 ::-webkit-scrollbar-corner {
-	background: #2a2a2a;
+  background: #2a2a2a
 }
 
 // Firefox 滚动条样式
 html {
-	scrollbar-width: thin;
-	scrollbar-color: #4a4a4a #2a2a2a;
+  scrollbar-width: thin
+  scrollbar-color: #4a4a4a #2a2a2a
 }
 
+// 移除列表样式
 ul, ol {
-	list-style: none;
+  list-style: none
 }
 
-/* 其他样式清除 */
+// 其他样式清除
 address, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
-	display: block;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote::before, blockquote::after, q::before, q::after {
-	content: "";
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-body {
-	color: #fff;
-	background-color: #202020;
-	position: relative;
-	min-height: 100vh;
-	overflow-x: hidden;
-	font-size: 16px; /* 基础字体大小 */
+  display: block
 }
 
-/* 响应式文字大小 */
+blockquote, q {
+  quotes: none
+  
+  &::before, &::after {
+    content: ""
+    content: none
+  }
+}
+
+table {
+  border-collapse: collapse
+  border-spacing: 0
+}
+
+// 基础页面样式
+body {
+  color: #fff
+  background-color: #202020
+  position: relative
+  min-height: 100vh
+  overflow-x: hidden
+  font-size: 16px // 基础字体大小
+}
+
+// 响应式文字大小
 @media (max-width: 768px) {
-	body {
-		font-size: 14px;
-	}
+  body {
+    font-size: 14px
+  }
 }
 
 @media (max-width: 480px) {
-	body {
-		font-size: 12px;
-	}
+  body {
+    font-size: 12px
+  }
 }
 
-/* 为背景容器添加一些基础样式 */
+// 背景容器样式
 #background-container {
-	pointer-events: none; /* 确保背景不会拦截鼠标事件 */
+  pointer-events: none // 确保背景不会拦截鼠标事件
 }
 
-/* 去除所有链接的默认下划线样式 */
+// 链接样式
 a {
-	text-decoration: none;
+  text-decoration: none
 }
 
-/* 保留基本的淡入动画，用于其他元素 */
+// 淡入动画
 @keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
+  from {
+    opacity: 0
+  }
+  to {
+    opacity: 1
+  }
 }
 
 .fade-in {
-	animation: fadeIn 1s ease-in-out forwards;
+  animation: fadeIn 1s ease-in-out forwards
 }
 
-/* 响应式容器 */
+// 响应式容器
 .container {
-	width: 90%;
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 0 15px;
+  width: 90%
+  max-width: 1200px
+  margin: 0 auto
+  padding: 0 15px
 }
 
-/* 响应式网格系统 */
+// 响应式网格系统
 .row {
-	display: flex;
-	flex-wrap: wrap;
-	margin: 0 -15px;
+  display: flex
+  flex-wrap: wrap
+  margin: 0 -15px
 }
 
 .col {
-	flex: 1;
-	padding: 0 15px;
+  flex: 1
+  padding: 0 15px
 }
 
-/* 媒体查询断点 */
+// 媒体查询断点
 @media (max-width: 992px) {
-	.row {
-		flex-direction: column;
-	}
-	
-	.col {
-		width: 100%;
-		margin-bottom: 20px;
-	}
+  .row {
+    flex-direction: column
+  }
+  
+  .col {
+    width: 100%
+    margin-bottom: 20px
+  }
 }
 
-/* 移动端触摸优化 */
+// 移动端触摸优化
 @media (max-width: 768px) {
-	a, button {
-		min-height: 44px; /* 提供足够大的触摸区域 */
-		min-width: 44px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-	}
+  a, button {
+    min-height: 44px // 提供足够大的触摸区域
+    min-width: 44px
+    display: inline-flex
+    align-items: center
+    justify-content: center
+  }
 }
 
+// 主页面包装器
 .main-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  position: relative;
+  min-height: 100vh
+  display: flex
+  flex-direction: column
+  position: relative
 }

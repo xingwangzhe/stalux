@@ -17,7 +17,7 @@ const {
 
 <sidebar class="left-sidebar">
     <div class="sidebar-container">
-        <div class="sidebar-section author-card">
+        <div class="sidebar-section author-card" id="author-card-container">
             <div class="author">
                 <div class="avatar-container">
                 {typeof avatarPath === 'string' ? (
@@ -66,109 +66,295 @@ const {
         <!-- 文章分类已迁移至右侧边栏 -->
 </sidebar>
 
-<style>
-    .left-sidebar {
-        width: 250px;
-        padding: 1.5rem 0.5rem;
-        position: sticky;
-        top: 20px;
-        height: fit-content;
-        max-height: calc(100vh - 40px);
-        overflow-y: auto;
-        /* 隐藏滚动条但保留滚动功能 */
-        scrollbar-width: none;  /* Firefox */
-        -ms-overflow-style: none;  /* IE and Edge */        
-    }
-      /* 为 Webkit 浏览器(Chrome, Safari)隐藏滚动条 */
-    .right-sidebar::-webkit-scrollbar {
-        display: none;
-    }
-    .sidebar-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
+<script>
+// 计算合适的尺寸
+function calculateSize(containerWidth:any, maxSize:any, minSize:any, maxWidth = 250, minWidth = 120) {
+  if (!containerWidth) return maxSize;
 
-    .sidebar-section {
-        border-radius: 8px;
-        padding: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
-        background-color: rgba(0, 0, 0, 0.1);
-    }
+  if (containerWidth >= maxWidth) return maxSize;
+  if (containerWidth <= minWidth) return minSize;
 
-    .sidebar-section h3 {
-        margin-top: 0;
-        margin-bottom: 0.8rem;
-        font-size: 1.2rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        padding-bottom: 0.5rem;
-        color: rgba(255, 255, 255, 0.9);
-    }
+  // 线性插值计算尺寸
+  const ratio = (containerWidth - minWidth) / (maxWidth - minWidth);
+  return minSize + ratio * (maxSize - minSize);
+}
 
-    .recent-posts ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+// 动态调整author-card内元素的大小
+function adjustAuthorCardSize(container:any) {
+  // 获取容器的宽度
+  const containerWidth = container.offsetWidth;
+  
+  // 计算头像大小
+  const avatarSize = calculateSize(containerWidth, 100, 60);
+  
+  // 计算字体大小
+  const nameSize = calculateSize(containerWidth, 1.4, 0.9);
+  const descSize = calculateSize(containerWidth, 1, 0.7);
+  
+  // 应用计算后的样式
+  const avatarContainer = container.querySelector('.avatar-container');
+  const authorName = container.querySelector('.author-name');
+  const authorDesc = container.querySelector('.author-description');
+  
+  if (avatarContainer) {
+    avatarContainer.style.width = `${avatarSize}px`;
+    avatarContainer.style.height = `${avatarSize}px`;
+  }
+  
+  if (authorName) {
+    authorName.style.fontSize = `${nameSize}rem`;
+    authorName.style.marginBottom = `${nameSize * 0.3}rem`;
+  }
+  
+  if (authorDesc) {
+    authorDesc.style.fontSize = `${descSize}rem`;
+  }
+}
 
-    .recent-posts li {
-        margin-bottom: 0.5rem;
-        padding: 0.3rem 0;
-        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-    }
-
-    .recent-posts li:last-child {
-        border-bottom: none;
-    }
-
-    .recent-posts a {
-        text-decoration: none;
-        color: rgba(255, 255, 255, 0.8);
-        transition: all 0.2s ease;
-        font-size: 0.95rem;
-    }
-
-    .recent-posts a:hover {
-        color: rgba(255, 255, 255, 1);
-        text-decoration: underline;
-    }
-
-    /* 标签云相关样式已迁移至右侧边栏 */
-
-    @media (max-width: 1024px) {
-        .left-sidebar {
-            width: 200px;
+// 初始化大小调整
+document.addEventListener('DOMContentLoaded', () => {
+  const authorCard = document.getElementById('author-card-container');
+  
+  if (!authorCard) return;
+  
+  // 初始调整
+  adjustAuthorCardSize(authorCard);
+  
+  // 使用ResizeObserver监控尺寸变化
+  if (window.ResizeObserver) {
+    const resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === authorCard) {
+          adjustAuthorCardSize(authorCard);
         }
-    }
+      }
+    });
+    
+    resizeObserver.observe(authorCard);
+  } else {
+    // 降级方案：监听窗口大小变化
+    window.addEventListener('resize', () => {
+      adjustAuthorCardSize(authorCard);
+    });
+  }
+});
+</script>
 
-    @media (max-width: 768px) {
-        .left-sidebar {
-            display: none; /* 在移动设备上隐藏左侧边栏 */
-        }
-    }
-    .avatar {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-        transition: transform 0.6s ease;
-        }
+<style lang="stylus">
+.left-sidebar {
+  width: 250px
+  padding: 1.5rem 0.5rem
+  position: sticky
+  top: 20px
+  height: fit-content
+  max-height: calc(100vh - 40px)
+  overflow-y: auto
+  
+  /* 隐藏滚动条但保留滚动功能 */
+  scrollbar-width: none  /* Firefox */
+  -ms-overflow-style: none  /* IE and Edge */
+  
+  /* 为 Webkit 浏览器(Chrome, Safari)隐藏滚动条 */
+  &::-webkit-scrollbar {
+    display: none
+  }
+}
 
-    .avatar-container:hover .avatar {
-    transform: rotate(360deg) scale(1.05);
-    box-shadow: 0 0 20px rgba(1, 162, 190, 0.4);
-    }
+.sidebar-container {
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+}
 
-    .avatar-container:not(:hover) .avatar {
-    transition: transform 0.8s ease;
-    transform: rotate(0deg);
+.sidebar-section {
+  border-radius: 8px
+  padding: 1rem
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753)
+  background-color: rgba(0, 0, 0, 0.1)
+  
+  h3 {
+    margin-top: 0
+    margin-bottom: 0.8rem
+    font-size: 1.2rem
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+    padding-bottom: 0.5rem
+    color: rgba(255, 255, 255, 0.9)
+  }
+}
+
+.recent-posts {
+  ul {
+    list-style: none
+    padding: 0
+    margin: 0
+  }
+  
+  li {
+    margin-bottom: 0.5rem
+    padding: 0.3rem 0
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1)
+    
+    &:last-child {
+      border-bottom: none
+    }
+  }
+  
+  a {
+    text-decoration: none
+    color: rgba(255, 255, 255, 0.8)
+    transition: all 0.2s ease
+    font-size: 0.95rem
+    
+    &:hover {
+      color: rgba(255, 255, 255, 1)
+      text-decoration: underline
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .left-sidebar {
+    width: 230px
+  }
+  
+  .author-info {
+    .author-name {
+      font-size: 1.3rem
     }
     
-    .author {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+    .author-description {
+      font-size: 0.9rem
     }
+  }
+}
+
+@media (max-width: 1024px) {
+  .left-sidebar {
+    width: 200px
+    padding: 1rem 0.4rem
+  }
+  
+  .sidebar-section {
+    padding: 0.8rem
+  }
+  
+  .avatar-container {
+    width: 80px
+    height: 80px
+  }
+  
+  .author-info {
+    .author-name {
+      font-size: 1.2rem
+      margin: 0.5rem 0 0.3rem
+    }
+    
+    .author-description {
+      font-size: 0.85rem
+      margin: 0.3rem 0
+    }
+  }
+}
+
+/* 在页面宽度较小但仍显示左侧边栏时的样式优化 */
+@media (max-width: 900px) {
+  .left-sidebar {
+    width: 180px
+    padding: 0.8rem 0.3rem
+  }
+  
+  .sidebar-container {
+    gap: 1rem
+  }
+  
+  .sidebar-section {
+    padding: 0.7rem
+  }
+  
+  .avatar-container {
+    width: 70px
+    height: 70px
+  }
+  
+  .author-info {
+    .author-name {
+      font-size: 1.1rem
+      margin: 0.4rem 0 0.2rem
+    }
+    
+    .author-description {
+      font-size: 0.8rem
+    }
+  }
+  
+  .recent-posts {
+    li {
+      margin-bottom: 0.3rem
+      padding: 0.2rem 0
+    }
+    
+    a {
+      font-size: 0.85rem
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .left-sidebar {
+    display: none /* 在移动设备上隐藏左侧边栏 */
+  }
+}
+
+.avatar {
+  display: block
+  width: 100%
+  height: 100%
+  object-fit: cover
+  border-radius: 50%
+  transition: transform 0.6s ease
+}
+
+.avatar-container {
+  width: 100px
+  height: 100px
+  margin: 0 auto
+  overflow: hidden
+  border-radius: 50%
+  
+  &:hover .avatar {
+    transform: rotate(360deg) scale(1.05)
+    box-shadow: 0 0 20px rgba(1, 162, 190, 0.4)
+  }
+  
+  &:not(:hover) .avatar {
+    transition: transform 0.8s ease
+    transform: rotate(0deg)
+  }
+}
+
+.author {
+  display: flex
+  flex-direction: column
+  align-items: center
+  text-align: center
+}
+
+.author-info {
+  margin-top: 0.6rem
+  
+  .author-name {
+    font-size: 1.4rem
+    font-weight: 600
+    margin: 0.6rem 0 0.4rem
+    color: rgba(255, 255, 255, 0.95)
+  }
+  
+  .author-description {
+    font-size: 1rem
+    color: rgba(255, 255, 255, 0.8)
+    margin: 0.4rem 0
+    line-height: 1.4
+    word-wrap: break-word
+  }
+}
 </style>

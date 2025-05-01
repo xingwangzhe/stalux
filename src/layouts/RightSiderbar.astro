@@ -99,153 +99,153 @@ const { tags = [] as string[], categories = [] as any[], headings = [] as Markdo
   });
 </script>
 
-<style>
-  .right-sidebar {
-    width: 250px;
-    padding: 1.5rem 0.5rem;
-    position: sticky;
-    top: 20px;
-    height: fit-content;
-    max-height: calc(100vh - 40px);
-    overflow-y: auto;
-    
-    /* 隐藏滚动条但保留滚动功能 */
-    scrollbar-width: none;  /* Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
-  }
+<style lang="stylus">
+.right-sidebar {
+  width: 250px
+  padding: 1.5rem 0.5rem
+  position: sticky
+  top: 20px
+  height: fit-content
+  max-height: calc(100vh - 40px)
+  overflow-y: auto
+  
+  /* 隐藏滚动条但保留滚动功能 */
+  scrollbar-width: none  /* Firefox */
+  -ms-overflow-style: none  /* IE and Edge */
   
   /* 为 Webkit 浏览器(Chrome, Safari)隐藏滚动条 */
-  .right-sidebar::-webkit-scrollbar {
-    display: none;
+  &::-webkit-scrollbar {
+    display: none
   }
+}
 
-  /* 时钟部分样式 */
-  .clock-section {
-    background-color: rgba(0, 0, 0, 0.192);
-    border-radius: 8px;
-    padding: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
-    background-color: rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
+/* 时钟部分样式 */
+.clock-section {
+  background-color: rgba(0, 0, 0, 0.192)
+  border-radius: 8px
+  padding: 0.5rem
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753)
+  background-color: rgba(0, 0, 0, 0.1)
+  margin-bottom: 1.5rem
+  text-align: center
+}
 
-  .toc-container {
-    background-color: rgba(0, 0, 0, 0.192);
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
-    background-color: rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
+.toc-container {
+  background-color: rgba(0, 0, 0, 0.192)
+  border-radius: 8px
+  padding: 1rem
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753)
+  background-color: rgba(0, 0, 0, 0.1)
+  margin-bottom: 1.5rem
+}
+
+/* 目录标题和折叠按钮样式 */
+.toc-header {
+  display: flex
+  justify-content: space-between
+  align-items: center
+  margin-bottom: 0.8rem
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+  padding-bottom: 0.5rem
+}
+
+.toc-title {
+  margin: 0
+  font-size: 1.2rem
+  color: rgba(255, 255, 255, 0.9)
+}
+
+.section-toggle {
+  background: none
+  border: none
+  color: rgba(255, 255, 255, 0.7)
+  cursor: pointer
+  padding: 0
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: transform 0.3s ease
+  
+  &:hover {
+    color: rgba(255, 255, 255, 1)
   }
   
-  /* 目录标题和折叠按钮样式 */
-  .toc-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.8rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 0.5rem;
+  &.collapsed {
+    transform: rotate(-90deg)
   }
+}
 
-  .toc-title {
-    margin: 0;
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.9);
+/* 可折叠内容的通用样式 */
+.section-content {
+  max-height: 500px
+  overflow-y: auto
+  /* 默认过渡时间在JS中动态设置 */
+  opacity: 1
+  
+  &.collapsed {
+    max-height: 0
+    opacity: 0
+    overflow: hidden
   }
+}
 
-  .section-toggle {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
-  }
+.toc-message {
+  color: rgba(255, 255, 255, 0.8)
+  font-size: 0.9rem
+  font-style: italic
+}
 
-  .section-toggle:hover {
-    color: rgba(255, 255, 255, 1);
+/* 目录列表样式 */
+.toc-list {
+  list-style: none
+  padding: 0
+  margin: 0
+}
+
+.toc-item {
+  margin-bottom: 0.5rem
+  border-radius: 4px
+  transition: background-color 0.2s ease
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15)
   }
   
-  .section-toggle.collapsed {
-    transform: rotate(-90deg);
-  }
-  
-  /* 可折叠内容的通用样式 */
-  .section-content {
-    max-height: 500px;
-    overflow-y: auto;
-    /* 默认过渡时间在JS中动态设置 */
-    opacity: 1;
-  }
-  
-  .section-content.collapsed {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-  }
-
-  .toc-message {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    font-style: italic;
-  }
-  
-  /* 目录列表样式 */
-  .toc-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .toc-item {
-    margin-bottom: 0.5rem;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-  }
-
-  .toc-item:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-  }
-
-  .toc-item a {
-    color: rgba(255, 255, 255, 0.85);
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 0.2rem 0.4rem; /* 为链接添加内边距，让hover效果更明显 */
-  }
-
-  .toc-item a:hover {
-    color: rgba(255, 255, 255, 1);
-    text-decoration: none; /* 移除下划线效果 */
-  }
-
-  /* 不同级别标题的缩进 */
-  .toc-item-h1 { margin-left: 0; }
-  .toc-item-h2 { margin-left: 0.75rem; }
-  .toc-item-h3 { margin-left: 1.5rem; }
-  .toc-item-h4 { margin-left: 2.25rem; font-size: 0.9em; }
-  .toc-item-h5 { margin-left: 3rem; font-size: 0.85em; }
-  .toc-item-h6 { margin-left: 3.75rem; font-size: 0.8em; }
-
-  @media (max-width: 1024px) {
-    .right-sidebar {
-      width: 200px;
+  a {
+    color: rgba(255, 255, 255, 0.85)
+    text-decoration: none
+    font-size: 0.95rem
+    transition: color 0.2s ease
+    display: block
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+    padding: 0.2rem 0.4rem /* 为链接添加内边距，让hover效果更明显 */
+    
+    &:hover {
+      color: rgba(255, 255, 255, 1)
+      text-decoration: none /* 移除下划线效果 */
     }
   }
+}
 
-  @media (max-width: 768px) {
-    .right-sidebar {
-      display: none; /* 在移动设备上隐藏右侧边栏 */
-    }
+/* 不同级别标题的缩进 */
+.toc-item-h1 { margin-left: 0 }
+.toc-item-h2 { margin-left: 0.75rem }
+.toc-item-h3 { margin-left: 1.5rem }
+.toc-item-h4 { margin-left: 2.25rem; font-size: 0.9em }
+.toc-item-h5 { margin-left: 3rem; font-size: 0.85em }
+.toc-item-h6 { margin-left: 3.75rem; font-size: 0.8em }
+
+@media (max-width: 1024px) {
+  .right-sidebar {
+    width: 200px
   }
+}
+
+@media (max-width: 768px) {
+  .right-sidebar {
+    display: none /* 在移动设备上隐藏右侧边栏 */
+  }
+}
 </style>
