@@ -6,31 +6,35 @@ import dayjs from 'dayjs';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
-	return posts.map((post) => ({
-		params: { slug: post.data.abbrlink },
-		props: post,
-	}));
+	return Promise.all(
+		posts.map(async (post) => {
+			const { remarkPluginFrontmatter } = await render(post);
+			const finalAbbrlink = post.data.abbrlink || remarkPluginFrontmatter.abbrlink;
+			const createDate = dayjs(remarkPluginFrontmatter.date)
+				.format("YYYY-MM-DD HH:mm:ss");
+			const updateDate = dayjs(remarkPluginFrontmatter.updated)
+				.format("YYYY-MM-DD HH:mm:ss");
+			post.data.date = typeof post.data.date === 'string' && post.data.date.trim() !== '' 
+				? post.data.date 
+				: post.data.date instanceof Date 
+					? dayjs(post.data.date).format("YYYY-MM-DD HH:mm:ss") 
+					: createDate;
+			post.data.updated = typeof post.data.updated === 'string' && post.data.updated.trim() !== ''
+				? post.data.updated
+				: post.data.updated instanceof Date
+					? dayjs(post.data.updated).format("YYYY-MM-DD HH:mm:ss")
+					: updateDate;
+			return {
+				params: { slug: finalAbbrlink },
+				props: post,
+			};
+		})
+	);
 }
 type Props = CollectionEntry<'posts'>;
 
 const post = Astro.props;
-const { Content , remarkPluginFrontmatter } = await render(post);
-const createDate = dayjs(remarkPluginFrontmatter.date)
-  .format("YYYY-MM-DD HH:mm:ss");
-const updateDate = dayjs(remarkPluginFrontmatter.updated)
-  .format("YYYY-MM-DD HH:mm:ss");
-const Abbrlink = remarkPluginFrontmatter.abbrlink;
-post.data.date = typeof post.data.date === 'string' && post.data.date.trim() !== '' 
-	? post.data.date 
-	: post.data.date instanceof Date 
-		? dayjs(post.data.date).format("YYYY-MM-DD HH:mm:ss") 
-		: createDate;
-post.data.updated = typeof post.data.updated === 'string' && post.data.updated.trim() !== ''
-	? post.data.updated
-	: post.data.updated instanceof Date
-		? dayjs(post.data.updated).format("YYYY-MM-DD HH:mm:ss")
-		: updateDate;
-post.data.abbrlink = post.data.abbrlink || Abbrlink;
+const { Content } = await render(post);
 ---
 
 <BlogPost {...post.data}>
