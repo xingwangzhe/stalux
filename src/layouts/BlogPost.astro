@@ -5,18 +5,22 @@ import Head from '../components/Head.vue';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
 import '../styles/layouts/BlogPost.styl';
+import {config_site} from '../utils/config-adapter';
+ 
 // 正确定义Props类型
 interface Props {
     title: string;
+	auther?: string;
     date?: string | Date;
     updated?: string | Date;
     tags?: string[];
     categories?: any[]; // 添加categories属性
     headings?: MarkdownHeading[];
 	description?: string;
+	abbrlink?: string;
 }
 
-const { title, date, updated, tags, categories, headings = [],description } = Astro.props;
+const { title, date, updated, tags, categories, headings = [], description, auther, abbrlink} = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
 import LeftSiderbar from './LeftSiderbar.astro';
@@ -42,13 +46,96 @@ function description150(description: string): string {
 	return plainText;
 }
 
+function categoriesToString(categories?: any[]): string {
+	if (!categories || categories.length === 0) {
+		return '';
+	}
+
+	// 创建一个Set用于存储所有分类，自动去重
+	const categorySet = new Set<string>();
+
+	// 递归函数，用于遍历嵌套的分类树
+	function extractCategoryNames(node: any) {
+		// 处理字符串类型的分类
+		if (typeof node === 'string') {
+			categorySet.add(node);
+			return;
+		}
+		
+		// 处理带有name属性的对象类型分类
+		if (node && typeof node === 'object' && node.name) {
+			categorySet.add(node.name);
+			
+			// 处理subcategories数组
+			if (node.subcategories && Array.isArray(node.subcategories)) {
+				node.subcategories.forEach((subcat: any) => {
+					extractCategoryNames(subcat);
+				});
+			}
+			// 处理children数组
+			if (node.children && Array.isArray(node.children)) {
+				node.children.forEach((child: any) => {
+					extractCategoryNames(child);
+				});
+			}
+			return;
+		}
+		
+		// 处理键值对对象类型的分类
+		if (node && typeof node === 'object') {
+			const keys = Object.keys(node);
+			if (keys.length > 0) {
+				const name = keys[0];
+				categorySet.add(name);
+				
+				const subCategories = node[name];
+				if (Array.isArray(subCategories)) {
+					subCategories.forEach((subcat: any) => {
+						extractCategoryNames(subcat);
+					});
+				}
+			}
+			return;
+		}
+	}
+
+	// 开始遍历分类树
+	categories.forEach(cat => extractCategoryNames(cat));
+	
+	// 将Set转换为逗号分隔的字符串
+	return Array.from(categorySet).join(',');
+}
+
+// 将标签和分类合并并去重
+const combinedKeywords = new Set<string>();
+
+// 添加所有标签
+if (tags && tags.length > 0) {
+	tags.forEach(tag => combinedKeywords.add(tag));
+}
+
+// 添加所有分类（已扁平化）
+const categoryArray = categories ? categoriesToString(categories).split(',').filter(cat => cat.trim() !== '') : [];
+categoryArray.forEach(category => {
+	combinedKeywords.add(category.trim());
+});
+
+// 转换为逗号分隔的字符串
+const keyws = combinedKeywords.size > 0 
+	? Array.from(combinedKeywords).slice(0, 10).join(',') 
+	: '';
+
+const categoryStr = categoriesToString(categories);
+
 ---
 
 <html lang="zh-CN">
 	<Head 
-		title={title}
-		description={description150(description) || '这是默认的文章描述'}
-		author="站点作者"
+		title={title+'|'+config_site.title}
+		description={description150(description|| '这是默认的文章描述')}
+		author={ auther || config_site.author}
+		url={config_site.url + '/posts/' + abbrlink}
+		keywords={ keyws }  || '关键字1, 关键字2'
 	/>
 	<body>
 		<Header />

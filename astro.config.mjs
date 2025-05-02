@@ -9,9 +9,10 @@ import {remarkModifiedTime} from './src/utils/remark-modified-time.mjs';
 import { remarkModifiedAbbrlink } from './src/utils/remark-modified-abbrlink.mjs';
 import remarkToc from 'remark-toc';
 import {browserslistToTargets} from 'lightningcss';
+import { config_site } from './src/utils/config-adapter';
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://example.com',
+    site: config_site.url,
     integrations: [sitemap(), vue(),astroExpressiveCode({
         // You can set configuration options here
         themes: ['dark-plus', 'github-light'],

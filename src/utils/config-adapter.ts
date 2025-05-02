@@ -1,10 +1,10 @@
 // 导入默认配置
 import { site as defaultConfig } from '../consts';
-
 // 尝试导入用户自定义配置
 let userConfig;
 try {
-  userConfig = await import('../_config');
+  // 使用require替代动态import来加载配置
+  userConfig = require('../_config');
 } catch (e) {
   // 如果_config.ts不存在或出错，则忽略错误
   userConfig = null;
