@@ -5,33 +5,32 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
 import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
-import { processFrontmatter } from '../../utils/process-frontmatter';
 import dayjs from 'dayjs';
 import CategoryTree from '../../components/categories/CategoryTree.astro';
 import { extractCategoryTrees } from '../../components/categories/CategoryUtils';
 import '../../styles/pages/categories/path.styl';
+
 export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
-  const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
-
+  
   // 提取所有分类路径
   const categoryPaths = new Set();
   
   // 递归收集所有分类路径
-  function collectCategoryPaths(categories: any[], parentPath = '') {
+  function collectCategoryPaths(categories, parentPath = '') {
     if (!categories || !Array.isArray(categories)) return;
     
     categories.forEach(category => {
-      // 处理字符串格式的分类
+      // 处理字符串格式
       if (typeof category === 'string') {
         const currentPath = parentPath ? `${parentPath}/${category}` : category;
         categoryPaths.add(currentPath);
         return;
       }
-
-      // 处理有name属性的对象格式
+      
+      // 处理对象格式 - {name, subcategories}
       if (category && typeof category === 'object' && category.name) {
-        const catName = String(category.name); // 确保是字符串
+        const catName = String(category.name);
         const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
         categoryPaths.add(currentPath);
         
@@ -42,16 +41,16 @@ export async function getStaticPaths() {
         return;
       }
       
-      // 处理key-array格式 {'category': [subcategories]}
+      // 处理对象格式 - {'category': [subcategories]}
       if (category && typeof category === 'object') {
         const keys = Object.keys(category);
         if (keys.length > 0) {
-          const catName = String(keys[0]); // 确保是字符串
+          const catName = String(keys[0]);
           const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
           categoryPaths.add(currentPath);
           
           // 递归处理子分类
-          const subCategories = category[catName];
+          const subCategories = category[keys[0]];
           if (Array.isArray(subCategories)) {
             collectCategoryPaths(subCategories, currentPath);
           }
@@ -61,26 +60,19 @@ export async function getStaticPaths() {
   }
   
   // 处理每篇文章的分类
-  processedPosts.forEach(post => {
+  allPosts.forEach(post => {
     if (post.data.categories) {
-      // 检查类型，确保 categories 是数组
-      const categories = Array.isArray(post.data.categories) 
-        ? post.data.categories 
-        : [String(post.data.categories)]; // 如果不是数组，转换为字符串数组
-      
+      const categories = Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories];
       collectCategoryPaths(categories);
     }
   });
   
   // 生成静态路径
   return Array.from(categoryPaths).map(path => {
-    // 确保路径是字符串
     const pathStr = String(path);
     
-    // 关键修复：为 rest 参数格式提供一个字符串而不是数组
     return {
       params: { 
-        // 对于 [...path] rest 参数，Astro 期望一个字符串而不是数组
         path: pathStr
       },
       props: { 
@@ -94,59 +86,50 @@ const { categoryPath } = Astro.props;
 const pathSegments = categoryPath.split('/');
 const currentCategory = pathSegments[pathSegments.length - 1];
 
-// 获取此分类及其子分类下的文章
-const allPosts = await getCollection('posts');
-const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
-
-// 判断文章是否属于当前分类或其子分类
-function isPostInCategory(post: { data: { categories: any; }; }, targetPath: string) {
-  if (!post.data.categories || !Array.isArray(post.data.categories)) return false;
+// 使用内容合集API过滤属于当前分类的文章
+function categoryFilter(post) {
+  if (!post.data.categories) return false;
   
   // 构建文章分类的所有路径
-  const postCategoryPaths: string[] = [];
+  const postCategoryPaths = [];
   
-  function buildPostCategoryPaths(categories: any[], parentPath = '') {
-    categories.forEach((category: { [x: string]: any; name?: any; subcategories?: any; }) => {
-      if (typeof category === 'string') {
-        postCategoryPaths.push(parentPath ? `${parentPath}/${category}` : category);
-      } else if (category && typeof category === 'object' && category.name) {
-        const catName = category.name;
-        const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
-        postCategoryPaths.push(currentPath);
-        
-        if (category.subcategories && Array.isArray(category.subcategories)) {
-          buildPostCategoryPaths(category.subcategories, currentPath);
-        }
-      } else if (category && typeof category === 'object') {
-        const keys = Object.keys(category);
-        if (keys.length > 0) {
-          const catName = keys[0];
-          const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
-          postCategoryPaths.push(currentPath);
-          
-          const subCategories = category[catName];
-          if (Array.isArray(subCategories)) {
-            buildPostCategoryPaths(subCategories, currentPath);
-          }
+  function buildCategoryPaths(categories, parentPath = '') {
+    if (!Array.isArray(categories)) return;
+    
+    categories.forEach(cat => {
+      if (typeof cat === 'string') {
+        postCategoryPaths.push(parentPath ? `${parentPath}/${cat}` : cat);
+      } else if (cat && cat.name) {
+        const path = parentPath ? `${parentPath}/${cat.name}` : cat.name;
+        postCategoryPaths.push(path);
+        if (cat.subcategories) buildCategoryPaths(cat.subcategories, path);
+      } else if (cat && typeof cat === 'object') {
+        const key = Object.keys(cat)[0];
+        if (key) {
+          const path = parentPath ? `${parentPath}/${key}` : key;
+          postCategoryPaths.push(path);
+          if (Array.isArray(cat[key])) buildCategoryPaths(cat[key], path);
         }
       }
     });
   }
   
-  buildPostCategoryPaths(post.data.categories);
+  const categories = Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories];
+  buildCategoryPaths(categories);
   
   // 检查文章分类路径是否包含目标路径
-  return postCategoryPaths.some(path => path === targetPath);
+  return postCategoryPaths.some(path => path === categoryPath);
 }
 
-// 过滤属于当前分类的文章
-const categoryPosts = processedPosts.filter(post => isPostInCategory(post, categoryPath))
-  .sort((a, b) => {
-    // 按日期降序排序
-    const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-    const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
-    return dateB - dateA;
-  });
+// 过滤和排序文章 - 直接使用内容合集过滤API
+const posts = await getCollection('posts', categoryFilter);
+
+// 使用内容合集API排序功能
+const sortedPosts = posts.sort((a, b) => {
+  const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
+  return dateB - dateA;  // 降序排序
+});
 
 // 页面标题
 const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
@@ -160,7 +143,6 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
     author={config_site.author}
     url={config_site.url + '/categories/' + categoryPath}
   >
-    <!-- 使用robots插槽来自定义robots设置 -->
     <meta name="robots" content="noindex, nofollow" slot="robots" />
   </Head>
   <body>
@@ -173,10 +155,10 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
         <h1 class="page-title">
           <span class="category-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
             </svg>
           </span>
-          <!-- 使用 Astro 原生方式处理面包屑导航 -->
+          {/* 面包屑导航 */}
           {pathSegments.map((segment, index) => {
             if (index > 0) {
               return (
@@ -195,14 +177,14 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
             );
           })}
         </h1>
-        <p class="page-description">共找到 {categoryPosts.length} 篇相关文章</p>
+        <p class="page-description">共找到 {sortedPosts.length} 篇相关文章</p>
         <a href="/categories/" class="back-link">返回分类列表</a>
       </div>
 
       <div class="post-list-container">
-        {categoryPosts.length > 0 ? (
+        {sortedPosts.length > 0 ? (
           <ul class="post-list">
-            {categoryPosts.map(post => {
+            {sortedPosts.map(post => {
               // 提取文章分类的树状结构
               const categoriesData = extractCategoryTrees(
                 Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories]

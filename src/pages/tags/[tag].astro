@@ -5,24 +5,25 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
 import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
-import { processFrontmatter } from '../../utils/process-frontmatter';
 import dayjs from 'dayjs';
-import '../../styles/pages/tags/tag.styl'
-export async function getStaticPaths() {
-  const allPosts = await getCollection('posts');
-  const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+import '../../styles/pages/tags/tag.styl';
 
+export async function getStaticPaths() {
+  // 获取所有文章
+  const allPosts = await getCollection('posts');
+  
   // 提取所有唯一标签
   const allTags = new Set();
-  processedPosts.forEach(post => {
+  allPosts.forEach(post => {
     const tags = post.data.tags || [];
-    tags.forEach((tag: any) => {
+    tags.forEach(tag => {
       if (tag.trim()) {
         allTags.add(tag);
       }
     });
   });
-
+  
+  // 为每个标签创建路径参数
   return Array.from(allTags).map(tag => ({
     params: { tag },
     props: { tag }
@@ -30,17 +31,18 @@ export async function getStaticPaths() {
 }
 
 const { tag } = Astro.props;
-const allPosts = await getCollection('posts');
-const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
-// 过滤包含此标签的文章
-const taggedPosts = processedPosts.filter(post => 
-  (post.data.tags || []).includes(tag)
-).sort((a, b) => {
-  // 按日期降序排序
+// 使用内容合集API的filter方法过滤拥有特定标签的文章
+const taggedPosts = await getCollection('posts', ({ data }) => {
+  const postTags = data.tags || [];
+  return postTags.includes(tag as string);
+});
+
+// 使用内容合集API的sort方法按日期排序文章
+const sortedPosts = taggedPosts.sort((a, b) => {
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-  const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
-  return dateB - dateA;
+  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+  return dateB - dateA; // 降序排序
 });
 
 // 页面标题
@@ -56,7 +58,6 @@ const pageTitle = `标签: ${tag} | ${config_site.title}`;
     url={config_site.url + '/tags/' + tag}
     noindex={true}
   >
-    <!-- 移除直接添加的 noindex meta 标签，改用属性控制 -->
   </Head>
   <body>
     <script>
@@ -74,14 +75,14 @@ const pageTitle = `标签: ${tag} | ${config_site.title}`;
           </span>
           {tag}
         </h1>
-        <p class="page-description">共找到 {taggedPosts.length} 篇相关文章</p>
+        <p class="page-description">共找到 {sortedPosts.length} 篇相关文章</p>
         <a href="/tags/" class="back-link">返回标签云</a>
       </div>
 
       <div class="post-list-container">
-        {taggedPosts.length > 0 ? (
+        {sortedPosts.length > 0 ? (
           <ul class="post-list">
-            {taggedPosts.map(post => (
+            {sortedPosts.map(post => (
               <li class="post-item">
                 <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
                   <div class="post-date">
@@ -91,7 +92,7 @@ const pageTitle = `标签: ${tag} | ${config_site.title}`;
                 </a>
                 {post.data.tags && post.data.tags.length > 0 && (
                   <div class="post-tags">
-                    {post.data.tags.map((postTag: any) => (
+                    {post.data.tags.map((postTag) => (
                       <a href={`/tags/${postTag}`} class={`post-tag ${postTag === tag ? 'current' : ''}`}>
                         {postTag}
                       </a>

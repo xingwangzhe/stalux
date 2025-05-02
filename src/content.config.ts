@@ -1,10 +1,6 @@
 import { glob } from 'astro/loaders';
 import { defineCollection, z } from 'astro:content';
 
-// 定义分类的递归类型，支持多种格式:
-// 1. 字符串格式: 'category'
-// 2. 对象格式-有标签: { name: 'category', subcategories: [...] }
-// 3. 对象格式-无标签: { 'category': [...subcategories] }
 const categorySchema: z.ZodType<any> = z.lazy(() => 
   z.union([
     z.string(), 
@@ -31,4 +27,13 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+// 添加 about 集合
+const about = defineCollection({
+  loader: glob({ base: './src/content/about', pattern: '**/*.{md,mdx}' }),
+  schema: z.object({
+    title: z.string(),
+    priority: z.number().default(1), // 优先级，数字越大优先级越高
+  }),
+});
+
+export const collections = { posts, about };

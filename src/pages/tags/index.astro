@@ -5,27 +5,26 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
 import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
-import { processFrontmatter } from '../../utils/process-frontmatter';
 import '../../styles/pages/tags/index.styl';
-// 获取文章集合
-const allPosts = await getCollection('posts');
-const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
-// 提取所有标签并计算数量
-const tagCounts = processedPosts.reduce((acc, post) => {
+// 获取文章集合 - 直接使用getCollection无需额外处理
+const posts = await getCollection('posts');
+
+// 提取所有标签并计算数量 - 更直观的实现
+const tagCounts: Record<string, number> = {};
+posts.forEach(post => {
   const tags = post.data.tags || [];
-  tags.forEach((tag: string) => {
+  tags.forEach(tag => {
     if (tag.trim()) {
-      acc[tag] = (acc[tag] || 0) + 1;
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
     }
   });
-  return acc;
-}, {});
+});
 
 // 转换为排序后的数组
 const sortedTags = Object.entries(tagCounts)
-  .sort(([, countA], [, countB]) => (countB as number) - (countA as number)) // 按数量降序排序
-  .map(([tag, count]) => ({ tag, count: count as number }));
+  .sort(([, countA], [, countB]) => countB - countA) // 按数量降序排序
+  .map(([tag, count]) => ({ tag, count }));
 
 // 页面标题
 const pageTitle = '标签云 | ' + config_site.title;

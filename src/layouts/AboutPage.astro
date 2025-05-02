@@ -1,0 +1,40 @@
+---
+import Head from '../components/Head.vue';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.vue';
+import { config_site } from '../utils/config-adapter';
+import '../styles/global.styl';
+interface Props {
+    title: string;
+    description?: string;
+}
+const { title , description } = Astro.props;
+
+
+// 页面标题
+const pageTitle = `${title} | ${config_site.title}`;
+---
+
+<!DOCTYPE html>
+<html lang={config_site.lang}>
+  <Head 
+    title={pageTitle}
+    description={ description || title}
+    author={config_site.author}
+    url={config_site.url + '/about/'}
+  />
+  <body>
+    <script>
+      import '../scripts/background.ts';
+    </script>
+    <Header />
+    <main class="about-container">
+      <div class="about-header">
+        <h1 class="about-title">{title}</h1>
+      <div class="about-content">
+        <slot />
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>

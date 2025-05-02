@@ -1,1 +1,41 @@
+---
+import { config_site } from '../utils/config-adapter';
+import '../styles/pages/about.styl';
+import { type CollectionEntry, getCollection } from 'astro:content';
+import AboutPage from '../layouts/AboutPage.astro';
+import { render } from 'astro:content';
+// 获取所有 about 集合内容
+const allAboutEntries = await getCollection('about');
+
+// 根据 priority 进行排序，优先级高的排前面
+const sortedEntries = allAboutEntries.sort((a, b) => b.data.priority - a.data.priority);
+
+// 默认选择：优先选择非 default.md 的文件，如果没有则选择 default.md
+let selectedEntry;
+
+// 查找是否有非 default 的优先级最高条目
+const nonDefaultEntry = sortedEntries.find(entry => entry.id !== 'default');
+
+// 如果有非默认条目，选择它；否则选择默认条目或排序后的第一个条目
+selectedEntry = nonDefaultEntry || sortedEntries.find(entry => entry.id === 'default') || sortedEntries[0];
+
+// 如果没有任何条目，创建一个基础的占位符
+if (!selectedEntry) {
+  throw new Error("未找到关于页面内容。请在 src/content/about/ 目录下创建至少一个 .md 或 .mdx 文件。");
+}
+
+
+// 渲染选中的条目内容
+type Props = CollectionEntry<'about'>;
+
+const about = sortedEntries[0] || Astro.props;
+const { Content } = await render(about);
+
+// 从内容中提取描述（例如取前100个字符作为摘要）
+const description = about.body?.split('\n').filter(line => line.trim() !== '').slice(0, 2).join(' ').substring(0, 100);
+---
+
+<AboutPage {...about.data} description={description}>
+	<Content />
+</AboutPage>
 
