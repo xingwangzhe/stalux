@@ -20,10 +20,20 @@ const posts = defineCollection({
     date: z.union([z.string(), z.coerce.date()]).optional(),
     // 更新时间可选，接受日期字符串或 Date 对象
     updated: z.union([z.string(), z.coerce.date()]).optional(),
+    // 自定义描述字段，用于 SEO
+    description: z.string().optional(),
+    // 摘要字段，如果没有描述，则用作备选
+    excerpt: z.string().optional(),
+    // 文章封面图
+    cover: z.string().optional(),
+    // 文章作者
+    author: z.string().optional(),
     tags: z.array(z.string()).optional(),
     // 分类支持多种格式的数组
     categories: z.array(categorySchema).optional(),
     abbrlink: z.union([z.string(), z.number()]).optional(),
+    // 是否不被搜索引擎索引
+    noindex: z.boolean().optional().default(false),
   }),
 });
 

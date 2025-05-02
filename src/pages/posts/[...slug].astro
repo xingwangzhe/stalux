@@ -2,7 +2,7 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
-import { processFrontmatter } from '../../utils/process-frontmatter';
+import { processFrontmatter } from '../../utils/process-frontmatter.ts';
 import PostNavigation from '../../components/PostNavigation.astro';
 
 export async function getStaticPaths() {
@@ -56,7 +56,5 @@ const { Content, headings } = await render(post);
 
 <BlogPost {...post.data} headings={headings}>
 	<Content />
-	
-	<!-- 添加文章导航 -->
 	<PostNavigation prevPost={prevPost} nextPost={nextPost} />
 </BlogPost>

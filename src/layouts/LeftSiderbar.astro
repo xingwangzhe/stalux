@@ -2,7 +2,9 @@
 import { config_site } from "../utils/config-adapter";
 import avatar from '../images/avatar.webp';
 import SocialLinks from "../components/others/SocialLinks.astro";
+import RandomPosts from "../components/others/RandomPosts.astro";
 import { Image }  from 'astro:assets';
+
 const avatarPath = config_site.avatarPath || avatar;
 // 定义不同设备的图像尺寸
 const mobileSizes = 70; // 移动设备图片尺寸
@@ -57,13 +59,10 @@ import '../styles/layouts/LeftSidebar.styl';
         <div class="sidebar-section fade-in-left delay-200">
             <SocialLinks mediaLinks={config_site.medialinks.slice(0, 4)} /> <!-- 限制显示数量 -->
         </div>
-        <div class="sidebar-section recent-posts fade-in-left delay-300">
-            <h3>最近文章</h3>
-            <ul>
-                <li><a href="/posts/d83cc174">nihao</a></li>
-                <!-- 这里可以用 Astro 动态生成最近文章列表 -->
-            </ul>
-        </div>
+        
+        <!-- 使用解耦的随机文章组件 -->
+        <RandomPosts count={5} delay="delay-300" />
+        
         <!-- 文章分类已迁移至右侧边栏 -->
 </sidebar>
 

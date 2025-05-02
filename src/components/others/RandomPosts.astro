@@ -1,0 +1,148 @@
+---
+import { getCollection } from 'astro:content';
+import { processFrontmatter } from '../../utils/process-frontmatter.ts';
+import '../../styles/components/RandomPosts.styl';
+
+// 组件参数定义
+interface Props {
+  count?: number;  // 显示随机文章的数量
+  title?: string;  // 组件标题
+  className?: string; // 自定义CSS类名
+  delay?: string; // 动画延迟类
+}
+
+const { 
+  count = 5,
+  title = "随机文章",
+  className = "random-posts",
+  delay = "delay-300"
+} = Astro.props;
+
+// 获取文章集合
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+
+// 初始随机选择文章 (只作为首次页面加载时的默认值)
+const randomPosts = (() => {
+  // 创建一个副本，避免修改原始数组
+  const shuffled = [...processedPosts];
+  
+  // Fisher-Yates 洗牌算法
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  
+  // 返回前count个元素
+  return shuffled.slice(0, count);
+})();
+
+// 将所有文章传递给前端脚本使用
+const allPostsData = processedPosts.map(post => ({
+  title: post.data.title,
+  abbrlink: post.data.abbrlink
+}));
+---
+
+<div class={`sidebar-section ${className} fade-in-left ${delay}`} id="random-posts-container">
+  <div class="random-posts-header">
+    <h3>{title}</h3>
+    <button 
+      id="refresh-random-posts" 
+      class="refresh-button" 
+      title="刷新随机文章"
+      aria-label="刷新随机文章">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+      </svg>
+    </button>
+  </div>
+  <ul class="random-posts-list" id="random-posts-list">
+    {randomPosts.length > 0 ? (
+      randomPosts.map(post => (
+        <li class="random-post-item">
+          <a href={`/posts/${post.data.abbrlink}`} class="random-post-link">
+            {post.data.title}
+          </a>
+        </li>
+      ))
+    ) : (
+      <li class="no-posts">暂无文章</li>
+    )}
+  </ul>
+</div>
+
+<script define:vars={{allPostsData, count}}>
+// Fisher-Yates 洗牌算法
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// 生成随机文章HTML
+function generatePostsHTML(posts) {
+  if (posts.length === 0) {
+    return '<li class="no-posts">暂无文章</li>';
+  }
+  
+  return posts.map(post => `
+    <li class="random-post-item">
+      <a href="/posts/${post.abbrlink}" class="random-post-link">
+        ${post.title}
+      </a>
+    </li>
+  `).join('');
+}
+
+// 刷新随机文章列表
+function refreshRandomPosts() {
+  const randomPostsList = document.getElementById('random-posts-list');
+  if (!randomPostsList) return;
+  
+  // 添加淡出效果
+  randomPostsList.classList.add('fade-out');
+  
+  setTimeout(() => {
+    // 获取新的随机文章
+    const shuffledPosts = shuffleArray(allPostsData);
+    const newRandomPosts = shuffledPosts.slice(0, count);
+    
+    // 更新DOM
+    randomPostsList.innerHTML = generatePostsHTML(newRandomPosts);
+    
+    // 添加淡入效果
+    randomPostsList.classList.remove('fade-out');
+    randomPostsList.classList.add('fade-in');
+    
+    // 移除淡入动画类
+    setTimeout(() => {
+      randomPostsList.classList.remove('fade-in');
+    }, 500);
+  }, 300);
+}
+
+// 初始化刷新按钮事件
+document.addEventListener('DOMContentLoaded', () => {
+  const refreshButton = document.getElementById('refresh-random-posts');
+  if (refreshButton) {
+    refreshButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      // 添加旋转动画
+      refreshButton.classList.add('rotating');
+      
+      // 刷新文章列表
+      refreshRandomPosts();
+      
+      // 移除旋转动画
+      setTimeout(() => {
+        refreshButton.classList.remove('rotating');
+      }, 600);
+    });
+  }
+});
+</script>
