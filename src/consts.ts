@@ -87,7 +87,7 @@ export const site: SiteConfig = {
    */
   comment: {
     waline: {
-      serverURL: 'https://waline.xingwangzhe.fun', // 你的Waline服务器地址
+      serverURL: 'https://waline.xingwangzhe.fun', // 你的Waline服务器地址 //我加白名单了,别让我在日志里逮到你用(╯▔皿▔)╯
       lang: 'zh-CN',                               // 语言设置
       emoji: ['https://unpkg.com/@waline/emojis@1.1.0/weibo'],  // 表情包设置
       requiredFields: [],                          // 必填项
