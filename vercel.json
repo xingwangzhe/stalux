@@ -10,11 +10,6 @@
       "destination": "/"
     }
   ],
-  "build": {
-    "env": {
-      "ASTRO_TELEMETRY_DISABLED": "1"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
@@ -26,7 +21,7 @@
       ]
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/src/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -40,12 +35,5 @@
       "memory": 1024,
       "maxDuration": 10
     }
-  },
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/" }
-  ],
-  "buildOptions": {
-    "baseDirectory": "src"
   }
 }
