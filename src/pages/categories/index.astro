@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import Head from '../../components/Head.vue';
+import { config_site } from '../../utils/config-adapter';
+import Head from '../../components/Head.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
-import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
 import { processFrontmatter } from '../../utils/process-frontmatter';
 // 获取文章集合
@@ -252,7 +252,7 @@ import '../../styles/pages/categories/index.styl';
               <a href={`/categories/${category.path}`} class="category-header">
                 <div class="category-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h5l2 3h9a2 2 0 0 1-2 2z"></path>
                   </svg>
                 </div>
                 <div class="category-content">

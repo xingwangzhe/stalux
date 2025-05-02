@@ -3,6 +3,7 @@
  */
 export interface SiteConfig {
   // 基础信息
+  head?: string;             // <head>元素硬嵌入
   title: string;
   description: string;
   url: string;
@@ -14,7 +15,6 @@ export interface SiteConfig {
   
   // 资源配置
   favicon?: string;
-  appleTouchIcon?: string;
   
   // 社交媒体配置
   ogImage?: string;

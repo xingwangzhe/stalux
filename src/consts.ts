@@ -1,6 +1,13 @@
 import type { SiteConfig, BadgeOptions } from './types'; // Import BadgeOptions
 
-export const site: SiteConfig = { // Add explicit type SiteConfig
+export const site: SiteConfig = { 
+  /**
+   * <head>元素硬嵌入
+   * 可以在此处添加自定义的meta标签、脚本、样式等
+   */
+  head: `<meta name="nishia" content="nihaiso">
+        <script>console.log("欢迎使用Stalux主题")</script>`,
+  
   /**
    * SEO 核心配置
    * 这些配置对搜索引擎优化至关重要
@@ -26,8 +33,7 @@ export const site: SiteConfig = { // Add explicit type SiteConfig
    * 站点资源配置
    * 用户体验相关，间接提升SEO价值
    */
-  favicon: '/favicon.ico',                // 网站图标
-  appleTouchIcon: '/apple-touch-icon.png',// iOS设备添加到主屏的图标
+  favicon: '/stalux.ico',                // 网站图标和iOS设备添加到主屏的图标
   // avatarPath: 'src/images/avatar.webp', // 用户头像路径
   
   /**
@@ -58,12 +64,12 @@ export const site: SiteConfig = { // Add explicit type SiteConfig
    * 站点导航配置
    */
   nav: [
-    { title: 'home', path: '/', icon: 'home' },
-    { title: 'about', path: '/about', icon: 'user' },
-    { title: 'links', path: '/links', icon: 'link' },
-    { title: 'archives', path: '/archives', icon: 'archive' },
-    { title: 'tags', path: '/tags', icon: 'tag' },
-    { title: 'categories', path: '/categories', icon: 'folder' },
+    { title: '首页', path: '/', icon: 'home' },
+    { title: '归档', path: '/archives', icon: 'archive' },
+    { title: '分类', path: '/categories', icon: 'folder' },
+    { title: '标签', path: '/tags', icon: 'tag' },
+    { title: '友链', path: '/links', icon: 'link' },
+    { title: '关于', path: '/about', icon: 'user' },
   ],
 
   /**

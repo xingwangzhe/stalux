@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import Head from '../../components/Head.vue';
+import { config_site } from '../../utils/config-adapter';
+import Head from '../../components/Head.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
-import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
 import { processFrontmatter } from '../../utils/process-frontmatter';
 import dayjs from 'dayjs';
@@ -46,7 +46,7 @@ const taggedPosts = processedPosts.filter(post =>
 // 排序文章
 const sortedPosts = taggedPosts.sort((a, b) => {
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
   return dateB - dateA; // 降序排序
 });
 

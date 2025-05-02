@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import Head from '../../components/Head.vue';
+import { config_site } from '../../utils/config-adapter';
+import Head from '../../components/Head.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
-import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
 import { processFrontmatter } from '../../utils/process-frontmatter';
 import '../../styles/pages/tags/index.styl';

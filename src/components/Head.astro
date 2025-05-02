@@ -1,0 +1,88 @@
+---
+// Head.astro - 页面头部元数据组件
+// 从Vue组件转换而来
+
+import { config_site } from '../utils/config-adapter.ts';
+import Favicon from '../images/favicon.ico'
+// 定义组件接收的属性
+interface Props {
+  title: string;
+  author: string;
+  description: string;
+  favicon?: string;
+  url?: string;
+  keywords?: string;
+  ogImage?: string;
+  twitterImage?: string;
+  twitterCreator?: string;
+  lang?: string;
+  locale?: string;
+  siteName?: string;
+  structuredData?: string;
+  noindex?: boolean; // 控制页面是否被索引
+  head?: string;     // 硬嵌入的head内容
+}
+
+// 接收组件属性
+const { 
+  title, 
+  author, 
+  description, 
+  favicon = '/favicon.ico', 
+  url, 
+  keywords, 
+  ogImage, 
+  twitterImage, 
+  twitterCreator, 
+  lang = 'zh-CN', 
+  locale = 'zh_CN', 
+  siteName, 
+  structuredData, 
+  noindex = false,
+  head = config_site.head  // 默认使用站点配置中的head
+} = Astro.props;
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{title}</title> 
+<meta name="description" content={description} />
+
+<!-- 使用插槽允许自定义 robots meta 标签，否则根据noindex属性设置 -->
+<slot name="robots">
+  <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+</slot>
+
+{keywords && <meta name="keywords" content={keywords} />}
+<meta name="author" content={author} />
+{url && <link rel="canonical" href={url} />}
+
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content="website" />
+{url && <meta property="og:url" content={url} />}
+
+<meta http-equiv="content-language" content={lang} />
+{ogImage && <meta property="og:image" content={ogImage} />}
+<meta property="og:locale" content={locale} />
+{siteName && <meta property="og:site_name" content={siteName} />}
+
+<link rel="icon"  href={favicon} sizes="32x32" />
+
+{(twitterImage || ogImage) && (
+  <>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={twitterImage || ogImage} />
+    {twitterCreator && <meta name="twitter:creator" content={twitterCreator} />}
+  </>
+)}
+
+{structuredData && <script type="application/ld+json" set:html={structuredData} />}
+
+<!-- 硬嵌入的head元素 -->
+{head && <Fragment set:html={head} />}
+
+<!-- 通用插槽，用于添加其他head元素 -->
+<slot name="head" />
