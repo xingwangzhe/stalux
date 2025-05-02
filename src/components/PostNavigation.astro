@@ -1,0 +1,75 @@
+---
+/**
+ * PostNavigation 组件
+ * 显示上一篇和下一篇文章的导航链接
+ */
+
+interface PostNavigationItem {
+  title: string;
+  abbrlink: string;
+}
+
+interface Props {
+  prevPost: PostNavigationItem | null;
+  nextPost: PostNavigationItem | null;
+}
+
+const { prevPost, nextPost } = Astro.props;
+import '../styles/components/PostNavigation.styl';
+---
+
+<nav class="post-navigation" aria-label="文章导航">
+  <div class="post-navigation-inner">
+    {prevPost ? (
+      <a href={`/posts/${prevPost.abbrlink}/`} class="post-nav-link prev-post" rel="prev">
+        <span class="post-nav-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </span>
+        <div class="post-nav-content">
+          <span class="post-nav-label">上一篇</span>
+          <span class="post-nav-title">{prevPost.title}</span>
+        </div>
+      </a>
+    ) : (
+      <span class="post-nav-link prev-post disabled">
+        <span class="post-nav-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </span>
+        <div class="post-nav-content">
+          <span class="post-nav-label">上一篇</span>
+          <span class="post-nav-title">没有更早的文章</span>
+        </div>
+      </span>
+    )}
+    
+    {nextPost ? (
+      <a href={`/posts/${nextPost.abbrlink}/`} class="post-nav-link next-post" rel="next">
+        <div class="post-nav-content">
+          <span class="post-nav-label">下一篇</span>
+          <span class="post-nav-title">{nextPost.title}</span>
+        </div>
+        <span class="post-nav-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </span>
+      </a>
+    ) : (
+      <span class="post-nav-link next-post disabled">
+        <div class="post-nav-content">
+          <span class="post-nav-label">下一篇</span>
+          <span class="post-nav-title">没有更新的文章</span>
+        </div>
+        <span class="post-nav-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </span>
+      </span>
+    )}
+  </div>
+</nav>

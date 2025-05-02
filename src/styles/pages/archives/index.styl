@@ -48,6 +48,8 @@
 .year-section {
   margin-bottom: 3rem
   position: relative
+  animation: fadeIn 0.6s ease forwards
+  opacity: 0
   
   &::before {
     content: ""
@@ -178,6 +180,73 @@
   background-color: rgba(0, 0, 0, 0.1)
   border-radius: 0.5rem
   width: 100%
+}
+
+// 懒加载指示器样式
+.lazyload-observer {
+  display: flex
+  flex-direction: column
+  align-items: center
+  padding: 2rem 0
+  opacity: 0.8
+  transition: opacity 0.3s ease
+  
+  &:hover {
+    opacity: 1
+  }
+}
+
+.loading-spinner {
+  display: flex
+  justify-content: center
+  margin-bottom: 0.5rem
+  
+  .dot {
+    display: inline-block
+    width: 10px
+    height: 10px
+    margin: 0 3px
+    border-radius: 50%
+    background-color: rgba(1, 162, 190, 0.8)
+    animation: dotPulse 1.4s infinite ease-in-out both
+    
+    &:nth-child(1) {
+      animation-delay: -0.32s
+    }
+    
+    &:nth-child(2) {
+      animation-delay: -0.16s
+    }
+    
+    &:nth-child(3) {
+      animation-delay: 0s
+    }
+  }
+}
+
+.loading-text {
+  font-size: 0.9rem
+  color: rgba(255, 255, 255, 0.7)
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% { 
+    transform: scale(0.3)
+  }
+  40% { 
+    transform: scale(1.0)
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0
+    transform: translateY(20px)
+  }
+  to {
+    opacity: 1
+    transform: translateY(0)
+  }
 }
 
 @media (max-width: 768px) {

@@ -8,6 +8,7 @@ import '../../../src/styles/global.styl';
 import { processFrontmatter } from '../../utils/process-frontmatter';
 import dayjs from 'dayjs';
 import '../../styles/pages/archives/index.styl';
+
 // 获取文章集合
 const allPosts = await getCollection('posts');
 const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
@@ -15,7 +16,7 @@ const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter
 // 按日期排序
 const sortedPosts = processedPosts.sort((a, b) => {
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-  const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
   return dateB - dateA;
 });
 
@@ -109,7 +110,65 @@ const pageTitle = '文章归档 | ' + config_site.title;
           <div class="no-posts">暂无文章</div>
         )}
       </div>
+      
+      <!-- 懒加载指示器 -->
+      <div id="lazyload-observer" class="lazyload-observer">
+        <div class="loading-spinner">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+        <div class="loading-text">加载更多内容</div>
+      </div>
     </main>
     <Footer />
+    
+    <script>
+      // 懒加载实现
+      document.addEventListener('DOMContentLoaded', () => {
+        // 初始化显示的内容数量
+        let visibleYears = 2;
+        
+        // 获取所有年份区块
+        const yearSections = document.querySelectorAll('.year-section');
+        const totalYears = yearSections.length;
+        
+        // 初始状态：只显示前几年的内容
+        if (totalYears > 0) {
+          for (let i = 0; i < totalYears; i++) {
+            if (i >= visibleYears) {
+              yearSections[i].style.display = 'none';
+            }
+          }
+        }
+        
+        // 创建 Intersection Observer
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && visibleYears < totalYears) {
+              // 当观察元素进入视口时，显示更多内容
+              visibleYears++;
+              if (visibleYears <= totalYears) {
+                yearSections[visibleYears - 1].style.display = 'block';
+              }
+              
+              // 如果已经加载完所有内容，隐藏加载指示器
+              if (visibleYears >= totalYears) {
+                document.getElementById('lazyload-observer').style.display = 'none';
+              }
+            }
+          });
+        }, {
+          rootMargin: '200px', // 提前 200px 触发加载
+          threshold: 0.1
+        });
+        
+        // 开始观察懒加载指示器
+        const lazyloadObserver = document.getElementById('lazyload-observer');
+        if (lazyloadObserver) {
+          observer.observe(lazyloadObserver);
+        }
+      });
+    </script>
   </body>
 </html>

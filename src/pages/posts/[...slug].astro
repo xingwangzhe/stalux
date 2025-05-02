@@ -3,26 +3,60 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
 import { processFrontmatter } from '../../utils/process-frontmatter';
+import PostNavigation from '../../components/PostNavigation.astro';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
 	const processedPosts = await Promise.all(
 		posts.map(async (post) => {
 			const processedPost = await processFrontmatter(post);
-			return {
-				params: { slug: processedPost.data.abbrlink },
-				props: processedPost,
-			};
+			return processedPost;
 		})
 	);
-	return processedPosts;
+	
+	// 按日期排序文章，用于确定上一篇/下一篇
+	const sortedPosts = processedPosts.sort((a, b) => {
+		const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
+		const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
+		return dateB - dateA; // 降序排序，最新的文章在前
+	});
+	
+	return sortedPosts.map((post, index) => {
+		// 确定上一篇和下一篇文章
+		const prevPost = index < sortedPosts.length - 1 ? {
+			title: sortedPosts[index + 1].data.title,
+			abbrlink: sortedPosts[index + 1].data.abbrlink
+		} : null;
+		
+		const nextPost = index > 0 ? {
+			title: sortedPosts[index - 1].data.title,
+			abbrlink: sortedPosts[index - 1].data.abbrlink
+		} : null;
+		
+		return {
+			params: { slug: post.data.abbrlink },
+			props: { 
+				post,
+				prevPost,
+				nextPost
+			},
+		};
+	});
 }
-type Props = CollectionEntry<'posts'>;
 
-const post = Astro.props;
+type Props = {
+	post: CollectionEntry<'posts'>;
+	prevPost: { title: string; abbrlink: string } | null;
+	nextPost: { title: string; abbrlink: string } | null;
+};
+
+const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 ---
 
 <BlogPost {...post.data} headings={headings}>
 	<Content />
+	
+	<!-- 添加文章导航 -->
+	<PostNavigation prevPost={prevPost} nextPost={nextPost} />
 </BlogPost>
