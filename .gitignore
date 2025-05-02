@@ -25,4 +25,10 @@ pnpm-debug.log*
 src/_config.ts
 # others
 src/content/posts/
+!src/content/posts/seo-config.md
+!src/content/posts/index.md
+!src/content/posts/frontmatter-guide.md
+!src/content/posts/comment-config.md
+!src/content/posts/basic-config.md
+!src/content/posts/advanced-config.md
 public/images/
