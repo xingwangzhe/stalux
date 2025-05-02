@@ -38,6 +38,9 @@ export interface SiteConfig {
   friendlinks_description?: string;
   friendlinks?: FriendLink[];
   
+  // 评论系统配置
+  comment?: CommentConfig;
+  
   // 页脚配置 - 备案信息
   enableIcpBeian?: boolean;         // 是否启用ICP备案显示
   icpBeian?: string;
@@ -109,4 +112,26 @@ export interface BadgeOptions {
   logoWidth?: number;
   alt?: string;
   href?: string;
+}
+
+/**
+ * 评论系统配置类型
+ */
+export interface CommentConfig {
+  waline?: WalineConfig;
+}
+
+/**
+ * Waline配置类型
+ */
+export interface WalineConfig {
+  serverURL: string;
+  path?: string;
+  lang?: string;
+  emoji?: string[];
+  requiredFields?: string[];
+  reaction?: boolean;
+  meta?: string[];
+  wordLimit?: number;
+  pageSize?: number;
 }

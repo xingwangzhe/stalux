@@ -77,11 +77,26 @@ export const site: SiteConfig = {
    */
   textyping: [  // 打字机效果文字
     'Free for free, not free for charge!', 
-    '因为我姓王,所以姓王者',
     '任意键在哪?',
     'F12看看?',
     'Hello World!',
   ],
+  
+  /**
+   * 评论系统配置
+   */
+  comment: {
+    waline: {
+      serverURL: 'https://waline.xingwangzhe.fun', // 你的Waline服务器地址
+      lang: 'zh-CN',                               // 语言设置
+      emoji: ['https://unpkg.com/@waline/emojis@1.1.0/weibo'],  // 表情包设置
+      requiredFields: [],                          // 必填项
+      reaction: true,                              // 文章反应
+      meta: ['nick', 'mail', 'link'],             // 评论者的元数据
+      wordLimit: 200,                              // 字数限制
+      pageSize: 10                                 // 评论分页大小
+    }
+  },
   
   /**
    * 社交媒体链接配置

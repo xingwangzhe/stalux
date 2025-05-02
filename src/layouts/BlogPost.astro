@@ -4,6 +4,7 @@ import type { MarkdownHeading } from 'astro';
 import Head from '../components/Head.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
+import WalineComment from '../components/comments/WalineComment.vue';
 import '../styles/layouts/BlogPost.styl';
 import {config_site} from '../utils/config-adapter';
  
@@ -129,7 +130,7 @@ const categoryStr = categoriesToString(categories);
 
 ---
 
-<html lang="zh-CN">
+<html lang={config_site.lang} class="dark">
 	<Head 
 		title={title+'|'+config_site.title}
 		description={description150(description|| '这是默认的文章描述')}
@@ -165,6 +166,7 @@ const categoryStr = categoriesToString(categories);
 						</div>
 						<slot />
 					</div>
+					<WalineComment client:idle />
 				</article>
 				<RightSiderbar {tags} {categories} {headings} />
 			</div>

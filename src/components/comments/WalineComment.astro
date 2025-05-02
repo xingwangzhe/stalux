@@ -1,0 +1,96 @@
+---
+/**
+ * Waline评论组件
+ * 集成Waline评论系统到Astro页面
+ */
+import { config_site } from '../../utils/config-adapter';
+
+interface Props {
+  path?: string;
+  title?: string;
+  serverURL?: string;
+}
+
+// 获取页面路径和配置参数
+const { 
+  path, 
+  title, 
+  serverURL = config_site.comment?.waline?.serverURL || '' 
+} = Astro.props;
+
+// 获取其他Waline配置参数
+const walineConfig = config_site.comment?.waline || {};
+
+// 如果没有设置serverURL，则不渲染评论区
+const enableComment = !!serverURL;
+---
+
+{enableComment && (
+  <div class="waline-comment-container dark-theme">
+    <div id="waline-comment"></div>
+  </div>
+)}
+
+{enableComment && (
+    <>
+        <!-- Import the Waline script -->
+        <script src="https://unpkg.com/@waline/client@v2/dist/waline.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css" />
+        
+        <!-- Initialize Waline -->
+        <script define:vars={{ 
+            serverURL, 
+            path: path || Astro.url.pathname,
+            lang: walineConfig.lang, 
+            emoji: walineConfig.emoji,
+            requiredFields: walineConfig.requiredFields,
+            reaction: walineConfig.reaction,
+            meta: walineConfig.meta,
+            wordLimit: walineConfig.wordLimit,
+            pageSize: walineConfig.pageSize,
+            title
+        }}>
+            document.addEventListener('DOMContentLoaded', () => {
+                Waline.init({
+                    el: '#waline-comment',
+                    serverURL,
+                    path,
+                    lang,
+                    emoji,
+                    requiredFields,
+                    reaction,
+                    meta,
+                    wordLimit,
+                    pageSize,
+                    title,
+                    dark: true // 固定使用暗色模式
+                });
+            });
+        </script>
+    </>
+)}
+
+<style>
+  .waline-comment-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background-color: var(--card-bg, #ffffff);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 适配暗色模式 */
+  @media (prefers-color-scheme: dark) {
+    .waline-comment-container {
+      background-color: var(--card-bg-dark, #1a1a1a);
+    }
+  }
+
+  /* 移动设备样式调整 */
+  @media (max-width: 768px) {
+    .waline-comment-container {
+      padding: 1rem;
+      margin-top: 1.5rem;
+    }
+  }
+</style>

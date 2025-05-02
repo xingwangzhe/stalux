@@ -3,21 +3,26 @@ import type { CollectionEntry } from 'astro:content';
 import Head from '../components/Head.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
+import WalineComment from '../components/comments/WalineComment.vue';
 import { config_site } from '../utils/config-adapter';
 import '../styles/global.styl';
-interface Props {
-    title: string;
-    description?: string;
-}
-const { title , description } = Astro.props;
+import '../styles/blog.styl';
+import '../styles/layouts/AboutPage.styl';
 
+interface Props {
+    title?: string;
+    description?: string;
+    noindex?: boolean;
+}
+
+const { title = '关于', description = '关于我', noindex } = Astro.props;
 
 // 页面标题
 const pageTitle = `${title} | ${config_site.title}`;
 ---
 
 <!DOCTYPE html>
-<html lang={config_site.lang}>
+<html lang={config_site.lang} class="dark">
   <Head 
     title={pageTitle}
     description={ description || title}
@@ -35,6 +40,7 @@ const pageTitle = `${title} | ${config_site.title}`;
       <div class="about-content">
         <slot />
       </div>
+      <WalineComment client:idle/>
     </main>
     <Footer />
   </body>

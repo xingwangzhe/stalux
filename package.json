@@ -26,5 +26,8 @@
     "simple-icons": "^14.12.3",
     "stylus": "^0.64.0",
     "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@waline/client": "^3.5.6"
   }
 }
