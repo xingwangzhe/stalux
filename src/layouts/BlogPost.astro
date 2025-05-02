@@ -13,19 +13,41 @@ interface Props {
     tags?: string[];
     categories?: any[]; // 添加categories属性
     headings?: MarkdownHeading[];
+	description?: string;
 }
 
-const { title, date, updated, tags, categories, headings = [] } = Astro.props;
+const { title, date, updated, tags, categories, headings = [],description } = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
 import LeftSiderbar from './LeftSiderbar.astro';
 import RightSiderbar from './RightSiderbar.astro';
+
+function description150(description: string): string {
+	// 去除Markdown标识符并截取约150个字符
+	const plainText = description
+		.replace(/#+\s/g, '')                  // 移除标题符号
+		.replace(/\*\*|\*|~~|__|_/g, '')       // 移除粗体、斜体、删除线等格式
+		.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // 将[链接文字](URL)转换为纯文本
+		.replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // 移除图片
+		.replace(/```[\s\S]*?```/g, '')        // 移除代码块
+		.replace(/`([^`]+)`/g, '$1')           // 移除行内代码
+		.replace(/>\s?/g, '')                  // 移除引用标记
+		.replace(/\n+/g, '')                   // 完全移除换行符
+		.replace(/\s+/g, '')                   // 移除所有空格
+		.trim();
+	
+	if (plainText.length > 150) {
+		return plainText.slice(0, 145) + '...';
+	}
+	return plainText;
+}
+
 ---
 
 <html lang="zh-CN">
 	<Head 
 		title={title}
-		description={title}
+		description={description150(description) || '这是默认的文章描述'}
 		author="站点作者"
 	/>
 	<body>
@@ -86,9 +108,9 @@ import RightSiderbar from './RightSiderbar.astro';
 				
 				// 处理图片加载错误
 				img.addEventListener('error', () => {
-					console.warn('图片加载失败:', img.src);
+					console.warn('图片加载失败:', (img as HTMLImageElement).src);
 					// 可以在这里添加一个占位图
-					// img.src = '/images/placeholder.svg';
+					// (img as HTMLImageElement).src = '/images/placeholder.svg';
 				});
 			});
 			
@@ -101,7 +123,7 @@ import RightSiderbar from './RightSiderbar.astro';
 							// 如果有data-src属性，则加载该图片
 							const dataSrc = img.getAttribute('data-src');
 							if (dataSrc) {
-								img.src = dataSrc;
+								(img as HTMLImageElement).src = dataSrc;
 								img.removeAttribute('data-src');
 							}
 							imageObserver.unobserve(img);
