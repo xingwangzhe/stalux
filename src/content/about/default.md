@@ -1,58 +1,114 @@
 ---
-title: 关于我
-description: 一个个人博客和技术分享的平台
+title: 关于 Stalux 主题
+description: 一个现代、简洁、功能丰富的 Astro 博客主题
 priority: -1
 ---
 
-## 欢迎来到我的博客
+## 欢迎使用 Stalux 主题
 
-在这里我会分享我的技术心得、学习笔记和一些生活中的点滴思考。
+Stalux 是一个为 [Astro](https://astro.build/) 构建的现代博客主题，专注于性能优化、搜索引擎友好和优秀的用户体验。
 
-### 关于我
-
-我是一名热爱技术、喜欢探索新事物的开发者。主要关注 Web 开发、人工智能和开源技术。希望通过这个博客能结交更多志同道合的朋友，共同学习和成长。
+### 主题特点
 
 <div class="card">
 
-### 我的技能
+#### 核心优势
 
-- **前端开发**：HTML, CSS, JavaScript, TypeScript, React, Vue, Astro
-- **后端开发**：Node.js, Python, Go
-- **数据科学**：机器学习入门, 数据可视化
-- **其他技能**：Git, Docker, 云服务部署
+- **高性能**：利用 Astro 的部分水合技术，实现极速页面加载
+- **SEO 优化**：内置结构化数据、自动站点地图和丰富的元数据配置
+- **响应式设计**：在任何设备上都能完美展示
+- **暗黑模式**：自动识别系统主题并支持手动切换
+- **多语言支持**：开箱即用的国际化支持
 
 </div>
 
-### 我的时间线
+### 功能一览
 
 <div class="timeline">
 
 <div class="timeline-item">
-  <h3>2025 年</h3>
-  <p>创建了这个博客网站，开始记录和分享自己的技术心得。</p>
+  <h4>内容管理</h4>
+  <ul>
+    <li>基于 Astro Content Collections 的文章管理</li>
+    <li>标签和分类系统</li>
+    <li>自动生成归档页面</li>
+    <li>自定义永久链接支持</li>
+  </ul>
 </div>
 
 <div class="timeline-item">
-  <h3>2024 年</h3>
-  <p>开始学习 Astro 和静态站点生成技术，探索现代 Web 开发方式。</p>
+  <h4>用户体验</h4>
+  <ul>
+    <li>打字机效果</li>
+    <li>平滑滚动</li>
+    <li>Markdown 增强样式</li>
+    <li>代码高亮与复制按钮</li>
+    <li>图片灯箱效果</li>
+    <li>全站搜索功能</li>
+  </ul>
 </div>
 
 <div class="timeline-item">
-  <h3>2023 年</h3>
-  <p>深入研究前端框架和工具链，提升开发效率和用户体验。</p>
+  <h4>集成功能</h4>
+  <ul>
+    <li>多种评论系统支持（Waline, Giscus 等）</li>
+    <li>社交媒体分享</li>
+    <li>友情链接管理</li>
+    <li>RSS 订阅</li>
+    <li>本地徽章生成</li>
+  </ul>
 </div>
 
 </div>
 
-### 联系我
+### 技术栈
 
-如果你有任何问题、建议或者合作意向，欢迎通过以下方式联系我：
+Stalux 主题采用现代 Web 技术栈构建：
 
-- **邮箱**：[example@example.com](mailto:example@example.com)
-- **GitHub**：[github.com/yourusername](https://github.com/yourusername)
+- **Astro** - 快速的静态站点生成器
+- **TypeScript** - 类型安全的 JavaScript 超集
+- **Tailwind CSS** - 实用优先的 CSS 框架
+- **Vue** - 用于交互组件的渐进式框架
+
+### 自定义与扩展
+
+Stalux 主题设计为易于扩展和自定义：
+
+- **TypeScript 配置** - 通过简单的配置文件修改主题行为
+- **自定义样式** - 支持全局样式覆盖和局部样式注入
+- **组件替换** - 可以替换特定组件实现自定义功能
 
 <div class="highlight">
 
-每个人都是独一无二的，希望我的分享能够帮助到你，也期待与你交流和学习！
+Stalux 主题专为注重内容创作的博主设计，让你专注于写作，而不必担心技术细节。同时，对于想要深度定制的开发者，提供了全面的扩展能力。
 
 </div>
+
+### 文档与支持
+
+详细的配置文档可以在以下页面找到：
+
+- [基础配置指南](/posts/basic-config)
+- [高级配置指南](/posts/advanced-config)
+- [评论系统配置](/posts/comment-config)
+- [SEO 优化指南](/posts/seo-config)
+- [Frontmatter 字段详解](/posts/frontmatter-guide)
+
+### 开源与贡献
+
+Stalux 是一个开源项目，欢迎任何形式的贡献，包括但不限于：
+
+- 功能建议和 Bug 报告
+- 文档改进
+- 代码贡献
+- 使用反馈
+
+<div class="card">
+
+### 许可证
+
+Stalux 主题基于 MIT 许可证开源，你可以自由地使用、修改和分发。
+
+</div>
+
+感谢选择 Stalux 主题，希望它能为你的博客带来愉悦的写作和阅读体验！
