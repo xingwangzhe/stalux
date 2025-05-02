@@ -64,8 +64,73 @@ import RightSiderbar from './RightSiderbar.astro';
 	</body>
 	<script>
 		import '../scripts/background.ts';
+		
+		// 为文章内容中的所有图片添加懒加载
+		document.addEventListener('DOMContentLoaded', () => {
+			const articleImages = document.querySelectorAll('.article-content img');
+			
+			// 为每个图片添加懒加载属性
+			articleImages.forEach(img => {
+				// 如果没有loading属性，添加loading="lazy"
+				if (!img.hasAttribute('loading')) {
+					img.setAttribute('loading', 'lazy');
+				}
+				
+				// 添加淡入效果类
+				img.classList.add('lazy-image');
+				
+				// 监听图片加载完成事件
+				img.addEventListener('load', () => {
+					img.classList.add('loaded');
+				});
+				
+				// 处理图片加载错误
+				img.addEventListener('error', () => {
+					console.warn('图片加载失败:', img.src);
+					// 可以在这里添加一个占位图
+					// img.src = '/images/placeholder.svg';
+				});
+			});
+			
+			// 使用 Intersection Observer API 监测图片可见性
+			if ('IntersectionObserver' in window) {
+				const imageObserver = new IntersectionObserver((entries) => {
+					entries.forEach(entry => {
+						if (entry.isIntersecting) {
+							const img = entry.target;
+							// 如果有data-src属性，则加载该图片
+							const dataSrc = img.getAttribute('data-src');
+							if (dataSrc) {
+								img.src = dataSrc;
+								img.removeAttribute('data-src');
+							}
+							imageObserver.unobserve(img);
+						}
+					});
+				}, {
+					rootMargin: '200px 0px', // 提前200px加载
+					threshold: 0.01
+				});
+				
+				// 观察所有图片
+				articleImages.forEach(img => {
+					imageObserver.observe(img);
+				});
+			}
+		});
 	</script>
-	
+
 	<!-- 添加响应式视口设置 -->
+	<style>
+		/* 图片懒加载相关样式 */
+		.lazy-image {
+			opacity: 0;
+			transition: opacity 0.5s ease;
+		}
+		
+		.lazy-image.loaded {
+			opacity: 1;
+		}
+	</style>
 </html>
 

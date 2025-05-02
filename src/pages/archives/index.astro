@@ -132,13 +132,58 @@ const pageTitle = '文章归档 | ' + config_site.title;
         // 获取所有年份区块
         const yearSections = document.querySelectorAll('.year-section');
         const totalYears = yearSections.length;
+        const lazyloadObserver = document.getElementById('lazyload-observer');
+        
+        // 更新加载指示器状态
+        const updateLoadingIndicator = (isLoading, isComplete) => {
+          if (!lazyloadObserver) return;
+          
+          const loadingText = lazyloadObserver.querySelector('.loading-text');
+          const loadingSpinner = lazyloadObserver.querySelector('.loading-spinner');
+          
+          if (isComplete) {
+            if (loadingText) loadingText.textContent = '已加载全部内容';
+            if (loadingSpinner) loadingSpinner.style.display = 'none';
+            // 3秒后隐藏加载指示器
+            setTimeout(() => {
+              lazyloadObserver.style.opacity = '0';
+              setTimeout(() => {
+                lazyloadObserver.style.display = 'none';
+              }, 500);
+            }, 3000);
+          } else {
+            if (loadingText) loadingText.textContent = isLoading ? '正在加载...' : '滚动加载更多';
+          }
+        };
+        
+        // 显示指定的年份区块
+        const showYearSection = (index) => {
+          if (index >= 0 && index < totalYears && yearSections[index]) {
+            const section = yearSections[index];
+            section.style.display = 'block';
+            section.style.opacity = '0';
+            
+            // 使用 setTimeout 让 CSS 动画生效
+            setTimeout(() => {
+              section.style.opacity = '1';
+              section.style.transform = 'translateY(0)';
+            }, 50);
+          }
+        };
         
         // 初始状态：只显示前几年的内容
         if (totalYears > 0) {
           for (let i = 0; i < totalYears; i++) {
-            if (i >= visibleYears) {
+            if (i < visibleYears) {
+              showYearSection(i);
+            } else {
               yearSections[i].style.display = 'none';
             }
+          }
+          
+          // 如果内容较少，隐藏加载指示器
+          if (totalYears <= visibleYears && lazyloadObserver) {
+            updateLoadingIndicator(false, true);
           }
         }
         
@@ -147,27 +192,40 @@ const pageTitle = '文章归档 | ' + config_site.title;
           entries.forEach(entry => {
             if (entry.isIntersecting && visibleYears < totalYears) {
               // 当观察元素进入视口时，显示更多内容
-              visibleYears++;
-              if (visibleYears <= totalYears) {
-                yearSections[visibleYears - 1].style.display = 'block';
-              }
+              updateLoadingIndicator(true, false);
               
-              // 如果已经加载完所有内容，隐藏加载指示器
-              if (visibleYears >= totalYears) {
-                document.getElementById('lazyload-observer').style.display = 'none';
-              }
+              // 延迟加载，模拟网络请求
+              setTimeout(() => {
+                showYearSection(visibleYears);
+                visibleYears++;
+                
+                // 如果已经加载完所有内容，更新加载指示器状态
+                if (visibleYears >= totalYears) {
+                  updateLoadingIndicator(false, true);
+                } else {
+                  updateLoadingIndicator(false, false);
+                }
+              }, 300);
             }
           });
         }, {
-          rootMargin: '200px', // 提前 200px 触发加载
+          rootMargin: '300px', // 提前 300px 触发加载，增加提前量
           threshold: 0.1
         });
         
         // 开始观察懒加载指示器
-        const lazyloadObserver = document.getElementById('lazyload-observer');
         if (lazyloadObserver) {
           observer.observe(lazyloadObserver);
+        } else {
+          console.warn('懒加载指示器元素未找到');
         }
+        
+        // 添加错误处理
+        window.addEventListener('error', (e) => {
+          if (e.message.includes('lazyload') || e.message.includes('observer')) {
+            console.error('懒加载功能出现错误:', e);
+          }
+        });
       });
     </script>
   </body>
