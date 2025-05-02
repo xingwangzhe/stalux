@@ -31,4 +31,4 @@ src/_config.ts
 # !src/content/posts/comment-config.md
 # !src/content/posts/basic-config.md
 # !src/content/posts/advanced-config.md
-public/images/
+# public/images/
