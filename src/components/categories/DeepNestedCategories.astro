@@ -12,6 +12,7 @@ const { categories, currentPath } = Astro.props;
 if (!categories || categories.length === 0) {
   return;
 }
+import '../../styles/components/categories/DeepNestedCategories.styl';
 ---
 
 <div class="deep-nested-categories">
@@ -29,76 +30,3 @@ if (!categories || categories.length === 0) {
     ))}
   </div>
 </div>
-
-<style lang="stylus">
-/* 深层嵌套的分类样式（平铺伪标签） */
-.deep-nested-categories {
-  margin-top: 0.5rem
-  width: 100%
-  background: rgba(0, 0, 0, 0.05)
-  border-radius: 0.4rem
-  padding: 0.5rem
-  border: 1px dashed rgba(1, 162, 190, 0.2)
-}
-
-.deep-nested-label {
-  font-size: 0.8rem
-  opacity: 0.7
-  margin-bottom: 0.3rem
-  font-style: italic
-}
-
-.deep-nested-tags {
-  display: flex
-  flex-wrap: wrap
-  gap: 0.35rem
-}
-
-.deep-category {
-  font-size: 0.75rem
-  padding: 0.15rem 0.4rem
-  background: rgba(22, 80, 100, 0.1)
-  border-radius: 0.3rem
-  position: relative
-  color: #ffffff
-  
-  &:hover {
-    background: rgba(1, 162, 190, 0.2)
-    color: #ffffff
-  }
-  
-  /* 根据层级设置不同颜色深浅 */
-  &.level-3 {
-    background: rgba(22, 80, 100, 0.1)
-  }
-  
-  &.level-4 {
-    background: rgba(26, 70, 90, 0.11)
-  }
-  
-  &.level-5 {
-    background: rgba(30, 60, 80, 0.12)
-  }
-  
-  &.level-6 {
-    background: rgba(34, 50, 70, 0.13)
-  }
-  
-  &.level-7 {
-    background: rgba(38, 40, 60, 0.14)
-  }
-  
-  &.level-8 {
-    background: rgba(42, 30, 50, 0.15)
-  }
-}
-
-.level-dot {
-  display: inline-block
-  width: 0.2rem
-  height: 0.2rem
-  background: rgba(1, 162, 190, 0.6)
-  border-radius: 50%
-  margin-right: 0.25rem
-}
-</style>

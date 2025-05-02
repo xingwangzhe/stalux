@@ -1,0 +1,100 @@
+.social-links {
+  display: flex
+  justify-content: center
+  align-items: center
+  margin: 25px auto
+  width: 90%
+  max-width: 800px
+  
+  ul {
+    display: flex
+    flex-wrap: wrap
+    justify-content: center
+    list-style: none
+    padding: 0
+    margin: 0
+    gap: 10px
+  }
+  
+  li {
+    margin: 5px
+  }
+  
+  a {
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 48px
+    height: 48px
+    border-radius: 50%
+    transition: all 0.3s ease
+    color: #ffffff
+    text-decoration: none
+    background-color: rgba(255, 255, 255, 0.1)
+    
+    &:hover {
+      transform: translateY(-3px)
+      background-color: rgba(255, 255, 255, 0.2)
+    }
+  }
+  
+  i {
+    font-size: 1.5rem
+  }
+}
+
+/* 为bilibili自定义图标 */
+.custom-icon {
+  font-style: normal
+  font-weight: bold
+  font-size: 1.3rem
+}
+
+.sr-only {
+  position: absolute
+  width: 1px
+  height: 1px
+  padding: 0
+  margin: -1px
+  overflow: hidden
+  clip: rect(0, 0, 0, 0)
+  white-space: nowrap
+}
+
+/* 添加svg图标的样式 */
+.icon-container {
+  svg {
+    width: 24px
+    height: 24px
+    font-size: 1.5rem
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .social-links {
+    margin: 20px auto
+    
+    ul {
+      gap: 5px
+    }
+    
+    a {
+      width: 44px
+      height: 44px
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .social-links {
+    a {
+      width: 40px
+      height: 40px
+    }
+    
+    i, .icon-container svg {
+      font-size: 1.2rem
+    }
+  }
+}
