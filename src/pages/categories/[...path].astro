@@ -5,19 +5,22 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
 import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
+import { processFrontmatter } from '../../utils/process-frontmatter';
 import dayjs from 'dayjs';
 import CategoryTree from '../../components/categories/CategoryTree.astro';
 import { extractCategoryTrees } from '../../components/categories/CategoryUtils';
 import '../../styles/pages/categories/path.styl';
 
 export async function getStaticPaths() {
+  // 获取所有文章并处理frontmatter
   const allPosts = await getCollection('posts');
+  const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
   
   // 提取所有分类路径
   const categoryPaths = new Set();
   
   // 递归收集所有分类路径
-  function collectCategoryPaths(categories, parentPath = '') {
+  function collectCategoryPaths(categories: any[], parentPath = '') {
     if (!categories || !Array.isArray(categories)) return;
     
     categories.forEach(category => {
@@ -60,7 +63,7 @@ export async function getStaticPaths() {
   }
   
   // 处理每篇文章的分类
-  allPosts.forEach(post => {
+  processedPosts.forEach(post => {
     if (post.data.categories) {
       const categories = Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories];
       collectCategoryPaths(categories);
@@ -86,14 +89,18 @@ const { categoryPath } = Astro.props;
 const pathSegments = categoryPath.split('/');
 const currentCategory = pathSegments[pathSegments.length - 1];
 
-// 使用内容合集API过滤属于当前分类的文章
-function categoryFilter(post) {
+// 获取所有文章并处理frontmatter
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+
+// 过滤属于当前分类的文章
+function isPostInCategory(post: { data: { categories: any; }; }, targetPath: string) {
   if (!post.data.categories) return false;
   
   // 构建文章分类的所有路径
-  const postCategoryPaths = [];
+  const postCategoryPaths: string[] = [];
   
-  function buildCategoryPaths(categories, parentPath = '') {
+  function buildCategoryPaths(categories: any[], parentPath = '') {
     if (!Array.isArray(categories)) return;
     
     categories.forEach(cat => {
@@ -118,16 +125,16 @@ function categoryFilter(post) {
   buildCategoryPaths(categories);
   
   // 检查文章分类路径是否包含目标路径
-  return postCategoryPaths.some(path => path === categoryPath);
+  return postCategoryPaths.some(path => path === targetPath);
 }
 
-// 过滤和排序文章 - 直接使用内容合集过滤API
-const posts = await getCollection('posts', categoryFilter);
+// 过滤和排序文章
+const categoryPosts = processedPosts.filter(post => isPostInCategory(post, categoryPath));
 
-// 使用内容合集API排序功能
-const sortedPosts = posts.sort((a, b) => {
+// 排序文章
+const sortedPosts = categoryPosts.sort((a, b) => {
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-  const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
   return dateB - dateA;  // 降序排序
 });
 
@@ -155,7 +162,7 @@ const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
         <h1 class="page-title">
           <span class="category-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
             </svg>
           </span>
           {/* 面包屑导航 */}

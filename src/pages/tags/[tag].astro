@@ -5,18 +5,20 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
 import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
+import { processFrontmatter } from '../../utils/process-frontmatter';
 import dayjs from 'dayjs';
 import '../../styles/pages/tags/tag.styl';
 
 export async function getStaticPaths() {
-  // 获取所有文章
+  // 获取所有文章并处理frontmatter
   const allPosts = await getCollection('posts');
+  const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
   
   // 提取所有唯一标签
   const allTags = new Set();
-  allPosts.forEach(post => {
+  processedPosts.forEach(post => {
     const tags = post.data.tags || [];
-    tags.forEach(tag => {
+    tags.forEach((tag: String) => {
       if (tag.trim()) {
         allTags.add(tag);
       }
@@ -32,13 +34,16 @@ export async function getStaticPaths() {
 
 const { tag } = Astro.props;
 
-// 使用内容合集API的filter方法过滤拥有特定标签的文章
-const taggedPosts = await getCollection('posts', ({ data }) => {
-  const postTags = data.tags || [];
-  return postTags.includes(tag as string);
-});
+// 获取所有文章并处理frontmatter
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
-// 使用内容合集API的sort方法按日期排序文章
+// 过滤包含特定标签的文章
+const taggedPosts = processedPosts.filter(post => 
+  (post.data.tags || []).includes(tag)
+);
+
+// 排序文章
 const sortedPosts = taggedPosts.sort((a, b) => {
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
   const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
@@ -92,7 +97,7 @@ const pageTitle = `标签: ${tag} | ${config_site.title}`;
                 </a>
                 {post.data.tags && post.data.tags.length > 0 && (
                   <div class="post-tags">
-                    {post.data.tags.map((postTag) => (
+                    {post.data.tags.map((postTag: unknown) => (
                       <a href={`/tags/${postTag}`} class={`post-tag ${postTag === tag ? 'current' : ''}`}>
                         {postTag}
                       </a>

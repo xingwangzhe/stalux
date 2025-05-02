@@ -5,16 +5,18 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.vue';
 import { config_site } from '../../utils/config-adapter';
 import '../../../src/styles/global.styl';
+import { processFrontmatter } from '../../utils/process-frontmatter';
 import '../../styles/pages/tags/index.styl';
 
-// 获取文章集合 - 直接使用getCollection无需额外处理
-const posts = await getCollection('posts');
+// 获取文章集合并处理frontmatter
+const allPosts = await getCollection('posts');
+const posts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
-// 提取所有标签并计算数量 - 更直观的实现
+// 提取所有标签并计算数量
 const tagCounts: Record<string, number> = {};
 posts.forEach(post => {
   const tags = post.data.tags || [];
-  tags.forEach(tag => {
+  tags.forEach((tag: string) => {
     if (tag.trim()) {
       tagCounts[tag] = (tagCounts[tag] || 0) + 1;
     }
