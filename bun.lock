@@ -366,7 +366,7 @@
 
     "@waline/api": ["@waline/api@1.0.0", "", {}, "sha512-o0lWjt+/oZH1/4q3DJxTf5kdkgNbSmoLRXIiGznW225A6hq9/9IkOO1DiAijIsxGYJS6psFC+58+IzkD1EerBA=="],
 
-    "@waline/client": ["@waline/client@3.5.6", "", { "dependencies": { "@vueuse/core": "^13.0.0", "@waline/api": "1.0.0", "autosize": "^6.0.1", "marked": "^15.0.7", "marked-highlight": "^2.2.1", "recaptcha-v3": "^1.11.3", "vue": "^3.5.13" } }, "sha512-K+mfUpuLilzFUN3G84ytB02v5EkaaU0eOyN6BILcSozjUpSsggbgcy73WBiuUVg8u7pRsIvx192/PclJYvaWCg=="],
+    "@waline/client": ["@waline/client@3.5.7", "", { "dependencies": { "@vueuse/core": "^13.1.0", "@waline/api": "1.0.0", "autosize": "^6.0.1", "marked": "^15.0.11", "marked-highlight": "^2.2.1", "recaptcha-v3": "^1.11.3", "vue": "^3.5.13" } }, "sha512-9DMlO9fiOgnBQRCIlyasfe0mbpIe4fgecsbOLhai1TbAa9XONFfZYvHoqppedfiyT8Wi156PUFgGNkXFIJowEg=="],
 
     "acorn": ["acorn@8.14.1", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg=="],
 
