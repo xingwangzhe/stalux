@@ -1,13 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import { config_site } from '../../utils/config-adapter';
-import Head from '../../components/Head.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.vue';
-import '../../../src/styles/global.styl';
 import { processFrontmatter } from '../../utils/process-frontmatter';
 import dayjs from 'dayjs';
-import '../../styles/pages/tags/tag.styl';
+import TagsLayout from '../../layouts/TagsLayout.astro';
 
 export async function getStaticPaths() {
   // 获取所有文章并处理frontmatter
@@ -46,7 +42,7 @@ const taggedPosts = processedPosts.filter(post =>
 // 排序文章
 const sortedPosts = taggedPosts.sort((a, b) => {
   const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-  const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
   return dateB - dateA; // 降序排序
 });
 
@@ -54,64 +50,51 @@ const sortedPosts = taggedPosts.sort((a, b) => {
 const pageTitle = `标签: ${tag} | ${config_site.title}`;
 ---
 
-<!DOCTYPE html>
-<html lang={config_site.lang}>
-  <Head 
-    title={pageTitle}
-    description={`"${tag}" 标签相关的所有文章`}
-    author={config_site.author}
-    url={config_site.url + '/tags/' + tag}
-    noindex={true}
-  >
-  </Head>
-  <body>
-    <script>
-      import '../../scripts/background.ts';
-    </script>
-    <Header />
-    <main class="tag-detail-container">
-      <div class="page-header">
-        <h1 class="page-title">
-          <span class="tag-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-              <line x1="7" y1="7" x2="7.01" y2="7"></line>
-            </svg>
-          </span>
-          {tag}
-        </h1>
-        <p class="page-description">共找到 {sortedPosts.length} 篇相关文章</p>
-        <a href="/tags/" class="back-link">返回标签云</a>
-      </div>
-
-      <div class="post-list-container">
-        {sortedPosts.length > 0 ? (
-          <ul class="post-list">
-            {sortedPosts.map(post => (
-              <li class="post-item">
-                <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
-                  <div class="post-date">
-                    {dayjs(post.data.date).format('YYYY-MM-DD')}
-                  </div>
-                  <h2 class="post-title">{post.data.title}</h2>
-                </a>
-                {post.data.tags && post.data.tags.length > 0 && (
-                  <div class="post-tags">
-                    {post.data.tags.map((postTag: unknown) => (
-                      <a href={`/tags/${postTag}`} class={`post-tag ${postTag === tag ? 'current' : ''}`}>
-                        {postTag}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div class="no-posts">未找到与标签 "{tag}" 相关的文章</div>
-        )}
-      </div>
-    </main>
-    <Footer />
-  </body>
-</html>
+<TagsLayout
+  title={pageTitle}
+  description={`"${tag}" 标签相关的所有文章`}
+  url={config_site.url + '/tags/' + tag}
+  noindex={true}
+>
+  <Fragment slot="header">
+    <h1 class="page-title">
+      <span class="tag-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+          <line x1="7" y1="7" x2="7.01" y2="7"></line>
+        </svg>
+      </span>
+      {tag}
+    </h1>
+    <p class="page-description">共找到 {sortedPosts.length} 篇相关文章</p>
+    <a href="/tags/" class="back-link">返回标签云</a>
+  </Fragment>
+  
+  <div slot="content" class="post-list-container">
+    {sortedPosts.length > 0 ? (
+      <ul class="post-list">
+        {sortedPosts.map(post => (
+          <li class="post-item">
+            <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
+              <div class="post-date">
+                {dayjs(post.data.date).format('YYYY-MM-DD')}
+              </div>
+              <h2 class="post-title">{post.data.title}</h2>
+            </a>
+            {post.data.tags && post.data.tags.length > 0 && (
+              <div class="post-tags">
+                {post.data.tags.map((postTag: unknown) => (
+                  <a href={`/tags/${postTag}`} class={`post-tag ${postTag === tag ? 'current' : ''}`}>
+                    {postTag}
+                  </a>
+                ))}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div class="no-posts">未找到与标签 "{tag}" 相关的文章</div>
+    )}
+  </div>
+</TagsLayout>

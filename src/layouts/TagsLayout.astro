@@ -1,0 +1,44 @@
+---
+import { config_site } from '../utils/config-adapter';
+import Head from '../components/Head.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.vue';
+import '../../src/styles/global.styl';
+import '../styles/layouts/tags.styl';
+
+export interface Props {
+  title: string;
+  description: string;
+  url: string;
+  noindex?: boolean;
+}
+
+const { title, description, url, noindex = true } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={config_site.lang}>
+  <Head 
+    title={title}
+    description={description}
+    author={config_site.author}
+    url={url}
+    noindex={noindex}
+  >
+    <slot name="head" />
+  </Head>
+  <body>
+    <script>
+      import '../scripts/background.ts';
+    </script>
+    <Header />
+    <main class="tags-layout-container">
+      <div class="page-header">
+        <slot name="header" />
+      </div>
+
+      <slot name="content" />
+    </main>
+    <Footer />
+  </body>
+</html>

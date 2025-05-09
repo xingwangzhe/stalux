@@ -1,12 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import { config_site } from '../../utils/config-adapter';
-import Head from '../../components/Head.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.vue';
-import '../../../src/styles/global.styl';
 import { processFrontmatter } from '../../utils/process-frontmatter';
-import '../../styles/pages/tags/index.styl';
+import TagsLayout from '../../layouts/TagsLayout.astro';
 
 // 获取文章集合并处理frontmatter
 const allPosts = await getCollection('posts');
@@ -32,41 +28,28 @@ const sortedTags = Object.entries(tagCounts)
 const pageTitle = '标签云 | ' + config_site.title;
 ---
 
-<!DOCTYPE html>
-<html lang={config_site.lang}>
-  <Head 
-    title={pageTitle}
-    description="所有文章标签列表"
-    author={config_site.author}
-    url={config_site.url + '/tags/'}
-    noindex={true}
-  >
-  </Head>
-  <body>
-    <script>
-      import '../../scripts/background.ts';
-    </script>
-    <Header />
-    <main class="tags-container">
-      <div class="page-header">
-        <h1 class="page-title">标签云</h1>
-        <p class="page-description">探索不同主题的文章标签</p>
-      </div>
-
-      <div class="tags-cloud">
-        {sortedTags.length > 0 ? (
-          sortedTags.map(({ tag, count }) => (
-            <a href={`/tags/${tag}`} class="tag-item" data-count={count}>
-              <span class="tag-name">{tag}</span>
-              <span class="tag-count">{count}</span>
-            </a>
-          ))
-        ) : (
-          <div class="no-tags">暂无标签</div>
-        )}
-      </div>
-    </main>
-    <Footer />
-  </body>
-</html>
+<TagsLayout
+  title={pageTitle}
+  description="所有文章标签列表"
+  url={config_site.url + '/tags/'}
+  noindex={true}
+>
+  <Fragment slot="header">
+    <h1 class="page-title">标签云</h1>
+    <p class="page-description">探索不同主题的文章标签</p>
+  </Fragment>
+  
+  <div slot="content" class="tags-cloud">
+    {sortedTags.length > 0 ? (
+      sortedTags.map(({ tag, count }) => (
+        <a href={`/tags/${tag}`} class="tag-item" data-count={count}>
+          <span class="tag-name">{tag}</span>
+          <span class="tag-count">{count}</span>
+        </a>
+      ))
+    ) : (
+      <div class="no-tags">暂无标签</div>
+    )}
+  </div>
+</TagsLayout>
 
