@@ -22,12 +22,38 @@ const pageTitle = `${title} | ${config_site.title}`;
 ---
 
 <!DOCTYPE html>
-<html lang={config_site.lang} class="dark">
-  <Head 
-    title={pageTitle}
-    description={ description || title}
+<html lang={config_site.lang} class="dark">  <Head 
+    title={title}
+    titleTemplate={config_site.titleTemplate}
+    description={description || title}
     author={config_site.author}
     url={config_site.url + '/about/'}
+    canonical={config_site.url + '/about/'}
+    noindex={noindex}
+    openGraph={config_site.openGraph ? {
+      ...config_site.openGraph,
+      basic: {
+        ...config_site.openGraph.basic,
+        title: title,
+        url: config_site.url + '/about/'
+      },
+      optional: {
+        ...config_site.openGraph?.optional,
+        description: description || title
+      }
+    } : undefined}
+    twitter={config_site.twitter ? {
+      ...config_site.twitter,
+      title: title,
+      description: description || title
+    } : undefined}
+    structuredData={{
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "name": title,
+      "description": description || title,
+      "url": config_site.url + '/about/'
+    }}
   />
   <body>
     <script>

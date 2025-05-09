@@ -1,0 +1,81 @@
+// path-content.styl - 分类详情页面的特定样式
+
+// 文章列表样式
+.post-list {
+  list-style: none
+  padding: 0
+  margin: 0
+}
+
+.post-item {
+  background: rgba(255, 255, 255, 0.03)
+  border-radius: 0.5rem
+  padding: 1rem
+  margin-bottom: 1rem
+  transition: all 0.3s ease
+  position: relative
+  border-left: 2px solid rgba(1, 162, 190, 0.4)
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05)
+    transform: translateY(-2px)
+    border-left-color: rgba(1, 162, 190, 0.8)
+  }
+}
+
+.post-link {
+  text-decoration: none
+  color: #ffffff
+  display: block
+  margin-bottom: 0.6rem
+}
+
+.post-date {
+  font-size: 0.85rem
+  color: rgba(255, 255, 255, 0.6)
+  margin-bottom: 0.3rem
+}
+
+.post-title {
+  margin: 0
+  font-size: 1.2rem
+  font-weight: normal
+  color: rgba(255, 255, 255, 0.9)
+  line-height: 1.4
+  transition: color 0.2s ease
+  
+  &:hover {
+    color: rgba(1, 162, 190, 0.9)
+  }
+}
+
+// 无文章提示
+.no-posts {
+  text-align: center
+  padding: 3rem 1rem
+  color: rgba(255, 255, 255, 0.7)
+  font-size: 1.1rem
+  background-color: rgba(0, 0, 0, 0.1)
+  border-radius: 0.5rem
+}
+
+// 响应式样式
+@media (max-width: 768px) {
+  .post-item {
+    padding: 0.8rem
+  }
+  
+  .post-title {
+    font-size: 1.1rem
+  }
+}
+
+@media (max-width: 480px) {
+  .post-item {
+    padding: 0.7rem
+  }
+  
+  .post-title {
+    font-size: 1rem
+  }
+}

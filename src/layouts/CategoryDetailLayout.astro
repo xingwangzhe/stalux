@@ -1,0 +1,75 @@
+---
+import Head from '../components/Head.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.vue';
+import '../../src/styles/global.styl';
+import '../styles/layouts/CategoryDetailLayout.styl';
+import '../styles/pages/categories/path-content.styl';
+
+export interface Props {
+  title: string;
+  description: string;
+  author: string;
+  url: string;
+  pathSegments: string[];
+  postCount: number;
+  noIndex?: boolean;
+}
+
+const { title, description, author, url, pathSegments, postCount, noIndex = false } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">  <Head 
+    title={title}
+    description={description}
+    author={author}
+    url={url}
+    canonical={url}
+    noindex={noIndex}
+  >
+    {noIndex && <meta name="robots" content="noindex, nofollow" slot="robots" />}
+  </Head>
+  <body>
+    <script>
+      import '../scripts/background.ts';
+    </script>
+    <Header />
+    <main class="category-detail-container">
+      <div class="page-header">
+        <h1 class="page-title">
+          <span class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </span>
+          {/* 面包屑导航 */}
+          {pathSegments.map((segment, index) => {
+            if (index > 0) {
+              return (
+                <span>
+                  <span class="breadcrumb-separator">/</span>
+                  <span class={`breadcrumb-item ${index === pathSegments.length - 1 ? 'current' : ''}`}>
+                    {segment}
+                  </span>
+                </span>
+              );
+            }
+            return (
+              <span class={`breadcrumb-item ${index === pathSegments.length - 1 ? 'current' : ''}`}>
+                {segment}
+              </span>
+            );
+          })}
+        </h1>
+        <p class="page-description">共找到 {postCount} 篇相关文章</p>
+        <a href="/categories/" class="back-link">返回分类列表</a>
+      </div>
+
+      <div class="post-list-container">
+        <slot />
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>

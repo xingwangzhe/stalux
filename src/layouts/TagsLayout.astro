@@ -17,12 +17,12 @@ const { title, description, url, noindex = true } = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang={config_site.lang}>
-  <Head 
+<html lang={config_site.lang}>  <Head 
     title={title}
     description={description}
     author={config_site.author}
     url={url}
+    canonical={url}
     noindex={noindex}
   >
     <slot name="head" />

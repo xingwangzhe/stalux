@@ -14,8 +14,7 @@ import AuthorCard from '../components/others/AuthorCard.astro'
 const avatarImage = config_site.avatarPath || avatar 
 ---
 <!DOCTYPE html>
-<html lang={config_site.lang}>
-    <Head
+<html lang={config_site.lang}>    <Head
         title={config_site.title}
         description={config_site.description}
         url={config_site.url}
@@ -25,11 +24,17 @@ const avatarImage = config_site.avatarPath || avatar
         locale={config_site.locale}
         siteName={config_site.siteName}
         favicon={config_site.favicon}
-        appleTouchIcon={config_site.appleTouchIcon}
         ogImage={config_site.ogImage}
+        openGraph={config_site.openGraph}
         twitterImage={config_site.twitterImage}
         twitterCreator={config_site.twitterCreator}
+        twitter={config_site.twitter}
+        extend={config_site.extend}
         structuredData={config_site.structuredData}
+        titleTemplate={config_site.titleTemplate}
+        titleDefault={config_site.titleDefault}
+        canonical={config_site.canonical}
+        head={config_site.head}
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
     <script>

@@ -1,15 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import Head from '../../components/Head.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.vue';
 import { config_site } from '../../utils/config-adapter';
-import '../../../src/styles/global.styl';
 import { processFrontmatter } from '../../utils/process-frontmatter';
 import dayjs from 'dayjs';
 import CategoryTree from '../../components/categories/CategoryTree.astro';
 import { extractCategoryTrees } from '../../components/categories/CategoryUtils';
-import '../../styles/pages/categories/path.styl';
+import CategoryDetailLayout from '../../layouts/CategoryDetailLayout.astro';
 
 export async function getStaticPaths() {
   // 获取所有文章并处理frontmatter
@@ -142,82 +138,40 @@ const sortedPosts = categoryPosts.sort((a, b) => {
 const pageTitle = `分类: ${currentCategory} | ${config_site.title}`;
 ---
 
-<!DOCTYPE html>
-<html lang={config_site.lang}>
-  <Head 
-    title={pageTitle}
-    description={`"${currentCategory}" 分类下的所有文章`}
-    author={config_site.author}
-    url={config_site.url + '/categories/' + categoryPath}
-  >
-    <meta name="robots" content="noindex, nofollow" slot="robots" />
-  </Head>
-  <body>
-    <script>
-      import '../../scripts/background.ts';
-    </script>
-    <Header />
-    <main class="category-detail-container">
-      <div class="page-header">
-        <h1 class="page-title">
-          <span class="category-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-            </svg>
-          </span>
-          {/* 面包屑导航 */}
-          {pathSegments.map((segment, index) => {
-            if (index > 0) {
-              return (
-                <span>
-                  <span class="breadcrumb-separator">/</span>
-                  <span class={`breadcrumb-item ${index === pathSegments.length - 1 ? 'current' : ''}`}>
-                    {segment}
-                  </span>
-                </span>
-              );
-            }
-            return (
-              <span class={`breadcrumb-item ${index === pathSegments.length - 1 ? 'current' : ''}`}>
-                {segment}
-              </span>
-            );
-          })}
-        </h1>
-        <p class="page-description">共找到 {sortedPosts.length} 篇相关文章</p>
-        <a href="/categories/" class="back-link">返回分类列表</a>
-      </div>
-
-      <div class="post-list-container">
-        {sortedPosts.length > 0 ? (
-          <ul class="post-list">
-            {sortedPosts.map(post => {
-              // 提取文章分类的树状结构
-              const categoriesData = extractCategoryTrees(
-                Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories]
-              );
-              
-              return (
-                <li class="post-item">
-                  <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
-                    <div class="post-date">
-                      {dayjs(post.data.date).format('YYYY-MM-DD')}
-                    </div>
-                    <h2 class="post-title">{post.data.title}</h2>
-                  </a>
-                  
-                  {categoriesData.trees.length > 0 && (
-                    <CategoryTree categoriesData={categoriesData} currentPath={categoryPath} />
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <div class="no-posts">未找到与分类 "{currentCategory}" 相关的文章</div>
-        )}
-      </div>
-    </main>
-    <Footer />
-  </body>
-</html>
+<CategoryDetailLayout
+  title={pageTitle}
+  description={`"${currentCategory}" 分类下的所有文章`}
+  author={config_site.author}
+  url={config_site.url + '/categories/' + categoryPath}
+  pathSegments={pathSegments}
+  postCount={sortedPosts.length}
+  noIndex={true}
+>
+  {sortedPosts.length > 0 ? (
+    <ul class="post-list">
+      {sortedPosts.map(post => {
+        // 提取文章分类的树状结构
+        const categoriesData = extractCategoryTrees(
+          Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories]
+        );
+        
+        return (
+          <li class="post-item">
+            <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
+              <div class="post-date">
+                {dayjs(post.data.date).format('YYYY-MM-DD')}
+              </div>
+              <h2 class="post-title">{post.data.title}</h2>
+            </a>
+            
+            {categoriesData.trees.length > 0 && (
+              <CategoryTree categoriesData={categoriesData} currentPath={categoryPath} />
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  ) : (
+    <div class="no-posts">未找到与分类 "{currentCategory}" 相关的文章</div>
+  )}
+</CategoryDetailLayout>

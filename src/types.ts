@@ -1,3 +1,64 @@
+// 从 astro-seo 导入 TwitterCardType 类型用于类型定义
+import type { TwitterCardType } from 'astro-seo';
+
+/**
+ * Open Graph 配置类型定义
+ */
+export interface OpenGraphConfig {
+  basic: {
+    title: string;
+    type: string;
+    image: string;
+    url?: string;
+  };
+  optional?: {
+    audio?: string;
+    description?: string;
+    determiner?: string;
+    locale?: string;
+    localeAlternate?: string[];
+    siteName?: string;
+    video?: string;
+  };
+  image?: {
+    url?: string;
+    secureUrl?: string;
+    type?: string;
+    width?: number;
+    height?: number;
+    alt?: string;
+  };
+  article?: {
+    publishedTime?: string;
+    modifiedTime?: string;
+    expirationTime?: string;
+    authors?: string[];
+    section?: string;
+    tags?: string[];
+  };
+}
+
+/**
+ * Twitter 卡片配置类型定义
+ */
+export interface TwitterConfig {
+  card?: TwitterCardType;
+  site?: string;
+  creator?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+}
+
+/**
+ * 扩展元标签配置
+ */
+export interface ExtendTagsConfig {
+  meta?: Record<string, any>[];
+  link?: Record<string, any>[];
+}
+
 /**
  * 站点配置类型定义
  */
@@ -16,13 +77,24 @@ export interface SiteConfig {
   // 资源配置
   favicon?: string;
   
+  // SEO 高级配置
+  titleTemplate?: string;    // 标题模板，如 "%s | 网站名称"
+  titleDefault?: string;     // 默认标题
+  canonical?: string;        // 规范链接
+  noindex?: boolean;         // 控制页面是否被索引
+  
   // 社交媒体配置
   ogImage?: string;
+  openGraph?: OpenGraphConfig;
   twitterImage?: string;
   twitterCreator?: string;
+  twitter?: TwitterConfig;
+  
+  // 扩展标签配置
+  extend?: ExtendTagsConfig;
   
   // 结构化数据
-  structuredData?: string;
+  structuredData?: string | Record<string, any>;
   
   // 导航配置
   nav?: NavItem[];
@@ -41,18 +113,18 @@ export interface SiteConfig {
   // 评论系统配置
   comment?: CommentConfig;
   
-  // 页脚配置 - 备案信息
-  enableIcpBeian?: boolean;         // 是否启用ICP备案显示
+  // 页脚配置 - 整合了所有页脚相关设置
+  footer?: FooterConfig;
+  
+  // 兼容旧版本的配置 (将在未来版本中移除)
+  buildtime?: string | Date;       // 站点构建时间
+  enableIcpBeian?: boolean;        // 是否启用ICP备案显示
   icpBeian?: string;
   enablePublicSecurityBeian?: boolean; // 是否启用公安备案显示
   publicSecurityBeian?: string;
   publicSecurityBeianNumber?: string;
-  
-  // 页脚配置 - 徽章
   badges?: BadgeLink[];
   customBadges?: BadgeOptions[];
-
-  // 页脚配置 - 版权和主题信息
   copyright?: {
     enabled?: boolean;
     startYear?: number;
@@ -60,6 +132,45 @@ export interface SiteConfig {
   };
   showPoweredBy?: boolean;
   showThemeInfo?: boolean;
+}
+
+/**
+ * 页脚配置类型定义
+ */
+export interface FooterConfig {
+  // 站点构建时间
+  buildtime?: string | Date;
+  
+  // 版权信息
+  copyright?: {
+    enabled?: boolean;
+    startYear?: number;
+    customText?: string;
+  };
+  
+  // 主题信息显示
+  theme?: {
+    showPoweredBy?: boolean;
+    showThemeInfo?: boolean;
+  };
+  
+  // 备案信息
+  beian?: {
+    // ICP备案
+    icp?: {
+      enabled?: boolean;
+      number?: string;
+    };
+    // 公安备案
+    security?: {
+      enabled?: boolean;
+      text?: string;
+      number?: string;
+    };
+  };
+  
+  // 徽章
+  badges?: BadgeOptions[];
 }
 
 /**

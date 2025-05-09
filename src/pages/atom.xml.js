@@ -1,7 +1,7 @@
 
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
-import { config_site } from '../utils/config-adapter.ts';
+import { config_site } from '../utils/config-adapter';
 import { processFrontmatter } from '../utils/process-frontmatter.ts';
 export async function GET(context) {
   // 获取所有文章

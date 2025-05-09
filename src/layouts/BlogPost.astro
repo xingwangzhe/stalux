@@ -135,11 +135,56 @@ const categoryStr = categoriesToString(categories);
 
 <html lang={config_site.lang} class="dark">
 	<Head 
-		title={title+'|'+config_site.title}
-		description={description150(description|| '这是默认的文章描述')}
-		author={ auther || config_site.author}
+		title={title}
+		titleTemplate={config_site.titleTemplate}
+		description={description150(description || '这是默认的文章描述')}
+		author={auther || config_site.author}
 		url={config_site.url + '/posts/' + abbrlink}
-		keywords={ keyws }  || '关键字1, 关键字2'
+		canonical={config_site.url + '/posts/' + abbrlink}
+		keywords={keyws || '关键字1, 关键字2'}
+		structuredData={{
+			"@context": "https://schema.org",
+			"@type": "BlogPosting",
+			"headline": title,
+			"description": description150(description || '这是默认的文章描述'),
+			"author": {
+				"@type": "Person",
+				"name": auther || config_site.author
+			},
+			"datePublished": date,
+			"dateModified": updated || date,
+			"mainEntityOfPage": {
+				"@type": "WebPage",
+				"@id": config_site.url + '/posts/' + abbrlink
+			}
+		}}
+		openGraph={{
+			basic: {
+				title: title,
+				type: "article",
+				image: config_site.ogImage,
+				url: config_site.url + '/posts/' + abbrlink,
+			},
+			optional: {
+				description: description150(description || '这是默认的文章描述'),
+				locale: config_site.locale,
+				siteName: config_site.siteName,
+			},
+			article: {
+				publishedTime: date?.toString(),
+				modifiedTime: updated?.toString(),
+				tags: tags,
+				section: categoryArray[0] || "Blog",
+			}
+		}}
+		twitter={{
+			card: "summary_large_image",
+			site: config_site.siteName,
+			creator: config_site.twitterCreator,
+			title: title,
+			description: description150(description || '这是默认的文章描述'),
+			image: config_site.twitterImage || config_site.ogImage
+		}}
 	/>
 	<body>
 		<Header />

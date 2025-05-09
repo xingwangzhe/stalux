@@ -15,12 +15,18 @@ export const site: SiteConfig = {
   title: 'Stalux',                        // 网站标题，SEO最重要的因素之一
   description: '博客主题Stalux',          // 网站描述，建议150-160字符以获得最佳SEO效果
   url: 'https://stalux.needhelp.icu',     // 完整网站URL(包含https协议)
-  
   /**
    * 重要SEO辅助配置
    */
   keywords: '关键词',                     // 网站关键词，虽然权重下降但仍有参考价值
   lang: 'zh-CN',                          // 语言设置，有助于地区搜索引擎理解内容
+  
+  /**
+   * SEO 高级配置
+   */
+  titleTemplate: '%s | Stalux',           // 标题模板，%s 将被替换为页面标题
+  titleDefault: 'Stalux博客',             // 默认标题，当没有指定标题时使用
+  canonical: 'https://stalux.needhelp.icu', // 规范链接，防止重复内容
   
   /**
    * 基础站点信息
@@ -40,25 +46,66 @@ export const site: SiteConfig = {
    * 社交媒体优化配置
    * 主要针对社交平台分享显示
    */
-  ogImage: 'https://www.baidu.com/og-image.jpg',        // Open Graph 分享图片
-  twitterImage: 'https://www.baidu.com/twitter-image.jpg', // Twitter分享图片
+  ogImage: 'https://www.baidu.com/og-image.jpg',        // Open Graph 分享图片 (简单配置)
+  openGraph: {                                          // Open Graph 完整配置
+    basic: {
+      title: 'Stalux - 专业博客主题',
+      type: 'website',
+      image: 'https://www.baidu.com/og-image.jpg',
+      url: 'https://stalux.needhelp.icu',
+    },
+    optional: {
+      description: '博客主题Stalux - 为内容创作者提供专业的展示平台',
+      locale: 'zh_CN',
+      siteName: 'Stalux'
+    },
+    image: {
+      alt: 'Stalux主题预览图'
+    }
+  },
+  twitterImage: 'https://www.baidu.com/twitter-image.jpg', // Twitter分享图片 (简单配置)
   twitterCreator: '@yourTwitterHandle',                  // Twitter账号
+  twitter: {                                            // Twitter 完整配置
+    card: 'summary_large_image',
+    site: 'Stalux',
+    creator: '@yourTwitterHandle',
+    title: 'Stalux - 专业博客主题',
+    description: '博客主题Stalux - 为内容创作者提供专业的展示平台',
+    image: 'https://www.baidu.com/twitter-image.jpg',
+    imageAlt: 'Stalux主题预览图'
+  },
+  
+  /**
+   * 额外HTML标签扩展
+   * 用于添加自定义meta和link标签
+   */
+  extend: {
+    meta: [
+      { name: 'application-name', content: 'Stalux' },
+      { name: 'apple-mobile-web-app-title', content: 'Stalux' },
+      { name: 'theme-color', content: '#3367D6' }
+    ],
+    link: [
+      { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+      { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#5bbad5' }
+    ]
+  },
   
   /**
    * 高级SEO配置
    * 结构化数据有助于搜索引擎展示富结果
    */
-  structuredData: JSON.stringify({
+  structuredData: {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "sitename",
+    "name": "Stalux",
     "url": "https://stalux.needhelp.icu",
-    "description": "描述啊",
+    "description": "博客主题Stalux - 为内容创作者提供专业的展示平台",
     "author": {
       "@type": "Person",
       "name": "xingwangzhe",
     }
-  }),
+  },
 
   /**
    * 站点导航配置
@@ -150,63 +197,73 @@ export const site: SiteConfig = {
   ],
 
   /**
-   * 页脚配置 - 备案信息
-   * 如果不需要可以留空或删除
+   * 页脚配置
+   * 整合所有页脚相关设置，便于管理
    */
-  enableIcpBeian: true,                     // 是否启用ICP备案显示
-  icpBeian: '辽ICP备XXXXXXXX号',             // ICP备案号，如不需要可留空
-
-  // 公安备案信息配置
-  enablePublicSecurityBeian: true,          // 是否启用公安备案显示
-  publicSecurityBeian: '辽公网安备 XXXXXXXXXXXX号',  // 公安备案号文字
-  publicSecurityBeianNumber: 'XXXXXXXXXXXX',  // 公安备案号数字部分(用于链接跳转)
-
-  /**
-   * 页脚配置 - 本地生成徽章
-   * 完全通过badge-maker本地生成，不依赖远程服务
-   * 参考：https://www.npmjs.com/package/badge-maker
-   */
-  customBadges: [
-    {
-      label: 'license',
-      message: 'MIT',
-      color: 'blue',
-      alt: 'License: MIT',
-      href: 'https://opensource.org/licenses/MIT'
+  footer: {
+    // 站点构建时间，用于计算运行时长
+    buildtime: '2024-6-20 10:00:00',  // 站点构建时间，支持多种格式
+    
+    // 版权信息
+    copyright: {
+      enabled: true,           // 是否启用版权信息
+      startYear: 2024,         // 可选：起始年份，如设置为2024，则显示2024-2025
+      customText: ''           // 可选：自定义版权文本，如为空则使用默认格式
     },
-    {
-      label: 'Built with',
-      message: '❤',
-      color: 'pink',
-      style: 'for-the-badge',
-      alt: 'Built with Love',
-      href: 'https://github.com/xingwangzhe'
+    
+    // 主题信息
+    theme: {
+      showPoweredBy: true,     // 是否显示"Powered by Astro"
+      showThemeInfo: true      // 是否显示"Theme is Stalux"
     },
-    {
-      label: 'Powered by',
-      message: 'Astro',
-      color: 'orange',
-      style: 'flat-square',
-      alt: 'Powered by Astro',
-      href: 'https://astro.build/'
+    
+    // 备案信息
+    beian: {
+      // ICP备案
+      icp: {
+        enabled: true,                    // 是否启用ICP备案显示
+        number: '辽ICP备XXXXXXXX号'        // ICP备案号，如不需要可留空
+      },
+      // 公安备案
+      security: {
+        enabled: true,                           // 是否启用公安备案显示
+        text: '辽公网安备 XXXXXXXXXXXX号',        // 公安备案号文字
+        number: 'XXXXXXXXXXXX'                   // 公安备案号数字部分(用于链接跳转)
+      }
     },
-    {
-      label: 'Theme',
-      message: 'Stalux',
-      color: 'blueviolet',
-      alt: 'Theme: Stalux',
-      href: 'https://stalux.needhelp.icu/'
-    }
-  ] as BadgeOptions[],
-  /**
-   * 页脚配置 - 版权和主题信息
-   */
-  copyright: {
-    enabled: true,           // 是否启用版权信息
-    startYear: 2023,         // 可选：起始年份，如设置为2023，则显示2023-2025
-    customText: ''           // 可选：自定义版权文本，如为空则使用默认格式
-  },
-  
-  showPoweredBy: true,       // 是否显示"Powered by Astro"
-  showThemeInfo: true        // 是否显示"Theme is Stalux"
+    
+    // 徽章配置
+    badges: [
+      {
+        label: 'license',
+        message: 'MIT',
+        color: 'blue',
+        alt: 'License: MIT',
+        href: 'https://opensource.org/licenses/MIT'
+      },
+      {
+        label: 'Built with',
+        message: '❤',
+        color: 'pink',
+        style: 'for-the-badge',
+        alt: 'Built with Love',
+        href: 'https://github.com/xingwangzhe'
+      },
+      {
+        label: 'Powered by',
+        message: 'Astro',
+        color: 'orange',
+        style: 'flat-square',
+        alt: 'Powered by Astro',
+        href: 'https://astro.build/'
+      },
+      {
+        label: 'Theme',
+        message: 'Stalux',
+        color: 'blueviolet',
+        alt: 'Theme: Stalux',
+        href: 'https://stalux.needhelp.icu/'
+      }
+    ] as BadgeOptions[]
+  }
 }

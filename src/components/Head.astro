@@ -1,14 +1,15 @@
 ---
 // Head.astro - 页面头部元数据组件
-// 从Vue组件转换而来
+// 使用 astro-seo 插件优化 SEO
 
 import { config_site } from '../utils/config-adapter.ts';
-import Favicon from '../images/favicon.ico'
+import { SEO, type TwitterCardType } from 'astro-seo';
+
 // 定义组件接收的属性
 interface Props {
-  title: string;
-  author: string;
-  description: string;
+  title?: string;
+  author?: string;
+  description?: string;
   favicon?: string;
   url?: string;
   keywords?: string;
@@ -18,68 +19,165 @@ interface Props {
   lang?: string;
   locale?: string;
   siteName?: string;
-  structuredData?: string;
+  structuredData?: string | Record<string, any>;
   noindex?: boolean; // 控制页面是否被索引
   head?: string;     // 硬嵌入的head内容
+  canonical?: string; // 规范链接
+  openGraph?: {      // 自定义 Open Graph 配置
+    basic: {
+      title: string;
+      type: string;
+      image: string;
+      url?: string;
+    },
+    optional?: {
+      audio?: string;
+      description?: string;
+      determiner?: string;
+      locale?: string;
+      localeAlternate?: string[];
+      siteName?: string;
+      video?: string;
+    },
+    image?: {
+      url?: string;
+      secureUrl?: string;
+      type?: string;
+      width?: number;
+      height?: number;
+      alt?: string;
+    },
+    article?: {
+      publishedTime?: string;
+      modifiedTime?: string;
+      expirationTime?: string;
+      authors?: string[];
+      section?: string;
+      tags?: string[];
+    }
+  };
+  twitter?: {         // 自定义 Twitter 卡片配置
+    card?: TwitterCardType;
+    site?: string;
+    creator?: string;
+    title?: string;
+    description?: string;
+    image?: string;
+    imageAlt?: string;
+  };
+  extend?: {          // 扩展元标签
+    link?: Record<string, any>[];
+    meta?: Record<string, any>[];
+  };
+  titleTemplate?: string; // 标题模板，如 "%s | 网站名称"
+  titleDefault?: string;  // 默认标题，用于替换模板中的%s
+}
+
+// 从站点配置获取默认值
+const siteDefaults = {
+  title: config_site.title,
+  description: config_site.description,
+  url: config_site.url,
+  author: config_site.author,
+  siteName: config_site.siteName,
+  favicon: config_site.favicon || '/favicon.ico',
+  lang: config_site.lang || 'zh-CN',
+  locale: config_site.locale || 'zh_CN',
+  keywords: config_site.keywords,
+  ogImage: config_site.ogImage,
+  twitterImage: config_site.twitterImage,
+  twitterCreator: config_site.twitterCreator,
+  head: config_site.head,
+  structuredData: config_site.structuredData,
 }
 
 // 接收组件属性
 const { 
-  title, 
-  author, 
-  description, 
-  favicon = '/favicon.ico', 
-  url, 
-  keywords, 
-  ogImage, 
-  twitterImage, 
-  twitterCreator, 
-  lang = 'zh-CN', 
-  locale = 'zh_CN', 
-  siteName, 
-  structuredData, 
+  title = siteDefaults.title, 
+  author = siteDefaults.author, 
+  description = siteDefaults.description, 
+  favicon = siteDefaults.favicon, 
+  url = siteDefaults.url, 
+  keywords = siteDefaults.keywords, 
+  ogImage = siteDefaults.ogImage, 
+  twitterImage = siteDefaults.twitterImage, 
+  twitterCreator = siteDefaults.twitterCreator, 
+  lang = siteDefaults.lang, 
+  locale = siteDefaults.locale, 
+  siteName = siteDefaults.siteName, 
+  structuredData = siteDefaults.structuredData, 
   noindex = false,
-  head = config_site.head  // 默认使用站点配置中的head
+  head = siteDefaults.head,
+  canonical = url,         // 规范链接默认为URL
+  openGraph,               // 自定义 Open Graph 配置
+  twitter,                 // 自定义 Twitter 卡片配置
+  extend = {},             // 扩展元标签
+  titleTemplate,           // 标题模板
+  titleDefault = title     // 默认标题
 } = Astro.props;
+
+// 准备默认的OpenGraph配置
+const defaultOgConfig = ogImage ? {
+  basic: {
+    title: title,
+    type: "website",
+    image: ogImage,
+    url: url,
+  },
+  optional: {
+    description: description,
+    locale: locale,
+    siteName: siteName,
+  }
+} : undefined;
+
+// 准备默认的Twitter配置
+const defaultTwitterConfig = (twitterImage || ogImage) ? {
+  card: "summary_large_image" as TwitterCardType,
+  site: siteName,
+  creator: twitterCreator,
+  title: title,
+  description: description,
+  image: twitterImage || ogImage,
+} : undefined;
 ---
 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>{title}</title> 
-<meta name="description" content={description} />
 
-<!-- 使用插槽允许自定义 robots meta 标签，否则根据noindex属性设置 -->
-<slot name="robots">
-  <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
-</slot>
+<!-- 使用 astro-seo 插件整合所有 SEO 相关标签 -->
+<SEO
+  title={title}
+  titleTemplate={titleTemplate}
+  titleDefault={titleDefault}
+  description={description}
+  canonical={canonical}
+  noindex={noindex}
+  nofollow={noindex}
+  openGraph={openGraph || defaultOgConfig}
+  twitter={twitter || defaultTwitterConfig}
+  extend={{
+    meta: [
+      { name: "author", content: author },
+      ...(keywords ? [{ name: "keywords", content: keywords }] : []),
+      { "http-equiv": "content-language", content: lang },
+      ...(extend.meta || []),
+    ],    link: [
+      { rel: "icon", href: favicon, sizes: "32x32" },
+      { rel: "alternate", type: "application/rss+xml", title: `${siteName || title} RSS Feed`, href: `${url}/rss.xml` },
+      { rel: "alternate", type: "application/atom+xml", title: `${siteName || title} Atom Feed`, href: `${url}/atom.xml` },
+      ...(extend.link || []),
+    ],
+  }}
+/>
 
-{keywords && <meta name="keywords" content={keywords} />}
-<meta name="author" content={author} />
-{url && <link rel="canonical" href={url} />}
+<!-- 使用插槽允许自定义 robots meta 标签 -->
+<slot name="robots"></slot>
 
-<meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
-<meta property="og:type" content="website" />
-{url && <meta property="og:url" content={url} />}
-
-<meta http-equiv="content-language" content={lang} />
-{ogImage && <meta property="og:image" content={ogImage} />}
-<meta property="og:locale" content={locale} />
-{siteName && <meta property="og:site_name" content={siteName} />}
-
-<link rel="icon"  href={favicon} sizes="32x32" />
-
-{(twitterImage || ogImage) && (
-  <>
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={twitterImage || ogImage} />
-    {twitterCreator && <meta name="twitter:creator" content={twitterCreator} />}
-  </>
-)}
-
-{structuredData && <script type="application/ld+json" set:html={structuredData} />}
+{/* 结构化数据，如果是字符串则直接使用，否则转换为JSON字符串 */}
+{structuredData && <script type="application/ld+json" set:html={
+  typeof structuredData === 'string' ? structuredData : JSON.stringify(structuredData)
+} />}
 
 <!-- 硬嵌入的head元素 -->
 {head && <Fragment set:html={head} />}
