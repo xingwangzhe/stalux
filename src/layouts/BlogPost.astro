@@ -6,6 +6,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.vue';
 import WalineComment from '../components/comments/WalineComment.vue';
 import '../styles/layouts/BlogPost.styl';
+import '../styles/components/PostNavigation.styl';
 import {config_site} from '../utils/config-adapter';
  
 // 正确定义Props类型
@@ -19,9 +20,11 @@ interface Props {
     headings?: MarkdownHeading[];
 	description?: string;
 	abbrlink?: string;
+	prev?: { title: string; url: string } | null;
+	next?: { title: string; url: string } | null;
 }
 
-const { title, date, updated, tags, categories, headings = [], description, auther, abbrlink} = Astro.props;
+const { title, date, updated, tags, categories, headings = [], description, auther, abbrlink, prev, next } = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
 import LeftSiderbar from './LeftSiderbar.astro';
@@ -146,8 +149,7 @@ const categoryStr = categoriesToString(categories);
 				<article class="article-content">
 					<div class="hero-image">
 						<!-- 如果有特色图片可以在这里添加 -->
-					</div>
-					<div class="prose fade-in-up delay-200">
+					</div>					<div class="prose fade-in-up delay-200">
 						<div class="title">
 							<h1>{title}</h1>
 							<div class="date">
@@ -164,8 +166,65 @@ const categoryStr = categoriesToString(categories);
 							</div>
 							<hr />
 						</div>
-						<slot />
-					</div>
+						<slot />					</div>
+					
+					{(prev || next) ? (
+						<nav class="post-navigation" aria-label="文章导航">
+							<div class="post-navigation-inner">
+								{prev ? (
+									<a href={prev.url} class="post-nav-link prev-post" rel="prev">
+										<span class="post-nav-arrow">
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+												<path d="M19 12H5M12 19l-7-7 7-7"/>
+											</svg>
+										</span>
+										<div class="post-nav-content">
+											<span class="post-nav-label">上一篇</span>
+											<span class="post-nav-title">{prev.title}</span>
+										</div>
+									</a>
+								) : (
+									<span class="post-nav-link prev-post disabled">
+										<span class="post-nav-arrow">
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+												<path d="M19 12H5M12 19l-7-7 7-7"/>
+											</svg>
+										</span>
+										<div class="post-nav-content">
+											<span class="post-nav-label">上一篇</span>
+											<span class="post-nav-title">没有更早的文章</span>
+										</div>
+									</span>
+								)}
+								
+								{next ? (
+									<a href={next.url} class="post-nav-link next-post" rel="next">
+										<div class="post-nav-content">
+											<span class="post-nav-label">下一篇</span>
+											<span class="post-nav-title">{next.title}</span>
+										</div>
+										<span class="post-nav-arrow">
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+												<path d="M5 12h14M12 5l7 7-7 7"/>
+											</svg>
+										</span>
+									</a>
+								) : (
+									<span class="post-nav-link next-post disabled">
+										<div class="post-nav-content">
+											<span class="post-nav-label">下一篇</span>
+											<span class="post-nav-title">没有更新的文章</span>
+										</div>
+										<span class="post-nav-arrow">
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+												<path d="M5 12h14M12 5l7 7-7 7"/>
+											</svg>
+										</span>
+									</span>
+								)}
+							</div>
+						</nav>
+					) : null}
 					<WalineComment client:idle />
 				</article>
 				<RightSiderbar {tags} {categories} {headings} />

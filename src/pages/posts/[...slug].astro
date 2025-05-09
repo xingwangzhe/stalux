@@ -3,7 +3,6 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
 import { processFrontmatter } from '../../utils/process-frontmatter.ts';
-import PostNavigation from '../../components/PostNavigation.astro';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
@@ -13,32 +12,31 @@ export async function getStaticPaths() {
 			return processedPost;
 		})
 	);
-	
-	// 按日期排序文章，用于确定上一篇/下一篇
+
+	// 按日期排序文章，最新的文章在前
 	const sortedPosts = processedPosts.sort((a, b) => {
 		const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
-		const dateB = b.data.date ? new Date(a.data.date).getTime() : 0;
-		return dateB - dateA; // 降序排序，最新的文章在前
+		const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+		return dateB - dateA;
 	});
 	
 	return sortedPosts.map((post, index) => {
-		// 确定上一篇和下一篇文章
-		const prevPost = index < sortedPosts.length - 1 ? {
-			title: sortedPosts[index + 1].data.title,
-			abbrlink: sortedPosts[index + 1].data.abbrlink
-		} : null;
-		
-		const nextPost = index > 0 ? {
-			title: sortedPosts[index - 1].data.title,
-			abbrlink: sortedPosts[index - 1].data.abbrlink
-		} : null;
+		// 使用官方 API 方式：直接在 props 中提供 prev 和 next
+		const prevPost = index < sortedPosts.length - 1 ? sortedPosts[index + 1] : null;
+		const nextPost = index > 0 ? sortedPosts[index - 1] : null;
 		
 		return {
 			params: { slug: post.data.abbrlink },
 			props: { 
 				post,
-				prevPost,
-				nextPost
+				prev: prevPost ? {
+					title: prevPost.data.title,
+					url: `/posts/${prevPost.data.abbrlink}/`
+				} : null,
+				next: nextPost ? {
+					title: nextPost.data.title,
+					url: `/posts/${nextPost.data.abbrlink}/`
+				} : null
 			},
 		};
 	});
@@ -46,15 +44,14 @@ export async function getStaticPaths() {
 
 type Props = {
 	post: CollectionEntry<'posts'>;
-	prevPost: { title: string; abbrlink: string } | null;
-	nextPost: { title: string; abbrlink: string } | null;
+	prev: { title: string; url: string } | null;
+	next: { title: string; url: string } | null;
 };
 
-const { post, prevPost, nextPost } = Astro.props;
+const { post, prev, next } = Astro.props;
 const { Content, headings } = await render(post);
 ---
 
-<BlogPost {...post.data} headings={headings} description={post.body}>
+<BlogPost {...post.data} headings={headings} description={post.body} prev={prev} next={next}>
 	<Content />
-	<PostNavigation prevPost={prevPost} nextPost={nextPost} />
 </BlogPost>
