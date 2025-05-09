@@ -10,10 +10,14 @@ import { remarkModifiedAbbrlink } from './src/utils/remark-modified-abbrlink.mjs
 import remarkToc from 'remark-toc';
 import {browserslistToTargets} from 'lightningcss';
 import { config_site } from './src/utils/config-adapter';
+import pagefind from "astro-pagefind";
 // https://astro.build/config
 export default defineConfig({
+    build: {
+      format: "file",
+    },
     site: config_site.url,
-    integrations: [sitemap(), vue(),astroExpressiveCode({
+    integrations: [pagefind(),sitemap(), vue(),astroExpressiveCode({
         // You can set configuration options here
         themes: ['dark-plus', 'github-light'],
         styleOverrides: {

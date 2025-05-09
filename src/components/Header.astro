@@ -2,6 +2,7 @@
 import { config_site } from '../utils/config-adapter';
 // @ts-ignore
 import * as feather from 'feather-icons';
+import Search from './Search.astro';
 
 // TypeScript类型定义
 interface NavItem {
@@ -16,7 +17,6 @@ const navItems: NavItem[] = config_site.nav;
 // 从feather图标库获取图标的辅助函数
 function getIconSvg(iconName: string): string {
   if (!iconName) return '';
-  
   try {
     const icon = feather.icons[iconName];
     return icon ? icon.toSvg({
@@ -51,16 +51,48 @@ import '../styles/components/Header.styl';
           )}
           <span>{item.title}</span>
         </a>
+      </li>    ))}      <li>
+        <a href="javascript:void(0)" class="nav-link search-toggle" id="search-toggle">
+          <span class="nav-icon-container" set:html={feather.icons['search'].toSvg({
+            width: 20,
+            height: 20,
+            'stroke-width': 2,
+            class: 'nav-icon'
+          })} />
+          <span>搜索</span>
+        </a>
       </li>
-    ))}
   </ul>
 </nav>
+
+<div id="search-container" class="search-container">
+  <div class="search-backdrop"></div>
+  <div class="search-box">
+    <div class="search-header">
+      <h2>站内搜索</h2>
+      <button class="search-close" id="search-close">
+        <Fragment set:html={feather.icons['x'].toSvg({
+          width: 24,
+          height: 24,
+          class: 'close-icon'
+        })} />
+      </button>
+    </div>
+    <div class="search-content">
+      <Search />
+    </div>
+  </div>
+</div>
 
 <script>
 // 移动端菜单交互逻辑
 document.addEventListener('DOMContentLoaded', () => {
   const menuToggle = document.getElementById('mobile-menu-toggle');
   const navMenu = document.getElementById('nav-menu');
+  const searchToggle = document.getElementById('search-toggle');
+  const searchContainer = document.getElementById('search-container');
+  const searchClose = document.getElementById('search-close');
+  const searchBackdrop = document.querySelector('.search-backdrop');
   
   if (menuToggle && navMenu) {
     menuToggle.addEventListener('click', () => {
@@ -75,6 +107,44 @@ document.addEventListener('DOMContentLoaded', () => {
           navMenu.classList.remove('active');
         }
       });
+    });
+  }
+  
+  // 搜索框交互逻辑
+  if (searchToggle && searchContainer && searchClose) {
+    // 点击搜索按钮显示搜索框
+    searchToggle.addEventListener('click', () => {
+      searchContainer.classList.add('active');
+      document.body.style.overflow = 'hidden'; // 防止背景滚动
+      // 聚焦到搜索输入框
+      setTimeout(() => {
+        const searchInput = document.querySelector('.pagefind-ui__search-input');
+        if (searchInput) {
+          (searchInput as HTMLElement).focus();
+        }
+      }, 100);
+    });
+    
+    // 点击关闭按钮隐藏搜索框
+    searchClose.addEventListener('click', () => {
+      searchContainer.classList.remove('active');
+      document.body.style.overflow = ''; // 恢复背景滚动
+    });
+    
+    // 点击遮罩层关闭搜索框
+    if (searchBackdrop) {
+      searchBackdrop.addEventListener('click', () => {
+        searchContainer.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    }
+    
+    // ESC键关闭搜索框
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && searchContainer.classList.contains('active')) {
+        searchContainer.classList.remove('active');
+        document.body.style.overflow = '';
+      }
     });
   }
 });

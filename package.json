@@ -17,6 +17,7 @@
     "animejs": "^4.0.2",
     "astro": "5.7.8",
     "astro-expressive-code": "^0.41.2",
+    "astro-pagefind": "^1.8.3",
     "astro-seo": "^0.8.4",
     "badge-maker": "^4.1.0",
     "dayjs": "^1.11.13",
