@@ -30,7 +30,7 @@ export const site: SiteConfig = {
   /**
    * SEO 高级配置
    */
-  titleDefault: 'Stalux博客', // 默认标题，当没有指定标题时使用
+  titleDefault: 'Stalux博客主题', // 默认标题，当没有指定标题时使用
   canonical: 'https://stalux.needhelp.icu', // 规范链接，防止重复内容
 
 
@@ -41,7 +41,7 @@ export const site: SiteConfig = {
    */
   author: 'xingwangzhe', // 内容创作者信息
   locale: 'zh_CN', // 内容的区域设置
-  siteName: 'Stalux', // 站点名称，用于品牌构建
+  siteName: 'Stalux博客主题', // 站点名称，用于品牌构建
 
 
 
@@ -143,8 +143,7 @@ export const site: SiteConfig = {
     'Free for free, not free for charge!',
     '任意键在哪?',
     'F12看看?',
-    'Hello World!',
-    '$E=MC^2$'
+    'Hello World!'
   ],
 
   /**
@@ -167,7 +166,7 @@ export const site: SiteConfig = {
    * 社交媒体链接配置
    */
   medialinks: [
-    { title: 'Github', url: 'https://github.com/', icon: 'github' },
+    { title: 'Github', url: 'https://github.com/xingwangzhe/stalux', icon: 'github' },
     { title: 'Bilibili', url: 'https://space.bilibili.com/', icon: 'bilibili' },
     { title: 'Twitter', url: 'https://x.com/', icon: 'x-twitter' },
     { title: 'Weibo', url: 'https://weibo.com/', icon: 'sinaweibo' },
@@ -179,8 +178,8 @@ export const site: SiteConfig = {
   /**
    * 友情链接配置
    */
-  friendlinks_title: '友情链接',
-  friendlinks_description: '优质技术博客交换友情链接，互惠共赢提升网站流量和用户体验。期待与同领域高质量内容创作者建立长期合作关系。',
+  friendlinks_title: '帮助链接',
+  friendlinks_description: '下列站点对本主题的开发起到了关键作用,非常感谢它们的资料',
   friendlinks: [
     {
       title: 'Astro',
@@ -219,7 +218,7 @@ export const site: SiteConfig = {
    */
   footer: {
     // 站点构建时间，用于计算运行时长
-    buildtime: '2024-06-20T10:00:00+8:00', // 站点构建时间，推荐使用ISO 8601标准格式(YYYY-MM-DDTHH:MM:SS)
+    buildtime: '2025-05-1T10:00:00+8:00', // 站点构建时间，推荐使用ISO 8601标准格式(YYYY-MM-DDTHH:MM:SS)
 
 
 
