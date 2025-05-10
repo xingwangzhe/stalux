@@ -236,8 +236,8 @@ export const site: SiteConfig = {
       }
     },
     
-    // 徽章配置
-    badges: [
+    // 徽章配置    
+   badges: [
       {
         label: 'Built with',
         message: '❤',
@@ -268,6 +268,48 @@ export const site: SiteConfig = {
         alt: 'License: MIT',
         href: 'https://github.com/xingwangzhe/stalux'
       },
+      {
+        label: '开往🚆',
+        message: '友链接力',
+        alt: '开往-友链接力',
+        href: 'https://www.travellings.cn/go.html'
+      },
+      {
+        label: '大佬论坛',
+        message: '',
+        alt: '大佬论坛',
+        href: 'https://www.dalao.net/'
+      },
+      {
+        label: 'BlogFinder',
+        message: '',
+        alt: 'BlogFinder',
+        href: 'https://bf.zzxworld.com/'
+      },
+      {
+        label: '空间穿梭',
+        message: '',
+        alt: '空间穿梭-随机访问BlogsClub成员博客',
+        href: 'https://www.blogsclub.org/go'
+      },
+      {
+        label: '多吉云',
+        message: 'CDN',
+        alt: '多吉云CDN',
+        href: 'https://www.dogecloud.com/?iuid=11702'
+      },
+      {
+        label: '十年之约',
+        message: '',
+        alt: '十年之约',
+        href: 'https://www.foreverblog.cn/blog/6304.html'
+      },
+      {
+        label: '博客宇宙',
+        message: '',
+        alt: '博客宇宙',
+        href: 'https://blogverse.cn/'
+      }
     ] as BadgeOptions[]
   }
 }
