@@ -23,8 +23,7 @@ export const site: SiteConfig = {
   
   /**
    * SEO 高级配置
-   */
-  titleTemplate: '%s | Stalux',           // 标题模板，%s 将被替换为页面标题
+   */           
   titleDefault: 'Stalux博客',             // 默认标题，当没有指定标题时使用
   canonical: 'https://stalux.needhelp.icu', // 规范链接，防止重复内容
   
@@ -195,14 +194,19 @@ export const site: SiteConfig = {
       description: 'Beautifully simple open-source icons'
     }
   ],
-
   /**
    * 页脚配置
    * 整合所有页脚相关设置，便于管理
-   */
+   */  
   footer: {
     // 站点构建时间，用于计算运行时长
-    buildtime: '2024-6-20 10:00:00',  // 站点构建时间，支持多种格式
+    buildtime: '2024-06-20T10:00:00',  // 站点构建时间，推荐使用ISO 8601标准格式(YYYY-MM-DDTHH:MM:SS)
+    // 支持的buildtime格式:
+    // 1. ISO 8601标准格式 (推荐): '2023-06-20T10:00:00'
+    // 2. 常用中文格式: '2023-06-20 10:00:00' 或 '2023-6-20 10:00:00'
+    // 3. 简化格式: '2023-06-20' (时间默认为 00:00:00)
+    // 4. 时间戳: 1687230000000 (毫秒)
+    // 注意: 日期必须是过去的时间，未来时间将被自动调整为当前时间
     
     // 版权信息
     copyright: {
@@ -235,16 +239,9 @@ export const site: SiteConfig = {
     // 徽章配置
     badges: [
       {
-        label: 'license',
-        message: 'MIT',
-        color: 'blue',
-        alt: 'License: MIT',
-        href: 'https://opensource.org/licenses/MIT'
-      },
-      {
         label: 'Built with',
         message: '❤',
-        color: 'pink',
+        color: 'red',
         style: 'for-the-badge',
         alt: 'Built with Love',
         href: 'https://github.com/xingwangzhe'
@@ -263,7 +260,14 @@ export const site: SiteConfig = {
         color: 'blueviolet',
         alt: 'Theme: Stalux',
         href: 'https://stalux.needhelp.icu/'
-      }
+      },
+      {
+        label: 'license',
+        message: 'MIT',
+        color: 'blue',
+        alt: 'License: MIT',
+        href: 'https://github.com/xingwangzhe/stalux'
+      },
     ] as BadgeOptions[]
   }
 }

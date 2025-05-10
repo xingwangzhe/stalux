@@ -117,15 +117,29 @@ main {
   }
   
   a {
-    color: rgba(1, 162, 190, 1)
+    color: rgba(41, 182, 246, 1)
     text-decoration: none
-    transition: all 0.2s ease
-    border-bottom: 1px dashed rgba(1, 162, 190, 0.5)
+    transition: all 0.3s ease
+    position: relative
+    
+    &:not(:has(img)) {
+      &:after {
+        content: " 🔗"
+        font-size: 0.85em
+        opacity: 0.7
+      }
+    }
     
     &:hover {
-      border-bottom-style: solid
+      color: rgba(3, 218, 198, 1)
+      text-shadow: 0 0 8px rgba(3, 218, 198, 0.4)
+    }
+    
+    &:active {
+      color: rgba(0, 229, 255, 1)
     }
   }
+
   
   img {
     max-width: 100%
@@ -155,6 +169,45 @@ main {
     tr:nth-child(even) {
       background-color: rgba(255, 255, 255, 0.05)
     }
+  }
+  code {
+    color:rgba(255, 121, 198, .95);
+  }
+  strong {
+    color:rgba(255, 217, 102, .95);
+  }
+  del {
+    text-decoration: line-through
+    color: rgba(255, 99, 132, 0.85)
+    background-color: rgba(255, 99, 132, 0.1)
+    padding: 0 4px
+    border-radius: 3px
+    position: relative
+  }
+
+  u {
+    text-decoration: none
+    position: relative
+    color: rgba(102, 217, 255, 0.95)
+    
+    &::after {
+      content: ''
+      position: absolute
+      left: 0
+      bottom: -2px
+      width: 100%
+      height: 2px
+      background: linear-gradient(90deg, rgba(102, 217, 255, 0.7), rgba(3, 218, 198, 0.7))
+      border-radius: 1px
+      box-shadow: 0 0 4px rgba(3, 218, 198, 0.4)
+    }
+  }
+
+  em {
+    font-style: italic
+    color: rgba(142, 220, 230, 0.95)
+    position: relative
+    padding: 0 2px
   }
 }
 

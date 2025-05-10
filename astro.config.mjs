@@ -11,6 +11,9 @@ import remarkToc from 'remark-toc';
 import {browserslistToTargets} from 'lightningcss';
 import { config_site } from './src/utils/config-adapter';
 import pagefind from "astro-pagefind";
+// 数学公式渲染相关插件
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 // https://astro.build/config
 export default defineConfig({
     build: {
@@ -42,8 +45,8 @@ export default defineConfig({
     // 禁用开发工具栏
     devToolbar: {
         enabled: false,
-    },
-    markdown: {
-      remarkPlugins: [remarkModifiedTime,remarkModifiedAbbrlink,[remarkToc, { heading: "contents"} ]],
+    },    markdown: {
+      remarkPlugins: [remarkModifiedTime,remarkModifiedAbbrlink,[remarkToc, { heading: "contents"} ], remarkMath],
+      rehypePlugins: [rehypeKatex],
     },
 });

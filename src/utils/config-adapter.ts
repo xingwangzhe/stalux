@@ -1,4 +1,5 @@
 // 导入默认配置
+import {type SiteConfig} from '../types'
 import { site as defaultConfig } from '../consts';
 // 尝试导入用户自定义配置
 let userConfig;
@@ -39,4 +40,4 @@ function deepMerge(target:any, source:any) {
 }
 
 // 合并配置：首先使用用户配置，如果不存在或不完整，则使用默认配置进行补充
-export const config_site = deepMerge(defaultConfig, userConfig?.config_site);
+export const config_site: SiteConfig = deepMerge(defaultConfig, userConfig?.config_site);

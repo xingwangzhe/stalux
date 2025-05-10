@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
 import Head from '../components/Head.astro';
 import Header from '../components/Header.astro';
-import Footer from '../components/Footer.vue';
+import Footer from '../components/Footer.astro';
 import WalineComment from '../components/comments/WalineComment.vue';
 import '../styles/layouts/BlogPost.styl';
 import '../styles/components/PostNavigation.styl';
@@ -133,8 +133,7 @@ const categoryStr = categoriesToString(categories);
 
 ---
 
-<html lang={config_site.lang} class="dark">
-	<Head 
+<html lang={config_site.lang} class="dark">	<Head 
 		title={title}
 		titleTemplate={config_site.titleTemplate}
 		description={description150(description || '这是默认的文章描述')}
@@ -176,8 +175,7 @@ const categoryStr = categoriesToString(categories);
 				tags: tags,
 				section: categoryArray[0] || "Blog",
 			}
-		}}
-		twitter={{
+		}}		twitter={{
 			card: "summary_large_image",
 			site: config_site.siteName,
 			creator: config_site.twitterCreator,
@@ -185,7 +183,15 @@ const categoryStr = categoriesToString(categories);
 			description: description150(description || '这是默认的文章描述'),
 			image: config_site.twitterImage || config_site.ogImage
 		}}
-	/>
+	>
+        <link
+            slot="head"
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+            integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
+            crossorigin="anonymous"
+        />
+    </Head>
 	<body>
 		<Header />
 		<main>
