@@ -19,7 +19,7 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
-
+!src/content/posts/_*.md
 # jetbrains setting folder
 .idea/
 src/_config.ts
