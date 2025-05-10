@@ -22,6 +22,8 @@ pnpm-debug.log*
 !src/content/posts/_*.md
 # jetbrains setting folder
 .idea/
+
+bun.lock
 #src/_config.ts
 # others
 # src/content/posts/
