@@ -133,7 +133,7 @@ export const site: SiteConfig = {
     { title: '分类', path: '/categories', icon: 'folder' },
     { title: '标签', path: '/tags', icon: 'tag' },
     { title: '友链', path: '/links', icon: 'link' },
-    { title: '关于', path: '/about', icon: 'user' },
+    { title: '关于', path: '/about', icon: 'user' }
   ],
 
   /**
@@ -144,6 +144,7 @@ export const site: SiteConfig = {
     '任意键在哪?',
     'F12看看?',
     'Hello World!',
+    '$E=MC^2$'
   ],
 
   /**
@@ -218,7 +219,7 @@ export const site: SiteConfig = {
    */
   footer: {
     // 站点构建时间，用于计算运行时长
-    buildtime: '2024-06-20T10:00:00', // 站点构建时间，推荐使用ISO 8601标准格式(YYYY-MM-DDTHH:MM:SS)
+    buildtime: '2024-06-20T10:00:00+8:00', // 站点构建时间，推荐使用ISO 8601标准格式(YYYY-MM-DDTHH:MM:SS)
 
 
 
