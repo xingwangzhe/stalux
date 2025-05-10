@@ -271,42 +271,49 @@ export const site: SiteConfig = {
       {
         label: '开往🚆',
         message: '友链接力',
+        color: 'green',
         alt: '开往-友链接力',
         href: 'https://www.travellings.cn/go.html'
       },
       {
         label: '大佬论坛',
         message: '',
+        color: 'yellowgreen',
         alt: '大佬论坛',
         href: 'https://www.dalao.net/'
       },
       {
         label: 'BlogFinder',
         message: '',
+        color: 'purple',
         alt: 'BlogFinder',
         href: 'https://bf.zzxworld.com/'
       },
       {
         label: '空间穿梭',
         message: '',
+        color: 'teal',
         alt: '空间穿梭-随机访问BlogsClub成员博客',
         href: 'https://www.blogsclub.org/go'
       },
       {
         label: '多吉云',
         message: 'CDN',
+        color: 'lightblue',
         alt: '多吉云CDN',
         href: 'https://www.dogecloud.com/?iuid=11702'
       },
       {
         label: '十年之约',
         message: '',
+        color: 'brightgreen',
         alt: '十年之约',
         href: 'https://www.foreverblog.cn/blog/6304.html'
       },
       {
         label: '博客宇宙',
         message: '',
+        color: 'darkblue',
         alt: '博客宇宙',
         href: 'https://blogverse.cn/'
       }
