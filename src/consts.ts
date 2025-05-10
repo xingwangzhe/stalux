@@ -12,13 +12,13 @@ export const site: SiteConfig = {
    * SEO 核心配置
    * 这些配置对搜索引擎优化至关重要
    */
-  title: 'Stalux',                        // 网站标题，SEO最重要的因素之一
-  description: '博客主题Stalux',          // 网站描述，建议150-160字符以获得最佳SEO效果
+  // 网站标题，SEO最重要的因素之一
+  description: '博客主题Stalux - 为内容创作者提供的专业展示平台，支持多种自定义功能，包含评论系统集成、友情链接管理、社交媒体分享和丰富的SEO优化选项，让您的内容更具吸引力和可发现性。',          // 网站描述，建议150-160字符以获得最佳SEO效果
   url: 'https://stalux.needhelp.icu',     // 完整网站URL(包含https协议)
   /**
    * 重要SEO辅助配置
    */
-  keywords: '关键词',                     // 网站关键词，虽然权重下降但仍有参考价值
+  keywords: 'Stalux, 博客主题, 内容创作, Astro主题, 静态网站生成器, SEO优化, 自定义博客, 响应式设计, 评论系统, 前端开发, Astro',  // 网站关键词，建议使用相关性高的长尾关键词组合
   lang: 'zh-CN',                          // 语言设置，有助于地区搜索引擎理解内容
   
   /**
@@ -225,12 +225,12 @@ export const site: SiteConfig = {
     beian: {
       // ICP备案
       icp: {
-        enabled: true,                    // 是否启用ICP备案显示
+        enabled: false,                    // 是否启用ICP备案显示
         number: '辽ICP备XXXXXXXX号'        // ICP备案号，如不需要可留空
       },
       // 公安备案
       security: {
-        enabled: true,                           // 是否启用公安备案显示
+        enabled: false,                           // 是否启用公安备案显示
         text: '辽公网安备 XXXXXXXXXXXX号',        // 公安备案号文字
         number: 'XXXXXXXXXXXX'                   // 公安备案号数字部分(用于链接跳转)
       }

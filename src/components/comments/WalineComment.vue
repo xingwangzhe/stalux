@@ -74,9 +74,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="waline-comment-container" v-if="serverURL" data-noindex="true" data-indexing="false">
+  <div class="waline-comment-container" v-if="serverURL">
     <h2 class="waline-comment-title">留言评论</h2>
     <div ref="commentRef" class="waline-comment" aria-hidden="true"></div>
+    <!-- SEO: Prevent indexing of comment section -->
     <meta name="robots" content="noindex, nofollow">
   </div>
 </template>
