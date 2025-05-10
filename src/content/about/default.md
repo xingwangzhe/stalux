@@ -103,7 +103,7 @@ Stalux主题基于 MIT 许可证开源，您可以自由地使用、修改和分
 
 ## 📖 学习资源推荐
 
-作为一个终身学习者，我常用的一些学习资源：
+常用的一些学习资源：
 
 - [**MDN Web Docs**](https://developer.mozilla.org/)：最全面的Web开发文档
 - [**Vue官方文档**](https://vuejs.org/)：Vue框架学习必备

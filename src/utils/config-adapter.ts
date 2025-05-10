@@ -1,7 +1,7 @@
 // 导入默认配置
 import {type SiteConfig} from '../types'
 import { site as defaultConfig } from '../consts';
-import { siteConfig,useConfig } from '../_config.ts'; // 导入默认配置
+import { siteConfig,useConfig } from '../_config'; // 导入默认配置
 
 
 
