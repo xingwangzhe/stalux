@@ -18,9 +18,22 @@ import rehypeKatex from 'rehype-katex';
 export default defineConfig({
     build: {
       format: "file",
-    },
-    site: config_site.url,
-    integrations: [pagefind(),sitemap(), vue(),astroExpressiveCode({
+    },    site: config_site.url,
+    integrations: [
+      pagefind(),
+      sitemap({
+        filter: (page) => {
+          // 只包含首页、posts、about页面
+          return page.includes('/posts/') || 
+                 page === config_site.url + '/about' || 
+                 page === config_site.url + '/';
+        },
+        changefreq: 'weekly',
+        priority: 0.7,
+        lastmod: new Date()
+      }), 
+      vue(),
+      astroExpressiveCode({
         // You can set configuration options here
         themes: ['dark-plus', 'github-light'],
         styleOverrides: {
