@@ -18,7 +18,7 @@ Stalux主题支持使用Markdown文件创建博客文章和页面。每个Markdo
 ## 博客文章配置 (posts/*.md)
 
 为每篇博客文章添加frontmatter，按以下格式：
-```ts
+```ts title="content.config.ts"
 const posts = defineCollection({
   loader: glob({ base: './src/content/posts', pattern: '**/*.{md,mdx}' }),
   schema: z.object({

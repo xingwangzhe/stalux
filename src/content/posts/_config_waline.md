@@ -15,7 +15,7 @@ date: 2025-5-10T14:00:00+8:00
 
 ### 基本配置
 
-```ts
+```ts title="_config.ts"
 export const siteConfig: SiteConfig = {    
     ...
     comment: {

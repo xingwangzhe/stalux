@@ -284,14 +284,14 @@ export const site: SiteConfig = {
         message: 'Stalux',
         color: 'blueviolet',
         alt: 'Theme: Stalux',
-        href: 'https://stalux.needhelp.icu/'
+        href: 'https://github.com/xingwangzhe/stalux'
       },
       {
         label: 'license',
         message: 'MIT',
         color: 'blue',
         alt: 'License: MIT',
-        href: 'https://github.com/xingwangzhe/stalux'
+        href: 'https://github.com/xingwangzhe/stalux/blob/main/LICENSE'
       },
       {
         label: '开往🚆',

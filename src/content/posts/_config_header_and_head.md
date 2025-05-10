@@ -15,7 +15,7 @@ date: 2025-5-10T12:00:00+08:00
 
 ### 基本配置
 
-```ts
+```ts title="_config.ts"
 export const siteConfig: SiteConfig = {
      ...
      head: '  <script>console.log("你好世界")</script>'
@@ -38,7 +38,7 @@ export const siteConfig: SiteConfig = {
 
 ### 实际示例
 
-```ts
+```ts title="_config.ts"
 export const siteConfig: SiteConfig = {
      ...
      head: `
@@ -71,7 +71,7 @@ export const siteConfig: SiteConfig = {
 
 ### 基本配置
 
-```ts
+```ts title="_config.ts"
 export const siteConfig: SiteConfig = {
   /**
     * 站点导航配置
@@ -94,7 +94,7 @@ export const siteConfig: SiteConfig = {
 
 如果你想在导航栏添加外部链接，可以这样配置：
 
-```ts
+```ts title="_config.ts"
 { title: 'GitHub', path: 'https://github.com/yourusername', icon: 'github'}
 ```
 

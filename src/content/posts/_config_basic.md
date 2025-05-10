@@ -11,7 +11,7 @@ date: 2025-5-10T11:00:00+08:00
 ## 必要信息配置
 
 在`src>_config.ts`启用之后下列配置必填,因为这会影响网站的标识,但某些字段未配置,可以不填.
-```ts
+```ts title="_config.ts"
 
 export const siteConfig: SiteConfig = {    
     ...
