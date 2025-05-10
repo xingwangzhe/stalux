@@ -157,25 +157,7 @@ const categoryStr = categoriesToString(categories);
 				"@id": config_site.url + '/posts/' + abbrlink
 			}
 		}}
-		openGraph={{
-			basic: {
-				title: title,
-				type: "article",
-				image: config_site.ogImage,
-				url: config_site.url + '/posts/' + abbrlink,
-			},
-			optional: {
-				description: description150(description || '这是默认的文章描述'),
-				locale: config_site.locale,
-				siteName: config_site.siteName,
-			},
-			article: {
-				publishedTime: date?.toString(),
-				modifiedTime: updated?.toString(),
-				tags: tags,
-				section: categoryArray[0] || "Blog",
-			}
-		}}		twitter={{
+		twitter={{
 			card: "summary_large_image",
 			site: config_site.siteName,
 			creator: config_site.twitterCreator,
