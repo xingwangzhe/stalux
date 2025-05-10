@@ -51,16 +51,17 @@ import '../styles/components/Header.styl';
           )}
           <span>{item.title}</span>
         </a>
-      </li>    ))}      <li>
-        <a href="javascript:void(0)" class="nav-link search-toggle" id="search-toggle">
+      </li>    ))}     
+      <li>
+        <p class="nav-link search-toggle" id="search-toggle" rel="noindex, nofollow">
           <span class="nav-icon-container" set:html={feather.icons['search'].toSvg({
-            width: 20,
-            height: 20,
-            'stroke-width': 2,
-            class: 'nav-icon'
+        width: 20,
+        height: 20,
+        'stroke-width': 2,
+        class: 'nav-icon'
           })} />
           <span>搜索</span>
-        </a>
+        </p>
       </li>
   </ul>
 </nav>
