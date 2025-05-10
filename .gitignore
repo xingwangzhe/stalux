@@ -22,7 +22,7 @@ pnpm-debug.log*
 !src/content/posts/_*.md
 # jetbrains setting folder
 .idea/
-src/_config.ts
+#src/_config.ts
 # others
 # src/content/posts/
 # !src/content/posts/seo-config.md
