@@ -76,7 +76,7 @@ export interface SiteConfig {
   
   // 资源配置
   favicon?: string;
-  
+  avatarPath?: string; // 用户头像路径
   // SEO 高级配置
   titleTemplate?: string;    // 标题模板，如 "%s | 网站名称"
   titleDefault?: string;     // 默认标题

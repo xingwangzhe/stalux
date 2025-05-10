@@ -28,7 +28,7 @@ if (!selectedEntry) {
 // 渲染选中的条目内容
 type Props = CollectionEntry<'about'>;
 
-const about = sortedEntries[0] || Astro.props;
+let about = sortedEntries[0] || Astro.props;
 const { Content } = await render(about);
 
 // 从内容中提取描述（例如取前100个字符作为摘要）

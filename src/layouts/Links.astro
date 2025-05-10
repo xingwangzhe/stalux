@@ -19,7 +19,7 @@ import '../styles/layouts/Links.styl';
 ---
 <!DOCTYPE html>
 <html lang={config_site.lang}>    <Head
-    title={config_site.friendlinks_title}
+    title={config_site.friendlinks_title +' | '+ config_site.siteName}
     titleTemplate={config_site.titleTemplate}
     description={config_site.friendlinks_description || config_site.description}
     url={config_site.url + '/links/'}

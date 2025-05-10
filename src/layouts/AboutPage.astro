@@ -23,8 +23,7 @@ const pageTitle = `${title} | ${config_site.title}`;
 
 <!DOCTYPE html>
 <html lang={config_site.lang} class="dark">  <Head 
-    title={title}
-    titleTemplate={config_site.titleTemplate}
+    title={title + ' | '+ config_site.siteName}
     description={description || title}
     author={config_site.author}
     url={config_site.url + '/about/'}
