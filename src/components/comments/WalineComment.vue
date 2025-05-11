@@ -76,9 +76,10 @@ onBeforeUnmount(() => {
 <template>
   <div class="waline-comment-container" v-if="serverURL">
     <h2 class="waline-comment-title">留言评论</h2>
-    <div ref="commentRef" class="waline-comment" aria-hidden="true"></div>
-    <!-- SEO: Prevent indexing of comment section -->
-    <meta name="robots" content="noindex, nofollow">
+    <!-- Use data-nosnippet attribute which tells search engines not to include this content in search results snippets -->
+    <div ref="commentRef" class="waline-comment" data-nosnippet aria-hidden="true"></div>
+    <!-- Use a more targeted approach instead of robots meta tag -->
+    <div class="comments-seo-notice" style="display:none">评论区内容由用户生成，不代表网站观点</div>
   </div>
 </template>
 
