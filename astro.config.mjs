@@ -17,7 +17,7 @@ import rehypeKatex from 'rehype-katex';
 // https://astro.build/config
 export default defineConfig({
     build: {
-      format: "file",
+      format: "directory",
     },    site: config_site.url,
     integrations: [
       pagefind(),
