@@ -11,8 +11,8 @@ export async function GET(context) {
     return await processFrontmatter(post);
   }));
   return rss({
-    title: config_site.title || 'Blog',
-    description: config_site.description[0] || '博客描述',
+    title: config_site.siteName || 'Blog',
+    description: config_site.description || '博客描述',
     site: context.site,
     items: posts.map((post) => ({
       title: post.data.title,
