@@ -344,5 +344,5 @@ export const site: SiteConfig = {
       }
     ] as BadgeOptions[]
   },
-  title: ''
+  title: 'Stalux博客主题'
 }
