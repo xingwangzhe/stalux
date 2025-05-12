@@ -218,7 +218,7 @@ export const site: SiteConfig = {
    */
   footer: {
     // 站点构建时间，用于计算运行时长
-    buildtime: '2025-05-1T10:00:00+8:00', // 站点构建时间，推荐使用ISO 8601标准格式(YYYY-MM-DDTHH:MM:SS)
+    buildtime: '2025-05-01T10:00:00', // 站点构建时间，推荐使用ISO 8601标准格式(YYYY-MM-DDTHH:MM:SS)
 
 
 

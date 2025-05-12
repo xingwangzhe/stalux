@@ -6,6 +6,8 @@ tags:
 categories:
     - 主题配置
 date: 2025-5-10T10:00:00+08:00
+updated: 2025-5-10T16:00:00+08:00
+abbrlink: 0b563d42
 ---
 ```ts
 console.log('欢迎使用Stalux主题博客')
