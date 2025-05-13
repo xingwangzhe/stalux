@@ -1,4 +1,14 @@
-# Stalux - 高效、美观、灵活的
+# 🌟 Stalux - 高效、美观、灵活的 Astro 博客主题
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/xingwangzhe/stalux/main/public/stalux.ico" width="100" alt="Stalux 主题图标">
+</p>
+
+<p align="center">
+  <strong>简单，但不简陋；美观，但不浮华。</strong>
+</p>
+
+Stalux 是一款基于 Astro 框架开发的静态博客主题，专为内容创作者设计，追求高性能、美观直观的用户界面与灵活的配置系统。主题名称"Stalux"中的"Sta"代表静态（Static），"lux"代表奢华（Luxury）的外观体验。
 
 ## 📦 主题结构
 

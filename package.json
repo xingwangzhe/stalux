@@ -1,7 +1,24 @@
 {
-  "name": "stalux",
+  "name": "astro-theme-stalux",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "Stalux - 一款高效、美观、灵活的 Astro 博客主题",
+  "author": "xingwangzhe",
+  "license": "MIT",
+  "homepage": "https://stalux.needhelp.icu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xingwangzhe/stalux"
+  },
+  "keywords": [
+    "astro-theme",
+    "blog",
+    "chinese",
+    "responsive",
+    "seo-friendly",
+    "typescript",
+    "vue"
+  ],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -10,7 +27,16 @@
     "check-timestamps": "node src/scripts/check-timestamps.mjs",
     "fix-timestamps": "node src/scripts/fix-timestamps.mjs",
     "convert-to-utc8": "node src/scripts/convert-to-utc8.mjs",
-    "check-timezone": "node src/scripts/check-timezone.mjs"
+    "check-timezone": "node src/scripts/check-timezone.mjs",
+    "init": "node scripts/init.js",
+    "postinstall": "node scripts/init.js"
+  },
+  "bin": {
+    "stalux-init": "./scripts/init.js"
+  },
+  "exports": {
+    ".": "./integration.js",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@astrojs/mdx": "4.2.5",
