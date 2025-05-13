@@ -34,7 +34,7 @@ export function remarkModifiedTime() {
         file.data.astro.frontmatter.updated = timestamp.modified;
         
         if (process.env.NODE_ENV !== 'production') {
-          console.log(`[remark-modified-time] 文件 ${filepath} 使用时间戳: ${timestamp.created}, ${timestamp.modified}`);
+          //console.log(`[remark-modified-time] 文件 ${filepath} 使用时间戳: ${timestamp.created}, ${timestamp.modified}`);
         }
       } else {
         // 作为备选方案，使用文件系统时间

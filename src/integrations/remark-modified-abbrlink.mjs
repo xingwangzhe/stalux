@@ -89,7 +89,7 @@ export function remarkModifiedAbbrlink() {
         if (timestamp && timestamp.abbrlink) {
             // 如果已有 abbrlink，直接使用
             const abbrlink = timestamp.abbrlink;
-            console.log(`[remark-abbrlink] 文件 ${relativePath} 使用现有 abbrlink: ${abbrlink}`);
+            //console.log(`[remark-abbrlink] 文件 ${relativePath} 使用现有 abbrlink: ${abbrlink}`);
             file.data.astro.frontmatter.abbrlink = abbrlink;
             return;
         }
