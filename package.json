@@ -26,9 +26,7 @@
     "astro": "astro",
     "check-timestamps": "node src/scripts/check-timestamps.mjs",
     "fix-timestamps": "node src/scripts/fix-timestamps.mjs",
-    "check-timezone": "node src/scripts/check-timezone.mjs",
-    "init": "node scripts/init.js",
-    "postinstall": "node scripts/init.js"
+    "check-timezone": "node src/scripts/check-timezone.mjs"
   },
   "bin": {
     "stalux-init": "./scripts/init.js"
