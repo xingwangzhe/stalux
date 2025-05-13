@@ -1,6 +1,5 @@
 ---
-title: nihaobi
-
+title: 乱数假文
 tags:
     - 乱数
 categories:

@@ -2,7 +2,7 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { config_site } from '../utils/config-adapter';
-import { processFrontmatter } from '../utils/process-frontmatter.ts';
+import { processFrontmatter } from '../integrations/process-frontmatter.ts';
 export async function GET(context) {
   // 获取所有文章
   let posts = await getCollection('posts');
