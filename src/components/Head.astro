@@ -4,7 +4,6 @@
 
 import { config_site } from '../utils/config-adapter.ts';
 import { SEO, type TwitterCardType } from 'astro-seo';
-import  stalux  from '../images/stalux.ico'
 // 定义组件接收的属性
 interface Props {
   title?: string;
@@ -163,13 +162,16 @@ const defaultTwitterConfig = (twitterImage || ogImage) ? {
       { "http-equiv": "content-language", content: lang },
       ...(extend.meta || []),
     ],    link: [
+      { rel: "icon", href: favicon || new URL(`../images/stalux.ico`, import.meta.url).href, type: "image/x-icon" },
+      { rel: "canonical", href: canonical },
+      { rel: "alternate", type: "application/json+oembed", title: `${siteName || title} JSON+OEmbed`, href: `${url}/oembed.json` },
+      { rel: "alternate", type: "text/xml+oembed", title: `${siteName || title} Text+OEmbed`, href: `${url}/oembed.xml` },
       { rel: "alternate", type: "application/rss+xml", title: `${siteName || title} RSS Feed`, href: `${url}/rss.xml` },
       { rel: "alternate", type: "application/atom+xml", title: `${siteName || title} Atom Feed`, href: `${url}/atom.xml` },
       ...(extend.link || []),
     ],
   }}
 />
-<link rel="icon" href={favicon || stalux} type="image/x-icon" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <!-- 使用插槽允许自定义 robots meta 标签 -->
 <slot name="robots"></slot>
