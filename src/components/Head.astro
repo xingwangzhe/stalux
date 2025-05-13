@@ -139,6 +139,10 @@ const defaultTwitterConfig = (twitterImage || ogImage) ? {
   description: description,
   image: twitterImage || ogImage,
 } : undefined;
+// Import the favicon image
+import favicon_img from '../images/stalux.ico';
+
+// In Astro, imported assets are directly strings, not objects with src property
 ---
 <head>
 <meta charset="UTF-8" />
@@ -162,7 +166,7 @@ const defaultTwitterConfig = (twitterImage || ogImage) ? {
       { "http-equiv": "content-language", content: lang },
       ...(extend.meta || []),
     ],    link: [
-      { rel: "icon", href: favicon || new URL(`../images/stalux.ico`, import.meta.url).href, type: "image/x-icon" },
+      { rel: "icon", href: favicon || favicon_img , type: "image/x-icon" },
       { rel: "canonical", href: canonical },
       { rel: "alternate", type: "application/json+oembed", title: `${siteName || title} JSON+OEmbed`, href: `${url}/oembed.json` },
       { rel: "alternate", type: "text/xml+oembed", title: `${siteName || title} Text+OEmbed`, href: `${url}/oembed.xml` },
