@@ -58,7 +58,7 @@ export const site: SiteConfig = {
 
 
 
-  // avatarPath: 'src/images/avatar.webp', // 用户头像路径
+  avatarPath: '', // 用户头像路径
   /**
    * 社交媒体优化配置
    * 主要针对社交平台分享显示

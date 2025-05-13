@@ -30,7 +30,7 @@ __mocks__
 
 # 忽略特定的示例内容，保留结构
 src/content/posts/_*.md
-
+.github/
 # 开发工具配置
 .eslintrc
 .prettierrc

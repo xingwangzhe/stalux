@@ -1,7 +1,7 @@
 ---
 import { config_site } from '../../utils/config-adapter';
 import { Image }  from 'astro:assets';
-
+import  avatar from '../../images/avatar.webp' 
 interface Props {
   avatarPath: any; // 接受任何图像类型
   avatarWidth?: number;
@@ -26,7 +26,7 @@ import '../../styles/components/others/AuthorCard.styl';
 <div class="card">
   <div class="author">
     <div class="avatar-container">
-      {typeof avatarPath === 'string' ? (
+      {(typeof avatarPath === 'string' && avatarPath!=='') ? (
         <img 
           src={avatarPath} 
           alt={`${author} avatar`} 
@@ -44,7 +44,7 @@ import '../../styles/components/others/AuthorCard.styl';
         />
       ) : (
         <Image 
-          src={avatarPath} 
+          src={avatar} 
           alt={`${author} avatar`} 
           class="avatar"
           width={avatarWidth}
