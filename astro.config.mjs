@@ -14,12 +14,14 @@ import pagefind from "astro-pagefind";
 // 数学公式渲染相关插件
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import timestampIntegration from './src/integrations/timestamp-integration.mjs';
 // https://astro.build/config
 export default defineConfig({
     build: {
       format: "directory",
     },    site: config_site.url,
     integrations: [
+      timestampIntegration(),
       pagefind(),
       sitemap({
         filter: (page) => {

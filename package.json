@@ -6,7 +6,11 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check-timestamps": "node src/scripts/check-timestamps.mjs",
+    "fix-timestamps": "node src/scripts/fix-timestamps.mjs",
+    "convert-to-utc8": "node src/scripts/convert-to-utc8.mjs",
+    "check-timezone": "node src/scripts/check-timezone.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "4.2.5",
