@@ -51,7 +51,7 @@ export const site: SiteConfig = {
    * 站点资源配置
    * 用户体验相关，间接提升SEO价值
    */
-  favicon: '/stalux.ico', // 网站图标和iOS设备添加到主屏的图标
+  favicon: '', // 网站图标和iOS设备添加到主屏的图标
 
 
 

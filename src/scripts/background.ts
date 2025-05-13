@@ -4,12 +4,24 @@
  * 使用额外的DOM元素实现背景淡入效果，提高性能
  */
 // 背景图片总数
-const TOTAL_PATTERNS = 42;
+// 预加载所有背景图片
+const backgroundImages = Array.from({ length: 42 }, (_, i) => {
+  const index = i + 1;
+  return {
+    id: index,
+    url: new URL(`../images/background/pattern-${index}.min.svg`, import.meta.url).href
+  };
+});
+
+// 使用backgroundImages的长度来确定总数量
 
 // 随机选择一个背景图案
 function selectRandomBackground(): void {
-  // 生成1到TOTAL_PATTERNS的随机整数
-  const randomNum = Math.floor(Math.random() * TOTAL_PATTERNS) + 1;
+  // 生成1到backgroundImages.length的随机整数
+  const randomIndex = Math.floor(Math.random() * backgroundImages.length);
+  
+  // 获取随机选择的背景图片URL
+  const selectedBackground = backgroundImages[randomIndex];
   
   // 创建背景容器元素
   const bgContainer = document.createElement('div');
@@ -21,7 +33,7 @@ function selectRandomBackground(): void {
     width: 100%;
     height: 100%;
     z-index: -10;
-    background-image: url('/images/background/pattern-${randomNum}.min.svg');
+    background-image: url('${selectedBackground.url}');
     background-repeat: repeat;
     background-size: auto;
     background-position: center;
