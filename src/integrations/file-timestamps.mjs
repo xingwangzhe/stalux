@@ -36,22 +36,31 @@ export function saveTimestamps(timestamps) {
 }
 
 /**
- * 将 UTC 时间转换为东八区 (UTC+8) 时间
- * @param {Date} date UTC 日期对象
- * @returns {string} 东八区时间的 ISO 字符串
+ * 将时间转换为本机时区时间，并附加时区信息
+ * @param {Date} date 日期对象
+ * @returns {string} 带时区信息的时间字符串
  */
-function toUTC8(date) {
-  // 获取用户本地时区的偏移量（分钟）
-  const localOffset = date.getTimezoneOffset() * 60000;
+function formatDateWithTimezone(date) {
+  // 获取当前时区偏移（分钟）
+  const tzOffset = date.getTimezoneOffset();
   
-  // 东八区的偏移量是 +8 小时，换算为毫秒
-  const utc8Offset = 8 * 60 * 60 * 1000;
+  // 计算时区字符串，如 "+08:00"
+  const tzSign = tzOffset <= 0 ? "+" : "-";
+  const tzHours = String(Math.abs(Math.floor(tzOffset / 60))).padStart(2, "0");
+  const tzMinutes = String(Math.abs(tzOffset % 60)).padStart(2, "0");
+  const tzString = `${tzSign}${tzHours}:${tzMinutes}`;
   
-  // 创建一个新的调整后的时间
-  const utc8Time = new Date(date.getTime() + localOffset + utc8Offset);
+  // 格式化日期为 "YYYY-MM-DDThh:mm:ss.sss+HH:MM" 格式
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
   
-  // 返回 ISO 格式的时间字符串
-  return utc8Time.toISOString();
+  // 返回带时区信息的时间字符串
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}${tzString}`;
 }
 
 /**
@@ -59,9 +68,10 @@ function toUTC8(date) {
  * 如果文件已有时间戳记录，则保留原有记录
  * 如果没有时间戳记录，则从文件系统获取时间并记录
  * @param {string} filepath 文件绝对路径
+ * @param {string} [abbrlink] 可选的 abbrlink 值
  * @returns {object} 更新后的时间戳对象
  */
-export function initFileTimestamp(filepath) {
+export function initFileTimestamp(filepath, abbrlink) {
   const timestamps = loadTimestamps();
   const relativePath = relative(process.cwd(), filepath).replace(/\\/g, '/');
   
@@ -74,15 +84,25 @@ export function initFileTimestamp(filepath) {
         ? stats.birthtime 
         : stats.ctime;
       
+      // 创建时间戳记录
       timestamps[relativePath] = {
-        created: toUTC8(createTime),
-        modified: toUTC8(stats.mtime)
+        created: formatDateWithTimezone(createTime),
+        modified: formatDateWithTimezone(stats.mtime)
       };
+      
+      // 如果提供了 abbrlink，也保存起来
+      if (abbrlink) {
+        timestamps[relativePath].abbrlink = abbrlink;
+      }
       
       saveTimestamps(timestamps);
     } catch (error) {
       // 忽略错误
     }
+  } else if (abbrlink && !timestamps[relativePath].abbrlink) {
+    // 如果文件记录已存在但没有 abbrlink，且提供了 abbrlink，则更新它
+    timestamps[relativePath].abbrlink = abbrlink;
+    saveTimestamps(timestamps);
   }
   
   return timestamps;
@@ -104,9 +124,8 @@ export function updateModifiedTimestamp(filepath) {
   }
   
   try {
-    const stats = statSync(filepath);
-    // 更新修改时间，使用东八区时间
-    timestamps[relativePath].modified = toUTC8(stats.mtime);
+    const stats = statSync(filepath);    // 更新修改时间，使用本机时区时间
+    timestamps[relativePath].modified = formatDateWithTimezone(stats.mtime);
     saveTimestamps(timestamps);
   } catch (error) {
     // 忽略错误
@@ -149,6 +168,43 @@ export function cleanupDeletedFiles(relativePaths) {
   if (changed) {
     saveTimestamps(timestamps);
     console.log(`已清理 ${relativePaths.length} 个已删除文件的时间戳记录`);
+  }
+  
+  return timestamps;
+}
+
+/**
+ * 更新文件的 abbrlink
+ * @param {string} filepath 文件绝对路径
+ * @param {string} abbrlink abbrlink 值
+ * @returns {object} 更新后的时间戳对象
+ */
+export function updateFileAbbrlink(filepath, abbrlink) {
+  const timestamps = loadTimestamps();
+  const relativePath = relative(process.cwd(), filepath).replace(/\\/g, '/');
+  
+  // 确保文件有初始时间戳
+  if (!timestamps[relativePath]) {
+    console.log(`[file-timestamps] 文件 ${relativePath} 没有时间戳记录，初始化...`);
+    initFileTimestamp(filepath);
+  }
+  
+  // 检查是否已有 abbrlink
+  const hadAbbrlink = timestamps[relativePath] && timestamps[relativePath].abbrlink;
+  const existingAbbrlink = hadAbbrlink ? timestamps[relativePath].abbrlink : null;
+  
+  // 更新或添加 abbrlink
+  if (timestamps[relativePath]) {
+    if (hadAbbrlink && existingAbbrlink !== abbrlink) {
+      console.log(`[file-timestamps] 警告: 正在更改文件 ${relativePath} 的 abbrlink 从 ${existingAbbrlink} 到 ${abbrlink}`);
+    }
+    
+    timestamps[relativePath].abbrlink = abbrlink;
+    saveTimestamps(timestamps);
+    
+    if (!hadAbbrlink) {
+      console.log(`[file-timestamps] 为文件 ${relativePath} 添加 abbrlink: ${abbrlink}`);
+    }
   }
   
   return timestamps;

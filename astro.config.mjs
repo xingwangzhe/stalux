@@ -5,8 +5,8 @@ import sitemap from '@astrojs/sitemap';
 import browserslist from 'browserslist';
 import vue from '@astrojs/vue';
 import astroExpressiveCode from 'astro-expressive-code'
-import {remarkModifiedTime} from './src/utils/remark-modified-time.mjs';
-import { remarkModifiedAbbrlink } from './src/utils/remark-modified-abbrlink.mjs';
+import {remarkModifiedTime} from './src/integrations/remark-modified-time.mjs';
+import { remarkModifiedAbbrlink } from './src/integrations/remark-modified-abbrlink.mjs';
 import remarkToc from 'remark-toc';
 import {browserslistToTargets} from 'lightningcss';
 import { config_site } from './src/utils/config-adapter';
