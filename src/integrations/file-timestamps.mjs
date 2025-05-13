@@ -1,16 +1,33 @@
 import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync } from 'fs';
 import { join, dirname, relative } from 'path';
+import { fileURLToPath } from 'url';
+
+// 获取当前文件的目录
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // 时间戳数据的存储路径
 const TIMESTAMP_FILE = join(process.cwd(), 'file-timestamps.json');
 
+// 缓存的时间戳数据，避免重复读取文件
+let cachedTimestamps = null;
+
 /**
  * 加载现有的时间戳数据
+ * 在开发环境下每次都读取文件，确保数据最新
+ * 在构建环境下使用缓存数据避免多次读取
  */
 export function loadTimestamps() {
+  // 如果是构建环境且已有缓存数据，直接返回缓存
+  if (process.env.NODE_ENV === 'production' && cachedTimestamps) {
+    return cachedTimestamps;
+  }
+  
   if (existsSync(TIMESTAMP_FILE)) {
     try {
-      return JSON.parse(readFileSync(TIMESTAMP_FILE, 'utf-8'));
+      const data = JSON.parse(readFileSync(TIMESTAMP_FILE, 'utf-8'));
+      // 缓存数据
+      cachedTimestamps = data;
+      return data;
     } catch (e) {
       console.warn('无法解析时间戳文件，将创建新文件', e);
     }
@@ -20,8 +37,16 @@ export function loadTimestamps() {
 
 /**
  * 保存时间戳数据
+ * 在构建环境中，不写入文件，只更新内存中的缓存
  */
 export function saveTimestamps(timestamps) {
+  // 在构建环境中不修改文件
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
+    console.log('[timestamp] 构建环境下不写入时间戳文件，仅更新内存缓存');
+    cachedTimestamps = { ...timestamps };
+    return;
+  }
+  
   try {
     // 确保文件所在目录存在
     const dir = dirname(TIMESTAMP_FILE);
@@ -29,6 +54,9 @@ export function saveTimestamps(timestamps) {
       mkdirSync(dir, { recursive: true });
     }
     
+    // 更新缓存
+    cachedTimestamps = { ...timestamps };
+    // 写入文件
     writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestamps, null, 2), 'utf-8');
   } catch (error) {
     console.error('保存时间戳文件时出错:', error);

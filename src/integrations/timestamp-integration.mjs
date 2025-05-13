@@ -287,8 +287,13 @@ export default function timestampIntegration() {
           fileWatcher.close();
           fileWatcher = null;
         }
-      },        // 文件变更时更新时间戳（仅在开发阶段）
+      },      // 文件变更时更新时间戳（仅在开发阶段）
       'astro:server:update': async ({ file }) => {
+        // 在构建环境中不处理
+        if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
+          return;
+        }
+        
         if (/\.(md|mdx)$/.test(file)) {
           // 更新修改时间戳
           updateModifiedTimestamp(file);
@@ -304,16 +309,21 @@ export default function timestampIntegration() {
             console.log(`[astro:update] 为已修改文件生成 abbrlink: ${abbrlink}`);
           }
         }
-      },
-        // 构建开始前，仅加载时间戳数据，不做任何修改
+      },// 构建开始前，仅加载时间戳数据，不做任何修改
       'astro:build:start': async () => {
-        console.log('构建开始，使用现有时间戳数据...');
+        console.log('构建开始，使用现有时间戳数据，禁止修改...');
         
         try {
+          // 设置环境变量，告知我们当前在构建环境
+          process.env.NODE_ENV = 'production';
+          
           // 只加载时间戳数据，不进行任何修改操作
           const timestamps = loadTimestamps();
           const timestampCount = Object.keys(timestamps).length;
-          console.log(`已加载 ${timestampCount} 条时间戳数据记录`);
+          const abbrLinkCount = Object.values(timestamps).filter(t => t.abbrlink).length;
+          
+          console.log(`已加载 ${timestampCount} 条时间戳数据记录，其中 ${abbrLinkCount} 条有 abbrlink`);
+          console.log('在构建过程中将不会修改时间戳文件');
         } catch (error) {
           console.error('加载时间戳数据时出错:', error);
         }

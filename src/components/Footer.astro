@@ -143,7 +143,8 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
   </div>
 </footer>
 
-<script define:vars={{ config_site }}>  // 客户端脚本，用于实时更新运行时间
+<script>
+  import { config_site } from "../utils/config-adapter"; 
   const buildtime = config_site.footer?.buildtime || config_site.buildtime;
   if (buildtime) {
     const runtimeCounter = document.getElementById('runtime-counter');
@@ -154,10 +155,13 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
         if (typeof buildtime === 'string') {
           // 日期字符串处理
           const dateStr = buildtime.trim();
-          
-          // 标准ISO格式: '2023-06-20T10:00:00'
+            // 标准ISO格式: '2023-06-20T10:00:00' 或带时区的 '2023-06-20T10:00:00+08:00'
           if (dateStr.includes('T')) {
+            // 确保正确解析带时区的ISO时间
             buildTimeDate = new Date(dateStr);
+            
+            // 记录解析后的时间，便于调试
+            console.log(`解析时间戳: ${dateStr} => ${buildTimeDate.toISOString()}`);
           } 
           // 处理常见的中文日期格式: '2023-06-20 10:00:00'
           else if (dateStr.includes(' ') && dateStr.includes(':')) {

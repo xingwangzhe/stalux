@@ -112,9 +112,12 @@ export function remarkModifiedAbbrlink() {
         
         // 使用统一的 abbrlink 生成函数
         let abbrlink = generateUniqueAbbrlink(filepath, createdTime, timestamps);
-        
-        // 将生成的abbrlink更新到时间戳文件中
-        updateFileAbbrlink(filepath, abbrlink);
+          // 在非构建环境下将生成的abbrlink更新到时间戳文件中
+        if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
+          updateFileAbbrlink(filepath, abbrlink);
+        } else {
+          console.log(`[remark-abbrlink] 构建环境下不写入，仅生成 abbrlink: ${abbrlink}`);
+        }
         
         console.log(`[remark-abbrlink] 为文件 ${relativePath} 生成并设置 abbrlink: ${abbrlink}`);
         

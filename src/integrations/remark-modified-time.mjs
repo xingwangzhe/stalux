@@ -8,16 +8,34 @@ export function remarkModifiedTime() {
       // 尝试从时间戳文件中获取时间
       let timestamp = getFileTimestamp(filepath);
       
-      // 如果找不到时间戳数据，初始化它
+      // 如果找不到时间戳数据，仅在非构建环境下初始化它
       if (!timestamp) {
-        initFileTimestamp(filepath);
-        timestamp = getFileTimestamp(filepath);
+        if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
+          // 仅在开发环境下创建新的时间戳
+          initFileTimestamp(filepath);
+          timestamp = getFileTimestamp(filepath);
+        } else {
+          // 在构建环境下使用文件系统信息，但不保存
+          const stats = statSync(filepath);
+          const createTime = new Date(Math.min(
+            stats.birthtime.getTime(),
+            stats.ctime.getTime()
+          ));
+          timestamp = {
+            created: createTime.toISOString(),
+            modified: stats.mtime.toISOString()
+          };
+        }
       }
       
       if (timestamp) {
-        // 使用保存的时间戳
+        // 使用保存的时间戳，但确保时区信息正确
         file.data.astro.frontmatter.date = timestamp.created;
         file.data.astro.frontmatter.updated = timestamp.modified;
+        
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`[remark-modified-time] 文件 ${filepath} 使用时间戳: ${timestamp.created}, ${timestamp.modified}`);
+        }
       } else {
         // 作为备选方案，使用文件系统时间
         const stats = statSync(filepath);
