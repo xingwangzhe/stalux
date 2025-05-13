@@ -186,24 +186,7 @@ export default function timestampIntegration() {
           updateModifiedTimestamp(file);
         }
       },
-      
-      // 构建开始前执行
-      'astro:build:start': async () => {
-        console.log('构建前更新文件时间戳...');
-        
-        // 构建前再次扫描，确保所有文件都有时间戳记录
-        const contentDir = join(process.cwd(), 'src', 'content');
-        
-        try {
-          // 验证时间戳数据的一致性
-          validateTimestampConsistency(contentDir);
-          
-          const timestamps = loadTimestamps();
-          console.log(`构建前时间戳数据已更新，共 ${Object.keys(timestamps).length} 个文件记录`);
-        } catch (error) {
-          console.error('构建前更新时间戳时出错:', error);
-        }
-      }
+      //构建别更新时间戳
     }
   };
 }
