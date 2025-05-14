@@ -1,0 +1,109 @@
+---
+// 在 Astro 中，前端脚本和逻辑放在 frontmatter 中（三个破折号之间）
+import { config_site } from "../../utils/config-adapter";
+
+// 从配置中获取文本内容
+const texts = config_site.textyping || ['Hello World!'];
+
+// 在服务器端，我们只需要准备数据，而不需要操作 DOM
+---
+
+<div id="textyping"></div>
+
+<script define:vars={{ texts: texts }}>
+// 这里是客户端脚本，使用define:vars将服务器端的texts变量传递给客户端脚本
+// 状态变量
+let displayText = '';
+let currentTextIndex = Math.floor(Math.random() * texts.length);
+let currentCharIndex = 0;
+let isDeleting = false;
+let typingDelay = 40; // 打印速度
+let deletingDelay = 80;  // 删除速度
+let pauseDelay = 1000;   // 暂停时间
+const textElement = document.getElementById('textyping');
+
+// 打字效果函数
+function typeText() {
+    if (!textElement) return;
+    const currentText = texts[currentTextIndex];
+    
+    if (isDeleting) {
+        displayText = currentText.slice(0, currentCharIndex--);
+        textElement.textContent = displayText;
+        typingDelay = deletingDelay;
+        
+        if (currentCharIndex < 0) {
+            isDeleting = false;
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * texts.length);
+            } while (newIndex === currentTextIndex && texts.length > 1);
+            currentTextIndex = newIndex;
+            setTimeout(typeText, pauseDelay);
+            return;
+        }
+    } else {
+        displayText = currentText.substring(0, currentCharIndex++);
+        textElement.textContent = displayText;
+        typingDelay = 80;
+        
+        if (currentCharIndex > currentText.length) {
+            isDeleting = true;
+            currentCharIndex = currentText.length;
+            setTimeout(typeText, pauseDelay);
+            return;
+        }
+    }
+    
+    setTimeout(typeText, typingDelay);
+}
+
+// 在DOM加载完成后启动打字效果
+document.addEventListener('DOMContentLoaded', () => {
+    typeText();
+});
+</script>
+
+<style>
+#textyping {
+    position: relative;
+    text-align: center;
+    font-size: 2.5rem;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 800px;
+    min-height: 2rem;
+    padding: 0 15px;
+    color: #ffffff;
+    text-shadow: 0.1rem 0.1rem 0.2rem rgb(1, 162, 190);
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+#textyping::after {
+    content: '|';
+    position: relative;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    #textyping {
+        font-size: 2rem;
+        margin: 15px auto;
+    }
+}
+
+@media (max-width: 480px) {
+    #textyping {
+        font-size: 1.5rem;
+        margin: 10px auto;
+    }
+}
+</style>
