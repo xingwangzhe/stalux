@@ -27,7 +27,8 @@ export default defineConfig({
         filter: (page) => {
           // 只包含首页、posts、about页面
           return page.includes('/posts/') || 
-                 page === config_site.url + '/about' || 
+                 page.includes('/about/') ||
+                 page.includes('/links/') || 
                  page === config_site.url + '/';
         },
         changefreq: 'weekly',
@@ -45,16 +46,63 @@ export default defineConfig({
             shadowColor: '#124',
           },
         },
-      }),],
-    vite: {
+      }),],    vite: {
         css: {
           transformer: "lightningcss",
           lightningcss: {
             targets: browserslistToTargets(browserslist('>= 0.25%'))
           }
-        },
+        },        // 处理可能不存在的_config.ts文件
+        plugins: [
+          {
+            name: 'handle-optional-imports',
+            resolveId(id, importer) {
+              // 捕获对 _config.ts 的导入
+              if (id.includes('/_config') || id.endsWith('_config')) {
+                try {
+                  // 检查文件是否实际存在
+                  const fs = require('fs');
+                  const path = require('path');
+                  const configPath = path.resolve('./src/_config.ts');
+                  
+                  if (fs.existsSync(configPath)) {
+                    // 如果存在，让 Vite 正常处理
+                    return null;
+                  }
+                  
+                  // 如果文件不存在，返回虚拟模块路径
+                  return '\0virtual:_config';
+                } catch (e) {
+                  // 如果出错，返回虚拟模块
+                  return '\0virtual:_config';
+                }
+              }
+              return null;
+            },
+            load(id) {
+              // 为虚拟模块提供默认导出
+              if (id === '\0virtual:_config') {
+                return 'export const useConfig = false; export const siteConfig = {};';
+              }
+              return null;
+            }
+          }
+        ],
         build: {
-          cssMinify: 'lightningcss'
+          cssMinify: 'lightningcss',          // 让 Vite/Rollup 静默处理一些导入错误
+          rollupOptions: {
+            onwarn(warning, warn) {
+              // 忽略关于找不到_config模块的警告
+              if (
+                warning.code === 'UNRESOLVED_IMPORT' && 
+                warning.message && warning.message.includes('_config')
+              ) {
+                return;
+              }
+              // 传递其他警告
+              warn(warning);
+            }
+          }
         }
     },
     // 禁用开发工具栏

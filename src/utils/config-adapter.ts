@@ -1,7 +1,7 @@
 // 导入默认配置
 import {type SiteConfig} from '../types'
 import { site as defaultConfig } from '../consts';
-// 直接尝试导入用户配置
+// 不要使用静态导入，改用动态导入
 async function getConfig(): Promise<SiteConfig> {
   let userConfig;
   
@@ -23,5 +23,16 @@ async function getConfig(): Promise<SiteConfig> {
   console.log('使用默认配置文件 consts.ts');
   return defaultConfig;
 }
-// 导出配置
-export const config_site: SiteConfig = await getConfig();
+// 导出配置 - 使用异步函数的结果初始化
+// 我们需要立即初始化一个默认值，但会在应用启动时尽快获取真实配置
+export let config_site: SiteConfig = defaultConfig;
+
+// 立即执行的异步函数来更新配置
+(async () => {
+  try {
+    config_site = await getConfig();
+  } catch (error) {
+    console.error('无法加载配置:', error);
+    // 配置加载失败时仍使用默认配置
+  }
+})();
