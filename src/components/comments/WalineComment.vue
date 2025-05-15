@@ -1,31 +1,46 @@
+
 <script setup lang="ts">
 /**
  * Waline评论组件 - Vue版本
  * 集成Waline评论系统，风格与博客主题保持一致
  */
-import { ref, onMounted, watch, onBeforeUnmount } from 'vue';
-import { init } from '@waline/client';
+import { ref, onMounted, watch, onBeforeUnmount, computed } from 'vue';
+import { init, type WalineInstance } from '@waline/client';
 import '@waline/client/style'; // 正确导入CSS路径
 
-// 引入站点配置
-import { config_site } from '../../utils/config-adapter';
+// 引入类型定义，但不导入实际配置
+import type { SiteConfig, WalineConfig } from '../../types';
 
-// 定义组件参数
+// 定义组件参数 - 将所有必要的配置拆分为单独参数
 interface Props {
   path?: string;
   title?: string;
   serverURL?: string;
+  // 细分 Waline 配置项，避免传递整个配置对象
+  lang?: string;
+  emoji?: any;
+  requiredFields?: string[];
+  reaction?: boolean;
+  meta?: string[];
+  wordLimit?: number;
+  pageSize?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   path: '',
   title: '',
-  serverURL: config_site.comment?.waline?.serverURL || '',
+  serverURL: '',
+  lang: 'zh-CN',
+  emoji: false,
+  requiredFields: () => [],
+  reaction: true,
+  meta: () => ['nick', 'mail', 'link'],
+  wordLimit: 200,
+  pageSize: 10
 });
 
-const walineConfig = config_site.comment?.waline || {};
 const commentRef = ref<HTMLElement | null>(null);
-const walineInstance = ref(null);
+const walineInstance = ref<WalineInstance | null>(null);
 
 // 初始化Waline评论系统
 const initWaline = () => {
@@ -36,18 +51,18 @@ const initWaline = () => {
     walineInstance.value.destroy();
   }
 
-  // 创建新实例
+  // 创建新实例 - 直接使用从props接收的配置项
   walineInstance.value = init({
     el: commentRef.value,
     serverURL: props.serverURL,
     path: props.path || window.location.pathname,
-    lang: walineConfig.lang || 'zh-CN',
-    emoji: walineConfig.emoji || ['https://unpkg.com/@waline/emojis@1.1.0/weibo'],
-    requiredFields: walineConfig.requiredFields || [],
-    reaction: walineConfig.reaction || true,
-    meta: walineConfig.meta || ['nick', 'mail', 'link'],
-    wordLimit: walineConfig.wordLimit || 200,
-    pageSize: walineConfig.pageSize || 10,
+    lang: props.lang,
+    emoji: props.emoji,
+    requiredFields: props.requiredFields,
+    reaction: props.reaction,
+    meta: props.meta,
+    wordLimit: props.wordLimit,
+    pageSize: props.pageSize,
     title: props.title,
     dark: true // 固定使用暗色模式
   });

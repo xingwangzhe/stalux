@@ -155,7 +155,7 @@ export const site: SiteConfig = {
       lang: 'zh-CN', // 语言设置
       emoji: ['https://unpkg.com/@waline/emojis@1.1.0/weibo'], // 表情包设置
       requiredFields: [], // 必填项
-      reaction: true, // 文章反应
+      reaction: false, // 文章反应
       meta: ['nick', 'mail', 'link'], // 评论者的元数据
       wordLimit: 200, // 字数限制
       pageSize: 10 // 评论分页大小

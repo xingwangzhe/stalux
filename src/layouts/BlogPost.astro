@@ -258,7 +258,19 @@ const categoryStr = categoriesToString(categories);
 							</div>
 						</nav>
 					) : null}
-					<WalineComment client:idle />
+					<WalineComment 
+						serverURL={config_site.comment?.waline?.serverURL}
+						path={Astro.url.pathname}
+						title={title}
+						lang={config_site.comment?.waline?.lang || 'zh-CN'}
+						emoji={config_site.comment?.waline?.emoji}
+						requiredFields={config_site.comment?.waline?.requiredFields}
+						reaction={config_site.comment?.waline?.reaction}
+						meta={config_site.comment?.waline?.meta}
+						wordLimit={config_site.comment?.waline?.wordLimit}
+						pageSize={config_site.comment?.waline?.pageSize}
+						client:idle 
+					/>
 				</article>
 				<RightSiderbar {tags} {categories} {headings} />
 			</div>
