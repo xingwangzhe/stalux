@@ -167,7 +167,6 @@ import favicon_img from '../images/stalux.ico';
       ...(extend.meta || []),
     ],    link: [
       { rel: "icon", href: favicon || favicon_img , type: "image/x-icon" },
-      { rel: "canonical", href: canonical },
       { rel: "alternate", type: "application/json+oembed", title: `${siteName || title} JSON+OEmbed`, href: `${url}/oembed.json` },
       { rel: "alternate", type: "text/xml+oembed", title: `${siteName || title} Text+OEmbed`, href: `${url}/oembed.xml` },
       { rel: "alternate", type: "application/rss+xml", title: `${siteName || title} RSS Feed`, href: `${url}/rss.xml` },
