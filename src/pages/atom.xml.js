@@ -14,7 +14,9 @@ export async function GET(context) {
     title: config_site.siteName || 'Blog',
     description: config_site.description || '博客描述',
     site: context.site,
-    items: posts.map((post) => ({
+    items: posts
+      .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
+      .map((post) => ({
       title: post.data.title,
       pubDate: post.data.date,
       description: post.data.description,
