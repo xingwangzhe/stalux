@@ -33,13 +33,19 @@ function getIconSvg(iconName: string): string {
 import '../styles/components/Header.styl';
 ---
 
-<nav class="nav">
-  <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="导航菜单">
-    <Fragment set:html={feather.icons['menu'].toSvg({
-      width: 24,
-      height: 24,
-      class: 'menu-icon'
-    })} />
+<nav class="nav">  <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="导航菜单" aria-expanded="false">
+    <span class="menu-icon-wrapper">
+      <Fragment set:html={feather.icons['menu'].toSvg({
+        width: 24,
+        height: 24,
+        class: 'menu-icon menu-open'
+      })} />
+      <Fragment set:html={feather.icons['x'].toSvg({
+        width: 24,
+        height: 24,
+        class: 'menu-icon menu-close'
+      })} />
+    </span>
   </button>
 
   <ul id="nav-menu">
@@ -65,6 +71,9 @@ import '../styles/components/Header.styl';
       </li>
   </ul>
 </nav>
+
+<!-- 移动端菜单遮罩层 -->
+<div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
 
 <div id="search-container" class="search-container">
   <div class="search-backdrop"></div>
@@ -93,21 +102,63 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchToggle = document.getElementById('search-toggle');
   const searchContainer = document.getElementById('search-container');
   const searchClose = document.getElementById('search-close');
-  const searchBackdrop = document.querySelector('.search-backdrop');
+  const searchBackdrop = document.querySelector('.search-backdrop');  const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
   
-  if (menuToggle && navMenu) {
+  if (menuToggle && navMenu && mobileMenuBackdrop) {
     menuToggle.addEventListener('click', () => {
-      navMenu.classList.toggle('active');
+      if (navMenu.classList.contains('active')) {
+        // 关闭菜单
+        navMenu.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        mobileMenuBackdrop.classList.remove('active');
+      } else {
+        // 打开菜单
+        navMenu.classList.add('active');
+        menuToggle.setAttribute('aria-expanded', 'true');
+        mobileMenuBackdrop.classList.add('active');
+      }
     });
     
     // 点击菜单项后关闭菜单
-    const menuItems = navMenu.querySelectorAll('a');
+    const menuItems = navMenu.querySelectorAll('a, .search-toggle');
     menuItems.forEach(item => {
       item.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
           navMenu.classList.remove('active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+          mobileMenuBackdrop.classList.remove('active');
         }
       });
+    });
+      // 点击遮罩层关闭菜单
+    if (mobileMenuBackdrop) {
+      mobileMenuBackdrop.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        mobileMenuBackdrop.classList.remove('active');
+      });
+    }
+    
+    // 点击菜单外部关闭菜单
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && 
+          !navMenu.contains(e.target as Node) && 
+          !menuToggle.contains(e.target as Node) &&
+          !mobileMenuBackdrop.contains(e.target as Node) &&
+          navMenu.classList.contains('active')) {
+        navMenu.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        mobileMenuBackdrop.classList.remove('active');
+      }
+    });
+    
+    // ESC键关闭菜单
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+        navMenu.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        mobileMenuBackdrop.classList.remove('active');
+      }
     });
   }
   
