@@ -16,7 +16,7 @@ interface Props {
     date?: string | Date;
     updated?: string | Date;
     tags?: string[];
-    categories?: any[]; // 添加categories属性
+    categories?: string[]; // 改为字符串数组
     headings?: MarkdownHeading[];
 	description?: string;
 	abbrlink?: string;
@@ -50,64 +50,16 @@ function description150(description: string): string {
 	return plainText;
 }
 
-function categoriesToString(categories?: any[]): string {
+function categoriesToString(categories?: string[]): string {
 	if (!categories || categories.length === 0) {
 		return '';
 	}
 
-	// 创建一个Set用于存储所有分类，自动去重
-	const categorySet = new Set<string>();
-
-	// 递归函数，用于遍历嵌套的分类树
-	function extractCategoryNames(node: any) {
-		// 处理字符串类型的分类
-		if (typeof node === 'string') {
-			categorySet.add(node);
-			return;
-		}
-		
-		// 处理带有name属性的对象类型分类
-		if (node && typeof node === 'object' && node.name) {
-			categorySet.add(node.name);
-			
-			// 处理subcategories数组
-			if (node.subcategories && Array.isArray(node.subcategories)) {
-				node.subcategories.forEach((subcat: any) => {
-					extractCategoryNames(subcat);
-				});
-			}
-			// 处理children数组
-			if (node.children && Array.isArray(node.children)) {
-				node.children.forEach((child: any) => {
-					extractCategoryNames(child);
-				});
-			}
-			return;
-		}
-		
-		// 处理键值对对象类型的分类
-		if (node && typeof node === 'object') {
-			const keys = Object.keys(node);
-			if (keys.length > 0) {
-				const name = keys[0];
-				categorySet.add(name);
-				
-				const subCategories = node[name];
-				if (Array.isArray(subCategories)) {
-					subCategories.forEach((subcat: any) => {
-						extractCategoryNames(subcat);
-					});
-				}
-			}
-			return;
-		}
-	}
-
-	// 开始遍历分类树
-	categories.forEach(cat => extractCategoryNames(cat));
-	
-	// 将Set转换为逗号分隔的字符串
-	return Array.from(categorySet).join(',');
+	// 现在 categories 已经是简单的字符串数组，直接处理即可
+	return categories
+		.filter(cat => cat && cat.trim() !== '') // 过滤空字符串
+		.map(cat => cat.trim()) // 去除首尾空格
+		.join(','); // 用逗号连接
 }
 
 // 将标签和分类合并并去重

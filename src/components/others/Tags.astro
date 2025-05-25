@@ -1,6 +1,25 @@
 ---
 // 标签组件
+import { getCollection } from 'astro:content';
+import { processFrontmatter } from '../../integrations/process-frontmatter';
+
 const { tags = [] as string[] } = Astro.props;
+
+// 获取所有文章并统计标签数量
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+
+// 统计所有标签的文章数量
+const tagCounts = new Map<string, number>();
+processedPosts.forEach(post => {
+  const postTags = post.data.tags || [];
+  postTags.forEach((tag: string) => {
+    if (tag && tag.trim()) {
+      tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+    }
+  });
+});
+
 import '../../styles/components/others/Tags.styl';
 ---
 
@@ -13,12 +32,14 @@ import '../../styles/components/others/Tags.styl';
         <path fill="currentColor" d="M7 10l5 5 5-5z"></path>
       </svg>
     </button>
-  </div>
-  <div id="tags-content" class="section-content">
+  </div>  <div id="tags-content" class="section-content">
     <div class="tag-cloud">
       {tags && tags.length > 0 ? (
         tags.map((tag: string) => (
-          <a href={`/tags/${tag}`} class="tag">{tag}</a>
+          <a href={`/tags/${tag}`} class="tag">
+            <span class="tag-name">{tag}</span>
+            <span class="tag-count">({tagCounts.get(tag) || 0})</span>
+          </a>
         ))
       ) : (
         <div class="no-tags">暂无标签</div>

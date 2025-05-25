@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import { config_site } from '../../utils/config-adapter';
 import { processFrontmatter } from '../../integrations/process-frontmatter';
-import { extractNestedCategories, sortCategoriesByCount } from '../../utils/category-utils';
+import { extractFlatCategories, sortCategoriesByCount } from '../../utils/category-utils';
 import CategoriesLayout from '../../layouts/CategoriesLayout.astro';
 
 // 获取文章集合
@@ -10,7 +10,7 @@ const allPosts = await getCollection('posts');
 const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
 // 获取所有分类并按文章数量排序
-const categories = extractNestedCategories(processedPosts);
+const categories = extractFlatCategories(processedPosts);
 const sortedCategories = sortCategoriesByCount(categories);
 
 // 页面标题

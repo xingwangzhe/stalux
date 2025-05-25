@@ -10,7 +10,7 @@ export interface CategoryNode {
 export type CategoryList = CategoryNode[];
 
 // 提取并组织所有分类，构建平铺标签结构
-export function extractNestedCategories(posts: any[]): CategoryList {
+export function extractFlatCategories(posts: any[]): CategoryList {
   const categoryMap = new Map<string, CategoryNode>();
 
   // 处理每篇文章的分类

@@ -1,11 +1,14 @@
 ---
-import { extractNestedCategories } from '../../utils/category-utils';
+import { getCollection } from 'astro:content';
+import { extractFlatCategories } from '../../utils/category-utils';
+import { processFrontmatter } from '../../integrations/process-frontmatter';
 
-// 接收分类数据作为组件属性
-const { categories = [] as any[] } = Astro.props;
+// 获取所有文章并处理frontmatter
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
-// 使用新的平铺分类函数处理分类数据
-const categoryList = extractNestedCategories(categories);
+// 使用新的平铺分类函数处理所有文章的分类数据
+const categoryList = extractFlatCategories(processedPosts);
 
 import '../../styles/components/categories/SidebarCategories.styl';
 ---

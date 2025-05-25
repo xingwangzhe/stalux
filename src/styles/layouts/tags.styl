@@ -153,7 +153,7 @@
 
 // 标签详情页样式
 .post-list-container {
-  max-width: 900px
+  max-width: 1200px
   margin: 0 auto
   padding: 1rem
 }
@@ -163,7 +163,7 @@
   padding: 0
   margin: 0
   display: grid
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))
   gap: 1.5rem
 }
 
@@ -242,9 +242,24 @@
 }
 
 // 响应式网格布局
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .post-list-container {
+    max-width: 1000px
+  }
+  
   .post-list {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
+    gap: 1.2rem
+  }
+}
+
+@media (max-width: 1024px) {
+  .post-list-container {
+    max-width: 900px
+  }
+  
+  .post-list {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr))
     gap: 1rem
   }
   
