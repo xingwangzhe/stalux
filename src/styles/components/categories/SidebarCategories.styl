@@ -69,89 +69,53 @@
   }
 }
 
-.category-tree {
+.category-list {
   display: flex
   flex-direction: column
-  gap: 0.35rem
+  gap: 0.5rem
   padding: 0.2rem
 }
 
-.category {
+.category-tag {
   position: relative
   display: flex
   align-items: center
-  border-radius: 4px
-  padding: 0.25rem 0.4rem
+  justify-content: space-between
+  border-radius: 6px
+  padding: 0.4rem 0.6rem
   font-size: 0.85rem
   color: rgba(255, 255, 255, 0.9)
   text-decoration: none
   transition: all 0.2s ease
-  margin-bottom: 0.1rem
-  overflow: hidden
-  
-  .indent {
-    color: rgba(255, 255, 255, 0.5)
-    font-family: monospace
-    margin-right: 0.2rem
-    white-space: pre
-    letter-spacing: -0.5px
-  }
+  background: rgba(1, 162, 190, 0.1)
+  border: 1px solid rgba(1, 162, 190, 0.2)
+  border-left: 3px solid rgba(1, 162, 190, 0.6)
   
   .category-name {
     flex: 1
     overflow: hidden
     text-overflow: ellipsis
     white-space: nowrap
-    position: relative
-    z-index: 1
+    font-weight: 500
   }
   
-  /* 不同层级的颜色和样式 */
-  &.level-0 {
-    font-weight: 600
-    border-left: 2px solid rgba(255, 168, 70, 0.7)
-  }
-  
-  &.level-1 {
-    border-left: 2px solid rgba(114, 137, 218, 0.7)
-  }
-  
-  &.level-2 {
-    border-left: 2px solid rgba(70, 200, 120, 0.7)
-  }
-  
-  &.level-3 {
-    border-left: 2px solid rgba(220, 100, 150, 0.7)
-  }
-  
-  &.level-4, &.level-5, &.level-6, &.level-7, &.level-8, &.level-9 {
-    border-left: 2px solid rgba(180, 130, 180, 0.7)
-    font-size: 0.8rem
+  .category-count {
+    font-size: 0.75rem
+    color: rgba(255, 255, 255, 0.6)
+    font-weight: normal
+    margin-left: 0.5rem
   }
   
   /* 悬停效果 */
   &:hover {
-    background-color: rgba(255, 255, 255, 0.18)
+    background: rgba(1, 162, 190, 0.2)
+    border-color: rgba(1, 162, 190, 0.4)
+    border-left-color: rgba(1, 162, 190, 0.8)
     transform: translateX(2px)
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+    box-shadow: 0 2px 6px rgba(1, 162, 190, 0.2)
     
-    .indent {
+    .category-count {
       color: rgba(255, 255, 255, 0.8)
-    }
-    
-    &::before {
-      content: ''
-      position: absolute
-      top: 0
-      left: 0
-      width: 100%
-      height: 100%
-      background: linear-gradient(90deg, 
-        rgba(255, 255, 255, 0) 0%, 
-        rgba(255, 255, 255, 0.05) 50%,
-        rgba(255, 255, 255, 0) 100%)
-      z-index: 0
-      animation: shine 1s ease-in-out
     }
   }
 }

@@ -6,13 +6,14 @@ import '../../src/styles/global.styl';
 import '../styles/layouts/CategoriesLayout.styl';
 import '../styles/pages/categories/index-content.styl';
 import { config_site } from '../utils/config-adapter';
+import type { CategoryNode } from '../utils/category-utils';
 
 export interface Props {
   title: string;
   description: string;
   author: string;
   url: string;
-  categories: any[];
+  categories: CategoryNode[];  // 改为平铺数组
   noIndex?: boolean;
 }
 
@@ -39,13 +40,11 @@ const { title, description, author, url, categories, noIndex = false } = Astro.p
       <div class="page-header">
         <h1 class="page-title">文章分类</h1>
         <p class="page-description">按主题分类浏览</p>
-      </div>
-
-      <!-- 主分类卡片网格 -->
+      </div>      <!-- 分类卡片网格 - 平铺标签模式 -->
       <div class="categories-grid">
         {categories.length > 0 ? (
           categories.map((category) => (
-            <div class={`category-card level-1 ${category.sortedChildren?.length ? 'has-children' : ''}`}>
+            <div class="category-card">
               <a href={`/categories/${category.path}`} class="category-header">
                 <div class="category-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -54,35 +53,9 @@ const { title, description, author, url, categories, noIndex = false } = Astro.p
                 </div>
                 <div class="category-content">
                   <h2 class="category-name">{category.name}</h2>
-                  <div class="category-count">{category.posts.length} 篇文章</div>
+                  <div class="category-count">{category.count} 篇文章</div>
                 </div>
               </a>
-              
-              <!-- 二级子分类 -->
-              {category.sortedChildren?.length > 0 && (
-                <div class="subcategories level-2">
-                  {category.sortedChildren.map((subCategory: { sortedChildren: any[]; path: any; name: unknown; posts: any[]; }) => (
-                    <div class={`subcategory-card ${subCategory.sortedChildren?.length ? 'has-children' : ''}`}>
-                      <a href={`/categories/${subCategory.path}`} class="subcategory-header">
-                        <h3 class="subcategory-name">{subCategory.name}</h3>
-                        <div class="subcategory-count">{subCategory.posts.length} 篇文章</div>
-                      </a>
-                      
-                      <!-- 三级子分类 (伪平铺) -->
-                      {subCategory.sortedChildren?.length > 0 && (
-                        <div class="subcategories level-3">
-                          {subCategory.sortedChildren.map((thirdLevelCategory: { path: any; name: unknown; posts: any[]; }) => (
-                            <a href={`/categories/${thirdLevelCategory.path}`} class="third-level-category">
-                              {thirdLevelCategory.name} 
-                              <span class="third-level-count">({thirdLevelCategory.posts.length})</span>
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           ))
         ) : (

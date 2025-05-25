@@ -53,6 +53,7 @@
     "katex": "^0.16.22",
     "lightningcss": "^1.29.3",
     "rehype-katex": "^7.0.1",
+    "remark-admonitions": "^1.2.1",
     "remark-math": "^6.0.0",
     "remark-toc": "^9.0.0",
     "sanitize-html": "^2.16.0",

@@ -10,8 +10,8 @@ const allPosts = await getCollection('posts');
 const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
 // 获取所有分类并按文章数量排序
-const categoryTree = extractNestedCategories(processedPosts);
-const sortedCategories = sortCategoriesByCount(categoryTree);
+const categories = extractNestedCategories(processedPosts);
+const sortedCategories = sortCategoriesByCount(categories);
 
 // 页面标题
 const pageTitle = '文章分类 | ' + config_site.siteName;
@@ -20,7 +20,7 @@ const pageTitle = '文章分类 | ' + config_site.siteName;
 <CategoriesLayout 
   title={pageTitle}
   description="所有文章分类列表，按主题分类索引"
-  author={config_site.author}
+  author={config_site.author || ''}
   url={config_site.url + '/categories/'}
   categories={sortedCategories}
   noIndex={true}

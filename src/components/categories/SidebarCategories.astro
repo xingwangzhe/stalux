@@ -1,17 +1,12 @@
 ---
-import { extractCategoryTrees } from './CategoryUtils';
+import { extractNestedCategories } from '../../utils/category-utils';
 
 // 接收分类数据作为组件属性
 const { categories = [] as any[] } = Astro.props;
 
-// 使用CategoryUtils中的函数处理分类数据
-const { trees: rootCategories, allCategories } = extractCategoryTrees(categories);
+// 使用新的平铺分类函数处理分类数据
+const categoryList = extractNestedCategories(categories);
 
-// 获取缩进标记 - 为了保持原有侧边栏样式
-function getIndentMark(level: number): string {
-  if (level === 0) return '';
-  return '  '.repeat(level);
-}
 import '../../styles/components/categories/SidebarCategories.styl';
 ---
 
@@ -24,14 +19,13 @@ import '../../styles/components/categories/SidebarCategories.styl';
         <path fill="currentColor" d="M7 10l5 5 5-5z"></path>
       </svg>
     </button>
-  </div>
-  <div id="categories-content" class="section-content">
-    <div class="category-tree">
-      {allCategories && allCategories.length > 0 ? (
-        allCategories.map((cat) => (
-          <a href={`/categories/${cat.path}`} class={`category level-${cat.level}`}>
-            <span class="indent">{getIndentMark(cat.level)}</span>
-            <span class="category-name">{cat.name}</span>
+  </div>  <div id="categories-content" class="section-content">
+    <div class="category-list">
+      {categoryList && categoryList.length > 0 ? (
+        categoryList.map((category) => (
+          <a href={`/categories/${category.name}`} class="category-tag">
+            <span class="category-name">{category.name}</span>
+            <span class="category-count">({category.count})</span>
           </a>
         ))
       ) : (

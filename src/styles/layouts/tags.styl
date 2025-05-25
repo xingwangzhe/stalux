@@ -162,14 +162,19 @@
   list-style: none
   padding: 0
   margin: 0
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))
+  gap: 1.5rem
 }
 
 .post-item {
-  margin-bottom: 1.5rem
   padding: 1.5rem
   background-color: rgba(255, 255, 255, 0.05)
   border-radius: 0.5rem
   transition: all 0.3s ease
+  display: flex
+  flex-direction: column
+  height: fit-content
   
   &:hover {
     background-color: rgba(255, 255, 255, 0.1)
@@ -233,4 +238,59 @@
   color: rgba(255, 255, 255, 0.6)
   text-align: center
   padding: 2rem
+  grid-column: 1 / -1
+}
+
+// 响应式网格布局
+@media (max-width: 1024px) {
+  .post-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
+    gap: 1rem
+  }
+  
+  .post-item {
+    padding: 1.2rem
+  }
+  
+  .post-title {
+    font-size: 1.2rem
+  }
+}
+
+@media (max-width: 768px) {
+  .post-list {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr))
+    gap: 1rem
+  }
+  
+  .post-item {
+    padding: 1rem
+  }
+  
+  .post-title {
+    font-size: 1.1rem
+  }
+  
+  .post-date {
+    font-size: 0.8rem
+  }
+}
+
+@media (max-width: 480px) {
+  .post-list {
+    grid-template-columns: 1fr
+    gap: 0.8rem
+  }
+  
+  .post-item {
+    padding: 0.8rem
+  }
+  
+  .post-title {
+    font-size: 1rem
+  }
+  
+  .tags-layout-container {
+    padding: 1rem 0.5rem
+  }
 }

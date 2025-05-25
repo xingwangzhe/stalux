@@ -3,8 +3,6 @@ import { getCollection } from 'astro:content';
 import { config_site } from '../../utils/config-adapter';
 import { processFrontmatter } from '../../integrations/process-frontmatter';
 import dayjs from 'dayjs';
-import CategoryTree from '../../components/categories/CategoryTree.astro';
-import { extractCategoryTrees } from '../../components/categories/CategoryUtils';
 import CategoryDetailLayout from '../../layouts/CategoryDetailLayout.astro';
 
 export async function getStaticPaths() {
@@ -12,116 +10,44 @@ export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
   const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
   
-  // 提取所有分类路径
-  const categoryPaths = new Set();
-  
-  // 递归收集所有分类路径
-  function collectCategoryPaths(categories: any[], parentPath = '') {
-    if (!categories || !Array.isArray(categories)) return;
-    
-    categories.forEach(category => {
-      // 处理字符串格式
-      if (typeof category === 'string') {
-        const currentPath = parentPath ? `${parentPath}/${category}` : category;
-        categoryPaths.add(currentPath);
-        return;
-      }
-      
-      // 处理对象格式 - {name, subcategories}
-      if (category && typeof category === 'object' && category.name) {
-        const catName = String(category.name);
-        const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
-        categoryPaths.add(currentPath);
-        
-        // 递归处理子分类
-        if (category.subcategories && Array.isArray(category.subcategories)) {
-          collectCategoryPaths(category.subcategories, currentPath);
+  // 提取所有分类路径 - 平铺标签模式
+  const categoryPaths = new Set<string>();
+    processedPosts.forEach(post => {
+    if (post.data.categories && Array.isArray(post.data.categories)) {
+      post.data.categories.forEach((category: string) => {
+        if (typeof category === 'string' && category.trim()) {
+          categoryPaths.add(category.trim());
         }
-        return;
-      }
-      
-      // 处理对象格式 - {'category': [subcategories]}
-      if (category && typeof category === 'object') {
-        const keys = Object.keys(category);
-        if (keys.length > 0) {
-          const catName = String(keys[0]);
-          const currentPath = parentPath ? `${parentPath}/${catName}` : catName;
-          categoryPaths.add(currentPath);
-          
-          // 递归处理子分类
-          const subCategories = category[keys[0]];
-          if (Array.isArray(subCategories)) {
-            collectCategoryPaths(subCategories, currentPath);
-          }
-        }
-      }
-    });
-  }
-  
-  // 处理每篇文章的分类
-  processedPosts.forEach(post => {
-    if (post.data.categories) {
-      const categories = Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories];
-      collectCategoryPaths(categories);
+      });
     }
   });
   
   // 生成静态路径
-  return Array.from(categoryPaths).map(path => {
-    const pathStr = String(path);
-    
+  return Array.from(categoryPaths).map(categoryName => {
     return {
       params: { 
-        path: pathStr
+        path: categoryName
       },
-      props: { 
-        categoryPath: pathStr
+      props: {
+        categoryPath: categoryName
       }
     };
   });
 }
 
 const { categoryPath } = Astro.props;
-const pathSegments = categoryPath.split('/');
-const currentCategory = pathSegments[pathSegments.length - 1];
 
 // 获取所有文章并处理frontmatter
 const allPosts = await getCollection('posts');
 const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
-// 过滤属于当前分类的文章
-function isPostInCategory(post: { data: { categories: any; }; }, targetPath: string) {
-  if (!post.data.categories) return false;
+// 过滤属于当前分类的文章 - 平铺标签模式
+function isPostInCategory(post: { data: { categories: any; }; }, targetCategory: string) {
+  if (!post.data.categories || !Array.isArray(post.data.categories)) return false;
   
-  // 构建文章分类的所有路径
-  const postCategoryPaths: string[] = [];
-  
-  function buildCategoryPaths(categories: any[], parentPath = '') {
-    if (!Array.isArray(categories)) return;
-    
-    categories.forEach(cat => {
-      if (typeof cat === 'string') {
-        postCategoryPaths.push(parentPath ? `${parentPath}/${cat}` : cat);
-      } else if (cat && cat.name) {
-        const path = parentPath ? `${parentPath}/${cat.name}` : cat.name;
-        postCategoryPaths.push(path);
-        if (cat.subcategories) buildCategoryPaths(cat.subcategories, path);
-      } else if (cat && typeof cat === 'object') {
-        const key = Object.keys(cat)[0];
-        if (key) {
-          const path = parentPath ? `${parentPath}/${key}` : key;
-          postCategoryPaths.push(path);
-          if (Array.isArray(cat[key])) buildCategoryPaths(cat[key], path);
-        }
-      }
-    });
-  }
-  
-  const categories = Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories];
-  buildCategoryPaths(categories);
-  
-  // 检查文章分类路径是否包含目标路径
-  return postCategoryPaths.some(path => path === targetPath);
+  return post.data.categories.some(category => 
+    typeof category === 'string' && category.trim() === targetCategory
+  );
 }
 
 // 过滤和排序文章
@@ -135,43 +61,46 @@ const sortedPosts = categoryPosts.sort((a, b) => {
 });
 
 // 页面标题
-const pageTitle = `分类: ${currentCategory} | ${config_site.siteName}`;
+const pageTitle = `分类: ${categoryPath} | ${config_site.siteName}`;
 ---
 
 <CategoryDetailLayout
   title={pageTitle}
-  description={`"${currentCategory}" 分类下的所有文章`}
-  author={config_site.author}
+  description={`"${categoryPath}" 分类下的所有文章`}
+  author={config_site.author || ''}
   url={config_site.url + '/categories/' + categoryPath}
-  pathSegments={pathSegments}
+  categoryName={categoryPath}
   postCount={sortedPosts.length}
   noIndex={true}
 >
   {sortedPosts.length > 0 ? (
     <ul class="post-list">
-      {sortedPosts.map(post => {
-        // 提取文章分类的树状结构
-        const categoriesData = extractCategoryTrees(
-          Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories]
-        );
-        
-        return (
-          <li class="post-item">
-            <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
-              <div class="post-date">
-                {dayjs(post.data.date).format('YYYY-MM-DD')}
-              </div>
-              <h2 class="post-title">{post.data.title}</h2>
-            </a>
-            
-            {categoriesData.trees.length > 0 && (
-              <CategoryTree categoriesData={categoriesData} currentPath={categoryPath} />
+      {sortedPosts.map(post => (
+        <li class="post-item">
+          <a href={`/posts/${post.data.abbrlink}/`} class="post-link">
+            <div class="post-date">
+              {dayjs(post.data.date).format('YYYY-MM-DD')}
+            </div>
+            <h2 class="post-title">{post.data.title}</h2>
+            {post.data.description && (
+              <p class="post-description">{post.data.description}</p>
             )}
-          </li>
-        );
-      })}
+          </a>
+          
+          {/* 显示文章的所有分类标签 */}
+          {post.data.categories && post.data.categories.length > 0 && (
+            <div class="post-categories">
+              {post.data.categories.map((cat: string) => (
+                <a href={`/categories/${cat}`} class={`category-tag ${cat === categoryPath ? 'current' : ''}`}>
+                  {cat}
+                </a>
+              ))}
+            </div>
+          )}
+        </li>
+      ))}
     </ul>
   ) : (
-    <div class="no-posts">未找到与分类 "{currentCategory}" 相关的文章</div>
+    <div class="no-posts">未找到与分类 "{categoryPath}" 相关的文章</div>
   )}
 </CategoryDetailLayout>

@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import browserslist from 'browserslist';
 import vue from '@astrojs/vue';
-import astroExpressiveCode from 'astro-expressive-code'
+import astroExpressiveCode from 'astro-expressive-code';
 import {remarkModifiedTime} from './src/integrations/remark-modified-time.mjs';
 import { remarkModifiedAbbrlink } from './src/integrations/remark-modified-abbrlink.mjs';
 import remarkToc from 'remark-toc';
