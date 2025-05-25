@@ -10,7 +10,7 @@ export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
   const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
   
-  // 提取所有分类路径 - 平铺标签模式
+  // 提取所有分类路径 - 扁平化结构
   const categoryPaths = new Set<string>();
     processedPosts.forEach(post => {
     if (post.data.categories && Array.isArray(post.data.categories)) {
@@ -41,7 +41,7 @@ const { categoryPath } = Astro.props;
 const allPosts = await getCollection('posts');
 const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
-// 过滤属于当前分类的文章 - 平铺标签模式
+// 过滤属于当前分类的文章 - 扁平化结构
 function isPostInCategory(post: { data: { categories: any; }; }, targetCategory: string) {
   if (!post.data.categories || !Array.isArray(post.data.categories)) return false;
   

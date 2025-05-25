@@ -13,7 +13,7 @@ export interface Props {
   description: string;
   author: string;
   url: string;
-  categories: CategoryNode[];  // 改为平铺数组
+  categories: CategoryNode[];  // 扁平化分类数组
   noIndex?: boolean;
 }
 
@@ -40,7 +40,7 @@ const { title, description, author, url, categories, noIndex = false } = Astro.p
       <div class="page-header">
         <h1 class="page-title">文章分类</h1>
         <p class="page-description">按主题分类浏览</p>
-      </div>      <!-- 分类卡片网格 - 平铺标签模式 -->
+      </div>      <!-- 分类卡片网格 - 扁平化展示 -->
       <div class="categories-grid">
         {categories.length > 0 ? (
           categories.map((category) => (
