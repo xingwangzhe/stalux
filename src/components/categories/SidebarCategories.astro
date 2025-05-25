@@ -1,11 +1,36 @@
 ---
-import { extractFlatCategories } from '../../utils/category-utils';
+import { getCollection } from 'astro:content';
+import { extractFlatCategories, type CategoryNode } from '../../utils/category-utils';
+import { processFrontmatter } from '../../integrations/process-frontmatter';
 
-// 接收分类数据作为组件属性
-const { categories = [] as any[] } = Astro.props;
+// 接收当前文章的分类参数
+const { currentCategories = [] as string[] } = Astro.props;
 
-// 使用新的平铺分类函数处理分类数据
-const categoryList = extractFlatCategories(categories);
+// 如果有当前文章分类，直接显示；否则获取所有分类
+let categoryList: CategoryNode[];
+
+// 获取所有文章并处理frontmatter（无论是否有当前分类都需要统计）
+const allPosts = await getCollection('posts');
+const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+
+if (currentCategories && currentCategories.length > 0) {
+  // 显示当前文章的分类，但需要统计每个分类的文章数量
+  const allCategoryList = extractFlatCategories(processedPosts);
+  
+  categoryList = currentCategories.map((cat: string) => {
+    // 在所有分类中找到对应的分类以获取正确的统计数量
+    const foundCategory = allCategoryList.find(c => c.name === cat);
+    return {
+      name: cat,
+      path: cat,
+      count: foundCategory ? foundCategory.count : 0,
+      posts: foundCategory ? foundCategory.posts : []
+    };
+  });
+} else {
+  // 使用新的平铺分类函数处理所有文章的分类数据
+  categoryList = extractFlatCategories(processedPosts);
+}
 
 import '../../styles/components/categories/SidebarCategories.styl';
 ---
@@ -13,16 +38,15 @@ import '../../styles/components/categories/SidebarCategories.styl';
 <!-- 文章分类部分 -->
 <div class="sidebar-section categories">
   <div class="section-header">
-    <h3>文章分类</h3>
+    <h3>{currentCategories && currentCategories.length > 0 ? '本文分类' : '文章分类'}</h3>
     <button id="categories-toggle" class="section-toggle" aria-label="折叠分类">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
         <path fill="currentColor" d="M7 10l5 5 5-5z"></path>
       </svg>
     </button>
   </div>  <div id="categories-content" class="section-content">
-    <div class="category-list">
-      {categoryList && categoryList.length > 0 ? (
-        categoryList.map((category) => (
+    <div class="category-list">      {categoryList && categoryList.length > 0 ? (
+        categoryList.map((category: CategoryNode) => (
           <a href={`/categories/${category.name}`} class="category-tag">
             <span class="category-name">{category.name}</span>
             <span class="category-count">({category.count})</span>
