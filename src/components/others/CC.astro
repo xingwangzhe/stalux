@@ -1,0 +1,32 @@
+---
+const { title, author, url } = Astro.props;
+import '../../styles/components/others/cc.styl';
+
+// 导入官方CC图标
+import ccIcon from '../../images/cc-icons/cc.svg?raw';
+import byIcon from '../../images/cc-icons/by.svg?raw';
+import ncIcon from '../../images/cc-icons/nc.svg?raw';
+import saIcon from '../../images/cc-icons/sa.svg?raw';
+---
+<div class="cc-by-nc-sa-box">
+  <div class="cc-content">
+    <h2 class="cc-title">{title}</h2>
+    <p class="cc-author">作者: {author}</p>
+    {url && <p class="cc-url">本文链接: <a href={url} target="_blank" rel="noopener noreferrer">{url}</a></p>}
+    <p class="cc-license">
+      本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a> 进行许可。
+    </p>
+  </div>  <div class="cc-watermark">
+    <div class="tool-icons">
+      <!-- 官方CC Logo -->
+      <div class="cc-icon" set:html={ccIcon}></div>
+      <!-- 官方BY (Attribution) -->
+      <div class="cc-icon" set:html={byIcon}></div>
+      <!-- 官方NC (Non-Commercial) -->
+      <div class="cc-icon" set:html={ncIcon}></div>
+      <!-- 官方SA (Share Alike) -->
+      <div class="cc-icon" set:html={saIcon}></div>
+    </div>
+  </div>
+</div>
+

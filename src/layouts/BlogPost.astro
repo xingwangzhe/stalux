@@ -12,7 +12,7 @@ import {config_site} from '../utils/config-adapter';
 // 正确定义Props类型
 interface Props {
     title: string;
-	auther?: string;
+	author?: string;
     date?: string | Date;
     updated?: string | Date;
     tags?: string[];
@@ -24,11 +24,12 @@ interface Props {
 	next?: { title: string; url: string } | null;
 }
 
-const { title, date, updated, tags, categories, headings = [], description, auther, abbrlink, prev, next } = Astro.props;
+const { title, date, updated, tags, categories, headings = [], description, author, abbrlink, prev, next } = Astro.props;
 import '../styles/blog.styl'
 import '../styles/global.styl'
 import LeftSiderbar from './LeftSiderbar.astro';
 import RightSiderbar from './RightSiderbar.astro';
+import CC from '../components/others/CC.astro';
 
 function description150(description: string): string {
 	// 去除Markdown标识符并截取约150个字符
@@ -89,8 +90,7 @@ const categoryStr = categoriesToString(categories);
 		title={title+' | '+config_site.siteName}
 		titleTemplate={config_site.titleTemplate}
 		description={description150(description || '这是默认的文章描述')}
-		author={auther || config_site.author}
-		url={config_site.url + '/posts/' + abbrlink}
+		author={author || config_site.author}		url={config_site.url + '/posts/' + abbrlink}
 		canonical={config_site.url + '/posts/' + abbrlink}
 		keywords={keyws || '关键字1, 关键字2'}
 		structuredData={{
@@ -100,7 +100,7 @@ const categoryStr = categoriesToString(categories);
 			"description": description150(description || '这是默认的文章描述'),
 			"author": {
 				"@type": "Person",
-				"name": auther || config_site.author
+				"name": author || config_site.author
 			},
 			"datePublished": date,
 			"dateModified": updated || date,
@@ -150,9 +150,10 @@ const categoryStr = categoriesToString(categories);
 								)}
 							</div>
 							<hr />
-						</div>
-						<slot />					</div>
-					
+						</div>						
+						<slot />					
+					</div>
+								<CC title={title} author={config_site.author} url={config_site.url + '/posts/' + abbrlink} />
 					{(prev || next) ? (
 						<nav class="post-navigation" aria-label="文章导航">
 							<div class="post-navigation-inner">
