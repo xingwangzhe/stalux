@@ -39,7 +39,7 @@ import '../../styles/components/others/SocialLinks.styl';
 <div class="social-links" aria-label={ariaLabel}>
   <ul>
     {mediaLinks.map((item) => {
-      const icon = getIconByTitle(item.icon);
+      const icon = item.icon ? getIconByTitle(item.icon) : undefined;
       return (
         <li class="socila_icon">
           <a
@@ -65,7 +65,7 @@ import '../../styles/components/others/SocialLinks.styl';
                 </svg>
               </div>
             ) : (
-              <span class="custom-icon">{item.icon.charAt(0).toUpperCase()}</span>
+              <span class="custom-icon">{item.icon ? item.icon.charAt(0).toUpperCase() : ''}</span>
             )}
             <span class="sr-only">{item.title}</span>
           </a>
