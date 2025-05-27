@@ -11,7 +11,6 @@ async function getConfig(): Promise<SiteConfig> {
     
     // 检查是否存在配置且开关已打开
     if (userConfig && userConfig.useConfig === true) {
-      console.log('使用用户配置文件 _config.ts');
       return userConfig.siteConfig;
     }
   } catch (error) {
@@ -20,7 +19,6 @@ async function getConfig(): Promise<SiteConfig> {
   }
   
   // 默认使用 consts.ts 中的配置
-  console.log('使用默认配置文件 consts.ts');
   return defaultConfig;
 }
 // 导出配置 - 使用异步函数的结果初始化
@@ -32,7 +30,6 @@ export let config_site: SiteConfig = defaultConfig;
   try {
     config_site = await getConfig();
   } catch (error) {
-    console.error('无法加载配置:', error);
     // 配置加载失败时仍使用默认配置
   }
 })();

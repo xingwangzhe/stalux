@@ -29,10 +29,8 @@ export function generateBadge(options: BadgeOptions): string {
         delete format[typedKey];
       }
     });
-    
-    return makeBadge(format);
+      return makeBadge(format);
   } catch (error) {
-    console.error('生成徽章出错:', error);
     return '';
   }
 }

@@ -28,11 +28,11 @@ function scanContentFiles(dir, rootDir = dir) {
           results.push(filePath);
         }
       } catch (e) {
-        console.error(`无法访问文件: ${filePath}`, e);
+        // ignore
       }
     }
   } catch (e) {
-    console.error(`无法访问目录: ${dir}`, e);
+    // ignore
   }
   
   return results;
@@ -76,8 +76,6 @@ function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
   
   // 检查是否重复
   if (isDuplicateAbbrlink(abbrlink, relativePath, timestamps)) {
-    console.log(`警告: 文件 ${relativePath} 生成的 abbrlink: ${abbrlink} 有重复，尝试生成新的...`);
-    
     // 尝试使用不同位置的哈希值
     let found = false;
     for (let i = 1; i <= hash.length - 8; i++) {
@@ -85,7 +83,6 @@ function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
       if (!isDuplicateAbbrlink(newAbbrlink, relativePath, timestamps)) {
         abbrlink = newAbbrlink;
         found = true;
-        console.log(`为文件 ${relativePath} 生成新的 abbrlink: ${abbrlink}`);
         break;
       }
     }
@@ -96,7 +93,6 @@ function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
         .update(relativePath + timeString + Date.now().toString())
         .digest('hex');
       abbrlink = uniqueHash.substring(0, 8);
-      console.log(`为文件 ${relativePath} 使用时间戳增强生成新的 abbrlink: ${abbrlink}`);
     }
   }
   
@@ -105,16 +101,12 @@ function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
 
 // 更新所有文件的 abbrlink
 async function updateAllAbbrlinks() {
-  console.log('开始更新所有文件的 abbrlink...');
-  
   // 加载时间戳数据
   const timestamps = loadTimestamps();
-  console.log(`加载了 ${Object.keys(timestamps).length} 个文件的时间戳记录`);
   
   // 扫描内容目录
   const contentDir = join(process.cwd(), 'src', 'content');
   const contentFiles = scanContentFiles(contentDir);
-  console.log(`找到 ${contentFiles.length} 个内容文件`);
   
   // 记录各种统计
   let updated = 0;
@@ -128,16 +120,16 @@ async function updateAllAbbrlinks() {
     
     // 如果文件没有时间戳记录，跳过
     if (!timestamps[relativePath]) {
-      console.log(`警告: 文件 ${relativePath} 没有时间戳记录，跳过`);
       continue;
     }
     
     // 检查是否已有 abbrlink
     if (timestamps[relativePath].abbrlink) {
-      console.log(`文件 ${relativePath} 已有 abbrlink: ${timestamps[relativePath].abbrlink}`);
       unchanged++;
       continue;
-    }    // 使用统一的函数生成新的 abbrlink
+    }
+    
+    // 使用统一的函数生成新的 abbrlink
     let abbrlink = generateUniqueAbbrlink(filepath, timestamps[relativePath].created, timestamps);
     
     // 检查是否与简单哈希不同（表示发生了重复处理）
@@ -152,17 +144,10 @@ async function updateAllAbbrlinks() {
     // 更新 abbrlink
     timestamps[relativePath].abbrlink = abbrlink;
     added++;
-    console.log(`为文件 ${relativePath} 设置 abbrlink: ${abbrlink}`);
   }
   
   // 保存时间戳数据
   saveTimestamps(timestamps);
-  
-  console.log('\n更新完成:');
-  console.log(`- 更新了 ${updated} 个文件的 abbrlink`);
-  console.log(`- 新增了 ${added} 个文件的 abbrlink`);
-  console.log(`- ${unchanged} 个文件的 abbrlink 保持不变`);
-  console.log(`- 解决了 ${duplicates} 个 abbrlink 重复问题`);
 }
 
 // 执行更新
