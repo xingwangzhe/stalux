@@ -29,22 +29,6 @@ const pageTitle = `${title} | ${config_site.title}`;
     url={config_site.url + '/about/'}
     canonical={config_site.url + '/about/'}
     noindex={noindex}
-    openGraph={config_site.openGraph ? {
-      ...config_site.openGraph,
-      basic: {
-        ...config_site.openGraph.basic,
-        title: title,
-        url: config_site.url + '/about/'
-      },
-      optional: {
-        ...config_site.openGraph?.optional,
-        description: description || title
-      }
-    } : undefined}    twitter={config_site.twitter ? {
-      ...config_site.twitter,
-      title: title,
-      description: description || title
-    } : undefined}
     structuredData={{
       "@context": "https://schema.org",
       "@type": "AboutPage",

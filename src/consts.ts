@@ -1,128 +1,35 @@
-import type { SiteConfig, BadgeOptions } from './types'; // Import BadgeOptions
+import type { SiteConfig, BadgeOptions } from './types';
 
 export const site: SiteConfig = {
   /**
-   * <head>元素硬嵌入
-   * 可以在此处添加自定义的meta标签、脚本、样式等
+   * 核心站点信息
    */
-  head: `<meta name="nishia" content="nihaiso">
-        <script>console.log("欢迎使用Stalux主题")</script>`,
-
+  title: 'Stalux博客主题',
+  titleDefault: 'Stalux博客主题',
+  siteName: 'Stalux博客主题',
+  author: 'xingwangzhe',
+  
   /**
    * SEO 核心配置
-   * 这些配置对搜索引擎优化至关重要
    */
-  // 网站标题，SEO最重要的因素之一
-  description: '博客主题Stalux - 为内容创作者提供的专业展示平台，支持多种自定义功能，包含评论系统集成、友情链接管理、社交媒体分享和丰富的SEO优化选项，让您的内容更具吸引力和可发现性。', // 网站描述，建议150-160字符以获得最佳SEO效果
-  url: 'https://stalux.needhelp.icu', // 完整网站URL(包含https协议)
-
-
-
-  /**
-   * 重要SEO辅助配置
-   */
-  keywords: 'Stalux, 博客主题, 内容创作, Astro主题, 静态网站生成器, SEO优化, 自定义博客, 响应式设计, 评论系统, 前端开发, Astro', // 网站关键词，建议使用相关性高的长尾关键词组合
-  lang: 'zh-CN', // 语言设置，有助于地区搜索引擎理解内容
-
-
-
-
-  /**
-   * SEO 高级配置
-   */
-  titleDefault: 'Stalux博客主题', // 默认标题，当没有指定标题时使用
-  canonical: 'https://stalux.needhelp.icu', // 规范链接，防止重复内容
-
-
-
-
-  /**
-   * 基础站点信息
-   */
-  author: 'xingwangzhe', // 内容创作者信息
-  locale: 'zh_CN', // 内容的区域设置
-  siteName: 'Stalux博客主题', // 站点名称，用于品牌构建
-
-
-
-
+  description: '博客主题Stalux - 为内容创作者提供的专业展示平台，支持多种自定义功能，包含评论系统集成、友情链接管理、社交媒体分享和丰富的SEO优化选项，让您的内容更具吸引力和可发现性。',
+  url: 'https://stalux.needhelp.icu',
+  keywords: 'Stalux, 博客主题, 内容创作, Astro主题, 静态网站生成器, SEO优化, 自定义博客, 响应式设计, 评论系统, 前端开发, Astro',
+  lang: 'zh-CN',
+  locale: 'zh_CN',
+  canonical: 'https://stalux.needhelp.icu',
 
   /**
    * 站点资源配置
-   * 用户体验相关，间接提升SEO价值
    */
-  favicon: '', // 网站图标和iOS设备添加到主屏的图标
-
-
-
-
-
-
-  avatarPath: '', // 用户头像路径
+  favicon: '',
+  avatarPath: '',
+  
   /**
-   * 社交媒体优化配置
-   * 主要针对社交平台分享显示
+   * <head>元素硬嵌入
    */
-  ogImage: 'https://www.baidu.com/og-image.jpg', // Open Graph 分享图片 (简单配置)
-  openGraph: {
-    basic: {
-      title: 'Stalux - 专业博客主题',
-      type: 'website',
-      image: 'https://www.baidu.com/og-image.jpg',
-      url: 'https://stalux.needhelp.icu',
-    },
-    optional: {
-      description: '博客主题Stalux - 为内容创作者提供专业的展示平台',
-      locale: 'zh_CN',
-      siteName: 'Stalux'
-    },
-    image: {
-      alt: 'Stalux主题预览图'
-    }
-  },
-  twitterImage: 'https://www.baidu.com/twitter-image.jpg', // Twitter分享图片 (简单配置)
-  twitterCreator: '@yourTwitterHandle', // Twitter账号
-  twitter: {
-    card: 'summary_large_image',
-    site: 'Stalux',
-    creator: '@yourTwitterHandle',
-    title: 'Stalux - 专业博客主题',
-    description: '博客主题Stalux - 为内容创作者提供专业的展示平台',
-    image: 'https://www.baidu.com/twitter-image.jpg',
-    imageAlt: 'Stalux主题预览图'
-  },
-
-  /**
-   * 额外HTML标签扩展
-   * 用于添加自定义meta和link标签
-   */
-  extend: {
-    meta: [
-      { name: 'application-name', content: 'Stalux' },
-      { name: 'apple-mobile-web-app-title', content: 'Stalux' },
-      { name: 'theme-color', content: '#3367D6' }
-    ],
-    link: [
-      { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
-      { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#5bbad5' }
-    ]
-  },
-
-  /**
-   * 高级SEO配置
-   * 结构化数据有助于搜索引擎展示富结果
-   */
-  structuredData: {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Stalux",
-    "url": "https://stalux.needhelp.icu",
-    "description": "博客主题Stalux - 为内容创作者提供专业的展示平台",
-    "author": {
-      "@type": "Person",
-      "name": "xingwangzhe",
-    }
-  },
+  head: `<meta name="nishia" content="nihaiso">
+        <script>console.log("欢迎使用Stalux主题")</script>`,
 
   /**
    * 站点导航配置
@@ -212,6 +119,7 @@ export const site: SiteConfig = {
       description: 'Beautifully simple open-source icons'
     }
   ],
+
   /**
    * 页脚配置
    * 整合所有页脚相关设置，便于管理
@@ -220,19 +128,6 @@ export const site: SiteConfig = {
     // 站点构建时间，用于计算运行时长
     buildtime: '2025-05-01T10:00:00', // 站点构建时间，推荐使用ISO 8601标准格式(YYYY-MM-DDTHH:MM:SS)
 
-
-
-
-
-
-
-
-    // 支持的buildtime格式:
-    // 1. ISO 8601标准格式 (推荐): '2023-06-20T10:00:00'
-    // 2. 常用中文格式: '2023-06-20 10:00:00' 或 '2023-6-20 10:00:00'
-    // 3. 简化格式: '2023-06-20' (时间默认为 00:00:00)
-    // 4. 时间戳: 1687230000000 (毫秒)
-    // 注意: 日期必须是过去的时间，未来时间将被自动调整为当前时间
     // 版权信息
     copyright: {
       enabled: true, // 是否启用版权信息
@@ -343,6 +238,5 @@ export const site: SiteConfig = {
         href: 'https://blogverse.cn/'
       }
     ] as BadgeOptions[]
-  },
-  title: 'Stalux博客主题'
+  }
 }

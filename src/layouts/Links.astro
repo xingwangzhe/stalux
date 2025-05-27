@@ -20,7 +20,6 @@ import '../styles/layouts/Links.styl';
 <!DOCTYPE html>
 <html lang={config_site.lang}>    <Head
     title={config_site.friendlinks_title +' | '+ config_site.siteName}
-    titleTemplate={config_site.titleTemplate}
     description={config_site.friendlinks_description || config_site.description}
     url={config_site.url + '/links/'}
     canonical={config_site.url + '/links/'}
@@ -30,23 +29,6 @@ import '../styles/layouts/Links.styl';
     locale={config_site.locale}
     siteName={config_site.siteName}
     favicon={config_site.favicon}
-    openGraph={config_site.openGraph ? {
-      ...config_site.openGraph,
-      basic: {
-        ...config_site.openGraph.basic,
-        title: config_site.friendlinks_title,
-        url: config_site.url + '/links/'
-      },
-      optional: {
-        ...config_site.openGraph?.optional,
-        description: config_site.friendlinks_description || config_site.description
-      }
-    } : undefined}
-    twitter={config_site.twitter ? {
-      ...config_site.twitter,
-      title: config_site.friendlinks_title,
-      description: config_site.friendlinks_description || config_site.description
-    } : undefined}
     structuredData={{
       "@context": "https://schema.org",
       "@type": "CollectionPage",
@@ -54,7 +36,6 @@ import '../styles/layouts/Links.styl';
       "description": config_site.friendlinks_description || config_site.description,
       "url": config_site.url + '/links/'
     }}
-    extend={config_site.extend}
 />
 <script>
     import '../scripts/background.ts';

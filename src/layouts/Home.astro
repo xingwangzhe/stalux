@@ -24,14 +24,6 @@ const avatarImage = config_site.avatarPath || avatar
         locale={config_site.locale}
         siteName={config_site.siteName}
         favicon={config_site.favicon}
-        ogImage={config_site.ogImage}
-        openGraph={config_site.openGraph}
-        twitterImage={config_site.twitterImage}
-        twitterCreator={config_site.twitterCreator}
-        twitter={config_site.twitter}
-        extend={config_site.extend}
-        structuredData={config_site.structuredData}
-        titleTemplate={config_site.titleTemplate}
         titleDefault={config_site.titleDefault}
         canonical={config_site.canonical}
         head={config_site.head}
@@ -54,7 +46,7 @@ const avatarImage = config_site.avatarPath || avatar
                 </AuthorCard>
                 <TextTyping/>
                 <Clock client:idle format="24hour" showDate={true} updateInterval={1000} />
-                <SocialLinks mediaLinks={config_site.medialinks} />
+                <SocialLinks mediaLinks={config_site.medialinks || []} />
             </div>
         </div>
         <Footer/>

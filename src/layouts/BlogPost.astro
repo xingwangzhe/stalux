@@ -88,7 +88,6 @@ const categoryStr = categoriesToString(categories);
 
 <html lang={config_site.lang} class="dark">	<Head 
 		title={title+' | '+config_site.siteName}
-		titleTemplate={config_site.titleTemplate}
 		description={description150(description || '这是默认的文章描述')}
 		author={author || config_site.author}		url={config_site.url + '/posts/' + abbrlink}
 		canonical={config_site.url + '/posts/' + abbrlink}
@@ -108,14 +107,6 @@ const categoryStr = categoriesToString(categories);
 				"@type": "WebPage",
 				"@id": config_site.url + '/posts/' + abbrlink
 			}
-		}}
-		twitter={{
-			card: "summary_large_image",
-			site: config_site.siteName,
-			creator: config_site.twitterCreator,
-			title: title,
-			description: description150(description || '这是默认的文章描述'),
-			image: config_site.twitterImage || config_site.ogImage
 		}}
 	>
         <link

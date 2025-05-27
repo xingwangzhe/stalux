@@ -83,11 +83,7 @@ const siteDefaults = {
   lang: config_site.lang || 'zh-CN',
   locale: config_site.locale || 'zh_CN',
   keywords: config_site.keywords,
-  ogImage: config_site.ogImage,
-  twitterImage: config_site.twitterImage,
-  twitterCreator: config_site.twitterCreator,
   head: config_site.head,
-  structuredData: config_site.structuredData,
 }
 
 // 接收组件属性
@@ -97,14 +93,14 @@ const {
   description = siteDefaults.description, 
   favicon = siteDefaults.favicon, 
   url = siteDefaults.url, 
-  keywords = siteDefaults.keywords, 
-  ogImage = siteDefaults.ogImage, 
-  twitterImage = siteDefaults.twitterImage, 
-  twitterCreator = siteDefaults.twitterCreator, 
+  keywords = siteDefaults.keywords,
+  ogImage, 
+  twitterImage, 
+  twitterCreator, 
   lang = siteDefaults.lang, 
   locale = siteDefaults.locale, 
   siteName = siteDefaults.siteName, 
-  structuredData = siteDefaults.structuredData, 
+  structuredData, 
   noindex = false,
   head = siteDefaults.head,
   canonical = url,         // 规范链接默认为URL
