@@ -5,14 +5,10 @@ import {config_site} from "../utils/config-adapter";
 import Footer from "../components/Footer.astro";
 import '../styles/global.styl';
 import Header from "../components/Header.astro";
-type links = {
-    title: string, 
-    url: string,
-    avatar: string , 
-    description: string
-}
+import type { FriendLink } from "../types";
+
 type Props = {
-    links: links[]
+    links: FriendLink[]
 }
 const { links } = Astro.props;
 import '../styles/layouts/Links.styl';
@@ -47,17 +43,16 @@ import '../styles/layouts/Links.styl';
             <div class="page-header">
                 <h1 class="page-title">{config_site.friendlinks_title}</h1>
                 <p class="page-description">{config_site.friendlinks_description}</p>
-            </div>
-            <ul class="friend-links">
+            </div>            <ul class="friend-links">
                 {links.map((link) => (
                 <li class="friend-link">
                     <a href={link.url} target="_blank" rel="noopener noreferrer">
                     <div class="friend-avatar">
-                        <img src={link.avatar} alt={`${link.title}'s avatar`} width="80" height="80" loading="lazy" />
+                        <img src={link.avatar || '/favicon.ico'} alt={`${link.title}'s avatar`} width="80" height="80" loading="lazy" />
                     </div>
                     <div class="friend-content">
                         <h2>{link.title}</h2>
-                        <p>{link.description}</p>
+                        <p>{link.description || '暂无描述'}</p>
                     </div>
                     </a>
                 </li>
