@@ -183,6 +183,10 @@ import favicon_img from '../images/stalux.ico';
 <!-- 硬嵌入的head元素 -->
 {head && <Fragment set:html={head} />}
 
+
+<!-- Fancybox CSS -->
+<link rel="stylesheet" href="/node_modules/@fancyapps/ui/dist/fancybox/fancybox.css" />
+
 <!-- 通用插槽，用于添加其他head元素 -->
 <slot name="head" />
 </head>

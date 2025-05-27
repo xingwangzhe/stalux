@@ -125,10 +125,8 @@ const categoryStr = categoriesToString(categories);
 				<article class="article-content">
 					<div class="hero-image">
 						<!-- 如果有特色图片可以在这里添加 -->
-					</div>					<div class="prose fade-in-up delay-200">
-						<div class="title">
-							<h1>{title}</h1>
-							<div class="date">
+					</div>					<div class="prose fade-in-up delay-200">						<div class="title">
+							<h1>{title}</h1>							<div class="date">
 								{date && (
 									<div class="published-on">
 										发布时间：<time>{date instanceof Date ? date.toLocaleDateString() : date}</time>
@@ -139,9 +137,13 @@ const categoryStr = categoriesToString(categories);
 										更新时间：<time>{updated instanceof Date ? updated.toLocaleDateString() : updated}</time>
 									</div>
 								)}
+							</div>							<!-- 文章阅读量统计 -->
+							<div class="page-stats">
+								<span id="busuanzi_container_page_pv">
+									👀 阅读量：<span id="busuanzi_value_page_pv"></span>
+								</span>
 							</div>
-							<hr />
-						</div>						
+						</div>
 						<slot />					
 					</div>
 								<CC title={title} author={config_site.author} url={config_site.url + '/posts/' + abbrlink} />
@@ -223,7 +225,7 @@ const categoryStr = categoriesToString(categories);
 	</body>
 	<script>
 		import '../scripts/background.ts';
-		
+		import '../scripts/fancybox.ts';
 		// 为文章内容中的所有图片添加懒加载
 		document.addEventListener('DOMContentLoaded', () => {
 			const articleImages = document.querySelectorAll('.article-content img');
@@ -278,7 +280,6 @@ const categoryStr = categoriesToString(categories);
 			}
 		});
 	</script>
-
 	<!-- 添加响应式视口设置 -->
 	<style>
 		/* 图片懒加载相关样式 */
@@ -289,6 +290,40 @@ const categoryStr = categoriesToString(categories);
 		
 		.lazy-image.loaded {
 			opacity: 1;
+		}
+		/* 文章页面统计样式 */
+		.page-stats {
+			margin-top: 1rem;
+			padding-top: 0.8rem;
+			border-top: 1px solid rgba(255, 255, 255, 0.1);
+			font-size: 0.9rem;
+			color: rgba(255, 255, 255, 0.7);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 1rem;
+		}
+
+		.page-stats span {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.3rem;
+		}		#busuanzi_value_page_pv {
+			font-weight: 600;
+			color: rgba(255, 255, 255, 0.9);
+		}
+
+		#busuanzi_container_page_pv {
+			transition: opacity 0.3s ease;
+		}
+
+		/* 响应式设计 */
+		@media (max-width: 768px) {
+			.page-stats {
+				font-size: 0.85rem;
+				margin-top: 0.8rem;
+				padding-top: 0.6rem;
+			}
 		}
 	</style>
 </html>
