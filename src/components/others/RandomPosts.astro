@@ -18,14 +18,39 @@ const {
   delay = "delay-300"
 } = Astro.props;
 
-// 获取文章集合
-const allPosts = await getCollection('posts');
-const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+// 在构建时直接获取文章数据，避免依赖API端点
+let allPosts: any[] = [];
+let allPostsData: any[] = [];
+
+try {
+  // 获取文章集合
+  const posts = await getCollection('posts');
+  const processedPosts = await Promise.all(posts.map(post => processFrontmatter(post)));
+  
+  // 转换为与JSON API相同的格式
+  allPosts = processedPosts.map(post => ({
+    title: post.data.title,
+    date: post.data.date,
+    updated: post.data.updated,
+    description: post.data.description,
+    link: `/posts/${post.data.abbrlink}/`,
+  }));
+  
+  // 准备前端脚本需要的数据
+  allPostsData = allPosts.map(post => ({
+    title: post.title,
+    abbrlink: post.link.replace('/posts/', '').replace('/', '')
+  }));
+} catch (error) {
+  console.error('Failed to load posts:', error);
+}
 
 // 初始随机选择文章 (只作为首次页面加载时的默认值)
 const randomPosts = (() => {
+  if (allPosts.length === 0) return [];
+  
   // 创建一个副本，避免修改原始数组
-  const shuffled = [...processedPosts];
+  const shuffled = [...allPosts];
   
   // Fisher-Yates 洗牌算法
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -36,12 +61,6 @@ const randomPosts = (() => {
   // 返回前count个元素
   return shuffled.slice(0, count);
 })();
-
-// 将所有文章传递给前端脚本使用
-const allPostsData = processedPosts.map(post => ({
-  title: post.data.title,
-  abbrlink: post.data.abbrlink
-}));
 ---
 
 <div class={`sidebar-section ${className} fade-in-left ${delay}`} id="random-posts-container">
@@ -61,8 +80,8 @@ const allPostsData = processedPosts.map(post => ({
     {randomPosts.length > 0 ? (
       randomPosts.map(post => (
         <li class="random-post-item">
-          <a href={`/posts/${post.data.abbrlink}`} class="random-post-link">
-            {post.data.title}
+          <a href={post.link} class="random-post-link">
+            {post.title}
           </a>
         </li>
       ))
