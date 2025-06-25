@@ -2,10 +2,14 @@
 # 允许所有搜索引擎爬取网站
 User-agent: *
 # 黑名单制度：默认允许所有页面，明确禁止特定页面
-Disallow: /archives/
-Disallow: /categories/
-Disallow: /tags/
+# 允许主页面访问，禁止子路由
+Disallow: /archives/*/
+Disallow: /categories/*/
+Disallow: /tags/*/
 Disallow: /_astro/
+Allow: /archives/$
+Allow: /categories/$
+Allow: /tags/$
 
 # Sitemap
 Sitemap: https://stalux.needhelp.icu/sitemap-index.xml
