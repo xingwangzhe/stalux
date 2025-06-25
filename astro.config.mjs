@@ -25,11 +25,14 @@ export default defineConfig({
       pagefind(),
       sitemap({
         filter: (page) => {
-          // 只包含首页、posts、about页面
+          // 只包含首页、posts、about,links,archives,tags,categories页面
           return page.includes('/posts/') || 
                  page.includes('/about/') ||
                  page.includes('/links/') || 
-                 page === config_site.url + '/';
+                 page === config_site.url + '/'||
+                 page === config_site.url + '/archives/' ||
+                 page === config_site.url + '/tags/' ||
+                 page === config_site.url + '/categories/';
         },
         changefreq: 'weekly',
         priority: 0.7,

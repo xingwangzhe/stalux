@@ -36,11 +36,11 @@ export const site: SiteConfig = {
    */
   nav: [
     { title: '首页', path: '/', icon: 'home' },
-    { title: '归档', path: '/archives', icon: 'archive' },
-    { title: '分类', path: '/categories', icon: 'folder' },
-    { title: '标签', path: '/tags', icon: 'tag' },
-    { title: '友链', path: '/links', icon: 'link' },
-    { title: '关于', path: '/about', icon: 'user' }
+    { title: '归档', path: '/archives/', icon: 'archive' },
+    { title: '分类', path: '/categories/', icon: 'folder' },
+    { title: '标签', path: '/tags/', icon: 'tag' },
+    { title: '友链', path: '/links/', icon: 'link' },
+    { title: '关于', path: '/about/', icon: 'user' }
   ],
 
   /**
