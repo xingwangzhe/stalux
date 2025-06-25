@@ -57,6 +57,7 @@ const pageTitle = `标签: ${tag} | ${config_site.siteName}`;
   noindex={true}
 >
   <Fragment slot="header">
+    <div data-pagefind-ignore>
     <h1 class="page-title">
       <span class="tag-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -68,9 +69,10 @@ const pageTitle = `标签: ${tag} | ${config_site.siteName}`;
     </h1>
     <p class="page-description">共找到 {sortedPosts.length} 篇相关文章</p>
     <a href="/tags/" class="back-link">返回标签云</a>
+    </div>
   </Fragment>
   
-  <div slot="content" class="post-list-container">
+  <div slot="content" class="post-list-container" data-pagefind-ignore>
     {sortedPosts.length > 0 ? (
       <ul class="post-list">
         {sortedPosts.map(post => (
