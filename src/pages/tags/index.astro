@@ -42,7 +42,7 @@ const pageTitle = '标签云 | ' + config_site.siteName;
   <div slot="content" class="tags-cloud">
     {sortedTags.length > 0 ? (
       sortedTags.map(({ tag, count }) => (
-        <a href={`/tags/${tag}`} class="tag-item" data-count={count}>
+        <a href={`/tags/${tag}/`} class="tag-item" data-count={count}>
           <span class="tag-name">{tag}</span>
           <span class="tag-count">{count}</span>
         </a>

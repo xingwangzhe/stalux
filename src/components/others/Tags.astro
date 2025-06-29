@@ -36,7 +36,7 @@ import '../../styles/components/others/Tags.styl';
     <div class="tag-cloud">
       {tags && tags.length > 0 ? (
         tags.map((tag: string) => (
-          <a href={`/tags/${tag}`} class="tag">
+          <a href={`/tags/${tag}/`} class="tag">
             <span class="tag-name">{tag}</span>
             <span class="tag-count">({tagCounts.get(tag) || 0})</span>
           </a>

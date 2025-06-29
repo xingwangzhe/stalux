@@ -91,7 +91,7 @@ const pageTitle = `分类: ${categoryPath} | ${config_site.siteName}`;
           {post.data.categories && post.data.categories.length > 0 && (
             <div class="post-categories">
               {post.data.categories.map((cat: string) => (
-                <a href={`/categories/${cat}`} class={`category-tag ${cat === categoryPath ? 'current' : ''}`}>
+                <a href={`/categories/${cat}/`} class={`category-tag ${cat === categoryPath ? 'current' : ''}`}>
                   {cat}
                 </a>
               ))}

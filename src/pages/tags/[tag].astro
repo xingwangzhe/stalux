@@ -86,7 +86,7 @@ const pageTitle = `标签: ${tag} | ${config_site.siteName}`;
             {post.data.tags && post.data.tags.length > 0 && (
               <div class="post-tags">
                 {post.data.tags.map((postTag: unknown) => (
-                  <a href={`/tags/${postTag}`} class={`post-tag ${postTag === tag ? 'current' : ''}`}>
+                  <a href={`/tags/${postTag}/`} class={`post-tag ${postTag === tag ? 'current' : ''}`}>
                     {postTag}
                   </a>
                 ))}

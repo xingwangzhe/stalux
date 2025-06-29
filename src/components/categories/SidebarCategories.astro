@@ -47,7 +47,7 @@ import '../../styles/components/categories/SidebarCategories.styl';
   </div>  <div id="categories-content" class="section-content">
     <div class="category-list">      {categoryList && categoryList.length > 0 ? (
         categoryList.map((category: CategoryNode) => (
-          <a href={`/categories/${category.name}`} class="category-tag">
+          <a href={`/categories/${category.name}/`} class="category-tag">
             <span class="category-name">{category.name}</span>
             <span class="category-count">({category.count})</span>
           </a>
