@@ -8,7 +8,8 @@ import WalineComment from '../components/comments/WalineComment.vue';
 import '../styles/layouts/BlogPost.styl';
 import '../styles/components/PostNavigation.styl';
 import {config_site} from '../utils/config-adapter';
- 
+import removeMd from 'remove-markdown';
+
 // 正确定义Props类型
 interface Props {
     title: string;
@@ -31,24 +32,12 @@ import LeftSiderbar from './LeftSiderbar.astro';
 import RightSiderbar from './RightSiderbar.astro';
 import CC from '../components/others/CC.astro';
 
-function description150(description: string): string {
-	// 去除Markdown标识符并截取约150个字符
-	const plainText = description
-		.replace(/#+\s/g, '')                  // 移除标题符号
-		.replace(/\*\*|\*|~~|__|_/g, '')       // 移除粗体、斜体、删除线等格式
-		.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // 将[链接文字](URL)转换为纯文本
-		.replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // 移除图片
-		.replace(/```[\s\S]*?```/g, '')        // 移除代码块
-		.replace(/`([^`]+)`/g, '$1')           // 移除行内代码
-		.replace(/>\s?/g, '')                  // 移除引用标记
-		.replace(/\n+/g, '')                   // 完全移除换行符
-		.replace(/\s+/g, '')                   // 移除所有空格
-		.trim();
-	
-	if (plainText.length > 150) {
-		return plainText.slice(0, 145) + '...';
-	}
-	return plainText;
+export function description150(description: string): string {
+  const plainText = removeMd(description || '').replace(/\s+/g, ' ').trim();
+  if (plainText.length > 150) {
+    return plainText.slice(0, 145) + '...';
+  }
+  return plainText;
 }
 
 function categoriesToString(categories?: string[]): string {

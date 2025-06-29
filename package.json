@@ -58,6 +58,7 @@
     "remark-admonitions": "^1.2.1",
     "remark-math": "^6.0.0",
     "remark-toc": "^9.0.0",
+    "remove-markdown": "^0.6.2",
     "sanitize-html": "^2.17.0",
     "simple-icons": "^15.3.0",
     "stylus": "^0.64.0",
