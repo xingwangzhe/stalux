@@ -2,6 +2,7 @@ import { render } from 'astro:content';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { description150 } from '../layouts/BlogPost.astro';
 
 // 使用插件
 dayjs.extend(utc);
@@ -44,7 +45,8 @@ export async function processFrontmatter(post: any) {
         ? post.data.updated
         : post.data.updated instanceof Date
           ? dayjs(post.data.updated).tz(post.data.updated.timezone).format("YYYY-MM-DD HH:mm:ss")
-          : updateDate
+          : updateDate,
+      description: post.data.description || description150(post.body),
     }
   };
 }
