@@ -82,6 +82,10 @@ const pageTitle = `标签: ${tag} | ${config_site.siteName}`;
                 {dayjs(post.data.date).format('YYYY-MM-DD')}
               </div>
               <h2 class="post-title">{post.data.title}</h2>
+              <br />
+              {post.data.description && (
+              <p class="post-description">{post.data.description.slice(0,50)+ '...'}</p>
+              )}
             </a>
             {post.data.tags && post.data.tags.length > 0 && (
               <div class="post-tags">
