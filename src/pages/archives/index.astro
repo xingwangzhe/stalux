@@ -5,8 +5,8 @@ import ArchivesLayout from '../../layouts/ArchivesLayout.astro';
 import { config_site } from '../../utils/config-adapter';
 
 // 获取文章集合
-const allPosts = await getCollection('posts');
-const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
+export const allPosts = await getCollection('posts');
+export const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
 
 // 按日期排序
 const sortedPosts = processedPosts.sort((a, b) => {

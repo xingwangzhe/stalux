@@ -1,0 +1,363 @@
+---
+const {Posts} = Astro.props;
+---
+
+<div class="postlist-wrapper">
+    <div id="posts-container" class="posts-container" style="display: none;">
+        <div class="posts-grid">
+            {Posts.map((post: any) => (
+                <article class="post-card">
+                    <a href={`/posts/${post.data.abbrlink}`}>
+                    <h2 class="post-title">{post.data.title}</h2>
+                    <p class="post-description">{post.data.description}</p>
+                    <div class="post-meta">
+                        {post.data.tags && (
+                            <div class="post-tags">
+                                {post.data.tags.map((tag: string) => (
+                                    <span class="tag">{tag}</span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    </a>
+                </article>
+            ))}
+        </div>
+    </div>
+    
+    <div id="load-posts-trigger" class="load-posts-trigger">
+        <div class="loading-indicator">
+            <div class="spinner"></div>
+            <span>正在加载更多内容...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const postsContainer = document.getElementById('posts-container');
+        const loadTrigger = document.getElementById('load-posts-trigger');
+        let postsLoaded = false;
+        let isLoading = false;
+        
+        // 智能检测用户行为
+        let userInteractionDetected = false;
+        let scrollStartTime = 0;
+        let idleTimeout: ReturnType<typeof setTimeout> | undefined;
+        
+        // 检测用户交互
+        function detectUserInteraction() {
+            if (!userInteractionDetected) {
+                userInteractionDetected = true;
+                // 用户开始交互后，降低加载阈值
+                startSmartLoading();
+            }
+        }
+        
+        // 监听多种用户交互
+        ['scroll', 'mousemove', 'keydown', 'click', 'touchstart'].forEach(event => {
+            window.addEventListener(event, detectUserInteraction, { once: true, passive: true });
+        });
+        
+        // 智能加载逻辑
+        function startSmartLoading() {
+            // 使用 Intersection Observer 监听触发器
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !postsLoaded && !isLoading) {
+                        loadPosts();
+                    }
+                });
+            }, {
+                rootMargin: '200px' // 提前200px开始加载
+            });
+            
+            if (loadTrigger) {
+                observer.observe(loadTrigger);
+            }
+            
+            // 备用滚动检测
+            let ticking = false;
+            function handleScroll() {
+                if (!ticking && !postsLoaded && !isLoading) {
+                    requestAnimationFrame(() => {
+                        const scrollPosition = window.innerHeight + window.scrollY;
+                        const documentHeight = document.documentElement.offsetHeight;
+                        const scrollPercent = (scrollPosition / documentHeight) * 100;
+                        
+                        // 根据滚动速度调整加载阈值
+                        const currentTime = Date.now();
+                        if (scrollStartTime === 0) {
+                            scrollStartTime = currentTime;
+                        }
+                        
+                        const scrollDuration = currentTime - scrollStartTime;
+                        const fastScroll = scrollDuration < 1000; // 快速滚动
+                        const threshold = fastScroll ? 60 : 70; // 动态阈值
+                        
+                        if (scrollPercent >= threshold) {
+                            loadPosts();
+                        }
+                        
+                        ticking = false;
+                    });
+                }
+                ticking = true;
+            }
+            
+            window.addEventListener('scroll', handleScroll, { passive: true });
+        }
+        
+        // 加载文章函数
+        function loadPosts() {
+            if (isLoading || postsLoaded || !postsContainer) return;
+            
+            isLoading = true;
+            
+            // 显示加载动画
+            if (loadTrigger) {
+                loadTrigger.style.display = 'flex';
+            }
+            
+            // 模拟网络延迟（可选）
+            setTimeout(() => {
+                postsContainer.style.display = 'block';
+                postsContainer.style.animation = 'fadeInUp 0.8s ease-in-out forwards';
+                
+                // 隐藏加载动画
+                if (loadTrigger) {
+                    loadTrigger.style.display = 'none';
+                }
+                
+                postsLoaded = true;
+                isLoading = false;
+                
+                // 预加载图片
+                preloadImages();
+            }, 300);
+        }
+        
+        // 预加载图片
+        function preloadImages() {
+            const images = postsContainer?.querySelectorAll('img');
+            images?.forEach(img => {
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                }
+            });
+        }
+        
+        // 空闲时自动加载
+        function scheduleIdleLoading() {
+            if (idleTimeout) {
+                clearTimeout(idleTimeout);
+            }
+            
+            idleTimeout = setTimeout(() => {
+                if (!postsLoaded && userInteractionDetected) {
+                    loadPosts();
+                }
+            }, 3000); // 3秒空闲后加载
+        }
+        
+        // 监听用户空闲状态
+        ['scroll', 'mousemove', 'keydown', 'click'].forEach(event => {
+            window.addEventListener(event, scheduleIdleLoading, { passive: true });
+        });
+        
+        // 页面可见性变化时的处理
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && userInteractionDetected && !postsLoaded) {
+                // 页面重新可见时延迟加载
+                setTimeout(() => {
+                    if (!postsLoaded) {
+                        loadPosts();
+                    }
+                }, 1000);
+            }
+        });
+        
+        // 网络状态检测
+        if ('connection' in navigator) {
+            const connection = (navigator as any).connection;
+            if (connection && connection.effectiveType === '5g') {
+                // 5G网络下更积极加载
+                setTimeout(() => {
+                    if (!postsLoaded && userInteractionDetected) {
+                        loadPosts();
+                    }
+                }, 1500);
+            }
+        }
+    });
+</script>
+
+<style>
+    .postlist-wrapper {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .posts-container {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    .posts-container[style*="display: block"] {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .load-posts-trigger {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        margin: 2rem 0;
+        padding: 1rem;
+        opacity: 0.8;
+    }
+    
+    .loading-indicator {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem;
+        width: 100%;
+    }
+
+    .post-card {
+        background-color: rgba(0, 0, 0, 0.192);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        cursor: pointer;
+        break-inside: avoid;
+        animation: fadeInUp 0.8s ease-in-out forwards;
+        opacity: 0;
+    }
+
+    .post-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .post-title {
+        margin: 0 0 0.75rem 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.3;
+        text-shadow: 0.1rem 0.1rem 0.3rem rgba(1, 162, 190, 0.3);
+    }
+
+    .post-description {
+        margin: 0 0 1rem 0;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.6;
+        font-size: 0.9rem;
+    }
+
+    .post-meta {
+        margin-top: auto;
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tag {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .tag:hover {
+        background-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+    }
+
+    /* 为不同的卡片设置不同的延迟 */
+    .post-card:nth-child(1) { animation-delay: 0.1s; }
+    .post-card:nth-child(2) { animation-delay: 0.2s; }
+    .post-card:nth-child(3) { animation-delay: 0.3s; }
+    .post-card:nth-child(4) { animation-delay: 0.4s; }
+    .post-card:nth-child(5) { animation-delay: 0.5s; }
+    .post-card:nth-child(6) { animation-delay: 0.6s; }
+    .post-card:nth-child(n+7) { animation-delay: 0.7s; }
+
+    /* 优化移动端体验 */
+    @media (max-width: 768px) {
+        .posts-grid {
+            grid-template-columns: 1fr;
+            padding: 0.5rem;
+            gap: 1rem;
+        }
+        
+        .post-card {
+            padding: 1rem;
+        }
+        
+        .post-title {
+            font-size: 1.1rem;
+        }
+        
+        .load-posts-trigger {
+            margin: 1rem 0;
+            padding: 0.5rem;
+        }
+        
+        .loading-indicator {
+            font-size: 0.8rem;
+        }
+        
+        .spinner {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .posts-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+    }
+
+    @media (min-width: 1025px) {
+        .posts-grid {
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        }
+    }
+</style>
