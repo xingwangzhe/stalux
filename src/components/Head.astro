@@ -4,6 +4,7 @@
 
 import { config_site } from '../utils/config-adapter.ts';
 import { SEO, type TwitterCardType } from 'astro-seo';
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
 // 定义组件接收的属性
 interface Props {
   title?: string;
@@ -135,10 +136,9 @@ const defaultTwitterConfig = (twitterImage || ogImage) ? {
   description: description,
   image: twitterImage || ogImage,
 } : undefined;
+
 // Import the favicon image
 import favicon_img from '../images/stalux.ico';
-
-// In Astro, imported assets are directly strings, not objects with src property
 ---
 <head>
 <meta charset="UTF-8" />
@@ -181,11 +181,6 @@ import favicon_img from '../images/stalux.ico';
 
 <!-- 硬嵌入的head元素 -->
 {head && <Fragment set:html={head} />}
-
-
-<!-- Fancybox CSS -->
-<link rel="stylesheet" href="/node_modules/@fancyapps/ui/dist/fancybox/fancybox.css" />
-
 <!-- 通用插槽，用于添加其他head元素 -->
 <slot name="head" />
 </head>

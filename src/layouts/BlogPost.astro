@@ -91,6 +91,7 @@ const keyws =
 		: "";
 
 const categoryStr = categoriesToString(categories);
+import "katex/dist/katex.min.css";
 ---
 
 <html lang={config_site.lang} class="dark">
@@ -118,13 +119,6 @@ const categoryStr = categoriesToString(categories);
 			},
 		}}
 	>
-		<link
-			slot="head"
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-			integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
-			crossorigin="anonymous"
-		/>
 	</Head>
 	<body>
 		<Header />
