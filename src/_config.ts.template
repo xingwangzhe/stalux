@@ -20,6 +20,7 @@ export const siteConfig: SiteConfig = {
    * 这些配置对搜索引擎优化至关重要
    */
   description: '探索、学习、进步、创造无限可能！姓王者的博客致力于分享前端开发技术，包括JavaScript、TypeScript、Vue等web开发知识。作为计算机科学与技术专业的博主，我相信终身学习的价值，这里记录了我的技术成长历程、实用教程和开发心得，希望能为大家提供有价值的参考和启发。可以不会，但不能不学！', // 网站描述，建议150-160字符以获得最佳SEO效果
+  short_description: "探索、学习、进步、创造无限可能！",
   url: 'https://xingwangzhe.fun', // 完整网站URL(包含https协议)
   lang: 'zh-CN', // 语言设置，有助于地区搜索引擎理解内容
   locale: 'zh_CN', // 内容的区域设置

@@ -13,6 +13,7 @@ export const site: SiteConfig = {
    * SEO 核心配置
    */
   description: '博客主题Stalux - 为内容创作者提供的专业展示平台，支持多种自定义功能，包含评论系统集成、友情链接管理、社交媒体分享和丰富的SEO优化选项，让您的内容更具吸引力和可发现性。',
+  short_description: "博客主题Stalux",
   url: 'https://stalux.needhelp.icu',
   keywords: 'Stalux, 博客主题, 内容创作, Astro主题, 静态网站生成器, SEO优化, 自定义博客, 响应式设计, 评论系统, 前端开发, Astro',
   lang: 'zh-CN',

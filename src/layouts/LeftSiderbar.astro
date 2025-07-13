@@ -1,140 +1,159 @@
 ---
 import { config_site } from "../utils/config-adapter";
-import avatar from '../images/avatar.webp';
+import avatar from "../images/avatar.webp";
 import SocialLinks from "../components/others/SocialLinks.astro";
 import RandomPosts from "../components/others/RandomPosts.astro";
-import { Image }  from 'astro:assets';
+import { Image } from "astro:assets";
 
 const avatarPath = config_site.avatarPath || avatar;
 // 定义不同设备的图像尺寸
 const mobileSizes = 70; // 移动设备图片尺寸
 const tabletSizes = 80; // 平板设备图片尺寸
 const desktopSizes = 100; // 桌面设备图片尺寸
-const { 
-  avatarWidth = 100, 
-  avatarHeight = 100, 
-  author = config_site.author
+const {
+  avatarWidth = 100,
+  avatarHeight = 100,
+  author = config_site.author,
 } = Astro.props;
-import '../styles/layouts/LeftSidebar.styl';
+import "../styles/layouts/LeftSidebar.styl";
 ---
 
 <sidebar class="left-sidebar">
-    <div class="sidebar-container">
-        <div class="sidebar-section author-card fade-in-left delay-100" id="author-card-container">
-            <div class="author">
-                <div class="avatar-container">
-                {typeof avatarPath === 'string' ? (
-                <img 
-                  src={avatarPath} 
-                  alt={`${author} avatar`} 
-                  class="avatar"
-                  width={avatarWidth}
-                  height={avatarHeight}
-                  loading="eager"
-                  decoding="async"
-                  srcset={`${avatarPath}?w=${mobileSizes} ${mobileSizes}w, 
+  <div class="sidebar-container">
+    <div
+      class="sidebar-section author-card fade-in-left delay-100"
+      id="author-card-container"
+    >
+      <div class="author">
+        <div class="avatar-container">
+          {
+            typeof avatarPath === "string" ? (
+              <img
+                src={avatarPath}
+                alt={`${author} avatar`}
+                class="avatar"
+                width={avatarWidth}
+                height={avatarHeight}
+                loading="eager"
+                decoding="async"
+                srcset={`${avatarPath}?w=${mobileSizes} ${mobileSizes}w, 
                            ${avatarPath}?w=${tabletSizes} ${tabletSizes}w, 
                            ${avatarPath}?w=${desktopSizes} ${desktopSizes}w`}
-                  sizes="(max-width: 480px) ${mobileSizes}px, 
+                sizes="(max-width: 480px) ${mobileSizes}px, 
                          (max-width: 768px) ${tabletSizes}px, 
                          ${desktopSizes}px"
-                />
-              ) : (
-                <Image 
-                  src={avatarPath} 
-                  alt={`${author} avatar`} 
-                  class="avatar"
-                  width={avatarWidth}
-                  height={avatarHeight}
-                  loading="eager"
-                />
-              )}
-                </div>
-                <div class="author-info">
-                    <h2 class="author-name">{config_site.author}</h2>
-                    <p class="author-description">{config_site.description}</p>
-                </div>
+              />
+            ) : (
+              <Image
+                src={avatarPath}
+                alt={`${author} avatar`}
+                class="avatar"
+                width={avatarWidth}
+                height={avatarHeight}
+                loading="eager"
+              />
+            )
+          }
         </div>
+        <div class="author-info">
+          <h2 class="author-name">{config_site.author}</h2>
+          <p class="author-description">
+            {
+              config_site.short_description ||
+                config_site.description.slice(0, 20) + "..."
+            }
+          </p>
+        </div>
+      </div>
     </div>
-        <div class="sidebar-section fade-in-left delay-200">
-            <SocialLinks mediaLinks={config_site.medialinks.slice(0, 4)} /> <!-- 限制显示数量 -->
-        </div>
-        
-        <!-- 使用解耦的随机文章组件 -->
-        <RandomPosts count={5} delay="delay-300" />
-        <!-- 文章分类已迁移至右侧边栏 -->
-</sidebar>
+    <div class="sidebar-section fade-in-left delay-200">
+      <SocialLinks mediaLinks={config_site.medialinks.slice(0, 4)} />
+      <!-- 限制显示数量 -->
+    </div>
 
-<script>
-// 计算合适的尺寸
-function calculateSize(containerWidth:any, maxSize:any, minSize:any, maxWidth = 250, minWidth = 120) {
-  if (!containerWidth) return maxSize;
+    <!-- 使用解耦的随机文章组件 -->
+    <RandomPosts count={5} delay="delay-300" />
 
-  if (containerWidth >= maxWidth) return maxSize;
-  if (containerWidth <= minWidth) return minSize;
+    <!-- 文章分类已迁移至右侧边栏 -->
+  </div>
 
-  // 线性插值计算尺寸
-  const ratio = (containerWidth - minWidth) / (maxWidth - minWidth);
-  return minSize + ratio * (maxSize - minSize);
-}
+  <script>
+    // 计算合适的尺寸
+    function calculateSize(
+      containerWidth: any,
+      maxSize: any,
+      minSize: any,
+      maxWidth = 250,
+      minWidth = 120,
+    ) {
+      if (!containerWidth) return maxSize;
 
-// 动态调整author-card内元素的大小
-function adjustAuthorCardSize(container:any) {
-  // 获取容器的宽度
-  const containerWidth = container.offsetWidth;
-  
-  // 计算头像大小
-  const avatarSize = calculateSize(containerWidth, 100, 60);
-  
-  // 计算字体大小
-  const nameSize = calculateSize(containerWidth, 1.4, 0.9);
-  const descSize = calculateSize(containerWidth, 1, 0.7);
-  
-  // 应用计算后的样式
-  const avatarContainer = container.querySelector('.avatar-container');
-  const authorName = container.querySelector('.author-name');
-  const authorDesc = container.querySelector('.author-description');
-  
-  if (avatarContainer) {
-    avatarContainer.style.width = `${avatarSize}px`;
-    avatarContainer.style.height = `${avatarSize}px`;
-  }
-  
-  if (authorName) {
-    authorName.style.fontSize = `${nameSize}rem`;
-    authorName.style.marginBottom = `${nameSize * 0.3}rem`;
-  }
-  
-  if (authorDesc) {
-    authorDesc.style.fontSize = `${descSize}rem`;
-  }
-}
+      if (containerWidth >= maxWidth) return maxSize;
+      if (containerWidth <= minWidth) return minSize;
 
-// 初始化大小调整
-document.addEventListener('DOMContentLoaded', () => {
-  const authorCard = document.getElementById('author-card-container');
-  
-  if (!authorCard) return;
-  
-  // 初始调整
-  adjustAuthorCardSize(authorCard);
-  
-  // 使用ResizeObserver监控尺寸变化
-  if (window.ResizeObserver) {
-    const resizeObserver = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        if (entry.target === authorCard) {
+      // 线性插值计算尺寸
+      const ratio = (containerWidth - minWidth) / (maxWidth - minWidth);
+      return minSize + ratio * (maxSize - minSize);
+    }
+
+    // 动态调整author-card内元素的大小
+    function adjustAuthorCardSize(container: any) {
+      // 获取容器的宽度
+      const containerWidth = container.offsetWidth;
+
+      // 计算头像大小
+      const avatarSize = calculateSize(containerWidth, 100, 60);
+
+      // 计算字体大小
+      const nameSize = calculateSize(containerWidth, 1.4, 0.9);
+      const descSize = calculateSize(containerWidth, 1, 0.7);
+
+      // 应用计算后的样式
+      const avatarContainer = container.querySelector(".avatar-container");
+      const authorName = container.querySelector(".author-name");
+      const authorDesc = container.querySelector(".author-description");
+
+      if (avatarContainer) {
+        avatarContainer.style.width = `${avatarSize}px`;
+        avatarContainer.style.height = `${avatarSize}px`;
+      }
+
+      if (authorName) {
+        authorName.style.fontSize = `${nameSize}rem`;
+        authorName.style.marginBottom = `${nameSize * 0.3}rem`;
+      }
+
+      if (authorDesc) {
+        authorDesc.style.fontSize = `${descSize}rem`;
+      }
+    }
+
+    // 初始化大小调整
+    document.addEventListener("DOMContentLoaded", () => {
+      const authorCard = document.getElementById("author-card-container");
+
+      if (!authorCard) return;
+
+      // 初始调整
+      adjustAuthorCardSize(authorCard);
+
+      // 使用ResizeObserver监控尺寸变化
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            if (entry.target === authorCard) {
+              adjustAuthorCardSize(authorCard);
+            }
+          }
+        });
+
+        resizeObserver.observe(authorCard);
+      } else {
+        // 降级方案：监听窗口大小变化
+        window.addEventListener("resize", () => {
           adjustAuthorCardSize(authorCard);
-        }
+        });
       }
     });
-    
-    resizeObserver.observe(authorCard);
-  } else {
-    // 降级方案：监听窗口大小变化
-    window.addEventListener('resize', () => {
-      adjustAuthorCardSize(authorCard);
-    });
-  }
-});
-</script>
+  </script></sidebar
+>
