@@ -12,8 +12,7 @@ import SocialLinks from '../components/others/SocialLinks.astro'
 import TextTyping from '../components/others/TextTyping.astro'
 import AuthorCard from '../components/others/AuthorCard.astro'
 import Postlist from '../components/Postlist.astro'
-const avatarImage = config_site.avatarPath || avatar 
-import { processedPosts } from '../pages/archives/index.astro'
+const avatarImage = config_site.avatarPath || avatar
 ---
 <!DOCTYPE html>
 <html lang={config_site.lang}>    <Head
@@ -51,7 +50,7 @@ import { processedPosts } from '../pages/archives/index.astro'
                 <SocialLinks mediaLinks={config_site.medialinks || []} />
             </div>
         </div>
-        <Postlist Posts={processedPosts} />
+        <Postlist />
         <Footer/>
     </body>
 </html>

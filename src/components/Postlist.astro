@@ -1,27 +1,11 @@
 ---
-const {Posts} = Astro.props;
+// 移除 Posts prop，改为客户端获取
 ---
 
 <div class="postlist-wrapper">
     <div id="posts-container" class="posts-container" style="display: none;">
-        <div class="posts-grid">
-            {Posts.map((post: any) => (
-                <article class="post-card">
-                    <a href={`/posts/${post.data.abbrlink}`}>
-                    <h2 class="post-title">{post.data.title}</h2>
-                    <p class="post-description">{post.data.description}</p>
-                    <div class="post-meta">
-                        {post.data.tags && (
-                            <div class="post-tags">
-                                {post.data.tags.map((tag: string) => (
-                                    <span class="tag">{tag}</span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                    </a>
-                </article>
-            ))}
+        <div class="posts-grid" id="posts-grid">
+            <!-- 文章将通过 JavaScript 动态加载 -->
         </div>
     </div>
     
@@ -34,6 +18,111 @@ const {Posts} = Astro.props;
 </div>
 
 <script>
+    // 从 /allpost.json API 获取文章数据
+    async function fetchAllPosts() {
+        try {
+            const response = await fetch('/allpost.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data.Posts || [];
+        } catch (error) {
+            console.error('Failed to fetch posts:', error);
+            return [];
+        }
+    }
+
+    // 生成文章卡片HTML
+    function generatePostHTML(post: any) {
+        // 处理标签
+        const tagsHTML = post.tags && post.tags.length > 0 ? 
+            `<div class="post-tags">
+                ${post.tags.map((tag: any) => `<span class="tag">${tag}</span>`).join('')}
+            </div>` : '';
+
+        // 处理日期显示
+        const formatDate = (dateString: string) => {
+            if (!dateString) return '';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '';
+                return date.toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+            } catch (error) {
+                console.warn('Invalid date format:', dateString);
+                return '';
+            }
+        };
+
+        const createDate = formatDate(post.date);
+        const updateDate = formatDate(post.updated);
+        
+        // 生成日期信息HTML
+        let dateHTML = '';
+        if (createDate) {
+            dateHTML += `<span class="post-date create-date" title="创建时间">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                ${createDate}
+            </span>`;
+        }
+        
+        if (updateDate && updateDate !== createDate) {
+            dateHTML += `<span class="post-date update-date" title="更新时间">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                </svg>
+                ${updateDate}
+            </span>`;
+        }
+
+        return `
+            <article class="post-card">
+                <a href="${post.link}">
+                    <h2 class="post-title">${post.title}</h2>
+                    <p class="post-description">${post.description || ''}</p>
+                    <div class="post-meta">
+                        ${dateHTML ? `<div class="post-dates">${dateHTML}</div>` : ''}
+                        ${tagsHTML}
+                    </div>
+                </a>
+            </article>
+        `;
+    }
+
+    // 渲染所有文章
+    function renderPosts(posts: any[]) {
+        const postsGrid = document.getElementById('posts-grid');
+        if (!postsGrid) return;
+
+        if (posts.length === 0) {
+            postsGrid.innerHTML = '<div class="no-posts">暂无文章</div>';
+            return;
+        }
+
+        postsGrid.innerHTML = posts.map((post: any) => generatePostHTML(post)).join('');
+        console.log('Generated HTML for', posts.length, 'posts');
+        console.log('First post HTML:', posts.length > 0 ? generatePostHTML(posts[0]) : 'No posts');
+        
+        // 添加渐入动画 - 移除手动透明度控制，让CSS动画处理
+        const postCards = postsGrid.querySelectorAll('.post-card');
+        console.log('Found', postCards.length, 'post cards in DOM');
+        postCards.forEach((card, index) => {
+            const htmlCard = card as HTMLElement;
+            htmlCard.style.animationDelay = `${index * 0.1}s`;
+            console.log(`Card ${index}:`, htmlCard.className, 'computed style:', window.getComputedStyle(htmlCard).backgroundColor);
+            // 移除手动透明度控制，让CSS动画自然执行
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const postsContainer = document.getElementById('posts-container');
         const loadTrigger = document.getElementById('load-posts-trigger');
@@ -109,7 +198,7 @@ const {Posts} = Astro.props;
         }
         
         // 加载文章函数
-        function loadPosts() {
+        async function loadPosts() {
             if (isLoading || postsLoaded || !postsContainer) return;
             
             isLoading = true;
@@ -119,22 +208,39 @@ const {Posts} = Astro.props;
                 loadTrigger.style.display = 'flex';
             }
             
-            // 模拟网络延迟（可选）
-            setTimeout(() => {
-                postsContainer.style.display = 'block';
-                postsContainer.style.animation = 'fadeInUp 0.8s ease-in-out forwards';
+            try {
+                // 从 API 获取文章数据
+                const posts = await fetchAllPosts();
                 
+                // 渲染文章
+                renderPosts(posts);
+                console.log('Posts rendered:', posts.length, 'articles');
+                
+                // 显示文章容器
+                postsContainer.style.display = 'block';
+                postsContainer.classList.add('show');
+                postsContainer.style.animation = 'fadeInUp 0.8s ease-in-out forwards';
+                console.log('Posts container displayed');
+                
+                postsLoaded = true;
+                
+                // 预加载图片
+                preloadImages();
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                const postsGrid = document.getElementById('posts-grid');
+                if (postsGrid) {
+                    postsGrid.innerHTML = '<div class="error">加载文章失败，请刷新页面重试</div>';
+                    postsContainer.style.display = 'block';
+                    postsContainer.classList.add('show');
+                }
+            } finally {
                 // 隐藏加载动画
                 if (loadTrigger) {
                     loadTrigger.style.display = 'none';
                 }
-                
-                postsLoaded = true;
                 isLoading = false;
-                
-                // 预加载图片
-                preloadImages();
-            }, 300);
+            }
         }
         
         // 预加载图片
@@ -165,6 +271,25 @@ const {Posts} = Astro.props;
             window.addEventListener(event, scheduleIdleLoading, { passive: true });
         });
         
+        // 页面完全加载后的处理
+        window.addEventListener('load', () => {
+            // 页面完全加载后自动加载文章，不需要等待用户交互
+            setTimeout(() => {
+                if (!postsLoaded) {
+                    loadPosts();
+                }
+            }, 500);
+        });
+
+        // 如果页面已经加载完成，立即执行
+        if (document.readyState === 'complete') {
+            setTimeout(() => {
+                if (!postsLoaded) {
+                    loadPosts();
+                }
+            }, 500);
+        }
+        
         // 页面可见性变化时的处理
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && userInteractionDetected && !postsLoaded) {
@@ -189,10 +314,18 @@ const {Posts} = Astro.props;
                 }, 1500);
             }
         }
+
+        // 备用自动加载：如果3秒后还没有加载，自动触发加载
+        setTimeout(() => {
+            if (!postsLoaded && !isLoading) {
+                console.log('Auto-loading posts after 3 seconds...');
+                loadPosts();
+            }
+        }, 3000);
     });
 </script>
 
-<style>
+<style is:global>
     .postlist-wrapper {
         width: 100%;
         max-width: 1400px;
@@ -206,6 +339,12 @@ const {Posts} = Astro.props;
     }
     
     .posts-container[style*="display: block"] {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* 确保容器在显示时能正确应用样式 */
+    .posts-container.show {
         opacity: 1;
         transform: translateY(0);
     }
@@ -241,6 +380,17 @@ const {Posts} = Astro.props;
         100% { transform: rotate(360deg); }
     }
 
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .posts-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -249,23 +399,34 @@ const {Posts} = Astro.props;
         width: 100%;
     }
 
-    .post-card {
-        background-color: rgba(0, 0, 0, 0.192);
-        border-radius: 10px;
+    .postlist-wrapper .post-card {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         padding: 1.5rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
         cursor: pointer;
-        break-inside: avoid;
-        animation: fadeInUp 0.8s ease-in-out forwards;
+        animation: fadeInUp 0.6s ease-in-out forwards;
         opacity: 0;
+        animation-fill-mode: forwards;
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
     }
 
-    .post-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.8);
-        background-color: rgba(0, 0, 0, 0.3);
+    .postlist-wrapper .post-card a {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+        text-decoration: none !important;
+        color: inherit !important;
+    }
+
+    .postlist-wrapper .post-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        background-color: rgba(0, 0, 0, 0.25);
     }
 
     .post-title {
@@ -286,6 +447,62 @@ const {Posts} = Astro.props;
 
     .post-meta {
         margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .post-dates {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .post-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background-color: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.75);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 400;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .post-date svg {
+        flex-shrink: 0;
+        opacity: 0.8;
+    }
+
+    .create-date {
+        background-color: rgba(100, 200, 255, 0.1);
+        color: rgba(100, 200, 255, 0.9);
+        border-color: rgba(100, 200, 255, 0.2);
+    }
+
+    .update-date {
+        background-color: rgba(255, 200, 100, 0.1);
+        color: rgba(255, 200, 100, 0.9);
+        border-color: rgba(255, 200, 100, 0.2);
+    }
+
+    .post-date:hover {
+        transform: translateY(-1px);
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .create-date:hover {
+        background-color: rgba(100, 200, 255, 0.2);
+        border-color: rgba(100, 200, 255, 0.4);
+    }
+
+    .update-date:hover {
+        background-color: rgba(255, 200, 100, 0.2);
+        border-color: rgba(255, 200, 100, 0.4);
     }
 
     .post-tags {
@@ -309,14 +526,18 @@ const {Posts} = Astro.props;
         transform: translateY(-2px);
     }
 
-    /* 为不同的卡片设置不同的延迟 */
-    .post-card:nth-child(1) { animation-delay: 0.1s; }
-    .post-card:nth-child(2) { animation-delay: 0.2s; }
-    .post-card:nth-child(3) { animation-delay: 0.3s; }
-    .post-card:nth-child(4) { animation-delay: 0.4s; }
-    .post-card:nth-child(5) { animation-delay: 0.5s; }
-    .post-card:nth-child(6) { animation-delay: 0.6s; }
-    .post-card:nth-child(n+7) { animation-delay: 0.7s; }
+    /* 无文章和错误状态样式 */
+    .no-posts, .error {
+        text-align: center;
+        padding: 2rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        grid-column: 1 / -1; /* 占满整个网格 */
+    }
+
+    .error {
+        color: rgba(255, 100, 100, 0.8);
+    }
 
     /* 优化移动端体验 */
     @media (max-width: 768px) {
@@ -332,6 +553,25 @@ const {Posts} = Astro.props;
         
         .post-title {
             font-size: 1.1rem;
+        }
+
+        .post-dates {
+            gap: 0.5rem;
+        }
+
+        .post-date {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.4rem;
+        }
+
+        .post-date svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
         }
         
         .load-posts-trigger {

@@ -142,12 +142,9 @@ async function initRandomPosts() {
   }
 }
 
-// 初始化刷新按钮事件和随机文章列表
+// 初始化刷新按钮事件
 document.addEventListener('DOMContentLoaded', () => {
-  // 初始化随机文章列表
-  initRandomPosts();
-  
-  // 设置刷新按钮事件
+  // 仅设置刷新按钮事件，不立即加载文章
   const refreshButton = document.getElementById('refresh-random-posts');
   if (refreshButton) {
     refreshButton.addEventListener('click', (e) => {
@@ -165,5 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 600);
     });
   }
+});
+
+// 等待页面完全加载后再初始化随机文章列表
+window.addEventListener('load', () => {
+  // 页面完全加载后初始化随机文章列表
+  initRandomPosts();
 });
 </script>

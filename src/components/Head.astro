@@ -163,16 +163,14 @@ import favicon_img from '../images/stalux.ico';
       ...(extend.meta || []),
     ],    link: [
       { rel: "icon", href: favicon || favicon_img , type: "image/x-icon" },
-      { rel: "alternate", type: "application/json+oembed", title: `${siteName || title} JSON+OEmbed`, href: `${url}/oembed.json` },
-      { rel: "alternate", type: "text/xml+oembed", title: `${siteName || title} Text+OEmbed`, href: `${url}/oembed.xml` },
-      { rel: "alternate", type: "application/rss+xml", title: `${siteName || title} RSS Feed`, href: `${url}/rss.xml` },
-      { rel: "alternate", type: "application/atom+xml", title: `${siteName || title} Atom Feed`, href: `${url}/atom.xml` },
+      { rel: "alternate", type: "application/rss+xml", title: `${siteName || title} RSS Feed`, href: `/rss.xml` },
+      { rel: "alternate", type: "application/atom+xml", title: `${siteName || title} Atom Feed`, href: `/atom.xml` },
+      { rel: "alternate", type: "application/sitemap+xml", title: `${siteName || title} Sitemap index Feed`, href: `/sitemap-index.xml` },
       ...(extend.link || []),
     ],
   }}
 />
 <meta name="color-scheme" content="dark">
-<link rel="sitemap" href="/sitemap-index.xml" />
 <!-- 使用插槽允许自定义 robots meta 标签 -->
 <slot name="robots"></slot>
 

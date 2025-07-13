@@ -20,6 +20,7 @@ export async function GET(context)  {
             updated: post.data.updated,
             description: post.data.description,
             link: `/posts/${post.data.abbrlink}/`,
+            tags: post.data.tags || [],
         }))
     }), {
         headers: {

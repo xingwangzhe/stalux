@@ -41,11 +41,11 @@
     "@astrojs/sitemap": "^3.4.1",
     "@astrojs/ts-plugin": "^1.10.4",
     "@astrojs/vue": "5.1.0",
-    "@expressive-code/plugin-line-numbers": "^0.41.2",
-    "@fancyapps/ui": "^6.0.5",
+    "@expressive-code/plugin-line-numbers": "^0.41.3",
+    "@fancyapps/ui": "^6.0.11",
     "animejs": "^4.0.2",
-    "astro": "^5.10.1",
-    "astro-expressive-code": "^0.41.2",
+    "astro": "^5.11.0",
+    "astro-expressive-code": "^0.41.3",
     "astro-pagefind": "^1.8.3",
     "astro-seo": "^0.8.4",
     "badge-maker": "^5.0.2",
@@ -60,11 +60,11 @@
     "remark-toc": "^9.0.0",
     "remove-markdown": "^0.6.2",
     "sanitize-html": "^2.17.0",
-    "simple-icons": "^15.3.0",
+    "simple-icons": "^15.5.0",
     "stylus": "^0.64.0",
     "vue": "^3.5.17"
   },
   "devDependencies": {
-    "@waline/client": "^3.5.7"
+    "@waline/client": "^3.6.0"
   }
 }
