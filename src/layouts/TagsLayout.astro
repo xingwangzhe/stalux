@@ -11,19 +11,37 @@ export interface Props {
   description: string;
   url: string;
   noindex?: boolean;
+  keywords?: string;
+  structuredData?: any;
+  ogImage?: string;
 }
 
-const { title, description, url, noindex = true } = Astro.props;
+const { 
+  title, 
+  description, 
+  url, 
+  noindex = false, 
+  keywords = '',
+  structuredData,
+  ogImage
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang={config_site.lang}>  <Head 
+<html lang={config_site.lang}>
+  <Head 
     title={title}
     description={description}
     author={config_site.author}
     url={url}
     canonical={url}
     noindex={noindex}
+    keywords={keywords}
+    structuredData={structuredData}
+    ogImage={ogImage}
+    siteName={config_site.siteName}
+    lang={config_site.lang}
+    locale={config_site.locale}
   >
     <slot name="head" />
   </Head>

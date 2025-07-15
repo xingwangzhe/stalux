@@ -14,19 +14,37 @@ export interface Props {
   categoryName: string;  // 改为单个分类名称
   postCount: number;
   noIndex?: boolean;
+  keywords?: string;
+  structuredData?: any;
+  ogImage?: string;
 }
 
-const { title, description, author, url, categoryName, postCount, noIndex = false } = Astro.props;
+const { 
+  title, 
+  description, 
+  author, 
+  url, 
+  categoryName, 
+  postCount, 
+  noIndex = false,
+  keywords = '',
+  structuredData,
+  ogImage
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="zh-CN">  <Head 
+<html lang="zh-CN">
+  <Head 
     title={title}
     description={description}
     author={author}
     url={url}
     canonical={url}
     noindex={noIndex}
+    keywords={keywords}
+    structuredData={structuredData}
+    ogImage={ogImage}
   >
     {noIndex && <meta name="robots" content="noindex, nofollow" slot="robots" />}
   </Head>

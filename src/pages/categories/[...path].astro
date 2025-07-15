@@ -10,32 +10,47 @@ export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
   const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
   
-  // 提取所有分类路径 - 扁平化结构
-  const categoryPaths = new Set<string>();
-    processedPosts.forEach(post => {
+  // 提取所有分类路径 - 扁平化结构，并收集统计信息
+  const categoryStats = new Map();
+  processedPosts.forEach(post => {
     if (post.data.categories && Array.isArray(post.data.categories)) {
       post.data.categories.forEach((category: string) => {
         if (typeof category === 'string' && category.trim()) {
-          categoryPaths.add(category.trim());
+          const categoryName = category.trim();
+          if (!categoryStats.has(categoryName)) {
+            categoryStats.set(categoryName, {
+              count: 0,
+              posts: [],
+              latestDate: null
+            });
+          }
+          const stats = categoryStats.get(categoryName);
+          stats.count++;
+          stats.posts.push(post);
+          const postDate = new Date(post.data.date);
+          if (!stats.latestDate || postDate > stats.latestDate) {
+            stats.latestDate = postDate;
+          }
         }
       });
     }
   });
   
   // 生成静态路径
-  return Array.from(categoryPaths).map(categoryName => {
+  return Array.from(categoryStats.entries()).map(([categoryName, stats]) => {
     return {
       params: { 
         path: categoryName
       },
       props: {
-        categoryPath: categoryName
+        categoryPath: categoryName,
+        categoryStats: stats
       }
     };
   });
 }
 
-const { categoryPath } = Astro.props;
+const { categoryPath, categoryStats } = Astro.props;
 
 // 获取所有文章并处理frontmatter
 const allPosts = await getCollection('posts');
@@ -60,18 +75,86 @@ const sortedPosts = categoryPosts.sort((a, b) => {
   return dateB - dateA;  // 降序排序
 });
 
-// 页面标题
+// SEO优化的页面元数据
 const pageTitle = `分类: ${categoryPath} | ${config_site.siteName}`;
+const pageDescription = `浏览 ${categoryPath} 分类下的 ${sortedPosts.length} 篇文章，涵盖相关领域的深度思考与见解。最后更新于 ${dayjs(categoryStats.latestDate).format('YYYY年MM月DD日')}`;
+const pageUrl = `${config_site.url}/categories/${encodeURIComponent(categoryPath)}/`;
+const pageKeywords = `${categoryPath}, 分类, 文章, 博客, ${config_site.siteName}, ${sortedPosts.slice(0, 5).map(p => p.data.title).join(', ')}`;
+
+// 结构化数据
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": pageTitle,
+  "description": pageDescription,
+  "url": pageUrl,
+  "author": {
+    "@type": "Person",
+    "name": config_site.author
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": config_site.siteName,
+    "url": config_site.url
+  },
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": sortedPosts.length,
+    "itemListElement": sortedPosts.slice(0, 10).map((post, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Article",
+        "name": post.data.title,
+        "url": `${config_site.url}/posts/${post.data.abbrlink}/`,
+        "datePublished": post.data.date,
+        "author": {
+          "@type": "Person",
+          "name": config_site.author
+        }
+      }
+    }))
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首页",
+        "item": config_site.url
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "分类",
+        "item": `${config_site.url}/categories/`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": categoryPath,
+        "item": pageUrl
+      }
+    ]
+  }
+};
 ---
 
 <CategoryDetailLayout
   title={pageTitle}
-  description={`"${categoryPath}" 分类下的所有文章`}
+  description={pageDescription}
   author={config_site.author || ''}
-  url={config_site.url + '/categories/' + categoryPath}
+  url={pageUrl}
   categoryName={categoryPath}
   postCount={sortedPosts.length}
-  noIndex={true}
+  noIndex={false}
+  keywords={pageKeywords}
+  structuredData={structuredData}
+>
+  noIndex={false}
+  keywords={pageKeywords}
+  structuredData={structuredData}
 >
   {sortedPosts.length > 0 ? (
     <ul class="post-list">
@@ -82,8 +165,9 @@ const pageTitle = `分类: ${categoryPath} | ${config_site.siteName}`;
               {dayjs(post.data.date).format('YYYY-MM-DD')}
             </div>
             <h2 class="post-title">{post.data.title}</h2>
+            <br />
             {post.data.description && (
-              <p class="post-description">{post.data.description}</p>
+              <p class="post-description">{post.data.description.slice(0,50)+ '...'}</p>
             )}
           </a>
           

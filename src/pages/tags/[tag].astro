@@ -10,25 +10,42 @@ export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
   const processedPosts = await Promise.all(allPosts.map(post => processFrontmatter(post)));
   
-  // 提取所有唯一标签
-  const allTags = new Set();
+  // 提取所有唯一标签及其统计信息
+  const tagStats = new Map();
   processedPosts.forEach(post => {
     const tags = post.data.tags || [];
     tags.forEach((tag: String) => {
       if (tag.trim()) {
-        allTags.add(tag);
+        const tagName = tag.trim();
+        if (!tagStats.has(tagName)) {
+          tagStats.set(tagName, {
+            count: 0,
+            posts: [],
+            latestDate: null
+          });
+        }
+        const stats = tagStats.get(tagName);
+        stats.count++;
+        stats.posts.push(post);
+        const postDate = new Date(post.data.date);
+        if (!stats.latestDate || postDate > stats.latestDate) {
+          stats.latestDate = postDate;
+        }
       }
     });
   });
   
   // 为每个标签创建路径参数
-  return Array.from(allTags).map(tag => ({
+  return Array.from(tagStats.entries()).map(([tag, stats]) => ({
     params: { tag },
-    props: { tag }
+    props: { 
+      tag,
+      tagStats: stats
+    }
   }));
 }
 
-const { tag } = Astro.props;
+const { tag, tagStats } = Astro.props;
 
 // 获取所有文章并处理frontmatter
 const allPosts = await getCollection('posts');
@@ -46,11 +63,80 @@ const sortedPosts = taggedPosts.sort((a, b) => {
   return dateB - dateA; // 降序排序
 });
 
-// 页面标题
+// SEO优化的页面元数据
 const pageTitle = `标签: ${tag} | ${config_site.siteName}`;
+const pageDescription = `探索 ${tag} 相关的 ${sortedPosts.length} 篇文章，包含最新的见解和思考。最后更新于 ${dayjs(tagStats.latestDate).format('YYYY年MM月DD日')}`;
+const pageUrl = `${config_site.url}/tags/${encodeURIComponent(tag)}/`;
+const pageKeywords = `${tag}, 标签, 文章, 博客, ${config_site.siteName}, ${sortedPosts.slice(0, 5).map(p => p.data.title).join(', ')}`;
+
+// 结构化数据
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": pageTitle,
+  "description": pageDescription,
+  "url": pageUrl,
+  "author": {
+    "@type": "Person",
+    "name": config_site.author
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": config_site.siteName,
+    "url": config_site.url
+  },
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": sortedPosts.length,
+    "itemListElement": sortedPosts.slice(0, 10).map((post, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Article",
+        "name": post.data.title,
+        "url": `${config_site.url}/posts/${post.data.abbrlink}/`,
+        "datePublished": post.data.date,
+        "author": {
+          "@type": "Person",
+          "name": config_site.author
+        }
+      }
+    }))
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首页",
+        "item": config_site.url
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "标签",
+        "item": `${config_site.url}/tags/`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": tag,
+        "item": pageUrl
+      }
+    ]
+  }
+};
 ---
 
 <TagsLayout
+  title={pageTitle}
+  description={pageDescription}
+  url={pageUrl}
+  noindex={false}
+  keywords={pageKeywords}
+  structuredData={structuredData}
+>
   title={pageTitle}
   description={`"${tag}" 标签相关的所有文章`}
   url={config_site.url + '/tags/' + tag}
