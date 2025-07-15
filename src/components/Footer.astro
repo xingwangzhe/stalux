@@ -135,12 +135,12 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
       </div>
     )}    <!-- 站点统计信息 -->
     <div class="site-stats">
-      <span id="busuanzi_container_site_uv">
-        本站访客数：<span id="busuanzi_value_site_uv"></span> 人次
+      <span id="vercount_container_site_uv">
+        本站访客数：<span id="vercount_value_site_uv">Loading...</span> 人次
       </span>
       <span class="stats-separator">|</span>
-      <span id="busuanzi_container_site_pv">
-        本站总访问量：<span id="busuanzi_value_site_pv"></span> 次
+      <span id="vercount_container_site_pv">
+        本站总访问量：<span id="vercount_value_site_pv">Loading...</span> 次
       </span>
     </div>
 
@@ -272,7 +272,8 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
     }
   }
 </script>
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Vercount统计脚本 -->
+<script defer src="https://events.vercount.one/js"></script>
 <style>
 .site-footer {
   width: 100%;
@@ -387,13 +388,13 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
   opacity: 0.6;
 }
 
-#busuanzi_container_site_uv,
-#busuanzi_container_site_pv {
+#vercount_container_site_uv,
+#vercount_container_site_pv {
   display: inline-block;
 }
 
-#busuanzi_value_site_uv,
-#busuanzi_value_site_pv {
+#vercount_value_site_uv,
+#vercount_value_site_pv {
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
 }

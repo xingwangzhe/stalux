@@ -119,6 +119,8 @@ import "katex/dist/katex.min.css";
 			},
 		}}
 	>
+		<!-- Vercount统计脚本 -->
+		<script defer src="https://events.vercount.one/js"></script>
 	</Head>
 	<body>
 		<Header />
@@ -160,9 +162,8 @@ import "katex/dist/katex.min.css";
 							</div>
 							<!-- 文章阅读量统计 -->
 							<div class="page-stats">
-								<span id="busuanzi_container_page_pv">
-									👀 阅读量：<span id="busuanzi_value_page_pv"
-									></span>
+								<span id="vercount_container_page_pv">
+									👀 阅读量：<span id="vercount_value_page_pv">Loading...</span>
 								</span>
 							</div>
 						</div>
@@ -409,12 +410,12 @@ import "katex/dist/katex.min.css";
 			align-items: center;
 			gap: 0.3rem;
 		}
-		#busuanzi_value_page_pv {
+		#vercount_value_page_pv {
 			font-weight: 600;
 			color: rgba(255, 255, 255, 0.9);
 		}
 
-		#busuanzi_container_page_pv {
+		#vercount_container_page_pv {
 			transition: opacity 0.3s ease;
 		}
 
