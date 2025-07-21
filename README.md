@@ -59,25 +59,9 @@ Stalux 是一款基于 Astro 框架开发的静态博客主题，专为内容创
 
 首先，您需要安装 Stalux 主题。有两种方式可供选择：
 
-#### 方式一：使用 GitHub 模板
-
-```bash
-# 使用 npm
-npm create astro@latest -- --template xingwangzhe/stalux
-
-# 使用 yarn
-yarn create astro --template xingwangzhe/stalux
-
-# 使用 pnpm
-pnpm create astro --template xingwangzhe/stalux
-
-# 使用 bun
-bun create astro --template xingwangzhe/stalux
-
-# 如果遇到SSL证书验证错误，可尝试：
-npx create-astro@latest --template xingwangzhe/stalux
 
 # 或者手动克隆仓库
+```bash
 git clone https://github.com/xingwangzhe/stalux.git my-blog-name
 cd my-blog-name
 npm install
@@ -85,26 +69,7 @@ npm install
 
 这种方式会从 GitHub 仓库克隆完整项目，包括所有示例文章和配置。
 
-##### 网络问题排查
-
-如果在安装过程中遇到网络问题，如SSL证书验证错误(`unable to verify the first certificate`)：
-
-- **检查网络连接**：确保您能正常访问 GitHub.com
-- **检查代理设置**：如果使用代理，确保正确配置环境变量 `HTTP_PROXY` 和 `HTTPS_PROXY`
-- **尝试使用VPN**：某些网络环境可能需要使用VPN连接
-- **临时禁用SSL验证**（不推荐用于生产环境）：
-  ```bash
-  # PowerShell
-  $env:NODE_TLS_REJECT_UNAUTHORIZED=0
-  
-  # CMD
-  set NODE_TLS_REJECT_UNAUTHORIZED=0
-  
-  # Linux/macOS
-  export NODE_TLS_REJECT_UNAUTHORIZED=0
-  ```
-
-#### 方式二：手动集成到现有项目
+#### 方式二：手动集成到现有项目 不推荐（
 
 如果您已有 Astro 项目，希望集成 Stalux 主题：
 
@@ -198,6 +163,8 @@ touch src/content/posts/my-first-post.md
 
 每个 Markdown 文件顶部的 frontmatter 配置是必需的，它定义了文章的元数据：
 
+并非所有元数据都被使用，有些暂作保留，以供后续使用
+
 ```markdown
 ---
 title: 我的第一篇文章      # 文章标题（必需）
@@ -247,7 +214,7 @@ $$
 $$
 ```
 
-#### 警告框
+#### 警告框 这个需要插件 astro-tips
 
 ```markdown
 :::note
@@ -299,99 +266,165 @@ Stalux 提供了灵活的配置系统，所有配置都集中在 `src/_config.ts
 export const useConfig: boolean = true;
 
 export const siteConfig: SiteConfig = {
-  // 站点基本信息
-  title: '我的博客',            // 站点标题
-  siteName: '我的博客',         // 站点名称
-  author: '作者名',            // 作者名称
-  description: '博客描述...',   // 站点描述
+  // 基础站点信息
+  title: '',                        // 页面标题（可为空）
+  titleDefault: '姓王者的博客',       // 默认标题
+  siteName: '姓王者的博客',          // 站点名称
+  author: 'xingwangzhe',            // 作者名称
+  description: '探索、学习、进步、创造无限可能！', // 站点描述
+  url: 'https://xingwangzhe.fun',   // 站点URL
   
   // 其他配置...
 }
 ```
 
-### 进阶配置项
+### 配置项详解
 
-Stalux 提供了丰富的配置选项，包括但不限于：
-
-#### 头部配置
+#### 基础信息配置
 
 ```typescript
-header: {
-  navs: [
-    { title: '首页', link: '/' },
-    { title: '归档', link: '/archives' },
-    { title: '分类', link: '/categories' },
-    { title: '标签', link: '/tags' },
-    { title: '关于', link: '/about' },
-  ],
-  search: true,             // 是否启用搜索
-  darkModeSwitch: true,     // 是否显示暗色模式切换按钮
-  titleAnimated: true,      // 是否启用标题动画效果
+// 基础站点信息
+title: '',                        // 页面标题（空则使用titleDefault）
+titleDefault: '姓王者的博客',       // 默认标题
+siteName: '姓王者的博客',          // 站点名称
+author: 'xingwangzhe',            // 作者信息
+
+// SEO配置
+description: '探索、学习、进步、创造无限可能！...', // 网站描述
+short_description: "探索、学习、进步、创造无限可能！",
+url: 'https://xingwangzhe.fun',   // 完整网站URL
+lang: 'zh-CN',                    // 语言设置
+locale: 'zh_CN',                  // 区域设置
+keywords: 'Stalux, 博客主题, 内容创作, Astro主题...', // 关键词
+canonical: 'https://xingwangzhe.fun', // 规范链接
+
+// 资源配置
+favicon: '/favicon.ico',          // 网站图标
+avatarPath: 'src/images/avatar.webp', // 头像路径
+```
+
+#### 导航配置
+
+```typescript
+nav: [
+  { title: '首页', path: '/', icon: 'home' },
+  { title: '归档', path: '/archives', icon: 'archive' },
+  { title: '分类', path: '/categories', icon: 'folder' },
+  { title: '标签', path: '/tags', icon: 'tag' },
+  { title: '友链', path: '/links', icon: 'link' },
+  { title: '关于', path: '/about', icon: 'user' },
+]
+```
+
+#### 特效配置
+
+```typescript
+textyping: [
+  'Free for free, not free for charge!',
+  '任意键在哪?',
+  'F12看看?',
+  'Hello World!',
+]
+```
+
+#### 社交媒体配置
+
+```typescript
+medialinks: [
+  { title: 'Github', url: 'https://github.com/xingwangzhe', icon: 'github' },
+  { title: 'Bilibili', url: 'https://space.bilibili.com/1987297874', icon: 'bilibili' },
+  { title: 'QQ', url: 'https://wpa.qq.com/msgrd?v=3&uin=2098422920&site=qq&menu=yes', icon: 'qq' },
+  { title: 'eMail', url: 'mailto:xingwangzhe@outlook.com', icon: 'maildotru' }
+]
+```
+
+#### Waline 评论系统配置
+
+```typescript
+comment: {
+  waline: {
+    serverURL: 'https://waline.xingwangzhe.fun', // Waline服务器地址
+    lang: 'zh-CN',                               // 语言设置
+    emoji: ['https://unpkg.com/@waline/emojis@1.1.0/weibo'], // 表情包
+    requiredFields: [],                          // 必填项
+    reaction: true,                              // 文章反应
+    meta: ['nick', 'mail', 'link'],             // 评论者元数据
+    wordLimit: 200,                             // 字数限制
+    pageSize: 10                                // 评论分页大小
+  }
 }
+```
+
+#### 友情链接配置
+
+```typescript
+friendlinks_title: '友情链接',
+friendlinks_description: '优质技术博客交换友情链接，互惠共赢提升网站流量和用户体验。',
+friendlinks: [
+  {
+    title: 'Astro',
+    url: 'https://astro.build/',
+    avatar: 'https://astro.build/favicon.svg',
+    description: 'The web framework for content-driven websites'
+  },
+  // 更多友情链接...
+]
 ```
 
 #### 页脚配置
 
 ```typescript
 footer: {
-  since: 2023,              // 建站年份
-  poweredBy: true,          // 是否显示"由Astro驱动"
-  beian: '备案号',          // ICP备案号
-  live: {                   // 站点运行时间
-    enable: true,
-    startTime: '2023/1/1 00:00:00'
+  // 站点构建时间
+  buildtime: '2024-06-20T10:00:00+8:00',
+  
+  // 版权信息
+  copyright: {
+    enabled: true,           // 是否启用版权信息
+    startYear: 2024,         // 起始年份
+    customText: ''           // 自定义版权文本
   },
-  // 自定义页脚链接
-  links: [
-    { title: '隐私政策', link: '/privacy' },
-    { title: '友情链接', link: '/links' },
+  
+  // 主题信息
+  theme: {
+    showPoweredBy: true,     // 是否显示"Powered by Astro"
+    showThemeInfo: true      // 是否显示"Theme is Stalux"
+  },
+  
+  // 备案信息
+  beian: {
+    icp: {
+      enabled: true,
+      number: ' 辽ICP备2024042064号-1'
+    },
+    security: {
+      enabled: false,
+      text: '辽公网安备 XXXXXXXXXXXX号',
+      number: 'XXXXXXXXXXXX'
+    }
+  },
+  
+  // 徽章配置
+  badges: [
+    {
+      label: 'Built with',
+      message: '❤',
+      color: 'red',
+      style: 'for-the-badge',
+      alt: 'Built with Love',
+      href: 'https://github.com/xingwangzhe'
+    },
+    // 更多徽章配置...
   ]
 }
 ```
 
-#### 代码高亮配置
+### 自定义头部元素
 
 ```typescript
-code: {
-  theme: 'github-dark',     // 代码高亮主题
-  lineNumbers: true,        // 是否显示行号
-  copyButton: true,         // 是否显示复制按钮
-}
-```
-
-#### Waline 评论系统配置
-
-```typescript
-waline: {
-  enable: true,             // 是否启用Waline评论
-  serverURL: 'your-waline-server-url',
-  locale: {                 // 自定义语言
-    placeholder: '欢迎留言...'
-  },
-  // 更多配置参考 Waline 官方文档
-}
-```
-
-#### 社交媒体配置
-
-```typescript
-social: {
-  github: 'your-github-username',
-  twitter: 'your-twitter-username',
-  email: 'your-email@example.com',
-  // 支持更多社交平台
-}
-```
-
-#### 博客功能配置
-
-```typescript
-blog: {
-  postsPerPage: 10,         // 每页显示的文章数
-  featuredPosts: true,      // 是否在首页显示精选文章
-  excerptLength: 300,       // 摘要长度
-  tagsLimit: 20,            // 标签云中显示的最大标签数
-}
+head: `
+  <script>console.log('我是姓王者')</script>
+`
 ```
 
 完整的配置选项和说明可以在项目的示例文章中找到：
