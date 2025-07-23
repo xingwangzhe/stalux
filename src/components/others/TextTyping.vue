@@ -2,7 +2,7 @@
     <div id="textyping">{{ displayText }}</div>
 </template>
 
-<script setup>
+<script setup vapor>
 import { onMounted, ref, computed } from 'vue';
 import { config_site } from "../../utils/config-adapter";
 

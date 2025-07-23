@@ -5,7 +5,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup vapor>
 import { ref, computed, onBeforeUnmount, watchEffect, onMounted } from 'vue';
 
 /**

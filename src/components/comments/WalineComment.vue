@@ -1,5 +1,5 @@
 
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 /**
  * Waline评论组件 - Vue版本
  * 集成Waline评论系统，风格与博客主题保持一致
