@@ -9,33 +9,33 @@ const footerConfig = config_site.footer || {};
 const author = config_site.author || 'Stalux';
 
 // 版权配置
-const copyrightConfig = footerConfig.copyright || config_site.copyright || { enabled: true };
+const copyrightConfig = footerConfig.copyright || config_site.footer?.copyright || { enabled: true };
 
 // 主题信息配置
 const showPoweredBy = footerConfig.theme?.showPoweredBy !== undefined 
   ? footerConfig.theme.showPoweredBy 
-  : config_site.showPoweredBy !== false;
+  : config_site.footer?.theme?.showPoweredBy !== false;
 
 const showThemeInfo = footerConfig.theme?.showThemeInfo !== undefined 
   ? footerConfig.theme.showThemeInfo 
-  : config_site.showThemeInfo !== false;
+  : config_site.footer?.theme?.showThemeInfo !== false;
 
 // 备案信息配置
 const enableIcpBeian = footerConfig.beian?.icp?.enabled !== undefined
   ? footerConfig.beian.icp.enabled
-  : config_site.enableIcpBeian !== false;
+  : config_site.footer?.beian?.icp?.enabled !== false;
 
-const icpBeian = footerConfig.beian?.icp?.number || config_site.icpBeian || '';
+const icpBeian = footerConfig.beian?.icp?.number || config_site.footer?.beian?.icp?.number || '';
 
 const enablePublicSecurityBeian = footerConfig.beian?.security?.enabled !== undefined
   ? footerConfig.beian.security.enabled
-  : config_site.enablePublicSecurityBeian !== false;
+  : config_site.footer?.beian?.security?.enabled !== false;
 
-const publicSecurityBeian = footerConfig.beian?.security?.text || config_site.publicSecurityBeian || '';
-const publicSecurityBeianNumber = footerConfig.beian?.security?.number || config_site.publicSecurityBeianNumber || '';
+const publicSecurityBeian = footerConfig.beian?.security?.text || config_site.footer?.beian?.security?.text || '';
+const publicSecurityBeianNumber = footerConfig.beian?.security?.number || config_site.footer?.beian?.security?.number || '';
 
 // 徽章配置
-const customBadgeOptions = footerConfig.badges || config_site.customBadges || [];
+const customBadgeOptions = footerConfig.badges || config_site.footer?.badges || [];
 
 // 是否显示版权
 const showCopyright = copyrightConfig.enabled !== false;
@@ -129,7 +129,7 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
         {showThemeInfo && (
           <span>
             Theme is
-            <a href="https://github.com/xingwangzhe/stalux" target="_blank" rel="noopener noreferrer">Stalux</a>
+            <a href="https://stalux.needhelp.icu" target="_blank" rel="noopener noreferrer">Stalux</a>
           </span>
         )}
       </div>
@@ -153,7 +153,7 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
   </div>
 </footer>
 
-<script define:vars={{ buildtime: config_site.footer?.buildtime || config_site.buildtime }}>
+<script define:vars={{ buildtime: config_site.footer?.buildtime }}>
   if (buildtime) {
     const runtimeCounter = document.getElementById('runtime-counter');
     if (runtimeCounter) {

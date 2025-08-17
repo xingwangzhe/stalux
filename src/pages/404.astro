@@ -135,8 +135,8 @@ const avatarImage = config_site.avatarPath || avatar
       const cards = document.querySelectorAll('.glass-card');
       cards.forEach((card, index) => {
         setTimeout(() => {
-          card.style.opacity = '1';
-          card.style.transform = 'translateY(0)';
+          (card as HTMLElement).style.opacity = '1';
+          (card as HTMLElement).style.transform = 'translateY(0)';
         }, index * 100);
       });
     });

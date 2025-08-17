@@ -12,7 +12,7 @@ interface NavItem {
 }
 
 // 获取导航配置
-const navItems: NavItem[] = config_site.nav;
+const navItems: NavItem[] = config_site.nav || [];
 
 // 从feather图标库获取图标的辅助函数
 function getIconSvg(iconName: string): string {

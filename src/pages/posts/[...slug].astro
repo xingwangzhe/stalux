@@ -2,7 +2,7 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
-import { processFrontmatter } from '../../integrations/process-frontmatter.ts';
+import { processFrontmatter } from '../../integrations/process-frontmatter';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
