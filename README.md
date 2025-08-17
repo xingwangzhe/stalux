@@ -1,8 +1,9 @@
 # Stalux - Astro 博客主题
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/xingwangzhe/stalux/main/public/stalux.ico" width="100" alt="Stalux 主题图标">
-</p>
+<div align="center">
+
+![Stalux 主题图标](src/images/stalux.ico)
+</div>
 
 <p align="center">
   一个简洁实用的 Astro 博客主题
@@ -123,7 +124,7 @@ npm run build
 
 在 `src/content/posts/` 目录下创建 Markdown 文件：
 
-```markdown
+```
 ---
 title: 我的第一篇文章
 description: 文章描述
