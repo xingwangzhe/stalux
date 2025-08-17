@@ -1,28 +1,66 @@
 // 导入默认配置
-import {type SiteConfig} from '../types'
+import type { SiteConfig } from '../types';
 import { site as defaultConfig } from '../consts';
-// 不要使用静态导入，改用动态导入
-async function getConfig(): Promise<SiteConfig> {
-  let userConfig;
-  
+
+// 创建一个Promise来处理异步配置加载
+let configPromise: Promise<SiteConfig> | null = null;
+
+// 更现代化的配置加载函数
+async function loadConfig(): Promise<SiteConfig> {
   try {
-    // 使用动态导入代替require
-    userConfig = await import('../_config').catch(() => null);
+    // 动态导入用户配置
+    const userConfigModule = await import('../_config').catch(() => null);
     
-    // 检查是否存在配置且开关已打开
-    if (userConfig && userConfig.useConfig === true) {
-      return userConfig.siteConfig;
+    // 类型守卫检查
+    if (userConfigModule && typeof userConfigModule === 'object' && userConfigModule.useConfig === true) {
+      // 合并配置，用户配置优先
+      return deepMerge(defaultConfig, userConfigModule.siteConfig);
     }
   } catch (error) {
-    // 如果导入失败，表示 _config.ts 文件不存在或内容有误
-    // 这里我们不打印错误信息，因为这是预期的行为（用户可能没有创建配置文件）
+    // 如果导入失败，这表示用户没有创建配置文件，这是正常的
+    console.debug('未找到用户配置文件或配置文件有误，使用默认配置');
   }
   
-  // 默认使用 consts.ts 中的配置
+  // 返回默认配置
   return defaultConfig;
 }
-// 导出配置 - 使用异步函数的结果初始化
-// 我们需要立即初始化一个默认值，但会在应用启动时尽快获取真实配置
+
+// 深度合并函数，用于合并默认配置和用户配置
+function deepMerge<T extends Record<string, any>>(defaultObj: T, userObj: Partial<T>): T {
+  const result = { ...defaultObj } as T;
+  
+  for (const key in userObj) {
+    if (userObj.hasOwnProperty(key)) {
+      const userValue = userObj[key];
+      const defaultValue = result[key];
+      
+      if (userValue !== undefined) {
+        if (isObject(defaultValue) && isObject(userValue)) {
+          result[key] = deepMerge(defaultValue, userValue);
+        } else {
+          result[key] = userValue;
+        }
+      }
+    }
+  }
+  
+  return result;
+}
+
+// 类型守卫函数
+function isObject(item: any): item is Record<string, any> {
+  return item !== null && typeof item === 'object' && !Array.isArray(item);
+}
+
+// 导出配置Promise，供应用其他部分使用
+export function getConfig(): Promise<SiteConfig> {
+  if (!configPromise) {
+    configPromise = loadConfig();
+  }
+  return configPromise;
+}
+
+// 也导出一个同步获取配置的方法（如果已经加载完成）
 export let config_site: SiteConfig = defaultConfig;
 
 // 立即执行的异步函数来更新配置
@@ -30,6 +68,6 @@ export let config_site: SiteConfig = defaultConfig;
   try {
     config_site = await getConfig();
   } catch (error) {
-    // 配置加载失败时仍使用默认配置
+    console.warn('配置加载失败，使用默认配置:', error);
   }
 })();
