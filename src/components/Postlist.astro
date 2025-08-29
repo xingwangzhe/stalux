@@ -10,10 +10,16 @@
     </div>
     
     <div id="load-posts-trigger" class="load-posts-trigger">
-        <div class="loading-indicator">
-            <div class="spinner"></div>
-            <span>正在加载更多内容...</span>
-        </div>
+        <button id="load-posts-btn" class="load-posts-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10,9 9,9 8,9"></polyline>
+            </svg>
+            <span>点击加载文章列表</span>
+        </button>
     </div>
 </div>
 
@@ -126,75 +132,17 @@
     document.addEventListener('DOMContentLoaded', function() {
         const postsContainer = document.getElementById('posts-container');
         const loadTrigger = document.getElementById('load-posts-trigger');
+        const loadBtn = document.getElementById('load-posts-btn') as HTMLButtonElement;
         let postsLoaded = false;
         let isLoading = false;
         
-        // 智能检测用户行为
-        let userInteractionDetected = false;
-        let scrollStartTime = 0;
-        let idleTimeout: ReturnType<typeof setTimeout> | undefined;
-        
-        // 检测用户交互
-        function detectUserInteraction() {
-            if (!userInteractionDetected) {
-                userInteractionDetected = true;
-                // 用户开始交互后，降低加载阈值
-                startSmartLoading();
-            }
-        }
-        
-        // 监听多种用户交互
-        ['scroll', 'mousemove', 'keydown', 'click', 'touchstart'].forEach(event => {
-            window.addEventListener(event, detectUserInteraction, { once: true, passive: true });
-        });
-        
-        // 智能加载逻辑
-        function startSmartLoading() {
-            // 使用 Intersection Observer 监听触发器
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !postsLoaded && !isLoading) {
-                        loadPosts();
-                    }
-                });
-            }, {
-                rootMargin: '200px' // 提前200px开始加载
-            });
-            
-            if (loadTrigger) {
-                observer.observe(loadTrigger);
-            }
-            
-            // 备用滚动检测
-            let ticking = false;
-            function handleScroll() {
-                if (!ticking && !postsLoaded && !isLoading) {
-                    requestAnimationFrame(() => {
-                        const scrollPosition = window.innerHeight + window.scrollY;
-                        const documentHeight = document.documentElement.offsetHeight;
-                        const scrollPercent = (scrollPosition / documentHeight) * 100;
-                        
-                        // 根据滚动速度调整加载阈值
-                        const currentTime = Date.now();
-                        if (scrollStartTime === 0) {
-                            scrollStartTime = currentTime;
-                        }
-                        
-                        const scrollDuration = currentTime - scrollStartTime;
-                        const fastScroll = scrollDuration < 1000; // 快速滚动
-                        const threshold = fastScroll ? 60 : 70; // 动态阈值
-                        
-                        if (scrollPercent >= threshold) {
-                            loadPosts();
-                        }
-                        
-                        ticking = false;
-                    });
+        // 点击按钮加载文章
+        if (loadBtn) {
+            loadBtn.addEventListener('click', function() {
+                if (!postsLoaded && !isLoading) {
+                    loadPosts();
                 }
-                ticking = true;
-            }
-            
-            window.addEventListener('scroll', handleScroll, { passive: true });
+            });
         }
         
         // 加载文章函数
@@ -203,9 +151,13 @@
             
             isLoading = true;
             
-            // 显示加载动画
-            if (loadTrigger) {
-                loadTrigger.style.display = 'flex';
+            // 显示加载状态
+            if (loadBtn) {
+                loadBtn.disabled = true;
+                loadBtn.innerHTML = `
+                    <div class="spinner"></div>
+                    <span>正在加载文章...</span>
+                `;
             }
             
             try {
@@ -224,6 +176,11 @@
                 
                 postsLoaded = true;
                 
+                // 隐藏加载按钮
+                if (loadTrigger) {
+                    loadTrigger.style.display = 'none';
+                }
+                
                 // 预加载图片
                 preloadImages();
             } catch (error) {
@@ -234,11 +191,22 @@
                     postsContainer.style.display = 'block';
                     postsContainer.classList.add('show');
                 }
-            } finally {
-                // 隐藏加载动画
-                if (loadTrigger) {
-                    loadTrigger.style.display = 'none';
+                
+                // 恢复按钮状态
+                if (loadBtn) {
+                    loadBtn.disabled = false;
+                    loadBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        <span>重新加载</span>
+                    `;
                 }
+            } finally {
                 isLoading = false;
             }
         }
@@ -252,76 +220,6 @@
                 }
             });
         }
-        
-        // 空闲时自动加载
-        function scheduleIdleLoading() {
-            if (idleTimeout) {
-                clearTimeout(idleTimeout);
-            }
-            
-            idleTimeout = setTimeout(() => {
-                if (!postsLoaded && userInteractionDetected) {
-                    loadPosts();
-                }
-            }, 3000); // 3秒空闲后加载
-        }
-        
-        // 监听用户空闲状态
-        ['scroll', 'mousemove', 'keydown', 'click'].forEach(event => {
-            window.addEventListener(event, scheduleIdleLoading, { passive: true });
-        });
-        
-        // 页面完全加载后的处理
-        window.addEventListener('load', () => {
-            // 页面完全加载后自动加载文章，不需要等待用户交互
-            setTimeout(() => {
-                if (!postsLoaded) {
-                    loadPosts();
-                }
-            }, 500);
-        });
-
-        // 如果页面已经加载完成，立即执行
-        if (document.readyState === 'complete') {
-            setTimeout(() => {
-                if (!postsLoaded) {
-                    loadPosts();
-                }
-            }, 500);
-        }
-        
-        // 页面可见性变化时的处理
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && userInteractionDetected && !postsLoaded) {
-                // 页面重新可见时延迟加载
-                setTimeout(() => {
-                    if (!postsLoaded) {
-                        loadPosts();
-                    }
-                }, 1000);
-            }
-        });
-        
-        // 网络状态检测
-        if ('connection' in navigator) {
-            const connection = (navigator as any).connection;
-            if (connection && connection.effectiveType === '5g') {
-                // 5G网络下更积极加载
-                setTimeout(() => {
-                    if (!postsLoaded && userInteractionDetected) {
-                        loadPosts();
-                    }
-                }, 1500);
-            }
-        }
-
-        // 备用自动加载：如果3秒后还没有加载，自动触发加载
-        setTimeout(() => {
-            if (!postsLoaded && !isLoading) {
-                console.log('Auto-loading posts after 3 seconds...');
-                loadPosts();
-            }
-        }, 3000);
     });
 </script>
 
@@ -350,23 +248,58 @@
     }
     
     .load-posts-trigger {
-        display: none;
+        display: flex;
         justify-content: center;
         align-items: center;
         margin: 2rem 0;
         padding: 1rem;
-        opacity: 0.8;
     }
     
-    .loading-indicator {
+    .load-posts-btn {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 0.9rem;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, rgba(100, 200, 255, 0.1), rgba(255, 200, 100, 0.1));
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.9);
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
     
-    .spinner {
+    .load-posts-btn:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(255, 200, 100, 0.2));
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .load-posts-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .load-posts-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .load-posts-btn svg {
+        transition: transform 0.3s ease;
+    }
+    
+    .load-posts-btn:hover svg {
+        transform: scale(1.1);
+    }
+    
+    .load-posts-btn .spinner {
         width: 20px;
         height: 20px;
         border: 2px solid rgba(255, 255, 255, 0.3);
@@ -579,13 +512,9 @@
             padding: 0.5rem;
         }
         
-        .loading-indicator {
-            font-size: 0.8rem;
-        }
-        
-        .spinner {
-            width: 16px;
-            height: 16px;
+        .load-posts-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
         }
     }
 
