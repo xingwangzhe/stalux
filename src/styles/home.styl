@@ -1,42 +1,3 @@
-// 此文件只包含全局样式或共享的基础样式
-// 组件特定的样式已迁移到各自的组件中
-
-// 共享的卡片样式属性
-.glass-card {
-  background-color: rgba(0, 0, 0, 0.021);
-  backdrop-filter: blur(25px);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.226);
-  animation: fadeInUp 0.8s ease-in-out forwards;
-  opacity: 0;
-}
-
-// 为不同的卡片设置不同的延迟
-.glass-card:nth-child(1) { animation-delay: 0.1s; }
-.glass-card:nth-child(2) { animation-delay: 0.2s; }
-.glass-card:nth-child(3) { animation-delay: 0.3s; }
-.glass-card:nth-child(4) { animation-delay: 0.4s; }
-.glass-card:nth-child(5) { animation-delay: 0.5s; }
-.glass-card:nth-child(n+6) { animation-delay: 0.6s; }
-
-// 全局动画效果
-@keyframes float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.float-animation {
-  animation: float 6s ease-in-out infinite;
-}
-
 // Home布局样式
 html, body {
   height: 100%;
@@ -78,7 +39,162 @@ html, body {
     padding: 0 10px;
   }
   
-  .HometitleS h1 {
+  .Hometitle h1 {
     font-size: 1.5rem;
+  }
+}
+
+// 下滑指示器样式
+.scroll-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+  animation: fadeInUp 0.8s ease-in-out forwards;
+  animation-delay: 0.8s;
+}
+
+.scroll-progress {
+  position: relative;
+  width: 2px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 1px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.scroll-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(100, 200, 255, 0.8), 
+    rgba(255, 200, 100, 0.8)
+  );
+  animation: progressFlow 2s ease-in-out infinite;
+}
+
+.scroll-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: linear-gradient(to bottom, 
+    rgba(100, 200, 255, 0.9), 
+    rgba(255, 200, 100, 0.9)
+  );
+  border-radius: 1px;
+  box-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+  animation: glowFlow 2s ease-in-out infinite;
+}
+
+.scroll-symbol {
+  color: rgba(255, 255, 255, 0.6);
+  animation: symbolPulse 2s ease-in-out infinite;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-symbol svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.scroll-symbol:hover svg {
+  color: rgba(255, 255, 255, 0.9);
+  transform: scale(1.1);
+}
+
+// 动画定义
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressFlow {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes glowFlow {
+  0% {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+@keyframes symbolPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+// 移动端调整
+@media (max-width: 768px) {
+  .scroll-indicator {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .scroll-progress {
+    height: 30px;
+  }
+  
+  .scroll-symbol svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .scroll-indicator {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .scroll-progress {
+    height: 25px;
+    width: 1.5px;
+  }
+  
+  .scroll-symbol svg {
+    width: 0.9rem;
+    height: 0.9rem;
   }
 }
