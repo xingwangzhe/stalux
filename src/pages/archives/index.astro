@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import { processFrontmatter } from '../../integrations/process-frontmatter';
 import ArchivesLayout from '../../layouts/ArchivesLayout.astro';
-import { config_site } from '../../utils/config-adapter';
+import { config_site } from '../../utils/yaml-config-adapter';
 
 // 获取文章集合
 export const allPosts = await getCollection('posts');

@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { config_site } from '../../utils/config-adapter';
+import { config_site } from '../../utils/yaml-config-adapter';
 import { processFrontmatter } from '../../integrations/process-frontmatter';
 import dayjs from 'dayjs';
 import CategoryDetailLayout from '../../layouts/CategoryDetailLayout.astro';
@@ -148,10 +148,6 @@ const structuredData = {
   url={pageUrl}
   categoryName={categoryPath}
   postCount={sortedPosts.length}
-  noIndex={false}
-  keywords={pageKeywords}
-  structuredData={structuredData}
->
   noIndex={false}
   keywords={pageKeywords}
   structuredData={structuredData}

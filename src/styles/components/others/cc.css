@@ -1,0 +1,73 @@
+.cc-by-nc-sa-box {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    max-width: 80%;
+    margin: 1.5rem auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.cc-by-nc-sa-box .cc-content {
+    position: relative;
+    z-index: 2;
+}
+
+.cc-by-nc-sa-box .cc-title {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.cc-by-nc-sa-box .cc-author,
+.cc-by-nc-sa-box .cc-url,
+.cc-by-nc-sa-box .cc-license {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.cc-by-nc-sa-box a {
+    color: #58a6ff;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease;
+    border-bottom: 1px dashed rgba(88, 166, 255, 0.5);
+    padding-bottom: 1px;
+}
+
+.cc-by-nc-sa-box a:hover {
+    color: #79bcff;
+    border-bottom: 1px solid #79bcff;
+}
+
+.cc-by-nc-sa-box a:active {
+    color: #2188ff;
+}
+
+.cc-by-nc-sa-box .cc-watermark {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    opacity: 0.15;
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+.cc-by-nc-sa-box .cc-watermark .tool-icons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.cc-by-nc-sa-box .cc-watermark .cc-icon {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+}
+
+.cc-by-nc-sa-box .cc-watermark .cc-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}

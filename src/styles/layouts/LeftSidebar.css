@@ -1,0 +1,236 @@
+/* 左侧边栏布局样式 */
+
+.left-sidebar {
+  width: 250px;
+  padding: 1.5rem 0.5rem;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  
+  /* 隐藏滚动条但保留滚动功能 */
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* 为 Webkit 浏览器(Chrome, Safari)隐藏滚动条 */
+.left-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar-section {
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  background-color: rgba(0, 0, 0, 0.1);
+  animation: fade-in-left 0.5s ease forwards;
+}
+
+.sidebar-section h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.recent-posts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-posts li {
+  margin-bottom: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.recent-posts li:last-child {
+  border-bottom: none;
+}
+
+.recent-posts a {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.recent-posts a:hover {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: underline;
+}
+
+@media (max-width: 1200px) {
+  .left-sidebar {
+    width: 230px;
+  }
+  
+  .author-info .author-name {
+    font-size: 1.3rem;
+  }
+  
+  .author-info .author-description {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .left-sidebar {
+    width: 200px;
+    padding: 1rem 0.4rem;
+  }
+  
+  .sidebar-section {
+    padding: 0.8rem;
+  }
+  
+  .avatar-container {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .author-info .author-name {
+    font-size: 1.2rem;
+    margin: 0.5rem 0 0.3rem;
+  }
+  
+  .author-info .author-description {
+    font-size: 0.85rem;
+    margin: 0.3rem 0;
+  }
+}
+
+/* 在页面宽度较小但仍显示左侧边栏时的样式优化 */
+@media (max-width: 900px) {
+  .left-sidebar {
+    width: 180px;
+    padding: 0.8rem 0.3rem;
+  }
+  
+  .sidebar-container {
+    gap: 1rem;
+  }
+  
+  .sidebar-section {
+    padding: 0.7rem;
+  }
+  
+  .avatar-container {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .author-info .author-name {
+    font-size: 1.1rem;
+    margin: 0.4rem 0 0.2rem;
+  }
+  
+  .author-info .author-description {
+    font-size: 0.8rem;
+  }
+  
+  .recent-posts li {
+    margin-bottom: 0.3rem;
+    padding: 0.2rem 0;
+  }
+  
+  .recent-posts a {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .left-sidebar {
+    display: none; /* 在移动设备上隐藏左侧边栏 */
+  }
+}
+
+.avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: transform 0.6s ease;
+}
+
+.avatar-container {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.avatar-container:hover .avatar {
+  transform: rotate(360deg) scale(1.05);
+  box-shadow: 0 0 20px rgba(1, 162, 190, 0.4);
+}
+
+.avatar-container:not(:hover) .avatar {
+  transition: transform 0.8s ease;
+  transform: rotate(0deg);
+}
+
+.author {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.author-info {
+  margin-top: 0.6rem;
+}
+
+.author-info .author-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0.6rem 0 0.4rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.author-info .author-description {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0.4rem 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+@keyframes fade-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fade-in-left {
+  animation: fade-in-left 0.5s ease forwards;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}

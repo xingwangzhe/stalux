@@ -1,0 +1,136 @@
+.card {
+  width: 100%;
+  margin: var(--spacing-lg) auto;
+  max-width: var(--width-lg);
+}
+
+.author {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-xs);
+  text-shadow: var(--text-shadow-large);
+}
+
+.name h2 {
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+.avatar-container {
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  border: 2px solid var(--color-primary-light);
+  box-shadow: var(--shadow-glow);
+  flex-shrink: 0;
+}
+
+.avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slower) var(--ease-out);
+}
+
+.avatar-container:hover .avatar {
+  transform: rotate(360deg) scale(1.05);
+  box-shadow: 0 0 20px var(--color-primary-shadow);
+}
+
+.avatar-container:not(:hover) .avatar {
+  transition: transform var(--duration-slower) var(--ease-out);
+  transform: rotate(0deg);
+}
+
+/* 响应式样式调整 */
+@media (max-width: 1024px) {
+  .card {
+    max-width: var(--width-md);
+  }
+
+  .avatar-container {
+    width: 90px;
+    height: 90px;
+  }
+  
+  .name {
+    font-size: var(--font-size-lg);
+  }
+}
+
+@media (max-width: 900px) {
+  .card {
+    max-width: var(--width-sm);
+  }
+  
+  .avatar-container {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    margin: var(--spacing-lg) auto;
+    max-width: var(--width-xs);
+  }
+  
+  .author {
+    justify-content: center;
+  }
+  
+  .name {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* 确保在小屏幕上也能显示 */
+@media (max-width: 480px) {
+  .card {
+    max-width: 100%;
+    margin: var(--spacing-sm) auto;
+  }
+  
+  .author {
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .avatar-container {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .name {
+    font-size: var(--font-size-md);
+  }
+}
+
+/* 处理超窄屏幕，确保内容能完全展示 */
+@media (max-width: 360px) {
+  .author {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .author-info {
+    align-items: center;
+    text-align: center;
+  }
+}

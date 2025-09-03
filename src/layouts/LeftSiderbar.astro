@@ -1,5 +1,5 @@
 ---
-import { config_site } from "../utils/config-adapter";
+import { config_site } from "../utils/yaml-config-adapter";
 import avatar from '../images/avatar.webp';
 import SocialLinks from "../components/others/SocialLinks.astro";
 import RandomPosts from "../components/others/RandomPosts.astro";
@@ -15,7 +15,7 @@ const {
   avatarHeight = 100, 
   author = config_site.author
 } = Astro.props;
-import '../styles/layouts/LeftSidebar.styl';
+import '../styles/layouts/LeftSidebar.css';
 ---
 
 <sidebar class="left-sidebar">
@@ -57,7 +57,7 @@ import '../styles/layouts/LeftSidebar.styl';
         </div>
     </div>
         <div class="sidebar-section fade-in-left delay-200">
-            <SocialLinks mediaLinks={config_site.medialinks?.slice(0, 4) || []} /> <!-- 限制显示数量 -->
+            <SocialLinks mediaLinks={config_site.medialinks || []} /> <!-- 限制显示数量 -->
         </div>
         
         <!-- 使用解耦的随机文章组件 -->

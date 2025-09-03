@@ -1,9 +1,9 @@
 ---
 import Head from "../components/Head.astro";
 import {site} from "../consts";
-import {config_site} from "../utils/config-adapter";
+import {config_site} from "../utils/yaml-config-adapter";
 import Footer from "../components/Footer.astro";
-import '../styles/global.styl';
+import '../styles/global.css';
 import Header from "../components/Header.astro";
 import type { FriendLink } from "../types";
 
@@ -11,7 +11,7 @@ type Props = {
     links: FriendLink[]
 }
 const { links } = Astro.props;
-import '../styles/layouts/Links.styl';
+import '../styles/layouts/Links.css';
 ---
 <!DOCTYPE html>
 <html lang={config_site.lang}>    <Head

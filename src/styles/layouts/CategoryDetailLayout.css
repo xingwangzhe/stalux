@@ -1,0 +1,85 @@
+/* CategoryDetailLayout.css - 分类详情页布局的样式 */
+
+/* 容器样式 */
+.category-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+/* 页面标题部分 */
+.page-header {
+  margin-bottom: 2.5rem;
+  position: relative;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page-header .page-title {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+}
+
+.page-header .page-title .category-icon {
+  margin-right: 0.8rem;
+  color: rgba(1, 162, 190, 0.8);
+}
+
+.page-header .page-title .category-name {
+  color: rgba(1, 162, 190, 0.9);
+  font-weight: 500;
+}
+
+.page-header .page-description {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.page-header .back-link {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.page-header .back-link:hover {
+  color: rgba(1, 162, 190, 0.9);
+  text-decoration: underline;
+}
+
+/* 文章列表容器 */
+.post-list-container {
+  position: relative;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .category-detail-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .page-header {
+    margin-bottom: 2rem;
+  }
+  
+  .page-header .page-title {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-detail-container {
+    padding: 1.2rem 0.8rem;
+  }
+  
+  .page-header .page-title {
+    font-size: 1.4rem;
+    flex-wrap: wrap;
+  }
+}

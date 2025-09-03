@@ -1,0 +1,295 @@
+/* About 页面样式 */
+.about-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.about-header .about-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about-header .about-description {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 700px;
+  margin: 0 auto 1rem;
+  line-height: 1.6;
+}
+
+.about-header .about-date {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.about-hero-image {
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.about-hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-content {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+}
+
+/* 内容排版增强 */
+.about-content p {
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.about-content h2,
+.about-content h3,
+.about-content h4 {
+  margin-top: 2rem;
+  margin-bottom: 1.2rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.about-content h2 {
+  font-size: 1.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.about-content h3 {
+  font-size: 1.5rem;
+}
+
+.about-content h4 {
+  font-size: 1.3rem;
+}
+
+.about-content ul,
+.about-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.about-content li {
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.about-content blockquote {
+  border-left: 4px solid rgba(1, 162, 190, 0.8);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin: 1.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+  background: rgba(1, 162, 190, 0.1);
+  border-radius: 0 4px 4px 0;
+}
+
+.about-content a {
+  color: rgba(1, 162, 190, 1);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-bottom: 1px dashed rgba(1, 162, 190, 0.5);
+}
+
+.about-content a:hover {
+  border-bottom-style: solid;
+  color: rgba(1, 162, 190, 0.8);
+}
+
+.about-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 1.5rem auto;
+}
+
+.about-content code {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Ubuntu Mono Nerd Font', Consolas, Monaco, 'Andale Mono', monospace;
+  font-size: 0.9em;
+}
+
+.about-content pre {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-family: 'Ubuntu Mono Nerd Font', Consolas, Monaco, 'Andale Mono', monospace;
+  font-size: 16px; /* 增加代码块字体大小 */
+  line-height: 1.5; /* 提高可读性 */
+}
+
+.about-content pre code {
+  background: none;
+  padding: 0;
+  font-family: 'Ubuntu Mono Nerd Font', Consolas, Monaco, 'Andale Mono', monospace;
+  font-size: 16px;
+}
+
+.about-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  overflow-x: auto;
+  display: block;
+}
+
+.about-content table th,
+.about-content table td {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.about-content table th {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.about-content table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 特殊样式类 */
+.about-content .highlight {
+  background: linear-gradient(90deg, rgba(1, 162, 190, 0.2), rgba(1, 162, 190, 0.1));
+  padding: 1rem;
+  border-radius: 5px;
+  margin: 1.5rem 0;
+  border-left: 3px solid rgba(1, 162, 190, 0.8);
+}
+
+.about-content .card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.about-content .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.about-content .timeline {
+  position: relative;
+  padding-left: 2rem;
+  margin: 2rem 0;
+}
+
+.about-content .timeline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(255, 255, 255, 0.2), 
+    rgba(1, 162, 190, 0.4), 
+    rgba(255, 255, 255, 0.2));
+  border-radius: 2px;
+}
+
+.about-content .timeline .timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.about-content .timeline .timeline-item::before {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(1, 162, 190, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  left: -2.3rem;
+  top: 0.3rem;
+}
+
+/* 响应式样式调整 */
+@media (max-width: 768px) {
+  .about-header .about-title {
+    font-size: 2rem;
+  }
+  
+  .about-header .about-description {
+    font-size: 1.1rem;
+  }
+  
+  .about-content {
+    padding: 1.5rem;
+  }
+  
+  .about-content h2 {
+    font-size: 1.6rem;
+  }
+  
+  .about-content h3 {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-container {
+    padding: 1.5rem 0.8rem;
+  }
+  
+  .about-header {
+    margin-bottom: 2rem;
+  }
+  
+  .about-header .about-title {
+    font-size: 1.8rem;
+  }
+  
+  .about-header .about-description {
+    font-size: 1rem;
+  }
+  
+  .about-content {
+    padding: 1.2rem;
+  }
+  
+  .about-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .about-content h3 {
+    font-size: 1.3rem;
+  }
+  
+  .about-content p {
+    font-size: 0.95rem;
+  }
+}

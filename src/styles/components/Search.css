@@ -1,0 +1,235 @@
+/* 自定义Pagefind UI样式 */
+.pagefind-ui {
+  width: 100%;
+  max-width: 100%;
+  font-family: inherit;
+  color: var(--color-text-primary) !important;
+}
+
+/* 搜索输入框 */
+.pagefind-ui .pagefind-ui__search-input {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-md);
+  font-size: var(--font-size-base);
+  width: 100%;
+  background-color: var(--color-bg-card);
+  color: var(--color-text-primary);
+  transition: all var(--transition-normal);
+}
+
+.pagefind-ui .pagefind-ui__search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 5px var(--color-primary-shadow);
+}
+
+.pagefind-ui .pagefind-ui__search-input::placeholder {
+  color: var(--color-text-light);
+}
+
+/* 结果容器 */
+.pagefind-ui .pagefind-ui__results {
+  margin-top: var(--spacing-md);
+}
+
+/* 结果项 */
+.pagefind-ui .pagefind-ui__result {
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-md);
+  background-color: var(--color-bg-card);
+  transition: transform var(--transition-fast);
+  border: 2px solid var(--color-border) !important;
+}
+
+.pagefind-ui .pagefind-ui__result:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+/* 结果标题 */
+.pagefind-ui .pagefind-ui__result-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-heading);
+  text-decoration: none;
+}
+
+.pagefind-ui .pagefind-ui__result-title:hover {
+  color: var(--color-primary);
+}
+
+/* 结果摘要 */
+.pagefind-ui .pagefind-ui__result-excerpt {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* 高亮文本 */
+mark {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--radius-xs);
+}
+
+/* 消息提示 */
+.pagefind-ui .pagefind-ui__message {
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  color: var(--color-text-light);
+}
+
+/* 加载指示器 */
+.pagefind-ui .pagefind-ui__button {
+  background-color: var(--color-primary);
+  color: var(--color-text-muted);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.pagefind-ui .pagefind-ui__button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* 修改搜索悬浮框样式 */
+.search-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  opacity: var(--opacity-0);
+  transition: visibility 0s linear var(--duration-normal), opacity var(--transition-normal);
+}
+
+.search-container.active {
+  visibility: visible;
+  opacity: var(--opacity-100);
+  transition-delay: 0s;
+}
+
+.search-container .search-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg-overlay);
+  backdrop-filter: blur(var(--blur-sm));
+}
+
+.search-container .search-box {
+  position: relative;
+  width: 90%;
+  max-width: var(--width-3xl);
+  max-height: 80vh;
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  z-index: var(--z-modal);
+  animation: search-appear var(--transition-normal) var(--ease-out);
+  display: flex;
+  flex-direction: column;
+}
+
+.search-container .search-box .search-header {
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-container .search-box .search-header h2 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-heading);
+}
+
+.search-container .search-box .search-header .search-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-light);
+  transition: color var(--transition-fast);
+  padding: var(--spacing-sm);
+  margin: calc(var(--spacing-sm) * -1);
+  line-height: 0;
+}
+
+.search-container .search-box .search-header .search-close:hover {
+  color: var(--color-primary);
+}
+
+.search-container .search-box .search-content {
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+  flex: 1;
+}
+
+@keyframes search-appear {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .search-container .search-box {
+    width: 95%;
+    max-width: 95%;
+    max-height: 90vh;
+  }
+}
+
+.pagefind-ui__search-clear {
+  background-color: rgba(255, 255, 255, 0) !important;
+  color: var(--color-text-light) !important;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagefind-ui__search-clear:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.pagefind-ui__result-link {
+  background-image: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+mark {
+  background-color: rgba(42, 246, 253, 0.5) !important;
+}
+
+.pagefind-ui__result-inner {
+  margin-left: 2rem;
+}

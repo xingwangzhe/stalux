@@ -1,4 +1,4 @@
-import { config_site } from "../utils/config-adapter";
+import { config_site } from "../utils/yaml-config-adapter";
 
 document.addEventListener("DOMContentLoaded", () => {
     const textTypingElement = document.getElementById("textyping");

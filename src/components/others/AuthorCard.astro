@@ -1,5 +1,5 @@
 ---
-import { config_site } from '../../utils/config-adapter';
+import { config_site } from '../../utils/yaml-config-adapter';
 import { Image }  from 'astro:assets';
 import  avatar from '../../images/avatar.webp' 
 interface Props {
@@ -20,7 +20,7 @@ const {
 const mobileSizes = 70; // 移动设备图片尺寸
 const tabletSizes = 80; // 平板设备图片尺寸
 const desktopSizes = 100; // 桌面设备图片尺寸
-import '../../styles/components/others/AuthorCard.styl';
+import '../../styles/components/others/AuthorCard.css';
 ---
 
 <div class="card">
@@ -44,7 +44,7 @@ import '../../styles/components/others/AuthorCard.styl';
         />
       ) : (
         <Image 
-          src={avatar} 
+          src={avatarPath} 
           alt={`${author} avatar`} 
           class="avatar"
           width={avatarWidth}

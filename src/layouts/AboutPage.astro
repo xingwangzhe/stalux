@@ -4,10 +4,10 @@ import Head from '../components/Head.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WalineComment from '../components/comments/WalineComment.vue';
-import { config_site } from '../utils/config-adapter';
-import '../styles/global.styl';
-import '../styles/blog.styl';
-import '../styles/layouts/AboutPage.styl';
+import { config_site } from '../utils/yaml-config-adapter';
+import '../styles/global.css';
+import '../styles/blog.css';
+import '../styles/layouts/AboutPage.css';
 
 interface Props {
     title?: string;
@@ -61,9 +61,8 @@ const pageTitle = `${title} | ${config_site.title}`;
         title={title}
         lang={config_site.comment?.waline?.lang || 'zh-CN'}
         emoji={config_site.comment?.waline?.emoji}
-        requiredFields={config_site.comment?.waline?.requiredFields}
         reaction={config_site.comment?.waline?.reaction}
-        meta={config_site.comment?.waline?.meta}
+				meta={config_site.comment?.waline?.meta as import('@waline/client').WalineMeta[] | undefined}
         wordLimit={config_site.comment?.waline?.wordLimit}
         pageSize={config_site.comment?.waline?.pageSize}
         client:idle

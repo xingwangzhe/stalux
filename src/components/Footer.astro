@@ -1,7 +1,7 @@
 ---
 import type { BadgeOptions } from '../types';
 import { generateBadge, svgToDataUrl } from '../utils/badge-generator';
-import { config_site } from '../utils/config-adapter'
+import { config_site } from '../utils/yaml-config-adapter'
 // --- 配置读取 ---
 // 获取页脚配置，优先使用footer对象中的配置，兼容旧版配置
 const footerConfig = config_site.footer || {};
@@ -142,6 +142,10 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
       <span id="vercount_container_site_pv">
         本站总访问量：<span id="vercount_value_site_pv">Loading...</span> 次
       </span>
+      <span class="stats-separator">|</span>
+      <span id="word-count-container">
+        本站总字数：<span id="word-count-value">Loading...</span> 字
+      </span>
     </div>
 
     <!-- 站点运行时间 -->
@@ -272,6 +276,41 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
     }
   }
 </script>
+
+<script>
+  // 字数统计功能
+  async function loadWordCount() {
+    try {
+      const response = await fetch('/api/word-count.json');
+      const data = await response.json();
+
+      if (data.success) {
+        const wordCountElement = document.getElementById('word-count-value');
+        if (wordCountElement) {
+          wordCountElement.textContent = data.formattedCount;
+        }
+      } else {
+        console.warn('获取字数统计失败:', data.error);
+        const wordCountElement = document.getElementById('word-count-value');
+        if (wordCountElement) {
+          wordCountElement.textContent = '统计中...';
+        }
+      }
+    } catch (error) {
+      console.error('加载字数统计时出错:', error);
+      const wordCountElement = document.getElementById('word-count-value');
+      if (wordCountElement) {
+        wordCountElement.textContent = '统计中...';
+      }
+    }
+  }
+
+  // 页面加载完成后获取字数统计
+  document.addEventListener('DOMContentLoaded', () => {
+    loadWordCount();
+  });
+</script>
+
 <!-- Vercount统计脚本 -->
 <script defer src="https://events.vercount.one/js"></script>
 <style>
@@ -389,12 +428,14 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
 }
 
 #vercount_container_site_uv,
-#vercount_container_site_pv {
+#vercount_container_site_pv,
+#word-count-container {
   display: inline-block;
 }
 
 #vercount_value_site_uv,
-#vercount_value_site_pv {
+#vercount_value_site_pv,
+#word-count-value {
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
 }

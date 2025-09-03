@@ -1,0 +1,14 @@
+/* 博客文章布局样式 */
+
+/* 响应式视口设置 */
+@media (max-width: 768px) {
+  html {
+    font-size: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 90%;
+  }
+}

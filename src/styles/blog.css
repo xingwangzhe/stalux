@@ -1,0 +1,413 @@
+/* 博客页面样式 */
+
+/* CSS 自定义属性 */
+:root {
+  --content-max-width: 100%;
+  --content-padding: 1rem;
+  --main-gap: 5rem;
+  --border-radius: 12px;
+  --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.753);
+  --bg-overlay: rgba(0, 0, 0, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.8);
+  --accent-blue: rgba(41, 182, 246, 1);
+  --accent-cyan: rgba(3, 218, 198, 1);
+  --accent-cyan-alt: rgba(0, 229, 255, 1);
+  --accent-pink: rgba(255, 121, 198, 0.95);
+  --accent-yellow: rgba(255, 217, 102, 0.95);
+  --accent-red: rgba(255, 99, 132, 0.85);
+  --accent-light-blue: rgba(102, 217, 255, 0.95);
+  --accent-light-cyan: rgba(142, 220, 230, 0.95);
+  --border-color: rgba(255, 255, 255, 0.2);
+  --animation-duration: 0.8s;
+  --animation-easing: ease-in-out;
+}
+
+/* 动画关键帧定义 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 主内容区样式 */
+main {
+  width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--content-padding);
+}
+
+/* 三栏布局 */
+.main-content {
+  display: flex;
+  min-height: 100vh;
+  gap: var(--main-gap);
+  position: relative;
+  margin: 1rem auto;
+}
+
+/* 文章内容区 */
+.article-content {
+  flex: 1;
+  min-width: 0; /* 解决Flexbox内容溢出问题 */
+  box-shadow: var(--shadow-medium);
+  background-color: var(--bg-overlay);
+  border-radius: var(--border-radius);
+  animation: fadeInUp var(--animation-duration) var(--animation-easing) forwards;
+  opacity: 0;
+}
+
+/* 侧边栏共同样式 */
+.left-sidebar,
+.right-sidebar {
+  flex: 0.3;
+  min-width: 0; /* 防止溢出 */
+}
+
+/* 左侧边栏特定动画 */
+.left-sidebar {
+  animation: fadeInLeft var(--animation-duration) var(--animation-easing) forwards;
+  opacity: 0;
+  animation-delay: 0.2s;
+}
+
+/* 右侧边栏特定动画 */
+.right-sidebar {
+  animation: fadeInRight var(--animation-duration) var(--animation-easing) forwards;
+  opacity: 0;
+  animation-delay: 0.2s;
+}
+
+/* 头图样式 */
+.hero-image {
+  width: 100%;
+  margin-bottom: 1rem;
+  animation: fadeIn 1s var(--animation-easing) forwards;
+  opacity: 0;
+}
+
+.hero-image img {
+  display: block;
+  margin: 0 auto;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  max-height: 400px;
+  object-fit: cover;
+}
+
+/* 文章内容区 */
+.prose {
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+}
+
+/* 文章排版增强 */
+.prose p {
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: 2.5rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.prose h2 {
+  font-size: 1.8rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.prose h3 {
+  font-size: 1.5rem;
+}
+
+.prose h4 {
+  font-size: 1.3rem;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+}
+
+.prose blockquote {
+  border-left: 4px solid rgba(1, 162, 190, 0.8);
+  padding-left: 1rem;
+  margin-left: 0;
+  color: var(--text-tertiary);
+  font-style: italic;
+  margin-bottom: 1.5rem;
+}
+
+.prose a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.prose a:not(:has(img))::after {
+  content: " 🔗";
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.prose a:hover {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 8px rgba(3, 218, 198, 0.4);
+}
+
+.prose a:active {
+  color: var(--accent-cyan-alt);
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 2rem auto;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  overflow-x: auto;
+  display: block;
+}
+
+.prose table th,
+.prose table td {
+  border: 1px solid var(--border-color);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.prose table th {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.prose table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.prose code {
+  color: var(--accent-pink);
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-size: 16px; /* 增加代码字体大小以提高清晰度 */
+}
+
+.prose strong {
+  color: var(--accent-yellow);
+}
+
+.prose del {
+  text-decoration: line-through;
+  color: var(--accent-red);
+  background-color: rgba(255, 99, 132, 0.1);
+  padding: 0 4px;
+  border-radius: 3px;
+  position: relative;
+}
+
+.prose u {
+  text-decoration: none;
+  position: relative;
+  color: var(--accent-light-blue);
+}
+
+.prose u::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(102, 217, 255, 0.7), rgba(3, 218, 198, 0.7));
+  border-radius: 1px;
+  box-shadow: 0 0 4px rgba(3, 218, 198, 0.4);
+}
+
+.prose em {
+  font-style: italic;
+  color: var(--accent-light-cyan);
+  position: relative;
+  padding: 0 2px;
+}
+
+/* 标题样式 */
+.title {
+  margin-bottom: 2rem;
+  text-align: center;
+  line-height: 1.3;
+  animation: fadeInUp var(--animation-duration) var(--animation-easing) forwards;
+  opacity: 0;
+  animation-delay: 0.1s;
+}
+
+.title h1 {
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+  background: linear-gradient(90deg, var(--text-primary), rgba(1, 162, 190, 0.9));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 日期样式 */
+.date {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  animation: fadeInUp var(--animation-duration) var(--animation-easing) forwards;
+  opacity: 0;
+  animation-delay: 0.2s;
+}
+
+/* 更新日期样式 */
+.last-updated-on {
+  font-style: italic;
+}
+
+/* 代码块样式增强 */
+.expressive-code {
+  margin: 2rem 0;
+}
+
+.expressive-code .frame {
+  border-radius: 8px;
+}
+
+.expressive-code pre,
+.expressive-code code {
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-size: 16px; /* 确保代码块字体清晰 */
+  line-height: 1.5; /* 增加行高以提高可读性 */
+}
+
+/* 确保所有代码相关元素都使用正确的字体 */
+.expressive-code .ec-line,
+.expressive-code .gutter,
+.expressive-code .code,
+.expressive-code .ln {
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-size: 16px;
+}
+
+/* 代码块标题 */
+.expressive-code figcaption.header {
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-size: 14px;
+}
+
+/* 行号 */
+.expressive-code .gutter .ln {
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-size: 16px;
+}
+
+/* 代码内容 */
+.expressive-code .code {
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .prose {
+    padding: 1.5rem;
+  }
+  
+  .title h1 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .prose {
+    padding: 1.2rem;
+  }
+  
+  .title h1 {
+    font-size: 2rem;
+  }
+  
+  .date {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 0 0.5rem;
+  }
+  
+  .prose {
+    padding: 1rem;
+  }
+  
+  .title h1 {
+    font-size: 1.8rem;
+  }
+}

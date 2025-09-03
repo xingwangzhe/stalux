@@ -1,0 +1,252 @@
+/* AboutPage.css - 关于页面样式 */
+/* 参考了博客文章和友链页面的样式，保持整体风格一致性 */
+
+/* 主要容器样式 */
+.about-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* 页面标题区域 */
+.about-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.about-header .about-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInDown 0.8s ease-out forwards;
+}
+
+/* 内容区域 */
+.about-content {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+/* 内容排版样式 */
+.about-content p {
+  margin-bottom: 1.2rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.05rem;
+}
+
+.about-content h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.7rem;
+  color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 0.5rem;
+}
+
+.about-content h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.about-content ul,
+.about-content ol {
+  margin-bottom: 1.2rem;
+  padding-left: 1.5rem;
+}
+
+.about-content ul li,
+.about-content ol li {
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.about-content a {
+  color: rgba(45, 165, 206, 0.9);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.about-content a:hover {
+  color: rgba(45, 165, 206, 1);
+  text-decoration: underline;
+}
+
+.about-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 1.5rem 0;
+  display: block;
+}
+
+.about-content blockquote {
+  border-left: 4px solid rgba(45, 165, 206, 0.7);
+  padding: 0.8rem 1.2rem;
+  margin: 1.5rem 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0 8px 8px 0;
+}
+
+.about-content blockquote p {
+  margin-bottom: 0.5rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.about-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.about-content pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-size: 16px; /* 增加代码块字体大小 */
+  line-height: 1.5; /* 提高可读性 */
+}
+
+.about-content pre code {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-size: 16px;
+}
+
+.about-content code {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+}
+
+.about-content hr {
+  border: none;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 2rem 0;
+}
+
+/* 表格样式 */
+.about-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.about-content table th,
+.about-content table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+}
+
+.about-content table th {
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.about-content table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Waline评论区样式调整 */
+.waline-comment-container {
+  margin-top: 3rem;
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+
+/* 动画定义 */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .about-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .about-header .about-title {
+    font-size: 2rem;
+  }
+  
+  .about-content {
+    padding: 1.5rem;
+  }
+  
+  .about-content p {
+    font-size: 1rem;
+  }
+  
+  .about-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .about-content h3 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-container {
+    padding: 1rem 0.8rem;
+  }
+  
+  .about-header .about-title {
+    font-size: 1.8rem;
+  }
+  
+  .about-content {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .about-content p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  
+  .about-content h2 {
+    font-size: 1.4rem;
+    margin-top: 1.8rem;
+  }
+  
+  .about-content h3 {
+    font-size: 1.2rem;
+    margin-top: 1.3rem;
+  }
+}

@@ -1,5 +1,5 @@
 ---
-import '../../styles/components/RandomPosts.styl';
+import '../../styles/components/RandomPosts.css';
 
 // 组件参数定义
 interface Props {
@@ -41,7 +41,7 @@ const {
 // 从 JSON API 获取文章数据
 async function fetchAllPosts() {
   try {
-    const response = await fetch('/allpost.json');
+    const response = await fetch('/api/posts.json');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

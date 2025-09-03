@@ -1,0 +1,200 @@
+/* 右侧边栏布局样式 */
+
+.right-sidebar {
+  width: 250px;
+  padding: 1.5rem 0.5rem;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  
+  /* 隐藏滚动条但保留滚动功能 */
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* 为 Webkit 浏览器(Chrome, Safari)隐藏滚动条 */
+.right-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 时钟部分样式 */
+.clock-section {
+  background-color: rgba(0, 0, 0, 0.192);
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  background-color: rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* 侧边栏通用部分样式 - 与Categories.astro组件保持一致 */
+.sidebar-section {
+  background-color: rgba(0, 0, 0, 0.192);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  background-color: rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+/* 标题和折叠按钮样式 - 与Categories.astro组件保持一致 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.section-header .section-title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.section-toggle {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.section-toggle:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.section-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
+/* 可折叠内容的通用样式 - 与Categories.astro组件保持一致 */
+.section-content {
+  max-height: 500px;
+  overflow-y: auto;
+  opacity: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.section-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.section-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.section-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.section-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* 无内容时的提示样式 */
+.no-content-message {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+/* 目录列表样式 */
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-item {
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.toc-item:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.toc-item a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0.2rem 0.4rem;
+}
+
+.toc-item a:hover {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: none;
+}
+
+/* 不同级别标题的缩进 */
+.toc-item-h1 { margin-left: 0; }
+.toc-item-h2 { margin-left: 0.75rem; }
+.toc-item-h3 { margin-left: 1.5rem; }
+.toc-item-h4 { margin-left: 2.25rem; font-size: 0.9em; }
+.toc-item-h5 { margin-left: 3rem; font-size: 0.85em; }
+.toc-item-h6 { margin-left: 3.75rem; font-size: 0.8em; }
+
+@keyframes fade-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fade-in-right {
+  animation: fade-in-right 0.8s ease forwards;
+  opacity: 0;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+@media (max-width: 1024px) {
+  .right-sidebar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .right-sidebar {
+    display: none; /* 在移动设备上隐藏右侧边栏 */
+  }
+}

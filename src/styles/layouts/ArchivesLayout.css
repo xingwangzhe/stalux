@@ -1,0 +1,351 @@
+.archives-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header .page-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-header .page-description {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.timeline-container {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline-container::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(1, 162, 190, 0.4), rgba(255, 255, 255, 0.2));
+  border-radius: 2px;
+}
+
+.year-section {
+  margin-bottom: 3rem;
+  position: relative;
+  animation: fadeIn 0.6s ease forwards;
+  opacity: 0;
+}
+
+.year-section::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: rgba(1, 162, 190, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  left: -2.5rem;
+  top: 0.5rem;
+  z-index: 2;
+}
+
+.year-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.year-title {
+  font-size: 1.8rem;
+  margin: 0;
+  color: rgba(1, 162, 190, 0.9);
+}
+
+.year-count {
+  margin-left: 1rem;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  background-color: rgba(1, 162, 190, 0.2);
+  border-radius: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.month-section {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.month-section::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  left: -2.25rem;
+  top: 0.5rem;
+  z-index: 1;
+}
+
+.month-title {
+  font-size: 1.4rem;
+  margin: 0 0 1rem 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.post-item {
+  margin-bottom: 1rem;
+  position: relative;
+  display: flex;
+  align-items: baseline;
+}
+
+.post-item::before {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(1, 162, 190, 0.6);
+  left: -2rem;
+  top: 0.6rem;
+  z-index: 1;
+}
+
+.post-date {
+  min-width: 100px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-right: 1rem;
+}
+
+.post-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.post-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: rgba(1, 162, 190, 0.5);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.post-link:hover {
+  color: rgba(1, 162, 190, 0.9);
+}
+
+.post-link:hover::after {
+  transform: translateX(0);
+}
+
+.no-posts {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+/* 懒加载指示器样式 */
+.lazyload-observer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.lazyload-observer:hover {
+  opacity: 1;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.loading-spinner .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 3px;
+  border-radius: 50%;
+  background-color: rgba(1, 162, 190, 0.8);
+  animation: dotPulse 1.4s infinite ease-in-out both;
+}
+
+.loading-spinner .dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-spinner .dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-spinner .dot:nth-child(3) {
+  animation-delay: 0s;
+}
+
+.loading-text {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% { 
+    transform: scale(0.3);
+  }
+  40% { 
+    transform: scale(1.0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .archives-container {
+    padding: 1.5rem 0.5rem 2rem 1.5rem;
+  }
+  
+  .page-header {
+    margin-bottom: 2rem;
+  }
+  
+  .page-header .page-title {
+    font-size: 2rem;
+  }
+  
+  .page-header .page-description {
+    font-size: 1rem;
+  }
+  
+  .timeline-container {
+    padding-left: 1.5rem;
+  }
+  
+  .year-section {
+    margin-bottom: 2rem;
+  }
+  
+  .year-section::before {
+    left: -2rem;
+    width: 14px;
+    height: 14px;
+  }
+  
+  .year-title {
+    font-size: 1.6rem;
+  }
+  
+  .month-section::before {
+    left: -1.75rem;
+    width: 8px;
+    height: 8px;
+  }
+  
+  .month-title {
+    font-size: 1.2rem;
+  }
+  
+  .post-item {
+    flex-direction: column;
+  }
+  
+  .post-item::before {
+    left: -1.6rem;
+    width: 5px;
+    height: 5px;
+  }
+  
+  .post-date {
+    min-width: auto;
+    margin-bottom: 0.2rem;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .archives-container {
+    padding: 1.5rem 0.5rem 2rem 1.2rem;
+  }
+  
+  .page-header .page-title {
+    font-size: 1.8rem;
+  }
+  
+  .timeline-container {
+    padding-left: 1.2rem;
+  }
+  
+  .timeline-container::before {
+    width: 3px;
+  }
+  
+  .year-section::before {
+    left: -1.6rem;
+    width: 12px;
+    height: 12px;
+  }
+  
+  .year-title {
+    font-size: 1.4rem;
+  }
+  
+  .month-title {
+    font-size: 1.1rem;
+  }
+  
+  .post-item {
+    margin-bottom: 0.8rem;
+  }
+  
+  .post-item::before {
+    left: -1.35rem;
+    width: 4px;
+    height: 4px;
+  }
+}

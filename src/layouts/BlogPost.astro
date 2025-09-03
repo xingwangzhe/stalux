@@ -5,10 +5,11 @@ import Head from "../components/Head.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import WalineComment from "../components/comments/WalineComment.vue";
-import "../styles/layouts/BlogPost.styl";
-import "../styles/components/PostNavigation.styl";
-import { config_site } from "../utils/config-adapter";
+import "../styles/layouts/BlogPost.css";
+import "../styles/components/PostNavigation.css";
+import { config_site } from "../utils/yaml-config-adapter";
 import removeMd from "remove-markdown";
+import { formatDate } from "../integrations/process-frontmatter.ts";
 
 // 正确定义Props类型
 interface Props {
@@ -23,6 +24,9 @@ interface Props {
 	abbrlink?: string;
 	prev?: { title: string; url: string } | null;
 	next?: { title: string; url: string } | null;
+	minutesRead?: string;
+	cover?: string;
+	noindex?: boolean;
 }
 
 const {
@@ -37,9 +41,10 @@ const {
 	abbrlink,
 	prev,
 	next,
+	minutesRead,
 } = Astro.props;
-import "../styles/blog.styl";
-import "../styles/global.styl";
+import "../styles/blog.css";
+import "../styles/global.css";
 import LeftSiderbar from "./LeftSiderbar.astro";
 import RightSiderbar from "./RightSiderbar.astro";
 import CC from "../components/others/CC.astro";
@@ -140,9 +145,7 @@ import "katex/dist/katex.min.css";
 										<div class="published-on">
 											发布时间：
 											<time>
-												{date instanceof Date
-													? date.toLocaleDateString()
-													: date}
+												{formatDate(date)}
 											</time>
 										</div>
 									)
@@ -152,9 +155,7 @@ import "katex/dist/katex.min.css";
 										<div class="last-updated-on">
 											更新时间：
 											<time>
-												{updated instanceof Date
-													? updated.toLocaleDateString()
-													: updated}
+												{formatDate(updated)}
 											</time>
 										</div>
 									)
@@ -162,6 +163,11 @@ import "katex/dist/katex.min.css";
 							</div>
 							<!-- 文章阅读量统计 -->
 							<div class="page-stats">
+								{minutesRead && (
+									<span class="reading-time">
+										🕒 阅读时间：{minutesRead}
+									</span>
+								)}
 								<span id="vercount_container_page_pv">
 									👀 阅读量：<span id="vercount_value_page_pv">Loading...</span>
 								</span>
@@ -303,10 +309,8 @@ import "katex/dist/katex.min.css";
 						title={title}
 						lang={config_site.comment?.waline?.lang || "zh-CN"}
 						emoji={config_site.comment?.waline?.emoji}
-						requiredFields={config_site.comment?.waline
-							?.requiredFields}
 						reaction={config_site.comment?.waline?.reaction}
-						meta={config_site.comment?.waline?.meta}
+						meta={config_site.comment?.waline?.meta as import('@waline/client').WalineMeta[] | undefined}
 						wordLimit={config_site.comment?.waline?.wordLimit}
 						pageSize={config_site.comment?.waline?.pageSize}
 						client:idle

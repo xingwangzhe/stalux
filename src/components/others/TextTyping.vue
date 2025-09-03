@@ -4,7 +4,7 @@
 
 <script setup vapor>
 import { onMounted, ref, computed } from 'vue';
-import { config_site } from "../../utils/config-adapter";
+import { config_site } from "../../utils/yaml-config-adapter";
 
 // 获取配置的文字
 const texts = computed(() => config_site.textyping);

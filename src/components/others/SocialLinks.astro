@@ -33,7 +33,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
   const iconKey = `si${normalizedName.charAt(0).toUpperCase() + normalizedName.slice(1)}`;
   return (simpleIcons as any)[iconKey];
 }
-import '../../styles/components/others/SocialLinks.styl';
+import '../../styles/components/others/SocialLinks.css';
 ---
 
 <div class="social-links" aria-label={ariaLabel}>

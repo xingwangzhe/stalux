@@ -1,5 +1,5 @@
 ---
-import { config_site } from '../utils/config-adapter';
+import { config_site } from '../utils/yaml-config-adapter';
 // @ts-ignore
 import * as feather from 'feather-icons';
 import Search from './Search.astro';
@@ -30,7 +30,7 @@ function getIconSvg(iconName: string): string {
     return '';
   }
 }
-import '../styles/components/Header.styl';
+import '../styles/components/Header.css';
 ---
 
 <nav class="nav">  <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="导航菜单" aria-expanded="false">

@@ -1,0 +1,131 @@
+/* path-content.css - 分类详情页面的特定样式 */
+
+/* 文章列表样式 - 网格布局 */
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.post-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0.5rem;
+  padding: 1.2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  border-left: 2px solid rgba(1, 162, 190, 0.4);
+  height: fit-content;
+}
+
+.post-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+  border-left-color: rgba(1, 162, 190, 0.8);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.post-link {
+  text-decoration: none;
+  color: #ffffff;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.post-date {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.3rem;
+}
+
+.post-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.post-title:hover {
+  color: rgba(1, 162, 190, 0.9);
+}
+
+/* 文章分类标签样式 */
+.post-categories {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  background: rgba(1, 162, 190, 0.2);
+  color: rgba(1, 162, 190, 0.9);
+  border-radius: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(1, 162, 190, 0.3);
+}
+
+.category-tag:hover {
+  background: rgba(1, 162, 190, 0.3);
+  color: rgba(1, 162, 190, 1);
+  border-color: rgba(1, 162, 190, 0.5);
+  transform: translateY(-1px);
+}
+
+/* 当前分类高亮 */
+.category-tag.current {
+  background: rgba(1, 162, 190, 0.8);
+  color: #ffffff;
+  border-color: rgba(1, 162, 190, 1);
+  font-weight: 500;
+}
+
+/* 无文章提示 */
+.no-posts {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .post-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  
+  .post-item {
+    padding: 1rem;
+  }
+  
+  .post-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-list {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  
+  .post-item {
+    padding: 0.9rem;
+  }
+  
+  .post-title {
+    font-size: 1rem;
+  }
+}

@@ -1,4 +1,3 @@
-
 <script setup lang="ts" vapor>
 /**
  * Waline评论组件 - Vue版本
@@ -6,6 +5,7 @@
  */
 import { ref, onMounted, watch, onBeforeUnmount, computed } from 'vue';
 import { init, type WalineInstance } from '@waline/client';
+import type { WalineMeta } from '@waline/client';
 import '@waline/client/style'; // 正确导入CSS路径
 
 // 引入类型定义，但不导入实际配置
@@ -19,9 +19,9 @@ interface Props {
   // 细分 Waline 配置项，避免传递整个配置对象
   lang?: string;
   emoji?: any;
-  requiredFields?: string[];
+  requiredMeta?: string[];
   reaction?: boolean;
-  meta?: string[];
+  meta?: WalineMeta[];
   wordLimit?: number;
   pageSize?: number;
 }
@@ -32,9 +32,9 @@ const props = withDefaults(defineProps<Props>(), {
   serverURL: '',
   lang: 'zh-CN',
   emoji: false,
-  requiredFields: () => [],
+  requiredMeta: () => [],
   reaction: true,
-  meta: () => ['nick', 'mail', 'link'],
+  meta: () => ['nick', 'mail', 'link'] as WalineMeta[],
   wordLimit: 200,
   pageSize: 10
 });
@@ -58,12 +58,11 @@ const initWaline = () => {
     path: props.path || window.location.pathname,
     lang: props.lang,
     emoji: props.emoji,
-    requiredFields: props.requiredFields,
+    requiredMeta: props.requiredMeta as WalineMeta[],
     reaction: props.reaction,
     meta: props.meta,
     wordLimit: props.wordLimit,
     pageSize: props.pageSize,
-    title: props.title,
     dark: true // 固定使用暗色模式
   });
 };

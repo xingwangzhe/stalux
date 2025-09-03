@@ -1,0 +1,76 @@
+/* CategoriesLayout.css - 分类列表布局的样式 */
+
+/* 容器样式 */
+.categories-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+/* 页面标题部分 */
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header .page-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(1, 162, 190, 0.9));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-header .page-description {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 分类网格布局 */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.8rem;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .page-header {
+    margin-bottom: 2rem;
+  }
+  
+  .page-header .page-title {
+    font-size: 2rem;
+  }
+  
+  .page-header .page-description {
+    font-size: 1rem;
+  }
+  
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-container {
+    padding: 1.5rem 0.8rem;
+  }
+  
+  .page-header .page-title {
+    font-size: 1.8rem;
+  }
+  
+  .categories-grid {
+    grid-template-columns: 1fr;
+    padding: 0.5rem;
+  }
+}

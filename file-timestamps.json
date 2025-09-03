@@ -4,11 +4,6 @@
     "modified": "2025-05-10T20:45:08.948+08:00",
     "abbrlink": "139bc770"
   },
-  "src/content/posts/_config_basic.md": {
-    "created": "2025-05-10T17:53:46.725+08:00",
-    "modified": "2025-05-13T13:30:28.384+08:00",
-    "abbrlink": "7c4685dd"
-  },
   "src/content/posts/_config_code.md": {
     "created": "2025-05-10T20:34:20.585+08:00",
     "modified": "2025-05-12T20:25:14.827+08:00",
@@ -53,5 +48,10 @@
     "created": "2025-05-13T11:09:11.882+08:00",
     "modified": "2025-05-13T17:25:11.466+08:00",
     "abbrlink": "080d8764"
+  },
+  "src/content/posts/_config_basic.md": {
+    "created": "2025-07-07T12:53:01.631+08:00",
+    "modified": "2025-07-07T12:53:01.631+08:00",
+    "abbrlink": "27a8ab10"
   }
 }

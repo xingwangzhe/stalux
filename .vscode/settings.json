@@ -1,4 +1,5 @@
 {
-    "svg.preview.background": "dark-transparent",
-    "oxc.enable": false
+  "svg.preview.background": "dark-transparent",
+  "oxc.enable": false,
+  "terminal.integrated.fontFamily": "Ubuntu Mono Nerd Font, 'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace"
 }

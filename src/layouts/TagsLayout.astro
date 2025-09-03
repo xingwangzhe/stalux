@@ -1,10 +1,10 @@
 ---
-import { config_site } from '../utils/config-adapter';
+import { config_site } from '../utils/yaml-config-adapter';
 import Head from '../components/Head.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import '../../src/styles/global.styl';
-import '../styles/layouts/tags.styl';
+import '../../src/styles/global.css';
+import '../styles/layouts/tags.css';
 
 export interface Props {
   title: string;

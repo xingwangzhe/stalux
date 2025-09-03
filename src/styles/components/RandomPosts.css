@@ -1,0 +1,215 @@
+/* 随机文章组件样式 */
+
+.random-posts {
+  /* 使用与其他侧边栏组件一致的样式 */
+  background-color: rgba(0, 0, 0, 0.192);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  background-color: rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.random-posts:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.8);
+}
+
+.random-posts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.random-posts-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.random-posts-header .refresh-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.random-posts-header .refresh-button:hover {
+  color: rgba(1, 162, 190, 0.9);
+  transform: rotate(45deg);
+}
+
+.random-posts-header .refresh-button.rotating {
+  animation: rotate360 0.6s ease;
+}
+
+.random-posts-header .refresh-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.random-posts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  
+  /* 滚动条样式 */
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.random-posts-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.random-posts-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.random-posts-list::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+/* 淡入淡出过渡效果 */
+.random-posts-list.fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.random-posts-list.fade-in {
+  opacity: 1;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.random-post-item {
+  margin-bottom: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.random-post-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.random-post-item:hover {
+  transform: translateX(3px);
+}
+
+.random-post-link {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.random-post-link:hover {
+  color: rgba(1, 162, 190, 0.9);
+  text-decoration: none;
+}
+
+.no-posts {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+/* 旋转动画 */
+@keyframes rotate360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 响应式样式 */
+@media (max-width: 1200px) {
+  .random-posts {
+    padding: 0.9rem;
+  }
+  
+  .random-post-link {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .random-posts {
+    padding: 0.8rem;
+  }
+  
+  .random-posts-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .random-post-link {
+    font-size: 0.85rem;
+  }
+  
+  .random-posts-list {
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 900px) {
+  .random-posts {
+    padding: 0.7rem;
+  }
+  
+  .random-posts-header {
+    margin-bottom: 0.6rem;
+  }
+  
+  .random-posts-header h3 {
+    font-size: 1rem;
+  }
+  
+  .random-posts-header .refresh-button svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .random-post-item {
+    padding: 0.25rem 0;
+  }
+}
+
+/* 移动设备适配 (虽然左右侧边栏在移动设备上通常被隐藏，但保留这些样式以防需要) */
+@media (max-width: 768px) {
+  .random-posts {
+    margin-bottom: 1rem;
+  }
+  
+  .random-posts-list {
+    max-height: 200px;
+  }
+}

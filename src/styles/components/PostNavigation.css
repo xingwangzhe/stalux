@@ -1,0 +1,150 @@
+/* 文章导航样式 */
+.post-navigation {
+  width: 100%;
+  margin: var(--spacing-xl) 0 var(--spacing-lg);
+  border-top: 1px solid var(--color-border-light);
+  padding-top: var(--spacing-lg);
+}
+
+.post-navigation .post-navigation-inner {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.post-navigation .post-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: var(--transition-all);
+  border: 1px solid var(--color-border-light);
+  flex: 1 1 0;
+  min-width: 0; /* 确保flex项可以缩小 */
+  position: relative;
+  overflow: hidden;
+}
+
+.post-navigation .post-nav-link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, var(--color-overlay-light), transparent);
+  transition: var(--transition-slow);
+}
+
+.post-navigation .post-nav-link:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.post-navigation .post-nav-link:hover::before {
+  left: 100%;
+}
+
+.post-navigation .post-nav-link:hover .post-nav-arrow {
+  color: var(--color-primary);
+}
+
+.post-navigation .post-nav-link.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+  background: var(--color-bg-muted);
+}
+
+.post-navigation .post-nav-link.prev-post {
+  text-align: left;
+  margin-left: var(--spacing-xs);
+}
+
+.post-navigation .post-nav-link.next-post {
+  text-align: right;
+  justify-content: flex-end;
+  margin-right: var(--spacing-xs);
+}
+
+.post-navigation .post-nav-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* 为了文本过长时的省略 */
+  overflow: hidden;
+}
+
+.post-navigation .post-nav-arrow {
+  flex-shrink: 0;
+  color: var(--color-text-light);
+  transition: var(--transition-fast);
+}
+
+.post-navigation .post-nav-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.post-navigation .post-nav-title {
+  font-size: var(--font-size-md);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .post-navigation {
+    margin: var(--spacing-lg) 0 var(--spacing-md);
+  }
+  
+  .post-navigation .post-navigation-inner {
+    gap: var(--spacing-sm);
+  }
+  
+  .post-navigation .post-nav-link {
+    padding: var(--spacing-sm);
+  }
+  
+  .post-navigation .post-nav-link.prev-post .post-nav-arrow {
+    transform: scale(0.85);
+  }
+  
+  .post-navigation .post-nav-link.next-post .post-nav-arrow {
+    transform: scale(0.85);
+  }
+  
+  .post-navigation .post-nav-label {
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--spacing-xxs);
+  }
+  
+  .post-navigation .post-nav-title {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+  .post-navigation {
+    margin: var(--spacing-lg) 0 var(--spacing-md);
+  }
+  
+  .post-navigation .post-navigation-inner {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .post-navigation .post-nav-link {
+    width: 100%;
+    padding: var(--spacing-sm);
+  }
+}
