@@ -1,4 +1,5 @@
 ---
+import { site } from '../consts'
 import { config_site } from '../utils/yaml-config-adapter'
 import Head from '../components/Head.astro'
 import Header from '../components/Header.astro'
@@ -12,7 +13,7 @@ import AuthorCard from '../components/others/AuthorCard.astro'
 const avatarImage = config_site.avatarPath || avatar
 ---
 
-<!DOCTYPE html data-pagefind-ignore>
+<!DOCTYPE html>
 <html lang={config_site.lang}>
 <Head
   title="404 - 页面未找到 | {config_site.title}"

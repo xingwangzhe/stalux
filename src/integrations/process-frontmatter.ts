@@ -12,28 +12,6 @@ dayjs.extend(timezone);
 dayjs.tz.setDefault('Asia/Shanghai');
 
 /**
- * 格式化日期为中文格式
- * @param dateInput 日期输入
- * @returns 格式化后的中文日期字符串
- */
-export const formatDate = (dateInput: any): string => {
-  if (!dateInput) return '';
-
-  try {
-    // 直接使用dayjs解析各种格式的日期输入
-    const date = dayjs(dateInput);
-
-    if (!date.isValid()) return '';
-
-    // 格式化为中文日期时间格式
-    return date.format('YYYY年MM月DD日 HH:mm:ss');
-  } catch (error) {
-    console.warn('Date parsing error:', error, dateInput);
-    return '';
-  }
-};
-
-/**
  * 处理文章的 frontmatter 数据
  * @param post 文章数据对象
  * @returns 处理后的文章数据对象
@@ -44,9 +22,13 @@ export async function processFrontmatter(post: any) {
   // 处理 abbrlink
   const abbrlink = post.data.abbrlink || remarkPluginFrontmatter.abbrlink;
   
-  // 处理创建日期和更新日期 - 统一格式化为中文日期格式
-  const createDate = formatDate(remarkPluginFrontmatter.date);
-  const updateDate = formatDate(remarkPluginFrontmatter.updated);
+  // 处理创建日期和更新日期
+  const createDate = dayjs(remarkPluginFrontmatter.date)
+    .tz(remarkPluginFrontmatter.date.timezone)
+    .format("YYYY-MM-DD HH:mm:ss");
+  const updateDate = dayjs(remarkPluginFrontmatter.updated)
+    .tz(remarkPluginFrontmatter.updated.timezone)
+    .format("YYYY-MM-DD HH:mm:ss");
   
   // 创建一个新对象，包含处理后的数据
   return {
@@ -54,8 +36,16 @@ export async function processFrontmatter(post: any) {
     data: {
       ...post.data,
       abbrlink,
-      date: post.data.date || createDate,
-      updated: post.data.updated || updateDate,
+      date: typeof post.data.date === 'string' && post.data.date.trim() !== '' 
+        ? post.data.date 
+        : post.data.date instanceof Date 
+          ? dayjs(post.data.date).tz(post.data.date.timezone).format("YYYY-MM-DD HH:mm:ss") 
+          : createDate,
+      updated: typeof post.data.updated === 'string' && post.data.updated.trim() !== ''
+        ? post.data.updated
+        : post.data.updated instanceof Date
+          ? dayjs(post.data.updated).tz(post.data.updated.timezone).format("YYYY-MM-DD HH:mm:ss")
+          : updateDate,
       description: post.data.description || description150(post.body),
     }
   };

@@ -9,7 +9,6 @@ import "../styles/layouts/BlogPost.css";
 import "../styles/components/PostNavigation.css";
 import { config_site } from "../utils/yaml-config-adapter";
 import removeMd from "remove-markdown";
-import { formatDate } from "../integrations/process-frontmatter.ts";
 
 // 正确定义Props类型
 interface Props {
@@ -145,7 +144,9 @@ import "katex/dist/katex.min.css";
 										<div class="published-on">
 											发布时间：
 											<time>
-												{formatDate(date)}
+												{date instanceof Date
+													? date.toLocaleDateString()
+													: date}
 											</time>
 										</div>
 									)
@@ -155,7 +156,9 @@ import "katex/dist/katex.min.css";
 										<div class="last-updated-on">
 											更新时间：
 											<time>
-												{formatDate(updated)}
+												{updated instanceof Date
+													? updated.toLocaleDateString()
+													: updated}
 											</time>
 										</div>
 									)

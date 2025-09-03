@@ -1,8 +1,8 @@
 
-import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { config_site } from '../utils/yaml-config-adapter';
 import { processFrontmatter } from '../integrations/process-frontmatter.ts';
+
 export async function GET(context) {
   // 获取所有文章
   let posts = await getCollection('posts');
@@ -10,80 +10,53 @@ export async function GET(context) {
   posts = await Promise.all(posts.map(async (post) => {
     return await processFrontmatter(post);
   }));
-  return rss({
-    title: config_site.siteName || 'Blog',
-    description: config_site.description || '博客描述',
-    site: context.site,
-    items: posts
-      .sort((a, b) => {
-        const dateA = new Date(a.data.date);
-        const dateB = new Date(b.data.date);
-        // 如果日期无效，将其排到后面
-        if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
-        if (isNaN(dateA.getTime())) return 1;
-        if (isNaN(dateB.getTime())) return -1;
-        return dateB - dateA;
-      })
-      .map((post) => {
-        const item = {
-          title: post.data.title,
-          description: post.data.description,
-          link: `/posts/${post.data.abbrlink}/`,
-          id: `/posts/${post.data.abbrlink}/`, // Atom规范的唯一标识符
-        };
+  
+  const sortedPosts = posts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+  const lastUpdated = sortedPosts.length > 0 ? new Date(sortedPosts[0].data.date) : new Date();
+  const siteUrl = config_site.url || context.site;
+  
+  // 手动构建 Atom XML
+  const atomXml = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xml:lang="${config_site.lang || 'zh-CN'}">
+  <title type="text">${config_site.siteName || config_site.title || 'Blog'}</title>
+  <subtitle type="text">${config_site.description || '博客描述'}</subtitle>
+  <link href="${siteUrl}/atom.xml" rel="self" type="application/atom+xml" />
+  <link href="${siteUrl}/" rel="alternate" type="text/html" />
+  <id>${siteUrl}/</id>
+  <updated>${lastUpdated.toISOString()}</updated>
+  <generator uri="https://astro.build/" version="4.x">Astro</generator>
+  <icon>${siteUrl}${config_site.favicon || '/favicon.ico'}</icon>
+  <logo>${siteUrl}${config_site.avatarPath || '/avatar.webp'}</logo>
+  <rights>Copyright © ${new Date().getFullYear()} ${config_site.author || config_site.siteName}</rights>
+  <author>
+    <name>${config_site.author || 'Admin'}</name>
+    <email>${config_site.author || 'webmaster'}@${siteUrl.replace(/^https?:\/\//, '')}</email>
+    <uri>${siteUrl}</uri>
+  </author>
+${sortedPosts.map((post) => `  <entry>
+    <title type="text">${post.data.title}</title>
+    <id>${siteUrl}/posts/${post.data.abbrlink}/</id>
+    <link href="${siteUrl}/posts/${post.data.abbrlink}/" rel="alternate" type="text/html" />
+    <published>${new Date(post.data.date).toISOString()}</published>
+    <updated>${new Date(post.data.date).toISOString()}</updated>
+    <summary type="text">${post.data.description || post.data.title}</summary>
+    <content type="html"><![CDATA[${post.data.description || post.data.title}]]></content>
+    <author>
+      <name>${config_site.author || 'Admin'}</name>
+      <email>${config_site.author || 'webmaster'}@${siteUrl.replace(/^https?:\/\//, '')}</email>
+      <uri>${siteUrl}</uri>
+    </author>
+${post.data.categories ? (Array.isArray(post.data.categories) ? post.data.categories : [post.data.categories]).map(cat => `    <category term="${cat}" label="${cat}" />`).join('\n') : '    <category term="未分类" label="未分类" />'}
+${post.data.tags && Array.isArray(post.data.tags) ? post.data.tags.map(tag => `    <category term="${tag}" label="${tag}" />`).join('\n') : ''}
+  </entry>`).join('\n')}
+</feed>`;
 
-        // 手动生成published和updated字段的XML标签
-        let publishedXml = '';
-        let updatedXml = '';
-
-        if (post.data.date) {
-          try {
-            // published字段：文章的原始发布日期
-            const publishedDate = new Date(post.data.date);
-            if (!isNaN(publishedDate.getTime())) {
-              publishedXml = `<published>${publishedDate.toISOString()}</published>`;
-            }
-
-            // updated字段：文章的最后更新日期，如果没有则使用发布日期
-            const updatedSource = post.data.updated || post.data.modified || post.data.date;
-            const updatedDate = new Date(updatedSource);
-            if (!isNaN(updatedDate.getTime())) {
-              updatedXml = `<updated>${updatedDate.toISOString()}</updated>`;
-            } else if (publishedXml) {
-              // 如果updated日期无效但published有效，使用published作为updated
-              updatedXml = `<updated>${publishedDate.toISOString()}</updated>`;
-            }
-          } catch (error) {
-            console.warn(`日期解析错误 for post ${post.data.title}:`, error);
-            // 如果解析失败，使用当前时间作为默认值
-            const now = new Date().toISOString();
-            publishedXml = `<published>${now}</published>`;
-            updatedXml = `<updated>${now}</updated>`;
-          }
-        } else {
-          // 如果没有原始日期，使用当前时间
-          const now = new Date().toISOString();
-          publishedXml = `<published>${now}</published>`;
-          updatedXml = `<updated>${now}</updated>`;
-        }
-
-        // 将XML标签添加到customData中，并添加更多Atom规范要求的元素
-        item.customData = `${publishedXml}${updatedXml}`;
-
-        // Atom规范：确保有作者信息
-        if (post.data.author || config_site.author) {
-          item.author = post.data.author || config_site.author;
-        } else {
-          // Atom规范要求必须有作者，如果没有则使用默认值
-          item.author = 'xingwangzhe';
-        }
-
-        // 添加内容类型信息（Atom规范推荐）
-        if (!item.customData.includes('<content')) {
-          item.customData += `<content type="html">${post.data.description || ''}</content>`;
-        }
-
-        return item;
-      }),
+  return new Response(atomXml, {
+    headers: {
+      'Content-Type': 'application/atom+xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600'
+    }
   });
 }

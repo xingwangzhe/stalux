@@ -7,7 +7,7 @@ import { processFrontmatter } from '../../integrations/process-frontmatter';
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
 	const processedPosts = await Promise.all(
-		posts.map(async (post:any) => {
+		posts.map(async (post) => {
 			const processedPost = await processFrontmatter(post);
 			return processedPost;
 		})
