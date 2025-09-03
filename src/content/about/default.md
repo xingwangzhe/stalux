@@ -1,123 +1,78 @@
 ---
-title: 关于Stalux主题
-description: 高效、美观、灵活的Astro静态博客主题
+title: 关于 Stalux 博客主题
+description: 为内容创作者提供的专业展示平台，支持多种自定义功能，包含评论系统集成、友情链接管理、社交媒体分享和丰富的SEO优化选项
 priority: -1
 ---
 
-## 👋 欢迎使用Stalux主题
+## 👋 欢迎使用 Stalux 主题
 
 <div class="card">
 
-Stalux是一款基于Astro框架开发的静态博客主题，专为内容创作者设计，追求高性能、美观直观的用户界面与灵活的配置系统。主题名称"Stalux"中的"Sta"代表静态（Static），"lux"代表奢华（Luxury）的外观体验。
+**Stalux** 是一款专为内容创作者设计的 Astro 静态博客主题，由 **xingwangzhe** 开发。主题名称 "Stalux" 融合了 "Static"（静态）和 "Luxury"（奢华）的理念，致力于为用户提供高性能、美观且灵活的博客体验。
 
-~~名字其实是我瞎编的~~
-
-无论您是技术博主、内容创作者还是个人站长，Stalux都能为您提供一个专业、美观的内容展示平台。
+本主题基于现代 Web 技术栈构建，注重性能优化和用户体验，支持多种自定义功能，帮助您专注于内容创作。
 
 </div>
 
-## 🚀 关于Stalux
 
-Stalux是一个精心设计和开发的静态博客主题，基于现代Web技术栈构建，注重性能与用户体验。
+## ⚙️ 配置系统详解
 
-<div class="timeline">
+Stalux 提供了强大的配置系统，让您无需修改源码即可定制博客：
 
-<div class="timeline-item">
-  <h4>📚 博客内容</h4>
-  <ul>
-    <li>前端开发技术分享（JavaScript、TypeScript、Vue等）</li>
-    <li>学习笔记与心得体会</li>
-    <li>项目开发经验总结</li>
-    <li>有趣的技术探索与实验</li>
-    <li>编程学习资源推荐</li>
-  </ul>
-</div>
+### 核心配置项
 
-<div class="timeline-item">
-  <h4>🛠️ 技术栈</h4>
-  <ul>
-    <li>基于 <strong>Astro</strong> 构建的静态站点</li>
-    <li>使用 <strong>TypeScript</strong> 保证代码类型安全</li>
-    <li>集成 <strong>Waline</strong> 评论系统</li>
-    <li>应用 <strong>SEO</strong> 优化策略</li>
-    <li>支持暗黑模式与响应式设计</li>
-  </ul>
-</div>
+- **站点信息**：标题、描述、作者、关键词等 SEO 相关配置
+- **导航菜单**：自定义导航项，支持图标和路径配置
+- **评论系统**：Waline 配置，包括服务器地址和显示选项
+- **社交链接**：多平台社交媒体链接管理
+- **友情链接**：合作伙伴站点展示
+- **页脚配置**：版权信息、备案号、主题信息等
 
-<div class="timeline-item">
-  <h4>🌟 创作理念</h4>
-  <ul>
-    <li><strong>实用为本</strong>：注重实际应用的技术分享</li>
-    <li><strong>深入浅出</strong>：复杂概念简单化，让读者易于理解</li>
-    <li><strong>原创优先</strong>：优先发布原创内容，分享独特见解</li>
-    <li><strong>持续更新</strong>：保持学习热情，定期分享新内容</li>
-  </ul>
-</div>
 
-</div>
+## 🌟 友情链接
 
-## 👨‍💻 主题特性
+根据配置，以下站点对 Stalux 主题的开发提供了重要帮助：
 
-<div class="card">
+- [**Astro**](https://astro.build/) - The web framework for content-driven websites
+- [**Vue**](https://cn.vuejs.org/) - 易学易用，性能出色，适用场景丰富的 Web 前端框架
+- [**MDN Web Docs**](https://developer.mozilla.org/) - Documenting web technologies since 2005
+- [**Simple Icons**](https://simpleicons.org/) - 流行品牌的 SVG 图标库
+- [**Feather**](https://feathericons.com/) - Beautifully simple open-source icons
 
-Stalux主题具备多种实用特性，帮助内容创作者专注于写作：
-
-- **简洁高效**：精简代码，快速加载，提供流畅的用户体验
-- **全面配置**：丰富的配置选项，可根据个人需求定制外观和功能
-- **SEO友好**：内置多种SEO优化技术，提高搜索引擎可见性
-- **内容优先**：专注内容展示，提供清晰的阅读体验
-
-</div>
+## � 站点统计
 
 <div class="highlight">
 
-> "简单，但不简陋；美观，但不浮华。" —— Stalux主题的设计理念，我们相信最好的主题应该让用户的内容成为焦点。
+> Stalux 主题自 2025 年开始开发，致力于为内容创作者提供最佳的博客体验。通过不断的优化和更新，我们希望让每一位用户都能轻松搭建属于自己的专业博客平台。
 
 </div>
 
-## 🌐 Stalux的优势
+## 💡 使用建议
 
-Stalux主题专为内容创作者和博客爱好者设计，具有以下核心优势：
+为了获得最佳体验，建议您：
 
-- **简单部署**：基于Astro构建，可轻松部署到Vercel、Netlify等平台
-- **丰富功能**：内置评论系统、全站搜索、标签云、归档功能等
-- **灵活配置**：提供丰富的配置选项，无需修改源码即可定制
-- **主题切换**：支持浅色/深色模式自动或手动切换
-- **移动友好**：完全响应式设计，在各种设备上提供出色体验
+1. **配置优化**：根据个人需求调整 `_config.yml` 中的各项配置
+2. **内容创作**：使用 Markdown 格式撰写高质量内容
+3. **SEO 优化**：合理设置关键词和描述，提升搜索引擎可见性
+4. **社区参与**：加入相关社区，分享经验和获取帮助
 
-如果您喜欢这个主题或有任何建议，欢迎通过GitHub提交Issue或Pull Request。
+## 🙏 致谢与支持
 
-## 💡 配置系统
+感谢所有为 Stalux 主题贡献代码、提出建议和提供反馈的用户！
 
-Stalux主题提供了强大而灵活的配置系统，让您可以轻松定制您的博客：
+如果您在使用过程中遇到问题或有改进建议，欢迎：
 
-- **统一配置**：通过`_config.ts`文件进行集中配置管理
-- **类型安全**：使用TypeScript确保配置类型安全
-- **模块化设计**：各功能模块配置分离，便于维护
-- **适配性强**：适应不同内容需求和个人喜好
-- **兼容性好**：支持各种内容格式和展示方式
+- 在 [GitHub 仓库](https://github.com/xingwangzhe/stalux) 提交 Issue
+- 参与项目开发，提交 Pull Request
+- 通过评论系统分享您的使用体验
 
 <div class="card">
 
-Stalux主题基于 MIT 许可证开源，您可以自由地使用、修改和分发。主题的所有配置项都有详细的文档说明，即使没有深厚的技术背景，也能轻松上手。
+**许可证**：Stalux 基于 MIT 许可证开源，您可以自由使用、修改和分发。
+
+**当前版本**：持续更新中
 
 </div>
 
-## 📖 学习资源推荐
-
-常用的一些学习资源：
-
-- [**MDN Web Docs**](https://developer.mozilla.org/)：最全面的Web开发文档
-- [**Vue官方文档**](https://vuejs.org/)：Vue框架学习必备
-- [**TypeScript官方文档**](https://www.typescriptlang.org/docs/)：TypeScript学习指南
-- [**JavaScript.info**](https://javascript.info/)：现代JavaScript教程
-- [**CSS-Tricks**](https://css-tricks.com/)：CSS技巧和最佳实践
-
-## 🙏 结语
-
-感谢您选择 Stalux 主题！我们希望这款主题能够为您的内容创作提供完美的展示平台，帮助您专注于内容创作而非技术细节。
-
-如果您在使用过程中有任何问题或建议，欢迎通过 GitHub 仓库提交 Issue 或贡献代码。我们将持续改进和优化 Stalux，为内容创作者提供更好的工具。
-
-希望 Stalux 成为您心目中最好用的博客主题之一！
+希望 Stalux 能成为您心目中最满意的博客主题！🎉
 
