@@ -1,5 +1,8 @@
 /* 全局样式 - 现代CSS 2025 */
 
+/* 引入视图过渡样式 */
+@import './view-transitions.css';
+
 /* CSS自定义属性 */
 :root {
   /* 主题色彩系统 */

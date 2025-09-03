@@ -4,6 +4,7 @@
 
 import { config_site } from '../utils/yaml-config-adapter';
 import { SEO, type TwitterCardType } from 'astro-seo';
+import { ClientRouter } from 'astro:transitions';
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 // 定义组件接收的属性
 interface Props {
@@ -23,6 +24,7 @@ interface Props {
   noindex?: boolean; // 控制页面是否被索引
   head?: string;     // 硬嵌入的head内容
   canonical?: string; // 规范链接
+  enableViewTransitions?: boolean; // 是否启用视图过渡
   openGraph?: {      // 自定义 Open Graph 配置
     basic: {
       title: string;
@@ -109,7 +111,8 @@ const {
   twitter,                 // 自定义 Twitter 卡片配置
   extend = {},             // 扩展元标签
   titleTemplate,           // 标题模板
-  titleDefault = title     // 默认标题
+  titleDefault = title,    // 默认标题
+  enableViewTransitions = true  // 是否启用视图过渡，默认启用
 } = Astro.props;
 
 // 准备默认的OpenGraph配置
@@ -143,6 +146,9 @@ import favicon_img from '../images/stalux.ico';
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- 视图过渡路由器 - 启用页面间的平滑过渡 -->
+{enableViewTransitions && <ClientRouter />}
 
 <!-- 使用 astro-seo 插件整合所有 SEO 相关标签 -->
 <SEO
@@ -181,6 +187,10 @@ import favicon_img from '../images/stalux.ico';
 
 <!-- 硬嵌入的head元素 -->
 {head && <Fragment set:html={head} />}
+
+<!-- 视图过渡增强脚本 -->
+{enableViewTransitions && <script src="/src/scripts/view-transitions.ts" type="module" />}
+
 <!-- 通用插槽，用于添加其他head元素 -->
 <slot name="head" />
 </head>

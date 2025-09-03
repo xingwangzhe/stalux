@@ -1,0 +1,47 @@
+---
+// BackgroundControl.astro - 背景控制组件
+// 用于在页面中设置背景变化策略
+
+export interface Props {
+  strategy?: 'random' | 'persist' | 'index' | 'auto';
+  backgroundIndex?: number;
+  changeOnNavigation?: boolean;
+}
+
+const { 
+  strategy = 'auto',
+  backgroundIndex,
+  changeOnNavigation = true 
+} = Astro.props;
+
+// 根据策略设置meta标签
+const shouldChange = strategy === 'random' || 
+                    (strategy === 'auto' && changeOnNavigation) ||
+                    (strategy === 'index' && typeof backgroundIndex === 'number');
+---
+
+<!-- 设置背景变化策略的meta标签 -->
+<meta name="change-background" content={shouldChange ? 'true' : 'false'} />
+{strategy === 'index' && typeof backgroundIndex === 'number' && (
+  <meta name="background-index" content={backgroundIndex.toString()} />
+)}
+{strategy && (
+  <meta name="background-strategy" content={strategy} />
+)}
+
+<script define:vars={{ strategy, backgroundIndex }}>
+  // 页面特定的背景控制
+  document.addEventListener('DOMContentLoaded', () => {
+    // 导入背景控制函数
+    import('/src/scripts/background.ts').then(({ setBackgroundStrategy }) => {
+      if (strategy === 'index' && typeof backgroundIndex === 'number') {
+        setBackgroundStrategy('index', backgroundIndex);
+      } else if (strategy === 'random') {
+        setBackgroundStrategy('random');
+      } else if (strategy === 'persist') {
+        setBackgroundStrategy('persist');
+      }
+      // 'auto' 策略由视图过渡系统自动处理
+    });
+  });
+</script>
