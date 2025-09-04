@@ -242,7 +242,7 @@ main {
 
 .prose code {
   color: var(--accent-pink);
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   font-size: 16px; /* 增加代码字体大小以提高清晰度 */
 }
 
@@ -333,7 +333,7 @@ main {
 
 .expressive-code pre,
 .expressive-code code {
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   font-size: 16px; /* 确保代码块字体清晰 */
   line-height: 1.5; /* 增加行高以提高可读性 */
 }
@@ -343,25 +343,25 @@ main {
 .expressive-code .gutter,
 .expressive-code .code,
 .expressive-code .ln {
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   font-size: 16px;
 }
 
 /* 代码块标题 */
 .expressive-code figcaption.header {
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   font-size: 14px;
 }
 
 /* 行号 */
 .expressive-code .gutter .ln {
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   font-size: 16px;
 }
 
 /* 代码内容 */
 .expressive-code .code {
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   font-size: 16px;
   line-height: 1.5;
 }

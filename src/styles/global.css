@@ -42,8 +42,8 @@
   --color-scrollbar-thumb-hover: #5a5a5a;
   
   /* 字体系统 */
-  --font-family-sans: 'Ubuntu Mono Nerd Font', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  --font-family-mono: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --font-family-mono: 'Ubuntu Mono Nerd Font', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'Consolas', 'Liberation Mono', 'Menlo', 'Courier New', monospace;
   
   /* 字体大小系统 */
   --font-size-xs: 0.75rem;    /* 12px */

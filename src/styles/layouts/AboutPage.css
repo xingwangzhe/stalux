@@ -114,14 +114,14 @@
   border-radius: 8px;
   overflow-x: auto;
   margin: 1.5rem 0;
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   font-size: 16px; /* 增加代码块字体大小 */
   line-height: 1.5; /* 提高可读性 */
 }
 
 .about-content pre code {
   color: rgba(255, 255, 255, 0.8);
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
   font-size: 16px;
 }
 
@@ -130,7 +130,7 @@
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.9em;
-  font-family: 'Ubuntu Mono Nerd Font', 'Courier New', monospace;
+  font-family: var(--font-family-mono);
 }
 
 .about-content hr {
