@@ -2,6 +2,8 @@
 import type { BadgeOptions } from '../types';
 import { generateBadge, svgToDataUrl } from '../utils/badge-generator';
 import { config_site } from '../utils/yaml-config-adapter'
+import { getTotalWordCount, formatWordCount } from '../utils/word-count-utils';
+
 // --- 配置读取 ---
 // 获取页脚配置，优先使用footer对象中的配置，兼容旧版配置
 const footerConfig = config_site.footer || {};
@@ -63,7 +65,11 @@ const allBadges = customBadgeOptions.map((options: BadgeOptions) => ({
 }));
 
 // 检查是否启用了站点运行时间
-const showBuildTime = config_site.footer?.buildtime ? true : false
+const showBuildTime = config_site.footer?.buildtime ? true : false;
+
+// 预获取字数统计数据
+const totalWordCount = await getTotalWordCount();
+const formattedWordCount = formatWordCount(totalWordCount);
 ---
 
 <footer class="site-footer">
@@ -144,7 +150,7 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
       </span>
       <span class="stats-separator">|</span>
       <span id="word-count-container">
-        本站总字数：<span id="word-count-value">Loading...</span> 字
+        本站总字数：<span id="word-count-value">{formattedWordCount}</span> 字
       </span>
     </div>
 
@@ -277,39 +283,7 @@ const showBuildTime = config_site.footer?.buildtime ? true : false
   }
 </script>
 
-<script>
-  // 字数统计功能
-  async function loadWordCount() {
-    try {
-      const response = await fetch('/api/word-count.json');
-      const data = await response.json();
 
-      if (data.success) {
-        const wordCountElement = document.getElementById('word-count-value');
-        if (wordCountElement) {
-          wordCountElement.textContent = data.formattedCount;
-        }
-      } else {
-        console.warn('获取字数统计失败:', data.error);
-        const wordCountElement = document.getElementById('word-count-value');
-        if (wordCountElement) {
-          wordCountElement.textContent = '统计中...';
-        }
-      }
-    } catch (error) {
-      console.error('加载字数统计时出错:', error);
-      const wordCountElement = document.getElementById('word-count-value');
-      if (wordCountElement) {
-        wordCountElement.textContent = '统计中...';
-      }
-    }
-  }
-
-  // 页面加载完成后获取字数统计
-  document.addEventListener('DOMContentLoaded', () => {
-    loadWordCount();
-  });
-</script>
 
 <!-- Vercount统计脚本 -->
 <script defer src="https://events.vercount.one/js"></script>
