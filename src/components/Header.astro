@@ -96,13 +96,14 @@ import '../styles/components/Header.css';
 
 <script>
 // 移动端菜单交互逻辑
-document.addEventListener('DOMContentLoaded', () => {
+const initMobileMenu = () => {
   const menuToggle = document.getElementById('mobile-menu-toggle');
   const navMenu = document.getElementById('nav-menu');
   const searchToggle = document.getElementById('search-toggle');
   const searchContainer = document.getElementById('search-container');
   const searchClose = document.getElementById('search-close');
-  const searchBackdrop = document.querySelector('.search-backdrop');  const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+  const searchBackdrop = document.querySelector('.search-backdrop');
+  const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
   
   if (menuToggle && navMenu && mobileMenuBackdrop) {
     menuToggle.addEventListener('click', () => {
@@ -130,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     });
-      // 点击遮罩层关闭菜单
+    
+    // 点击遮罩层关闭菜单
     if (mobileMenuBackdrop) {
       mobileMenuBackdrop.addEventListener('click', () => {
         navMenu.classList.remove('active');
@@ -199,5 +201,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-});
+};
+
+// 如果DOM已经加载，则立即初始化，否则等待加载
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMobileMenu);
+} else {
+  initMobileMenu();
+}
 </script>
