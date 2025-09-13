@@ -23,11 +23,22 @@ import { remarkReadingTime } from './src/integrations/remark-reading-time.mjs';
 export default defineConfig({
   build: {
     format: "directory",
-  }, 
+    inlineStylesheets: "auto", // 自动内联小 CSS 文件
+  },
+  
+  // 实验性功能
+  experimental: {
+    contentIntellisense: true, // 内容智能感知
+  },
+  
   site: config_site.url,
   integrations: [
     timestampIntegration(),
+    
+    // Pagefind 搜索
     pagefind(),
+    
+    // Sitemap 优化
     sitemap({
       filter: (page) => {
         // 包含所有重要页面及其子页面
@@ -43,20 +54,42 @@ export default defineConfig({
       },
       changefreq: 'weekly',
       priority: 0.5,
-      lastmod: new Date()
+      lastmod: new Date(),
+      // 添加性能优化
+      serialize(item) {
+        return {
+          url: item.url,
+          changefreq: item.changefreq,
+          lastmod: item.lastmod,
+          priority: item.priority,
+          links: item.links,
+        };
+      }
     }),
-    vue(),
+    
+    // Vue 集成优化
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith('astro-')
+        }
+      }
+    }),
+    
+    // 代码高亮优化
     astroExpressiveCode({
-      // You can set configuration options here
       themes: ['dark-plus', 'github-light'],
       styleOverrides: {
-        // You can also override styles
         borderRadius: '0.5rem',
         frames: {
           shadowColor: '#124',
         },
       },
-    }),], 
+      // 性能优化选项
+      useDarkModeMediaQuery: true,
+      minSyntaxHighlightingColorContrast: 5.5,
+    }),
+  ], 
     vite: {
        plugins: [yaml()],
       css: {
@@ -64,24 +97,97 @@ export default defineConfig({
         lightningcss: {
           targets: browserslistToTargets(browserslist('>= 0.25%'))
         }
-      },        // 处理可能不存在的_config.ts文件
+      },
       build: {
-        cssMinify: 'lightningcss',          // 让 Vite/Rollup 静默处理一些导入错误
-        rollupOptions: {}
+        cssMinify: 'lightningcss',
+        minify: 'esbuild', // 使用 esbuild 进行 JS 压缩
+        sourcemap: false, // 生产环境关闭 sourcemap
+        rollupOptions: {
+          output: {
+            // 手动代码分割策略
+            manualChunks(id) {
+              // 将 node_modules 按功能分组
+              if (id.includes('node_modules')) {
+                if (id.includes('vue')) {
+                  return 'vue';
+                }
+                if (id.includes('@fancyapps')) {
+                  return 'fancybox';
+                }
+                if (id.includes('animejs')) {
+                  return 'anime';
+                }
+                if (id.includes('dayjs')) {
+                  return 'dayjs';
+                }
+                if (id.includes('katex')) {
+                  return 'katex';
+                }
+                if (id.includes('reading-time') || id.includes('gray-matter')) {
+                  return 'utils';
+                }
+                return 'vendor';
+              }
+              
+              // 将组件按功能分组
+              if (id.includes('src/components/comments')) {
+                return 'comments';
+              }
+              if (id.includes('src/scripts')) {
+                return 'scripts';
+              }
+            },
+            // 优化输出文件名
+            chunkFileNames: 'assets/[name]-[hash].js',
+            entryFileNames: 'assets/[name]-[hash].js',
+            assetFileNames: 'assets/[name]-[hash].[ext]'
+          }
+        },
+        // 提高构建性能
+        chunkSizeWarningLimit: 1000,
+        reportCompressedSize: false, // 生产环境关闭压缩大小报告
+      },
+      // 优化依赖预构建
+      optimizeDeps: {
+        include: [
+          'vue',
+          'dayjs',
+          'animejs',
+          '@fancyapps/ui'
+        ],
+        exclude: [
+          'astro:transitions'
+        ]
+      },
+      // 开发服务器优化
+      server: {
+        hmr: {
+          overlay: false // 关闭错误覆盖层
+        }
       }
     },
   // 禁用开发工具栏
   devToolbar: {
     enabled: false,
-  }, 
+  },
+  
+  // 性能优化
+  output: 'static',
+  
   markdown: {
     remarkPlugins: [
       remarkModifiedTime,
       remarkModifiedAbbrlink,
       remarkReadingTime,
-      [remarkToc, { heading: "contents" }],
+      [remarkToc, { heading: "contents", maxDepth: 3 }], // 限制目录深度
       remarkMath
     ],
     rehypePlugins: [rehypeKatex],
+    // 优化 markdown 处理
+    shikiConfig: {
+      wrap: true,
+    },
+    gfm: true, // 启用 GitHub Flavored Markdown
+    smartypants: true, // 智能标点符号
   },
 });
