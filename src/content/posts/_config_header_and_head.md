@@ -17,12 +17,10 @@ abbrlink: 0035a0ee
 
 ### 基本配置
 
-```ts title="_config.ts"
-export const siteConfig: SiteConfig = {
-     ...
-     head: '  <script>console.log("你好世界")</script>'
-     ...
-}
+```yaml title="_config.yml"
+# 自定义head
+head: |
+  <script>console.log("你好世界")</script>
 ```
 
 是的，这是自定义head标签的配置，本质上是**硬插入**HTML内容到页面的head部分。
@@ -40,31 +38,27 @@ export const siteConfig: SiteConfig = {
 
 ### 实际示例
 
-```ts title="_config.ts"
-export const siteConfig: SiteConfig = {
-     ...
-     head: `
-        <!-- 网站图标 -->
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        
-        <!-- 自定义样式 -->
-        <style>
-          :root {
-             --theme-color: #42b883;
-          }
-        </style>
-        
-        <!-- 分析工具 -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-XXXXXXXXXX');
-        </script>
-     `
-     ...
-}
+```yaml title="_config.yml"
+# 自定义head
+head: |
+  <!-- 网站图标 -->
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+  <!-- 自定义样式 -->
+  <style>
+    :root {
+       --theme-color: #42b883;
+    }
+  </style>
+
+  <!-- 分析工具 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 ```
 
 ## header的自定义
@@ -73,21 +67,27 @@ export const siteConfig: SiteConfig = {
 
 ### 基本配置
 
-```ts title="_config.ts"
-export const siteConfig: SiteConfig = {
-  /**
-    * 站点导航配置
-    */
-  //https://feathericons.com/
-  nav: [
-     { title: '首页', path: '/', icon: 'home' },
-     { title: '归档', path: '/archives', icon: 'archive' },
-     { title: '分类', path: '/categories', icon: 'folder' },
-     { title: '标签', path: '/tags', icon: 'tag' },
-     { title: '友链', path: '/links', icon: 'link' },
-     { title: '关于', path: '/about', icon: 'user' },
-  ],
-}
+```yaml title="_config.yml"
+# 站点导航配置
+nav:
+  - title: "首页"
+    path: "/"
+    icon: "home"
+  - title: "归档"
+    path: "/archives"
+    icon: "archive"
+  - title: "分类"
+    path: "/categories"
+    icon: "folder"
+  - title: "标签"
+    path: "/tags"
+    icon: "tag"
+  - title: "友链"
+    path: "/links"
+    icon: "link"
+  - title: "关于"
+    path: "/about"
+    icon: "user"
 ```
 
 这是导航栏的配置，默认最后一个是搜索，不用刻意设置，`path`选项可以填**外链**，icon图标名字来自于网站[feathericons](https://feathericons.com/)的开源组件图标。
@@ -96,7 +96,14 @@ export const siteConfig: SiteConfig = {
 
 如果你想在导航栏添加外部链接，可以这样配置：
 
-```ts title="_config.ts"
-{ title: 'GitHub', path: 'https://github.com/yourusername', icon: 'github'}
+```yaml title="_config.yml"
+# 站点导航配置
+nav:
+  - title: "首页"
+    path: "/"
+    icon: "home"
+  - title: "GitHub"
+    path: "https://github.com/yourusername"
+    icon: "github"
 ```
 

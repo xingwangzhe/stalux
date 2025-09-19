@@ -18,11 +18,55 @@ console.log('欢迎使用 Stalux 主题！')
 
 Stalux 主题采用 YAML 配置文件系统，通过 `_stalux.yml` 文件进行统一配置管理。这种设计让您无需修改源码即可定制博客的外观和功能。
 
+### 项目结构
+
+```
+stalux/
+├── public/                 # 静态资源目录
+├── src/
+│   ├── components/         # UI 组件
+│   ├── components-vue/     # Vue 组件
+│   ├── content/            # 内容目录
+│   │   ├── posts/          # 博客文章
+│   │   └── about/          # 关于页面
+│   ├── fonts/              # 字体文件
+│   ├── images/             # 图片资源
+│   ├── integrations/       # 自定义集成
+│   ├── layouts/            # 页面布局组件
+│   ├── pages/              # 页面路由
+│   ├── scripts/            # 脚本文件
+│   ├── styles/             # 全局样式
+│   ├── types/              # TypeScript 类型定义
+│   ├── utils/              # 工具函数
+│   ├── consts.ts           # 默认配置常量
+│   ├── content.config.ts   # 内容配置
+│   └── types.ts            # 全局类型定义
+├── astro.config.mjs        # Astro 配置文件
+├── package.json            # 项目依赖和脚本
+├── tsconfig.json           # TypeScript 配置
+├── _config.yml             # 用户自定义配置文件
+├── _stalux.yml             # 主题默认配置文件
+└── README.md               # 项目说明文档
+```
+
 ### 配置文件位置
 
 - **默认配置**：`_stalux.yml` - 主题的默认配置文件
 - **用户配置**：`_config.yml` - 用户自定义配置文件（可覆盖默认配置）
 - **内容文件**：`src/content/` - 存放文章和页面内容
+
+### 功能特性
+
+- **基于 Astro v5**：利用 Astro 的现代化架构，实现快速构建和优异性能
+- **多格式支持**：支持 Markdown 和 MDX 格式写作
+- **响应式设计**：适配移动端和桌面端，提供一致的用户体验
+- **暗色模式**：仅支持暗色主题，专注阅读体验
+- **评论系统**：集成 Waline 评论系统，支持互动
+- **SEO 优化**：自动生成 RSS 和站点地图，提升搜索引擎可见性
+- **代码高亮**：使用 Expressive Code 提供高质量代码高亮
+- **数学公式**：支持 KaTeX 渲染数学公式
+- **文章目录**：自动生成文章目录，提升导航体验
+- **自定义配置**：灵活的配置文件，支持个性化定制
 
 ## 主要配置模块
 
