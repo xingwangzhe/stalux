@@ -118,8 +118,25 @@ import "../styles/components/Header.css";
 </div>
 
 <script>
-  // 移动端菜单交互逻辑
-  const initMobileMenu = () => {
+  // 移动端菜单交互逻辑 - 使用client:load确保每次页面加载都执行
+  console.log("Header script loaded");
+
+  // 全局事件处理器存储 - 使用正确的类型定义
+  const eventHandlers = {
+    menuClick: null as ((e: Event) => void) | null,
+    menuItemClicks: [] as Array<{ element: Element; func: () => void }>,
+    backdropClick: null as (() => void) | null,
+    documentClick: null as ((e: Event) => void) | null,
+    documentKeydown: null as ((e: KeyboardEvent) => void) | null,
+    searchToggleClick: null as (() => void) | null,
+    searchCloseClick: null as (() => void) | null,
+    searchBackdropClick: null as (() => void) | null,
+    searchKeydown: null as ((e: KeyboardEvent) => void) | null,
+  };
+
+  const initMobileMenu = function () {
+    console.log("initMobileMenu called");
+
     const menuToggle = document.getElementById("mobile-menu-toggle");
     const navMenu = document.getElementById("nav-menu");
     const searchToggle = document.getElementById("search-toggle");
@@ -128,44 +145,100 @@ import "../styles/components/Header.css";
     const searchBackdrop = document.querySelector(".search-backdrop");
     const mobileMenuBackdrop = document.getElementById("mobile-menu-backdrop");
 
+    console.log("Elements found:", {
+      menuToggle: !!menuToggle,
+      navMenu: !!navMenu,
+      mobileMenuBackdrop: !!mobileMenuBackdrop,
+    });
+
     if (menuToggle && navMenu && mobileMenuBackdrop) {
-      menuToggle.addEventListener("click", () => {
+      console.log("Binding click event to menu toggle");
+
+      // 移除之前的事件监听器
+      if (eventHandlers.menuClick) {
+        menuToggle.removeEventListener("click", eventHandlers.menuClick);
+      }
+
+      // 创建新的点击处理函数
+      eventHandlers.menuClick = function (e: Event) {
+        console.log("Menu toggle clicked");
+        e.preventDefault();
+        e.stopPropagation();
+
         if (navMenu.classList.contains("active")) {
           // 关闭菜单
+          console.log("Closing menu");
           navMenu.classList.remove("active");
           menuToggle.setAttribute("aria-expanded", "false");
           mobileMenuBackdrop.classList.remove("active");
         } else {
           // 打开菜单
+          console.log("Opening menu");
           navMenu.classList.add("active");
           menuToggle.setAttribute("aria-expanded", "true");
           mobileMenuBackdrop.classList.add("active");
         }
-      });
+      };
+
+      menuToggle.addEventListener("click", eventHandlers.menuClick);
 
       // 点击菜单项后关闭菜单
       const menuItems = navMenu.querySelectorAll("a, .search-toggle");
-      menuItems.forEach((item) => {
-        item.addEventListener("click", () => {
+      console.log("Found menu items:", menuItems.length);
+
+      // 移除之前的事件监听器
+      eventHandlers.menuItemClicks.forEach((handler) => {
+        if (handler.element && handler.func) {
+          handler.element.removeEventListener("click", handler.func);
+        }
+      });
+      eventHandlers.menuItemClicks = [];
+
+      menuItems.forEach(function (item, index) {
+        const clickHandler = function () {
+          console.log("Menu item clicked:", index);
           if (window.innerWidth <= 768) {
             navMenu.classList.remove("active");
             menuToggle.setAttribute("aria-expanded", "false");
             mobileMenuBackdrop.classList.remove("active");
           }
+        };
+
+        item.addEventListener("click", clickHandler);
+        eventHandlers.menuItemClicks.push({
+          element: item,
+          func: clickHandler,
         });
       });
 
       // 点击遮罩层关闭菜单
       if (mobileMenuBackdrop) {
-        mobileMenuBackdrop.addEventListener("click", () => {
+        if (eventHandlers.backdropClick) {
+          mobileMenuBackdrop.removeEventListener(
+            "click",
+            eventHandlers.backdropClick
+          );
+        }
+
+        eventHandlers.backdropClick = function () {
+          console.log("Backdrop clicked");
           navMenu.classList.remove("active");
           menuToggle.setAttribute("aria-expanded", "false");
           mobileMenuBackdrop.classList.remove("active");
-        });
+        };
+
+        mobileMenuBackdrop.addEventListener(
+          "click",
+          eventHandlers.backdropClick
+        );
       }
 
       // 点击菜单外部关闭菜单
-      document.addEventListener("click", (e) => {
+      if (eventHandlers.documentClick) {
+        document.removeEventListener("click", eventHandlers.documentClick);
+      }
+
+      eventHandlers.documentClick = function (e: Event) {
         if (
           window.innerWidth <= 768 &&
           !navMenu.contains(e.target as Node) &&
@@ -173,70 +246,140 @@ import "../styles/components/Header.css";
           !mobileMenuBackdrop.contains(e.target as Node) &&
           navMenu.classList.contains("active")
         ) {
+          console.log("Clicked outside menu");
           navMenu.classList.remove("active");
           menuToggle.setAttribute("aria-expanded", "false");
           mobileMenuBackdrop.classList.remove("active");
         }
-      });
+      };
+
+      document.addEventListener("click", eventHandlers.documentClick);
 
       // ESC键关闭菜单
-      document.addEventListener("keydown", (e) => {
+      if (eventHandlers.documentKeydown) {
+        document.removeEventListener("keydown", eventHandlers.documentKeydown);
+      }
+
+      eventHandlers.documentKeydown = function (e: KeyboardEvent) {
         if (e.key === "Escape" && navMenu.classList.contains("active")) {
+          console.log("ESC pressed");
           navMenu.classList.remove("active");
           menuToggle.setAttribute("aria-expanded", "false");
           mobileMenuBackdrop.classList.remove("active");
         }
-      });
+      };
+
+      document.addEventListener("keydown", eventHandlers.documentKeydown);
+    } else {
+      console.log("Required elements not found, cannot initialize menu");
     }
 
     // 搜索框交互逻辑
     if (searchToggle && searchContainer && searchClose) {
+      console.log("Initializing search functionality");
+
+      // 移除之前的事件监听器
+      if (eventHandlers.searchToggleClick) {
+        searchToggle.removeEventListener(
+          "click",
+          eventHandlers.searchToggleClick
+        );
+      }
+      if (eventHandlers.searchCloseClick) {
+        searchClose.removeEventListener(
+          "click",
+          eventHandlers.searchCloseClick
+        );
+      }
+
       // 点击搜索按钮显示搜索框
-      searchToggle.addEventListener("click", () => {
+      eventHandlers.searchToggleClick = function () {
+        console.log("Search toggle clicked");
         searchContainer.classList.add("active");
         document.body.style.overflow = "hidden"; // 防止背景滚动
         // 聚焦到搜索输入框
-        setTimeout(() => {
+        setTimeout(function () {
           const searchInput = document.querySelector(
             ".pagefind-ui__search-input"
           );
-          if (searchInput) {
-            (searchInput as HTMLElement).focus();
+          if (searchInput && typeof (searchInput as any).focus === "function") {
+            (searchInput as any).focus();
           }
         }, 100);
-      });
+      };
+
+      searchToggle.addEventListener("click", eventHandlers.searchToggleClick);
 
       // 点击关闭按钮隐藏搜索框
-      searchClose.addEventListener("click", () => {
+      eventHandlers.searchCloseClick = function () {
+        console.log("Search close clicked");
         searchContainer.classList.remove("active");
         document.body.style.overflow = ""; // 恢复背景滚动
-      });
+      };
+
+      searchClose.addEventListener("click", eventHandlers.searchCloseClick);
 
       // 点击遮罩层关闭搜索框
       if (searchBackdrop) {
-        searchBackdrop.addEventListener("click", () => {
+        if (eventHandlers.searchBackdropClick) {
+          searchBackdrop.removeEventListener(
+            "click",
+            eventHandlers.searchBackdropClick
+          );
+        }
+
+        eventHandlers.searchBackdropClick = function () {
+          console.log("Search backdrop clicked");
           searchContainer.classList.remove("active");
           document.body.style.overflow = "";
-        });
+        };
+
+        searchBackdrop.addEventListener(
+          "click",
+          eventHandlers.searchBackdropClick
+        );
       }
 
       // ESC键关闭搜索框
-      document.addEventListener("keydown", (e) => {
+      if (eventHandlers.searchKeydown) {
+        document.removeEventListener("keydown", eventHandlers.searchKeydown);
+      }
+
+      eventHandlers.searchKeydown = function (e: KeyboardEvent) {
         if (
           e.key === "Escape" &&
           searchContainer.classList.contains("active")
         ) {
+          console.log("ESC pressed for search");
           searchContainer.classList.remove("active");
           document.body.style.overflow = "";
         }
-      });
+      };
+
+      document.addEventListener("keydown", eventHandlers.searchKeydown);
     }
   };
 
-  // 如果DOM已经加载，则立即初始化，否则等待加载
+  // 页面加载完成后初始化
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOMContentLoaded fired, initializing menu...");
+    initMobileMenu();
+  });
+
+  // 监听Astro页面过渡事件
+  document.addEventListener("astro:page-load", function () {
+    console.log("Astro page-load event fired, reinitializing menu...");
+    // 延迟执行，确保DOM已更新
+    setTimeout(function () {
+      initMobileMenu();
+    }, 50);
+  });
+
+  // 立即尝试初始化（以防DOMContentLoaded已经触发）
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initMobileMenu);
+    console.log("Document still loading, waiting for DOMContentLoaded...");
   } else {
+    console.log("Document already loaded, initializing immediately...");
     initMobileMenu();
   }
 </script>
