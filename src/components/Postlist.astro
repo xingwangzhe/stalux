@@ -3,74 +3,87 @@
 ---
 
 <div class="postlist-wrapper">
-    <div id="posts-container" class="posts-container" style="display: none;">
-        <div class="posts-grid" id="posts-grid">
-            <!-- 文章将通过 JavaScript 动态加载 -->
-        </div>
+  <div id="posts-container" class="posts-container" style="display: none;">
+    <div class="posts-grid" id="posts-grid">
+      <!-- 文章将通过 JavaScript 动态加载 -->
     </div>
-    
-    <div id="load-posts-trigger" class="load-posts-trigger">
-        <button id="load-posts-btn" class="load-posts-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14,2 14,8 20,8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10,9 9,9 8,9"></polyline>
-            </svg>
-            <span>点击加载文章列表</span>
-        </button>
-    </div>
+  </div>
+
+  <div id="load-posts-trigger" class="load-posts-trigger">
+    <button id="load-posts-btn" class="load-posts-btn">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+        ></path>
+        <polyline points="14,2 14,8 20,8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10,9 9,9 8,9"></polyline>
+      </svg>
+      <span>点击加载文章列表</span>
+    </button>
+  </div>
 </div>
 
 <script>
-    // 从 /api/posts.json API 获取文章数据
-    async function fetchAllPosts() {
-        try {
-            const response = await fetch('/api/posts.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            return data.Posts || [];
-        } catch (error) {
-            console.error('Failed to fetch posts:', error);
-            return [];
-        }
+  // 从 /api/posts.json API 获取文章数据
+  async function fetchAllPosts() {
+    try {
+      const response = await fetch("/api/posts.json");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data.Posts || [];
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+      return [];
     }
+  }
 
-    // 生成文章卡片HTML
-    function generatePostHTML(post: any) {
-        // 处理标签
-        const tagsHTML = post.tags && post.tags.length > 0 ? 
-            `<div class="post-tags">
-                ${post.tags.map((tag: any) => `<span class="tag">${tag}</span>`).join('')}
-            </div>` : '';
+  // 生成文章卡片HTML
+  function generatePostHTML(post: any) {
+    // 处理标签
+    const tagsHTML =
+      post.tags && post.tags.length > 0
+        ? `<div class="post-tags">
+                ${post.tags.map((tag: any) => `<span class="tag">${tag}</span>`).join("")}
+            </div>`
+        : "";
 
-        // 处理日期显示
-        const formatDate = (dateString: string) => {
-            if (!dateString) return '';
-            try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) return '';
-                return date.toLocaleDateString('zh-CN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                });
-            } catch (error) {
-                console.warn('Invalid date format:', dateString);
-                return '';
-            }
-        };
+    // 处理日期显示
+    const formatDate = (dateString: string) => {
+      if (!dateString) return "";
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "";
+        return date.toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+      } catch (error) {
+        console.warn("Invalid date format:", dateString);
+        return "";
+      }
+    };
 
-        const createDate = formatDate(post.date);
-        const updateDate = formatDate(post.updated);
-        
-        // 生成日期信息HTML
-        let dateHTML = '';
-        if (createDate) {
-            dateHTML += `<span class="post-date create-date" title="创建时间">
+    const createDate = formatDate(post.date);
+    const updateDate = formatDate(post.updated);
+
+    // 生成日期信息HTML
+    let dateHTML = "";
+    if (createDate) {
+      dateHTML += `<span class="post-date create-date" title="创建时间">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                     <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -79,454 +92,523 @@
                 </svg>
                 ${createDate}
             </span>`;
-        }
-        
-        if (updateDate && updateDate !== createDate) {
-            dateHTML += `<span class="post-date update-date" title="更新时间">
+    }
+
+    if (updateDate && updateDate !== createDate) {
+      dateHTML += `<span class="post-date update-date" title="更新时间">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                 </svg>
                 ${updateDate}
             </span>`;
-        }
+    }
 
-        return `
+    return `
             <article class="post-card">
                 <a href="${post.link}">
                     <h2 class="post-title">${post.title}</h2>
-                    <p class="post-description">${post.description || ''}</p>
+                    <p class="post-description">${post.description || ""}</p>
                     <div class="post-meta">
-                        ${dateHTML ? `<div class="post-dates">${dateHTML}</div>` : ''}
+                        ${dateHTML ? `<div class="post-dates">${dateHTML}</div>` : ""}
                         ${tagsHTML}
                     </div>
                 </a>
             </article>
         `;
+  }
+
+  // 渲染所有文章
+  function renderPosts(posts: any[]) {
+    const postsGrid = document.getElementById("posts-grid");
+    if (!postsGrid) return;
+
+    if (posts.length === 0) {
+      postsGrid.innerHTML = '<div class="no-posts">暂无文章</div>';
+      return;
     }
 
-    // 渲染所有文章
-    function renderPosts(posts: any[]) {
-        const postsGrid = document.getElementById('posts-grid');
-        if (!postsGrid) return;
+    postsGrid.innerHTML = posts
+      .map((post: any) => generatePostHTML(post))
+      .join("");
+    console.log("Generated HTML for", posts.length, "posts");
+    console.log(
+      "First post HTML:",
+      posts.length > 0 ? generatePostHTML(posts[0]) : "No posts"
+    );
 
-        if (posts.length === 0) {
-            postsGrid.innerHTML = '<div class="no-posts">暂无文章</div>';
-            return;
-        }
-
-        postsGrid.innerHTML = posts.map((post: any) => generatePostHTML(post)).join('');
-        console.log('Generated HTML for', posts.length, 'posts');
-        console.log('First post HTML:', posts.length > 0 ? generatePostHTML(posts[0]) : 'No posts');
-        
-        // 添加渐入动画 - 移除手动透明度控制，让CSS动画处理
-        const postCards = postsGrid.querySelectorAll('.post-card');
-        console.log('Found', postCards.length, 'post cards in DOM');
-        postCards.forEach((card, index) => {
-            const htmlCard = card as HTMLElement;
-            htmlCard.style.animationDelay = `${index * 0.1}s`;
-            console.log(`Card ${index}:`, htmlCard.className, 'computed style:', window.getComputedStyle(htmlCard).backgroundColor);
-            // 移除手动透明度控制，让CSS动画自然执行
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const postsContainer = document.getElementById('posts-container');
-        const loadTrigger = document.getElementById('load-posts-trigger');
-        const loadBtn = document.getElementById('load-posts-btn') as HTMLButtonElement;
-        let postsLoaded = false;
-        let isLoading = false;
-        
-        // 点击按钮加载文章
-        if (loadBtn) {
-            loadBtn.addEventListener('click', function() {
-                if (!postsLoaded && !isLoading) {
-                    loadPosts();
-                }
-            });
-        }
-        
-        // 加载文章函数
-        async function loadPosts() {
-            if (isLoading || postsLoaded || !postsContainer) return;
-            
-            isLoading = true;
-            
-            // 显示加载状态
-            if (loadBtn) {
-                loadBtn.disabled = true;
-                loadBtn.innerHTML = `
-                    <div class="spinner"></div>
-                    <span>正在加载文章...</span>
-                `;
-            }
-            
-            try {
-                // 从 API 获取文章数据
-                const posts = await fetchAllPosts();
-                
-                // 渲染文章
-                renderPosts(posts);
-                console.log('Posts rendered:', posts.length, 'articles');
-                
-                // 显示文章容器
-                postsContainer.style.display = 'block';
-                postsContainer.classList.add('show');
-                postsContainer.style.animation = 'fadeInUp 0.8s ease-in-out forwards';
-                console.log('Posts container displayed');
-                
-                postsLoaded = true;
-                
-                // 隐藏加载按钮
-                if (loadTrigger) {
-                    loadTrigger.style.display = 'none';
-                }
-                
-                // 预加载图片
-                preloadImages();
-            } catch (error) {
-                console.error('Error loading posts:', error);
-                const postsGrid = document.getElementById('posts-grid');
-                if (postsGrid) {
-                    postsGrid.innerHTML = '<div class="error">加载文章失败，请刷新页面重试</div>';
-                    postsContainer.style.display = 'block';
-                    postsContainer.classList.add('show');
-                }
-                
-                // 恢复按钮状态
-                if (loadBtn) {
-                    loadBtn.disabled = false;
-                    loadBtn.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14,2 14,8 20,8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10,9 9,9 8,9"></polyline>
-                        </svg>
-                        <span>重新加载</span>
-                    `;
-                }
-            } finally {
-                isLoading = false;
-            }
-        }
-        
-        // 预加载图片
-        function preloadImages() {
-            const images = postsContainer?.querySelectorAll('img');
-            images?.forEach(img => {
-                if (img.dataset.src) {
-                    img.src = img.dataset.src;
-                }
-            });
-        }
+    // 添加渐入动画 - 移除手动透明度控制，让CSS动画处理
+    const postCards = postsGrid.querySelectorAll(".post-card");
+    console.log("Found", postCards.length, "post cards in DOM");
+    postCards.forEach((card, index) => {
+      const htmlCard = card as HTMLElement;
+      htmlCard.style.animationDelay = `${index * 0.1}s`;
+      console.log(
+        `Card ${index}:`,
+        htmlCard.className,
+        "computed style:",
+        window.getComputedStyle(htmlCard).backgroundColor
+      );
+      // 移除手动透明度控制，让CSS动画自然执行
     });
+  }
+
+  // 立即初始化事件监听器，不等待DOMContentLoaded
+  const postsContainer = document.getElementById("posts-container");
+  const loadTrigger = document.getElementById("load-posts-trigger");
+  const loadBtn = document.getElementById(
+    "load-posts-btn"
+  ) as HTMLButtonElement;
+  let postsLoaded = false;
+  let isLoading = false;
+
+  // 点击按钮加载文章
+  if (loadBtn) {
+    loadBtn.addEventListener("click", function () {
+      if (!postsLoaded && !isLoading) {
+        loadPosts();
+      }
+    });
+  }
+
+  // 加载文章函数
+  async function loadPosts() {
+    if (isLoading || postsLoaded || !postsContainer) return;
+
+    isLoading = true;
+
+    // 显示加载状态
+    if (loadBtn) {
+      loadBtn.disabled = true;
+      loadBtn.innerHTML = `
+                <div class="spinner"></div>
+                <span>正在加载文章...</span>
+            `;
+    }
+
+    try {
+      // 从 API 获取文章数据
+      const posts = await fetchAllPosts();
+
+      // 渲染文章
+      renderPosts(posts);
+      console.log("Posts rendered:", posts.length, "articles");
+
+      // 显示文章容器
+      postsContainer.style.display = "block";
+      postsContainer.classList.add("show");
+      postsContainer.style.animation = "fadeInUp 0.8s ease-in-out forwards";
+      console.log("Posts container displayed");
+
+      postsLoaded = true;
+
+      // 隐藏加载按钮
+      if (loadTrigger) {
+        loadTrigger.style.display = "none";
+      }
+
+      // 预加载图片
+      preloadImages();
+    } catch (error) {
+      console.error("Error loading posts:", error);
+      const postsGrid = document.getElementById("posts-grid");
+      if (postsGrid) {
+        postsGrid.innerHTML =
+          '<div class="error">加载文章失败，请刷新页面重试</div>';
+        postsContainer.style.display = "block";
+        postsContainer.classList.add("show");
+      }
+
+      // 恢复按钮状态
+      if (loadBtn) {
+        loadBtn.disabled = false;
+        loadBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10,9 9,9 8,9"></polyline>
+                    </svg>
+                    <span>重新加载</span>
+                `;
+      }
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  // 预加载图片
+  function preloadImages() {
+    const images = postsContainer?.querySelectorAll("img");
+    images?.forEach((img) => {
+      if (img.dataset.src) {
+        img.src = img.dataset.src;
+      }
+    });
+  }
+
+  // 备用：如果元素还没有加载完成，使用MutationObserver监听
+  if (!loadBtn) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as Element;
+            const btn =
+              element.id === "load-posts-btn"
+                ? element
+                : element.querySelector("#load-posts-btn");
+            if (btn && !postsLoaded && !isLoading) {
+              (btn as HTMLButtonElement).addEventListener("click", function () {
+                if (!postsLoaded && !isLoading) {
+                  loadPosts();
+                }
+              });
+              observer.disconnect();
+            }
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    // 5秒后停止观察，避免性能问题
+    setTimeout(() => {
+      observer.disconnect();
+    }, 5000);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // DOMContentLoaded事件中可以做一些额外的初始化工作
+    console.log("Postlist component fully loaded");
+  });
 </script>
 
 <style is:global>
-    .postlist-wrapper {
-        width: 100%;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-    
-    .posts-container {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    
-    .posts-container[style*="display: block"] {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  .postlist-wrapper {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
 
-    /* 确保容器在显示时能正确应用样式 */
-    .posts-container.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    .load-posts-trigger {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 2rem 0;
-        padding: 1rem;
-    }
-    
-    .load-posts-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        background: linear-gradient(135deg, rgba(100, 200, 255, 0.1), rgba(255, 200, 100, 0.1));
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: rgba(255, 255, 255, 0.9);
-        padding: 1rem 2rem;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    
-    .load-posts-btn:hover {
-        transform: translateY(-2px);
-        background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(255, 200, 100, 0.2));
-        border-color: rgba(255, 255, 255, 0.4);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    }
-    
-    .load-posts-btn:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .load-posts-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-    }
-    
-    .load-posts-btn svg {
-        transition: transform 0.3s ease;
-    }
-    
-    .load-posts-btn:hover svg {
-        transform: scale(1.1);
-    }
-    
-    .load-posts-btn .spinner {
-        width: 20px;
-        height: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top: 2px solid rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+  .posts-container {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.8s ease;
+  }
 
-    @keyframes fadeInUp {
-        0% {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+  .posts-container[style*="display: block"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
+  /* 确保容器在显示时能正确应用样式 */
+  .posts-container.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .load-posts-trigger {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+    padding: 1rem;
+  }
+
+  .load-posts-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: linear-gradient(
+      135deg,
+      rgba(100, 200, 255, 0.1),
+      rgba(255, 200, 100, 0.1)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .load-posts-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(
+      135deg,
+      rgba(100, 200, 255, 0.2),
+      rgba(255, 200, 100, 0.2)
+    );
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .load-posts-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .load-posts-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .load-posts-btn svg {
+    transition: transform 0.3s ease;
+  }
+
+  .load-posts-btn:hover svg {
+    transform: scale(1.1);
+  }
+
+  .load-posts-btn .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .postlist-wrapper .post-card {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+    cursor: pointer;
+    animation: fadeInUp 0.6s ease-in-out forwards;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+  }
+
+  .postlist-wrapper .post-card a {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+
+  .postlist-wrapper .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.25);
+  }
+
+  .post-title {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.3;
+    text-shadow: 0.1rem 0.1rem 0.3rem rgba(1, 162, 190, 0.3);
+  }
+
+  .post-description {
+    margin: 0 0 1rem 0;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    font-size: 0.9rem;
+  }
+
+  .post-meta {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .post-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .post-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .post-date svg {
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  .create-date {
+    background-color: rgba(100, 200, 255, 0.1);
+    color: rgba(100, 200, 255, 0.9);
+    border-color: rgba(100, 200, 255, 0.2);
+  }
+
+  .update-date {
+    background-color: rgba(255, 200, 100, 0.1);
+    color: rgba(255, 200, 100, 0.9);
+    border-color: rgba(255, 200, 100, 0.2);
+  }
+
+  .post-date:hover {
+    transform: translateY(-1px);
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .create-date:hover {
+    background-color: rgba(100, 200, 255, 0.2);
+    border-color: rgba(100, 200, 255, 0.4);
+  }
+
+  .update-date:hover {
+    background-color: rgba(255, 200, 100, 0.2);
+    border-color: rgba(255, 200, 100, 0.4);
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .tag:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  /* 无文章和错误状态样式 */
+  .no-posts,
+  .error {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    grid-column: 1 / -1; /* 占满整个网格 */
+  }
+
+  .error {
+    color: rgba(255, 100, 100, 0.8);
+  }
+
+  /* 优化移动端体验 */
+  @media (max-width: 768px) {
     .posts-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        padding: 1rem;
-        width: 100%;
+      grid-template-columns: 1fr;
+      padding: 0.5rem;
+      gap: 1rem;
     }
 
-    .postlist-wrapper .post-card {
-        background-color: rgba(0, 0, 0, 0.2);
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        padding: 1.5rem;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        cursor: pointer;
-        animation: fadeInUp 0.6s ease-in-out forwards;
-        opacity: 0;
-        animation-fill-mode: forwards;
-        display: flex !important;
-        flex-direction: column !important;
-        height: 100% !important;
-    }
-
-    .postlist-wrapper .post-card a {
-        display: flex !important;
-        flex-direction: column !important;
-        height: 100% !important;
-        text-decoration: none !important;
-        color: inherit !important;
-    }
-
-    .postlist-wrapper .post-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        background-color: rgba(0, 0, 0, 0.25);
+    .post-card {
+      padding: 1rem;
     }
 
     .post-title {
-        margin: 0 0 0.75rem 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.9);
-        line-height: 1.3;
-        text-shadow: 0.1rem 0.1rem 0.3rem rgba(1, 162, 190, 0.3);
-    }
-
-    .post-description {
-        margin: 0 0 1rem 0;
-        color: rgba(255, 255, 255, 0.7);
-        line-height: 1.6;
-        font-size: 0.9rem;
-    }
-
-    .post-meta {
-        margin-top: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+      font-size: 1.1rem;
     }
 
     .post-dates {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+      gap: 0.5rem;
     }
 
     .post-date {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        background-color: rgba(255, 255, 255, 0.08);
-        color: rgba(255, 255, 255, 0.75);
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        font-weight: 400;
-        transition: all 0.2s ease;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.65rem;
+      padding: 0.2rem 0.4rem;
     }
 
     .post-date svg {
-        flex-shrink: 0;
-        opacity: 0.8;
-    }
-
-    .create-date {
-        background-color: rgba(100, 200, 255, 0.1);
-        color: rgba(100, 200, 255, 0.9);
-        border-color: rgba(100, 200, 255, 0.2);
-    }
-
-    .update-date {
-        background-color: rgba(255, 200, 100, 0.1);
-        color: rgba(255, 200, 100, 0.9);
-        border-color: rgba(255, 200, 100, 0.2);
-    }
-
-    .post-date:hover {
-        transform: translateY(-1px);
-        background-color: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .create-date:hover {
-        background-color: rgba(100, 200, 255, 0.2);
-        border-color: rgba(100, 200, 255, 0.4);
-    }
-
-    .update-date:hover {
-        background-color: rgba(255, 200, 100, 0.2);
-        border-color: rgba(255, 200, 100, 0.4);
-    }
-
-    .post-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+      width: 10px;
+      height: 10px;
     }
 
     .tag {
-        background-color: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.9);
-        padding: 0.2rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
     }
 
-    .tag:hover {
-        background-color: rgba(255, 255, 255, 0.25);
-        transform: translateY(-2px);
+    .load-posts-trigger {
+      margin: 1rem 0;
+      padding: 0.5rem;
     }
 
-    /* 无文章和错误状态样式 */
-    .no-posts, .error {
-        text-align: center;
-        padding: 2rem;
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 1rem;
-        grid-column: 1 / -1; /* 占满整个网格 */
+    .load-posts-btn {
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
     }
+  }
 
-    .error {
-        color: rgba(255, 100, 100, 0.8);
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .posts-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     }
+  }
 
-    /* 优化移动端体验 */
-    @media (max-width: 768px) {
-        .posts-grid {
-            grid-template-columns: 1fr;
-            padding: 0.5rem;
-            gap: 1rem;
-        }
-        
-        .post-card {
-            padding: 1rem;
-        }
-        
-        .post-title {
-            font-size: 1.1rem;
-        }
-
-        .post-dates {
-            gap: 0.5rem;
-        }
-
-        .post-date {
-            font-size: 0.65rem;
-            padding: 0.2rem 0.4rem;
-        }
-
-        .post-date svg {
-            width: 10px;
-            height: 10px;
-        }
-
-        .tag {
-            font-size: 0.7rem;
-            padding: 0.15rem 0.4rem;
-        }
-        
-        .load-posts-trigger {
-            margin: 1rem 0;
-            padding: 0.5rem;
-        }
-        
-        .load-posts-btn {
-            padding: 0.8rem 1.5rem;
-            font-size: 0.9rem;
-        }
+  @media (min-width: 1025px) {
+    .posts-grid {
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
-
-    @media (min-width: 769px) and (max-width: 1024px) {
-        .posts-grid {
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        }
-    }
-
-    @media (min-width: 1025px) {
-        .posts-grid {
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        }
-    }
+  }
 </style>

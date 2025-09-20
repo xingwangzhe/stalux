@@ -1,27 +1,155 @@
 ---
 import SearchS from "astro-pagefind/components/Search";
-import '../styles/components/Search.css';
+import "../styles/components/Search.css";
 ---
-<SearchS 
-  id="search" 
-  className="pagefind-ui" 
-  uiOptions={{ 
-    showImages: false,
-    placeholderText: "",
-    showEmptyResults: true,
-    showSubResults: true,
-    resetStyles: true,
-    translations: {
-      placeholder: "",
-      clear_search: "清除",
-      load_more: "加载更多结果",
-      search_label: "搜索网站",
-      filters_label: "筛选",
-      zero_results: "未找到与 [SEARCH_TERM] 相关的结果",
-      many_results: "找到 [COUNT] 个与 [SEARCH_TERM] 相关的结果",
-      one_result: "找到 1 个与 [SEARCH_TERM] 相关的结果",
-      searching: "搜索 [SEARCH_TERM] 中..."
-    }
-  }}
-/>
 
+<div class="search-wrapper">
+  <SearchS
+    id="search"
+    className="pagefind-ui"
+    uiOptions={{
+      showImages: false,
+      placeholderText: "",
+      showEmptyResults: true,
+      showSubResults: true,
+      resetStyles: true,
+      translations: {
+        placeholder: "",
+        clear_search: "清除",
+        load_more: "加载更多结果",
+        search_label: "搜索网站",
+        filters_label: "筛选",
+        zero_results: "未找到与 [SEARCH_TERM] 相关的结果",
+        many_results: "找到 [COUNT] 个与 [SEARCH_TERM] 相关的结果",
+        one_result: "找到 1 个与 [SEARCH_TERM] 相关的结果",
+        searching: "搜索 [SEARCH_TERM] 中...",
+      },
+    }}
+  />
+</div>
+
+<script>
+  // 声明pagefind类型
+  declare global {
+    interface Window {
+      pagefind?: any;
+    }
+  }
+
+  // 确保搜索功能在DOM加载前就能工作
+  function ensureSearchWorks() {
+    // 检查pagefind是否已经加载
+    if (typeof window.pagefind === "undefined") {
+      // 如果pagefind还没有加载，等待它加载完成
+      window.addEventListener("load", function () {
+        if (window.pagefind) {
+          initializeSearch();
+        }
+      });
+    } else {
+      initializeSearch();
+    }
+  }
+
+  function initializeSearch() {
+    // 确保搜索输入框可以立即响应
+    const searchInput = document.querySelector(
+      ".pagefind-ui__search-input"
+    ) as HTMLInputElement;
+    if (searchInput) {
+      // 移除可能存在的disabled属性
+      searchInput.disabled = false;
+      searchInput.style.pointerEvents = "auto";
+
+      // 确保输入框可以获取焦点
+      searchInput.addEventListener("focus", function () {
+        this.style.outline = "2px solid rgba(59, 130, 246, 0.5)";
+      });
+
+      searchInput.addEventListener("blur", function () {
+        this.style.outline = "none";
+      });
+    }
+
+    // 监听搜索结果容器的变化，确保结果能正确显示
+    const resultsContainer = document.querySelector(".pagefind-ui__results");
+    if (resultsContainer) {
+      const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+            // 搜索结果更新时，确保样式正确应用
+            const results = resultsContainer.querySelectorAll(
+              ".pagefind-ui__result"
+            );
+            results.forEach(function (result, index) {
+              (result as HTMLElement).style.animationDelay = `${index * 0.1}s`;
+            });
+          }
+        });
+      });
+
+      observer.observe(resultsContainer, {
+        childList: true,
+        subtree: true,
+      });
+    }
+  }
+
+  // 立即尝试初始化
+  ensureSearchWorks();
+
+  // 备用：如果搜索组件还没有完全加载，使用MutationObserver监听
+  const searchObserver = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      mutation.addedNodes.forEach(function (node) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as Element;
+          if (element.classList && element.classList.contains("pagefind-ui")) {
+            // 搜索组件已加载，初始化功能
+            setTimeout(initializeSearch, 100);
+            searchObserver.disconnect();
+          }
+        }
+      });
+    });
+  });
+
+  searchObserver.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+
+  // 5秒后停止观察，避免性能问题
+  setTimeout(function () {
+    searchObserver.disconnect();
+  }, 5000);
+</script>
+
+<style>
+  .search-wrapper {
+    width: 100%;
+    position: relative;
+  }
+
+  .search-wrapper .pagefind-ui__search-input {
+    transition: all 0.2s ease;
+  }
+
+  .search-wrapper .pagefind-ui__search-input:focus {
+    transform: scale(1.02);
+  }
+
+  /* 确保搜索结果有平滑的动画效果 */
+  .search-wrapper .pagefind-ui__result {
+    animation: searchResultFadeIn 0.5s ease-in-out forwards;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  @keyframes searchResultFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
