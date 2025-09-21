@@ -1,23 +1,13 @@
 ---
-import { site } from '../consts'
 import { config_site } from '../utils/yaml-config-adapter'
 import Head from '../components/Head.astro'
-import Header from '../components/Header.astro'
-import Footer from '../components/Footer.astro'
-import { Image } from 'astro:assets';
-import avatar from '../images/avatar.webp';
-import '../styles/home.css'
-import Clock from '../components/others/Clock.vue'
-import SocialLinks from '../components/others/SocialLinks.astro'
-import AuthorCard from '../components/others/AuthorCard.astro'
-const avatarImage = config_site.avatarPath || avatar
 ---
 
 <!DOCTYPE html>
 <html lang={config_site.lang}>
 <Head
-  title="404 - 页面未找到 | {config_site.title}"
-  description="抱歉，您访问的页面不存在。3秒后将自动跳转到首页。"
+  title="404 - 页面未找到"
+  description="抱歉，您访问的页面不存在。"
   url={config_site.url}
   keywords={config_site.keywords}
   author={config_site.author}
@@ -28,358 +18,81 @@ const avatarImage = config_site.avatarPath || avatar
   titleDefault={config_site.titleDefault}
   canonical={config_site.canonical}
   head={config_site.head}
+  noindex={true}
 />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
-<script>
-  import '../scripts/background.ts';
-</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <body>
-  <div class="main-wrapper">
-    <div class="container">
-      <!-- 错误标题 -->
-      <div class="Hometitle">
-        <h1>404 - 页面走丢了</h1>
-      </div>
-      
-      <Header />
-      
-      <!-- 404页面专属的AuthorCard变体 -->
-      <div class="glass-card error-author-card">
-        <div class="author-avatar">
-          {typeof avatarImage === 'string' ? (
-            <img 
-              src={avatarImage} 
-              alt="404"
-              width={100}
-              height={100}
-              class="avatar-img"
-              loading="eager"
-              decoding="async"
-            />
-          ) : (
-            <Image 
-              src={avatarImage} 
-              alt="404"
-              width={100}
-              height={100}
-              class="avatar-img"
-            />
-          )}
-          <div class="error-badge">404</div>
-        </div>
-        <div class="author-info">
-          <h2>抱歉，页面不存在</h2>
-          <p>您访问的页面可能已被删除、移动或从未存在过...</p>
-        </div>
-      </div>
-      
-      <!-- 倒计时卡片 -->
-      <div class="glass-card countdown-card">
-        <div class="countdown-content">
-          <div class="countdown-icon">🚀</div>
-          <div class="countdown-text">
-            <span id="countdown-number">3</span> 秒后自动返回首页
-          </div>
-          <div class="countdown-progress">
-            <div class="progress-bar" id="progress-bar"></div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 时钟组件 -->
-      <Clock client:idle format="24hour" showDate={true} updateInterval={1000} />
-      
-      <!-- 导航按钮卡片 -->
-      <div class="glass-card navigation-card">
-        <div class="nav-buttons">
-          <a href="/" class="nav-btn primary">
-            <span class="btn-icon">🏠</span>
-            <span class="btn-text">返回首页</span>
-          </a>
-          <a href="/posts" class="nav-btn secondary">
-            <span class="btn-icon">📚</span>
-            <span class="btn-text">浏览文章</span>
-          </a>
-          <a href="/archives" class="nav-btn secondary">
-            <span class="btn-icon">📂</span>
-            <span class="btn-text">文章归档</span>
-          </a>
-        </div>
-      </div>
-      
-      <!-- 社交链接 -->
-      <SocialLinks mediaLinks={config_site.medialinks || []} />
+  <div class="error-container">
+    <div class="error-content">
+      <h1>404</h1>
+      <p>页面未找到</p>
+      <a href="/" class="home-btn">返回首页</a>
     </div>
   </div>
-  
-  <Footer/>
-  
+
   <script>
-    // 3秒倒计时跳转
-    let countdown = 3;
-    const countdownElement = document.getElementById('countdown-number');
-    const progressBar = document.getElementById('progress-bar');
-    let startTime = Date.now();
-    
-    const timer = setInterval(() => {
-      countdown--;
-      if (countdownElement) {
-        countdownElement.textContent = countdown.toString();
-      }
-      
-      // 更新进度条
-      if (progressBar) {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / 3000 * 100, 100);
-        progressBar.style.width = progress + '%';
-      }
-      
-      if (countdown <= 0) {
-        clearInterval(timer);
-        window.location.href = '/';
-      }
-    }, 1000);
-    
-    // 页面加载动画
-    document.addEventListener('DOMContentLoaded', () => {
-      // 添加动画类
-      const cards = document.querySelectorAll('.glass-card');
-      cards.forEach((card, index) => {
-        setTimeout(() => {
-          (card as HTMLElement).style.opacity = '1';
-          (card as HTMLElement).style.transform = 'translateY(0)';
-        }, index * 100);
-      });
-    });
+    // 3秒后自动跳转首页
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
   </script>
 </body>
 </html>
 
 <style>
-  /* 继承首页的样式基础 */
-  .main-wrapper {
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1a1a;
+    color: #ffffff;
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
-    flex: 1 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  /* 错误页面专属样式 */
-  .error-author-card {
-    display: flex;
-    align-items: center;
-    padding: 2rem;
-    margin: 1rem 0;
-    gap: 1.5rem;
-    text-align: left;
-  }
-  
-  .author-avatar {
-    position: relative;
-    flex-shrink: 0;
-  }
-  
-  .avatar-img {
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    filter: grayscale(0.3);
-  }
-  
-  .error-badge {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-    color: white;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 0.8rem;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
   }
-  
-  .author-info h2 {
-    margin: 0 0 0.5rem 0;
-    color: #333;
-    font-size: 1.5rem;
-  }
-  
-  .author-info p {
-    margin: 0;
-    color: #666;
-    line-height: 1.6;
-  }
-  
-  .countdown-card {
-    padding: 2rem;
-    margin: 1rem 0;
+
+  .error-container {
     text-align: center;
-  }
-  
-  .countdown-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .countdown-icon {
-    font-size: 3rem;
-    animation: float 2s ease-in-out infinite;
-  }
-  
-  .countdown-text {
-    font-size: 1.2rem;
-    color: #333;
-  }
-  
-  #countdown-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #667eea;
-    text-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
-  }
-  
-  .countdown-progress {
-    width: 100%;
-    height: 6px;
-    background: rgba(102, 126, 234, 0.2);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 1rem;
-  }
-  
-  .progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    border-radius: 3px;
-    width: 0%;
-    transition: width 0.3s ease;
-  }
-  
-  .navigation-card {
     padding: 2rem;
-    margin: 1rem 0;
   }
-  
-  .nav-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
+
+  .error-content h1 {
+    font-size: 6rem;
+    font-weight: bold;
+    margin: 0;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
   }
-  
-  .nav-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1.5rem 1rem;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-    background: rgba(255, 255, 255, 0.5);
-  }
-  
-  .nav-btn.primary {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-  }
-  
-  .nav-btn.secondary {
-    color: #667eea;
-    border-color: rgba(102, 126, 234, 0.3);
-  }
-  
-  .nav-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  }
-  
-  .nav-btn.primary:hover {
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-  }
-  
-  .nav-btn.secondary:hover {
-    background: #667eea;
-    color: white;
-  }
-  
-  .btn-icon {
+
+  .error-content p {
     font-size: 1.5rem;
+    margin: 1rem 0 2rem 0;
+    color: #cccccc;
   }
-  
-  .btn-text {
-    font-weight: 600;
-    font-size: 0.9rem;
+
+  .home-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #333333;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+    font-size: 1rem;
   }
-  
-  /* 动画效果 */
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+
+  .home-btn:hover {
+    background: #555555;
   }
-  
-  /* 响应式设计 */
+
   @media (max-width: 768px) {
-    .error-author-card {
-      flex-direction: column;
-      text-align: center;
-      padding: 1.5rem;
+    .error-content h1 {
+      font-size: 4rem;
     }
-    
-    .nav-buttons {
-      grid-template-columns: 1fr;
-    }
-    
-    .countdown-card {
-      padding: 1.5rem;
-    }
-    
-    .Hometitle h1 {
-      font-size: 1.8rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .container {
-      width: 95%;
-      padding: 0 10px;
-    }
-    
-    .Hometitle h1 {
-      font-size: 1.5rem;
-    }
-    
-    .error-author-card {
-      padding: 1rem;
-    }
-    
-    .countdown-card {
-      padding: 1rem;
-    }
-    
-    .navigation-card {
-      padding: 1rem;
+
+    .error-content p {
+      font-size: 1.2rem;
     }
   }
 </style>
