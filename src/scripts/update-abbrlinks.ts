@@ -4,11 +4,13 @@
 import { readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 import { createHash } from 'crypto';
-import { loadTimestamps, saveTimestamps } from '../integrations/file-timestamps.mjs';
+import { loadTimestamps, saveTimestamps, type TimestampsData } from '../integrations/file-timestamps.js';
 
-// 递归扫描目录找出所有 .md 和 .mdx 文件
-function scanContentFiles(dir, rootDir = dir) {
-  let results = [];
+/**
+ * 递归扫描目录找出所有 .md 和 .mdx 文件
+ */
+function scanContentFiles(dir: string, rootDir: string = dir): string[] {
+  let results: string[] = [];
   
   try {
     const files = readdirSync(dir);
@@ -28,11 +30,11 @@ function scanContentFiles(dir, rootDir = dir) {
           results.push(filePath);
         }
       } catch (e) {
-        // ignore
+        // ignore errors accessing individual files
       }
     }
   } catch (e) {
-    // ignore
+    // ignore errors accessing directory
   }
   
   return results;
@@ -40,30 +42,25 @@ function scanContentFiles(dir, rootDir = dir) {
 
 /**
  * 检查 abbrlink 是否已存在于其他文件中
- * @param {string} abbrlink 要检查的 abbrlink
- * @param {string} currentFilePath 当前文件路径 (相对路径)
- * @returns {boolean} 如果存在重复返回 true，否则返回 false
  */
-function isDuplicateAbbrlink(abbrlink, currentFilePath, timestamps) {
-  for (const path in timestamps) {
-    if (path !== currentFilePath && 
-        timestamps[path].abbrlink && 
-        timestamps[path].abbrlink === abbrlink) {
-      return true;
-    }
-  }
-  
-  return false;
+function isDuplicateAbbrlink(
+  abbrlink: string,
+  currentFilePath: string,
+  timestamps: TimestampsData
+): boolean {
+  return Object.entries(timestamps).some(
+    ([path, data]) => path !== currentFilePath && data.abbrlink === abbrlink
+  );
 }
 
 /**
  * 为文件生成唯一的 abbrlink
- * @param {string} filepath 文件路径
- * @param {string} createdTime 创建时间
- * @param {object} timestamps 时间戳数据对象
- * @returns {string} 生成的 abbrlink
  */
-function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
+function generateUniqueAbbrlink(
+  filepath: string,
+  createdTime: string,
+  timestamps: TimestampsData
+): string {
   const relativePath = relative(process.cwd(), filepath).replace(/\\/g, '/');
   const timeString = new Date(createdTime).getTime().toString();
   
@@ -99,8 +96,10 @@ function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
   return abbrlink;
 }
 
-// 更新所有文件的 abbrlink
-async function updateAllAbbrlinks() {
+/**
+ * 更新所有文件的 abbrlink
+ */
+async function updateAllAbbrlinks(): Promise<void> {
   // 加载时间戳数据
   const timestamps = loadTimestamps();
   
@@ -130,12 +129,17 @@ async function updateAllAbbrlinks() {
     }
     
     // 使用统一的函数生成新的 abbrlink
-    let abbrlink = generateUniqueAbbrlink(filepath, timestamps[relativePath].created, timestamps);
+    const abbrlink = generateUniqueAbbrlink(
+      filepath,
+      timestamps[relativePath].created,
+      timestamps
+    );
     
     // 检查是否与简单哈希不同（表示发生了重复处理）
     const simpleHash = createHash('sha256')
       .update(relativePath + new Date(timestamps[relativePath].created).getTime().toString())
-      .digest('hex').substring(0, 8);
+      .digest('hex')
+      .substring(0, 8);
     
     if (abbrlink !== simpleHash) {
       duplicates++;
@@ -148,10 +152,12 @@ async function updateAllAbbrlinks() {
   
   // 保存时间戳数据
   saveTimestamps(timestamps);
+  
+  console.log(`✅ 完成！添加: ${added}, 未变: ${unchanged}, 重复处理: ${duplicates}`);
 }
 
 // 执行更新
-updateAllAbbrlinks().catch(error => {
+updateAllAbbrlinks().catch((error: Error) => {
   console.error('更新 abbrlink 时出错:', error);
   process.exit(1);
 });

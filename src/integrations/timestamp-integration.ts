@@ -1,10 +1,21 @@
-import { loadTimestamps, initFileTimestamp, updateModifiedTimestamp, cleanupDeletedFiles, updateFileAbbrlink } from './file-timestamps.mjs';
+import {
+  loadTimestamps,
+  initFileTimestamp,
+  updateModifiedTimestamp,
+  cleanupDeletedFiles,
+  updateFileAbbrlink,
+  type TimestampsData
+} from './file-timestamps.js';
 import { createHash } from 'crypto';
 import { join, relative } from 'path';
-import { readdirSync, statSync, watch, existsSync } from 'fs';
+import { readdirSync, statSync, watch, existsSync, type FSWatcher } from 'fs';
+import type { AstroIntegration } from 'astro';
 
-function scanContentFiles(dir, rootDir = dir) {
-  let results = [];
+/**
+ * 扫描目录下所有的 Markdown 文件
+ */
+function scanContentFiles(dir: string, rootDir: string = dir): string[] {
+  let results: string[] = [];
   
   try {
     const files = readdirSync(dir);
@@ -23,28 +34,37 @@ function scanContentFiles(dir, rootDir = dir) {
           results.push(filePath);
         }
       } catch (e) {
-        // ignore
+        // ignore errors accessing individual files
       }
     }
   } catch (e) {
-    // ignore
+    // ignore errors accessing directory
   }
   
   return results;
 }
 
-function isDuplicateAbbrlink(abbrlink, currentFilePath, timestamps) {
-  for (const path in timestamps) {
-    if (path !== currentFilePath && 
-        timestamps[path].abbrlink && 
-        timestamps[path].abbrlink === abbrlink) {
-      return true;
-    }
-  }
-  return false;
+/**
+ * 检查 abbrlink 是否重复
+ */
+function isDuplicateAbbrlink(
+  abbrlink: string,
+  currentFilePath: string,
+  timestamps: TimestampsData
+): boolean {
+  return Object.entries(timestamps).some(
+    ([path, data]) => path !== currentFilePath && data.abbrlink === abbrlink
+  );
 }
 
-function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
+/**
+ * 生成唯一的 abbrlink
+ */
+function generateUniqueAbbrlink(
+  filepath: string,
+  createdTime: string,
+  timestamps: TimestampsData
+): string {
   const relativePath = relative(process.cwd(), filepath).replace(/\\/g, '/');
   const timeString = new Date(createdTime).getTime().toString();
   
@@ -76,13 +96,24 @@ function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
   return abbrlink;
 }
 
-function validateTimestampConsistency(contentDir) {
+/**
+ * 验证时间戳一致性并清理已删除的文件
+ */
+function validateTimestampConsistency(contentDir: string): {
+  nonExistentFiles: number;
+  newFiles: number;
+  abbrlinksAdded: number;
+} {
   const timestamps = loadTimestamps();
   const contentFiles = scanContentFiles(contentDir);
-  const relativeContentFiles = contentFiles.map(file => relative(process.cwd(), file).replace(/\\/g, '/'));
+  const relativeContentFiles = contentFiles.map(
+    file => relative(process.cwd(), file).replace(/\\/g, '/')
+  );
   
   const timestampPaths = Object.keys(timestamps);
-  const nonExistentFiles = timestampPaths.filter(path => !relativeContentFiles.includes(path));
+  const nonExistentFiles = timestampPaths.filter(
+    path => !relativeContentFiles.includes(path)
+  );
   
   if (nonExistentFiles.length > 0) {
     cleanupDeletedFiles(nonExistentFiles);
@@ -105,65 +136,84 @@ function validateTimestampConsistency(contentDir) {
     const relativePath = relative(process.cwd(), file).replace(/\\/g, '/');
     
     if (updatedTimestamps[relativePath] && !updatedTimestamps[relativePath].abbrlink) {
-      const abbrlink = generateUniqueAbbrlink(file, updatedTimestamps[relativePath].created, updatedTimestamps);
+      const abbrlink = generateUniqueAbbrlink(
+        file,
+        updatedTimestamps[relativePath].created,
+        updatedTimestamps
+      );
       updateFileAbbrlink(file, abbrlink);
       abbrlinksAdded++;
     }
   }
   
-  return { 
-    nonExistentFiles: nonExistentFiles.length, 
+  return {
+    nonExistentFiles: nonExistentFiles.length,
     newFiles: newFileCount,
     abbrlinksAdded
   };
 }
 
-function setupFileWatcher(contentDir) {
+/**
+ * 设置文件监听器
+ */
+function setupFileWatcher(contentDir: string): FSWatcher | null {
   if (!existsSync(contentDir)) {
     console.error(`内容目录不存在: ${contentDir}`);
     return null;
   }
   
   try {
-    const watcher = watch(contentDir, { recursive: true }, (eventType, filename) => {
-      if (!filename || !/\.(md|mdx)$/.test(filename)) return;
-      
-      const fullPath = join(contentDir, filename);
-      
-      if (eventType === 'rename') {
-        try {
-          if (existsSync(fullPath)) {
-            initFileTimestamp(fullPath);
-            
-            const timestamps = loadTimestamps();
-            const relativePath = relative(process.cwd(), fullPath).replace(/\\/g, '/');
-            
-            if (timestamps[relativePath] && !timestamps[relativePath].abbrlink) {
-              const abbrlink = generateUniqueAbbrlink(fullPath, timestamps[relativePath].created, timestamps);
-              updateFileAbbrlink(fullPath, abbrlink);
+    const watcher = watch(
+      contentDir,
+      { recursive: true },
+      (eventType, filename) => {
+        if (!filename || !/\.(md|mdx)$/.test(filename)) return;
+        
+        const fullPath = join(contentDir, filename);
+        
+        if (eventType === 'rename') {
+          try {
+            if (existsSync(fullPath)) {
+              initFileTimestamp(fullPath);
+              
+              const timestamps = loadTimestamps();
+              const relativePath = relative(process.cwd(), fullPath).replace(/\\/g, '/');
+              
+              if (timestamps[relativePath] && !timestamps[relativePath].abbrlink) {
+                const abbrlink = generateUniqueAbbrlink(
+                  fullPath,
+                  timestamps[relativePath].created,
+                  timestamps
+                );
+                updateFileAbbrlink(fullPath, abbrlink);
+              }
+            } else {
+              cleanupDeletedFiles([relative(process.cwd(), fullPath).replace(/\\/g, '/')]);
             }
-          } else {
-            cleanupDeletedFiles([relative(process.cwd(), fullPath).replace(/\\/g, '/')]);
+          } catch (err) {
+            console.error(`处理文件 ${filename} 时出错:`, err);
           }
-        } catch (err) {
-          console.error(`处理文件 ${filename} 时出错:`, err);
-        }
-      } else if (eventType === 'change') {
-        if (existsSync(fullPath)) {
-          updateModifiedTimestamp(fullPath);
+        } else if (eventType === 'change') {
+          if (existsSync(fullPath)) {
+            updateModifiedTimestamp(fullPath);
+          }
         }
       }
-    });
+    );
     
     return watcher;
   } catch (error) {
-    console.error(`设置文件监听器时出错: ${error.message}`);
+    const err = error as Error;
+    console.error(`设置文件监听器时出错: ${err.message}`);
     return null;
   }
 }
 
-export default function timestampIntegration() {
-  let fileWatcher = null;
+/**
+ * Astro 集成：时间戳和 abbrlink 管理
+ */
+export default function timestampIntegration(): AstroIntegration {
+  let fileWatcher: FSWatcher | null = null;
   
   return {
     name: 'stalux-timestamp-integration',
@@ -193,7 +243,7 @@ export default function timestampIntegration() {
         }
       },
       
-      'astro:server:update': async ({ file }) => {
+      'astro:server:update': async ({ file }: { file: string }) => {
         if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
           return;
         }
@@ -205,7 +255,11 @@ export default function timestampIntegration() {
           const relativePath = relative(process.cwd(), file).replace(/\\/g, '/');
           
           if (timestamps[relativePath] && !timestamps[relativePath].abbrlink) {
-            const abbrlink = generateUniqueAbbrlink(file, timestamps[relativePath].created, timestamps);
+            const abbrlink = generateUniqueAbbrlink(
+              file,
+              timestamps[relativePath].created,
+              timestamps
+            );
             updateFileAbbrlink(file, abbrlink);
           }
         }

@@ -166,12 +166,33 @@ import favicon_img from '../images/stalux.ico';
       { name: "author", content: author },
       ...(keywords ? [{ name: "keywords", content: keywords }] : []),
       { "http-equiv": "content-language", content: lang },
+      // 性能提示
+      { "http-equiv": "x-dns-prefetch-control", content: "on" },
+      { name: "format-detection", content: "telephone=no" },
+      // 移动优化
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      // 渲染优化
+      { name: "renderer", content: "webkit" },
+      { name: "force-rendering", content: "webkit" },
       ...(extend.meta || []),
     ],    link: [
       { rel: "icon", href: favicon || favicon_img , type: "image/x-icon" },
       { rel: "alternate", type: "application/rss+xml", title: `${siteName || title} RSS Feed`, href: `/rss.xml` },
       { rel: "alternate", type: "application/atom+xml", title: `${siteName || title} Atom Feed`, href: `/atom.xml` },
       { rel: "alternate", type: "application/sitemap+xml", title: `${siteName || title} Sitemap index Feed`, href: `/sitemap-index.xml` },
+      // 关键字体预加载
+      { rel: "preload", href: "/src/fonts/UbuntuMonoNerdFont-Regular.ttf", as: "font", type: "font/ttf", crossorigin: "anonymous" },
+      { rel: "preload", href: "/src/fonts/UbuntuMonoNerdFont-Bold.ttf", as: "font", type: "font/ttf", crossorigin: "anonymous" },
+      // DNS 预解析
+      { rel: "dns-prefetch", href: "//fonts.googleapis.com" },
+      { rel: "dns-prefetch", href: "//fonts.gstatic.com" },
+      // 预连接
+      { rel: "preconnect", href: "//fonts.googleapis.com", crossorigin: "anonymous" },
+      { rel: "preconnect", href: "//fonts.gstatic.com", crossorigin: "anonymous" },
+      // PWA manifest
+      { rel: "manifest", href: "/manifest.json" },
       ...(extend.link || []),
     ],
   }}

@@ -1,35 +1,36 @@
 import { statSync } from 'fs';
 import { createHash } from 'crypto';
-import { getFileTimestamp, initFileTimestamp, updateFileAbbrlink, loadTimestamps } from './file-timestamps.mjs';
+import { getFileTimestamp, initFileTimestamp, updateFileAbbrlink, loadTimestamps, type FileTimestamp, type TimestampsData } from './file-timestamps';
 import { relative } from 'path';
+import type { Root } from 'mdast';
+import type { VFile } from 'vfile';
 
 /**
  * 检查 abbrlink 是否已存在于其他文件中
- * @param {string} abbrlink 要检查的 abbrlink
- * @param {string} currentFilePath 当前文件路径 (相对路径)
- * @param {object} timestamps 时间戳数据对象
- * @returns {boolean} 如果存在重复返回 true，否则返回 false
  */
-function isDuplicateAbbrlink(abbrlink, currentFilePath, timestamps) {
-  for (const path in timestamps) {
-    if (path !== currentFilePath && 
-        timestamps[path].abbrlink && 
-        timestamps[path].abbrlink === abbrlink) {
-      return true;
-    }
-  }
+function isDuplicateAbbrlink(
   
-  return false;
+  abbrlink: string: string,
+ 
+  currentFilePath: string: string,
+ 
+ times tamps: TimestampsData
+: TimestampsData
+): boolean: boolean {
+  // 使用 Object.entries 和 some 提升性能
+  return Object.entries(timestamps).some(
+    ([path, data]) => path !== currentFilePath && data.abbrlink === abbrlink
+  );
 }
 
 /**
  * 为文件生成唯一的 abbrlink
- * @param {string} filepath 文件路径
- * @param {string} createdTime 创建时间
- * @param {object} timestamps 时间戳数据对象
- * @returns {string} 生成的 abbrlink
  */
-function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
+function generateUniqueAbbrlink(
+  filepath: string,
+  createdTime: string,
+  timestamps: TimestampsData
+): string {
   const relativePath = relative(process.cwd(), filepath).replace(/\\/g, '/');
   const timeString = new Date(createdTime).getTime().toString();
   
@@ -70,7 +71,7 @@ function generateUniqueAbbrlink(filepath, createdTime, timestamps) {
 }
 
 export function remarkModifiedAbbrlink() {
-    return function (tree, file) {
+    return function (tree: Root, file: VFile) {
         // 获取文件路径
         const filepath = file.history[0];
         const relativePath = relative(process.cwd(), filepath).replace(/\\/g, '/');
