@@ -8,25 +8,12 @@ import WalineComment from "../components/comments/WalineComment.vue";
 import "../styles/layouts/BlogPost.css";
 import "../styles/components/PostNavigation.css";
 import { config_site } from "../utils/yaml-config-adapter";
-import removeMd from "remove-markdown";
-
-// 正确定义Props类型
-interface Props {
-	title: string;
-	author?: string;
-	date?: string | Date;
-	updated?: string | Date;
-	tags?: string[];
-	categories?: string[]; // 改为字符串数组
-	headings?: MarkdownHeading[];
-	description?: string;
-	abbrlink?: string;
-	prev?: { title: string; url: string } | null;
-	next?: { title: string; url: string } | null;
-	minutesRead?: string;
-	cover?: string;
-	noindex?: boolean;
-}
+import { description150 } from "../utils/description";
+import "../styles/blog.css";
+import "../styles/global.css";
+import LeftSiderbar from "./LeftSiderbar.astro";
+import RightSiderbar from "./RightSiderbar.astro";
+import CC from "../components/others/CC.astro";
 
 const {
 	title,
@@ -42,21 +29,6 @@ const {
 	next,
 	minutesRead,
 } = Astro.props;
-import "../styles/blog.css";
-import "../styles/global.css";
-import LeftSiderbar from "./LeftSiderbar.astro";
-import RightSiderbar from "./RightSiderbar.astro";
-import CC from "../components/others/CC.astro";
-
-export function description150(description: string): string {
-	const plainText = removeMd(description || "")
-		.replace(/\s+/g, " ")
-		.trim();
-	if (plainText.length > 150) {
-		return plainText.slice(0, 145) + "...";
-	}
-	return plainText;
-}
 
 function categoriesToString(categories?: string[]): string {
 	if (!categories || categories.length === 0) {
@@ -95,7 +67,6 @@ const keyws =
 		: "";
 
 const categoryStr = categoriesToString(categories);
-import "katex/dist/katex.min.css";
 ---
 
 <html lang={config_site.lang} class="dark">

@@ -2,7 +2,7 @@ import { render } from 'astro:content';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { description150 } from '../layouts/BlogPost.astro';
+import { description150 } from '../utils/description';
 
 // 使用插件
 dayjs.extend(utc);

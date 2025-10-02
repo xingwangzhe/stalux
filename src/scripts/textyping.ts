@@ -4,7 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const textTypingElement = document.getElementById("textyping");
     if(!textTypingElement) return;
 
-    const texts = config_site.textyping;
+    const texts: string[] = config_site.textyping || [];
+    if (texts.length === 0) return;
     let currentTextIndex = Math.floor(Math.random() * texts.length);
     let currentCharIndex = 0;
     let isDeleting = false;
