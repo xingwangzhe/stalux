@@ -14,7 +14,7 @@ import "../styles/global.css";
 import LeftSiderbar from "./LeftSiderbar.astro";
 import RightSiderbar from "./RightSiderbar.astro";
 import CC from "../components/others/CC.astro";
-
+import "katex/dist/katex.min.css";
 const {
 	title,
 	date,
@@ -116,7 +116,7 @@ const categoryStr = categoriesToString(categories);
 											发布时间：
 											<time>
 												{date instanceof Date
-													? date.toLocaleDateString()
+													? date.toLocaleDateString('zh-CN')
 													: date}
 											</time>
 										</div>
@@ -128,7 +128,7 @@ const categoryStr = categoriesToString(categories);
 											更新时间：
 											<time>
 												{updated instanceof Date
-													? updated.toLocaleDateString()
+													? updated.toLocaleDateString('zh-CN')
 													: updated}
 											</time>
 										</div>
@@ -297,6 +297,7 @@ const categoryStr = categoriesToString(categories);
 	</body><script>
 		import "../scripts/background.ts";
 		import "../scripts/fancybox.ts";
+					import panZoomTiger  from "svg-pan-zoom";
 		// 为文章内容中的所有图片添加懒加载
 		document.addEventListener("DOMContentLoaded", () => {
 			const articleImages = document.querySelectorAll(
@@ -357,6 +358,89 @@ const categoryStr = categoriesToString(categories);
 					imageObserver.observe(img);
 				});
 			}
+		});
+		// 定义应用 panZoomTiger 的函数
+		function applyPanZoomToMermaid(retryCount = 0, maxRetries = 10) {
+		  let svgs = document.querySelectorAll("[id^='mermaid-']");
+		  console.log('Found Mermaid SVGs:', svgs.length);
+		  if (!svgs || svgs.length === 0) {
+		    // 如果没有找到 SVG，且重试次数未达到上限，则延迟重试
+		    if (retryCount < maxRetries) {
+		      console.log(`No Mermaid SVGs found, retrying in 500ms (attempt ${retryCount + 1}/${maxRetries})`);
+		      setTimeout(() => applyPanZoomToMermaid(retryCount + 1, maxRetries), 500);
+		    } else {
+		      console.log('Max retries reached, no Mermaid SVGs found');
+		    }
+		    return;
+		  }
+		  svgs.forEach((svg, index) => {
+		    // 检查是否已经应用过 panZoomTiger
+		    if ((svg as any)._panZoomTiger) {
+		      console.log('SVG', index, 'already has panZoomTiger applied');
+		      return;
+		    }
+		    (svg as SVGElement).style.height = '500px';
+		    (svg as SVGElement).style.width = '100%';
+		    console.log('Processing SVG', index, ':', svg.id, svg);
+		    if (svg instanceof SVGElement) {
+		      try {
+		        const panZoomInstance = panZoomTiger(svg, {
+		          zoomEnabled: true,
+		          controlIconsEnabled: true,
+		          fit: false,
+		          center: true,
+		        });
+		        // 标记已应用
+		        (svg as any)._panZoomTiger = panZoomInstance;
+		        console.log('Applied panZoomTiger to SVG', index);
+		        // 删除父 DOM 以防止遮盖
+		        if (svg.parentElement) {
+		          const parent = svg.parentElement;
+		          if (parent.parentElement) {
+		            parent.parentElement.insertBefore(svg, parent);
+		            parent.remove();
+		            console.log('Removed parent DOM for SVG', index);
+		          }
+		        }
+		      } catch (error) {
+		        console.error('Error applying panZoomTiger to SVG', index, ':', error);
+		      }
+		    } else {
+		      console.warn('Element is not SVGElement:', svg);
+		    }
+		  });
+		}
+
+		// 初始页面加载时应用
+		document.addEventListener('DOMContentLoaded', () => applyPanZoomToMermaid());
+
+		// 视图过渡页面加载时重新应用（添加延迟以确保 DOM 更新）
+		document.addEventListener('astro:page-load', () => {
+		  setTimeout(() => applyPanZoomToMermaid(), 100);
+		});
+
+		// 使用 MutationObserver 监听动态添加的 Mermaid SVG
+		const observer = new MutationObserver((mutations) => {
+		  mutations.forEach((mutation) => {
+		    if (mutation.type === 'childList') {
+		      mutation.addedNodes.forEach((node) => {
+		        if (node.nodeType === Node.ELEMENT_NODE) {
+		          const element = node as Element;
+		          // 检查新添加的元素是否包含 Mermaid SVG
+		          const mermaidSvgs = element.querySelectorAll("[id^='mermaid-']");
+		          if (mermaidSvgs.length > 0) {
+		            console.log('Detected new Mermaid SVGs via MutationObserver');
+		            applyPanZoomToMermaid();
+		          }
+		          // 也检查元素本身是否是 Mermaid SVG
+		          if (element.id && element.id.startsWith('mermaid-')) {
+		            console.log('Detected new Mermaid SVG element via MutationObserver');
+		            applyPanZoomToMermaid();
+		          }
+		        }
+		      });
+		    }
+		  });
 		});
 	</script>
 	<!-- 添加响应式视口设置 -->
