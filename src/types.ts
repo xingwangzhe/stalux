@@ -13,36 +13,36 @@ export interface SiteConfig {
   url: string;
   author?: string;
   siteName?: string;
-  
+  enableViewTransitions?: boolean;
   // SEO 基础配置
-  titleDefault?: string;     
+  titleDefault?: string;
   lang?: string;
   locale?: string;
   keywords?: string;
   canonical?: string;
-  
+
   // 资源配置
   favicon?: string;
   avatarPath?: string;
   head?: string;
-  
+
   // 导航配置
   nav?: NavItem[];
-  
+
   // 特效配置
   textyping?: string[];
-  
+
   // 社交媒体链接
   medialinks?: MediaLink[];
-  
+
   // 友情链接
   friendlinks_title?: string;
   friendlinks_description?: string;
   friendlinks?: FriendLink[];
-  
+
   // 评论系统配置
   comment?: CommentConfig;
-  
+
   // 页脚配置
   footer?: FooterConfig;
 }
@@ -53,20 +53,20 @@ export interface SiteConfig {
 export interface FooterConfig {
   // 站点构建时间
   buildtime?: string | Date;
-  
+
   // 版权信息
   copyright?: {
     enabled?: boolean;
     startYear?: number;
     customText?: string;
   };
-  
+
   // 主题信息显示
   theme?: {
     showPoweredBy?: boolean;
     showThemeInfo?: boolean;
   };
-  
+
   // 备案信息
   beian?: {
     // ICP备案
@@ -81,7 +81,7 @@ export interface FooterConfig {
       number?: string;
     };
   };
-  
+
   // 徽章
   badges?: BadgeOptions[];
 }
@@ -130,7 +130,7 @@ export interface BadgeOptions {
   label: string;
   message: string;
   color?: string;
-  style?: 'plastic' | 'flat' | 'flat-square' | 'for-the-badge' | 'social';
+  style?: "plastic" | "flat" | "flat-square" | "for-the-badge" | "social";
   labelColor?: string;
   logo?: string;
   logoWidth?: number;

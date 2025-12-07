@@ -2,9 +2,9 @@
 // Head.astro - 页面头部元数据组件
 // 使用 astro-seo 插件优化 SEO
 
-import { config_site } from '../utils/yaml-config-adapter';
-import { SEO, type TwitterCardType } from 'astro-seo';
-import { ClientRouter } from 'astro:transitions';
+import { config_site } from "../utils/yaml-config-adapter";
+import { SEO, type TwitterCardType } from "astro-seo";
+import { ClientRouter } from "astro:transitions";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 // 定义组件接收的属性
 interface Props {
@@ -22,16 +22,17 @@ interface Props {
   siteName?: string;
   structuredData?: string | Record<string, any>;
   noindex?: boolean; // 控制页面是否被索引
-  head?: string;     // 硬嵌入的head内容
+  head?: string; // 硬嵌入的head内容
   canonical?: string; // 规范链接
   enableViewTransitions?: boolean; // 是否启用视图过渡
-  openGraph?: {      // 自定义 Open Graph 配置
+  openGraph?: {
+    // 自定义 Open Graph 配置
     basic: {
       title: string;
       type: string;
       image: string;
       url?: string;
-    },
+    };
     optional?: {
       audio?: string;
       description?: string;
@@ -40,7 +41,7 @@ interface Props {
       localeAlternate?: string[];
       siteName?: string;
       video?: string;
-    },
+    };
     image?: {
       url?: string;
       secureUrl?: string;
@@ -48,7 +49,7 @@ interface Props {
       width?: number;
       height?: number;
       alt?: string;
-    },
+    };
     article?: {
       publishedTime?: string;
       modifiedTime?: string;
@@ -56,9 +57,10 @@ interface Props {
       authors?: string[];
       section?: string;
       tags?: string[];
-    }
+    };
   };
-  twitter?: {         // 自定义 Twitter 卡片配置
+  twitter?: {
+    // 自定义 Twitter 卡片配置
     card?: TwitterCardType;
     site?: string;
     creator?: string;
@@ -67,12 +69,13 @@ interface Props {
     image?: string;
     imageAlt?: string;
   };
-  extend?: {          // 扩展元标签
+  extend?: {
+    // 扩展元标签
     link?: Record<string, any>[];
     meta?: Record<string, any>[];
   };
   titleTemplate?: string; // 标题模板，如 "%s | 网站名称"
-  titleDefault?: string;  // 默认标题，用于替换模板中的%s
+  titleDefault?: string; // 默认标题，用于替换模板中的%s
 }
 
 // 从站点配置获取默认值
@@ -82,136 +85,151 @@ const siteDefaults = {
   url: config_site.url,
   author: config_site.author,
   siteName: config_site.siteName,
-  favicon: config_site.favicon ,
-  lang: config_site.lang || 'zh-CN',
-  locale: config_site.locale || 'zh_CN',
+  favicon: config_site.favicon,
+  lang: config_site.lang || "zh-CN",
+  locale: config_site.locale || "zh_CN",
   keywords: config_site.keywords,
   head: config_site.head,
-}
+  enableViewTransitions: config_site.enableViewTransitions || false,
+};
 
 // 接收组件属性
-const { 
-  title = siteDefaults.title, 
-  author = siteDefaults.author, 
-  description = siteDefaults.description, 
-  favicon = siteDefaults.favicon, 
-  url = siteDefaults.url, 
+const {
+  title = siteDefaults.title,
+  author = siteDefaults.author,
+  description = siteDefaults.description,
+  favicon = siteDefaults.favicon,
+  url = siteDefaults.url,
   keywords = siteDefaults.keywords,
-  ogImage, 
-  twitterImage, 
-  twitterCreator, 
-  lang = siteDefaults.lang, 
-  locale = siteDefaults.locale, 
-  siteName = siteDefaults.siteName, 
-  structuredData, 
+  ogImage,
+  twitterImage,
+  twitterCreator,
+  lang = siteDefaults.lang,
+  locale = siteDefaults.locale,
+  siteName = siteDefaults.siteName,
+  structuredData,
   noindex = false,
   head = siteDefaults.head,
-  canonical = url,         // 规范链接默认为URL
-  openGraph,               // 自定义 Open Graph 配置
-  twitter,                 // 自定义 Twitter 卡片配置
-  extend = {},             // 扩展元标签
-  titleTemplate,           // 标题模板
-  titleDefault = title,    // 默认标题
-  enableViewTransitions = true  // 是否启用视图过渡，默认启用
+  canonical = url, // 规范链接默认为URL
+  openGraph, // 自定义 Open Graph 配置
+  twitter, // 自定义 Twitter 卡片配置
+  extend = {}, // 扩展元标签
+  titleTemplate, // 标题模板
+  titleDefault = title, // 默认标题
+  enableViewTransitions = siteDefaults.enableViewTransitions, // 是否启用视图过渡，默认启用
 } = Astro.props;
 
 // 准备默认的OpenGraph配置
-const defaultOgConfig = ogImage ? {
-  basic: {
-    title: title,
-    type: "website",
-    image: ogImage,
-    url: url,
-  },
-  optional: {
-    description: description,
-    locale: locale,
-    siteName: siteName,
-  }
-} : undefined;
+const defaultOgConfig = ogImage
+  ? {
+      basic: {
+        title: title,
+        type: "website",
+        image: ogImage,
+        url: url,
+      },
+      optional: {
+        description: description,
+        locale: locale,
+        siteName: siteName,
+      },
+    }
+  : undefined;
 
 // 准备默认的Twitter配置
-const defaultTwitterConfig = (twitterImage || ogImage) ? {
-  card: "summary_large_image" as TwitterCardType,
-  site: siteName,
-  creator: twitterCreator,
-  title: title,
-  description: description,
-  image: twitterImage || ogImage,
-} : undefined;
+const defaultTwitterConfig =
+  twitterImage || ogImage
+    ? {
+        card: "summary_large_image" as TwitterCardType,
+        site: siteName,
+        creator: twitterCreator,
+        title: title,
+        description: description,
+        image: twitterImage || ogImage,
+      }
+    : undefined;
 
 // Import the favicon image
-import favicon_img from '../images/stalux.ico';
+import favicon_img from "../images/stalux.ico";
 ---
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<!-- 视图过渡路由器 - 启用页面间的平滑过渡 -->
-{enableViewTransitions && <ClientRouter />}
+  <!-- 视图过渡路由器 - 启用页面间的平滑过渡 -->
+  {enableViewTransitions && <ClientRouter />}
 
-<!-- 使用 astro-seo 插件整合所有 SEO 相关标签 -->
-<SEO
-  title={title}
-  titleTemplate={titleTemplate}
-  titleDefault={titleDefault}
-  description={description}
-  canonical={canonical}
-  noindex={noindex}
-  nofollow={noindex}
-  openGraph={openGraph || defaultOgConfig}
-  twitter={twitter || defaultTwitterConfig}
-  extend={{
-    meta: [
-      { name: "author", content: author },
-      ...(keywords ? [{ name: "keywords", content: keywords }] : []),
-      { "http-equiv": "content-language", content: lang },
-      // 性能提示
-      { "http-equiv": "x-dns-prefetch-control", content: "on" },
-      { name: "format-detection", content: "telephone=no" },
-      // 移动优化
-      { name: "mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      // 渲染优化
-      { name: "renderer", content: "webkit" },
-      { name: "force-rendering", content: "webkit" },
-      ...(extend.meta || []),
-    ],    link: [
-      { rel: "icon", href: favicon || favicon_img , type: "image/x-icon" },
-      { rel: "alternate", type: "application/rss+xml", title: `${siteName || title} RSS Feed`, href: `/rss.xml` },
-      { rel: "alternate", type: "application/atom+xml", title: `${siteName || title} Atom Feed`, href: `/atom.xml` },
-      { rel: "alternate", type: "application/sitemap+xml", title: `${siteName || title} Sitemap index Feed`, href: `/sitemap-index.xml` },
-      // 关键字体预加载
-      { rel: "preload", href: "/src/fonts/UbuntuMonoNerdFont-Regular.ttf", as: "font", type: "font/ttf", crossorigin: "anonymous" },
-      { rel: "preload", href: "/src/fonts/UbuntuMonoNerdFont-Bold.ttf", as: "font", type: "font/ttf", crossorigin: "anonymous" },
-      // DNS 预解析
-      { rel: "dns-prefetch", href: "//fonts.googleapis.com" },
-      { rel: "dns-prefetch", href: "//fonts.gstatic.com" },
-      // 预连接
-      { rel: "preconnect", href: "//fonts.googleapis.com", crossorigin: "anonymous" },
-      { rel: "preconnect", href: "//fonts.gstatic.com", crossorigin: "anonymous" },
-      // PWA manifest
-      { rel: "manifest", href: "/manifest.json" },
-      ...(extend.link || []),
-    ],
-  }}
-/>
-<meta name="color-scheme" content="dark">
-<!-- 使用插槽允许自定义 robots meta 标签 -->
-<slot name="robots"></slot>
+  <!-- 使用 astro-seo 插件整合所有 SEO 相关标签 -->
+  <SEO
+    title={title}
+    titleTemplate={titleTemplate}
+    titleDefault={titleDefault}
+    description={description}
+    canonical={canonical}
+    noindex={noindex}
+    nofollow={noindex}
+    openGraph={openGraph || defaultOgConfig}
+    twitter={twitter || defaultTwitterConfig}
+    extend={{
+      meta: [
+        { name: "author", content: author },
+        ...(keywords ? [{ name: "keywords", content: keywords }] : []),
+        { "http-equiv": "content-language", content: lang },
+        ...(extend.meta || []),
+      ],
+      link: [
+        { rel: "icon", href: favicon || favicon_img, type: "image/x-icon" },
+        {
+          rel: "alternate",
+          type: "application/rss+xml",
+          title: `${siteName || title} RSS Feed`,
+          href: `/rss.xml`,
+        },
+        {
+          rel: "alternate",
+          type: "application/atom+xml",
+          title: `${siteName || title} Atom Feed`,
+          href: `/atom.xml`,
+        },
+        {
+          rel: "alternate",
+          type: "application/sitemap+xml",
+          title: `${siteName || title} Sitemap index Feed`,
+          href: `/sitemap-index.xml`,
+        },
+        ...(extend.link || []),
+      ],
+    }}
+  />
+  <meta name="color-scheme" content="dark" />
+  <!-- 使用插槽允许自定义 robots meta 标签 -->
+  <slot name="robots" />
 
-{/* 结构化数据，如果是字符串则直接使用，否则转换为JSON字符串 */}
-{structuredData && <script type="application/ld+json" set:html={
-  typeof structuredData === 'string' ? structuredData : JSON.stringify(structuredData)
-} />}
+  {/* 结构化数据，如果是字符串则直接使用，否则转换为JSON字符串 */}
+  {
+    structuredData && (
+      <script
+        type="application/ld+json"
+        set:html={
+          typeof structuredData === "string"
+            ? structuredData
+            : JSON.stringify(structuredData)
+        }
+      />
+    )
+  }
 
-<!-- 硬嵌入的head元素 -->
-{head && <Fragment set:html={head} />}
+  <!-- 硬嵌入的head元素 -->
+  {head && <Fragment set:html={head} />}
 
-<!-- 视图过渡增强脚本 -->
-{enableViewTransitions && <script src="/src/scripts/view-transitions.ts" type="module" />}
+  <!-- 视图过渡增强脚本 -->
+  {
+    enableViewTransitions && (
+      <script src="/src/scripts/view-transitions.ts" type="module" />
+    )
+  }
 
-<!-- 通用插槽，用于添加其他head元素 -->
-<slot name="head" />
+  <!-- 通用插槽，用于添加其他head元素 -->
+  <slot name="head" />
 </head>
