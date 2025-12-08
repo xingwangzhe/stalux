@@ -129,6 +129,7 @@ title: "姓王者的博客"
 titleDefault: "姓王者的博客"
 siteName: "姓王者的博客"
 author: "xingwangzhe"
+enableViewTransitions: false  ## 是否启用视图转换效果，默认为 false
 
 # 站点资源配置
 favicon: "/favicon.ico"
