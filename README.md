@@ -7,7 +7,7 @@
 # Stalux - Astro 博客主题
 
 
-**本博客主题已有[软著](./软著证明.pdf)，受中国版权相关法律保护，请务必遵守[LICENSE](./LICENSE)**
+**本博客主题已有[软著](./软著证明.pdf)，受中国版权相关法律保护，请务必遵守[LICENSE](./LICENSE),即MIT协议，遵守该协议即为默认授权自由使用**
 
 <div align="center">
 
