@@ -139,9 +139,6 @@ export default defineConfig({
               if (id.includes("vue")) {
                 return "vue";
               }
-              if (id.includes("@fancyapps")) {
-                return "fancybox";
-              }
               if (id.includes("animejs")) {
                 return "anime";
               }
