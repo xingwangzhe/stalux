@@ -1,7 +1,7 @@
 /* 全局样式 - 现代CSS 2025 */
 
 /* 引入视图过渡样式 */
-@import './view-transitions.css';
+@import "./view-transitions.css";
 
 /* CSS自定义属性 */
 :root {
@@ -10,7 +10,7 @@
   --color-primary-light: rgba(255, 255, 255, 0.25);
   --color-primary-shadow: rgba(1, 162, 190, 0.3);
   --color-primary-dark: #008ba3;
-  
+
   /* 背景色系统 */
   --color-bg-primary: #202020;
   --color-bg-secondary: rgba(255, 255, 255, 0.1);
@@ -18,14 +18,14 @@
   --color-bg-overlay: rgba(0, 0, 0, 0.5);
   --color-bg-glass: rgba(0, 0, 0, 0.25);
   --color-bg-muted: rgba(255, 255, 255, 0.05);
-  
+
   /* 文本色系统 */
   --color-text-primary: #fff;
   --color-text-secondary: rgba(255, 255, 255, 0.8);
   --color-text-muted: rgba(255, 255, 255, 0.6);
   --color-text-light: rgba(255, 255, 255, 0.5);
   --color-heading: rgba(255, 255, 255, 0.9);
-  
+
   /* 边框和阴影系统 */
   --color-border: rgba(255, 255, 255, 0.1);
   --color-border-light: rgba(255, 255, 255, 0.05);
@@ -35,47 +35,51 @@
   --shadow-glow: 0 0 15px rgba(1, 162, 190, 0.2);
   --text-shadow-primary: 0.1rem 0.1rem 0.2rem rgb(1, 162, 190);
   --text-shadow-large: 0.25rem 0.25rem 0.5rem rgb(1, 162, 190);
-  
+
   /* 滚动条系统 */
   --color-scrollbar-track: #2a2a2a;
   --color-scrollbar-thumb: #4a4a4a;
   --color-scrollbar-thumb-hover: #5a5a5a;
-  
+
   /* 字体系统 */
-  --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  --font-family-mono: 'Ubuntu Mono Nerd Font', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'Consolas', 'Liberation Mono', 'Menlo', 'Courier New', monospace;
-  
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  --font-family-mono: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono",
+    "Source Code Pro", "Consolas", "Liberation Mono", "Menlo", "Courier New",
+    monospace;
+
   /* 字体大小系统 */
-  --font-size-xs: 0.75rem;    /* 12px */
-  --font-size-sm: 0.85rem;   /* 13.6px */
-  --font-size-base: 1rem;     /* 16px */
-  --font-size-md: 1.125rem;   /* 18px */
-  --font-size-lg: 1.2rem;     /* 19.2px */
-  --font-size-xl: 1.5rem;     /* 24px */
-  --font-size-2xl: 2rem;      /* 32px */
-  
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.85rem; /* 13.6px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-md: 1.125rem; /* 18px */
+  --font-size-lg: 1.2rem; /* 19.2px */
+  --font-size-xl: 1.5rem; /* 24px */
+  --font-size-2xl: 2rem; /* 32px */
+
   /* 字重系统 */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  
+
   /* 行高系统 */
   --line-height-tight: 1.2;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.6;
   --line-height-loose: 1.8;
-  
+
   /* 间距系统 */
-  --spacing-xs: 0.2rem;      /* 3.2px */
-  --spacing-sm: 0.5rem;       /* 8px */
-  --spacing-md: 1rem;         /* 16px */
-  --spacing-lg: 1.5rem;       /* 24px */
-  --spacing-xl: 2rem;         /* 32px */
-  --spacing-2xl: 2.5rem;      /* 40px */
-  --spacing-3xl: 3rem;        /* 48px */
-  --spacing-4xl: 4rem;        /* 64px */
-  
+  --spacing-xs: 0.2rem; /* 3.2px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 2.5rem; /* 40px */
+  --spacing-3xl: 3rem; /* 48px */
+  --spacing-4xl: 4rem; /* 64px */
+
   /* 圆角系统 */
   --radius-xs: 2px;
   --radius-sm: 4px;
@@ -85,20 +89,20 @@
   --radius-2xl: 16px;
   --radius-3xl: 20px;
   --radius-full: 50%;
-  
+
   /* 宽度系统 */
-  --width-xs: 20rem;          /* 320px */
-  --width-sm: 24rem;          /* 384px */
-  --width-md: 28rem;          /* 448px */
-  --width-lg: 32rem;          /* 512px */
-  --width-xl: 36rem;          /* 576px */
-  --width-2xl: 42rem;         /* 672px */
-  --width-3xl: 48rem;         /* 768px */
-  --width-4xl: 56rem;         /* 896px */
-  --width-5xl: 64rem;         /* 1024px */
-  --width-6xl: 72rem;         /* 1152px */
-  --width-7xl: 80rem;         /* 1280px */
-  
+  --width-xs: 20rem; /* 320px */
+  --width-sm: 24rem; /* 384px */
+  --width-md: 28rem; /* 448px */
+  --width-lg: 32rem; /* 512px */
+  --width-xl: 36rem; /* 576px */
+  --width-2xl: 42rem; /* 672px */
+  --width-3xl: 48rem; /* 768px */
+  --width-4xl: 56rem; /* 896px */
+  --width-5xl: 64rem; /* 1024px */
+  --width-6xl: 72rem; /* 1152px */
+  --width-7xl: 80rem; /* 1280px */
+
   /* 断点系统 */
   --breakpoint-xs: 360px;
   --breakpoint-sm: 480px;
@@ -106,13 +110,13 @@
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
   --breakpoint-2xl: 1400px;
-  
+
   /* 动画时长系统 */
   --duration-fast: 0.15s;
   --duration-normal: 0.3s;
   --duration-slow: 0.5s;
   --duration-slower: 0.8s;
-  
+
   /* 动画缓动系统 */
   --ease-linear: linear;
   --ease-in: ease-in;
@@ -120,16 +124,17 @@
   --ease-in-out: ease-in-out;
   --ease-bounce: cubic-bezier(0.25, 0.8, 0.25, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
+
   /* 组合动画 */
   --transition-fast: var(--duration-fast) var(--ease-out);
   --transition-normal: var(--duration-normal) var(--ease-out);
   --transition-slow: var(--duration-slow) var(--ease-in-out);
   --transition-bounce: var(--duration-normal) var(--ease-bounce);
   --transition-spring: var(--duration-slow) var(--ease-spring);
-  --transition-all: all 0.3s ease-in-out, transform 0.2s ease, box-shadow 0.2s ease;
+  --transition-all: all 0.3s ease-in-out, transform 0.2s ease,
+    box-shadow 0.2s ease;
   --transition-transform: transform 0.3s ease;
-  
+
   /* Z-index 系统 */
   --z-dropdown: 10;
   --z-sticky: 20;
@@ -140,13 +145,13 @@
   --z-tooltip: 70;
   --z-notification: 80;
   --z-maximum: 9999;
-  
+
   /* 模糊效果系统 */
   --blur-sm: 4px;
   --blur-md: 8px;
   --blur-lg: 12px;
   --blur-xl: 20px;
-  
+
   /* 透明度系统 */
   --opacity-0: 0;
   --opacity-10: 0.1;
@@ -161,108 +166,7 @@
   --opacity-100: 1;
 }
 
-/* 导入 Ubuntu Mono Nerd Font - 完整变体 */
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFont-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFont-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFont-Italic.ttf') format('truetype');
-  font-weight: normal;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFont-BoldItalic.ttf') format('truetype');
-  font-weight: bold;
-  font-style: italic;
-  font-display: swap;
-}
-
-/* Ubuntu Mono Nerd Font Mono 系列 - 等宽字体 */
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFontMono-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-  font-variant-numeric: tabular-nums; /* 等宽数字 */
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFontMono-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-  font-variant-numeric: tabular-nums;
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFontMono-Italic.ttf') format('truetype');
-  font-weight: normal;
-  font-style: italic;
-  font-display: swap;
-  font-variant-numeric: tabular-nums;
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFontMono-BoldItalic.ttf') format('truetype');
-  font-weight: bold;
-  font-style: italic;
-  font-display: swap;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Ubuntu Mono Nerd Font Propo 系列 - 比例字体 */
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFontPropo-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFontPropo-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFontPropo-Italic.ttf') format('truetype');
-  font-weight: normal;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Ubuntu Mono Nerd Font';
-  src: url('../fonts/UbuntuMonoNerdFontPropo-BoldItalic.ttf') format('truetype');
-  font-weight: bold;
-  font-style: italic;
-  font-display: swap;
-}
+/* 本地字体已移除：Ubuntu Mono Nerd Font（对应本地文件已删除） */
 
 /* 现代CSS重置 */
 *,
@@ -288,7 +192,7 @@
   background: var(--color-scrollbar-thumb);
   border-radius: 4px;
   transition: background var(--transition-normal);
-  
+
   &:hover {
     background: var(--color-scrollbar-thumb-hover);
   }
@@ -305,20 +209,34 @@ html {
 }
 
 /* 列表样式重置 */
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
 /* 语义化元素样式 */
-address, article, aside, canvas, details, figcaption, figure, 
-footer, header, hgroup, main, nav, section, summary {
+address,
+article,
+aside,
+canvas,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
   display: block;
 }
 
 /* 引用样式重置 */
-blockquote, q {
+blockquote,
+q {
   quotes: none;
-  
+
   &::before,
   &::after {
     content: "";
@@ -348,14 +266,17 @@ body {
 }
 
 /* 代码相关元素 */
-code, pre, kbd, samp {
+code,
+pre,
+kbd,
+samp {
   font-family: var(--font-family-mono);
 }
 
 /* 代码块容器 */
 figure.frame {
   font-family: var(--font-family-mono);
-  
+
   & * {
     font-family: inherit;
   }
@@ -397,7 +318,7 @@ a {
   text-decoration: none;
   color: inherit;
   transition: color var(--transition-normal);
-  
+
   &:focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 2px;
@@ -469,12 +390,24 @@ a {
 }
 
 /* 动画延迟类 */
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
-.delay-600 { animation-delay: 0.6s; }
+.delay-100 {
+  animation-delay: 0.1s;
+}
+.delay-200 {
+  animation-delay: 0.2s;
+}
+.delay-300 {
+  animation-delay: 0.3s;
+}
+.delay-400 {
+  animation-delay: 0.4s;
+}
+.delay-500 {
+  animation-delay: 0.5s;
+}
+.delay-600 {
+  animation-delay: 0.6s;
+}
 
 /* 现代容器布局 */
 .container {
@@ -502,7 +435,7 @@ a {
     flex-direction: column;
     gap: var(--spacing-md);
   }
-  
+
   .col {
     width: 100%;
   }
@@ -510,7 +443,8 @@ a {
 
 /* 移动端无障碍优化 */
 @media (max-width: 768px) {
-  a, button {
+  a,
+  button {
     min-block-size: 44px;
     min-inline-size: 44px;
     display: inline-flex;
