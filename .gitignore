@@ -34,3 +34,5 @@ bun.lock
 # !src/content/posts/basic-config.md
 # !src/content/posts/advanced-config.md
 # public/images/
+
+*.txt
