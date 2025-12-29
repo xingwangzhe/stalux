@@ -55,15 +55,28 @@ function setupPageTransitions(): void {
       prism.highlightAll();
     }
 
-    // 重新初始化图片画廊（PhotoSwipe）
-    const pswp = (window as any).__pswp_lightbox;
-    if (pswp) {
+    // 重新初始化图片画廊（GLightbox）
+    const gl = (window as any).__glightbox;
+    if (gl) {
       try {
-        pswp.destroy();
+        if (typeof gl.destroy === "function") gl.destroy();
       } catch (e) {
         // ignore
       }
-      pswp.init();
+    }
+    // 重新创建实例（使用动态导入以避免打包问题）
+    try {
+      const init = (window as any).__initGlightbox;
+      if (typeof init === "function") {
+        init();
+      } else {
+        import("glightbox").then((mod) => {
+          const GLightbox = (mod && (mod as any).default) || mod;
+          GLightbox({ selector: "a.glightbox-item, a.glightbox" });
+        });
+      }
+    } catch (e) {
+      // ignore
     }
   });
 }
