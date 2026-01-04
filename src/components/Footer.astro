@@ -1,43 +1,60 @@
 ---
-import type { BadgeOptions } from '../types';
-import { generateBadge, svgToDataUrl } from '../utils/badge-generator';
-import { config_site } from '../utils/yaml-config-adapter'
-import { getTotalWordCount, formatWordCount } from '../utils/word-count-utils';
+import type { BadgeOptions } from "../types";
+import { generateBadge, svgToDataUrl } from "../utils/badge-generator";
+import { config_site } from "../utils/yaml-config-adapter";
+import { getTotalWordCount, formatWordCount } from "../utils/word-count-utils";
 
 // --- 配置读取 ---
 // 获取页脚配置，优先使用footer对象中的配置，兼容旧版配置
 const footerConfig = config_site.footer || {};
+// 自定义页脚插入内容
+const footerCustom = footerConfig.custom || "";
 // 作者信息
-const author = config_site.author || 'Stalux';
+const author = config_site.author || "Stalux";
 
 // 版权配置
-const copyrightConfig = footerConfig.copyright || config_site.footer?.copyright || { enabled: true };
+const copyrightConfig = footerConfig.copyright ||
+  config_site.footer?.copyright || { enabled: true };
 
 // 主题信息配置
-const showPoweredBy = footerConfig.theme?.showPoweredBy !== undefined 
-  ? footerConfig.theme.showPoweredBy 
-  : config_site.footer?.theme?.showPoweredBy !== false;
+const showPoweredBy =
+  footerConfig.theme?.showPoweredBy !== undefined
+    ? footerConfig.theme.showPoweredBy
+    : config_site.footer?.theme?.showPoweredBy !== false;
 
-const showThemeInfo = footerConfig.theme?.showThemeInfo !== undefined 
-  ? footerConfig.theme.showThemeInfo 
-  : config_site.footer?.theme?.showThemeInfo !== false;
+const showThemeInfo =
+  footerConfig.theme?.showThemeInfo !== undefined
+    ? footerConfig.theme.showThemeInfo
+    : config_site.footer?.theme?.showThemeInfo !== false;
 
 // 备案信息配置
-const enableIcpBeian = footerConfig.beian?.icp?.enabled !== undefined
-  ? footerConfig.beian.icp.enabled
-  : config_site.footer?.beian?.icp?.enabled !== false;
+const enableIcpBeian =
+  footerConfig.beian?.icp?.enabled !== undefined
+    ? footerConfig.beian.icp.enabled
+    : config_site.footer?.beian?.icp?.enabled !== false;
 
-const icpBeian = footerConfig.beian?.icp?.number || config_site.footer?.beian?.icp?.number || '';
+const icpBeian =
+  footerConfig.beian?.icp?.number ||
+  config_site.footer?.beian?.icp?.number ||
+  "";
 
-const enablePublicSecurityBeian = footerConfig.beian?.security?.enabled !== undefined
-  ? footerConfig.beian.security.enabled
-  : config_site.footer?.beian?.security?.enabled !== false;
+const enablePublicSecurityBeian =
+  footerConfig.beian?.security?.enabled !== undefined
+    ? footerConfig.beian.security.enabled
+    : config_site.footer?.beian?.security?.enabled !== false;
 
-const publicSecurityBeian = footerConfig.beian?.security?.text || config_site.footer?.beian?.security?.text || '';
-const publicSecurityBeianNumber = footerConfig.beian?.security?.number || config_site.footer?.beian?.security?.number || '';
+const publicSecurityBeian =
+  footerConfig.beian?.security?.text ||
+  config_site.footer?.beian?.security?.text ||
+  "";
+const publicSecurityBeianNumber =
+  footerConfig.beian?.security?.number ||
+  config_site.footer?.beian?.security?.number ||
+  "";
 
 // 徽章配置
-const customBadgeOptions = footerConfig.badges || config_site.footer?.badges || [];
+const customBadgeOptions =
+  footerConfig.badges || config_site.footer?.badges || [];
 
 // 是否显示版权
 const showCopyright = copyrightConfig.enabled !== false;
@@ -45,14 +62,20 @@ const showCopyright = copyrightConfig.enabled !== false;
 // 计算版权年份
 const currentYear = new Date().getFullYear();
 const startYear = copyrightConfig.startYear;
-const copyrightYear = (startYear && startYear < currentYear) ? `${startYear}-${currentYear}` : currentYear;
+const copyrightYear =
+  startYear && startYear < currentYear
+    ? `${startYear}-${currentYear}`
+    : currentYear;
 
 // 版权自定义文本
-const copyrightText = copyrightConfig.customText || '';
+const copyrightText = copyrightConfig.customText || "";
 
 // 是否显示备案信息
-const showBeian = (enableIcpBeian && !!icpBeian) || 
-  (enablePublicSecurityBeian && !!publicSecurityBeian && !!publicSecurityBeianNumber);
+const showBeian =
+  (enableIcpBeian && !!icpBeian) ||
+  (enablePublicSecurityBeian &&
+    !!publicSecurityBeian &&
+    !!publicSecurityBeianNumber);
 
 // 是否显示主题信息部分
 const showThemeInfoSection = showPoweredBy || showThemeInfo;
@@ -61,7 +84,7 @@ const showThemeInfoSection = showPoweredBy || showThemeInfo;
 const allBadges = customBadgeOptions.map((options: BadgeOptions) => ({
   src: svgToDataUrl(generateBadge(options)),
   alt: options.alt || `${options.label}: ${options.message}`,
-  href: options.href
+  href: options.href,
 }));
 
 // 检查是否启用了站点运行时间
@@ -75,71 +98,110 @@ const formattedWordCount = formatWordCount(totalWordCount);
 <footer class="site-footer">
   <div class="footer-content">
     <!-- 版权信息 -->
-    {showCopyright && (
-      <div class="copyright">
-        <span>&copy; {copyrightYear} {author}.</span>
-        {copyrightText ? <span>{copyrightText}</span> : <span> 保留权利.</span>}
-      </div>
-    )}
+    {
+      showCopyright && (
+        <div class="copyright">
+          <span>
+            &copy; {copyrightYear} {author}.
+          </span>
+          {copyrightText ? (
+            <span>{copyrightText}</span>
+          ) : (
+            <span> 保留权利.</span>
+          )}
+        </div>
+      )
+    }
 
     <!-- 徽章展示区 -->
-    {allBadges.length > 0 && (
-      <div class="badges">
-        {allBadges.map((badge: { href: string | URL | null | undefined; src: string | null | undefined; alt: string | null | undefined; }) => (
-          badge.href ? 
-          <a href={badge.href} target="_blank" rel="noopener noreferrer">
-            <img src={badge.src} alt={badge.alt} class="badge" />
-          </a> :
-          <img src={badge.src} alt={badge.alt} class="badge" />
-        ))}
-      </div>
-    )}
+    {
+      allBadges.length > 0 && (
+        <div class="badges">
+          {allBadges.map(
+            (badge: {
+              href: string | URL | null | undefined;
+              src: string | null | undefined;
+              alt: string | null | undefined;
+            }) =>
+              badge.href ? (
+                <a href={badge.href} target="_blank" rel="noopener noreferrer">
+                  <img src={badge.src} alt={badge.alt} class="badge" />
+                </a>
+              ) : (
+                <img src={badge.src} alt={badge.alt} class="badge" />
+              )
+          )}
+        </div>
+      )
+    }
 
     <!-- 备案信息区 -->
-    {showBeian && (
-      <div class="beian-info">
-        {enableIcpBeian && icpBeian && (
-          <a 
-            href="https://beian.miit.gov.cn/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
-            {icpBeian}
-          </a>
-        )}
+    {
+      showBeian && (
+        <div class="beian-info">
+          {enableIcpBeian && icpBeian && (
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {icpBeian}
+            </a>
+          )}
 
-        {enablePublicSecurityBeian && publicSecurityBeian && publicSecurityBeianNumber && (
-          <a 
-            href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${publicSecurityBeianNumber}`} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="public-security-beian"
-          >
-            <img src="https://beian.mps.gov.cn/img/logo01.dd7ff50e.png" alt="公安备案图标" />
-            {publicSecurityBeian}
-          </a>
-        )}
-      </div>
-    )}
+          {enablePublicSecurityBeian &&
+            publicSecurityBeian &&
+            publicSecurityBeianNumber && (
+              <a
+                href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${publicSecurityBeianNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="public-security-beian"
+              >
+                <img
+                  src="https://beian.mps.gov.cn/img/logo01.dd7ff50e.png"
+                  alt="公安备案图标"
+                />
+                {publicSecurityBeian}
+              </a>
+            )}
+        </div>
+      )
+    }
 
     <!-- 主题信息 -->
-    {showThemeInfoSection && (
-      <div class="theme-info">
-        {showPoweredBy && (
-          <span>
-            Powered by
-            <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
-          </span>
-        )}
-        {showPoweredBy && showThemeInfo && <span> | </span>}
-        {showThemeInfo && (
-          <span>
-            Theme is
-            <a href="https://github.com/xingwangzhe/stalux" target="_blank" rel="noopener noreferrer">Stalux</a>
-          </span>
-        )}
-      </div>
-    )}    <!-- 站点统计信息 -->
+    {
+      showThemeInfoSection && (
+        <div class="theme-info">
+          {showPoweredBy && (
+            <span>
+              Powered by
+              <a
+                href="https://astro.build"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Astro
+              </a>
+            </span>
+          )}
+          {showPoweredBy && showThemeInfo && <span> | </span>}
+          {showThemeInfo && (
+            <span>
+              Theme is
+              <a
+                href="https://github.com/xingwangzhe/stalux"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Stalux
+              </a>
+            </span>
+          )}
+        </div>
+      )
+    }
+    <!-- 站点统计信息 -->
     <div class="site-stats">
       <span id="vercount_container_site_uv">
         本站访客数：<span id="vercount_value_site_uv">Loading...</span> 人次
@@ -155,48 +217,57 @@ const formattedWordCount = formatWordCount(totalWordCount);
     </div>
 
     <!-- 站点运行时间 -->
-    {showBuildTime && (
-      <div class="site-build-time">
-        <span>本站已正常运行<span id="runtime-counter"></span></span>
-      </div>
-    )}
+    {
+      showBuildTime && (
+        <div class="site-build-time">
+          <span>
+            本站已正常运行
+            <span id="runtime-counter" />
+          </span>
+        </div>
+      )
+    }
+    {/* 硬嵌入的自定义footer内容 */}
+    {footerCustom && <Fragment set:html={footerCustom} />}
   </div>
 </footer>
 
 <script define:vars={{ buildtime: config_site.footer?.buildtime }}>
   if (buildtime) {
-    const runtimeCounter = document.getElementById('runtime-counter');
+    const runtimeCounter = document.getElementById("runtime-counter");
     if (runtimeCounter) {
       // 解析构建时间，处理多种格式
       let buildTimeDate;
-        try {
-        if (typeof buildtime === 'string') {
+      try {
+        if (typeof buildtime === "string") {
           // 日期字符串处理
           const dateStr = buildtime.trim();
-            // 标准ISO格式: '2023-06-20T10:00:00' 或带时区的 '2023-06-20T10:00:00+08:00'
-          if (dateStr.includes('T')) {
+          // 标准ISO格式: '2023-06-20T10:00:00' 或带时区的 '2023-06-20T10:00:00+08:00'
+          if (dateStr.includes("T")) {
             // 确保正确解析带时区的ISO时间
             buildTimeDate = new Date(dateStr);
-            
+
             // 记录解析后的时间，便于调试
-            console.log(`解析时间戳: ${dateStr} => ${buildTimeDate.toISOString()}`);
-          } 
+            console.log(
+              `解析时间戳: ${dateStr} => ${buildTimeDate.toISOString()}`
+            );
+          }
           // 处理常见的中文日期格式: '2023-06-20 10:00:00'
-          else if (dateStr.includes(' ') && dateStr.includes(':')) {
+          else if (dateStr.includes(" ") && dateStr.includes(":")) {
             // 分离日期和时间部分
-            const [datePart, timePart] = dateStr.split(' ');
+            const [datePart, timePart] = dateStr.split(" ");
             if (datePart && timePart) {
-              const [year, month, day] = datePart.split('-');
-              const timeParts = timePart.split(':');
-              
-              const hour = timeParts[0] || '00';
-              const minute = timeParts[1] || '00';
-              const second = timeParts[2] || '00';
-              
+              const [year, month, day] = datePart.split("-");
+              const timeParts = timePart.split(":");
+
+              const hour = timeParts[0] || "00";
+              const minute = timeParts[1] || "00";
+              const second = timeParts[2] || "00";
+
               // 使用 Date 构造函数 - 注意月份从0开始
               buildTimeDate = new Date(
                 parseInt(year),
-                parseInt(month) - 1, 
+                parseInt(month) - 1,
                 parseInt(day),
                 parseInt(hour),
                 parseInt(minute),
@@ -205,12 +276,12 @@ const formattedWordCount = formatWordCount(totalWordCount);
             }
           }
           // 仅有日期的格式: '2023-06-20'
-          else if (dateStr.includes('-')) {
-            const [year, month, day] = dateStr.split('-');
+          else if (dateStr.includes("-")) {
+            const [year, month, day] = dateStr.split("-");
             // 使用 Date 构造函数 - 注意月份从0开始
             buildTimeDate = new Date(
               parseInt(year),
-              parseInt(month) - 1, 
+              parseInt(month) - 1,
               parseInt(day)
             );
           }
@@ -222,18 +293,18 @@ const formattedWordCount = formatWordCount(totalWordCount);
           else {
             buildTimeDate = new Date(dateStr);
           }
-        }        // Date 对象
+        } // Date 对象
         else if (buildtime instanceof Date) {
           buildTimeDate = buildtime;
-        } 
+        }
         // 数字时间戳
-        else if (typeof buildtime === 'number') {
+        else if (typeof buildtime === "number") {
           buildTimeDate = new Date(buildtime);
         }
-        
+
         // 确保构建时间是有效的日期且不是未来日期
         if (!buildTimeDate || isNaN(buildTimeDate.getTime())) {
-          console.warn('网站构建时间格式无效，无法解析: ' + buildtime);
+          console.warn("网站构建时间格式无效，无法解析: " + buildtime);
           // 使用备用日期（当前日期减去1天，作为默认值）
           const yesterday = new Date();
           yesterday.setDate(yesterday.getDate() - 1);
@@ -242,214 +313,214 @@ const formattedWordCount = formatWordCount(totalWordCount);
           // 防止使用未来日期，未来日期会导致计算出负值
           const now = new Date();
           if (buildTimeDate.getTime() > now.getTime()) {
-            console.warn('构建时间设置为未来，将使用当前时间: ' + buildtime);
+            console.warn("构建时间设置为未来，将使用当前时间: " + buildtime);
             buildTimeDate = new Date(now.getTime() - 86400000); // 使用一天前的时间
           }
         }
       } catch (e) {
-        console.error('解析网站构建时间时发生错误:', e);
+        console.error("解析网站构建时间时发生错误:", e);
         // 使用备用日期（当前日期减去1天，作为默认值）
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         buildTimeDate = yesterday;
       }
-      
+
       function updateRuntime() {
         const now = new Date();
         const diff = now.getTime() - buildTimeDate.getTime();
-        
+
         // 计算天、时、分、秒
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const hours = Math.floor(
+          (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        
+
         // 添加千分位分隔符并格式化显示
         const formatNumber = (num) => {
           if (num < 1000) return String(num);
-          return num.toLocaleString('zh-CN');
+          return num.toLocaleString("zh-CN");
         };
-        
+
         // 格式化显示，添加带有特殊样式的文本
         runtimeCounter.innerHTML = `${formatNumber(days)}<span class="time-unit">天</span>${hours}<span class="time-unit">时</span>${minutes}<span class="time-unit">分</span>${seconds}<span class="time-unit">秒</span>`;
       }
-      
+
       // 初次运行
       updateRuntime();
-      
+
       // 设置定时器，每秒更新一次
       setInterval(updateRuntime, 1000);
     }
   }
 </script>
 
-
-
 <!-- Vercount统计脚本 -->
 <script defer src="https://events.vercount.one/js"></script>
 <style>
-.site-footer {
-  width: 100%;
-  padding: 1.5rem 0;
-  text-align: center;
-  margin-top: auto;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  background-color: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.footer-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.copyright {
-  font-weight: 500;
-}
-.copyright span {
-  margin-right: 0.3em; /* 给版权信息各部分之间增加一点间距 */
-}
-
-.badges {
-  display: flex;
-  justify-content: center;
-  align-items: center; /* 垂直居中对齐徽章 */
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.badge {
-  height: 20px;
-  vertical-align: middle; /* 确保图片基线对齐 */
-}
-
-.beian-info {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.beian-info a {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.beian-info a:hover {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: underline;
-}
-
-.public-security-beian {
-  display: inline-flex; /* 改为 inline-flex 使其能与其他备案号在同一行 */
-  align-items: center;
-  gap: 5px;
-}
-
-.public-security-beian img {
-  width: 15px;
-  height: 15px;
-  display: inline-block; /* 确保图片能正确对齐 */
-}
-
-.theme-info {
-  font-size: 0.85rem;
-}
-
-.theme-info a {
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.theme-info a:hover {
-  color: rgba(255, 255, 255, 1);
-  text-decoration: underline;
-}
-
-.site-build-time {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.site-build-time .time-unit {
-  font-size: 0.8em;
-  opacity: 0.85;
-  margin: 0 2px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.site-stats {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.stats-separator {
-  margin: 0 0.5rem;
-  opacity: 0.6;
-}
-
-#vercount_container_site_uv,
-#vercount_container_site_pv,
-#word-count-container {
-  display: inline-block;
-}
-
-#vercount_value_site_uv,
-#vercount_value_site_pv,
-#word-count-value {
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-@media (max-width: 768px) {
   .site-footer {
-    padding: 1.2rem 0;
-    font-size: 0.8rem;
+    width: 100%;
+    padding: 1.5rem 0;
+    text-align: center;
+    margin-top: auto;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
   }
 
   .footer-content {
-    gap: 0.6rem;
-    padding: 0 0.8rem;
-  }
-
-  .site-stats {
+    display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    font-size: 0.8rem;
+    gap: 0.8rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
   }
 
-  .stats-separator {
-    display: none;
+  .copyright {
+    font-weight: 500;
   }
-
-  .beian-info {
-    flex-direction: column;
-    gap: 0.5rem;
+  .copyright span {
+    margin-right: 0.3em; /* 给版权信息各部分之间增加一点间距 */
   }
 
   .badges {
-    gap: 0.3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 垂直居中对齐徽章 */
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .badge {
-    height: 18px;
+    height: 20px;
+    vertical-align: middle; /* 确保图片基线对齐 */
+  }
+
+  .beian-info {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .beian-info a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .beian-info a:hover {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: underline;
+  }
+
+  .public-security-beian {
+    display: inline-flex; /* 改为 inline-flex 使其能与其他备案号在同一行 */
+    align-items: center;
+    gap: 5px;
+  }
+
+  .public-security-beian img {
+    width: 15px;
+    height: 15px;
+    display: inline-block; /* 确保图片能正确对齐 */
   }
 
   .theme-info {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
   }
-}
+
+  .theme-info a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .theme-info a:hover {
+    color: rgba(255, 255, 255, 1);
+    text-decoration: underline;
+  }
+
+  .site-build-time {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .site-build-time .time-unit {
+    font-size: 0.8em;
+    opacity: 0.85;
+    margin: 0 2px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .site-stats {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .stats-separator {
+    margin: 0 0.5rem;
+    opacity: 0.6;
+  }
+
+  #vercount_container_site_uv,
+  #vercount_container_site_pv,
+  #word-count-container {
+    display: inline-block;
+  }
+
+  #vercount_value_site_uv,
+  #vercount_value_site_pv,
+  #word-count-value {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  @media (max-width: 768px) {
+    .site-footer {
+      padding: 1.2rem 0;
+      font-size: 0.8rem;
+    }
+
+    .footer-content {
+      gap: 0.6rem;
+      padding: 0 0.8rem;
+    }
+
+    .site-stats {
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.8rem;
+    }
+
+    .stats-separator {
+      display: none;
+    }
+
+    .beian-info {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .badges {
+      gap: 0.3rem;
+    }
+
+    .badge {
+      height: 18px;
+    }
+
+    .theme-info {
+      font-size: 0.75rem;
+    }
+  }
 </style>

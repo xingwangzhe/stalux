@@ -301,7 +301,11 @@ footer:
       color: "blue"
       alt: "LLM Dataset"
       href: "/llms.txt"
-
+      
+  custom: |
+    <!-- footer自定义插槽示例，可放统计、挂件等 -->
+    <div id="custom-footer-hook"></div>
+    <script>console.log('自定义footer已加载');</script>
 
 
 ```

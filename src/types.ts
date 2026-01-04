@@ -54,6 +54,9 @@ export interface FooterConfig {
   // 站点构建时间
   buildtime?: string | Date;
 
+  // 自定义页脚内嵌内容，支持直接插入HTML/脚本
+  custom?: string;
+
   // 版权信息
   copyright?: {
     enabled?: boolean;
