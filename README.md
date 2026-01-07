@@ -5,6 +5,10 @@
 
 **\#阿里云ESA Pages** **\#阿里云云工开物话题**
 
+[![Stargazers repo roster for @xingwangzhe/stalux](https://reporoster.com/stars/dark/xingwangzhe/stalux)](https://github.com/xingwangzhe/stalux/stargazers)
+
+[![Forkers repo roster for @xingwangzhe/stalux](https://reporoster.com/forks/dark/xingwangzhe/stalux)](https://github.com/xingwangzhe/stalux/network/members)
+
 # Stalux - Astro 博客主题
 
 
