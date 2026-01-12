@@ -178,22 +178,18 @@ export default defineConfig({
           assetFileNames: "assets/[name]-[hash].[ext]",
         },
       },
-      // 提高构建性能
-      chunkSizeWarningLimit: 1000,
-      reportCompressedSize: false, // 生产环境关闭压缩大小报告
-      assetsInlineLimit: 4096, // 小于 4KB 的资源内联为 base64
+      // // 提高构建性能
+      // chunkSizeWarningLimit: 1000,
+      // reportCompressedSize: false, // 生产环境关闭压缩大小报告
+      // assetsInlineLimit: 4096, // 小于 4KB 的资源内联为 base64
     },
     // 优化依赖预构建
     optimizeDeps: {
-      include: ["vue", "dayjs", "animejs", "@fancyapps/ui"],
+      include: ["vue", "dayjs", "animejs"],
       exclude: ["astro:transitions"],
       esbuildOptions: {
         target: "es2022",
       },
-    },
-    // SSR 优化
-    ssr: {
-      noExternal: ["@fancyapps/ui"], // 避免外部依赖问题
     },
     // 开发服务器优化
     server: {
