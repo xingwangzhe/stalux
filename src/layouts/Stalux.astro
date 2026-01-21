@@ -1,0 +1,42 @@
+---
+import Head from "../components/stalux/head.astro";
+import Footer from "../components/stalux/footer.astro";
+import "../styles/init.css";
+const props = Astro.props as Props;
+
+export interface Props {
+  stalux: {
+    title: string;
+    description: string;
+    url: string;
+    twitterSite?: string;
+    noindex?: boolean;
+    nofollow?: boolean;
+    anyhead?: string;
+  };
+}
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <Head
+    title={props.stalux.title}
+    description={props.stalux.description}
+    canonical={props.stalux.url}
+    twitterSite={props.stalux.twitterSite}
+    noindex={props.stalux.noindex}
+    nofollow={props.stalux.nofollow}
+    anyhead={props.stalux.anyhead}
+  />
+  <script>
+    import "../scripts/background.ts";
+  </script>
+  <body class="stalux-root">
+    <main class="stalux-main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style></style>

@@ -1,8 +1,22 @@
 ---
-import Layout from "../layouts/Layout.astro";
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import { getCollection } from "astro:content";
+import Head from "../components/stalux/head.astro";
+const stalux = (await getCollection("config"))[0].data;
+import Stalux from "../layouts/Stalux.astro";
+import "../styles/home.css";
 ---
 
-<Layout />
+<Stalux
+  stalux={{
+    title: stalux.title,
+    description: stalux.description,
+    url: Astro.url.href,
+    twitterSite: stalux.twitterSite,
+    noindex: stalux.noindex,
+    nofollow: stalux.nofollow,
+    anyhead: stalux.anyhead,
+  }}
+>
+  <h1>欢迎来到 Stalux！</h1>
+  <p>这是一个使用 Astro 构建的示例页面。</p>
+</Stalux>

@@ -1,0 +1,14 @@
+stalux:
+  title: Stalux
+  url: https://stalux.needhelp.icu
+  description: 一个现代化的框架
+  # canonical: # 源指向 默认为 stalux.url
+  # twitterSite: # Twitter 站点
+  # noindex: # 是否禁止搜索引擎索引 默认 false
+  # nofollow: # 是否禁止搜索引擎跟踪链接 默认 false
+  anyhead: <script>
+    console.log('Hello from anyhead!');
+    </script>
+  footer:
+    icp: 浙ICP备2023000000号-1
+    pubsec: 浙公网安备 33010602000000号

@@ -1,18 +1,23 @@
 {
   "name": "stalux",
-  "type": "module",
   "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
   "dependencies": {
     "astro": "^5.16.11",
     "astro-seo": "^1.1.0"
   },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  },
+  "type": "module",
   "devDependencies": {
-    "@biomejs/biome": "2.3.11"
+    "oxfmt": "^0.26.0",
+    "oxlint": "^1.41.0"
   }
 }
