@@ -5,8 +5,42 @@ body {
   width: 100%;
   height: 100%;
   color: white;
+  main {
+    flex: 1;
+  }
+  scrollbar-color: #4a4a4a #2a2a2a;
+}
+/* 将所有链接初始化为无视觉状态，但保留键盘可见焦点 */
+a {
+  color: inherit;
+  text-decoration: none;
+  background-color: transparent;
+  cursor: pointer;
+  text-decoration-skip-ink: auto;
 }
 
+a:hover,
+a:active {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:focus {
+  outline: none;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--stalux-accent-color);
+  outline-offset: 2px;
+}
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.none {
+  display: none;
+}
 /* 布局：使 body 成为列 flex 容器，并让 main 填充可用高度 */
 .stalux-root {
   display: flex;
@@ -19,9 +53,34 @@ body {
 :root {
   --stalux-bg-color: #202020;
   --stalux-bg-filter: none;
+  --stalux-text-shadow: rgb(1, 162, 190) 0.1rem 0.1rem 0.2rem;
+  --stalux-accent-color: rgb(1, 162, 190);
+  --stalux-search-backdrop: rgba(0, 0, 0, 0.1);
+  --stalux-search-box-bg: rgba(0, 0, 0, 0.1);
+  --stalux-search-border: rgba(0, 0, 0, 0.2);
 }
-.stalux-main {
-  min-height: 100vh;
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2a2a2a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 4px;
+  transition: background 0.3s ease-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
+
+::-webkit-scrollbar-corner {
+  background: #2a2a2a;
 }
 
 /* 背景通过 CSS 变量和伪元素处理，因此与 JS 解耦 */
@@ -37,4 +96,14 @@ body {
   background-color: var(--stalux-bg-color, transparent);
   filter: var(--stalux-bg-filter, none);
   pointer-events: none;
+}
+
+/* footer 基础样式，保证页脚始终可见且不覆盖内容 */
+footer {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: #bbb;
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }

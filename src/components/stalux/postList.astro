@@ -1,0 +1,18 @@
+---
+import styles from "@styles/postList.module.css";
+import { getCollection } from "astro:content";
+const posts = await getCollection("posts");
+import PostCard from "@components/stalux/postCard.astro";
+---
+
+<div data-stalux="postlist" class={styles["container"] + " none"}>
+    <ul>
+        {
+            posts.map((post) => (
+                <li>
+                    <PostCard post={post} />
+                </li>
+            ))
+        }
+    </ul>
+</div>

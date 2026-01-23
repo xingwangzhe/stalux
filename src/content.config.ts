@@ -15,15 +15,21 @@ const posts = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
-    abbrlink: z.string(),
-    date: z.string().transform((str) => new Date(str)),
-    updated: z
-      .string()
-      .optional()
-      .transform((str) => (str ? new Date(str) : undefined)),
+    abbrlink: z.string() || z.number().transform((num) => num.toString()),
+    date: z.preprocess((v) => (typeof v === "string" ? new Date(v) : v), z.date()),
+    updated: z.preprocess(
+      (v) => (v == null ? undefined : typeof v === "string" ? new Date(v) : v),
+      z.date().optional()
+    ),
     draft: z.boolean().optional().default(false),
-    tags: z.array(z.string()).optional(),
-    categories: z.array(z.string()).optional(),
+    tags: z.preprocess(
+      (val) => (typeof val === "string" ? [val] : val),
+      z.array(z.string()).optional()
+    ),
+    categories: z.preprocess(
+      (val) => (typeof val === "string" ? [val] : val),
+      z.array(z.string()).optional()
+    ),
   }),
 });
 const config = defineCollection({
@@ -37,7 +43,25 @@ const config = defineCollection({
     noindex: z.boolean().optional().default(false),
     nofollow: z.boolean().optional().default(false),
     anyhead: z.string().optional(),
-
+    author: z.object({
+      name: z.string(),
+      avatar: z.string(),
+      bio: z.string(),
+    }),
+    navs: z.array(
+      z.object({
+        title: z.string(),
+        icon: z.string(),
+        link: z.string(),
+      })
+    ),
+    typetexts: z.array(z.string()).optional(),
+    mediaLinks: z.array(
+      z.object({
+        icon: z.string(),
+        link: z.string(),
+      })
+    ).optional(),
     footer: z.object({
       icp: z.string().optional(),
       pubsec: z.string().optional(),

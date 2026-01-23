@@ -1,9 +1,14 @@
 ---
 import { getCollection } from "astro:content";
-import Head from "../components/stalux/head.astro";
 const stalux = (await getCollection("config"))[0].data;
-import Stalux from "../layouts/Stalux.astro";
-import "../styles/home.css";
+import Stalux from "@layouts/Stalux.astro";
+import styles from "@styles/home.module.css";
+import Navs from "@components/stalux/navs.astro";
+import Author from "@components/stalux/author.astro";
+import TextType from "@components/stalux/textType.astro";
+import DateTime from "@components/stalux/date.astro";
+import SocialMedia from "@components/stalux/socialMedia.astro";
+import PostList from "@components/stalux/postList.astro";
 ---
 
 <Stalux
@@ -17,6 +22,28 @@ import "../styles/home.css";
     anyhead: stalux.anyhead,
   }}
 >
-  <h1>欢迎来到 Stalux！</h1>
-  <p>这是一个使用 Astro 构建的示例页面。</p>
+  <div class={styles.homeBody}>
+    <h1 class={styles.homeTitle}>{stalux.title}</h1>
+    <div class={styles.homeNavs}>
+      <Navs />
+    </div>
+    <Author />
+    <TextType />
+    <DateTime />
+    <SocialMedia />
+    <div id={styles.showPostList} data-ref="showPosts">点击查看文章列表</div>
+    <script>
+      let elmt = document.querySelector('[data-ref="showPosts"]');
+      if (elmt) {
+        elmt.addEventListener("click", () => {
+          const postList = document.querySelector('[data-stalux="postlist"]');
+          if (postList) {
+            postList.classList.remove("none");
+            (elmt as HTMLElement).style.display = "none";
+          }
+        });
+      }
+    </script>
+    <PostList id="home-post-list" class="none" />
+  </div>
 </Stalux>

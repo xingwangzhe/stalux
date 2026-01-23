@@ -1,14 +1,56 @@
 stalux:
-  title: Stalux
+  title: Stalux博客主题演示
   url: https://stalux.needhelp.icu
   description: 一个现代化的框架
   # canonical: # 源指向 默认为 stalux.url
   # twitterSite: # Twitter 站点
   # noindex: # 是否禁止搜索引擎索引 默认 false
   # nofollow: # 是否禁止搜索引擎跟踪链接 默认 false
-  anyhead: <script>
-    console.log('Hello from anyhead!');
-    </script>
+  anyhead: "" # 额外添加到<head>的内容
   footer:
     icp: 浙ICP备2023000000号-1
     pubsec: 浙公网安备 33010602000000号
+  author:
+    name: xingwangzhe
+    avatar: /stalux.ico
+    bio: 一个热爱编程和分享的开发者。
+  typetexts:
+    - 欢迎来到我的博客！
+    - 这里是分享知识的地方。
+    - 探索编程的乐趣。
+    - 一起成长，一起进步。
+  mediaLinks:
+    - icon: github
+      link: https://github.com/xingwangzhe/stalux
+    - icon: bilibili
+      link: https://bilibili.com/
+    - icon: X
+      link: https://x.com
+    - icon: juejin
+      link: https://juejin.cn/
+    - icon: zhihu
+      link: https://www.zhihu.com/
+    - icon: maildotru
+      link: mailto:xingwangzhe@outlook.com
+  navs:
+    - title: 首页
+      icon: home
+      link: /
+    - title: 归档
+      icon: archive
+      link: /archives
+    - title: 分类
+      icon: folder
+      link: /categories
+    - title: 标签
+      icon: tag
+      link: /tags
+    - title: 友链
+      icon: link
+      link: /links
+    - title: 关于
+      icon: user
+      link: /about
+    - title: 开往
+      icon: airplay
+      link: https://www.travellings.cn/go

@@ -1,0 +1,82 @@
+---
+import type { SimpleIcon } from "simple-icons";
+import * as simpleIcons from "simple-icons";
+import { getCollection } from "astro:content";
+import styles from "@styles/socialLinks.module.css";
+const stalux = (await getCollection("config"))[0].data;
+const mediaLinks = stalux.mediaLinks || [];
+
+// 在构建时获取图标
+function getIconByTitle(iconName: string): SimpleIcon | undefined {
+    // 标准化名称为 simple-icons 的格式 (去除非字母数字字符，转换为小写)
+    const normalizedName = iconName.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+
+    // 尝试使用 simple-icons 的命名约定获取图标
+    const iconKey = `si${normalizedName.charAt(0).toUpperCase() + normalizedName.slice(1)}`;
+    return (simpleIcons as any)[iconKey];
+}
+---
+
+<div class={styles["social-links"]}>
+    <ul>
+        {
+            mediaLinks.map((item) => {
+                const icon = item.icon ? getIconByTitle(item.icon) : undefined;
+                return (
+                    <li class="social_icon">
+                        <a
+                            href={item.link}
+                            target="_blank"
+                            aria-label={item.icon}
+                            rel="noopener noreferrer"
+                            title={item.icon}
+                        >
+                            {icon ? (
+                                <div class="icon-container">
+                                    <svg
+                                        role="img"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <title>{icon.title}</title>
+                                        <path d={icon.path} />
+                                    </svg>
+                                </div>
+                            ) : (
+                                <span class="custom-icon">
+                                    {item.icon
+                                        ? item.icon.charAt(0).toUpperCase()
+                                        : ""}
+                                </span>
+                            )}
+                        </a>
+                    </li>
+                );
+            })
+        }
+    </ul>
+</div>
+
+<script>
+    import { animate } from "animejs";
+    document.addEventListener("DOMContentLoaded", () => {
+        animate(".social_icon", {
+            y: [
+                { to: "-2.75rem", ease: "outExpo", duration: 600 },
+                { to: 0, ease: "outBounce", duration: 800, delay: 100 },
+            ],
+            rotate: {
+                from: "-1turn",
+                delay: 0,
+            },
+            delay: (_, i) => i * 50, // Function based value
+            ease: "inOutCirc",
+            loopDelay: 1000,
+            loop: true,
+        });
+    });
+</script>

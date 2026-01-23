@@ -1,0 +1,9 @@
+---
+//@ts-ignore
+import Typewriter from "astro-typewriter";
+import { getCollection } from "astro:content";
+const stalux = (await getCollection("config"))[0].data;
+import styles from "@styles/textType.module.css";
+---
+
+<Typewriter class={styles.typeWriter} messages={stalux.typetexts} />

@@ -1,9 +1,31 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist"
+  ],
   "compilerOptions": {
     "strictNullChecks": true, // 使用 `base` 模板需要添加
-    "allowJs": true // 必需，包含在所有 Astro 模板中
+    "allowJs": true, // 必需，包含在所有 Astro 模板中
+    "paths": {
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@layouts/*": [
+        "./src/layouts/*"
+      ],
+      "@scripts/*": [
+        "./src/scripts/*"
+      ],
+      "@styles/*": [
+        "./src/styles/*"
+      ]
+    }
   }
 }

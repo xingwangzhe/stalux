@@ -1,0 +1,5 @@
+.postContainer {
+  gap: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}

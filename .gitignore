@@ -1,6 +1,6 @@
 # build output
 dist/
-
+src/content/*
 # generated types
 .astro/
 
