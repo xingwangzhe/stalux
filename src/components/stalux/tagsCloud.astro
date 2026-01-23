@@ -1,0 +1,42 @@
+---
+import { getCollection } from "astro:content";
+import styles from "@styles/tagsCloud.module.css";
+const posts = await getCollection("posts");
+
+const tags = (posts: any[]) => {
+    let tagMap = new Map();
+    posts.forEach((post: { data: { tags: any[] } }) => {
+        if (post.data.tags) {
+            post.data.tags.forEach((tag: any) => {
+                if (tagMap.has(tag)) {
+                    tagMap.set(tag, tagMap.get(tag) + 1);
+                } else {
+                    tagMap.set(tag, 1);
+                }
+            });
+        }
+    });
+    return Array.from(tagMap, ([name, count]) => ({ name, count }));
+};
+
+const tagList = tags(posts);
+---
+
+<div class={styles.tagsCloud}>
+    {
+        tagList.length > 0 ? (
+            tagList.map(({ name, count }) => (
+                <a
+                    href={`/tags/${name}/`}
+                    class={styles.tagItem}
+                    data-count={count}
+                >
+                    <div class={styles.tagName}>{name}</div>
+                    <div class={styles.tagCount}>{count}</div>
+                </a>
+            ))
+        ) : (
+            <div class={styles.noTags}>暂无标签</div>
+        )
+    }
+</div>

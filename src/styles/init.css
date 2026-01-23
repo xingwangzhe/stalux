@@ -19,10 +19,39 @@ a {
   text-decoration-skip-ink: auto;
 }
 
+a {
+  position: relative;
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease;
+}
+
+/* animated underline */
+a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--stalux-accent-color), rgba(1, 162, 190, 0.5));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.25, 0.9, 0.2, 1);
+  pointer-events: none;
+}
+
+a:hover::after,
+a:focus-visible::after,
+a:active::after {
+  transform: scaleX(1);
+}
+
 a:hover,
-a:active {
+a:active,
+a:focus-visible {
   text-decoration: none;
-  color: inherit;
+  /* 保持颜色不变，避免 hover 时颜色跳变 */
 }
 
 a:focus {
@@ -58,6 +87,22 @@ ul {
   --stalux-search-backdrop: rgba(0, 0, 0, 0.1);
   --stalux-search-box-bg: rgba(0, 0, 0, 0.1);
   --stalux-search-border: rgba(0, 0, 0, 0.2);
+
+  /* Card & tag color tokens (可在这里统一调整主题色/透明度) */
+  --card-bg: rgba(0, 0, 0, 0.2);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --card-box-shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.5);
+
+  --tag-bg: rgba(255, 255, 255, 0.12);
+  --tag-bg-hover: rgba(255, 255, 255, 0.18);
+  --category-bg: rgba(255, 255, 255, 0.08);
+  --category-bg-hover: rgba(255, 255, 255, 0.14);
+
+  --date-bg: rgba(66, 160, 255, 0.18);
+  --date-border: rgba(66, 160, 255, 0.25);
+  --updated-bg: rgba(255, 201, 71, 0.2);
+  --updated-border: rgba(255, 201, 71, 0.3);
 }
 ::-webkit-scrollbar {
   width: 8px;

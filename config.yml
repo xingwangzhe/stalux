@@ -12,7 +12,7 @@ stalux:
     pubsec: 浙公网安备 33010602000000号
   author:
     name: xingwangzhe
-    avatar: /stalux.ico
+    avatar: /avatar.png
     bio: 一个热爱编程和分享的开发者。
   typetexts:
     - 欢迎来到我的博客！
@@ -36,7 +36,7 @@ stalux:
     - title: 首页
       icon: home
       link: /
-    - title: 归档
+    - title: 文章
       icon: archive
       link: /archives
     - title: 分类

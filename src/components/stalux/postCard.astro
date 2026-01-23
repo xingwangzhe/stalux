@@ -1,32 +1,72 @@
 ---
 import style from "@styles/postCard.module.css";
-import type { InferEntrySchema, RenderedContent } from "astro:content";
+import type { RenderedContent } from "astro:content";
 import { stripHtml } from "string-strip-html";
-interface post {
-    id: string;
-    body?: string;
-    collection: "posts";
-    data: InferEntrySchema<"posts">;
+
+type PostData = {
+    title: string;
+    date?: string | Date;
+    updated?: string | Date;
+    tags?: string[];
+    categories?: string[];
+    abbrlink?: string;
+};
+
+type PostLike = {
+    data: PostData;
+    description?: string;
     rendered?: RenderedContent;
-    filePath?: string;
-}
+};
 
 export interface Props {
-    post: post;
+    post: PostLike;
 }
-const post = Astro.props.post as post;
-let description =
+const post = Astro.props.post as PostLike;
+const description =
+    post.description ??
     stripHtml(post.rendered?.html || "").result.slice(0, 100) + "...";
 ---
 
 <div class={style.postContainer}>
     <h2 class={style.postTitle}>{post.data.title}</h2>
-    <p class={style.postDescription}>{description}</p>
+    <div class={style.time}>
+        {
+            post.data.date && (
+                <time class={style.postDate}>
+                    {new Date(post.data.date).toLocaleDateString()}
+                </time>
+            )
+        }
+        {
+            post.data.updated && (
+                <time class={style.postUpdated}>
+                    {new Date(post.data.updated).toLocaleDateString()}
+                </time>
+            )
+        }
+    </div>
+    <div class={style.postDescription}>
+        {description}
+    </div>
     <div class={style.postMeta}>
-        <span class={style.postTags}>Tags: {post.data.tags?.join(", ")}</span>
-        <span class={style.postCategories}
-            >Categories: {post.data.categories?.join(", ")}</span
-        >
+        <div class={style.postTags}>
+            {
+                post.data.tags?.map((tag) => (
+                    <a href={`/tags/${tag}`}>
+                        <div class={style.postTag}>{tag}</div>
+                    </a>
+                ))
+            }
+        </div>
+        <div class={style.postCategories}>
+            {
+                post.data.categories?.map((category) => (
+                    <a href={`/categories/${category}`}>
+                        <div class={style.postCategory}>{category}</div>
+                    </a>
+                ))
+            }
+        </div>
     </div>
     <a href={post.data.abbrlink} class={style.readMore}>Read More</a>
 </div>

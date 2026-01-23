@@ -1,0 +1,29 @@
+---
+import Navs from "@components/stalux/navs.astro";
+import Stalux from "@layouts/Stalux.astro";
+import ArchivesList from "@components/stalux/archivesList.astro";
+import { getCollection } from "astro:content";
+import styles from "@styles/archives.module.css";
+const stalux = (await getCollection("config"))[0].data;
+const posts = await getCollection("posts");
+---
+
+<Stalux
+    stalux={{
+        title: "文章归档|" + stalux.title,
+        description: "本站文章归档页面",
+        url: Astro.url.href,
+        twitterSite: stalux.twitterSite,
+        noindex: stalux.noindex,
+        nofollow: stalux.nofollow,
+        anyhead: stalux.anyhead,
+    }}
+>
+    <div style="height: 2em;"></div>
+    <Navs />
+    <h1 class={styles.h1}>文章归档</h1>
+    <div class={styles.description}>
+        时间轴上的所有文章（共 {posts.length} 篇）
+    </div>
+    <ArchivesList />
+</Stalux>

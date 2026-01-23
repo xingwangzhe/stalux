@@ -1,9 +1,10 @@
 .container {
   width: 100%;
   height: 100%;
+  margin: 5px 0;
   ul {
     /* 使用 CSS columns 实现自然瀑布流（masonry） */
-    column-width: 16rem; /* 目标列宽，浏览器会自动计算列数 */
+    column-width: 22rem; /* 调宽列宽，使卡片更接近“宽长方形” */
     column-gap: 2rem;
     padding: 0;
     margin: 0;

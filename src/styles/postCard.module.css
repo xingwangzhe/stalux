@@ -1,5 +1,134 @@
 .postContainer {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-box-shadow);
+  padding: 1.5rem;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   gap: 1.5rem;
-  width: 100%;
   box-sizing: border-box;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-in-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Post Meta Layout */
+.postMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Card hover / focus */
+.postContainer {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+.postContainer:hover,
+.postContainer:focus-within {
+  transform: translateY(-6px);
+  box-shadow: var(--card-box-shadow-hover);
+}
+
+.time {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Date & Updated badges */
+.postDate,
+.postUpdated {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  padding: 0.28rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.1;
+  color: #e8f2ff;
+}
+.postDate {
+  background: var(--date-bg);
+  border: 1px solid var(--date-border);
+  color: #e8f2ff;
+}
+.postUpdated {
+  background: var(--updated-bg);
+  border: 1px solid var(--updated-border);
+  color: #fff7de;
+}
+
+/* Tags: 胶囊形状 */
+.postTags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.postTags a {
+  text-decoration: none;
+}
+.postTag {
+  display: inline-block;
+  padding: 0.22rem 0.7rem;
+  border-radius: 9999px;
+  background: var(--tag-bg);
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.postTag:focus,
+.postTag:hover {
+  background: var(--tag-bg-hover);
+}
+
+/* Categories: 矩形块 */
+.postCategories {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.postCategories a {
+  text-decoration: none;
+}
+.postCategory {
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  border-radius: 6px;
+  background: var(--category-bg);
+  color: #fff;
+  font-size: 0.84rem;
+  line-height: 1;
+}
+.postCategory:focus,
+.postCategory:hover {
+  background: var(--category-bg-hover);
+}
+
+/* Read more link alignment */
+.readMore {
+  margin-top: 0.6rem;
+  align-self: flex-start;
 }

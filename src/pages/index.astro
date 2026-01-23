@@ -8,7 +8,7 @@ import Author from "@components/stalux/author.astro";
 import TextType from "@components/stalux/textType.astro";
 import DateTime from "@components/stalux/date.astro";
 import SocialMedia from "@components/stalux/socialMedia.astro";
-import PostList from "@components/stalux/postList.astro";
+import ToArchive from "@components/stalux/toArchive.astro";
 ---
 
 <Stalux
@@ -31,19 +31,6 @@ import PostList from "@components/stalux/postList.astro";
     <TextType />
     <DateTime />
     <SocialMedia />
-    <div id={styles.showPostList} data-ref="showPosts">点击查看文章列表</div>
-    <script>
-      let elmt = document.querySelector('[data-ref="showPosts"]');
-      if (elmt) {
-        elmt.addEventListener("click", () => {
-          const postList = document.querySelector('[data-stalux="postlist"]');
-          if (postList) {
-            postList.classList.remove("none");
-            (elmt as HTMLElement).style.display = "none";
-          }
-        });
-      }
-    </script>
-    <PostList id="home-post-list" class="none" />
+    <ToArchive />
   </div>
 </Stalux>

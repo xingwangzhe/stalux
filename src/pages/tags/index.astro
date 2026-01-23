@@ -1,0 +1,21 @@
+---
+import Stalux from "@layouts/Stalux.astro";
+import { getCollection } from "astro:content";
+import Navs from "@components/stalux/navs.astro";
+import styles from "@styles/tags.module.css";
+import TagsCloud from "@components/stalux/tagsCloud.astro";
+const stalux = (await getCollection("config"))[0].data;
+---
+
+<Stalux
+    stalux={{
+        title: "标签云|" + stalux.title,
+        description: stalux.title + "的标签云",
+        url: Astro.url.href,
+    }}
+>
+    <div style="height: 2em;"></div>
+    <Navs />
+    <h1 class={styles.title}>标签云</h1>
+    <TagsCloud />
+</Stalux>

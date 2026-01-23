@@ -1,0 +1,6 @@
+.title {
+  margin-top: 1.5em;
+  text-align: center;
+  text-shadow: var(--stalux-text-shadow);
+  font-size: 2.5em;
+}
