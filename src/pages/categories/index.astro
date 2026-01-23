@@ -1,0 +1,20 @@
+---
+import Stalux from "@layouts/Stalux.astro";
+import { getCollection } from "astro:content";
+import Navs from "@components/stalux/navs.astro";
+import CategoriesList from "@components/stalux/categoriesList.astro";
+const stalux = (await getCollection("config"))[0].data;
+---
+
+<Stalux
+    stalux={{
+        title: "文章分类|" + stalux.title,
+        description: stalux.title + "的文章分类",
+        url: Astro.url.href,
+    }}
+>
+    <div style="height: 2em;"></div>
+    <Navs />
+    <h1>文章分类</h1>
+    <CategoriesList />
+</Stalux>

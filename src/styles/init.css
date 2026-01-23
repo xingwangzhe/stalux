@@ -19,6 +19,18 @@ a {
   text-decoration-skip-ink: auto;
 }
 
+.a-none {
+  color: inherit !important;
+  text-decoration: none !important;
+  background-color: transparent;
+  cursor: pointer;
+  text-decoration-skip-ink: auto;
+}
+
+.a-none::after {
+  display: none !important;
+}
+
 a {
   position: relative;
   transition:

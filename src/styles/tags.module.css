@@ -4,3 +4,9 @@
   text-shadow: var(--stalux-text-shadow);
   font-size: 2.5em;
 }
+.description {
+  text-align: center;
+  margin-bottom: 1.5em;
+  font-size: 1.2em;
+  color: rgba(255, 255, 255, 0.6);
+}
