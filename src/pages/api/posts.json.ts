@@ -18,7 +18,7 @@ export const GET: APIRoute = async (context) => {
             title: post.data.title,
             date: post.data.date,
             updated: post.data.updated,
-            // description: stripHtml(post.rendered?.html || "无内容").result.slice(0, 150),
+            // 描述: stripHtml(post.rendered?.html || "无内容").result.slice(0, 150),
             link: `/posts/${post.data.abbrlink}/`,
             abbrlink: post.data.abbrlink,
             tags: post.data.tags || [],

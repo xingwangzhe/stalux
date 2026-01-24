@@ -1,0 +1,166 @@
+---
+import style from "@styles/components/posts/randomPost.module.css";
+
+interface Props {
+    count?: number;
+    title?: string;
+}
+
+const { count = 5, title = "随机文章" } = Astro.props;
+---
+
+<div class={style.container}>
+    <div class={style.header}>
+        <h3 class={style.title}>{title}</h3>
+        <button
+            id="refresh-random-posts"
+            class={style.refreshButton}
+            title="刷新随机文章"
+            aria-label="刷新随机文章"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path
+                    d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"
+                ></path>
+            </svg>
+        </button>
+    </div>
+    <ul class={style.list} id="random-posts-list">
+        <li class={style.loading}>正在加载随机文章...</li>
+    </ul>
+</div>
+
+<script define:vars={{ count }}>
+    // Fisher-Yates 洗牌算法
+    function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    // 获取随机文章
+    async function fetchRandomPosts() {
+        try {
+            const response = await fetch("/api/post.abbrlink.json");
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const posts = await response.json();
+            return posts || [];
+        } catch (error) {
+            console.error("Failed to fetch posts:", error);
+            return [];
+        }
+    }
+
+    // 生成随机文章 HTML
+    function generatePostsHTML(posts) {
+        if (posts.length === 0) {
+            return '<li class="no-posts">暂无文章</li>';
+        }
+
+        return posts
+            .map(
+                (post) => `
+            <li class="random-post-item">
+                <a href="/posts/${post.abbrlink}/" class="random-post-link">
+                    ${post.title}
+                </a>
+            </li>
+        `,
+            )
+            .join("");
+    }
+
+    // 刷新随机文章列表
+    async function refreshRandomPosts() {
+        const randomPostsList = document.getElementById("random-posts-list");
+        if (!randomPostsList) return;
+
+        // 添加淡出效果
+        randomPostsList.style.opacity = "0.5";
+
+        setTimeout(async () => {
+            try {
+                const allPosts = await fetchRandomPosts();
+
+                if (allPosts.length === 0) {
+                    randomPostsList.innerHTML =
+                        '<li class="no-posts">暂无文章</li>';
+                    return;
+                }
+
+                // 获取新的随机文章
+                const shuffledPosts = shuffleArray(allPosts);
+                const newRandomPosts = shuffledPosts.slice(0, count);
+
+                // 更新 DOM
+                randomPostsList.innerHTML = generatePostsHTML(newRandomPosts);
+            } catch (error) {
+                console.error("Error refreshing random posts:", error);
+                randomPostsList.innerHTML =
+                    '<li class="error">加载失败，请重试</li>';
+            }
+
+            // 恢复显示
+            randomPostsList.style.opacity = "1";
+        }, 300);
+    }
+
+    // 初始化随机文章列表
+    async function initRandomPosts() {
+        const randomPostsList = document.getElementById("random-posts-list");
+        if (!randomPostsList) return;
+
+        try {
+            const allPosts = await fetchRandomPosts();
+
+            if (allPosts.length === 0) {
+                randomPostsList.innerHTML =
+                    '<li class="no-posts">暂无文章</li>';
+                return;
+            }
+
+            // 获取初始随机文章
+            const shuffledPosts = shuffleArray(allPosts);
+            const initialRandomPosts = shuffledPosts.slice(0, count);
+
+            // 更新 DOM
+            randomPostsList.innerHTML = generatePostsHTML(initialRandomPosts);
+        } catch (error) {
+            console.error("Error initializing random posts:", error);
+            randomPostsList.innerHTML = '<li class="error">加载失败</li>';
+        }
+    }
+
+    // 初始化事件监听
+    document.addEventListener("DOMContentLoaded", () => {
+        const refreshButton = document.getElementById("refresh-random-posts");
+        if (refreshButton) {
+            refreshButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                refreshButton.classList.add("rotating");
+                refreshRandomPosts();
+                setTimeout(() => {
+                    refreshButton.classList.remove("rotating");
+                }, 600);
+            });
+        }
+
+        // 初始化随机文章列表
+        initRandomPosts();
+    });
+</script>

@@ -1,0 +1,36 @@
+---
+import PostAuthor from "@components/stalux/posts/postAuthor.astro";
+import style from "@styles/components/posts/postLeft.module.css";
+import SocialMedia from "@components/stalux/links/socialMedia.astro";
+import RandomPost from "@components/stalux/posts/randomPost.astro";
+// 判断是否为文章页面
+const isPostPage = Astro.url.pathname.includes("/posts/");
+---
+
+<aside class={style.leftSidebar}>
+    <PostAuthor />
+    <div class={style.sidebarContainer}>
+        <SocialMedia />
+    </div>
+    <div class={style.sidebarContainer}>
+        <RandomPost />
+    </div>
+
+    <style define:vars={style}>
+        :global(.stalux-root) {
+            --sidebar-width: 280px;
+        }
+
+        @media (max-width: 1200px) {
+            :global(.stalux-root) {
+                --sidebar-width: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :global(.stalux-root) {
+                --sidebar-width: 0;
+            }
+        }
+    </style>
+</aside>

@@ -28,14 +28,14 @@
   }
 }
 
-/* Post Meta Layout */
+/* 文章元数据布局 */
 .postMeta {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
-/* Card hover / focus */
+/* 卡片悬停和焦点效果 */
 .postContainer {
   transition:
     transform var(--transition-fast) ease,
@@ -55,7 +55,7 @@
   flex-wrap: wrap;
 }
 
-/* Date & Updated badges */
+/* 日期和更新标签 */
 .postDate,
 .postUpdated {
   display: inline-flex;
@@ -127,7 +127,7 @@
   background: var(--category-bg-hover);
 }
 
-/* Read more link alignment */
+/* 阅读更多链接对齐 */
 .readMore {
   margin-top: 0.6rem;
   align-self: flex-start;

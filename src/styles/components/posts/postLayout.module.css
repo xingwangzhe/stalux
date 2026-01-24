@@ -1,0 +1,149 @@
+/* 文章布局 - 文章页面的三列布局 */
+
+.postLayout {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  gap: 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 三列布局间距调整 */
+.container > :nth-child(1) {
+  /* 左侧边栏 */
+}
+
+.container > :nth-child(2) {
+  /* 中间内容 */
+  min-width: 0;
+  /* 防止长内容溢出 */
+}
+
+.container > :nth-child(3) {
+  /* 右侧边栏 */
+}
+
+/* 响应式设计 */
+
+/* 大屏幕 */
+@media (min-width: 1600px) {
+  .container {
+    grid-template-columns: 300px 1fr 300px;
+    gap: 3.5rem;
+    padding: 4rem 3rem;
+  }
+}
+
+/* 中大屏幕 */
+@media (max-width: 1400px) {
+  .container {
+    grid-template-columns: 260px 1fr 260px;
+    gap: 2.5rem;
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+/* 中屏幕 - 仍为三列布局 */
+@media (max-width: 1200px) {
+  .container {
+    grid-template-columns: 240px 1fr 240px;
+    gap: 2rem;
+    padding: 2rem 1rem;
+  }
+}
+
+/* 平板电脑 - 两个侧栏上下堆叠 */
+@media (max-width: 1024px) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 1rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .postLayout {
+    padding: 1rem;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    margin: 0;
+  }
+
+  /* Reorder for mobile: content first, then sidebars */
+  .container > :nth-child(2) {
+    order: 1;
+  }
+
+  .container > :nth-child(1) {
+    order: 2;
+  }
+
+  .container > :nth-child(3) {
+    order: 3;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .postLayout {
+    padding: 0.5rem;
+  }
+
+  .container {
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .container > :nth-child(1),
+  .container > :nth-child(3) {
+    display: none;
+  }
+}
+
+/* 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  .postLayout * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 高对比模式 */
+@media (prefers-contrast: more) {
+  .container {
+    gap: 2rem;
+  }
+}
+
+/* 无障碍访问焦点 */
+.container :focus-visible {
+  outline: 2px solid var(--accent-80p);
+  outline-offset: 2px;
+}

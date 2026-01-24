@@ -1,0 +1,109 @@
+/* 左侧边栏 - 作者信息和导航 */
+
+.leftSidebar {
+  position: sticky;
+  top: 20px;
+  width: 280px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 0.5rem;
+
+  /* 隐藏滚动条但保留滚动功能 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.leftSidebar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Stats Section */
+.statsSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  animation: fadeInLeft 0.6s ease 0.1s forwards;
+  opacity: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--white-60p);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-80p);
+}
+
+/* 快速导航部分 */
+.quickLinks {
+  animation: fadeInLeft 0.6s ease 0.2s forwards;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+}
+
+.linksTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* 滿条样式 */
+.leftSidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.leftSidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.leftSidebar::-webkit-scrollbar-thumb {
+  background: var(--white-20p);
+  border-radius: 3px;
+  transition: background var(--transition-fast) ease;
+}
+
+.leftSidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--white-40p);
+}
+
+.sidebarContainer {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  transition: all var(--transition-normal) ease;
+}

@@ -1,0 +1,50 @@
+---
+import PostLeft from "@components/stalux/posts/postLeft.astro";
+import PostContent from "@components/stalux/posts/postContent.astro";
+import PostRight from "@components/stalux/posts/postRight.astro";
+import layoutStyle from "@styles/components/posts/postLayout.module.css";
+
+interface Props {
+    title: string;
+    date?: string;
+    updated?: string;
+    readingTime?: string;
+    tags?: string[];
+    categories?: string[];
+    headings?: Array<{ depth: number; slug: string; text: string }>;
+    author?: string;
+    authorAvatar?: string;
+}
+
+const {
+    title,
+    date,
+    updated,
+    readingTime,
+    tags = [],
+    categories = [],
+    headings = [],
+    author = "Author",
+    authorAvatar,
+} = Astro.props;
+---
+
+<div class={layoutStyle.postLayout}>
+    <div class={layoutStyle.container}>
+        <!-- Left Sidebar -->
+        <PostLeft author={author} authorAvatar={authorAvatar} />
+
+        <!-- Main Content -->
+        <PostContent
+            title={title}
+            date={date}
+            updated={updated}
+            readingTime={readingTime}
+        >
+            <slot />
+        </PostContent>
+
+        <!-- Right Sidebar -->
+        <PostRight headings={headings} tags={tags} categories={categories} />
+    </div>
+</div>

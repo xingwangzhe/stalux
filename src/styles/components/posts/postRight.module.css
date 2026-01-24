@@ -1,0 +1,335 @@
+/* 右侧边栏 - 文章纲要和元数据 */
+
+.rightSidebar {
+  position: sticky;
+  top: 20px;
+  width: 280px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 0.5rem;
+
+  /* 隐藏滚动条但保留滚动功能 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.rightSidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 部分样式 */
+.tocSection,
+.tagsSection,
+.categoriesSection,
+.actionSection {
+  animation: fadeInRight 0.6s ease forwards;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+}
+
+.tocSection {
+  animation-delay: 0;
+}
+
+.tagsSection {
+  animation-delay: 0.1s;
+}
+
+.categoriesSection {
+  animation-delay: 0.2s;
+}
+
+.actionSection {
+  animation-delay: 0.3s;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 文章目录 */
+.tocList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tocItem {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--white-70p);
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: all var(--transition-fast) ease;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.tocItem:hover {
+  color: var(--accent-90p);
+  background-color: var(--accent-10p);
+  border-left-color: var(--accent-60p);
+  padding-left: 1.2rem;
+}
+
+.tocItem.active {
+  color: var(--accent-90p);
+  background-color: var(--accent-20p);
+  border-left-color: var(--accent-80p);
+  font-weight: 500;
+}
+
+/* 根据深度的缩进 */
+.depth-1 {
+  padding-left: 0.75rem;
+}
+
+.depth-2 {
+  padding-left: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.depth-3 {
+  padding-left: 2.25rem;
+  font-size: 0.8rem;
+}
+
+.depth-4,
+.depth-5,
+.depth-6 {
+  padding-left: 3rem;
+  font-size: 0.75rem;
+  color: var(--white-60p);
+}
+
+/* 标签 */
+.tagsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: var(--accent-20p);
+  color: var(--accent-90p);
+  border: 1px solid var(--accent-50p);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all var(--transition-fast) ease;
+  white-space: nowrap;
+}
+
+.tag:hover {
+  background: var(--accent-50p);
+  color: var(--white-full);
+  border-color: var(--accent-80p);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 分类 */
+.categoriesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.category {
+  display: block;
+  padding: 0.6rem 0.8rem;
+  background: var(--black-10p);
+  color: var(--white-80p);
+  border-left: 3px solid var(--accent-60p);
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast) ease;
+}
+
+.category:hover {
+  background: var(--black-15p);
+  color: var(--accent-90p);
+  border-left-color: var(--accent-90p);
+  padding-left: 1.1rem;
+}
+
+/* 回到顶部按颁 */
+.actionSection {
+  position: relative;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scrollButton {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-60p);
+  color: var(--white-full);
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast) ease;
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+}
+
+.scrollButton:hover {
+  background: var(--accent-80p);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.scrollButton:active {
+  transform: translateY(-2px);
+}
+
+/* 滿条样式 */
+.rightSidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rightSidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rightSidebar::-webkit-scrollbar-thumb {
+  background: var(--white-20p);
+  border-radius: 3px;
+  transition: background var(--transition-fast) ease;
+}
+
+.rightSidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--white-40p);
+}
+
+/* 响应式设计 */
+@media (max-width: 1400px) {
+  .rightSidebar {
+    width: 240px;
+  }
+
+  .depth-2,
+  .depth-3 {
+    font-size: 0.8rem;
+  }
+
+  .depth-4,
+  .depth-5,
+  .depth-6 {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .rightSidebar {
+    width: 220px;
+    padding: 1rem 0.4rem;
+  }
+
+  .tocItem {
+    font-size: 0.85rem;
+  }
+
+  .sectionTitle {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .rightSidebar {
+    position: static;
+    width: 100%;
+    max-height: none;
+    top: auto;
+    order: 2;
+    padding: 1rem 0;
+  }
+
+  .tocSection,
+  .tagsSection,
+  .categoriesSection,
+  .actionSection {
+    animation: none;
+    opacity: 1;
+  }
+
+  .tocList,
+  .tagsList,
+  .categoriesList {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .tocItem {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .depth-1 {
+    padding-left: 0.6rem;
+  }
+
+  .depth-2 {
+    padding-left: 1.2rem;
+  }
+
+  .depth-3 {
+    padding-left: 1.8rem;
+  }
+
+  .tag {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .category {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .scrollButton {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

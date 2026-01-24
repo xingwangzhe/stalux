@@ -32,3 +32,9 @@
 .figureColumn {
   flex-direction: column;
 }
+
+.figureColumn figcaption {
+  margin-left: 0;
+  margin-top: 0.5em;
+  text-align: center;
+}

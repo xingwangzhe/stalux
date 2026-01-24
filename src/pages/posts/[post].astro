@@ -1,0 +1,62 @@
+---
+import Stalux from "@layouts/Stalux.astro";
+import PostLayout from "@layouts/PostLayout.astro";
+import { getCollection, type CollectionEntry, render } from "astro:content";
+import { stripHtml } from "string-strip-html";
+import Navs from "@components/stalux/layout/navs.astro";
+interface Props {
+    post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+const { Content, remarkPluginFrontmatter } = await render(post);
+
+// 从 remarkPluginFrontmatter 中提取阅读时间
+const readingTime = remarkPluginFrontmatter?.minutesRead || "5分钟";
+
+// 提取目录信息
+const headings = remarkPluginFrontmatter?.headings || [];
+
+// 获取网站配置信息
+const siteConfig = {
+    author: "Stalux",
+    authorAvatar: "/avatar.png",
+};
+
+export async function getStaticPaths() {
+    const posts = await getCollection("posts");
+    return posts.map((post) => ({
+        params: { post: post.data.abbrlink },
+        props: { post },
+    }));
+}
+---
+
+<Stalux
+    stalux={{
+        title: post.data.title,
+        description:
+            stripHtml(post.rendered?.html || "").result.slice(0, 150) + "...",
+        url: Astro.url.href,
+    }}
+>
+    <div style="height: 2em;"></div>
+    <Navs />
+    <PostLayout
+        title={post.data.title}
+        date={post.data.date
+            ? post.data.date.toISOString().split("T")[0]
+            : undefined}
+        updated={post.data.updated
+            ? post.data.updated.toISOString().split("T")[0]
+            : undefined}
+        readingTime={readingTime}
+        tags={post.data.tags || []}
+        categories={post.data.categories || []}
+        headings={headings}
+        author={siteConfig.author}
+        authorAvatar={siteConfig.authorAvatar}
+    >
+        <Content />
+    </PostLayout>
+</Stalux>

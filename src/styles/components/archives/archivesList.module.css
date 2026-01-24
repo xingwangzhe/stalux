@@ -157,7 +157,7 @@
   }
 }
 
-/* Post list & item styles (static DOM) */
+/* 文章列表和项目样式（静态 DOM）*/
 .postList {
   list-style: none;
   padding: 0;

@@ -30,6 +30,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
                             aria-label={item.icon}
                             rel="noopener noreferrer"
                             title={item.icon}
+                            class="a-none"
                         >
                             {icon ? (
                                 <div class="icon-container">
@@ -73,7 +74,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
                 from: "-1turn",
                 delay: 0,
             },
-            delay: (_, i) => i * 50, // Function based value
+            delay: (_, i) => i * 50, // 基于函数的延迟值
             ease: "inOutCirc",
             loopDelay: 1000,
             loop: true,

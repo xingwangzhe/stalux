@@ -97,10 +97,10 @@ const sortedYears = Object.keys(archivesByYearMonth)
     </div>
 
     <script>
-        // 懒加载实现 (This script is identical to the original page's script)
+        // 懒加载实现（脚本与原始页面相同）
         document.addEventListener("DOMContentLoaded", () => {
             let visibleYears = 2;
-            // select by data attribute so JS won't break when using CSS modules for classes
+            // 通过数据属性选择，以便在使用 CSS 模块时不会破坏 JS
             const yearSections = document.querySelectorAll("[data-year]");
             const totalYears = yearSections.length;
             const lazyloadObserver =

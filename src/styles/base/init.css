@@ -100,7 +100,7 @@ ul {
   --stalux-search-box-bg: rgba(0, 0, 0, 0.1);
   --stalux-search-border: rgba(0, 0, 0, 0.2);
 
-  /* Card & tag color tokens (可在这里统一调整主题色/透明度) */
+  /* 卡片和标签颜色 Token（可在这里统一调整主题色/透明度） */
   --card-bg: rgba(0, 0, 0, 0.2);
   --card-border: rgba(255, 255, 255, 0.1);
   --card-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -116,7 +116,7 @@ ul {
   --updated-bg: rgba(255, 201, 71, 0.2);
   --updated-border: rgba(255, 201, 71, 0.3);
 
-  /* Common color values */
+  /* 常用颜色值 */
   --white-full: #ffffff;
   --white-90p: rgba(255, 255, 255, 0.9);
   --white-78p: rgba(255, 255, 255, 0.78);
@@ -134,13 +134,19 @@ ul {
   --black-15p: rgba(0, 0, 0, 0.15);
   --black-10p: rgba(0, 0, 0, 0.1);
 
-  /* Accent color variations */
+  /* 强调色变体 */
+  --accent-90p: rgba(1, 162, 190, 0.9);
   --accent-85p: rgba(1, 162, 190, 0.85);
+  --accent-80p: rgba(1, 162, 190, 0.8);
+  --accent-70p: rgba(1, 162, 190, 0.7);
   --accent-60p: rgba(1, 162, 190, 0.6);
   --accent-50p: rgba(1, 162, 190, 0.5);
+  --accent-40p: rgba(1, 162, 190, 0.4);
   --accent-30p: rgba(1, 162, 190, 0.3);
+  --accent-20p: rgba(1, 162, 190, 0.2);
+  --accent-10p: rgba(1, 162, 190, 0.1);
 
-  /* Common transitions and animations */
+  /* 常用过渡和动画 */
   --transition-fast: 0.18s ease;
   --transition-normal: 0.25s ease;
   --transition-slow: 0.3s ease;
@@ -150,20 +156,20 @@ ul {
   --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --easing-smooth: cubic-bezier(0.25, 0.9, 0.2, 1);
 
-  /* Common spacing values */
+  /* 常用间距值 */
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
 
-  /* Common border radius values */
+  /* 常用圆角半径值 */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 10px;
   --radius-full: 9999px;
 
-  /* Common shadows */
+  /* 常用阴影 */
   --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.3);

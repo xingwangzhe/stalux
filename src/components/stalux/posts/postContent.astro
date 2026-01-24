@@ -1,0 +1,65 @@
+---
+import style from "@styles/components/posts/postContent.module.css";
+
+interface Props {
+    title: string;
+    date?: string;
+    updated?: string;
+    readingTime?: string;
+}
+
+const { title, date, updated, readingTime } = Astro.props;
+---
+
+<article class={style.articleContent}>
+    <!-- Article Header -->
+    <header class={style.articleHeader}>
+        <h1 class={style.title}>{title}</h1>
+
+        <div class={style.metadata}>
+            {
+                date && (
+                    <time class={style.metaItem} datetime={date}>
+                        📅{" "}
+                        {new Date(date).toLocaleDateString("zh-CN", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                        })}
+                    </time>
+                )
+            }
+
+            {
+                updated && (
+                    <span class={style.metaItem}>
+                        ✏️ 更新于{" "}
+                        {new Date(updated).toLocaleDateString("zh-CN", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                        })}
+                    </span>
+                )
+            }
+
+            {
+                readingTime && (
+                    <span class={style.metaItem}>🕒 {readingTime}</span>
+                )
+            }
+        </div>
+    </header>
+
+    <!-- Article Body -->
+    <div class={style.body}>
+        <slot />
+    </div>
+
+    <!-- Article Footer -->
+    <footer class={style.articleFooter}>
+        <div class={style.footerContent}>
+            <slot name="footer" />
+        </div>
+    </footer>
+</article>

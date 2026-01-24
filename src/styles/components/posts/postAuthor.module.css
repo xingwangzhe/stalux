@@ -1,0 +1,32 @@
+/* 作者卡片组件样式 */
+
+.sidebarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.authorSection {
+  width: 100%;
+}
+
+.authorCard {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  transition: all var(--transition-normal) ease;
+}
+
+.authorBio {
+  font-size: 0.9rem;
+  color: var(--white-70p);
+  margin: 1rem 0 0;
+  line-height: 1.6;
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--white-10p);
+  width: 100%;
+}

@@ -1,0 +1,116 @@
+---
+import style from "@styles/components/posts/postRight.module.css";
+
+interface Props {
+    headings?: Array<{ depth: number; slug: string; text: string }>;
+    tags?: string[];
+    categories?: string[];
+}
+
+const { headings = [], tags = [], categories = [] } = Astro.props;
+---
+
+<aside class={style.rightSidebar}>
+    <div class={style.sidebarContainer}>
+        <!-- Table of Contents -->
+        {
+            headings && headings.length > 0 && (
+                <div class={style.tocSection}>
+                    <h3 class={style.sectionTitle}>文章目录</h3>
+                    <nav class={style.tocList}>
+                        {headings.map((heading) => (
+                            <a
+                                href={`#${heading.slug}`}
+                                class={`${style.tocItem} ${style[`depth-${heading.depth}`]}`}
+                            >
+                                {heading.text}
+                            </a>
+                        ))}
+                    </nav>
+                </div>
+            )
+        }
+
+        <!-- Tags -->
+        {
+            tags && tags.length > 0 && (
+                <div class={style.tagsSection}>
+                    <h3 class={style.sectionTitle}>标签</h3>
+                    <div class={style.tagsList}>
+                        {tags.map((tag) => (
+                            <a href={`/tags/${tag}`} class={style.tag}>
+                                #{tag}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            )
+        }
+
+        <!-- Categories -->
+        {
+            categories && categories.length > 0 && (
+                <div class={style.categoriesSection}>
+                    <h3 class={style.sectionTitle}>分类</h3>
+                    <div class={style.categoriesList}>
+                        {categories.map((category) => (
+                            <a
+                                href={`/categories/${category}`}
+                                class={style.category}
+                            >
+                                {category}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            )
+        }
+
+        <!-- Scroll to top button -->
+        <div class={style.actionSection}>
+            <button
+                id="scroll-to-top"
+                class={style.scrollButton}
+                aria-label="回到顶部"
+                title="回到顶部"
+            >
+                ↑
+            </button>
+        </div>
+    </div>
+</aside>
+
+<script>
+    // 回到顶部按钮功能
+    const scrollBtn = document.getElementById("scroll-to-top");
+    if (scrollBtn) {
+        window.addEventListener("scroll", () => {
+            scrollBtn.style.display = window.scrollY > 300 ? "block" : "none";
+        });
+
+        scrollBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    // 高亮目录中的当前部分
+    const tocItems = document.querySelectorAll('[class*="tocItem"]');
+    window.addEventListener("scroll", () => {
+        const headings = document.querySelectorAll("h2, h3, h4");
+        let current = null;
+
+        headings.forEach((heading) => {
+            if (heading.getBoundingClientRect().top < 100) {
+                current = heading.id;
+            }
+        });
+
+        tocItems.forEach((item: any) => {
+            if (item.href?.endsWith(current)) {
+                item.classList.add("active");
+            } else {
+                item.classList.remove("active");
+            }
+        });
+    });
+</script>

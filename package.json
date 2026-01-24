@@ -14,9 +14,11 @@
     "license-checker": "bun license-checker.ts"
   },
   "dependencies": {
+    "@astrojs/partytown": "^2.1.4",
     "animejs": "^4.3.4",
     "astro": "^5.16.15",
     "astro-pagefind": "^1.8.5",
+    "astro-reading-time": "^0.1.17",
     "astro-seo": "^1.1.0",
     "astro-typewriter": "^1.1.0",
     "dayjs": "^1.11.19",

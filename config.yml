@@ -32,6 +32,8 @@ stalux:
       link: https://www.zhihu.com/
     - icon: maildotru
       link: mailto:xingwangzhe@outlook.com
+    - icon: telegram
+      link: https://t.me/
   navs:
     - title: 首页
       icon: home
