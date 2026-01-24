@@ -1,9 +1,9 @@
 ---
 import Stalux from "@layouts/Stalux.astro";
 import { getCollection } from "astro:content";
-import Navs from "@components/stalux/navs.astro";
-import styles from "@styles/tags.module.css";
-import TagsCloud from "@components/stalux/tagsCloud.astro";
+import Navs from "@components/stalux/layout/navs.astro";
+import styles from "@styles/pages/tags.module.css";
+import TagsCloud from "@components/stalux/tags/tagsCloud.astro";
 const stalux = (await getCollection("config"))[0].data;
 ---
 

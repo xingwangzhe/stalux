@@ -1,9 +1,9 @@
 ---
-import LinkList from "@components/stalux/linkList.astro";
-import Navs from "@components/stalux/navs.astro";
+import LinkList from "@components/stalux/links/linkList.astro";
+import Navs from "@components/stalux/layout/navs.astro";
 import Stalux from "@layouts/Stalux.astro";
 import { getCollection } from "astro:content";
-import styles from "@styles/links.module.css";
+import styles from "@styles/pages/links.module.css";
 const stalux = (await getCollection("config"))[0].data;
 ---
 

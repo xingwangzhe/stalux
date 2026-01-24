@@ -1,0 +1,21 @@
+.social-links {
+  margin-top: 3em;
+  ul {
+    display: flex;
+    gap: 1em;
+    padding: 0;
+    margin: 0;
+    li {
+      font-size: large;
+      width: 2.5em;
+      height: 2.5em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: var(--white-15p);
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+  }
+}

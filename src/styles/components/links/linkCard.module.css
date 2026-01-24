@@ -1,0 +1,97 @@
+/* Friend link card inspired by staluxmyblog Links layout */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--white-10p) !important;
+  border-radius: 10px;
+  padding: 16px;
+  text-decoration: none;
+  color: #fff;
+  min-height: 200px;
+  height: 100%;
+  transition:
+    transform var(--transition-normal) ease,
+    box-shadow var(--transition-normal) ease,
+    background var(--transition-normal) ease;
+  box-shadow: var(--shadow-md);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  background: #ffffff26;
+  box-shadow: var(--shadow-xl);
+}
+
+.avatar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-60p);
+  transition:
+    transform var(--transition-slow) ease,
+    box-shadow var(--transition-slow) ease,
+    border-color var(--transition-slow) ease;
+}
+
+.card:hover .avatar img {
+  transform: rotate(360deg) scale(1.05);
+  box-shadow: 0 0 14px var(--accent-50p);
+  border-color: var(--accent-85p);
+}
+
+.content {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.1rem;
+  margin: 0 0 8px 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(1, 162, 190, 0.9));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.description {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--white-78p);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 14px;
+  }
+
+  .avatar img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+}

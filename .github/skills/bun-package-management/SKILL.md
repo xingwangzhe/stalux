@@ -1,3 +1,4 @@
+---
 name: bun-package-management
 description: 当使用node相关命令时,务必使用bun来代替
 allowed-tools: Bash(bun:*) Read

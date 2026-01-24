@@ -1,3 +1,4 @@
+---
 name: astro-css-modules
 description: 默认应用css时,优先使用模块化的方式导入css
 allowed-tools: Bash(bun:*) Read

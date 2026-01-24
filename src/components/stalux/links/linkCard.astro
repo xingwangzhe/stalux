@@ -1,0 +1,44 @@
+---
+import styles from "@styles/components/links/linkCard.module.css";
+
+interface LinkItem {
+    title?: string;
+    name?: string;
+    url?: string;
+    link?: string;
+    description?: string;
+    icon?: string;
+    avatar?: string;
+}
+
+interface Props {
+    link: LinkItem;
+}
+
+const link = Astro.props.link;
+const href = link.url ?? link.link ?? "#";
+const title = link.title ?? link.name ?? "友链";
+const desc = link.description ?? "";
+const icon = link.icon ?? link.avatar ?? "/favicon.ico";
+---
+
+<a
+    class={styles.card + " a-none"}
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    <div class={styles.avatar}>
+        <img
+            src={icon}
+            alt={`${title} 图标`}
+            loading="lazy"
+            width="80"
+            height="80"
+        />
+    </div>
+    <div class={styles.content}>
+        <h3 class={styles.title}>{title}</h3>
+        {desc && <p class={styles.description}>{desc}</p>}
+    </div>
+</a>

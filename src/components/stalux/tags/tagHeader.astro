@@ -1,0 +1,40 @@
+---
+interface Props {
+    type: string;
+    name: string;
+    count: number;
+}
+const props = Astro.props as Props;
+import styles from "@styles/components/tags/tagHeader.module.css";
+let typeUrl = "";
+if (props.type === "分类") {
+    typeUrl = "/categories/";
+} else if (props.type === "标签") {
+    typeUrl = "/tags/";
+}
+---
+
+<div class={styles.pageHeader}>
+    <h1 class={styles.pageTitle}>
+        <span class={styles.categoryIcon}>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="28"
+                height="28"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path
+                    d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                ></path>
+            </svg>
+        </span>
+        {props.type}: {props.name}
+    </h1>
+    <p class={styles.pageDescription}>共找到 {props.count} 篇相关文章</p>
+    <a href={typeUrl} class={styles.backLink}>返回{props.type}列表</a>
+</div>

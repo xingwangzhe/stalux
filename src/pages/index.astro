@@ -2,13 +2,13 @@
 import { getCollection } from "astro:content";
 const stalux = (await getCollection("config"))[0].data;
 import Stalux from "@layouts/Stalux.astro";
-import styles from "@styles/home.module.css";
-import Navs from "@components/stalux/navs.astro";
-import Author from "@components/stalux/author.astro";
-import TextType from "@components/stalux/textType.astro";
-import DateTime from "@components/stalux/date.astro";
-import SocialMedia from "@components/stalux/socialMedia.astro";
-import ToArchive from "@components/stalux/toArchive.astro";
+import styles from "@styles/pages/home.module.css";
+import Navs from "@components/stalux/layout/navs.astro";
+import Author from "@components/stalux/common/author.astro";
+import TextType from "@components/stalux/common/textType.astro";
+import DateTime from "@components/stalux/common/date.astro";
+import SocialMedia from "@components/stalux/links/socialMedia.astro";
+import ToArchive from "@components/stalux/archives/toArchive.astro";
 ---
 
 <Stalux

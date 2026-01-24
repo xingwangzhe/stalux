@@ -1,10 +1,10 @@
 ---
-import PostList from "@components/stalux/postList.astro";
-import TagHeader from "@components/stalux/tagHeader.astro";
+import PostList from "@components/stalux/posts/postList.astro";
+import TagHeader from "@components/stalux/tags/tagHeader.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import Stalux from "@layouts/Stalux.astro";
 import dayjs from "dayjs";
-import Navs from "@components/stalux/navs.astro";
+import Navs from "@components/stalux/layout/navs.astro";
 const stalux = (await getCollection("config"))[0].data;
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);

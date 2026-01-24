@@ -1,0 +1,55 @@
+---
+//@ts-ignore
+import * as feather from "feather-icons"; // 导入 feather-icons 以便使用图标
+import { getCollection } from "astro:content";
+import styles from "@styles/components/layout/navs.module.css";
+import Search from "@components/stalux/common/search.astro";
+function getIconSvg(iconName: string): string {
+    if (!iconName) return "";
+    try {
+        const icon = feather.icons[iconName];
+        return icon
+            ? icon.toSvg({
+                  width: 20,
+                  height: 20,
+                  "stroke-width": 2,
+                  class: "nav-icon",
+              })
+            : "";
+    } catch (error) {
+        console.error(`Icon '${iconName}' not found in feather-icons`);
+        return "";
+    }
+}
+const stalux = (await getCollection("config"))[0].data;
+---
+
+<nav aria-label="Main navigation">
+    <ul class={styles.navList}>
+        {
+            stalux.navs.map((item) => (
+                <a href={item.link} class={styles.navLink}>
+                    <li class={styles.navItem}>
+                        {item.icon && (
+                            <Fragment set:html={getIconSvg(item.icon)} />
+                        )}
+                        <span>{item.title}</span>
+                    </li>
+                </a>
+            ))
+        }
+        <a href="javascript:void(0);" class={styles.navLink}>
+            <li id="search-btn" class={styles.navItem}>
+                <Fragment set:html={getIconSvg("search")} />
+                <span>搜索</span>
+            </li>
+        </a>
+    </ul>
+</nav>
+<Search />
+<script>
+    document.getElementById("search-btn")?.addEventListener("click", () => {
+        const event = new CustomEvent("openSearch");
+        document.dispatchEvent(event);
+    });
+</script>

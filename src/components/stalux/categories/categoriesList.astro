@@ -1,0 +1,31 @@
+---
+import { getCollection } from "astro:content";
+import styles from "@styles/components/categories/categoriesList.module.css";
+import CategoriesCard from "./categoriesCard.astro";
+const posts = await getCollection("posts");
+const categories = (posts: any[]) => {
+    let categoryMap = new Map();
+    posts.forEach((post: { data: { categories: string[] } }) => {
+        const category = post.data.categories || ["未分类"];
+        category.forEach((cat: string) => {
+            if (categoryMap.has(cat)) {
+                categoryMap.set(cat, categoryMap.get(cat) + 1);
+            } else {
+                categoryMap.set(cat, 1);
+            }
+        });
+    });
+    return Array.from(categoryMap, ([name, count]) => ({ name, count }));
+};
+const categoryList = categories(posts);
+---
+
+<ul class={styles.categoriesList}>
+    {
+        categoryList.map((category) => (
+            <li>
+                <CategoriesCard category={category} />
+            </li>
+        ))
+    }
+</ul>
