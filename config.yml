@@ -54,3 +54,27 @@ stalux:
     - title: 开往
       icon: airplay
       link: https://www.travellings.cn/go
+  links:
+    title: 帮助链接
+    description: 这些网站很棒，对本主题有很大帮助!
+    sites:
+      - name: Astro
+        description: 构建内容丰富的网站的现代静态网站生成器。
+        link: https://astro.build/
+        icon: https://astro.build/favicon.svg
+      - name: MDN
+        description: 提供关于Web标准的开放性、详尽且易于理解的信息。
+        link: https://developer.mozilla.org/
+        icon: https://developer.mozilla.org/favicon.ico
+      - name: animtejs
+        description: 一个强大的JavaScript动画库，帮助你轻松创建复杂的动画效果。
+        link: https://animejs.com/
+        icon: https://animejs.com/assets/images/favicon.png
+      - name: feather-icons
+        description: 简洁且美观的开源图标库，适用于各种设计项目。
+        link: https://feathericons.com/
+        icon: https://feathericons.com/favicon.ico
+      - name: simple-icons
+        description: 提供数千个品牌图标的开源图标库，适用于网页和应用设计。
+        link: https://simpleicons.org/
+        icon: https://simpleicons.org/icons/simpleicons.svg

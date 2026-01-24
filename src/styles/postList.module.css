@@ -7,7 +7,7 @@
     column-width: 22rem; /* 调宽列宽，使卡片更接近“宽长方形” */
     column-gap: 2rem;
     padding: 0;
-    margin: 0;
+    margin: 3em;
     list-style: none;
   }
 

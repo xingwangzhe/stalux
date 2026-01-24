@@ -6,4 +6,8 @@ const stalux = (await getCollection("config"))[0].data;
 import styles from "@styles/textType.module.css";
 ---
 
-<Typewriter class={styles.typeWriter} messages={stalux.typetexts} />
+{
+    stalux.typetexts && (
+        <Typewriter class={styles.typeWriter} messages={stalux.typetexts} />
+    )
+}

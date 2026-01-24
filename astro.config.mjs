@@ -4,5 +4,10 @@ import pagefind from "astro-pagefind";
 // https://astro.build/config
 export default defineConfig({
     output: 'static',
-     integrations: [pagefind()],
+    integrations: [pagefind()],
+    vite: {
+        css: {
+        transformer: "lightningcss",
+        },
+  },
 });

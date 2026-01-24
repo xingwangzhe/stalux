@@ -1,0 +1,87 @@
+/* Friend links list - responsive grid layout inspired by staluxmyblog */
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin: 30px auto;
+  padding: 0;
+  list-style: none;
+  max-width: 1200px;
+}
+
+.item {
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+  display: flex;
+}
+
+/* 渐进动画效果 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 为每个项目设置不同的延迟 */
+.item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.item:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.item:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.item:nth-child(4) {
+  animation-delay: 0.25s;
+}
+.item:nth-child(5) {
+  animation-delay: 0.3s;
+}
+.item:nth-child(n + 6) {
+  animation-delay: 0.35s;
+}
+
+/* 大屏幕：5个卡片一行 */
+@media (min-width: 1400px) {
+  .list {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* 中等屏幕：4个卡片一行 */
+@media (max-width: 1399px) and (min-width: 1100px) {
+  .list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 小屏幕：3个卡片一行 */
+@media (max-width: 1099px) and (min-width: 768px) {
+  .list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 平板：2个卡片一行 */
+@media (max-width: 767px) and (min-width: 480px) {
+  .list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* 移动设备：1个卡片一行 */
+@media (max-width: 479px) {
+  .list {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 20px auto;
+  }
+}

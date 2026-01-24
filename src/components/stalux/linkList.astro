@@ -1,0 +1,17 @@
+---
+import LinkCard from "./linkCard.astro";
+import styles from "@styles/linkList.module.css";
+import { getCollection } from "astro:content";
+
+const links = (await getCollection("config"))[0].data.links.sites ?? [];
+---
+
+<ul class={styles.list}>
+    {
+        links.map((link) => (
+            <li class={styles.item}>
+                <LinkCard link={link} />
+            </li>
+        ))
+    }
+</ul>

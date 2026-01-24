@@ -6,27 +6,26 @@ import Stalux from "@layouts/Stalux.astro";
 import dayjs from "dayjs";
 import Navs from "@components/stalux/navs.astro";
 const stalux = (await getCollection("config"))[0].data;
-
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const counts = new Map<string, number>();
     for (const post of posts) {
-        const tags = post.data.tags ?? [];
-        for (const t of tags) {
-            counts.set(t, (counts.get(t) ?? 0) + 1);
+        const cats = post.data.categories ?? [];
+        for (const c of cats) {
+            counts.set(c, (counts.get(c) ?? 0) + 1);
         }
     }
-    return Array.from(counts.entries()).map(([tag, count]) => ({
-        params: { tag },
-        props: { tag, count },
+    return Array.from(counts.entries()).map(([category, count]) => ({
+        params: { category },
+        props: { category, count },
     }));
 }
 
-const { tag, count } = Astro.props;
+const { category, count } = Astro.props;
 const allPosts = await getCollection("posts", ({ data }) => !data.draft);
 const filteredPosts = allPosts.filter((post) => {
-    const tags = post.data.tags ?? [];
-    return tags.includes(tag);
+    const cats = post.data.categories ?? [];
+    return cats.includes(category);
 });
 const latestPost = filteredPosts.reduce((latest, post) => {
     const postTime = post.data.updated ?? post.data.date;
@@ -42,8 +41,8 @@ const lastUpdateDate = latestPost
 
 <Stalux
     stalux={{
-        title: "标签: " + tag + " | " + stalux.title,
-        description: `浏览标签 ${tag} 下的 ${count} 篇文章，涵盖相关领域的深度思考与见解。最后更新于 ${lastUpdateDate}`,
+        title: "分类: " + category + " | " + stalux.title,
+        description: `浏览分类 ${category} 下的 ${count} 篇文章，涵盖相关领域的深度思考与见解。最后更新于 ${lastUpdateDate}`,
         url: Astro.url.href,
         twitterSite: stalux.twitterSite,
         noindex: stalux.noindex,
@@ -53,12 +52,12 @@ const lastUpdateDate = latestPost
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <TagHeader type={"标签"} name={tag} count={count} />
+    <TagHeader type={"分类"} name={category} count={count} />
     <PostList
         filter={(posts: CollectionEntry<"posts">[]) => {
             return posts.filter((post) => {
-                const tags = post.data.tags ?? [];
-                return tags.includes(tag);
+                const cats = post.data.categories ?? [];
+                return cats.includes(category);
             });
         }}
         posts={allPosts}

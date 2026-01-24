@@ -9,12 +9,16 @@ const stalux = (await getCollection("config"))[0].data;
 
 <Stalux
     stalux={{
-        title: "标签云|" + stalux.title,
+        title: "标签云 | " + stalux.title,
         description: stalux.title + "的标签云",
         url: Astro.url.href,
+        twitterSite: stalux.twitterSite,
+        noindex: stalux.noindex,
+        nofollow: stalux.nofollow,
+        anyhead: stalux.anyhead,
     }}
 >
-    <div style="height: 2em;"></div>
+    <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.title}>标签云</h1>
     <div class={styles.description}>探索不同主题的文章标签</div>

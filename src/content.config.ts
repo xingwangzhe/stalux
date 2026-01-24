@@ -1,6 +1,5 @@
 // 1. 从 `astro:content` 导入工具函数
 import { defineCollection } from "astro:content";
-
 // 2. 导入加载器
 import { glob, file } from "astro/loaders";
 
@@ -62,12 +61,31 @@ const config = defineCollection({
         link: z.string(),
       })
     ).optional(),
+    links: z.object({
+      title: z.string(),
+      description: z.string(),
+      sites: z.array(
+        z.object({
+          name: z.string(),
+          description: z.string(),
+          icon: z.string(),
+          link: z.string(),
+        })
+      ),
+    }),
     footer: z.object({
       icp: z.string().optional(),
       pubsec: z.string().optional(),
     }),
   }),
 });
+const about = defineCollection({
+  loader: glob({ base: "src/content/about", pattern: "**/*.{md,mdx}" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+  }),
+});
 
 // 5. 导出一个 `collections` 对象来注册你的集合
-export const collections = { posts, config };
+export const collections = { posts, about, config };

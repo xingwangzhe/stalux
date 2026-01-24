@@ -3,18 +3,24 @@ import Stalux from "@layouts/Stalux.astro";
 import { getCollection } from "astro:content";
 import Navs from "@components/stalux/navs.astro";
 import CategoriesList from "@components/stalux/categoriesList.astro";
+import styles from "@styles/categories.module.css";
 const stalux = (await getCollection("config"))[0].data;
 ---
 
 <Stalux
     stalux={{
-        title: "文章分类|" + stalux.title,
+        title: "文章分类 | " + stalux.title,
         description: stalux.title + "的文章分类",
         url: Astro.url.href,
+        twitterSite: stalux.twitterSite,
+        noindex: stalux.noindex,
+        nofollow: stalux.nofollow,
+        anyhead: stalux.anyhead,
     }}
 >
-    <div style="height: 2em;"></div>
+    <div style="height: 3em;"></div>
     <Navs />
-    <h1>文章分类</h1>
+    <h1 class={styles.title}>文章分类</h1>
+    <div class={styles.description}>按主题分类浏览</div>
     <CategoriesList />
 </Stalux>
