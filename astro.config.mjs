@@ -10,7 +10,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import expressiveCode from "astro-expressive-code";
 
-// Suppress jsdom CSS parsing errors from pagefind
+
 if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
   const originalError = console.error;
   console.error = function(...args) {
