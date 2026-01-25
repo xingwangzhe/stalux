@@ -10,7 +10,7 @@ import { z } from "astro/zod";
 const posts = defineCollection({
   loader: glob({
     pattern: ["*.{md,mdx}"],
-    base: "src/content/posts/",
+    base: "stalux/posts/",
   }),
   schema: z.object({
     title: z.string(),
@@ -127,7 +127,7 @@ const config = defineCollection({
   }),
 });
 const about = defineCollection({
-  loader: glob({ base: "src/content/about", pattern: "**/*.{md,mdx}" }),
+  loader: glob({ base: "stalux/about", pattern: "**/*.{md,mdx}" }),
   schema: z.object({
     title: z.string(),
     description: z.string(),

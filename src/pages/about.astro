@@ -1,0 +1,66 @@
+---
+import Stalux from "@layouts/Stalux.astro";
+import PostContent from "@components/stalux/posts/postContent.astro";
+import PostCC from "@components/stalux/posts/postCC.astro";
+import WalineComment from "@components/stalux/posts/WalineComment.vue";
+import { getCollection, render } from "astro:content";
+import Navs from "@components/stalux/layout/navs.astro";
+
+// 获取关于页面内容
+const aboutPages = await getCollection("about");
+const aboutPage = aboutPages[0];
+const { Content } = await render(aboutPage);
+
+// 获取配置
+const stalux = (await getCollection("config"))[0].data;
+const walineConfig = stalux?.comment?.waline;
+const author = stalux?.author?.name;
+---
+
+<Stalux
+    stalux={{
+        title: aboutPage.data.title + " | " + stalux.title,
+        description: aboutPage.data.description,
+        url: Astro.url.href,
+        twitterSite: stalux.twitterSite,
+        noindex: stalux.noindex,
+        nofollow: stalux.nofollow,
+        anyhead: stalux.anyhead,
+    }}
+>
+    <div style="height: 2em;"></div>
+    <Navs />
+    <div style="height: 2em;"></div>
+    <div style="max-width: 900px; margin: 2rem auto; padding: 0 1rem;">
+        <PostContent
+            title={aboutPage.data.title}
+            date={undefined}
+            updated={undefined}
+            readingTime={undefined}
+        >
+            <Content />
+            <PostCC
+                title={aboutPage.data.title}
+                author={author}
+                url={Astro.url.href}
+                cc="CC-BY-NC-SA-4.0"
+            />
+            {
+                walineConfig?.serverURL && (
+                    <WalineComment
+                        serverURL={walineConfig.serverURL}
+                        path={Astro.url.pathname}
+                        title={aboutPage.data.title}
+                        lang={walineConfig.lang}
+                        emoji={walineConfig.emoji}
+                        reaction={walineConfig.reaction}
+                        meta={walineConfig.meta as any}
+                        wordLimit={walineConfig.wordLimit}
+                        pageSize={walineConfig.pageSize}
+                        client:idle
+                    />
+                )
+            }
+        </PostContent>
+    </div>
+</Stalux>
