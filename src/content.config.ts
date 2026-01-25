@@ -29,6 +29,7 @@ const posts = defineCollection({
       (val) => (typeof val === "string" ? [val] : val),
       z.array(z.string()).optional(),
     ),
+    cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
   }),
 });
 const config = defineCollection({

@@ -1,0 +1,65 @@
+---
+import style from "@styles/components/posts/postCC.module.css";
+import ccIcon from "@assets/cc-icon.svg?raw";
+
+interface Props {
+    title: string;
+    author: string;
+    url: string;
+    cc?: string;
+}
+
+const { title, author, url, cc = "CC-BY-NC-SA-4.0" } = Astro.props;
+
+// CC 许可证信息映射
+const ccLicenses: Record<string, { name: string; link: string }> = {
+    "CC-BY-NC-SA-4.0": {
+        name: "知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议",
+        link: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    },
+    "CC-BY-4.0": {
+        name: "知识共享署名 4.0 国际许可协议",
+        link: "https://creativecommons.org/licenses/by/4.0/",
+    },
+    "CC-BY-SA-4.0": {
+        name: "知识共享署名-相同方式共享 4.0 国际许可协议",
+        link: "https://creativecommons.org/licenses/by-sa/4.0/",
+    },
+    "CC-BY-NC-4.0": {
+        name: "知识共享署名-非商业性使用 4.0 国际许可协议",
+        link: "https://creativecommons.org/licenses/by-nc/4.0/",
+    },
+};
+
+const licenseInfo = ccLicenses[cc] || ccLicenses["CC-BY-NC-SA-4.0"];
+---
+
+<div class={style.ccBox}>
+    <div class={style.ccContent}>
+        <h2 class={style.ccTitle}>{title}</h2>
+        <p class={style.ccAuthor}>作者：{author}</p>
+        {
+            url && (
+                <p class={style.ccUrl}>
+                    本文链接：
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                        {url}
+                    </a>
+                </p>
+            )
+        }
+        <p class={style.ccLicense}>
+            本文采用 <a
+                href={licenseInfo.link}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                {licenseInfo.name}
+            </a> 进行许可。
+        </p>
+    </div>
+
+    <div class={style.ccWatermark}>
+        <div class={style.ccIcon} set:html={ccIcon} />
+    </div>
+</div>

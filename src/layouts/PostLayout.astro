@@ -3,6 +3,7 @@ import PostLeft from "@components/stalux/posts/postLeft.astro";
 import PostContent from "@components/stalux/posts/postContent.astro";
 import PostRight from "@components/stalux/posts/postRight.astro";
 import PostNavigation from "@components/stalux/posts/postNavigation.astro";
+import PostCC from "@components/stalux/posts/postCC.astro";
 import layoutStyle from "@styles/components/posts/postLayout.module.css";
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
     authorAvatar?: string;
     prev?: { url: string; title: string };
     next?: { url: string; title: string };
+    cc?: string;
 }
 
 const {
@@ -31,6 +33,7 @@ const {
     authorAvatar,
     prev,
     next,
+    cc,
 } = Astro.props;
 ---
 
@@ -47,6 +50,12 @@ const {
             readingTime={readingTime}
         >
             <slot />
+            <PostCC
+                title={title}
+                author={author}
+                url={Astro.url.href}
+                cc={cc}
+            />
             <PostNavigation prev={prev} next={next} />
         </PostContent>
 
