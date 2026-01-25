@@ -60,14 +60,7 @@ const { title, date, updated, readingTime } = Astro.props;
     </header>
 
     <!-- Article Body -->
-    <div class={style.body}>
+    <div class={style.body} data-pagefind-body>
         <slot />
     </div>
-
-    <!-- Article Footer -->
-    <footer class={style.articleFooter}>
-        <div class={style.footerContent}>
-            <slot name="footer" />
-        </div>
-    </footer>
 </article>

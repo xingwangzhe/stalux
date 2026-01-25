@@ -1,0 +1,67 @@
+---
+interface Props {
+    showPoweredBy?: boolean;
+    showThemeInfo?: boolean;
+}
+
+const { showPoweredBy = true, showThemeInfo = true } = Astro.props;
+const showThemeInfoSection = !!(showPoweredBy || showThemeInfo);
+---
+
+{
+    showThemeInfoSection && (
+        <div class="theme-info">
+            {showPoweredBy && (
+                <span>
+                    Powered by
+                    <a
+                        href="https://astro.build"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Astro
+                    </a>
+                </span>
+            )}
+            {showPoweredBy && showThemeInfo && <span> | </span>}
+            {showThemeInfo && (
+                <span>
+                    Theme is
+                    <a
+                        href="https://github.com/xingwangzhe/stalux"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Stalux
+                    </a>
+                </span>
+            )}
+        </div>
+    )
+}
+
+<style>
+    .theme-info {
+        font-size: 0.85rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.3em;
+        flex-wrap: wrap;
+    }
+
+    .theme-info span {
+        margin: 0;
+    }
+
+    .theme-info a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        margin: 0 0.2em;
+    }
+
+    .theme-info a:hover {
+        color: rgba(255, 255, 255, 1);
+        text-decoration: none;
+    }
+</style>

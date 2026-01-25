@@ -11,6 +11,13 @@ body {
   scrollbar-color: #4a4a4a #2a2a2a;
   display: block;
 }
+body.dark {
+  --pagefind-ui-primary: #eeeeee;
+  --pagefind-ui-text: #eeeeee;
+  --pagefind-ui-background: #152028;
+  --pagefind-ui-border: #152028;
+  --pagefind-ui-tag: #152028;
+}
 /* 将所有链接初始化为无视觉状态，但保留键盘可见焦点 */
 a {
   color: inherit;

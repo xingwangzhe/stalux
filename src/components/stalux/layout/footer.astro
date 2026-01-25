@@ -1,7 +1,63 @@
 ---
-const props = Astro.props as Props;
+import FooterCopyright from "@components/stalux/footer/FooterCopyright.astro";
+import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
+import FooterThemeInfo from "@components/stalux/footer/FooterThemeInfo.astro";
+import FooterStats from "@components/stalux/footer/FooterStats.astro";
+import FooterBadges from "@components/stalux/footer/FooterBadges.astro";
+import { getCollection } from "astro:content";
+import { getTotalWordCount, formatWordCount } from "@utils/word-count-utils";
+import footerStyle from "@styles/components/footer/footer.module.css";
 
-export interface Props {}
+// 获取配置
+const stalux = (await getCollection("config"))[0]?.data || {};
+const footerConfig = stalux.footer;
+const author = stalux?.author?.name;
+
+const totalWordCount = await getTotalWordCount();
+const formattedWordCount = formatWordCount(totalWordCount);
 ---
 
-<footer>测试</footer>
+<footer class={footerStyle.siteFooter}>
+    <div class={footerStyle.footerContent}>
+        <!-- 版权信息 -->
+        {
+            footerConfig?.copyright?.enabled && (
+                <FooterCopyright
+                    author={author}
+                    startYear={footerConfig?.copyright?.startYear}
+                />
+            )
+        }
+
+        <!-- 徽章展示 -->
+        <FooterBadges badges={footerConfig?.badges} />
+
+        <!-- 备案信息 -->
+        <FooterBeian
+            icp={footerConfig?.beian?.icp?.enabled
+                ? footerConfig?.beian?.icp?.number
+                : undefined}
+            pubsec={footerConfig?.beian?.security?.enabled
+                ? footerConfig?.beian?.security?.text
+                : undefined}
+            pubsecNumber={footerConfig?.beian?.security?.enabled
+                ? footerConfig?.beian?.security?.number
+                : undefined}
+        />
+
+        <!-- 主题信息 -->
+        <FooterThemeInfo
+            showPoweredBy={footerConfig?.theme?.showPoweredBy}
+            showThemeInfo={footerConfig?.theme?.showThemeInfo}
+        />
+
+        <!-- 站点统计 -->
+        <FooterStats
+            wordCount={formattedWordCount}
+            buildtime={footerConfig?.buildtime}
+        />
+
+        <!-- 自定义内容 -->
+        {footerConfig?.custom && <Fragment set:html={footerConfig.custom} />}
+    </div>
+</footer>

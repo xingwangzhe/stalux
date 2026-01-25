@@ -4,6 +4,8 @@ import PostContent from "@components/stalux/posts/postContent.astro";
 import PostRight from "@components/stalux/posts/postRight.astro";
 import PostNavigation from "@components/stalux/posts/postNavigation.astro";
 import PostCC from "@components/stalux/posts/postCC.astro";
+import WalineComment from "@components/stalux/posts/WalineComment.vue";
+import { getCollection } from "astro:content";
 import layoutStyle from "@styles/components/posts/postLayout.module.css";
 
 interface Props {
@@ -35,6 +37,10 @@ const {
     next,
     cc,
 } = Astro.props;
+
+// 获取 Waline 配置
+const stalux = (await getCollection("config"))[0].data;
+const walineConfig = stalux?.comment?.waline;
 ---
 
 <div class={layoutStyle.postLayout}>
@@ -57,6 +63,22 @@ const {
                 cc={cc}
             />
             <PostNavigation prev={prev} next={next} />
+            {
+                walineConfig?.serverURL && (
+                    <WalineComment
+                        serverURL={walineConfig.serverURL}
+                        path={Astro.url.pathname}
+                        title={title}
+                        lang={walineConfig.lang}
+                        emoji={walineConfig.emoji}
+                        reaction={walineConfig.reaction}
+                        meta={walineConfig.meta as any}
+                        wordLimit={walineConfig.wordLimit}
+                        pageSize={walineConfig.pageSize}
+                        client:idle
+                    />
+                )
+            }
         </PostContent>
 
         <!-- Right Sidebar -->

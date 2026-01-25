@@ -1,0 +1,32 @@
+---
+interface Props {
+    author?: string;
+    startYear?: number;
+}
+
+const { author = "", startYear } = Astro.props;
+
+const currentYear = new Date().getFullYear();
+const copyrightYear =
+    startYear && startYear < currentYear
+        ? `${startYear}-${currentYear}`
+        : currentYear;
+---
+
+<div class="copyright">
+    <span>&copy; {copyrightYear} {author}. 保留权利.</span>
+</div>
+
+<style>
+    .copyright {
+        font-weight: 500;
+        display: flex;
+        gap: 0.3em;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .copyright span {
+        margin: 0;
+    }
+</style>

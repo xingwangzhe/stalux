@@ -1,0 +1,83 @@
+---
+interface Props {
+    icp?: string;
+    pubsec?: string;
+    pubsecNumber?: string;
+}
+
+const { icp, pubsec, pubsecNumber } = Astro.props;
+
+const showBeian = !!(icp || pubsec);
+---
+
+{
+    showBeian && (
+        <div class="beian-info">
+            {icp && (
+                <a
+                    href="https://beian.miit.gov.cn/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {icp}
+                </a>
+            )}
+            {pubsec && pubsecNumber && (
+                <a
+                    href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${pubsecNumber}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="public-security-beian"
+                >
+                    <img
+                        src="https://beian.mps.gov.cn/img/logo01.dd7ff50e.png"
+                        alt="公安备案图标"
+                    />
+                    {pubsec}
+                </a>
+            )}
+        </div>
+    )
+}
+
+<style>
+    .beian-info {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .beian-info a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .beian-info a:hover {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+    }
+
+    .public-security-beian {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .public-security-beian:hover {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+    }
+
+    .public-security-beian img {
+        width: 15px;
+        height: 15px;
+        display: inline-block;
+    }
+</style>

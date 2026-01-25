@@ -1,0 +1,44 @@
+.siteFooter {
+  width: 100%;
+  padding: 1.5rem 0;
+  text-align: center;
+  margin-top: auto;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.footerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .siteFooter {
+    padding: 1.2rem 0;
+    font-size: 0.8rem;
+  }
+
+  .footerContent {
+    gap: 0.6rem;
+    padding: 0 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .siteFooter {
+    padding: 1rem 0;
+    font-size: 0.8rem;
+  }
+
+  .footerContent {
+    gap: 0.6rem;
+    padding: 0 0.8rem;
+  }
+}

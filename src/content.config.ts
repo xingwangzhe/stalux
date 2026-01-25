@@ -77,9 +77,52 @@ const config = defineCollection({
       ),
     }),
     footer: z.object({
+      startYear: z.number().optional(),
       icp: z.string().optional(),
       pubsec: z.string().optional(),
-    }),
+      pubsecNumber: z.string().optional(),
+      buildtime: z.string().optional(),
+      copyright: z.object({
+        enabled: z.boolean().optional().default(true),
+        startYear: z.number().optional(),
+        customText: z.string().optional(),
+      }).optional(),
+      theme: z.object({
+        showPoweredBy: z.boolean().optional().default(true),
+        showThemeInfo: z.boolean().optional().default(true),
+      }).optional(),
+      beian: z.object({
+        icp: z.object({
+          enabled: z.boolean().optional().default(false),
+          number: z.string().optional(),
+        }).optional(),
+        security: z.object({
+          enabled: z.boolean().optional().default(false),
+          text: z.string().optional(),
+          number: z.string().optional(),
+        }).optional(),
+      }).optional(),
+      badges: z.array(z.object({
+        label: z.string(),
+        message: z.string(),
+        color: z.string().optional(),
+        style: z.string().optional(),
+        alt: z.string().optional(),
+        href: z.string().optional(),
+      })).optional(),
+      custom: z.string().optional(),
+    }).optional(),
+    comment: z.object({
+      waline: z.object({
+        serverURL: z.string().url().optional(),
+        lang: z.string().optional().default("zh-CN"),
+        emoji: z.array(z.string()).optional().default(["https://unpkg.com/@waline/emojis@1.1.0/weibo"]),
+        reaction: z.boolean().optional().default(false),
+        meta: z.array(z.string()).optional().default(["nick", "mail", "link"]),
+        wordLimit: z.number().optional().default(200),
+        pageSize: z.number().optional().default(10),
+      }).optional(),
+    }).optional(),
   }),
 });
 const about = defineCollection({

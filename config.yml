@@ -8,8 +8,104 @@ stalux:
   # nofollow: # 是否禁止搜索引擎跟踪链接 默认 false
   anyhead: "" # 额外添加到<head>的内容
   footer:
-    icp: 浙ICP备2023000000号-1
-    pubsec: 浙公网安备 33010602000000号
+    # 站点构建时间，用于计算运行时长
+    buildtime: "2025-05-01T10:00:00"
+
+    # 版权信息
+    copyright:
+      enabled: true
+      startYear: 2024
+      customText: ""
+
+    # 主题信息
+    theme:
+      showPoweredBy: true
+      showThemeInfo: true
+
+    # 备案信息
+    beian:
+      # ICP备案
+      icp:
+        enabled: false
+        number: "辽ICP备XXXXXXXX号"
+      # 公安备案
+      security:
+        enabled: false
+        text: "辽公网安备 XXXXXXXXXXXX号"
+        number: "XXXXXXXXXXXX"
+
+    # 徽章配置
+    badges:
+      - label: "Built with"
+        message: "❤"
+        color: "red"
+        style: "for-the-badge"
+        alt: "Built with Love"
+        href: "https://github.com/xingwangzhe"
+      - label: "Powered by"
+        message: "Astro"
+        color: "orange"
+        style: "flat-square"
+        alt: "Powered by Astro"
+        href: "https://astro.build/"
+      - label: "Theme"
+        message: "Stalux"
+        color: "blueviolet"
+        alt: "Theme: Stalux"
+        href: "https://github.com/xingwangzhe/stalux"
+      - label: "license"
+        message: "MIT"
+        color: "blue"
+        alt: "License: MIT"
+        href: "https://github.com/xingwangzhe/stalux/blob/main/LICENSE"
+      - label: "软著"
+        message: "登记号 2025SR2258474"
+        color: "yellowgreen"
+        alt: "软件著作权登记号 2025SR2258474"
+        href: "/软著证明.pdf"
+      - label: "阿里云ESA"
+        message: "支持"
+        color: "brightgreen"
+        alt: "阿里云ESA"
+        href: "https://www.aliyun.com/product/esa"
+      - label: "Sitemap"
+        message: "XML"
+        color: "orange"
+        alt: "Sitemap XML"
+        href: "/sitemap-index.xml"
+      - label: "RSS"
+        message: "Feed"
+        color: "orange"
+        alt: "RSS Feed"
+        href: "/rss.xml"
+      - label: "Atom"
+        message: "Feed"
+        color: "orange"
+        alt: "Atom Feed"
+        href: "/atom.xml"
+      - label: "LLMs"
+        message: "Dataset"
+        color: "blue"
+        alt: "LLM Dataset"
+        href: "/llms.txt"
+
+    custom: |
+      <!-- footer自定义插槽示例，可放统计、挂件等 -->
+      <div id="custom-footer-hook"></div>
+      <script>console.log('自定义footer已加载');</script>
+  comment:
+    waline:
+      serverURL: https://walines.xingwangzhe.fun
+      lang: zh-CN
+      emoji:
+        - https://unpkg.com/@waline/emojis@1.1.0/weibo
+      reaction: false
+      meta:
+        - nick
+        - mail
+        - link
+      wordLimit: 200
+      pageSize: 10
   author:
     name: xingwangzhe
     avatar: /avatar.png

@@ -1,74 +1,191 @@
 ---
 import SearchS from "astro-pagefind/components/Search";
-import "@styles/components/common/search.css";
+import "@styles/components/search.css";
 //@ts-ignore
-import * as feather from "feather-icons"; // 导入 feather-icons 以便使用
+import * as feather from "feather-icons";
 ---
 
-<div id="search-container" class="none">
+<div id="search-container" class="search-container">
     <div class="search-backdrop"></div>
     <div class="search-box">
         <div class="search-header">
-            <h2>站内搜索</h2>
-            <button class="search-close" id="search-close">
+            <h2>搜索</h2>
+            <button
+                id="search-close"
+                class="search-close"
+                aria-label="关闭搜索"
+            >
                 <Fragment
                     set:html={feather.icons["x"].toSvg({
                         width: 24,
                         height: 24,
-                        class: "close-icon",
                     })}
                 />
             </button>
         </div>
         <div class="search-content">
-            <div id="search-wrapper" class="none">
-                <SearchS
-                    id="search"
-                    className="pagefind-ui"
-                    uiOptions={{
-                        showImages: false,
-                        placeholderText: "",
-                        showEmptyResults: true,
-                        showSubResults: true,
-                        resetStyles: true,
-                        translations: {
-                            placeholder: "",
-                            clear_search: "清除",
-                            load_more: "加载更多结果",
-                            search_label: "搜索网站",
-                            filters_label: "筛选",
-                            zero_results: "未找到与 [SEARCH_TERM] 相关的结果",
-                            many_results:
-                                "找到 [COUNT] 个与 [SEARCH_TERM] 相关的结果",
-                            one_result: "找到 1 个与 [SEARCH_TERM] 相关的结果",
-                            searching: "搜索 [SEARCH_TERM] 中...",
-                        },
-                    }}
-                />
-            </div>
+            <SearchS
+                id="search"
+                className="pagefind-ui"
+                uiOptions={{
+                    showImages: false,
+                    placeholderText: "输入关键词搜索...",
+                    showEmptyResults: true,
+                    showSubResults: true,
+                    resetStyles: true,
+                    translations: {
+                        placeholder: "输入关键词搜索...",
+                        clear_search: "清除",
+                        load_more: "加载更多结果",
+                        search_label: "搜索网站",
+                        filters_label: "筛选",
+                        zero_results: "未找到与 [SEARCH_TERM] 相关的结果",
+                        many_results:
+                            "找到 [COUNT] 个与 [SEARCH_TERM] 相关的结果",
+                        one_result: "找到 1 个与 [SEARCH_TERM] 相关的结果",
+                        searching: "搜索 [SEARCH_TERM] 中...",
+                    },
+                }}
+            />
         </div>
     </div>
 </div>
+
 <script>
-    document.addEventListener("openSearch", () => {
-        const searchElement = document.getElementById("search-container");
-        const searchWrapper = document.getElementById("search-wrapper");
-        if (searchElement) {
-            searchElement.classList.add("search-actives");
+    declare global {
+        interface Window {
+            pagefind?: any;
         }
-        if (searchWrapper) {
-            searchWrapper.classList.add("search-actives");
+    }
+
+    const container = document.getElementById("search-container");
+    const closeBtn = document.getElementById("search-close");
+    const backdrop = document.querySelector(".search-backdrop");
+
+    // 打开搜索 - 监听 openSearch 事件（stalux的触发器）
+    document.addEventListener("openSearch", () => {
+        console.log("Search opened");
+        container?.classList.add("active");
+        const searchInput = container?.querySelector(
+            ".pagefind-ui__search-input",
+        ) as HTMLInputElement;
+        if (searchInput) {
+            setTimeout(() => searchInput.focus(), 0);
         }
     });
 
-    document.getElementById("search-close")?.addEventListener("click", () => {
-        const searchElement = document.getElementById("search-container");
-        const searchWrapper = document.getElementById("search-wrapper");
-        if (searchElement) {
-            searchElement.classList.remove("search-actives");
-        }
-        if (searchWrapper) {
-            searchWrapper.classList.remove("search-actives");
+    // 关闭函数
+    const closeSearch = () => {
+        container?.classList.remove("active");
+    };
+
+    // 关闭按钮
+    closeBtn?.addEventListener("click", closeSearch);
+
+    // 点击背景关闭
+    backdrop?.addEventListener("click", closeSearch);
+
+    // ESC 关闭
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && container?.classList.contains("active")) {
+            closeSearch();
         }
     });
+
+    // 点击结果后关闭
+    container?.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        if (
+            target.closest(".pagefind-ui__result-link") ||
+            target.closest(".pagefind-ui__result-title")
+        ) {
+            setTimeout(() => closeSearch(), 100);
+        }
+    });
+
+    // 确保搜索功能在DOM加载前就能工作
+    function ensureSearchWorks() {
+        if (typeof window.pagefind === "undefined") {
+            window.addEventListener("load", function () {
+                if (window.pagefind) {
+                    initializeSearch();
+                }
+            });
+        } else {
+            initializeSearch();
+        }
+    }
+
+    function initializeSearch() {
+        const searchInput = document.querySelector(
+            ".pagefind-ui__search-input",
+        ) as HTMLInputElement;
+        if (searchInput) {
+            searchInput.disabled = false;
+            searchInput.style.pointerEvents = "auto";
+
+            searchInput.addEventListener("focus", function () {
+                this.style.outline = "2px solid var(--stalux-accent-color)";
+            });
+
+            searchInput.addEventListener("blur", function () {
+                this.style.outline = "none";
+            });
+        }
+
+        const resultsContainer = document.querySelector(
+            ".pagefind-ui__results",
+        );
+        if (resultsContainer) {
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (
+                        mutation.type === "childList" &&
+                        mutation.addedNodes.length > 0
+                    ) {
+                        const results = resultsContainer.querySelectorAll(
+                            ".pagefind-ui__result",
+                        );
+                        results.forEach(function (result, index) {
+                            (result as HTMLElement).style.animationDelay =
+                                `${index * 0.1}s`;
+                        });
+                    }
+                });
+            });
+
+            observer.observe(resultsContainer, {
+                childList: true,
+                subtree: true,
+            });
+        }
+    }
+
+    ensureSearchWorks();
+
+    const searchObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            mutation.addedNodes.forEach(function (node) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    const element = node as Element;
+                    if (
+                        element.classList &&
+                        element.classList.contains("pagefind-ui")
+                    ) {
+                        setTimeout(initializeSearch, 100);
+                        searchObserver.disconnect();
+                    }
+                }
+            });
+        });
+    });
+
+    searchObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+    });
+
+    setTimeout(function () {
+        searchObserver.disconnect();
+    }, 5000);
 </script>
