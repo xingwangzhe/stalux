@@ -3,7 +3,7 @@
 .sidebarContainer {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-lg);
 }
 
 .authorSection {
@@ -13,20 +13,20 @@
 .authorCard {
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  background: var(--black-10p);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sidebar);
   transition: all var(--transition-normal) ease;
 }
 
 .authorBio {
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
   color: var(--white-70p);
-  margin: 1rem 0 0;
+  margin: var(--space-md) 0 0;
   line-height: 1.6;
   text-align: center;
-  padding-top: 1rem;
-  border-top: 1px solid var(--white-10p);
+  padding-top: var(--space-md);
+  border-top: var(--border-thin) solid var(--white-10p);
   width: 100%;
 }

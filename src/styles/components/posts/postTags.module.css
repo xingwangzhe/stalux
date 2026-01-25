@@ -1,36 +1,38 @@
 .tagsContainer {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-xs);
 }
 
 .title {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--white-90p);
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--border-thin) solid var(--white-20p);
 }
 
 .tagList {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-sm);
 }
 
 .tag {
   display: inline-block;
   padding: 0.4rem 0.8rem;
-  border: 1px solid var(--accent-50p);
+  background: var(--white-10p);
+  border: none;
   border-radius: var(--radius-full);
-  font-size: 0.85rem;
+  font-size: var(--font-size-smaller);
   text-decoration: none;
   transition:
-    color 0.2s ease,
-    transform 0.2s ease;
+    color var(--transition-medium),
+    transform var(--transition-medium);
   white-space: nowrap;
   transform: translateY(0);
+  color: var(--white-85p);
 }
 
 .tag:hover {
@@ -43,7 +45,7 @@
 
 .empty {
   color: var(--white-50p);
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
   text-align: center;
-  padding: 1rem 0;
+  padding: var(--space-md) 0;
 }

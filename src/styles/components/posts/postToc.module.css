@@ -1,10 +1,10 @@
 .title {
-  margin: 0 0 0.75rem;
-  font-size: 1rem;
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--white-90p);
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--border-thin) solid var(--white-20p);
 }
 
 .list {
@@ -13,24 +13,24 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-sm);
 }
 
 .item {
   display: block;
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-sm) var(--space-xs);
   color: var(--white-70p);
   text-decoration: none;
-  font-size: 0.9rem;
-  border-left: 3px solid transparent;
-  border-radius: 0 4px 4px 0;
-  transition: transform 0.2s ease;
+  font-size: var(--font-size-small);
+  border-left: var(--border-thick) solid transparent;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  transition: transform var(--transition-medium);
   line-height: 1.4;
   word-break: break-word;
 }
 
 .item:hover {
-  transform: translateX(-0.5rem);
+  transform: translateX(-var(--space-sm));
 }
 
 .item:active,
@@ -43,28 +43,28 @@
 
 /* 层级缩进 */
 .depth-1 {
-  padding-left: 0.75rem;
+  padding-left: var(--space-xs);
 }
 
 .depth-2 {
-  padding-left: 1.5rem;
-  font-size: 0.85rem;
+  padding-left: var(--space-lg);
+  font-size: var(--font-size-smaller);
 }
 
 .depth-3 {
   padding-left: 2.25rem;
-  font-size: 0.8rem;
+  font-size: var(--font-size-tiny);
 }
 
 .depth-4,
 .depth-5,
 .depth-6 {
-  padding-left: 3rem;
+  padding-left: var(--space-2xl);
   font-size: 0.75rem;
   color: var(--white-60p);
 }
 
 .empty {
   color: var(--white-60p);
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
 }

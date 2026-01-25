@@ -104,23 +104,23 @@
 .footerContent {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-lg);
 }
 .articleContent {
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  background: var(--black-10p);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-sidebar);
   transition: all var(--transition-normal) ease;
   box-sizing: border-box;
 }
 
 /* 输入样式 - 重置并增强 */
 :global(.articleContent :where(h1, h2, h3, h4, h5, h6)) {
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
   color: var(--white-full);
   font-weight: 600;
   line-height: 1.3;

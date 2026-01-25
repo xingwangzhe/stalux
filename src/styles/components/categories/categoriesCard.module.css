@@ -3,10 +3,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
-  background-color: rgba(255, 255, 255, 0.05);
+  padding: var(--space-lg);
+  background-color: var(--white-05p);
   border-radius: 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: var(--border-thin) solid var(--white-10p);
   color: var(--white-full);
   transition: all var(--transition-slow);
   overflow: hidden;

@@ -120,10 +120,16 @@ ul {
   /* 常用颜色值 */
   --white-full: #ffffff;
   --white-90p: rgba(255, 255, 255, 0.9);
+  --white-85p: rgba(255, 255, 255, 0.85);
+  --white-80p: rgba(255, 255, 255, 0.8);
   --white-78p: rgba(255, 255, 255, 0.78);
+  --white-70p: rgba(255, 255, 255, 0.7);
   --white-60p: rgba(255, 255, 255, 0.6);
   --white-50p: rgba(255, 255, 255, 0.5);
+  --white-30p: rgba(255, 255, 255, 0.3);
   --white-20p: rgba(255, 255, 255, 0.2);
+  --white-15p: rgba(255, 255, 255, 0.15);
+  --white-12p: rgba(255, 255, 255, 0.12);
   --white-10p: rgba(255, 255, 255, 0.1);
   --white-8p: rgba(255, 255, 255, 0.08);
   --white-05p: rgba(255, 255, 255, 0.05);
@@ -134,6 +140,8 @@ ul {
   --black-20p: rgba(0, 0, 0, 0.2);
   --black-15p: rgba(0, 0, 0, 0.15);
   --black-10p: rgba(0, 0, 0, 0.1);
+  --black-05p: rgba(0, 0, 0, 0.05);
+  --black-03p: rgba(0, 0, 0, 0.03);
 
   /* 强调色变体 */
   --accent-90p: rgba(1, 162, 190, 0.9);
@@ -149,6 +157,7 @@ ul {
 
   /* 常用过渡和动画 */
   --transition-fast: 0.18s ease;
+  --transition-medium: 0.2s ease;
   --transition-normal: 0.25s ease;
   --transition-slow: 0.3s ease;
   --transition-slower: 0.5s ease;
@@ -158,10 +167,14 @@ ul {
   --easing-smooth: cubic-bezier(0.25, 0.9, 0.2, 1);
 
   /* 常用间距值 */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.75rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
 
   /* 常用圆角半径值 */
   --radius-sm: 4px;
@@ -169,12 +182,36 @@ ul {
   --radius-lg: 8px;
   --radius-xl: 10px;
   --radius-full: 9999px;
+  --radius-circle: 50%;
 
   /* 常用阴影 */
   --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.3);
   --shadow-xl: 0 12px 26px rgba(0, 0, 0, 0.28);
+  --shadow-sidebar: 0 4px 6px rgba(0, 0, 0, 0.753);
+  --shadow-dark: rgba(0, 0, 0, 0.753);
+
+  /* 语义化颜色 */
+  --date-text-color: #e8f2ff;
+  --updated-text-color: #fff7de;
+  --muted-text: #bbb;
+  --border-color-light: #e5e5e5;
+
+  /* 字体大小系统 */
+  --font-size-title: 2.5rem;
+  --font-size-h2: 1.8rem;
+  --font-size-subtitle: 1.2rem;
+  --font-size-base: 1rem;
+  --font-size-small: 0.9rem;
+  --font-size-smaller: 0.85rem;
+  --font-size-tiny: 0.8rem;
+
+  /* 边框宽度 */
+  --border-thin: 1px;
+  --border-medium: 2px;
+  --border-thick: 3px;
+  --border-thicker: 4px;
 }
 ::-webkit-scrollbar {
   width: 8px;
@@ -217,9 +254,9 @@ ul {
 
 /* footer 基础样式，保证页脚始终可见且不覆盖内容 */
 footer {
-  padding: 1.5rem 1rem;
+  padding: var(--space-lg) var(--space-md);
   text-align: center;
-  color: #bbb;
+  color: var(--muted-text);
   background: transparent;
   position: relative;
   z-index: 1;

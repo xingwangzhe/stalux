@@ -2,6 +2,7 @@
 import PostLeft from "@components/stalux/posts/postLeft.astro";
 import PostContent from "@components/stalux/posts/postContent.astro";
 import PostRight from "@components/stalux/posts/postRight.astro";
+import PostNavigation from "@components/stalux/posts/postNavigation.astro";
 import layoutStyle from "@styles/components/posts/postLayout.module.css";
 
 interface Props {
@@ -14,6 +15,8 @@ interface Props {
     headings?: Array<{ depth: number; slug: string; text: string }>;
     author?: string;
     authorAvatar?: string;
+    prev?: { url: string; title: string };
+    next?: { url: string; title: string };
 }
 
 const {
@@ -26,6 +29,8 @@ const {
     headings = [],
     author = "Author",
     authorAvatar,
+    prev,
+    next,
 } = Astro.props;
 ---
 
@@ -42,6 +47,7 @@ const {
             readingTime={readingTime}
         >
             <slot />
+            <PostNavigation prev={prev} next={next} />
         </PostContent>
 
         <!-- Right Sidebar -->

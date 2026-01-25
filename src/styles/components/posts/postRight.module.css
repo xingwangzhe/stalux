@@ -4,12 +4,13 @@
   position: sticky;
   top: 20px;
   width: 100%;
+  height: fit-content;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem 0;
+  gap: var(--space-lg);
+  padding: var(--space-lg) 0;
 
   /* 隐藏滚动条但保留滚动功能 */
   scrollbar-width: none;
@@ -23,10 +24,10 @@
 .sidebarContainer {
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  background: var(--black-10p);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sidebar);
   transition: all var(--transition-normal) ease;
 }
 
@@ -37,10 +38,10 @@
 .actionSection {
   animation: fadeInRight 0.6s ease forwards;
   opacity: 0;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  background: var(--black-10p);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sidebar);
 }
 
 .tocSection {

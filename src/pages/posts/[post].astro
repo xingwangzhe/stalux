@@ -6,9 +6,11 @@ import { stripHtml } from "string-strip-html";
 import Navs from "@components/stalux/layout/navs.astro";
 interface Props {
     post: CollectionEntry<"posts">;
+    prev?: { url: string; title: string };
+    next?: { url: string; title: string };
 }
 const stalux = (await getCollection("config"))[0].data;
-const { post } = Astro.props;
+const { post, prev, next } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await render(post);
 
 // 从 remarkPluginFrontmatter 中提取阅读时间
@@ -22,10 +24,38 @@ const siteConfig = {
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts");
-    return posts.map((post) => ({
-        params: { post: post.data.abbrlink },
-        props: { post },
-    }));
+
+    // 按日期排序（降序）
+    const sortedPosts = posts.sort((a, b) => {
+        const dateA = a.data.date?.getTime() || 0;
+        const dateB = b.data.date?.getTime() || 0;
+        return dateB - dateA;
+    });
+
+    return sortedPosts.map((post, index) => {
+        const next = index > 0 ? sortedPosts[index - 1] : undefined;
+        const prev =
+            index < sortedPosts.length - 1 ? sortedPosts[index + 1] : undefined;
+
+        return {
+            params: { post: post.data.abbrlink },
+            props: {
+                post,
+                prev: prev
+                    ? {
+                          url: `/posts/${prev.data.abbrlink}`,
+                          title: prev.data.title,
+                      }
+                    : undefined,
+                next: next
+                    ? {
+                          url: `/posts/${next.data.abbrlink}`,
+                          title: next.data.title,
+                      }
+                    : undefined,
+            },
+        };
+    });
 }
 ---
 
@@ -58,6 +88,8 @@ export async function getStaticPaths() {
         headings={headings}
         author={siteConfig.author}
         authorAvatar={siteConfig.authorAvatar}
+        prev={prev}
+        next={next}
     >
         <Content />
     </PostLayout>

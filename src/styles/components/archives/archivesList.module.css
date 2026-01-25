@@ -1,12 +1,12 @@
 .archivesContainer {
   max-width: 1000px;
   margin: 0 auto; /* 水平居中 */
-  padding: 2rem 1rem;
+  padding: var(--space-xl) var(--space-md);
 }
 
 .timelineContainer {
   position: relative;
-  padding-left: 2rem;
+  padding-left: var(--space-xl);
 }
 
 .timelineContainer::before {
@@ -14,14 +14,14 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 4px;
+  width: var(--radius-sm);
   height: 100%;
   background: linear-gradient(to bottom, var(--white-20p), var(--accent-40p), var(--white-20p));
-  border-radius: 2px;
+  border-radius: var(--border-medium);
 }
 
 .yearSection {
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-2xl);
   position: relative;
   animation: fadeIn 0.6s ease forwards;
   opacity: 0;

@@ -1,0 +1,161 @@
+/* 文章导航样式 */
+
+.postNavigation {
+  width: 100%;
+  margin: var(--space-lg) 0;
+  border-top: var(--border-thin) solid var(--white-20p);
+  padding-top: var(--space-lg);
+}
+
+.postNavigationInner {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.postNavLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--black-10p);
+  border-radius: var(--radius-md);
+  color: var(--white-90p);
+  text-decoration: none;
+  transition:
+    background-color var(--transition-normal),
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal),
+    color var(--transition-normal);
+  border: var(--border-thin) solid var(--white-20p);
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.postNavLink::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, var(--accent-20p), transparent);
+  transition: left var(--transition-slow);
+}
+
+.postNavLink:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px var(--shadow-dark);
+}
+
+.postNavLink:hover::before {
+  left: 100%;
+}
+
+.postNavLink.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+  background: var(--black-15p);
+}
+
+.postNavLink.prevPost {
+  text-align: left;
+  margin-left: var(--space-xs);
+}
+
+.postNavLink.nextPost {
+  text-align: right;
+  justify-content: flex-end;
+  margin-right: var(--space-xs);
+}
+
+.postNavContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.postNavArrow {
+  flex-shrink: 0;
+  color: var(--white-70p);
+  transition: color var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.postNavLabel {
+  font-size: var(--font-size-small);
+  color: var(--accent-90p);
+  margin-bottom: var(--space-xs);
+  font-weight: 500;
+}
+
+.postNavTitle {
+  font-size: var(--font-size-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  color: var(--white-90p);
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .postNavigation {
+    margin: var(--space-md) 0;
+  }
+
+  .postNavigationInner {
+    gap: var(--space-sm);
+  }
+
+  .postNavLink {
+    padding: var(--space-sm);
+  }
+
+  .postNavArrow {
+    transform: scale(0.85);
+  }
+
+  .postNavLabel {
+    font-size: 0.75rem;
+    margin-bottom: var(--space-2xs);
+  }
+
+  .postNavTitle {
+    font-size: var(--font-size-small);
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+  .postNavigation {
+    margin: var(--space-md) 0;
+  }
+
+  .postNavigationInner {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .postNavLink {
+    width: 100%;
+    padding: var(--space-sm);
+  }
+
+  .postNavLink.prevPost,
+  .postNavLink.nextPost {
+    margin-left: 0;
+    margin-right: 0;
+    text-align: left;
+  }
+
+  .postNavLink.nextPost {
+    justify-content: flex-start;
+  }
+}
