@@ -9,13 +9,10 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { Content, remarkPluginFrontmatter } = await render(post);
+const { Content, headings, remarkPluginFrontmatter } = await render(post);
 
 // 从 remarkPluginFrontmatter 中提取阅读时间
 const readingTime = remarkPluginFrontmatter?.minutesRead || "5分钟";
-
-// 提取目录信息
-const headings = remarkPluginFrontmatter?.headings || [];
 
 // 获取网站配置信息
 const siteConfig = {
@@ -42,6 +39,7 @@ export async function getStaticPaths() {
 >
     <div style="height: 2em;"></div>
     <Navs />
+    <div style="height: 2em;"></div>
     <PostLayout
         title={post.data.title}
         date={post.data.date

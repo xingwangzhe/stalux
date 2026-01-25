@@ -6,13 +6,13 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 /* 文章标题 */
 .articleHeader {
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid var(--white-10p);
   animation: fadeInUp 0.6s ease forwards;
   opacity: 0;
 }
@@ -23,6 +23,7 @@
   color: var(--white-full);
   margin: 0 0 1.5rem;
   line-height: 1.2;
+  text-align: center;
   word-break: break-word;
   text-shadow: var(--stalux-text-shadow);
 }
@@ -30,9 +31,10 @@
 .metadata {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 1.5rem;
   font-size: 0.95rem;
-  color: var(--white-70p);
+  color: #ffffffb3;
 }
 
 .metaItem {
@@ -42,8 +44,45 @@
   transition: color var(--transition-fast) ease;
 }
 
-.metaItem:hover {
-  color: var(--accent-80p);
+/* 文章阅读量统计 */
+.pageStats {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--white-10p);
+  font-size: 0.9rem;
+  color: #ffffffb3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pageStats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.readingTime {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+#vercount_value_page_pv {
+  font-weight: 600;
+  color: #ffffffb3;
+}
+
+#vercount_container_page_pv {
+  transition: opacity 0.3s ease;
+}
+
+/* 阅读量单独一行并居中 */
+.metaRow {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 /* 文章身体 */
@@ -66,6 +105,16 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+.articleContent {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  transition: all var(--transition-normal) ease;
+  box-sizing: border-box;
 }
 
 /* 输入样式 - 重置并增强 */
@@ -251,7 +300,6 @@
 :global(.articleContent em b) {
   color: var(--accent-90p);
 }
-
 /* 响应式设计 */
 @media (max-width: 1024px) {
   .title {
@@ -351,6 +399,13 @@
   :global(.articleContent th),
   :global(.articleContent td) {
     padding: 0.6rem 0.8rem;
+  }
+
+  /* 响应式设计 */
+  .pageStats {
+    font-size: 0.85rem;
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
   }
 }
 

@@ -1,0 +1,70 @@
+.title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: var(--white-70p);
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: transform 0.2s ease;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.item:hover {
+  transform: translateX(-0.5rem);
+}
+
+.item:active,
+.item.active {
+  color: var(--accent-90p);
+  background-color: var(--accent-20p);
+  border-left-color: var(--accent-80p);
+  font-weight: 500;
+}
+
+/* 层级缩进 */
+.depth-1 {
+  padding-left: 0.75rem;
+}
+
+.depth-2 {
+  padding-left: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.depth-3 {
+  padding-left: 2.25rem;
+  font-size: 0.8rem;
+}
+
+.depth-4,
+.depth-5,
+.depth-6 {
+  padding-left: 3rem;
+  font-size: 0.75rem;
+  color: var(--white-60p);
+}
+
+.empty {
+  color: var(--white-60p);
+  font-size: 0.9rem;
+}

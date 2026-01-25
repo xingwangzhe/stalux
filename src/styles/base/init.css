@@ -9,6 +9,7 @@ body {
     flex: 1;
   }
   scrollbar-color: #4a4a4a #2a2a2a;
+  display: block;
 }
 /* 将所有链接初始化为无视觉状态，但保留键盘可见焦点 */
 a {
@@ -38,7 +39,7 @@ a {
     text-shadow 0.2s ease;
 }
 
-/* animated underline */
+/* 下划线动画 */
 a::after {
   content: "";
   position: absolute;

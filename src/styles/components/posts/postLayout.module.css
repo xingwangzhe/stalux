@@ -11,10 +11,10 @@
   flex: 1;
   display: grid;
   grid-template-columns: 280px 1fr 280px;
-  gap: 3rem;
-  max-width: 1400px;
+  gap: 4rem;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 1.5rem 1rem;
   width: 100%;
   box-sizing: border-box;
 }
@@ -22,16 +22,19 @@
 /* 三列布局间距调整 */
 .container > :nth-child(1) {
   /* 左侧边栏 */
+  margin: 0;
 }
 
 .container > :nth-child(2) {
   /* 中间内容 */
   min-width: 0;
   /* 防止长内容溢出 */
+  margin: 0;
 }
 
 .container > :nth-child(3) {
   /* 右侧边栏 */
+  margin: 0;
 }
 
 /* 响应式设计 */
@@ -40,8 +43,8 @@
 @media (min-width: 1600px) {
   .container {
     grid-template-columns: 300px 1fr 300px;
-    gap: 3.5rem;
-    padding: 4rem 3rem;
+    gap: 4.5rem;
+    padding: 2rem 1.5rem;
   }
 }
 
@@ -49,8 +52,8 @@
 @media (max-width: 1400px) {
   .container {
     grid-template-columns: 260px 1fr 260px;
-    gap: 2.5rem;
-    padding: 2.5rem 1.5rem;
+    gap: 3.5rem;
+    padding: 1.5rem 1rem;
   }
 }
 
@@ -58,8 +61,8 @@
 @media (max-width: 1200px) {
   .container {
     grid-template-columns: 240px 1fr 240px;
-    gap: 2rem;
-    padding: 2rem 1rem;
+    gap: 3rem;
+    padding: 1rem 0.75rem;
   }
 }
 
@@ -68,12 +71,12 @@
   .container {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 2rem 1rem;
+    gap: 2.5rem;
+    padding: 1rem 0.5rem;
   }
 }
 
-/* Mobile */
+/* 手机端 */
 @media (max-width: 768px) {
   .postLayout {
     padding: 1rem;
@@ -82,12 +85,12 @@
   .container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2rem;
     padding: 1.5rem 0;
     margin: 0;
   }
 
-  /* Reorder for mobile: content first, then sidebars */
+  /* 手机端重排：先内容，后侧栏 */
   .container > :nth-child(2) {
     order: 1;
   }
@@ -108,7 +111,7 @@
   }
 
   .container {
-    gap: 1rem;
+    gap: 1.25rem;
     padding: 1rem 0;
   }
 }

@@ -24,6 +24,7 @@
     "dayjs": "^1.11.19",
     "feather-icons": "^4.29.2",
     "lightningcss": "^1.31.1",
+    "remark-toc": "^9.0.0",
     "simple-icons": "^16.6.0",
     "string-strip-html": "^13.5.3"
   },

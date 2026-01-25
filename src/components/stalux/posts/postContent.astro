@@ -15,12 +15,11 @@ const { title, date, updated, readingTime } = Astro.props;
     <!-- Article Header -->
     <header class={style.articleHeader}>
         <h1 class={style.title}>{title}</h1>
-
         <div class={style.metadata}>
             {
                 date && (
                     <time class={style.metaItem} datetime={date}>
-                        📅{" "}
+                        发布时间：
                         {new Date(date).toLocaleDateString("zh-CN", {
                             year: "numeric",
                             month: "long",
@@ -33,7 +32,7 @@ const { title, date, updated, readingTime } = Astro.props;
             {
                 updated && (
                     <span class={style.metaItem}>
-                        ✏️ 更新于{" "}
+                        更新时间：
                         {new Date(updated).toLocaleDateString("zh-CN", {
                             year: "numeric",
                             month: "long",
@@ -42,13 +41,22 @@ const { title, date, updated, readingTime } = Astro.props;
                     </span>
                 )
             }
-
-            {
-                readingTime && (
-                    <span class={style.metaItem}>🕒 {readingTime}</span>
-                )
-            }
         </div>
+        {
+            (readingTime || true) && (
+                <div class={style.pageStats}>
+                    {readingTime && (
+                        <span class={style.readingTime}>
+                            🕒 阅读时间：{readingTime}
+                        </span>
+                    )}
+                    <span id="vercount_container_page_pv">
+                        👀 阅读量：
+                        <span id="vercount_value_page_pv">Loading...</span>
+                    </span>
+                </div>
+            )
+        }
     </header>
 
     <!-- Article Body -->

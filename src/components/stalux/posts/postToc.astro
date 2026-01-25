@@ -1,0 +1,43 @@
+---
+import style from "@styles/components/posts/postToc.module.css";
+
+interface TocHeading {
+    depth: number;
+    slug: string;
+    text: string;
+}
+
+interface Props {
+    headings?: TocHeading[];
+    title?: string;
+}
+
+const { headings = [], title = "目录" } = Astro.props;
+
+const tocItems = headings
+    .filter((item) => item && item.slug && item.text)
+    .map((item) => ({
+        ...item,
+        depth: Math.min(Math.max(item.depth ?? 1, 1), 6),
+    }));
+---
+
+<h3 class={style.title}>{title}</h3>
+{
+    tocItems.length > 0 ? (
+        <ul class={style.list}>
+            {tocItems.map((heading) => (
+                <li>
+                    <a
+                        class={`${style.item} ${style[`depth-${heading.depth}`] || ""} a-none`}
+                        href={`#${heading.slug}`}
+                    >
+                        {heading.text}
+                    </a>
+                </li>
+            ))}
+        </ul>
+    ) : (
+        <div class={style.empty}>暂无目录</div>
+    )
+}

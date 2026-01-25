@@ -18,16 +18,16 @@ const posts = defineCollection({
     date: z.preprocess((v) => (typeof v === "string" ? new Date(v) : v), z.date()),
     updated: z.preprocess(
       (v) => (v == null ? undefined : typeof v === "string" ? new Date(v) : v),
-      z.date().optional()
+      z.date().optional(),
     ),
     draft: z.boolean().optional().default(false),
     tags: z.preprocess(
       (val) => (typeof val === "string" ? [val] : val),
-      z.array(z.string()).optional()
+      z.array(z.string()).optional(),
     ),
     categories: z.preprocess(
       (val) => (typeof val === "string" ? [val] : val),
-      z.array(z.string()).optional()
+      z.array(z.string()).optional(),
     ),
   }),
 });
@@ -52,15 +52,17 @@ const config = defineCollection({
         title: z.string(),
         icon: z.string(),
         link: z.string(),
-      })
+      }),
     ),
     typetexts: z.array(z.string()).optional(),
-    mediaLinks: z.array(
-      z.object({
-        icon: z.string(),
-        link: z.string(),
-      })
-    ).optional(),
+    mediaLinks: z
+      .array(
+        z.object({
+          icon: z.string(),
+          link: z.string(),
+        }),
+      )
+      .optional(),
     links: z.object({
       title: z.string(),
       description: z.string(),
@@ -70,7 +72,7 @@ const config = defineCollection({
           description: z.string(),
           icon: z.string(),
           link: z.string(),
-        })
+        }),
       ),
     }),
     footer: z.object({

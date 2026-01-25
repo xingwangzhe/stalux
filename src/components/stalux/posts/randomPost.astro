@@ -41,7 +41,7 @@ const { count = 5, title = "随机文章" } = Astro.props;
 </div>
 
 <script define:vars={{ count }}>
-    // Fisher-Yates 洗牌算法
+    // 费雪-耶茨洗牌算法
     function shuffleArray(array) {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -76,7 +76,7 @@ const { count = 5, title = "随机文章" } = Astro.props;
             .map(
                 (post) => `
             <li class="random-post-item">
-                <a href="/posts/${post.abbrlink}/" class="random-post-link">
+                <a href="/posts/${post.abbrlink}/" class="random-post-link a-none">
                     ${post.title}
                 </a>
             </li>

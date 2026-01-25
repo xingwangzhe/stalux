@@ -25,7 +25,7 @@ function selectRandomBackground(): void {
 function applyBackground(imageUrl: string): void {
   const root = document.documentElement;
   // 设置 CSS 变量
-  root.style.setProperty('--stalux-bg-image', `url('${imageUrl}')`);
+  root.style.setProperty("--stalux-bg-image", `url('${imageUrl}')`);
 }
 
 // 初始化

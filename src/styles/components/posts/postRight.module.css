@@ -3,13 +3,13 @@
 .rightSidebar {
   position: sticky;
   top: 20px;
-  width: 280px;
+  width: 100%;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 1.5rem 0.5rem;
+  padding: 1.5rem 0;
 
   /* 隐藏滚动条但保留滚动功能 */
   scrollbar-width: none;
@@ -23,7 +23,11 @@
 .sidebarContainer {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.753);
+  transition: all var(--transition-normal) ease;
 }
 
 /* 部分样式 */
@@ -322,7 +326,7 @@
   }
 }
 
-/* Animations */
+/* 动画 */
 @keyframes fadeInRight {
   from {
     opacity: 0;
