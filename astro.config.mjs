@@ -6,6 +6,9 @@ import partytown from "@astrojs/partytown";
 import vue from "@astrojs/vue";
 import remarkToc from "remark-toc";
 import astroLLMsGenerator from "astro-llms-generate";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import expressiveCode from "astro-expressive-code";
 
 // Suppress jsdom CSS parsing errors from pagefind
 if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
@@ -25,21 +28,35 @@ export default defineConfig({
   experimental: {
     preserveScriptOrder: true,
   },
-  integrations: [
-    vue(),
-    readingTime(),
-    pagefind(),
-    partytown({
-      config: {
-        forward: ["dataLayer.push"],
+  integrations: [vue(), readingTime(), pagefind(), partytown({
+    config: {
+      forward: ["dataLayer.push"],
+    },
+   }), astroLLMsGenerator({
+    includePatterns: ["**/*"], // Pages to include
+    excludePatterns: ["**/404*", "**/api/**"], // Pages to exclude
+    customSeparator: "\n\n---\n\n", // Custom separator for full content
+   }), expressiveCode({
+      themes: ["dark-plus", "github-light"],
+      styleOverrides: {
+        borderRadius: "0.5rem",
+        frames: {
+          shadowColor: "#124",
+        },
       },
-     }),
-        astroLLMsGenerator({
-          includePatterns: ["**/*"], // Pages to include
-          excludePatterns: ["**/404*", "**/api/**"], // Pages to exclude
-          customSeparator: "\n\n---\n\n", // Custom separator for full content
-        }),
-  ],
+      // 性能优化选项
+      // 性能优化选项
+      useDarkModeMediaQuery: true,
+      minSyntaxHighlightingColorContrast: 5.5,
+      defaultProps: {
+        wrap: true,
+        overridesByLang: {
+          "bash,ps,sh": { preserveIndent: false },
+        },
+      },
+    }
+    
+  )],
   vite: {
     build: {
       cssMinify: "lightningcss",
@@ -47,7 +64,9 @@ export default defineConfig({
     },
   },
   markdown: {
-    remarkPlugins: [[remarkToc, { heading: "toc", maxDepth: 7 }]],
-    // rehypePlugins: [rehypeAccessibleEmojis],
+    remarkPlugins: [[remarkToc, { heading: "toc", maxDepth: 7 }], remarkMath],
+        rehypePlugins: [rehypeKatex],
+    smartypants: true, // 智能标点符号
+    gfm: true, // GitHub 风格的 Markdown 支持
   },
 });

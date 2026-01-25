@@ -15,17 +15,20 @@ export interface Props {
   noindex?: boolean;
   nofollow?: boolean;
   anyhead?: string;
+  favicon?: string;
 }
 
 const props = Astro.props as Props;
 const effectiveTitle = props.title;
 const effectiveDescription = props.description;
 
+const faviconPath = props.favicon || "/favicon.ico";
+
 const openGraphConfig = {
   basic: {
     title: effectiveTitle,
     type: "website",
-    image: "/favicon.ico",
+    image: faviconPath,
     url: props.canonical || props.url || Astro.url.href,
   },
   optional: {
@@ -38,11 +41,11 @@ const twitterConfig = {
   card: "summary_large_image" as TwitterCardType,
   title: effectiveTitle,
   description: effectiveDescription,
-  image: "/favicon.ico",
+  image: faviconPath,
   ...(props.twitterSite ? { site: props.twitterSite } : {}),
 };
 
-const extendedLink = [{ rel: "icon", href: "/favicon.ico" }];
+const extendedLink = [{ rel: "icon", href: faviconPath }];
 const extendedMeta = [
   { name: "viewport", content: "width=device-width, initial-scale=1" },
 ];

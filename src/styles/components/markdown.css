@@ -1,0 +1,117 @@
+/* Markdown 内容渲染样式 */
+/* 作用于 postContent 的 body 区域 */
+
+/* 基础排版 */
+
+/* 标题样式 */
+[data-pagefind-body] h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+[data-pagefind-body] h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-top: 2.5rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.3;
+}
+
+[data-pagefind-body] h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+[data-pagefind-body] h4 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+
+[data-pagefind-body] h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+[data-pagefind-body] h6 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+/* 段落和文本 */
+[data-pagefind-body] p {
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+[data-pagefind-body] strong {
+  font-weight: 600;
+  color: #ffd966;
+}
+
+[data-pagefind-body] code {
+  color: #ff79c6;
+  background-color: rgba(255, 121, 198, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: var(--font-mono, "Courier New", monospace);
+}
+
+[data-pagefind-body] pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* 列表样式 */
+
+/* 引用块 */
+
+/* 代码块 */
+
+/* 表格样式 */
+[data-pagefind-body] table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  overflow-x: auto;
+  display: block;
+}
+
+[data-pagefind-body] table th,
+[data-pagefind-body] table td {
+  border: 1px solid var(--white-20p);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+[data-pagefind-body] table th {
+  background-color: var(--white-10p);
+}
+
+[data-pagefind-body] table tr:nth-child(even) {
+  background-color: var(--white-05p);
+}
+
+/* 链接样式 */
+
+/* 图片样式 */
+
+/* 分隔线 */
+
+/* 其他元素 */

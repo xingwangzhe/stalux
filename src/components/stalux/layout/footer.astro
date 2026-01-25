@@ -4,6 +4,7 @@ import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
 import FooterThemeInfo from "@components/stalux/footer/FooterThemeInfo.astro";
 import FooterStats from "@components/stalux/footer/FooterStats.astro";
 import FooterBadges from "@components/stalux/footer/FooterBadges.astro";
+import type { BadgeOptions } from "@utils/badge-generator";
 import { getCollection } from "astro:content";
 import { getTotalWordCount, formatWordCount } from "@utils/word-count-utils";
 import footerStyle from "@styles/components/footer/footer.module.css";
@@ -12,6 +13,22 @@ import footerStyle from "@styles/components/footer/footer.module.css";
 const stalux = (await getCollection("config"))[0]?.data || {};
 const footerConfig = stalux.footer;
 const author = stalux?.author?.name;
+
+// 转换徽章配置，确保类型正确
+const badges: BadgeOptions[] | undefined = footerConfig?.badges?.map(
+    (badge: any) => ({
+        ...badge,
+        style: ([
+            "flat",
+            "plastic",
+            "flat-square",
+            "for-the-badge",
+            "social",
+        ].includes(badge.style)
+            ? badge.style
+            : "flat") as BadgeOptions["style"],
+    }),
+);
 
 const totalWordCount = await getTotalWordCount();
 const formattedWordCount = formatWordCount(totalWordCount);
@@ -30,7 +47,7 @@ const formattedWordCount = formatWordCount(totalWordCount);
         }
 
         <!-- 徽章展示 -->
-        <FooterBadges badges={footerConfig?.badges} />
+        <FooterBadges badges={badges} />
 
         <!-- 备案信息 -->
         <FooterBeian

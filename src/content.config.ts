@@ -43,6 +43,7 @@ const config = defineCollection({
     noindex: z.boolean().optional().default(false),
     nofollow: z.boolean().optional().default(false),
     anyhead: z.string().optional(),
+    favicon: z.string().optional().default("/favicon.ico"),
     author: z.object({
       name: z.string(),
       avatar: z.string(),
