@@ -1,5 +1,6 @@
 ---
 import { SEO } from "astro-seo";
+import { ClientRouter } from "astro:transitions";
 import VerCount from "../common/verCount.astro";
 import "@styles/base/init.css";
 // Twitter 卡片类型定义
@@ -62,6 +63,7 @@ const ldJson = JSON.stringify(schema);
 
 <head>
   <meta charset="utf-8" />
+  <ClientRouter />
   <SEO
     title={effectiveTitle}
     description={effectiveDescription}

@@ -10,6 +10,7 @@
   margin-top: 1.5em;
   text-shadow: var(--stalux-text-shadow);
   text-align: center;
+  color: var(--white-full);
 }
 
 .homeNavs {

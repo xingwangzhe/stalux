@@ -4,7 +4,7 @@
   text-align: center;
   margin-top: auto;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--white-full);
   background-color: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
 }

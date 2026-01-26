@@ -41,30 +41,30 @@ const stalux = (await getCollection("config"))[0].data;
     <ul data-ref="stalux-nav-list" class={styles.navList}>
         {
             stalux.navs.map((item) => (
-                <a
-                    href={item.link}
-                    class={styles.navLink}
-                    data-ref="stalux-nav-link"
-                >
-                    <li class={styles.navItem}>
+                <li class={styles.navItem}>
+                    <a
+                        href={item.link}
+                        class={styles.navLink}
+                        data-ref="stalux-nav-link"
+                    >
                         {item.icon && (
                             <Fragment set:html={getIconSvg(item.icon)} />
                         )}
                         <span class={styles.navText}>{item.title}</span>
-                    </li>
-                </a>
+                    </a>
+                </li>
             ))
         }
-        <a
-            href="javascript:void(0);"
-            class={styles.navLink}
-            data-ref="stalux-search-btn"
-        >
-            <li class={styles.navItem}>
+        <li class={styles.navItem}>
+            <button
+                class={styles.navLink}
+                data-ref="stalux-search-btn"
+                aria-label="打开搜索"
+            >
                 <Fragment set:html={getIconSvg("search")} />
                 <span class={styles.navText}>搜索</span>
-            </li>
-        </a>
+            </button>
+        </li>
     </ul>
 </nav>
 <Search />

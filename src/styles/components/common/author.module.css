@@ -26,6 +26,7 @@
     font-size: 2.5em;
     font-weight: bold;
     text-shadow: var(--stalux-text-shadow);
+    color: var(--white-full);
   }
 }
 

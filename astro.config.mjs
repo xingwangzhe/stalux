@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import pagefind from "astro-pagefind";
 import readingTime from "astro-reading-time";
 import partytown from "@astrojs/partytown";
+import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
 import astroLLMsGenerator from "astro-llms-generate";
 import remarkMath from "remark-math";
@@ -27,6 +28,7 @@ if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
 // https://astro.build/config
 export default defineConfig({
   output: "static",
+  site: "https://stalux.needhelp.icu",
   experimental: {
     preserveScriptOrder: true,
   },
@@ -37,6 +39,15 @@ export default defineConfig({
     }),
     readingTime(),
     pagefind(),
+    sitemap({
+      filter: (page) => {
+        // 排除 API 端点和 404 页面
+        return !page.includes("/api/") && !page.includes("/404");
+      },
+      changefreq: "weekly",
+      priority: 0.7,
+      lastmod: new Date(),
+    }),
     partytown({
       config: {
         forward: ["dataLayer.push"],

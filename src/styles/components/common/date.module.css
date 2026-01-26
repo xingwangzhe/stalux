@@ -4,6 +4,7 @@
   align-items: center;
   margin-top: 2em;
   text-shadow: var(--stalux-text-shadow);
+  color: var(--white-full);
   #date {
     font-size: 2em;
     margin-bottom: 0.5em;
