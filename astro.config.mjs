@@ -25,10 +25,11 @@ if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
   };
 }
 
+const site = "https://stalux.needhelp.icu";
 // https://astro.build/config
 export default defineConfig({
   output: "static",
-  site: "https://stalux.needhelp.icu",
+  site: site,
   experimental: {
     preserveScriptOrder: true,
   },
@@ -41,8 +42,17 @@ export default defineConfig({
     pagefind(),
     sitemap({
       filter: (page) => {
-        // 排除 API 端点和 404 页面
-        return !page.includes("/api/") && !page.includes("/404");
+        return (
+          page.includes("/posts/") ||
+          page.includes("/about/") ||
+          page.includes("/links/") ||
+          page === site + "/" ||
+          page === site + "/archives/" ||
+          page === site + "/tags/" ||
+          page === site + "/categories/" ||
+          page.includes("/tags/") || // 所有标签页面
+          page.includes("/categories/")
+        ); // 所有分类页面
       },
       changefreq: "weekly",
       priority: 0.7,
