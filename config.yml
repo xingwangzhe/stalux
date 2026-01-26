@@ -1,0 +1,314 @@
+stalux:
+  title: "姓王者的博客"
+  url: "https://xingwangzhe.fun"
+  description: "探索、学习、进步、创造无限可能！姓王者的博客致力于分享前端开发技术，包括JavaScript、TypeScript、Vue等web开发知识。作为计算机科学与技术专业的博主，我相信终身学习的价值，这里记录了我的技术成长历程、实用教程和开发心得，希望能为大家提供有价值的参考和启发。可以不会，但不能不学！"
+  canonical: "https://xingwangzhe.fun"
+  anyhead: "" # 额外添加到<head>的内容
+  favicon: "/favicon.ico" # 网站图标路径，默认为根路径下
+
+  author:
+    name: xingwangzhe
+    avatar: /avatar.webp
+    bio: "探索、学习、进步、创造无限可能！"
+
+  navs:
+    - title: "首页"
+      icon: home
+      link: /
+    - title: "归档"
+      icon: archive
+      link: /archives/
+    - title: "分类"
+      icon: folder
+      link: /categories/
+    - title: "标签"
+      icon: tag
+      link: /tags/
+    - title: "友链"
+      icon: link
+      link: /links/
+    - title: "关于"
+      icon: user
+      link: /about/
+    - title: "开往"
+      icon: airplay
+      link: "https://www.travellings.cn/go.html"
+
+  typetexts:
+    - "Free as in Freedom"
+    - "任意键在哪?"
+    - "若为自由故"
+    - "Just for fun!"
+    - "Hello World!"
+    - "问道无先后，术业一番通!"
+
+  mediaLinks:
+    - icon: github
+      link: "https://github.com/xingwangzhe"
+    - icon: bilibili
+      link: "https://space.bilibili.com/1987297874"
+    - icon: qq
+      link: "https://qm.qq.com/q/64L8hnwQ2k"
+    - icon: maildotru
+      link: "mailto:xingwangzhe@outlook.com"
+    - icon: juejin
+      link: "https://juejin.cn/user/1795939693507712"
+
+  links:
+    title: "友情链接"
+    description: "左邻右舍，互通有无"
+    sites:
+      - name: "姓王者的博客"
+        description: "探索、学习、进步、创造无限可能！"
+        link: "https://xingwangzhe.fun"
+        icon: "https://xingwangzhe.fun/avatar.webp"
+      - name: "友链图鉴"
+        description: "汇聚千丝万缕的关系"
+        link: "https://links.needhelp.icu/?local=xingwangzhe.fun"
+        icon: "https://links.needhelp.icu/StreamlinePlumpColorWebFlat.svg"
+      - name: "Lily Ellenvia"
+        description: "喜歡睡覺的普通人"
+        link: "https://blog.lilynet.work"
+        icon: "https://avatars.githubusercontent.com/u/118451956?v=4"
+      - name: "夜梦星尘の折腾日记"
+        description: "眼底星河荡漾，踏着梦走过时光。"
+        link: "https://tech.yemengstar.com/"
+        icon: "https://cn-sy1.rains3.com/yemengtechpublic/yemenglogoNEW.bmp"
+      - name: "浪海导航"
+        description: "浪海导航 ~ 收录各种类型的博客以及论坛网站"
+        link: "https://www.langhai.net/"
+        icon: "https://www.langhai.net/assets/images/langhai-logo.png"
+      - name: "琼西往事"
+        description: "Do Not Be Sorry, Be Better"
+        link: "https://fushaolei.fun/"
+        icon: "https://cdn.jsdelivr.net/gh/fushaolei/img/20200524104925.jpg"
+      - name: "ksh"
+        description: "Life Oriented Programming"
+        link: "https://ksh7.com/"
+        icon: "https://ksh7.com/img/avatar.webp"
+      - name: "aopstudio 的个人博客"
+        description: "记录精彩的程序人生"
+        link: "https://neusoftware.top"
+        icon: "https://b3log.org/images/brand/solo-128.png"
+      - name: "Admibrill"
+        description: "有志者，事竟成。"
+        link: "https://blog.qyadbr.top/"
+        icon: "https://source-admibrill.pages.dev/file/f69c9c86b22cb90df18a1.png"
+      - name: "大佬论坛"
+        description: "站长论坛，互联网站长综合交流，十年之约合作论坛"
+        link: "https://www.dalao.net/"
+        icon: "https://www.dalao.net/view/img/apple-touch-icon.png"
+      - name: "BlogFinder"
+        description: "每个博客都是一座宝藏"
+        link: "https://bf.zzxworld.com/"
+        icon: "https://bf.zzxworld.com/images/favicon.png"
+      - name: "浩瀚星河"
+        description: "缓慢向上也是一种勇气。"
+        link: "https://www.golangblog.com"
+        icon: "https://cdn.codepzj.cn/image/20250529174726187.jpeg"
+      - name: "清羽飞扬"
+        description: "柳影曳曳，清酒孤灯，扬笔撒墨，心境如霜"
+        link: "https://blog.liushen.fun/"
+        icon: "https://blog.liushen.fun/info/avatar.ico"
+      - name: "时歌的博客"
+        description: "理解以真实为本，但真实本身并不会自动呈现"
+        link: "https://www.lapis.cafe/"
+        icon: "https://www.lapis.cafe/avatar.webp"
+      - name: "懋和道人"
+        description: "李懋和，俗名李栋梁。书法、国画爱好者，互联网安全与前端建设者。"
+        link: "https://www.dao.js.cn/"
+        icon: "https://cn.cravatar.com/avatar/37d41e2b550633a30f5d41de61c1aa92?s=400&r=G&d=mp&ver=1754413756"
+      - name: "拾柒"
+        description: "奇奇怪怪。"
+        link: "https://www.s17.cn"
+        icon: "https://www.s17.cn/logo.png"
+      - name: "洛屿的小站"
+        description: "嗨，靓仔，今天也要有个好心情哦！"
+        link: "https://www.drluo.top/"
+        icon: "https://www.drluo.top/img/avatar.webp"
+      - name: "云端的解构者"
+        description: "以我观物，故物皆著我之色彩"
+        link: "https://www.zheep.top"
+        icon: "https://www.zheep.top/img/uuz.jpg"
+      - name: "Pinpe 的云端"
+        description: "一个属于自己的云朵。"
+        link: "https://pinpe.top"
+        icon: "https://pinpe.top/head.jpg"
+      - name: "我的飛鳥集"
+        description: "代码与诗的世界"
+        link: "https://fmcf.cc/"
+        icon: "https://api.fmcf.cc/api/v2/objects/avatar/fvfzp7f411o9qkrba6.jpg"
+      - name: "J將軍的博客 - BG9JMR的无线电小站~"
+        description: "欢迎来到J將軍的个人小站！呼号：BG9JMR 请在bilibili或者X上关注我~。"
+        link: "https://blog.bg9jmr.icu/"
+        icon: "https://blog.bg9jmr.icu/upload/b_dcfe8673d4b07f0d2e6f138fbea38d33.jpg"
+      - name: "VnYzm的博客"
+        description: "分享技术心得和摸鱼感想"
+        link: "https://vnyzm.top"
+        icon: "https://vnyzm.top/img/profile.jpg"
+      - name: "Exister"
+        description: "民生各有所乐兮，余独好修以为常"
+        link: "https://exister.tk/"
+        icon: "https://exister.tk/images/avatar.webp"
+      - name: "孤影墨香"
+        description: "温暖的灵魂终将相遇"
+        link: "https://www.iloli.xin"
+        icon: "https://jsd.gymxbl.com/avatar/links/@gymxbl.com@iloli.xin/logo2.png"
+
+  footer:
+    # 站点构建时间，用于计算运行时长
+    buildtime: "2024-06-20T10:00:00"
+
+    # 版权信息
+    copyright:
+      enabled: true
+      startYear: 2024
+      customText: ""
+
+    # 主题信息
+    theme:
+      showPoweredBy: true
+      showThemeInfo: true
+
+    # 备案信息
+    beian:
+      # ICP备案
+      icp:
+        enabled: true
+        number: " 辽ICP备2024042064号-1"
+      # 公安备案
+      security:
+        enabled: false
+        text: "辽公网安备 XXXXXXXXXXXX号"
+        number: "XXXXXXXXXXXX"
+
+    # 徽章配置
+    badges:
+      - label: "Built with"
+        message: "❤"
+        color: "red"
+        style: "for-the-badge"
+        alt: "Built with Love"
+        href: "https://github.com/xingwangzhe"
+      - label: "Powered by"
+        message: "Astro"
+        color: "orange"
+        style: "flat-square"
+        alt: "Powered by Astro"
+        href: "https://astro.build/"
+      - label: "Theme"
+        message: "Stalux"
+        color: "blueviolet"
+        alt: "Theme: Stalux"
+        href: "https://stalux.needhelp.icu/"
+      - label: "license"
+        message: "MIT"
+        color: "blue"
+        alt: "License: MIT"
+        href: "https://github.com/xingwangzhe/stalux"
+      - label: "主题软著"
+        message: "登记号 2025SR2258474"
+        color: "yellowgreen"
+        alt: "软件著作权登记号 2025SR2258474"
+        href: "/软著证明.pdf"
+      - label: "阿里云"
+        message: "服务器"
+        alt: "阿里云支持"
+        href: "https://www.aliyun.com/minisite/goods?userCode=lmvvqvl9"
+      - label: "travellings"
+        message: "开往🚆"
+        color: "green"
+        alt: "开往-友链接力"
+        href: "https://www.travellings.cn/go.html"
+      - label: "dalao"
+        message: "大佬论坛"
+        color: "yellowgreen"
+        alt: "大佬论坛"
+        href: "https://www.dalao.net/"
+      - label: "BlogFinder"
+        message: "探索博客"
+        color: "yellow"
+        alt: "BlogFinder"
+        href: "https://bf.zzxworld.com/"
+      - label: "BlogsClub"
+        message: "空间穿梭"
+        color: "teal"
+        alt: "空间穿梭-随机访问BlogsClub成员博客"
+        href: "https://www.blogsclub.org/go"
+      - label: "EdgeOne"
+        message: "CDN"
+        color: "blue"
+        alt: "腾讯EdgeOne CDN"
+        href: "https://edgeone.ai/zh"
+      - label: "foreverblog"
+        message: "十年之约"
+        color: "blue"
+        alt: "十年之约"
+        href: "https://www.foreverblog.cn/blog/6304.html"
+      - label: "BLOGS·CN"
+        message: "笔墨迹"
+        color: "#eb5055"
+        alt: "本站已加入BLOGS·CN"
+        href: "https://blogscn.fun/"
+      - label: "blogverse"
+        message: "博客宇宙"
+        color: "#4285f4"
+        alt: "博客宇宙 - 精选博客导航"
+        href: "https://blogverse.cn"
+      - label: "🥱"
+        message: "无聊湾"
+        color: "#d0273e"
+        alt: "无聊湾 🥱 "
+        href: "https://boringbay.com"
+      - label: "Sitemap"
+        message: "XML"
+        color: "orange"
+        alt: "Sitemap XML"
+        href: "/sitemap-index.xml"
+      - label: "RSS"
+        message: "Feed"
+        color: "orange"
+        alt: "RSS Feed"
+        href: "/rss.xml"
+      - label: "Atom"
+        message: "Feed"
+        color: "orange"
+        alt: "Atom Feed"
+        href: "/atom.xml"
+      - label: "LLMs"
+        message: "Dataset"
+        color: "blue"
+        alt: "LLM Dataset"
+        href: "/llms.txt"
+
+    custom: |
+      <script defer src="https://umami.xingwangzhe.fun/script.js" data-website-id="b28b14f6-a7b6-4c6c-8e4f-347f618ba998" type="text/partytown"></script>
+      <script async src="https://cloud.umami.is/script.js" data-website-id="baf2a9fb-abcf-4850-a553-bb5d01483e2e" type="text/partytown"></script>
+      <link rel="prefetch" as="image" href="https://www.blogsclub.org/badge/xingwangzhe.fun">
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-NHFWWSE5KJ" type="text/partytown"></script>
+      <script type="text/partytown">
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-NHFWWSE5KJ');
+      </script>
+      <script type="text/partytown">
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "syapyoange");
+      </script>
+
+  comment:
+    waline:
+      serverURL: "https://walines.xingwangzhe.fun"
+      lang: "zh-CN"
+      reaction: false
+      meta:
+        - "nick"
+        - "mail"
+        - "link"
+      wordLimit: 200
+      pageSize: 10

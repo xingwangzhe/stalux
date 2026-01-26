@@ -1,0 +1,86 @@
+---
+import PostLeft from "@components/stalux/posts/postLeft.astro";
+import PostContent from "@components/stalux/posts/postContent.astro";
+import PostRight from "@components/stalux/posts/postRight.astro";
+import PostNavigation from "@components/stalux/posts/postNavigation.astro";
+import PostCC from "@components/stalux/posts/postCC.astro";
+import WalineComment from "@components/stalux/posts/WalineComment.astro";
+import { getCollection } from "astro:content";
+import layoutStyle from "@styles/components/posts/postLayout.module.css";
+
+interface Props {
+    title: string;
+    date?: string;
+    updated?: string;
+    readingTime?: string;
+    tags?: string[];
+    categories?: string[];
+    headings?: Array<{ depth: number; slug: string; text: string }>;
+    author?: string;
+    authorAvatar?: string;
+    prev?: { url: string; title: string };
+    next?: { url: string; title: string };
+    cc?: string;
+}
+
+const {
+    title,
+    date,
+    updated,
+    readingTime,
+    tags = [],
+    categories = [],
+    headings = [],
+    author = "Author",
+    authorAvatar,
+    prev,
+    next,
+    cc,
+} = Astro.props;
+
+// 获取 Waline 配置
+const stalux = (await getCollection("config"))[0].data;
+const walineConfig = stalux?.comment?.waline;
+---
+
+<div class={layoutStyle.postLayout}>
+    <div class={layoutStyle.container}>
+        <!-- Left Sidebar -->
+        <PostLeft author={author} authorAvatar={authorAvatar} />
+
+        <!-- Main Content -->
+        <PostContent
+            title={title}
+            date={date}
+            updated={updated}
+            readingTime={readingTime}
+        >
+            <slot />
+            <PostCC
+                title={title}
+                author={author}
+                url={Astro.url.href}
+                cc={cc}
+            />
+            <PostNavigation prev={prev} next={next} />
+            {
+                walineConfig?.serverURL && (
+                    <WalineComment
+                        serverURL={walineConfig.serverURL}
+                        path={Astro.url.pathname}
+                        title={title}
+                        lang={walineConfig.lang}
+                        emoji={walineConfig.emoji}
+                        reaction={walineConfig.reaction}
+                        meta={walineConfig.meta as any}
+                        wordLimit={walineConfig.wordLimit}
+                        pageSize={walineConfig.pageSize}
+                    />
+                )
+            }
+        </PostContent>
+
+        <!-- Right Sidebar -->
+        <PostRight headings={headings} tags={tags} categories={categories} />
+    </div>
+</div>

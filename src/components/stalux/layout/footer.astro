@@ -1,0 +1,80 @@
+---
+import FooterCopyright from "@components/stalux/footer/FooterCopyright.astro";
+import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
+import FooterThemeInfo from "@components/stalux/footer/FooterThemeInfo.astro";
+import FooterStats from "@components/stalux/footer/FooterStats.astro";
+import FooterBadges from "@components/stalux/footer/FooterBadges.astro";
+import type { BadgeOptions } from "@utils/badge-generator";
+import { getCollection } from "astro:content";
+import { getTotalWordCount, formatWordCount } from "@utils/word-count-utils";
+import footerStyle from "@styles/components/footer/footer.module.css";
+
+// 获取配置
+const stalux = (await getCollection("config"))[0]?.data || {};
+const footerConfig = stalux.footer;
+const author = stalux?.author?.name;
+
+// 转换徽章配置，确保类型正确
+const badges: BadgeOptions[] | undefined = footerConfig?.badges?.map(
+    (badge: any) => ({
+        ...badge,
+        style: ([
+            "flat",
+            "plastic",
+            "flat-square",
+            "for-the-badge",
+            "social",
+        ].includes(badge.style)
+            ? badge.style
+            : "flat") as BadgeOptions["style"],
+    }),
+);
+
+const totalWordCount = await getTotalWordCount();
+const formattedWordCount = formatWordCount(totalWordCount);
+---
+
+<footer class={footerStyle.siteFooter}>
+    <div class={footerStyle.footerContent}>
+        <!-- 版权信息 -->
+        {
+            footerConfig?.copyright?.enabled && (
+                <FooterCopyright
+                    author={author}
+                    startYear={footerConfig?.copyright?.startYear}
+                />
+            )
+        }
+
+        <!-- 徽章展示 -->
+        <FooterBadges badges={badges} />
+
+        <!-- 备案信息 -->
+        <FooterBeian
+            icp={footerConfig?.beian?.icp?.enabled
+                ? footerConfig?.beian?.icp?.number
+                : undefined}
+            pubsec={footerConfig?.beian?.security?.enabled
+                ? footerConfig?.beian?.security?.text
+                : undefined}
+            pubsecNumber={footerConfig?.beian?.security?.enabled
+                ? footerConfig?.beian?.security?.number
+                : undefined}
+        />
+
+        <!-- 主题信息 -->
+        <FooterThemeInfo
+            showPoweredBy={footerConfig?.theme?.showPoweredBy}
+            showThemeInfo={footerConfig?.theme?.showThemeInfo}
+        />
+
+        <!-- 站点统计 -->
+        <FooterStats
+            wordCount={formattedWordCount}
+            buildtime={footerConfig?.buildtime}
+        />
+
+        <!-- 自定义内容 -->
+        {footerConfig?.custom && <Fragment set:html={footerConfig.custom} />}
+    </div>
+</footer>

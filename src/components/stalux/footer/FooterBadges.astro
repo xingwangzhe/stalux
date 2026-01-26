@@ -1,0 +1,67 @@
+---
+import type { BadgeOptions } from "@utils/badge-generator";
+import { generateBadge, svgToDataUrl } from "@utils/badge-generator";
+
+interface Props {
+    badges?: BadgeOptions[];
+}
+
+const { badges } = Astro.props;
+
+// 生成所有徽章
+const allBadges = (badges ?? []).map((options: BadgeOptions) => ({
+    src: svgToDataUrl(generateBadge(options)),
+    alt: options.alt || `${options.label}: ${options.message}`,
+    href: options.href,
+}));
+---
+
+{
+    allBadges.length > 0 && (
+        <div class="badges">
+            {allBadges.map(
+                (badge: { href?: string; src: string; alt: string }) =>
+                    badge.href ? (
+                        <a
+                            href={badge.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <img
+                                src={badge.src}
+                                alt={badge.alt}
+                                class="badge"
+                            />
+                        </a>
+                    ) : (
+                        <img src={badge.src} alt={badge.alt} class="badge" />
+                    ),
+            )}
+        </div>
+    )
+}
+
+<style>
+    .badges {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .badge {
+        height: 20px;
+        vertical-align: middle;
+    }
+
+    @media (max-width: 768px) {
+        .badges {
+            gap: 0.3rem;
+        }
+
+        .badge {
+            height: 18px;
+        }
+    }
+</style>

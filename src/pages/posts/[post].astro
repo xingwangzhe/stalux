@@ -1,0 +1,98 @@
+---
+import Stalux from "@layouts/Stalux.astro";
+import PostLayout from "@layouts/PostLayout.astro";
+import { getCollection, type CollectionEntry, render } from "astro:content";
+import removeMarkdown from "remove-markdown";
+import Navs from "@components/stalux/layout/navs.astro";
+interface Props {
+    post: CollectionEntry<"posts">;
+    prev?: { url: string; title: string };
+    next?: { url: string; title: string };
+}
+const stalux = (await getCollection("config"))[0].data;
+const { post, prev, next } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await render(post);
+
+// 从 remarkPluginFrontmatter 中提取阅读时间
+const readingTime = remarkPluginFrontmatter?.minutesRead || "5分钟";
+
+// 获取网站配置信息
+const siteConfig = {
+    author: "Stalux",
+    authorAvatar: "/avatar.png",
+};
+
+export async function getStaticPaths() {
+    const posts = await getCollection("posts");
+
+    // 按日期排序（降序）
+    const sortedPosts = posts.sort((a, b) => {
+        const dateA = a.data.date?.getTime() || 0;
+        const dateB = b.data.date?.getTime() || 0;
+        return dateB - dateA;
+    });
+
+    return sortedPosts.map((post, index) => {
+        const next = index > 0 ? sortedPosts[index - 1] : undefined;
+        const prev =
+            index < sortedPosts.length - 1 ? sortedPosts[index + 1] : undefined;
+
+        return {
+            params: { post: post.data.abbrlink },
+            props: {
+                post,
+                prev: prev
+                    ? {
+                          url: `/posts/${prev.data.abbrlink}`,
+                          title: prev.data.title,
+                      }
+                    : undefined,
+                next: next
+                    ? {
+                          url: `/posts/${next.data.abbrlink}`,
+                          title: next.data.title,
+                      }
+                    : undefined,
+            },
+        };
+    });
+}
+---
+
+<Stalux
+    stalux={{
+        title: post.data.title + " | " + stalux.title,
+        description:
+            removeMarkdown(post.body?.slice(0, 300) || "").slice(0, 150) +
+            "...",
+        url: Astro.url.href,
+        twitterSite: stalux.twitterSite,
+        noindex: stalux.noindex,
+        nofollow: stalux.nofollow,
+        anyhead: stalux.anyhead,
+    }}
+>
+    <div style="height: 2em;"></div>
+    <Navs />
+    <div style="height: 2em;"></div>
+    <PostLayout
+        title={post.data.title}
+        date={post.data.date
+            ? post.data.date.toISOString().split("T")[0]
+            : undefined}
+        updated={post.data.updated
+            ? post.data.updated.toISOString().split("T")[0]
+            : undefined}
+        readingTime={readingTime}
+        tags={post.data.tags || []}
+        categories={post.data.categories || []}
+        headings={headings}
+        author={siteConfig.author}
+        authorAvatar={siteConfig.authorAvatar}
+        prev={prev}
+        next={next}
+        cc={post.data.cc}
+    >
+        <Content />
+    </PostLayout>
+</Stalux>

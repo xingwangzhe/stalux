@@ -1,0 +1,90 @@
+---
+interface Props {
+    showStats?: boolean;
+    wordCount?: string;
+    buildtime?: string;
+}
+
+const { showStats = true, wordCount, buildtime } = Astro.props;
+---
+
+{
+    showStats && (
+        <div class="site-stats">
+            <span id="vercount_container_site_uv">
+                本站访客数：<span id="vercount_value_site_uv">Loading...</span>{" "}
+                人次
+            </span>
+            <span class="stats-separator">|</span>
+            <span id="vercount_container_site_pv">
+                本站总访问量：
+                <span id="vercount_value_site_pv">Loading...</span> 次
+            </span>
+            <span class="stats-separator">|</span>
+            <span id="word-count-container">
+                本站总字数：
+                <span id="word-count-value">
+                    {wordCount ?? "Loading..."}
+                </span>{" "}
+                字
+            </span>
+        </div>
+    )
+}
+
+{
+    buildtime && (
+        <div class="site-build-time">
+            <span>
+                本站已正常运行
+                <span id="runtime-counter" />
+            </span>
+        </div>
+    )
+}
+
+<script define:vars={{ buildtime }}>
+    if (buildtime) {
+        const runtimeCounter = document.getElementById("runtime-counter");
+
+        const updateRuntime = () => {
+            if (!runtimeCounter) return;
+            const now = new Date();
+            const start = new Date(buildtime);
+            const diffMs = now.getTime() - start.getTime();
+            if (Number.isNaN(diffMs) || diffMs < 0) return;
+
+            const totalSeconds = Math.floor(diffMs / 1000);
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            runtimeCounter.textContent = `${days}天${hours}时${minutes}分${seconds}秒`;
+        };
+
+        updateRuntime();
+        setInterval(updateRuntime, 1000);
+    }
+</script>
+
+<style>
+    .site-stats {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .stats-separator {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .site-build-time {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+    }
+</style>

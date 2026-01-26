@@ -1,0 +1,131 @@
+.container {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+  padding-bottom: 0.75em;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--foreground-60p, #333);
+}
+
+.refreshButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  padding: 0;
+  border: none;
+  border-radius: 0.375em;
+  background: transparent;
+  color: var(--foreground-60p, #333);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.refreshButton:hover {
+  color: var(--accent-60p, #0066cc);
+}
+
+.refreshButton:active {
+  opacity: 0.7;
+}
+
+.refreshButton svg {
+  width: 1em;
+  height: 1em;
+}
+
+.refreshButton.rotating svg {
+  animation: spin 0.6s linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  transition: opacity 0.3s ease;
+}
+
+.loading,
+.error,
+.noMore {
+  padding: 1em;
+  text-align: center;
+  color: var(--foreground-60p, #666);
+  font-size: 0.95em;
+}
+
+.error {
+  color: var(--accent-60p, #e74c3c);
+}
+
+.list > li > a {
+  display: block;
+  padding: 0.75em 1em;
+  border-radius: 0.375em;
+  background: transparent;
+  color: var(--foreground-60p, #333);
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+  word-break: break-word;
+}
+
+.list > li > a:hover {
+  transform: translateX(0.25em);
+}
+
+.list > li > a:active {
+  transform: translateX(0.125em);
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .title {
+    color: var(--foreground-60p, #e0e0e0);
+  }
+
+  .refreshButton {
+    color: var(--foreground-60p, #e0e0e0);
+  }
+
+  .loading,
+  .error,
+  .noMore {
+    color: var(--foreground-60p, #b0b0b0);
+  }
+
+  .list > li > a {
+    color: var(--foreground-60p, #e0e0e0);
+  }
+}

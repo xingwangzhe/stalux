@@ -1,0 +1,29 @@
+---
+import style from "@styles/components/posts/postRight.module.css";
+import Date from "@components/stalux/common/date.astro";
+import PostToc from "@components/stalux/posts/postToc.astro";
+import PostTags from "@components/stalux/posts/postTags.astro";
+import PostCategories from "@components/stalux/posts/postCategories.astro";
+interface Props {
+    headings?: Array<{ depth: number; slug: string; text: string }>;
+    tags?: string[];
+    categories?: string[];
+}
+
+const { headings = [], tags = [], categories = [] } = Astro.props;
+---
+
+<aside class={style.rightSidebar}>
+    <div class={style.sidebarContainer}>
+        <Date />
+    </div>
+    <div class={style.sidebarContainer}>
+        <PostToc headings={headings} />
+    </div>
+    <div class={style.sidebarContainer}>
+        <PostTags tags={tags} />
+    </div>
+    <div class={style.sidebarContainer}>
+        <PostCategories categories={categories} />
+    </div>
+</aside>

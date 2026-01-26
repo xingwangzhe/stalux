@@ -1,0 +1,61 @@
+---
+import PostList from "@components/stalux/posts/postList.astro";
+import TagHeader from "@components/stalux/tags/tagHeader.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import Stalux from "@layouts/Stalux.astro";
+import dayjs from "dayjs";
+import Navs from "@components/stalux/layout/navs.astro";
+const stalux = (await getCollection("config"))[0].data;
+
+export async function getStaticPaths() {
+    const posts = await getCollection("posts", ({ data }) => !data.draft);
+    const tagMap = new Map<
+        string,
+        { posts: CollectionEntry<"posts">[]; latestTime: Date }
+    >();
+
+    for (const post of posts) {
+        const tags = post.data.tags ?? [];
+        const postTime = post.data.updated ?? post.data.date;
+        for (const t of tags) {
+            if (!tagMap.has(t)) {
+                tagMap.set(t, { posts: [], latestTime: postTime });
+            }
+            const entry = tagMap.get(t)!;
+            entry.posts.push(post);
+            if (postTime > entry.latestTime) {
+                entry.latestTime = postTime;
+            }
+        }
+    }
+
+    return Array.from(tagMap.entries()).map(([tag, entry]) => ({
+        params: { tag },
+        props: {
+            tag,
+            count: entry.posts.length,
+            posts: entry.posts,
+            lastUpdateDate: dayjs(entry.latestTime).format("YYYY年MM月DD日"),
+        },
+    }));
+}
+
+const { tag, count, posts, lastUpdateDate } = Astro.props;
+---
+
+<Stalux
+    stalux={{
+        title: "标签: " + tag + " | " + stalux.title,
+        description: `浏览标签 ${tag} 下的 ${count} 篇文章，涵盖相关领域的深度思考与见解。最后更新于 ${lastUpdateDate}`,
+        url: Astro.url.href,
+        twitterSite: stalux.twitterSite,
+        noindex: stalux.noindex,
+        nofollow: stalux.nofollow,
+        anyhead: stalux.anyhead,
+    }}
+>
+    <div style="height: 3em;"></div>
+    <Navs />
+    <TagHeader type={"标签"} name={tag} count={count} />
+    <PostList posts={posts} />
+</Stalux>

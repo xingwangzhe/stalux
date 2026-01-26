@@ -1,0 +1,138 @@
+/* 版权声明盒子 */
+
+.ccBox {
+  background-color: var(--black-10p);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  border: var(--border-thin) solid var(--white-20p);
+  max-width: 80%;
+  margin: var(--space-lg) auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.ccContent {
+  position: relative;
+  z-index: 2;
+}
+
+.ccTitle {
+  margin-top: 0;
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-subtitle);
+  color: var(--white-90p);
+}
+
+.ccAuthor,
+.ccUrl,
+.ccLicense {
+  margin: var(--space-sm) 0;
+  font-size: var(--font-size-small);
+  color: var(--white-80p);
+  line-height: 1.6;
+}
+
+.ccBox a {
+  color: var(--accent-90p);
+  text-decoration: none;
+  position: relative;
+  transition:
+    color var(--transition-normal),
+    border-bottom-color var(--transition-normal);
+  border-bottom: 1px dashed var(--accent-50p);
+  padding-bottom: 1px;
+}
+
+.ccBox a:hover {
+  color: var(--accent-full);
+  border-bottom-color: var(--accent-80p);
+}
+
+.ccBox a:active {
+  color: var(--accent-70p);
+}
+
+/* 水印 - 右下角 CC SVG 图标 */
+.ccWatermark {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  opacity: 0.15;
+  z-index: 1;
+  transition: opacity var(--transition-normal);
+  pointer-events: none;
+}
+
+.ccBox:hover .ccWatermark {
+  opacity: 0.25;
+}
+
+.ccIcon {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ccIcon :global(svg) {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ccIcon :global(path) {
+  fill: currentColor;
+  color: var(--white-full);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .ccBox {
+    max-width: 95%;
+    padding: var(--space-md);
+    margin: var(--space-md) auto;
+  }
+
+  .ccTitle {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-xs);
+  }
+
+  .ccAuthor,
+  .ccUrl,
+  .ccLicense {
+    margin: var(--space-xs) 0;
+    font-size: 0.85rem;
+  }
+
+  .ccIcon {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ccBox {
+    max-width: 100%;
+    padding: var(--space-sm);
+    margin: var(--space-md) 0;
+  }
+
+  .ccTitle {
+    font-size: var(--font-size-small);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .ccAuthor,
+  .ccUrl,
+  .ccLicense {
+    margin: var(--space-2xs) 0;
+    font-size: 0.8rem;
+  }
+
+  .ccIcon {
+    width: 60px;
+    height: 60px;
+  }
+}

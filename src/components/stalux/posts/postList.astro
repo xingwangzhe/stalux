@@ -1,0 +1,25 @@
+---
+import styles from "@styles/components/posts/postList.module.css";
+import { getCollection, type CollectionEntry } from "astro:content";
+import PostCard from "@components/stalux/posts/postCard.astro";
+
+interface Props {
+    posts?: CollectionEntry<"posts">[];
+}
+
+const props = Astro.props as Props;
+// Allow callers to pass filtered posts to avoid re-fetching the full list.
+const posts = props.posts ?? (await getCollection("posts"));
+---
+
+<div data-stalux="postlist" class={styles["container"]}>
+    <ul class={styles["post-list"]}>
+        {
+            posts.map((post) => (
+                <li>
+                    <PostCard post={post} />
+                </li>
+            ))
+        }
+    </ul>
+</div>

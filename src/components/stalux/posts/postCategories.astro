@@ -1,0 +1,30 @@
+---
+import style from "@styles/components/posts/postCategories.module.css";
+
+interface Props {
+    categories?: string[];
+    title?: string;
+}
+
+const { categories = [], title = "分类" } = Astro.props;
+---
+
+<div class={style.categoriesContainer}>
+    {categories.length > 0 && <h3 class={style.title}>{title}</h3>}
+    {
+        categories.length > 0 ? (
+            <div class={style.categoryList}>
+                {categories.map((category) => (
+                    <a
+                        href={`/categories/${category}/`}
+                        class={`${style.category} a-none`}
+                    >
+                        {category}
+                    </a>
+                ))}
+            </div>
+        ) : (
+            <div class={style.empty}>暂无分类</div>
+        )
+    }
+</div>

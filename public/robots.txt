@@ -1,0 +1,22 @@
+# robots.txt for https://xingwangzhe.fun
+# 允许所有搜索引擎爬取网站
+User-agent: *
+# 黑名单制度：默认允许所有页面，明确禁止特定页面
+Disallow: /404/
+# 允许标签和分类页面被索引（优化SEO）
+Allow: /archives/
+Allow: /categories/
+Allow: /tags/
+
+# 特别允许AI爬虫访问以下页面
+User-agent: *
+Allow: /llms.txt
+Allow: /llms-small.txt
+Allow: /llms-full.txt
+# 允许访问feed和sitemap文件
+Allow: /sitemap-index.xml
+Allow: /rss.xml
+Allow: /atom.xml
+
+# Sitemap
+Sitemap: https://xingwangzhe.fun/sitemap-index.xml

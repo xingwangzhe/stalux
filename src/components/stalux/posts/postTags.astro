@@ -1,0 +1,27 @@
+---
+import style from "@styles/components/posts/postTags.module.css";
+
+interface Props {
+    tags?: string[];
+    title?: string;
+}
+
+const { tags = [], title = "标签" } = Astro.props;
+---
+
+<div class={style.tagsContainer}>
+    {tags.length > 0 && <h3 class={style.title}>{title}</h3>}
+    {
+        tags.length > 0 ? (
+            <div class={style.tagList}>
+                {tags.map((tag) => (
+                    <a href={`/tags/${tag}/`} class={`${style.tag} a-none`}>
+                        {tag}
+                    </a>
+                ))}
+            </div>
+        ) : (
+            <div class={style.empty}>暂无标签</div>
+        )
+    }
+</div>

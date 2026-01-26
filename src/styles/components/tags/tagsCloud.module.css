@@ -1,0 +1,112 @@
+.tagsCloudWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+/* 标签云样式 */
+.tagsCloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tagItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  background-color: var(--white-10p);
+  color: var(--white-full);
+  text-decoration: none;
+  transition: all var(--transition-slow);
+  border: 1px solid var(--white-20p);
+  overflow: hidden;
+}
+
+.tagItem::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0),
+    var(--white-10p),
+    rgba(255, 255, 255, 0)
+  );
+  transform: translateX(-100%);
+  transition: transform var(--transition-slowest);
+  z-index: 1;
+}
+
+.tagItem:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-50p);
+}
+
+.tagItem:hover::before {
+  transform: translateX(100%);
+}
+
+/* 根据标签数量调整大小 */
+.tagItem[data-count="1"] {
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+}
+
+.tagItem[data-count="2"] {
+  font-size: 1rem;
+  padding: 0.4rem 0.9rem;
+}
+
+.tagItem[data-count="3"] {
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+}
+
+.tagItem[data-count^="4"],
+.tagItem[data-count^="5"] {
+  font-size: 1.2rem;
+  padding: 0.6rem 1.1rem;
+}
+
+.tagItem[data-count^="6"],
+.tagItem[data-count^="7"],
+.tagItem[data-count^="8"],
+.tagItem[data-count^="9"] {
+  font-size: 1.3rem;
+  padding: 0.7rem 1.2rem;
+}
+
+.tagItem .tagName {
+  margin-right: 0.5rem;
+  z-index: 2;
+}
+
+.tagItem .tagCount {
+  background-color: var(--white-20p);
+  border-radius: 1rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.8rem;
+  min-width: 1.5rem;
+  text-align: center;
+  z-index: 2;
+}
+
+.noTags {
+  font-size: 1.2rem;
+  color: var(--white-60p);
+  text-align: center;
+  padding: 2rem;
+  width: 100%;
+}

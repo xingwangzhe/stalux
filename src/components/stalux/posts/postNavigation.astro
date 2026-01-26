@@ -1,0 +1,126 @@
+---
+import style from "@styles/components/posts/postNavigation.module.css";
+
+interface Props {
+    prev?: { url: string; title: string };
+    next?: { url: string; title: string };
+}
+
+const { prev, next } = Astro.props;
+---
+
+{
+    (prev || next) && (
+        <nav class={style.postNavigation} aria-label="文章导航">
+            <div class={style.postNavigationInner}>
+                {prev ? (
+                    <a
+                        href={prev.url}
+                        class={`${style.postNavLink} ${style.prevPost}`}
+                        rel="prev"
+                    >
+                        <span class={style.postNavArrow}>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M19 12H5M12 19l-7-7 7-7" />
+                            </svg>
+                        </span>
+                        <div class={style.postNavContent}>
+                            <span class={style.postNavLabel}>上一篇</span>
+                            <span class={style.postNavTitle}>{prev.title}</span>
+                        </div>
+                    </a>
+                ) : (
+                    <span
+                        class={`${style.postNavLink} ${style.prevPost} ${style.disabled}`}
+                    >
+                        <span class={style.postNavArrow}>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M19 12H5M12 19l-7-7 7-7" />
+                            </svg>
+                        </span>
+                        <div class={style.postNavContent}>
+                            <span class={style.postNavLabel}>上一篇</span>
+                            <span class={style.postNavTitle}>
+                                没有更早的文章
+                            </span>
+                        </div>
+                    </span>
+                )}
+
+                {next ? (
+                    <a
+                        href={next.url}
+                        class={`${style.postNavLink} ${style.nextPost}`}
+                        rel="next"
+                    >
+                        <div class={style.postNavContent}>
+                            <span class={style.postNavLabel}>下一篇</span>
+                            <span class={style.postNavTitle}>{next.title}</span>
+                        </div>
+                        <span class={style.postNavArrow}>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </a>
+                ) : (
+                    <span
+                        class={`${style.postNavLink} ${style.nextPost} ${style.disabled}`}
+                    >
+                        <div class={style.postNavContent}>
+                            <span class={style.postNavLabel}>下一篇</span>
+                            <span class={style.postNavTitle}>
+                                没有更新的文章
+                            </span>
+                        </div>
+                        <span class={style.postNavArrow}>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </span>
+                )}
+            </div>
+        </nav>
+    )
+}

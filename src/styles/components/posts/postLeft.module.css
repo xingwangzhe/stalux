@@ -1,0 +1,38 @@
+/* 左侧边栏 */
+
+.leftSidebar {
+  position: sticky;
+  top: 20px;
+  width: 100%;
+  height: fit-content;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg) 0;
+
+  /* 隐藏滚动条但保留滚动功能 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.leftSidebar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  .leftSidebar {
+    display: none;
+  }
+}
+
+.sidebarContainer {
+  display: flex;
+  flex-direction: column;
+  background: var(--black-10p);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sidebar);
+  transition: all var(--transition-normal) ease;
+}

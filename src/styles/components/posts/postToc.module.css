@@ -1,0 +1,70 @@
+.title {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--white-90p);
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--border-thin) solid var(--white-20p);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.item {
+  display: block;
+  padding: var(--space-sm) var(--space-xs);
+  color: var(--white-70p);
+  text-decoration: none;
+  font-size: var(--font-size-small);
+  border-left: var(--border-thick) solid transparent;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  transition: transform var(--transition-medium);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.item:hover {
+  transform: translateX(-var(--space-sm));
+}
+
+.item:active,
+.item.active {
+  color: var(--accent-90p);
+  background-color: var(--accent-20p);
+  border-left-color: var(--accent-80p);
+  font-weight: 500;
+}
+
+/* 层级缩进 */
+.depth-1 {
+  padding-left: var(--space-xs);
+}
+
+.depth-2 {
+  padding-left: var(--space-lg);
+  font-size: var(--font-size-smaller);
+}
+
+.depth-3 {
+  padding-left: 2.25rem;
+  font-size: var(--font-size-tiny);
+}
+
+.depth-4,
+.depth-5,
+.depth-6 {
+  padding-left: var(--space-2xl);
+  font-size: 0.75rem;
+  color: var(--white-60p);
+}
+
+.empty {
+  color: var(--white-60p);
+  font-size: var(--font-size-small);
+}

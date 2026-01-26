@@ -1,0 +1,80 @@
+---
+import style from "@styles/components/posts/postCard.module.css";
+import removeMarkdown from "remove-markdown";
+
+type PostData = {
+    title: string;
+    date?: string | Date;
+    updated?: string | Date;
+    tags?: string[];
+    categories?: string[];
+    abbrlink?: string;
+};
+
+type PostLike = {
+    data: PostData;
+    description?: string;
+    body?: string;
+};
+
+export interface Props {
+    post: PostLike;
+}
+
+const post = Astro.props.post as PostLike;
+
+// 从原始 Markdown 文本提取纯文本描述
+// 先截取前面部分再清除markdown，避免处理整个长文本
+const plainText = removeMarkdown(post.body?.slice(0, 300) || "");
+const description =
+    plainText.slice(0, 100) + (plainText.length > 100 ? "..." : "");
+---
+
+<a href={`/posts/${post.data.abbrlink}`} class={style.post + " a-none"}>
+    <div class={style.postContainer}>
+        <h2 class={style.postTitle}>{post.data.title}</h2>
+        <div class={style.time}>
+            {
+                post.data.date && (
+                    <time class={style.postDate}>
+                        {new Date(post.data.date).toLocaleDateString()}
+                    </time>
+                )
+            }
+            {
+                post.data.updated && (
+                    <time class={style.postUpdated}>
+                        {new Date(post.data.updated).toLocaleDateString()}
+                    </time>
+                )
+            }
+        </div>
+        <div class={style.postDescription}>{description}</div>
+        <div class={style.postMeta}>
+            <div class={style.postTags}>
+                {
+                    post.data.tags?.map((tag) => (
+                        <a class="a-none" href={`/tags/${tag}`}>
+                            <div class={style.postTag}>{tag}</div>
+                        </a>
+                    ))
+                }
+            </div>
+            <div class={style.postCategories}>
+                {
+                    post.data.categories?.map((category) => (
+                        <a class="a-none" href={`/categories/${category}`}>
+                            <div class={style.postCategory}>{category}</div>
+                        </a>
+                    ))
+                }
+            </div>
+        </div>
+        <a
+            href={`/posts/${post.data.abbrlink}`}
+            class={style.readMore + " a-none"}
+        >
+            Read More
+        </a>
+    </div>
+</a>
