@@ -8,6 +8,8 @@ import astroLLMsGenerator from "astro-llms-generate";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
+import mermaid from "astro-mermaid";
+
 // import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
 import expressiveCode from "astro-expressive-code";
 
@@ -29,6 +31,10 @@ export default defineConfig({
     preserveScriptOrder: true,
   },
   integrations: [
+    mermaid({
+      theme: "dark",
+      autoTheme: true,
+    }),
     readingTime(),
     pagefind(),
     partytown({

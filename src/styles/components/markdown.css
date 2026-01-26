@@ -109,6 +109,22 @@
 }
 
 /* 链接样式 */
+[data-pagefind-body] a {
+  color: var(--accent-80p, #01a2be);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-50p, rgba(1, 162, 190, 0.5));
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 2px;
+  transition:
+    color var(--transition-medium, 0.2s ease),
+    text-decoration-color var(--transition-medium, 0.2s ease);
+}
+
+[data-pagefind-body] a:hover,
+[data-pagefind-body] a:focus-visible {
+  color: var(--stalux-accent-color, #01a2be);
+  text-decoration-color: var(--stalux-accent-color, #01a2be);
+}
 
 /* 图片样式 */
 [data-pagefind-body] img {

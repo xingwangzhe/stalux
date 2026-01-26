@@ -57,22 +57,12 @@
   }
 }
 
-/* 中屏幕 - 仍为三列布局 */
+/* 中屏幕 - 侧栏隐藏后改为单列 */
 @media (max-width: 1200px) {
   .container {
-    grid-template-columns: 240px 1fr 240px;
-    gap: 3rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
     padding: 1rem 0.75rem;
-  }
-}
-
-/* 平板电脑 - 两个侧栏上下堆叠 */
-@media (max-width: 1024px) {
-  .container {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-    padding: 1rem 0.5rem;
   }
 }
 

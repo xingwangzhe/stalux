@@ -1,137 +1,86 @@
 ---
 title: Markdown文件配置参考
 tags:
-    - 配置
-    - Markdown
-    - 内容创作
+  - 配置
+  - Markdown
+  - 内容创作
 categories:
-    - 主题配置
+  - 主题配置
 date: 2025-5-10T16:00:00+08:00
-updated: 2025-5-10T16:00:00+08:00
+updated: 2026-1-26T00:00:00+08:00
 abbrlink: f31dae4f
 ---
 
-## Markdown文件配置说明
+## 概要
 
-Stalux主题支持使用Markdown文件创建博客文章和页面。每个Markdown文件需要配置frontmatter（文件顶部的元数据部分），以便主题正确处理和展示内容。
+本篇按照当前 schema（见 src/content.config.ts）重写，列出 posts 与 about 的 frontmatter 要求及示例。避免使用项目内相对链接，确保发布到站点时不会出现无效链接。
 
-本文将详细介绍Markdown文件的frontmatter配置选项，帮助您更好地组织和管理内容。关键配置在`src>content.config.ts`中定义。
+## posts/\*.md frontmatter
 
-## 博客文章配置 (posts/*.md)
+loader: base 为 `stalux/posts/`，pattern `*.md`/`*.mdx`。
 
-为每篇博客文章添加frontmatter，按以下格式：
-```ts title="content.config.ts"
-const posts = defineCollection({
-  loader: glob({ base: './src/content/posts', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
-    title: z.string(),
-    // 接受日期字符串或 Date 对象
-    date: z.union([z.string(), z.coerce.date()]).optional(),
-    // 更新时间可选，接受日期字符串或 Date 对象
-    updated: z.union([z.string(), z.coerce.date()]).optional(),
-    // 自定义描述字段，用于 SEO
-    description: z.string().optional(),
-    // 摘要字段，如果没有描述，则用作备选
-    excerpt: z.string().optional(),
-    // 文章封面图
-    cover: z.string().optional(),
-    // 文章作者
-    author: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    // 分类支持多种格式的数组
-    categories: z.array(categorySchema).optional(),
-    abbrlink: z.union([z.string(), z.number()]).optional(),
-    // 是否不被搜索引擎索引
-    noindex: z.boolean().optional().default(false),
-  }),
-});
-```
+必填字段：
 
-### 必要字段说明
+- `title`: 文章标题。
+- `abbrlink`: 永久链接，当前 schema 要求为字符串（建议手动设置，保持 URL 稳定）。
+- `date`: 发布时间，接受 ISO 字符串或日期对象，构建时会转为 Date。
 
-对于博主来说，以下是最常用的frontmatter字段：
+可选字段：
 
-- **`title`**: 文章标题，必填项
-- **`tags`**: 文章标签，建议设置1-5个相关标签，有助于内容分类
-- **`categories`**: 文章分类，可以设置单个或多个分类
-- **`date`**: 发布日期，建议使用`YYYY-MM-DDTHH:MM:SS+08:00`格式
-- **`updated`**: 更新日期，可选，用于显示文章的最后修改时间
+- `updated`: 更新日期，字符串或 Date，未填则不显示更新时间。
+- `draft`: 布尔，默认 false；为 true 时可用于本地草稿控制。
+- `tags`: 标签数组，字符串或单个字符串会被预处理为数组。
+- `categories`: 分类数组，字符串或单个字符串会被预处理为数组。
+- `cc`: 版权标识，默认 `CC-BY-NC-SA-4.0`。
 
-### 永久链接设置
-
-- **`abbrlink`**: 文章的永久链接，默认使用sha256算法取前8位生成，您也可以手动设置。永久链接有助于维护URL的稳定性，即使文章标题变更，链接仍保持不变。
-
-### 可选字段说明
-
-以下字段为可选配置：
-
-- **`description`**: 文章描述，用于SEO和社交媒体分享
-- **`excerpt`**: 文章摘要，如果没有设置description，则用作替代
-- **`cover`**: 文章封面图片路径，会在文章列表和详情页显示
-- **`author`**: 文章作者，如果未设置则使用站点默认作者
-- **`noindex`**: 设置为`true`将告诉搜索引擎不要索引此文章，默认为`false`
-
-## 关于页面配置 (about/*.md)
-
-Stalux主题支持创建多个关于页面，每个页面可以通过frontmatter配置其显示顺序和内容：
-
-```ts title="content.config.ts"
-const about = defineCollection({
-  loader: glob({ base: './src/content/about', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(), // 页面描述，用于SEO
-    priority: z.number().default(1), // 优先级，数字越大优先级越高
-  }),
-});
-```
-
-### 关于页面frontmatter字段
-
-- **`title`**: 页面标题，必填项
-- **`description`**: 页面描述，用于SEO，可选
-- **`priority`**: 页面优先级，数字越大显示越靠前，默认为1
-
-## 实际应用示例
-
-### 博客文章示例
+示例：
 
 ```markdown
 ---
-title: Astro框架入门指南
+title: Astro 入门指南
+abbrlink: astro-guide
+date: 2025-05-10T09:30:00+08:00
+updated: 2025-05-12T18:00:00+08:00
 tags:
-    - Astro
-    - 前端
-    - 静态站点
+  - Astro
+  - 前端
 categories:
-    - 技术教程
-    - Web开发
-date: 2025-5-10T09:30:00+08:00
-description: 本文详细介绍了Astro框架的基本概念、安装方法和使用技巧，帮助前端开发者快速上手这一强大的静态站点生成器。
-cover: /images/astro-guide-cover.jpg
+  - 技术教程
+cc: CC-BY-NC-SA-4.0
+draft: false
 ---
 
-这里是文章正文内容...
+正文内容...
 ```
 
-### 关于页面示例
+书写提示：
+
+- 日期推荐使用 ISO 8601（例：`2025-05-10T09:30:00+08:00`） 或者简单地写成 'YYYY-MM-DD HH:mm:ss'。
+- `tags`/`categories` 支持单字符串或数组，内部会自动转成数组。
+- 未提供 `cc` 时采用默认值；若不需要版权声明，可自定义为空字符串。
+
+## about/\*.md frontmatter
+
+loader: base 为 `stalux/about/`，pattern `**/*.{md,mdx}`。
+
+字段：
+
+- `title` 必填。
+- `description` 必填（用于页面描述/SEO）。
+
+示例：
 
 ```markdown
 ---
 title: 关于博主
-description: 个人简介、技能和联系方式
-priority: -1
+description: 个人简介、技能与联系方式
 ---
 
-这里是关于博主的详细介绍...
+这里是关于页面正文...
 ```
-priority是优先级,数字越大就会被about页面渲染,这意味这你不用变动`default.md`文件,而是直接在同级目录下创建md文件即可实现自己的about页面
 
-## 注意事项
+## 写作与校验
 
-1. frontmatter必须位于Markdown文件的最顶部，并用三个连字符(`---`)包围
-2. 字段名称和值之间使用冒号(`:`)分隔，并确保冒号后有一个空格
-3. 嵌套数据(如数组)需要正确缩进
-4. 日期格式推荐使用ISO 8601标准(`YYYY-MM-DDTHH:MM:SS+08:00`)
-
-适当配置frontmatter可以让您的内容组织更加清晰，也有助于提升网站的SEO表现和用户体验。
+- frontmatter 放在文件顶部，使用三根短横线包裹。
+- 冒号后留空格，数组/对象保持正确缩进。
+- 保存后运行 `bun run dev`，如有必填缺失或类型不符，构建日志会提示具体字段。

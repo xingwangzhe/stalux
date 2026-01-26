@@ -6,7 +6,7 @@ tags:
 categories:
   - 主题配置
 date: 2025-5-10T11:00:00+08:00
-updated: 2026-1-26T11:00:00+08:00
+updated: 2026-1-26T12:00:00+08:00
 abbrlink: ad81245d
 ---
 
@@ -60,49 +60,69 @@ stalux/
 └── (其他文件)
 ```
 
-## 内容合集
+## 内容合集位置
 
-与默认的Astro 内容合集所在文件夹不同, **Stalux** 默认的内容合集文件夹为根目录的`stalux`文件夹, 该文件夹存在两个子文件夹: `about`和`posts`, 分别存放关于页面的`.md`文件和文章页面的`.md`文件。
+内容集合使用 `astro:content`，默认存放在根目录 `stalux/` 下：
 
-### frontmatter 配置
+- `stalux/posts/`：文章 Markdown/MDX，受 posts 集合 schema 约束。
+- `stalux/about/`：关于页面 Markdown/MDX，受 about 集合 schema 约束。
 
-对于`posts`文件夹中的文章`.md`文件, 需要在frontmatter中添加以下配置:
+## posts/\*.md frontmatter
 
-```markdown title="posts/*.md 的示例"
+必填：
+
+- `title`: 文章标题。
+- `abbrlink`: 永久链接标识，字符串；用于生成 `/posts/{abbrlink}` 路由。
+- `date`: 发布时间，建议 ISO 格式 `YYYY-MM-DDTHH:MM:SS+08:00`。
+
+可选：
+
+- `updated`: 更新日期，字符串或 Date，可为空。
+- `draft`: 布尔，默认 false；可用于草稿控制。
+- `tags`: 标签数组；单字符串也会被转换为数组。
+- `categories`: 分类数组；单字符串也会被转换为数组。
+- `cc`: 版权标识，默认 `CC-BY-NC-SA-4.0`。
+
+示例：
+
+```markdown
 ---
-title: 文章标题
-abbrlink: 唯一标识符
-date: 2024-01-01T12:00:00+08:00
-updated: 2024-01-02T12:00:00+08:00
+title: 示例文章
+abbrlink: sample-post
+date: 2025-05-10T12:00:00+08:00
+updated: 2025-05-12T09:00:00+08:00
 tags:
-- 标签1
-- 标签2
-  categories:
-- 分类1
+  - 技术
+  - 随笔
+categories:
+  - 前端
+cc: CC-BY-NC-SA-4.0
+draft: false
 ---
+
+正文...
 ```
 
-```markdown title="about/*.md 的示例"
+## about/\*.md frontmatter
+
+必填：
+
+- `title`: 页面标题。
+- `description`: 页面描述（用于页面简介/SEO）。
+
+示例：
+
+```markdown
 ---
-title: 名称,
-description: 描述,
+title: 关于本站
+description: 个人简介与站点信息
 ---
+
+内容...
 ```
 
-### frontmatter 字段说明
+## 书写注意
 
-本主题是适应Hexo风格的frontmatter字段, 主要字段说明如下:
-
-对于`posts`文件夹中的文章`.md`文件:
-
-- `title`: 文章标题
-- `abbrlink`: 文章的唯一标识符, 用于生成文章链接 路由为`/posts/{abbrlink}`
-- `date`: 文章的发布日期, 格式为`YYYY-MM-DDTHH:MM:SS+08:00` 或者简单地写成 `YYYY-MM-DD HH:MM:SS`
-- `updated`: 文章的最后更新日期, 格式同上
-- `tags`: 文章的标签列表
-- `categories`: 文章的分类列表
-
-对于`about`文件夹中的关于页面`.md`文件:
-
-- `title`: 关于页面的名称
-- `description`: 关于页面的描述
+- frontmatter 顶部使用 `---` 包裹；冒号后留空格，数组/对象保持缩进。
+- 建议日期使用 ISO 8601（含时区偏移），便于排序和显示。
+- abbrlink 建议自定义字符串以保证链接稳定，不依赖标题。

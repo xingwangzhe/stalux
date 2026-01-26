@@ -21,6 +21,12 @@
   display: none;
 }
 
+@media (max-width: 1200px) {
+  .leftSidebar {
+    display: none;
+  }
+}
+
 .sidebarContainer {
   display: flex;
   flex-direction: column;
