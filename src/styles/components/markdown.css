@@ -111,6 +111,20 @@
 /* 链接样式 */
 
 /* 图片样式 */
+[data-pagefind-body] img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+}
+
+/* 媒体响应式 */
+[data-pagefind-body] iframe,
+[data-pagefind-body] embed,
+[data-pagefind-body] video {
+  max-width: 100%;
+  height: auto;
+}
 
 /* 分隔线 */
 

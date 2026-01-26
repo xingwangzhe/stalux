@@ -92,6 +92,16 @@
   opacity: 0;
 }
 
+/* 限制 Markdown 内容最大宽度，居中显示，避免侵占左右侧栏 */
+.body {
+  /* 使用 min() 保证在窄屏时不会超出视口 */
+  width: min(900px, 100%);
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding-inline-end: 1rem; /* 防止内容紧贴右侧，避免视觉上侵占右侧栏 */
+}
+
 /* 文章页脚 */
 .articleFooter {
   margin-top: 3rem;

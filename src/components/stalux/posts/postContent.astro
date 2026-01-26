@@ -2,6 +2,8 @@
 import style from "@styles/components/posts/postContent.module.css";
 import "@styles/components/markdown.css";
 import "katex/dist/katex.min.css";
+import "photoswipe/dist/photoswipe.css";
+
 interface Props {
     title: string;
     date?: string;
@@ -65,3 +67,54 @@ const { title, date, updated, readingTime } = Astro.props;
         <slot />
     </div>
 </article>
+
+<script>
+    import PhotoSwipeLightbox from "photoswipe/lightbox";
+    import "photoswipe/style.css";
+
+    // 动态获取图片尺寸并更新 PhotoSwipe 数据属性
+    function enrichPhotoSwipeData() {
+        const container = document.querySelector("[data-pagefind-body]");
+        if (!container) return;
+
+        const links = container.querySelectorAll("a[data-pswp]");
+        links.forEach((link) => {
+            const img = link.querySelector("img");
+            if (!img) return;
+
+            // 创建临时图片对象以获取真实尺寸
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                link.setAttribute(
+                    "data-pswp-width",
+                    String(tempImg.naturalWidth),
+                );
+                link.setAttribute(
+                    "data-pswp-height",
+                    String(tempImg.naturalHeight),
+                );
+            };
+            tempImg.src = img.src;
+        });
+    }
+
+    // 初始化灯箱
+    function initLightbox() {
+        enrichPhotoSwipeData();
+        const lightbox = new PhotoSwipeLightbox({
+            gallery: "[data-pagefind-body]",
+            children: "a[data-pswp]",
+            pswpModule: () => import("photoswipe"),
+            initialZoomLevel: "fill",
+        });
+        lightbox.init();
+    }
+
+    // 在 DOM 就绪时初始化
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initLightbox);
+    } else {
+        // 延迟以确保图片已加载
+        setTimeout(initLightbox, 100);
+    }
+</script>
