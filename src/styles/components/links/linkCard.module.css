@@ -9,7 +9,8 @@
   text-decoration: none;
   color: #fff;
   min-height: 200px;
-  height: 100%;
+  width: 180px;
+  overflow: visible;
   transition:
     transform var(--transition-normal) ease,
     box-shadow var(--transition-normal) ease,
@@ -35,15 +36,13 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--accent-60p);
-  transition:
-    transform var(--transition-slow) ease,
-    box-shadow var(--transition-slow) ease,
-    border-color var(--transition-slow) ease;
+  transform-origin: center;
+  transition: transform 0.8s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .card:hover .avatar img {
-  transform: rotate(360deg) scale(1.05);
-  box-shadow: 0 0 14px var(--accent-50p);
+  transform: rotate(360deg) scale(1.1);
+  box-shadow: 0 0 20px var(--accent-50p);
   border-color: var(--accent-85p);
 }
 
