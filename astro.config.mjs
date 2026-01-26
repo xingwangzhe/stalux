@@ -8,12 +8,12 @@ import remarkToc from "remark-toc";
 import astroLLMsGenerator from "astro-llms-generate";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import rehypePhotoswipe from './src/utils/rehype-photoswipe';
 import expressiveCode from "astro-expressive-code";
-
 
 if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
   const originalError = console.error;
-  console.error = function(...args) {
+  console.error = function (...args) {
     const message = args[0]?.toString?.() || "";
     if (message.includes("Could not parse CSS stylesheet")) {
       return;
@@ -28,15 +28,21 @@ export default defineConfig({
   experimental: {
     preserveScriptOrder: true,
   },
-  integrations: [vue(), readingTime(), pagefind(), partytown({
-    config: {
-      forward: ["dataLayer.push"],
-    },
-   }), astroLLMsGenerator({
-    includePatterns: ["**/*"], // Pages to include
-    excludePatterns: ["**/404*", "**/api/**"], // Pages to exclude
-    customSeparator: "\n\n---\n\n", // Custom separator for full content
-   }), expressiveCode({
+  integrations: [
+    vue(),
+    readingTime(),
+    pagefind(),
+    partytown({
+      config: {
+        forward: ["dataLayer.push"],
+      },
+    }),
+    astroLLMsGenerator({
+      includePatterns: ["**/*"], // Pages to include
+      excludePatterns: ["**/404*", "**/api/**"], // Pages to exclude
+      customSeparator: "\n\n---\n\n", // Custom separator for full content
+    }),
+    expressiveCode({
       themes: ["dark-plus", "github-light"],
       styleOverrides: {
         borderRadius: "0.5rem",
@@ -54,9 +60,8 @@ export default defineConfig({
           "bash,ps,sh": { preserveIndent: false },
         },
       },
-    }
-    
-  )],
+    }),
+  ],
   vite: {
     build: {
       cssMinify: "lightningcss",
@@ -65,7 +70,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [[remarkToc, { heading: "toc", maxDepth: 7 }], remarkMath],
-        rehypePlugins: [rehypeKatex],
+    rehypePlugins: [rehypeKatex, rehypePhotoswipe],
     smartypants: true, // 智能标点符号
     gfm: true, // GitHub 风格的 Markdown 支持
   },

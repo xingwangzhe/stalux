@@ -1,87 +1,108 @@
 ---
-title: 站点基本信息配置
+title: 站点基本信息
 tags:
-    - 配置
-    - 基本配置
+  - 配置
+  - 基本配置
 categories:
-    - 主题配置
+  - 主题配置
 date: 2025-5-10T11:00:00+08:00
-updated: 2025-5-10T11:00:00+08:00
+updated: 2026-1-26T11:00:00+08:00
 abbrlink: ad81245d
 ---
 
-## 核心站点信息配置
+## 主要文件结构
 
-在 `_stalux.yml` 中，您可以配置以下基本信息，这些配置将影响网站的整体标识和 SEO 表现：
-
-```yaml title="_stalux.yml"
-# 核心站点信息
-title: "Stalux博客主题"
-titleDefault: "Stalux博客主题"
-siteName: "Stalux博客主题"
-author: "xingwangzhe"
-
-# SEO 核心配置
-description: "博客主题Stalux - 为内容创作者提供的专业展示平台，支持多种自定义功能，包含评论系统集成、友情链接管理、社交媒体分享和丰富的SEO优化选项，让您的内容更具吸引力和可发现性。"
-short_description: "博客主题Stalux"
-url: "https://stalux.needhelp.icu"
-keywords: "Stalux, 博客主题, 内容创作, Astro主题, 静态网站生成器, SEO优化, 自定义博客, 响应式设计, 评论系统, 前端开发, Astro"
-lang: "zh-CN"
-locale: "zh_CN"
-canonical: "https://stalux.needhelp.icu"
+```bash
+stalux/
+├── public/  # 公共资源文件夹
+├── src/
+│   ├── assets/  #静态资源,一般不动
+│   ├── components/ # 组件
+│   │   └── stalux/ # 主题组件
+│   │       ├── archives/ # 归档
+│   │       ├── categories/ # 分类
+│   │       ├── common/ # 通用组件
+│   │       ├── footer/ # 底部
+│   │       ├── layout/ # 布局
+│   │       ├── links/  # 友链
+│   │       ├── posts/  # 文章
+│   │       └── tags/   # 标签
+│   ├── layouts/ # 布局文件
+│   ├── pages/ # 页面文件
+│   │   ├── api/ # API 文件夹
+│   │   ├── categories/ # 分类页面
+│   │   ├── posts/ # 文章页面
+│   │   └── tags/ # 标签页面
+│   ├── scripts/ # 脚本文件
+│   ├── styles/
+│   │   ├── base/ # 基础样式
+│   │   ├── components/ # 组件样式
+│   │   │   ├── archives/ # 归档
+│   │   │   ├── categories/ # 分类
+│   │   │   ├── common/ # 通用组件
+│   │   │   ├── footer/ # 底部
+│   │   │   ├── layout/ # 布局
+│   │   │   ├── links/  # 友链
+│   │   │   ├── markdown.css # markdown 样式
+│   │   │   ├── posts/  # 文章
+│   │   │   ├── search.css # 搜索样式
+│   │   │   ├── tags/   # 标签
+│   │   └── pages/ # 页面样式
+│   ├── utils/ # 工具文件
+│   └── content.config.ts # 内容配置文件
+├── stalux
+│   ├── about/ # 关于 .md
+│   ├── posts/ # 文章 .md
+├── astro.config.mjs
+├── tsconfig.json
+├── package.json
+├── README.md
+└── (其他文件)
 ```
 
-### 标题配置
+## 内容合集
 
-- **`title`**: 网站主标题，用于页面标题显示
-- **`titleDefault`**: 默认标题，当页面没有特定标题时使用
-- **`siteName`**: 站点名称，用于品牌标识
+与默认的Astro 内容合集所在文件夹不同, **Stalux** 默认的内容合集文件夹为根目录的`stalux`文件夹, 该文件夹存在两个子文件夹: `about`和`posts`, 分别存放关于页面的`.md`文件和文章页面的`.md`文件。
 
-建议将这些字段设置为您的网站名称，以保持一致性。
+### frontmatter 配置
 
-### 作者信息
+对于`posts`文件夹中的文章`.md`文件, 需要在frontmatter中添加以下配置:
 
-```yaml
-author: "xingwangzhe"
+```markdown title="posts/*.md 的示例"
+---
+title: 文章标题
+abbrlink: 唯一标识符
+date: 2024-01-01T12:00:00+08:00
+updated: 2024-01-02T12:00:00+08:00
+tags:
+- 标签1
+- 标签2
+  categories:
+- 分类1
+---
 ```
 
-作者信息将显示在网站页脚和元数据中，确保填写准确的作者名称。
-
-## 站点资源配置
-
-```yaml title="_stalux.yml"
-# 站点资源配置
-favicon: ""
-avatarPath: ""
+```markdown title="about/*.md 的示例"
+---
+title: 名称,
+description: 描述,
+---
 ```
 
-- **`favicon`**: 网站图标路径，建议使用 `.ico` 或 `.png` 格式
-- **`avatarPath`**: 作者头像路径，用于网站头像显示
+### frontmatter 字段说明
 
-## SEO 配置详解
+本主题是适应Hexo风格的frontmatter字段, 主要字段说明如下:
 
-SEO 配置是提升网站搜索引擎可见性的关键部分：
+对于`posts`文件夹中的文章`.md`文件:
 
-### 描述和关键词
+- `title`: 文章标题
+- `abbrlink`: 文章的唯一标识符, 用于生成文章链接 路由为`/posts/{abbrlink}`
+- `date`: 文章的发布日期, 格式为`YYYY-MM-DDTHH:MM:SS+08:00` 或者简单地写成 `YYYY-MM-DD HH:MM:SS`
+- `updated`: 文章的最后更新日期, 格式同上
+- `tags`: 文章的标签列表
+- `categories`: 文章的分类列表
 
-- **`description`**: 网站描述，建议 150-160 字符，包含核心关键词
-- **`keywords`**: 关键词列表，使用逗号分隔的相关关键词
+对于`about`文件夹中的关于页面`.md`文件:
 
-### URL 和规范链接
-
-- **`url`**: 完整的网站 URL，必须包含 `https://` 协议
-- **`canonical`**: 规范链接 URL，用于防止重复内容问题
-
-### 语言和地区设置
-
-- **`lang`**: 网站主要语言，使用标准语言代码（如 `zh-CN`）
-- **`locale`**: 内容地区设置（如 `zh_CN`），有助于本地化 SEO
-
-## 配置建议
-
-1. **保持一致性**：在所有标题字段中使用相同的网站名称
-2. **SEO 优化**：编写吸引人的描述，包含目标关键词
-3. **完整 URL**：确保 URL 配置包含完整的协议和域名
-4. **语言设置**：根据目标受众选择合适的语言和地区代码
-
-通过合理配置这些基本信息，您可以为网站建立良好的品牌形象并提升 SEO 效果。
+- `title`: 关于页面的名称
+- `description`: 关于页面的描述
