@@ -8,7 +8,7 @@ import remarkToc from "remark-toc";
 import astroLLMsGenerator from "astro-llms-generate";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import rehypePhotoswipe from './src/utils/rehype-photoswipe';
+// import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
 import expressiveCode from "astro-expressive-code";
 
 if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
@@ -70,7 +70,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [[remarkToc, { heading: "toc", maxDepth: 7 }], remarkMath],
-    rehypePlugins: [rehypeKatex, rehypePhotoswipe],
+    rehypePlugins: [rehypeKatex],
     smartypants: true, // 智能标点符号
     gfm: true, // GitHub 风格的 Markdown 支持
   },

@@ -2,7 +2,6 @@
 import Head from "@components/stalux/layout/head.astro";
 import Footer from "@components/stalux/layout/footer.astro";
 import "@styles/base/init.css";
-import "photoswipe/dist/photoswipe.css";
 const props = Astro.props as Props;
 
 export interface Props {
@@ -37,23 +36,6 @@ export interface Props {
       <slot />
     </main>
     <Footer />
-    <script type="module" client:load>
-      import PhotoSwipeLightbox from "photoswipe/lightbox";
-      // 延迟加载完整模块以减小初始包体积
-      const pswp = async () => {
-        const lightbox = new PhotoSwipeLightbox({
-          gallery: ".stalux-main",
-          children: "a[data-pswp]",
-          pswpModule: () => import("photoswipe"),
-        });
-        lightbox.init();
-      };
-
-      if (typeof window !== "undefined") {
-        // 在微任务队列中初始化，确保 DOM 已渲染
-        window.requestAnimationFrame(() => pswp());
-      }
-    </script>
   </body>
 </html>
 
