@@ -9,35 +9,38 @@ const stalux = (await getCollection("config"))[0].data;
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
-    const counts = new Map<string, number>();
+    const tagMap = new Map<
+        string,
+        { posts: CollectionEntry<"posts">[]; latestTime: Date }
+    >();
+
     for (const post of posts) {
         const tags = post.data.tags ?? [];
+        const postTime = post.data.updated ?? post.data.date;
         for (const t of tags) {
-            counts.set(t, (counts.get(t) ?? 0) + 1);
+            if (!tagMap.has(t)) {
+                tagMap.set(t, { posts: [], latestTime: postTime });
+            }
+            const entry = tagMap.get(t)!;
+            entry.posts.push(post);
+            if (postTime > entry.latestTime) {
+                entry.latestTime = postTime;
+            }
         }
     }
-    return Array.from(counts.entries()).map(([tag, count]) => ({
+
+    return Array.from(tagMap.entries()).map(([tag, entry]) => ({
         params: { tag },
-        props: { tag, count },
+        props: {
+            tag,
+            count: entry.posts.length,
+            posts: entry.posts,
+            lastUpdateDate: dayjs(entry.latestTime).format("YYYY年MM月DD日"),
+        },
     }));
 }
 
-const { tag, count } = Astro.props;
-const allPosts = await getCollection("posts", ({ data }) => !data.draft);
-const filteredPosts = allPosts.filter((post) => {
-    const tags = post.data.tags ?? [];
-    return tags.includes(tag);
-});
-const latestPost = filteredPosts.reduce((latest, post) => {
-    const postTime = post.data.updated ?? post.data.date;
-    const latestTime = latest.data.updated ?? latest.data.date;
-    return postTime > latestTime ? post : latest;
-}, filteredPosts[0]);
-const lastUpdateDate = latestPost
-    ? dayjs(latestPost.data.updated ?? latestPost.data.date).format(
-          "YYYY年MM月DD日",
-      )
-    : "未知";
+const { tag, count, posts, lastUpdateDate } = Astro.props;
 ---
 
 <Stalux
@@ -54,13 +57,5 @@ const lastUpdateDate = latestPost
     <div style="height: 3em;"></div>
     <Navs />
     <TagHeader type={"标签"} name={tag} count={count} />
-    <PostList
-        filter={(posts: CollectionEntry<"posts">[]) => {
-            return posts.filter((post) => {
-                const tags = post.data.tags ?? [];
-                return tags.includes(tag);
-            });
-        }}
-        posts={allPosts}
-    />
+    <PostList posts={posts} />
 </Stalux>

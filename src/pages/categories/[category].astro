@@ -8,35 +8,38 @@ import Navs from "@components/stalux/layout/navs.astro";
 const stalux = (await getCollection("config"))[0].data;
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
-    const counts = new Map<string, number>();
+    const categoryMap = new Map<
+        string,
+        { posts: CollectionEntry<"posts">[]; latestTime: Date }
+    >();
+
     for (const post of posts) {
         const cats = post.data.categories ?? [];
+        const postTime = post.data.updated ?? post.data.date;
         for (const c of cats) {
-            counts.set(c, (counts.get(c) ?? 0) + 1);
+            if (!categoryMap.has(c)) {
+                categoryMap.set(c, { posts: [], latestTime: postTime });
+            }
+            const entry = categoryMap.get(c)!;
+            entry.posts.push(post);
+            if (postTime > entry.latestTime) {
+                entry.latestTime = postTime;
+            }
         }
     }
-    return Array.from(counts.entries()).map(([category, count]) => ({
+
+    return Array.from(categoryMap.entries()).map(([category, entry]) => ({
         params: { category },
-        props: { category, count },
+        props: {
+            category,
+            count: entry.posts.length,
+            posts: entry.posts,
+            lastUpdateDate: dayjs(entry.latestTime).format("YYYY年MM月DD日"),
+        },
     }));
 }
 
-const { category, count } = Astro.props;
-const allPosts = await getCollection("posts", ({ data }) => !data.draft);
-const filteredPosts = allPosts.filter((post) => {
-    const cats = post.data.categories ?? [];
-    return cats.includes(category);
-});
-const latestPost = filteredPosts.reduce((latest, post) => {
-    const postTime = post.data.updated ?? post.data.date;
-    const latestTime = latest.data.updated ?? latest.data.date;
-    return postTime > latestTime ? post : latest;
-}, filteredPosts[0]);
-const lastUpdateDate = latestPost
-    ? dayjs(latestPost.data.updated ?? latestPost.data.date).format(
-          "YYYY年MM月DD日",
-      )
-    : "未知";
+const { category, count, posts, lastUpdateDate } = Astro.props;
 ---
 
 <Stalux
@@ -53,13 +56,5 @@ const lastUpdateDate = latestPost
     <div style="height: 3em;"></div>
     <Navs />
     <TagHeader type={"分类"} name={category} count={count} />
-    <PostList
-        filter={(posts: CollectionEntry<"posts">[]) => {
-            return posts.filter((post) => {
-                const cats = post.data.categories ?? [];
-                return cats.includes(category);
-            });
-        }}
-        posts={allPosts}
-    />
+    <PostList posts={posts} />
 </Stalux>

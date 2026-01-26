@@ -1,7 +1,6 @@
 ---
 import style from "@styles/components/posts/postCard.module.css";
-import type { RenderedContent } from "astro:content";
-import { stripHtml } from "string-strip-html";
+import removeMarkdown from "remove-markdown";
 
 type PostData = {
     title: string;
@@ -15,16 +14,20 @@ type PostData = {
 type PostLike = {
     data: PostData;
     description?: string;
-    rendered?: RenderedContent;
+    body?: string;
 };
 
 export interface Props {
     post: PostLike;
 }
+
 const post = Astro.props.post as PostLike;
+
+// 从原始 Markdown 文本提取纯文本描述
+// 先截取前面部分再清除markdown，避免处理整个长文本
+const plainText = removeMarkdown(post.body?.slice(0, 300) || "");
 const description =
-    post.description ??
-    stripHtml(post.rendered?.html || "").result.slice(0, 100) + "...";
+    plainText.slice(0, 100) + (plainText.length > 100 ? "..." : "");
 ---
 
 <a href={`/posts/${post.data.abbrlink}`} class={style.post + " a-none"}>

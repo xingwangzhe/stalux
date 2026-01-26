@@ -1,7 +1,7 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
-import { stripHtml } from "string-strip-html";
+import removeMarkdown from "remove-markdown";
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");
     const stalux = configCollection[0]?.data;
@@ -23,7 +23,7 @@ export const GET: APIRoute = async (context) => {
         items: sortedPosts.map((post) => ({
             title: post.data.title,
             pubDate: new Date(post.data.date),
-            description: stripHtml(post.rendered?.html.substring(0, 150) || "").result,
+            description: removeMarkdown(post.body?.substring(0, 150) || "").slice(0, 150),
             link: `/posts/${post.data.abbrlink}/`,
             categories: post.data.categories || [],
         })),

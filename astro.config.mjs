@@ -82,6 +82,7 @@ export default defineConfig({
     build: {
       cssMinify: "lightningcss",
       target: "es2022",
+      sourcemap: false,
     },
   },
   markdown: {

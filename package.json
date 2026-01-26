@@ -49,8 +49,7 @@
     "remark-math": "^6.0.0",
     "remark-toc": "^9.0.0",
     "remove-markdown": "^0.6.3",
-    "simple-icons": "^16.6.0",
-    "string-strip-html": "^13.5.3"
+    "simple-icons": "^16.6.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.10",

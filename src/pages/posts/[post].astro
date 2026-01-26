@@ -2,7 +2,7 @@
 import Stalux from "@layouts/Stalux.astro";
 import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry, render } from "astro:content";
-import { stripHtml } from "string-strip-html";
+import removeMarkdown from "remove-markdown";
 import Navs from "@components/stalux/layout/navs.astro";
 interface Props {
     post: CollectionEntry<"posts">;
@@ -63,7 +63,8 @@ export async function getStaticPaths() {
     stalux={{
         title: post.data.title + " | " + stalux.title,
         description:
-            stripHtml(post.rendered?.html || "").result.slice(0, 150) + "...",
+            removeMarkdown(post.body?.slice(0, 300) || "").slice(0, 150) +
+            "...",
         url: Astro.url.href,
         twitterSite: stalux.twitterSite,
         noindex: stalux.noindex,
