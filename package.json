@@ -3,9 +3,9 @@
   "version": "1.1.0",
   "type": "module",
   "scripts": {
-    "dev": "astro dev --bun",
-    "build": "astro build --bun",
-    "preview": "astro preview --bun",
+    "dev": "astro dev ",
+    "build": "astro build ",
+    "preview": "astro preview ",
     "astro": "astro",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",

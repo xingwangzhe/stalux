@@ -7,7 +7,7 @@ stalux:
   # noindex: # 是否禁止搜索引擎索引 默认 false
   # nofollow: # 是否禁止搜索引擎跟踪链接 默认 false
   anyhead: "" # 额外添加到<head>的内容
-  favicon: "/favicon.svg" # 网站图标路径，默认为根路径下
+  favicon: "/stalux.ico" # 网站图标路径，默认为根路径下
 
   author:
     name: xingwangzhe
