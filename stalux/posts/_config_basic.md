@@ -72,13 +72,12 @@ stalux/
 必填：
 
 - `title`: 文章标题。
-- `abbrlink`: 永久链接标识，字符串；用于生成 `/posts/{abbrlink}` 路由。
-- `date`: 发布时间，建议 ISO 格式 `YYYY-MM-DDTHH:MM:SS+08:00`。
+- `abbrlink`: 永久链接标识，字符串或数字（数字会自动转为字符串）；用于生成 `/posts/{abbrlink}` 路由。
+- `date`: 发布时间，支持 ISO 8601 格式（如 `2025-05-10T09:30:00+08:00`）或 `YYYY-MM-DD HH:mm:ss` 格式。
 
 可选：
 
 - `updated`: 更新日期，字符串或 Date，可为空。
-- `draft`: 布尔，默认 false；可用于草稿控制。
 - `tags`: 标签数组；单字符串也会被转换为数组。
 - `categories`: 分类数组；单字符串也会被转换为数组。
 - `cc`: 版权标识，默认 `CC-BY-NC-SA-4.0`。
