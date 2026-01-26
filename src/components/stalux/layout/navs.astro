@@ -25,31 +25,81 @@ const stalux = (await getCollection("config"))[0].data;
 ---
 
 <nav aria-label="Main navigation">
-    <ul class={styles.navList}>
+    <!-- 汉堡菜单按钮 (仅窄屏显示) -->
+    <button
+        data-ref="stalux-nav-toggle"
+        class={styles.navToggle}
+        aria-label="打开导航菜单"
+    >
+        <Fragment set:html={getIconSvg("menu")} />
+    </button>
+
+    <!-- 侧边栏遮罩 -->
+    <div data-ref="stalux-nav-overlay" class={styles.navOverlay}></div>
+
+    <!-- 导航列表 -->
+    <ul data-ref="stalux-nav-list" class={styles.navList}>
         {
             stalux.navs.map((item) => (
-                <a href={item.link} class={styles.navLink}>
+                <a
+                    href={item.link}
+                    class={styles.navLink}
+                    data-ref="stalux-nav-link"
+                >
                     <li class={styles.navItem}>
                         {item.icon && (
                             <Fragment set:html={getIconSvg(item.icon)} />
                         )}
-                        <span>{item.title}</span>
+                        <span class={styles.navText}>{item.title}</span>
                     </li>
                 </a>
             ))
         }
-        <a href="javascript:void(0);" class={styles.navLink}>
-            <li id="search-btn" class={styles.navItem}>
+        <a
+            href="javascript:void(0);"
+            class={styles.navLink}
+            data-ref="stalux-search-btn"
+        >
+            <li class={styles.navItem}>
                 <Fragment set:html={getIconSvg("search")} />
-                <span>搜索</span>
+                <span class={styles.navText}>搜索</span>
             </li>
         </a>
     </ul>
 </nav>
 <Search />
 <script>
-    document.getElementById("search-btn")?.addEventListener("click", () => {
+    const searchBtn = document.querySelector('[data-ref="stalux-search-btn"]');
+    searchBtn?.addEventListener("click", () => {
         const event = new CustomEvent("openSearch");
         document.dispatchEvent(event);
+    });
+
+    // 汉堡菜单交互
+    const navToggle = document.querySelector('[data-ref="stalux-nav-toggle"]');
+    const navList = document.querySelector('[data-ref="stalux-nav-list"]');
+    const navOverlay = document.querySelector(
+        '[data-ref="stalux-nav-overlay"]',
+    );
+
+    function openNav() {
+        navList?.setAttribute("data-state", "open");
+        navOverlay?.setAttribute("data-state", "show");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeNav() {
+        navList?.removeAttribute("data-state");
+        navOverlay?.removeAttribute("data-state");
+        document.body.style.overflow = "";
+    }
+
+    navToggle?.addEventListener("click", openNav);
+    navOverlay?.addEventListener("click", closeNav);
+
+    // 点击导航链接后关闭侧边栏
+    const navLinks = document.querySelectorAll('[data-ref="stalux-nav-link"]');
+    navLinks?.forEach((link) => {
+        link.addEventListener("click", closeNav);
     });
 </script>

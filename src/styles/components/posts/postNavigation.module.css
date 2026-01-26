@@ -32,6 +32,7 @@
   min-width: 0;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .postNavLink::before {
@@ -115,7 +116,15 @@
   }
 
   .postNavLink {
-    padding: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 120px;
+    justify-content: center;
+  }
+
+  .postNavLink.nextPost {
+    align-items: flex-end;
   }
 
   .postNavArrow {
@@ -124,11 +133,13 @@
 
   .postNavLabel {
     font-size: 0.75rem;
-    margin-bottom: var(--space-2xs);
+    margin-bottom: var(--space-xs);
   }
 
   .postNavTitle {
     font-size: var(--font-size-small);
+    white-space: normal;
+    max-width: 100%;
   }
 }
 
@@ -145,7 +156,12 @@
 
   .postNavLink {
     width: 100%;
-    padding: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    flex-direction: row;
+    align-items: center;
+    min-height: 100px;
+    justify-content: flex-start;
+    gap: var(--space-md);
   }
 
   .postNavLink.prevPost,
@@ -153,9 +169,14 @@
     margin-left: 0;
     margin-right: 0;
     text-align: left;
+    align-items: center;
   }
 
   .postNavLink.nextPost {
     justify-content: flex-start;
+  }
+
+  .postNavTitle {
+    white-space: normal;
   }
 }
