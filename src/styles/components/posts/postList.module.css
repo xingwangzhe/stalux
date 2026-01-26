@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  height: 100%;
+  height: auto;
   margin: 5px 0;
   ul {
     /* 使用 CSS columns 实现自然瀑布流（masonry） */
