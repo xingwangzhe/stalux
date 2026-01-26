@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@astrojs/partytown": "^2.1.4",
-    "@astrojs/vue": "^5.1.4",
     "@waline/client": "^3.8.0",
     "animejs": "^4.3.4",
     "astro": "^5.16.15",

@@ -2,7 +2,7 @@
 import Stalux from "@layouts/Stalux.astro";
 import PostContent from "@components/stalux/posts/postContent.astro";
 import PostCC from "@components/stalux/posts/postCC.astro";
-import WalineComment from "@components/stalux/posts/WalineComment.vue";
+import WalineComment from "@components/stalux/posts/WalineComment.astro";
 import { getCollection, render } from "astro:content";
 import Navs from "@components/stalux/layout/navs.astro";
 
@@ -57,7 +57,6 @@ const author = stalux?.author?.name;
                         meta={walineConfig.meta as any}
                         wordLimit={walineConfig.wordLimit}
                         pageSize={walineConfig.pageSize}
-                        client:idle
                     />
                 )
             }

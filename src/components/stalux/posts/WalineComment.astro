@@ -1,0 +1,539 @@
+---
+import "@waline/client/style";
+
+export interface Props {
+    path?: string;
+    title?: string;
+    serverURL?: string;
+    lang?: string;
+    emoji?: any;
+    requiredMeta?: string[];
+    reaction?: boolean;
+    meta?: string[];
+    wordLimit?: number;
+    pageSize?: number;
+}
+
+const {
+    path = typeof window !== "undefined" ? window.location.pathname : "",
+    title = "",
+    serverURL = "",
+    lang = "zh-CN",
+    emoji = false,
+    requiredMeta = [],
+    reaction = true,
+    meta = ["nick", "mail", "link"],
+    wordLimit = 200,
+    pageSize = 10,
+} = Astro.props;
+
+// 为客户端脚本准备配置对象
+const walineConfig = {
+    path,
+    title,
+    serverURL,
+    lang,
+    emoji,
+    requiredMeta,
+    reaction,
+    meta,
+    wordLimit,
+    pageSize,
+};
+---
+
+{
+    serverURL && (
+        <div
+            id="waline-container"
+            class="waline-comment-container"
+            data-waline-config={JSON.stringify(walineConfig)}
+        >
+            <h2 class="waline-comment-title">留言评论</h2>
+            <div id="waline-comment" class="waline-comment" data-nosnippet />
+            <div class="comments-seo-notice" style="display:none">
+                评论区内容由用户生成，不代表网站观点
+            </div>
+        </div>
+    )
+}
+
+<script>
+    import { init, type WalineInstance } from "@waline/client";
+
+    let walineInstance: WalineInstance | null = null;
+
+    const initWaline = async () => {
+        // 从 data 属性获取配置
+        const container = document.getElementById("waline-container");
+        if (!container) {
+            console.warn("Waline container not found");
+            return;
+        }
+
+        let walineConfig;
+        try {
+            walineConfig = JSON.parse(container.dataset.walineConfig || "{}");
+        } catch (error) {
+            console.error("Failed to parse Waline config:", error);
+            return;
+        }
+
+        // 销毁已有实例
+        if (walineInstance?.destroy) {
+            walineInstance.destroy();
+            walineInstance = null;
+        }
+
+        // 检查必要条件
+        if (!walineConfig.serverURL) {
+            console.warn("Waline serverURL not configured");
+            return;
+        }
+
+        const commentEl = document.getElementById("waline-comment");
+        if (!commentEl) {
+            console.warn("Waline comment element not found");
+            return;
+        }
+
+        try {
+            console.log("Initializing Waline with:", {
+                serverURL: walineConfig.serverURL,
+                path: walineConfig.path,
+                lang: walineConfig.lang,
+            });
+
+            // 初始化 Waline
+            walineInstance = init({
+                el: commentEl,
+                serverURL: walineConfig.serverURL,
+                path: walineConfig.path || window.location.pathname,
+                lang: walineConfig.lang,
+                emoji: walineConfig.emoji,
+                requiredMeta: walineConfig.requiredMeta,
+                reaction: walineConfig.reaction,
+                meta: walineConfig.meta,
+                wordLimit: walineConfig.wordLimit,
+                pageSize: walineConfig.pageSize,
+                dark: true,
+            });
+
+            console.log("Waline initialized successfully");
+        } catch (error) {
+            console.error("Failed to initialize Waline:", error);
+        }
+    };
+
+    // 监听路由变化
+    const handlePopState = () => {
+        const container = document.getElementById("waline-container");
+        if (container) {
+            const config = JSON.parse(container.dataset.walineConfig || "{}");
+            const currentPath = window.location.pathname;
+            if (currentPath !== config.path) {
+                config.path = currentPath;
+                initWaline();
+            }
+        }
+    };
+
+    // onMounted 等效
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+            initWaline();
+            window.addEventListener("popstate", handlePopState);
+        });
+    } else {
+        // DOM 已加载
+        setTimeout(() => {
+            initWaline();
+            window.addEventListener("popstate", handlePopState);
+        }, 0);
+    }
+
+    // onBeforeUnmount 等效（清理资源）
+    window.addEventListener("beforeunload", () => {
+        if (walineInstance?.destroy) {
+            walineInstance.destroy();
+        }
+        window.removeEventListener("popstate", handlePopState);
+    });
+</script>
+
+<style is:global>
+    /* 评论区容器与博客风格一致 */
+    .waline-comment-container {
+        margin-top: 3rem;
+        margin-bottom: 1rem;
+        padding: 2rem;
+        border-radius: 12px;
+        animation: fadeInUp 0.8s ease-in-out forwards;
+        opacity: 0;
+        animation-delay: 0.3s;
+    }
+
+    /* 评论区标题样式与博客风格一致 */
+    .waline-comment-title {
+        margin: 0 0 1.5rem 0;
+        font-size: 2rem;
+        text-align: center;
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.9),
+            rgba(1, 162, 190, 0.9)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Waline根元素自定义 */
+    .wl-panel {
+        background-color: rgba(17, 17, 17, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    /* 修改输入框样式 */
+    .wl-editor,
+    .wl-input {
+        background-color: rgba(17, 17, 17, 0.5) !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        border: 1px solid rgba(100, 100, 100, 0.3) !important;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    /* 输入框焦点状态 */
+    .wl-editor:focus,
+    .wl-input:focus {
+        border-color: rgba(1, 162, 190, 0.5) !important;
+        box-shadow: 0 0 5px rgba(1, 162, 190, 0.3) !important;
+        outline: none;
+    }
+
+    /* 按钮样式统一 */
+    .wl-btn {
+        background: rgba(1, 162, 190, 0.8) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        padding: 8px 15px;
+        cursor: pointer;
+    }
+
+    .wl-btn:hover {
+        background: rgba(1, 162, 190, 1) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(1, 162, 190, 0.3) !important;
+    }
+
+    .wl-btn.primary {
+        background: linear-gradient(
+            135deg,
+            rgba(1, 162, 190, 0.8),
+            rgba(1, 130, 170, 0.8)
+        ) !important;
+    }
+
+    .wl-btn.primary:hover {
+        background: linear-gradient(
+            135deg,
+            rgba(1, 162, 190, 1),
+            rgba(1, 130, 170, 1)
+        ) !important;
+    }
+
+    /* 标签文字颜色 */
+    .wl-header label {
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 500;
+    }
+
+    /* 评论卡片样式 */
+    .wl-card {
+        background-color: rgba(17, 17, 17, 0.3) !important;
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-top: 1.2rem;
+        border: 1px solid rgba(70, 70, 70, 0.2) !important;
+        transition: all 0.3s ease;
+    }
+
+    .wl-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        border-color: rgba(1, 162, 190, 0.3) !important;
+    }
+
+    /* 修改用户名样式 */
+    .wl-nick {
+        color: rgba(1, 162, 190, 0.95) !important;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .wl-nick:hover {
+        color: rgba(1, 162, 190, 1) !important;
+    }
+
+    /* 评论内容样式 */
+    .wl-content {
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.7;
+        margin: 0.8rem 0;
+        word-break: break-word;
+    }
+
+    /* 回复按钮样式 */
+    .wl-reply {
+        opacity: 0.8;
+        transition: all 0.2s ease;
+    }
+
+    .wl-reply:hover {
+        opacity: 1;
+        text-decoration: none;
+    }
+
+    /* 表情面板样式 */
+    .wl-emoji-popup,
+    .wl-gif-popup {
+        background-color: rgba(25, 25, 25, 0.95) !important;
+        border: 1px solid rgba(70, 70, 70, 0.3) !important;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    /* 表情按钮样式 */
+    .wl-emoji-popup button {
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .wl-emoji-popup button:hover {
+        background-color: rgba(1, 162, 190, 0.2);
+        transform: scale(1.05);
+    }
+
+    /* 文章评价反应区域 */
+    .wl-reaction {
+        background-color: rgba(17, 17, 17, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(70, 70, 70, 0.2);
+        text-align: center;
+    }
+
+    .wl-reaction-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .wl-reaction-list {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .wl-reaction-item {
+        background-color: rgba(30, 30, 30, 0.5) !important;
+        border-radius: 8px;
+        margin: 5px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1px solid rgba(70, 70, 70, 0.2) !important;
+    }
+
+    .wl-reaction-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        background-color: rgba(40, 40, 40, 0.8) !important;
+        border-color: rgba(1, 162, 190, 0.3) !important;
+    }
+
+    .wl-reaction-img {
+        padding: 6px;
+    }
+
+    .wl-reaction-img img {
+        transition: transform 0.3s ease;
+    }
+
+    .wl-reaction-item:hover .wl-reaction-img img {
+        transform: scale(1.15);
+    }
+
+    .wl-reaction-votes {
+        font-size: 0.8rem;
+        padding: 5px 0;
+        background-color: rgba(1, 162, 190, 0.7);
+        color: #fff;
+    }
+
+    /* 评论计数和排序 */
+    .wl-meta-head {
+        margin-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(70, 70, 70, 0.3);
+        padding-bottom: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .wl-count {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .wl-sort {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .wl-sort li {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .wl-sort li:hover {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .wl-sort li.active {
+        color: rgba(1, 162, 190, 1);
+        font-weight: 500;
+    }
+
+    /* 页码导航 */
+    .wl-page {
+        margin-top: 1.2rem;
+        text-align: center;
+    }
+
+    .wl-page button {
+        background: rgba(30, 30, 30, 0.5) !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        border: 1px solid rgba(70, 70, 70, 0.3) !important;
+        border-radius: 6px;
+        margin: 0 5px;
+        padding: 5px 10px;
+        transition: all 0.2s ease;
+    }
+
+    .wl-page button:hover:not(:disabled) {
+        background: rgba(1, 162, 190, 0.7) !important;
+        color: #fff !important;
+        transform: translateY(-2px);
+    }
+
+    .wl-page button.active {
+        background: rgba(1, 162, 190, 0.8) !important;
+        color: #fff !important;
+    }
+
+    /* Waline底部版权信息 */
+    .wl-power {
+        opacity: 0.6;
+        font-size: 0.85rem;
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    .wl-power a {
+        color: rgba(1, 162, 190, 0.9);
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .wl-power a:hover {
+        color: rgba(1, 162, 190, 1);
+        text-decoration: underline;
+    }
+
+    /* 评论为空状态 */
+    .wl-empty {
+        text-align: center;
+        padding: 2rem 0;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1.1rem;
+    }
+
+    /* 支持文字数量统计 */
+    .wl-text-number {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 添加动画效果 */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+        .waline-comment-container {
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .waline-comment-title {
+            font-size: 1.8rem;
+        }
+
+        .wl-panel {
+            padding: 0.8rem;
+        }
+
+        .wl-header {
+            flex-direction: column;
+        }
+
+        .wl-header-item {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .waline-comment-container {
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .waline-comment-title {
+            font-size: 1.6rem;
+        }
+
+        .wl-reaction-list {
+            gap: 5px;
+        }
+
+        .wl-card {
+            padding: 1rem;
+        }
+
+        .wl-meta-head {
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+    }
+</style>

@@ -4,7 +4,7 @@ import PostContent from "@components/stalux/posts/postContent.astro";
 import PostRight from "@components/stalux/posts/postRight.astro";
 import PostNavigation from "@components/stalux/posts/postNavigation.astro";
 import PostCC from "@components/stalux/posts/postCC.astro";
-import WalineComment from "@components/stalux/posts/WalineComment.vue";
+import WalineComment from "@components/stalux/posts/WalineComment.astro";
 import { getCollection } from "astro:content";
 import layoutStyle from "@styles/components/posts/postLayout.module.css";
 
@@ -75,7 +75,6 @@ const walineConfig = stalux?.comment?.waline;
                         meta={walineConfig.meta as any}
                         wordLimit={walineConfig.wordLimit}
                         pageSize={walineConfig.pageSize}
-                        client:idle
                     />
                 )
             }
