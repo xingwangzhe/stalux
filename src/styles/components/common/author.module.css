@@ -39,3 +39,35 @@
   margin-top: 0.5em;
   text-align: center;
 }
+
+/* 移动端响应式优化 */
+@media (max-width: 768px) {
+  .author {
+    margin-top: 2em;
+    padding: 1em 0.5em;
+    border-width: 0.5px;
+    max-width: 95vw;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .authorFigure {
+    flex-direction: column !important;
+    gap: 0.5em;
+  }
+  .authorFigure img {
+    width: 64px !important;
+    height: 64px !important;
+    max-width: 20vw;
+    max-height: 20vw;
+  }
+  .authorFigure figcaption {
+    font-size: 1.5em;
+    margin-left: 0;
+    margin-top: 0.5em;
+    text-align: center;
+    word-break: break-all;
+    max-width: 90vw;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+}
