@@ -1,0 +1,12 @@
+# robots.txt 
+# 允许所有搜索引擎爬取网站
+User-agent: *
+# 黑名单制度：默认允许所有页面，明确禁止特定页面
+Disallow: /404/
+# 允许标签和分类页面被索引（优化SEO）
+Allow: /archives/
+Allow: /categories/
+Allow: /tags/
+
+# Sitemap
+Sitemap: https://stalux.needhelp.icu/sitemap-index.xml
