@@ -14,7 +14,7 @@ const posts = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
-    abbrlink: z.string() || z.number().transform((num) => num.toString()),
+    abbrlink: z.string().or(z.number().transform((num) => num.toString())),
     date: z.preprocess((v) => (typeof v === "string" ? new Date(v) : v), z.date()),
     updated: z.preprocess(
       (v) => (v == null ? undefined : typeof v === "string" ? new Date(v) : v),
