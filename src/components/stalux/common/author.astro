@@ -11,7 +11,7 @@ export interface Props {
 const props = Astro.props as Props;
 ---
 
-<article class={styles.author}>
+<article class={styles.author} transition:persist-props>
     <figure
         class={`${styles.authorFigure} ${props.iscolum ? styles.figureColumn : ""}`}
     >

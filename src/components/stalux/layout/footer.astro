@@ -34,7 +34,7 @@ const totalWordCount = await getTotalWordCount();
 const formattedWordCount = formatWordCount(totalWordCount);
 ---
 
-<footer class={footerStyle.siteFooter}>
+<footer class={footerStyle.siteFooter} transition:persist-props>
     <div class={footerStyle.footerContent}>
         <!-- 版权信息 -->
         {

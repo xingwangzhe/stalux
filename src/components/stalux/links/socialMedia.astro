@@ -17,7 +17,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
 }
 ---
 
-<div class={styles["social-links"]}>
+<div class={styles["social-links"]} transition:persist-props>
     <ul>
         {
             mediaLinks.map((item) => {
