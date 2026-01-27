@@ -21,7 +21,6 @@
         "badge-maker": "^5.0.2",
         "dayjs": "^1.11.19",
         "feather-icons": "^4.29.2",
-        "js-yaml": "^4.1.1",
         "katex": "^0.16.28",
         "lightningcss": "^1.31.1",
         "mermaid": "^11.12.2",
