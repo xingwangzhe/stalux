@@ -24,7 +24,7 @@ function getIconSvg(iconName: string): string {
 const stalux = (await getCollection("config"))[0].data;
 ---
 
-<nav aria-label="Main navigation">
+<nav aria-label="Main navigation" transition:persist-props>
     <!-- 汉堡菜单按钮 (仅窄屏显示) -->
     <button
         data-ref="stalux-nav-toggle"

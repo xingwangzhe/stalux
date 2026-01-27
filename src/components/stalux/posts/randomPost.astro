@@ -9,7 +9,7 @@ interface Props {
 const { count = 5, title = "随机文章" } = Astro.props;
 ---
 
-<div class={style.container}>
+<div class={style.container} transition:persist-props>
     <div class={style.header}>
         <h3 class={style.title}>{title}</h3>
         <button
@@ -147,7 +147,7 @@ const { count = 5, title = "随机文章" } = Astro.props;
     }
 
     // 初始化事件监听
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("astro:page-load", () => {
         const refreshButton = document.getElementById("refresh-random-posts");
         if (refreshButton) {
             refreshButton.addEventListener("click", (e) => {

@@ -47,7 +47,12 @@ const walineConfig = {
         <div
             id="waline-container"
             class="waline-comment-container"
-            data-waline-config={JSON.stringify(walineConfig)}
+            data-waline-config={
+                // base64 可逆混淆（无 unescape，兼容 Node/浏览器）
+                Buffer.from(
+                    new TextEncoder().encode(JSON.stringify(walineConfig)),
+                ).toString("base64")
+            }
         >
             <h2 class="waline-comment-title">留言评论</h2>
             <div id="waline-comment" class="waline-comment" data-nosnippet />
@@ -59,52 +64,47 @@ const walineConfig = {
 }
 
 <script>
-    import { init, type WalineInstance } from "@waline/client";
-
-    let walineInstance: WalineInstance | null = null;
-
+    import { init } from "@waline/client";
+    let walineInstance: ReturnType<typeof init> | null = null;
+    const safeDestroy = () => {
+        try {
+            if (walineInstance?.destroy) {
+                const commentEl = document.getElementById("waline-comment");
+                if (commentEl && commentEl.parentNode) {
+                    walineInstance.destroy();
+                }
+            }
+        } catch (e) {}
+        walineInstance = null;
+    };
     const initWaline = async () => {
-        // 从 data 属性获取配置
         const container = document.getElementById("waline-container");
         if (!container) {
             console.warn("Waline container not found");
             return;
         }
-
         let walineConfig;
         try {
-            walineConfig = JSON.parse(container.dataset.walineConfig || "{}");
+            // base64 可逆混淆解码（无 unescape，兼容 Node/浏览器）
+            const base64 = container.dataset.walineConfig || "";
+            const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+            const jsonStr = new TextDecoder().decode(bytes);
+            walineConfig = JSON.parse(jsonStr);
         } catch (error) {
-            console.error("Failed to parse Waline config:", error);
+            console.error("Failed to decode Waline config:", error);
             return;
         }
-
-        // 销毁已有实例
-        if (walineInstance?.destroy) {
-            walineInstance.destroy();
-            walineInstance = null;
-        }
-
-        // 检查必要条件
+        safeDestroy();
         if (!walineConfig.serverURL) {
             console.warn("Waline serverURL not configured");
             return;
         }
-
         const commentEl = document.getElementById("waline-comment");
         if (!commentEl) {
             console.warn("Waline comment element not found");
             return;
         }
-
         try {
-            console.log("Initializing Waline with:", {
-                serverURL: walineConfig.serverURL,
-                path: walineConfig.path,
-                lang: walineConfig.lang,
-            });
-
-            // 初始化 Waline
             walineInstance = init({
                 el: commentEl,
                 serverURL: walineConfig.serverURL,
@@ -118,46 +118,25 @@ const walineConfig = {
                 pageSize: walineConfig.pageSize,
                 dark: true,
             });
-
-            console.log("Waline initialized successfully");
         } catch (error) {
             console.error("Failed to initialize Waline:", error);
         }
     };
 
-    // 监听路由变化
-    const handlePopState = () => {
-        const container = document.getElementById("waline-container");
-        if (container) {
-            const config = JSON.parse(container.dataset.walineConfig || "{}");
-            const currentPath = window.location.pathname;
-            if (currentPath !== config.path) {
-                config.path = currentPath;
-                initWaline();
-            }
-        }
-    };
-
-    // onMounted 等效
+    // 首屏 SSR 兼容
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => {
-            initWaline();
-            window.addEventListener("popstate", handlePopState);
+        document.addEventListener("DOMContentLoaded", initWaline, {
+            once: true,
         });
     } else {
-        // DOM 已加载
-        setTimeout(() => {
-            initWaline();
-            window.addEventListener("popstate", handlePopState);
-        }, 0);
+        setTimeout(initWaline, 0);
     }
-
-    // onBeforeUnmount 等效（清理资源）
+    // 关键：每次页面导航后都重新执行
+    document.addEventListener("astro:page-load", initWaline);
+    // 清理
     window.addEventListener("beforeunload", () => {
-        if (walineInstance?.destroy) {
-            walineInstance.destroy();
-        }
-        window.removeEventListener("popstate", handlePopState);
+        safeDestroy();
+        document.removeEventListener("astro:page-load", initWaline);
     });
 </script>
 
