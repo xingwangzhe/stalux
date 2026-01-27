@@ -60,11 +60,13 @@
   z-index: 999;
   opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .navOverlay[data-state="show"] {
   display: block;
   opacity: 1;
+  pointer-events: auto;
 }
 
 /* 中等屏幕：隐藏文字，只显示图标 */
@@ -93,7 +95,7 @@
     position: fixed;
     top: 0;
     right: 0;
-    width: 280px;
+    width: 140px;
     height: 100vh;
     background: var(--black-20p);
     backdrop-filter: blur(20px);
@@ -104,10 +106,12 @@
     transform: translateX(100%);
     z-index: 1000;
     overflow-y: auto;
+    pointer-events: none;
   }
 
   .navList[data-state="open"] {
     transform: translateX(0);
+    pointer-events: auto;
   }
 
   .navItem {

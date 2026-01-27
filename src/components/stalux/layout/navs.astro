@@ -69,37 +69,45 @@ const stalux = (await getCollection("config"))[0].data;
 </nav>
 <Search />
 <script>
-    const searchBtn = document.querySelector('[data-ref="stalux-search-btn"]');
-    searchBtn?.addEventListener("click", () => {
-        const event = new CustomEvent("openSearch");
-        document.dispatchEvent(event);
-    });
+    document.addEventListener("astro:page-load", () => {
+        const searchBtn = document.querySelector(
+            '[data-ref="stalux-search-btn"]',
+        );
+        searchBtn?.addEventListener("click", () => {
+            const event = new CustomEvent("openSearch");
+            document.dispatchEvent(event);
+        });
 
-    // 汉堡菜单交互
-    const navToggle = document.querySelector('[data-ref="stalux-nav-toggle"]');
-    const navList = document.querySelector('[data-ref="stalux-nav-list"]');
-    const navOverlay = document.querySelector(
-        '[data-ref="stalux-nav-overlay"]',
-    );
+        // 汉堡菜单交互
+        const navToggle = document.querySelector(
+            '[data-ref="stalux-nav-toggle"]',
+        );
+        const navList = document.querySelector('[data-ref="stalux-nav-list"]');
+        const navOverlay = document.querySelector(
+            '[data-ref="stalux-nav-overlay"]',
+        );
 
-    function openNav() {
-        navList?.setAttribute("data-state", "open");
-        navOverlay?.setAttribute("data-state", "show");
-        document.body.style.overflow = "hidden";
-    }
+        function openNav() {
+            navList?.setAttribute("data-state", "open");
+            navOverlay?.setAttribute("data-state", "show");
+            document.body.style.overflow = "hidden";
+        }
 
-    function closeNav() {
-        navList?.removeAttribute("data-state");
-        navOverlay?.removeAttribute("data-state");
-        document.body.style.overflow = "";
-    }
+        function closeNav() {
+            navList?.removeAttribute("data-state");
+            navOverlay?.removeAttribute("data-state");
+            document.body.style.overflow = "";
+        }
 
-    navToggle?.addEventListener("click", openNav);
-    navOverlay?.addEventListener("click", closeNav);
+        navToggle?.addEventListener("click", openNav);
+        navOverlay?.addEventListener("click", closeNav);
 
-    // 点击导航链接后关闭侧边栏
-    const navLinks = document.querySelectorAll('[data-ref="stalux-nav-link"]');
-    navLinks?.forEach((link) => {
-        link.addEventListener("click", closeNav);
+        // 点击导航链接后关闭侧边栏
+        const navLinks = document.querySelectorAll(
+            '[data-ref="stalux-nav-link"]',
+        );
+        navLinks?.forEach((link) => {
+            link.addEventListener("click", closeNav);
+        });
     });
 </script>
