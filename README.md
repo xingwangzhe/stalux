@@ -4,11 +4,9 @@
 
 **#阿里云ESA Pages** **#阿里云云工开物话题**
 
-[![Stargazers repo roster for @xingwangzhe/stalux](https://reporoster.com/stars/dark/xingwangzhe/stalux)](https://github.com/xingwangzhe/stalux/stargazers)
-
-[![Forkers repo roster for @xingwangzhe/stalux](https://reporoster.com/forks/dark/xingwangzhe/stalux)](https://github.com/xingwangzhe/stalux/network/members)
-
 # Stalux - 现代 Astro 博客主题
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/xingwangzhe/stalux)
 
 **本博客主题已有[软著](./软著证明.pdf)，受中国版权相关法律保护，请务必遵守 [LICENSE 许可证](./LICENSE)（MIT 协议）**
 

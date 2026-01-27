@@ -7,6 +7,7 @@ MIT* color-convert
 MIT* khroma
 MIT* stalux
 MIT* zod-to-ts
+UNLICENSE robust-predicates
 
 === LIKELY MIT-COMPATIBLE (PERMISSIVE) ===
 (MIT OR CC0-1.0) type-fest
@@ -51,16 +52,6 @@ CC0-1.0 badge-maker
 CC0-1.0 binary-search
 CC0-1.0 mdn-data
 CC0-1.0 simple-icons
-CUSTOM: HTTPS://BADGEN.NET/GITHUB/LAST-COMMIT/SACHINCHOOLUR/LIGHTGALLERY/MASTER lightgallery
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-autoplay
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-fullscreen
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-hash
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-pager
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-rotate
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-share
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-thumbnail
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-video
-CUSTOM: HTTPS://SITE.UPLABS.COM/POSTS/LIGHTGALLERY lg-zoom
 ISC @emmetio/html-matcher
 ISC @ungap/structured-clone
 ISC ansi-align
@@ -363,7 +354,6 @@ MIT is-inside-container
 MIT is-plain-obj
 MIT is-potential-custom-element-name
 MIT is-wsl
-MIT jquery
 MIT js-yaml
 MIT jsdom
 MIT json-schema-traverse
@@ -588,4 +578,3 @@ MPL-2.0 lightningcss
 MPL-2.0 lightningcss-linux-x64-gnu
 MPL-2.0 lightningcss-linux-x64-musl
 PYTHON-2.0 argparse
-UNLICENSE robust-predicates

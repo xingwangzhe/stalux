@@ -5,7 +5,7 @@ import { writeFile } from "fs/promises";
 const execP = promisify(exec);
 
 // Patterns considered possibly not compatible with MIT and need review
-const FLAGGED_PATTERNS = [/LGPL/i, /\bGPL\b/i, /AGPL/i, /CC-BY/i, /BLUEOAK/i, /UNKNOWN/i, /MIT\*/i];
+const FLAGGED_PATTERNS = [/LGPL/i, /\bGPL\b/i, /AGPL/i, /CC-BY/i, /BLUEOAK/i, /UNKNOWN/i, /MIT\*/i, /CUSTOM/i, /UNLICENSE/i];
 
 function isFlagged(license: string) {
   return FLAGGED_PATTERNS.some((rx) => rx.test(license));
