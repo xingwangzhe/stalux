@@ -11,6 +11,7 @@ const posts = defineCollection({
   loader: glob({
     pattern: ["*.{md,mdx}"],
     base: "stalux/posts/",
+    generateId: ({ data }) => data['abbrlink'] as string,
   }),
   schema: z.object({
     title: z.string(),
