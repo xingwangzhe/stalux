@@ -18,6 +18,17 @@ posts.forEach((post: any) => {
     archivesByYearMonth[year][month].push(post);
 });
 
+// 对每个月内的文章按 date 字段降序排序
+Object.keys(archivesByYearMonth).forEach((year) => {
+    Object.keys(archivesByYearMonth[Number(year)]).forEach((month) => {
+        archivesByYearMonth[Number(year)][Number(month)].sort((a, b) => {
+            const da = new Date(a.data.date || 0).getTime();
+            const db = new Date(b.data.date || 0).getTime();
+            return db - da;
+        });
+    });
+});
+
 // 按年份降序排序 -
 const sortedYears = Object.keys(archivesByYearMonth)
     .map(Number)
