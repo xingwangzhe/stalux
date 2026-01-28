@@ -17,6 +17,7 @@
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
+    "@expressive-code/plugin-line-numbers": "^0.41.6",
     "@waline/client": "^3.8.0",
     "animejs": "^4.3.5",
     "astro": "^5.16.15",
