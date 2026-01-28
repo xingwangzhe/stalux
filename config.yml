@@ -282,6 +282,7 @@ stalux:
         href: "/llms.txt"
 
     custom: |
+      <link rel="prefetch" as="image" href="https://www.blogsclub.org/badge/xingwangzhe.fun">
       <script defer src="https://umami.xingwangzhe.fun/script.js" data-website-id="b28b14f6-a7b6-4c6c-8e4f-347f618ba998" type="text/partytown"></script>
       <script async src="https://cloud.umami.is/script.js" data-website-id="baf2a9fb-abcf-4850-a553-bb5d01483e2e" type="text/partytown"></script>
       <link rel="prefetch" as="image" href="https://www.blogsclub.org/badge/xingwangzhe.fun">
