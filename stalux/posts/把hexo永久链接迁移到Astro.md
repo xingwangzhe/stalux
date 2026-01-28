@@ -24,24 +24,24 @@ permlink或者abbrlink 目的都是为了通过一个短链接来访问文章,�
 
 如果尽可能保持小的改动,确保路由能够由frontmatter的permlink或者abbrlink字段来控制,那就可以避免大批量修改文章链接的问题。
 
-## 具体操作步骤
+## 更改Astro的内容集合配置
 
-### 1.内容集合的定义
+### 直接更改
 
 对于博客类型的内容,Astro的各种博客主题大部分都会在`/src/content.config.ts`或者`/src/content/config.ts`文件中定义内容集合
 
 我们需要找到这个文件,然后找到对应的集合定义。以我这个[博客主题](https://github.com/xingwangzhe/stalux)为例子
 
-```ts diff title="src/content.config.ts"
+```diff lang='ts' title="src/content.config.ts"
 const posts = defineCollection({
   loader: glob({
     pattern: ["*.{md,mdx}"],
     base: "stalux/posts/",
-    generateId: ({ data }) => String(data["abbrlink"]),
++   generateId: ({ data }) => String(data["abbrlink"]), // 通过abbrlink字段来生成路由ID
   }),
   schema: z.object({
     title: z.string(),
-    ++ abbrlink: z.string().or(z.number().transform((num) => num.toString())),
++   abbrlink: z.string().or(z.number().transform((num) => num.toString())), // 支持字符串或者数字
     date: z.preprocess((v) => (typeof v === "string" ? new Date(v) : v), z.date()),
     updated: z.preprocess(
       (v) => (v == null ? undefined : typeof v === "string" ? new Date(v) : v),
@@ -60,3 +60,22 @@ const posts = defineCollection({
   }),
 });
 ```
+
+### 解释
+
+对于abbrlink字段,有可能是纯数字,也有可能是字符串,所以我们需要在schema中定义支持字符串或者数字的类型,并且把数字转换成字符串。
+
+```ts
+abbrlink: z.string().or(z.number().transform((num) => num.toString())), // 支持字符串或者数字
+```
+
+然后在`generateId`函数中,我们通过frontmatter的`abbrlink`字段来生成路由ID,这样就可以确保路由和之前的hexo永久链接保持一致。
+
+```ts
+generateId: ({ data }) => String(data["abbrlink"]), // 通过abbrlink字段来生成路由ID
+```
+
+## 一举多得的好处
+
+一方面,避免了大量的修改,另一方面,也确保了之前的永久链接依然可以访问,不会因为迁移而导致链接失效的问题,再者,以前通过文件系统不会重名的特性来作为路由ID,现在通过abbrlink字段来生成路由ID,也避免了重名的问题(此时重复ID会generateId函数会报错)。
+总之,通过这种方式,我们可以轻松地把hexo的永久链接迁移到Astro,而且不需要大批量修改文章链接,非常方便.
