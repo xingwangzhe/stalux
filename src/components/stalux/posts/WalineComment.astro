@@ -6,12 +6,23 @@ export interface Props {
     title?: string;
     serverURL?: string;
     lang?: string;
+    locale?: any;
     emoji?: any;
     requiredMeta?: string[];
     reaction?: boolean;
     meta?: string[];
     wordLimit?: number;
     pageSize?: number;
+    login?: string;
+    recaptchaV3Key?: string;
+    turnstileKey?: string;
+    dark?: string | boolean;
+    noCopyright?: boolean;
+    commentSorting?: string;
+    imageUploader?: any;
+    highlighter?: any;
+    texRenderer?: any;
+    search?: any;
 }
 
 const {
@@ -19,12 +30,23 @@ const {
     title = "",
     serverURL = "",
     lang = "zh-CN",
+    locale = undefined,
     emoji = false,
     requiredMeta = [],
     reaction = true,
     meta = ["nick", "mail", "link"],
     wordLimit = 200,
     pageSize = 10,
+    login = "enable",
+    recaptchaV3Key = "",
+    turnstileKey = "",
+    dark = true,
+    noCopyright = false,
+    commentSorting = "latest",
+    imageUploader = undefined,
+    highlighter = undefined,
+    texRenderer = undefined,
+    search = undefined,
 } = Astro.props;
 
 // 为客户端脚本准备配置对象
@@ -33,12 +55,23 @@ const walineConfig = {
     title,
     serverURL,
     lang,
+    locale,
     emoji,
     requiredMeta,
     reaction,
     meta,
     wordLimit,
     pageSize,
+    login,
+    recaptchaV3Key,
+    turnstileKey,
+    dark,
+    noCopyright,
+    commentSorting,
+    imageUploader,
+    highlighter,
+    texRenderer,
+    search,
 };
 ---
 
@@ -110,13 +143,23 @@ const walineConfig = {
                 serverURL: walineConfig.serverURL,
                 path: walineConfig.path || window.location.pathname,
                 lang: walineConfig.lang,
+                locale: walineConfig.locale,
                 emoji: walineConfig.emoji,
                 requiredMeta: walineConfig.requiredMeta,
                 reaction: walineConfig.reaction,
                 meta: walineConfig.meta,
                 wordLimit: walineConfig.wordLimit,
                 pageSize: walineConfig.pageSize,
-                dark: true,
+                login: walineConfig.login,
+                recaptchaV3Key: walineConfig.recaptchaV3Key,
+                turnstileKey: walineConfig.turnstileKey,
+                dark: walineConfig.dark,
+                noCopyright: walineConfig.noCopyright,
+                commentSorting: walineConfig.commentSorting,
+                imageUploader: walineConfig.imageUploader,
+                highlighter: walineConfig.highlighter,
+                texRenderer: walineConfig.texRenderer,
+                search: walineConfig.search,
             });
         } catch (error) {
             console.error("Failed to initialize Waline:", error);

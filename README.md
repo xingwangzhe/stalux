@@ -185,6 +185,18 @@ stalux:
   # 评论系统（Waline）
   waline:
     serverURL: https://your-waline-server.com
+    # login: 'enable' | 'disable' | 'force'  # 强制登录可防止伪造
+    # recaptchaV3Key: ""  # 可选，配置 reCAPTCHA v3 网站 key
+    # turnstileKey: ""  # 可选，配置 Cloudflare Turnstile key
+    # dark: true  # 是否启用暗色模式适配
+    # reaction: false
+    # meta: ["nick", "mail", "link"]
+    # requiredMeta: []  # 必填字段示例, 可设置为 ['nick'] 或 ['nick','mail']
+    # commentSorting: "latest"  # 评论排序方式
+    # imageUploader: # 自定义图片上传
+    # highlighter: # 自定义代码高亮
+    # texRenderer: # 自定义 TeX 渲染
+    # search: # 自定义搜索功能
 
   # 友情链接
   links:

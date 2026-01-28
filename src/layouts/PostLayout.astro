@@ -70,11 +70,22 @@ const walineConfig = stalux?.comment?.waline;
                         path={Astro.url.pathname}
                         title={title}
                         lang={walineConfig.lang}
+                        locale={(walineConfig as any).locale}
                         emoji={walineConfig.emoji}
                         reaction={walineConfig.reaction}
                         meta={walineConfig.meta as any}
                         wordLimit={walineConfig.wordLimit}
                         pageSize={walineConfig.pageSize}
+                        login={(walineConfig as any).login}
+                        recaptchaV3Key={(walineConfig as any).recaptchaV3Key}
+                        turnstileKey={(walineConfig as any).turnstileKey}
+                        dark={(walineConfig as any).dark}
+                        noCopyright={(walineConfig as any).noCopyright}
+                        commentSorting={(walineConfig as any).commentSorting}
+                        imageUploader={(walineConfig as any).imageUploader}
+                        highlighter={(walineConfig as any).highlighter}
+                        texRenderer={(walineConfig as any).texRenderer}
+                        search={(walineConfig as any).search}
                     />
                 )
             }

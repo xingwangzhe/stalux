@@ -175,12 +175,21 @@ stalux:
     waline:
       serverURL: https://walines.xingwangzhe.fun
       lang: zh-CN
-      emoji:
-        - https://unpkg.com/@waline/emojis@1.1.0/weibo
+      # locale: # 可选，自定义语言配置
+      login: "force" # 'enable' | 'disable' | 'force'（开启强制登录可防止伪造）
+      recaptchaV3Key: "" # 可选，配置 reCAPTCHA v3 网站 key 以启用验证码
+      turnstileKey: "" # 可选，配置 Cloudflare Turnstile key 以启用验证码
+      dark: true
       reaction: false
       meta:
         - nick
         - mail
         - link
+      requiredMeta: []
+      commentSorting: "latest"
+      # imageUploader: # 可选，自定义图片上传函数
+      # highlighter: # 可选，自定义代码高亮函数
+      # texRenderer: # 可选，自定义 TeX 渲染函数
+      # search: # 可选，自定义搜索功能
       wordLimit: 200
       pageSize: 10
