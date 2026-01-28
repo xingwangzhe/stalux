@@ -5,7 +5,6 @@ import readingTime from "astro-reading-time";
 import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
-import astroLLMsGenerator from "astro-llms-generate";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
@@ -62,11 +61,6 @@ export default defineConfig({
       config: {
         forward: ["dataLayer.push"],
       },
-    }),
-    astroLLMsGenerator({
-      includePatterns: ["**/*"], // Pages to include
-      excludePatterns: ["**/404*", "**/api/**"], // Pages to exclude
-      customSeparator: "\n\n---\n\n", // Custom separator for full content
     }),
     expressiveCode({
       themes: ["dark-plus", "github-light"],
