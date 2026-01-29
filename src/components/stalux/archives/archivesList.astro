@@ -96,7 +96,11 @@ const sortedYears = Object.keys(archivesByYearMonth)
         </div>
 
         <!-- 懒加载指示器 -->
-        <div id="lazyload-observer" class={styles.lazyloadObserver}>
+        <div
+            id="lazyload-observer"
+            class={styles.lazyloadObserver}
+            style="display:none"
+        >
             <div class={styles.loadingSpinner} data-loading-spinner>
                 <span class="dot"></span>
                 <span class="dot"></span>
@@ -116,6 +120,15 @@ const sortedYears = Object.keys(archivesByYearMonth)
             const totalYears = yearSections.length;
             const lazyloadObserver =
                 document.getElementById("lazyload-observer");
+
+            // 默认隐藏懒加载指示器，仅当还有未显示年份时才显示（避免在全部已加载时出现“加载更多内容”）
+            if (lazyloadObserver) {
+                if (totalYears > visibleYears) {
+                    (lazyloadObserver as HTMLElement).style.display = "flex";
+                } else {
+                    (lazyloadObserver as HTMLElement).style.display = "none";
+                }
+            }
 
             const updateLoadingIndicator = (
                 isLoading: boolean,
