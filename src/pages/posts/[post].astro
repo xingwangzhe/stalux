@@ -16,12 +16,6 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post);
 // 从 remarkPluginFrontmatter 中提取阅读时间
 const readingTime = remarkPluginFrontmatter?.minutesRead || "5分钟";
 
-// 获取网站配置信息
-const siteConfig = {
-    author: "Stalux",
-    authorAvatar: "/avatar.png",
-};
-
 export async function getStaticPaths() {
     const posts = await getCollection("posts");
 
@@ -87,8 +81,8 @@ export async function getStaticPaths() {
         tags={post.data.tags || []}
         categories={post.data.categories || []}
         headings={headings}
-        author={siteConfig.author}
-        authorAvatar={siteConfig.authorAvatar}
+        author={stalux.author.avatar}
+        authorAvatar={stalux.author.avatar}
         prev={prev}
         next={next}
         cc={post.data.cc}
