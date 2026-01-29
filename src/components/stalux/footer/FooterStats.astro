@@ -44,28 +44,30 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
 }
 
 <script define:vars={{ buildtime }}>
-    if (buildtime) {
-        const runtimeCounter = document.getElementById("runtime-counter");
+    document.addEventListener("astro:page-load", () => {
+        if (buildtime) {
+            const runtimeCounter = document.getElementById("runtime-counter");
 
-        const updateRuntime = () => {
-            if (!runtimeCounter) return;
-            const now = new Date();
-            const start = new Date(buildtime);
-            const diffMs = now.getTime() - start.getTime();
-            if (Number.isNaN(diffMs) || diffMs < 0) return;
+            const updateRuntime = () => {
+                if (!runtimeCounter) return;
+                const now = new Date();
+                const start = new Date(buildtime);
+                const diffMs = now.getTime() - start.getTime();
+                if (Number.isNaN(diffMs) || diffMs < 0) return;
 
-            const totalSeconds = Math.floor(diffMs / 1000);
-            const days = Math.floor(totalSeconds / 86400);
-            const hours = Math.floor((totalSeconds % 86400) / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
+                const totalSeconds = Math.floor(diffMs / 1000);
+                const days = Math.floor(totalSeconds / 86400);
+                const hours = Math.floor((totalSeconds % 86400) / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
 
-            runtimeCounter.textContent = `${days}天${hours}时${minutes}分${seconds}秒`;
-        };
+                runtimeCounter.textContent = `${days}天${hours}时${minutes}分${seconds}秒`;
+            };
 
-        updateRuntime();
-        setInterval(updateRuntime, 1000);
-    }
+            updateRuntime();
+            setInterval(updateRuntime, 1000);
+        }
+    });
 </script>
 
 <style>
