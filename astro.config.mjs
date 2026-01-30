@@ -11,7 +11,6 @@ import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
 import mermaid from "astro-mermaid";
 
 import expressiveCode from "astro-expressive-code";
-import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 
 if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
   const originalError = console.error;
