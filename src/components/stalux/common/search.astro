@@ -57,135 +57,136 @@ import * as feather from "feather-icons";
             pagefind?: any;
         }
     }
+    document.addEventListener("astro:page-load", () => {
+        const container = document.getElementById("search-container");
+        const closeBtn = document.getElementById("search-close");
+        const backdrop = document.querySelector(".search-backdrop");
 
-    const container = document.getElementById("search-container");
-    const closeBtn = document.getElementById("search-close");
-    const backdrop = document.querySelector(".search-backdrop");
+        // 打开搜索 - 监听 openSearch 事件（stalux的触发器）
+        document.addEventListener("openSearch", () => {
+            console.log("Search opened");
+            container?.classList.add("active");
+            const searchInput = container?.querySelector(
+                ".pagefind-ui__search-input",
+            ) as HTMLInputElement;
+            if (searchInput) {
+                setTimeout(() => searchInput.focus(), 0);
+            }
+        });
 
-    // 打开搜索 - 监听 openSearch 事件（stalux的触发器）
-    document.addEventListener("openSearch", () => {
-        console.log("Search opened");
-        container?.classList.add("active");
-        const searchInput = container?.querySelector(
-            ".pagefind-ui__search-input",
-        ) as HTMLInputElement;
-        if (searchInput) {
-            setTimeout(() => searchInput.focus(), 0);
-        }
-    });
+        // 关闭函数
+        const closeSearch = () => {
+            container?.classList.remove("active");
+        };
 
-    // 关闭函数
-    const closeSearch = () => {
-        container?.classList.remove("active");
-    };
+        // 关闭按钮
+        closeBtn?.addEventListener("click", closeSearch);
 
-    // 关闭按钮
-    closeBtn?.addEventListener("click", closeSearch);
+        // 点击背景关闭
+        backdrop?.addEventListener("click", closeSearch);
 
-    // 点击背景关闭
-    backdrop?.addEventListener("click", closeSearch);
+        // ESC 关闭
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && container?.classList.contains("active")) {
+                closeSearch();
+            }
+        });
 
-    // ESC 关闭
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && container?.classList.contains("active")) {
-            closeSearch();
-        }
-    });
+        // 点击结果后关闭
+        container?.addEventListener("click", (e) => {
+            const target = e.target as HTMLElement;
+            if (
+                target.closest(".pagefind-ui__result-link") ||
+                target.closest(".pagefind-ui__result-title")
+            ) {
+                setTimeout(() => closeSearch(), 100);
+            }
+        });
 
-    // 点击结果后关闭
-    container?.addEventListener("click", (e) => {
-        const target = e.target as HTMLElement;
-        if (
-            target.closest(".pagefind-ui__result-link") ||
-            target.closest(".pagefind-ui__result-title")
-        ) {
-            setTimeout(() => closeSearch(), 100);
-        }
-    });
-
-    // 确保搜索功能在DOM加载前就能工作
-    function ensureSearchWorks() {
-        if (typeof window.pagefind === "undefined") {
-            window.addEventListener("load", function () {
-                if (window.pagefind) {
-                    initializeSearch();
-                }
-            });
-        } else {
-            initializeSearch();
-        }
-    }
-
-    function initializeSearch() {
-        const searchInput = document.querySelector(
-            ".pagefind-ui__search-input",
-        ) as HTMLInputElement;
-        if (searchInput) {
-            searchInput.disabled = false;
-            searchInput.style.pointerEvents = "auto";
-
-            searchInput.addEventListener("focus", function () {
-                this.style.outline = "2px solid var(--stalux-accent-color)";
-            });
-
-            searchInput.addEventListener("blur", function () {
-                this.style.outline = "none";
-            });
+        // 确保搜索功能在DOM加载前就能工作
+        function ensureSearchWorks() {
+            if (typeof window.pagefind === "undefined") {
+                window.addEventListener("load", function () {
+                    if (window.pagefind) {
+                        initializeSearch();
+                    }
+                });
+            } else {
+                initializeSearch();
+            }
         }
 
-        const resultsContainer = document.querySelector(
-            ".pagefind-ui__results",
-        );
-        if (resultsContainer) {
-            const observer = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
-                    if (
-                        mutation.type === "childList" &&
-                        mutation.addedNodes.length > 0
-                    ) {
-                        const results = resultsContainer.querySelectorAll(
-                            ".pagefind-ui__result",
-                        );
-                        results.forEach(function (result, index) {
-                            (result as HTMLElement).style.animationDelay =
-                                `${index * 0.1}s`;
-                        });
+        function initializeSearch() {
+            const searchInput = document.querySelector(
+                ".pagefind-ui__search-input",
+            ) as HTMLInputElement;
+            if (searchInput) {
+                searchInput.disabled = false;
+                searchInput.style.pointerEvents = "auto";
+
+                searchInput.addEventListener("focus", function () {
+                    this.style.outline = "2px solid var(--stalux-accent-color)";
+                });
+
+                searchInput.addEventListener("blur", function () {
+                    this.style.outline = "none";
+                });
+            }
+
+            const resultsContainer = document.querySelector(
+                ".pagefind-ui__results",
+            );
+            if (resultsContainer) {
+                const observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        if (
+                            mutation.type === "childList" &&
+                            mutation.addedNodes.length > 0
+                        ) {
+                            const results = resultsContainer.querySelectorAll(
+                                ".pagefind-ui__result",
+                            );
+                            results.forEach(function (result, index) {
+                                (result as HTMLElement).style.animationDelay =
+                                    `${index * 0.1}s`;
+                            });
+                        }
+                    });
+                });
+
+                observer.observe(resultsContainer, {
+                    childList: true,
+                    subtree: true,
+                });
+            }
+        }
+
+        ensureSearchWorks();
+
+        const searchObserver = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                mutation.addedNodes.forEach(function (node) {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        const element = node as Element;
+                        if (
+                            element.classList &&
+                            element.classList.contains("pagefind-ui")
+                        ) {
+                            setTimeout(initializeSearch, 100);
+                            searchObserver.disconnect();
+                        }
                     }
                 });
             });
-
-            observer.observe(resultsContainer, {
-                childList: true,
-                subtree: true,
-            });
-        }
-    }
-
-    ensureSearchWorks();
-
-    const searchObserver = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-            mutation.addedNodes.forEach(function (node) {
-                if (node.nodeType === Node.ELEMENT_NODE) {
-                    const element = node as Element;
-                    if (
-                        element.classList &&
-                        element.classList.contains("pagefind-ui")
-                    ) {
-                        setTimeout(initializeSearch, 100);
-                        searchObserver.disconnect();
-                    }
-                }
-            });
         });
-    });
 
-    searchObserver.observe(document.body, {
-        childList: true,
-        subtree: true,
-    });
+        searchObserver.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
 
-    setTimeout(function () {
-        searchObserver.disconnect();
-    }, 5000);
+        setTimeout(function () {
+            searchObserver.disconnect();
+        }, 5000);
+    });
 </script>
