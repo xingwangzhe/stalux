@@ -115,6 +115,7 @@ const config = defineCollection({
       custom: z.string().optional(),
     }).optional(),
     comment: z.object({
+      enabled: z.boolean().optional().default(false),
       waline: z.object({
         serverURL: z.string().url().optional(),
         lang: z.string().optional().default("zh-CN"),

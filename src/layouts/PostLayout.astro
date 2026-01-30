@@ -40,6 +40,7 @@ const {
 
 // 获取 Waline 配置
 const stalux = (await getCollection("config"))[0].data;
+const commentEnabled = stalux?.comment?.enabled ?? false;
 const walineConfig = stalux?.comment?.waline;
 ---
 
@@ -64,7 +65,7 @@ const walineConfig = stalux?.comment?.waline;
             />
             <PostNavigation prev={prev} next={next} />
             {
-                walineConfig?.serverURL && (
+                commentEnabled && walineConfig?.serverURL && (
                     <WalineComment
                         serverURL={walineConfig.serverURL}
                         path={Astro.url.pathname}

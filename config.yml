@@ -301,6 +301,7 @@ stalux:
     custom: ""
 
   comment:
+    enabled: true # 添加一个开关来启用或禁用评论
     waline:
       serverURL: "https://walines.xingwangzhe.fun"
       lang: "zh-CN"
