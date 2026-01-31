@@ -3,6 +3,9 @@ import style from "@styles/components/posts/postContent.module.css";
 import "@styles/components/markdown.css";
 import "katex/dist/katex.min.css";
 import "photoswipe/dist/photoswipe.css";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 interface Props {
     title: string;
@@ -12,6 +15,22 @@ interface Props {
 }
 
 const { title, date, updated, readingTime } = Astro.props;
+
+// 格式化：若包含时间则显示 YYYY-MM-DD HH:mm:ss，否则退级为 YYYY-MM-DD
+const formatDateTime = (d?: string | Date) => {
+    if (!d) return "";
+    const dt = dayjs.utc(d);
+    if (!dt.isValid()) return "";
+    if (
+        dt.hour() === 0 &&
+        dt.minute() === 0 &&
+        dt.second() === 0 &&
+        dt.millisecond() === 0
+    ) {
+        return dt.format("YYYY-MM-DD");
+    }
+    return dt.format("YYYY-MM-DD HH:mm:ss");
+};
 ---
 
 <article class={style.articleContent}>
@@ -23,11 +42,7 @@ const { title, date, updated, readingTime } = Astro.props;
                 date && (
                     <time class={style.metaItem} datetime={date}>
                         发布时间：
-                        {new Date(date).toLocaleDateString("zh-CN", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        })}
+                        {formatDateTime(date)}
                     </time>
                 )
             }
@@ -36,11 +51,7 @@ const { title, date, updated, readingTime } = Astro.props;
                 updated && (
                     <span class={style.metaItem}>
                         更新时间：
-                        {new Date(updated).toLocaleDateString("zh-CN", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        })}
+                        {formatDateTime(updated)}
                     </span>
                 )
             }

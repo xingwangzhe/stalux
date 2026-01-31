@@ -1,6 +1,9 @@
 ---
 import style from "@styles/components/posts/postCard.module.css";
 import removeMarkdown from "remove-markdown";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 type PostData = {
     title: string;
@@ -37,14 +40,14 @@ const description =
             {
                 post.data.date && (
                     <time class={style.postDate}>
-                        {new Date(post.data.date).toLocaleDateString()}
+                        {dayjs.utc(post.data.date).format("YYYY年M月D日")}
                     </time>
                 )
             }
             {
                 post.data.updated && (
                     <time class={style.postUpdated}>
-                        {new Date(post.data.updated).toLocaleDateString()}
+                        {dayjs.utc(post.data.updated).format("YYYY年M月D日")}
                     </time>
                 )
             }

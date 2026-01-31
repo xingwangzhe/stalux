@@ -4,6 +4,8 @@ import TagHeader from "@components/stalux/tags/tagHeader.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import Stalux from "@layouts/Stalux.astro";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 import Navs from "@components/stalux/layout/navs.astro";
 const stalux = (await getCollection("config"))[0].data;
 
@@ -35,7 +37,9 @@ export async function getStaticPaths() {
             tag,
             count: entry.posts.length,
             posts: entry.posts,
-            lastUpdateDate: dayjs(entry.latestTime).format("YYYY年MM月DD日"),
+            lastUpdateDate: dayjs
+                .utc(entry.latestTime)
+                .format("YYYY年MM月DD日"),
         },
     }));
 }

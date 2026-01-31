@@ -71,11 +71,9 @@ export async function getStaticPaths() {
     <div style="height: 3em;"></div>
     <PostLayout
         title={post.data.title}
-        date={post.data.date
-            ? post.data.date.toISOString().split("T")[0]
-            : undefined}
+        date={post.data.date ? post.data.date.toISOString() : undefined}
         updated={post.data.updated
-            ? post.data.updated.toISOString().split("T")[0]
+            ? post.data.updated.toISOString()
             : undefined}
         readingTime={readingTime}
         tags={post.data.tags || []}

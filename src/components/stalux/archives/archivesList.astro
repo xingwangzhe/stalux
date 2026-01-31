@@ -2,11 +2,13 @@
 import { getCollection } from "astro:content";
 import styles from "@styles/components/archives/archivesList.module.css";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 const posts = await getCollection("posts");
 const archivesByYearMonth: Record<number, Record<number, any[]>> = {};
 posts.forEach((post: any) => {
     if (!post.data.date) return;
-    const date = dayjs(post.data.date);
+    const date = dayjs.utc(post.data.date);
     const year = date.year();
     const month = date.month() + 1; // dayjs 月份从 0 开始
     if (!archivesByYearMonth[year]) {
@@ -22,8 +24,8 @@ posts.forEach((post: any) => {
 Object.keys(archivesByYearMonth).forEach((year) => {
     Object.keys(archivesByYearMonth[Number(year)]).forEach((month) => {
         archivesByYearMonth[Number(year)][Number(month)].sort((a, b) => {
-            const da = new Date(a.data.date || 0).getTime();
-            const db = new Date(b.data.date || 0).getTime();
+            const da = dayjs.utc(a.data.date || 0).valueOf();
+            const db = dayjs.utc(b.data.date || 0).valueOf();
             return db - da;
         });
     });
@@ -72,9 +74,11 @@ const sortedYears = Object.keys(archivesByYearMonth)
                                                     <div
                                                         class={styles.postDate}
                                                     >
-                                                        {dayjs(
-                                                            post.data.date,
-                                                        ).format("YYYY-MM-DD")}
+                                                        {dayjs
+                                                            .utc(post.data.date)
+                                                            .format(
+                                                                "YYYY-MM-DD",
+                                                            )}
                                                     </div>
                                                     <a
                                                         href={`/posts/${post.data.abbrlink}/`}
