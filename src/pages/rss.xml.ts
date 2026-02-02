@@ -1,7 +1,6 @@
 import rss from "@astrojs/rss";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import type { APIRoute } from "astro";
-import removeMarkdown from "remove-markdown";
 
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");
@@ -17,17 +16,29 @@ export const GET: APIRoute = async (context) => {
         return dateA.getTime() - dateB.getTime();
     });
 
+    // 获取每篇文章的 remarkPluginFrontmatter 以使用动态生成的描述
+    const items = await Promise.all(
+        sortedPosts.map(async (post) => {
+            const { remarkPluginFrontmatter } = await render(post);
+            return {
+                title: post.data.title,
+                pubDate: new Date(post.data.date),
+                // 优先使用 remark 插件生成的描述，如果没有则使用文章自身的 desc
+                description: remarkPluginFrontmatter.desc || post.data.desc || "",
+                link: `/posts/${post.data.abbrlink}/`,
+                categories: post.data.categories || [],
+            };
+        })
+    );
+
     return rss({
         title: stalux?.title || "Stalux Blog",
         description: stalux?.description || "A blog powered by Stalux theme",
         site: context.site?.toString() || stalux?.url || "https://stalux.needhelp.icu",
-        items: sortedPosts.map((post) => ({
-            title: post.data.title,
-            pubDate: new Date(post.data.date),
-            description: removeMarkdown(post.body?.substring(0, 150) || "").slice(0, 150),
-            link: `/posts/${post.data.abbrlink}/`,
-            categories: post.data.categories || [],
-        })),
+        items,
         customData: `<language>zh-cn</language>`,
+        xmlns: {
+            atom: "http://www.w3.org/2005/Atom",
+        },
     });
 };

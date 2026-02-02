@@ -2,8 +2,9 @@
 import Stalux from "@layouts/Stalux.astro";
 import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry, render } from "astro:content";
-import removeMarkdown from "remove-markdown";
+
 import Navs from "@components/stalux/layout/navs.astro";
+
 interface Props {
     post: CollectionEntry<"posts">;
     prev?: { url: string; title: string };
@@ -12,9 +13,11 @@ interface Props {
 const stalux = (await getCollection("config"))[0].data;
 const { post, prev, next } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await render(post);
-
-// 从 remarkPluginFrontmatter 中提取阅读时间
-const readingTime = remarkPluginFrontmatter?.minutesRead || "5分钟";
+// 从 remark 插件获取虚拟 frontmatter：阅读时间、字数、自动生成的描述
+const minutesRead = remarkPluginFrontmatter.minutesRead || "";
+const wordCount = remarkPluginFrontmatter.wordCount || 0;
+// 优先使用 remark 插件生成的描述（前125字符），如果没有则使用文章自身的 desc
+const autoDesc = remarkPluginFrontmatter.desc || post.data.desc || "";
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts");
@@ -56,9 +59,7 @@ export async function getStaticPaths() {
 <Stalux
     stalux={{
         title: post.data.title + " | " + stalux.title,
-        description:
-            removeMarkdown(post.body?.slice(0, 300) || "").slice(0, 150) +
-            "...",
+        description: autoDesc,
         url: Astro.url.href,
         twitterSite: stalux.twitterSite,
         noindex: stalux.noindex,
@@ -75,7 +76,7 @@ export async function getStaticPaths() {
         updated={post.data.updated
             ? post.data.updated.toISOString()
             : undefined}
-        readingTime={readingTime}
+        readingTime={minutesRead}
         tags={post.data.tags || []}
         categories={post.data.categories || []}
         headings={headings}
@@ -84,6 +85,7 @@ export async function getStaticPaths() {
         prev={prev}
         next={next}
         cc={post.data.cc}
+        wordCount={wordCount}
     >
         <Content />
     </PostLayout>

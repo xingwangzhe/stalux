@@ -3,7 +3,9 @@
   "ignorePatterns": [],
   "overrides": [
     {
-      "files": ["**/*.mjs"]
+      "files": [
+        "**/*.mjs"
+      ]
     }
   ]
 }

@@ -1,11 +1,12 @@
 /**
  * 站点字数统计工具
  */
-import { getCollection } from "astro:content";
-import removeMd from "remove-markdown";
+import { getCollection, render } from "astro:content";
 
 /**
  * 获取所有文章的总字数
+ * 注意：wordCount 是通过 remark 插件动态生成的虚拟 frontmatter，
+ * 需要通过 render() 函数获取
  */
 export async function getTotalWordCount(): Promise<number> {
     try {
@@ -13,14 +14,8 @@ export async function getTotalWordCount(): Promise<number> {
         let totalWords = 0;
 
         for (const post of posts) {
-            const plainText = removeMd(post.body || "");
-            const words = plainText.trim().split(/\s+/).filter((word) => word.length > 0);
-            totalWords += words.length;
-
-            const chineseChars = plainText.match(/[\u4e00-\u9fa5]/g);
-            if (chineseChars) {
-                totalWords += chineseChars.length;
-            }
+            const { remarkPluginFrontmatter } = await render(post);
+            totalWords += remarkPluginFrontmatter.wordCount || 0;
         }
 
         return totalWords;

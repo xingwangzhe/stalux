@@ -9,19 +9,19 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
 import mermaid from "astro-mermaid";
-
+import { remarkPostBody } from "./src/utils/remark-post-body";
 import expressiveCode from "astro-expressive-code";
 
-if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
-  const originalError = console.error;
-  console.error = function (...args) {
-    const message = args[0]?.toString?.() || "";
-    if (message.includes("Could not parse CSS stylesheet")) {
-      return;
-    }
-    originalError.apply(console, args);
-  };
-}
+// if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
+//   const originalError = console.error;
+//   console.error = function (...args) {
+//     const message = args[0]?.toString?.() || "";
+//     if (message.includes("Could not parse CSS stylesheet")) {
+//       return;
+//     }
+//     originalError.apply(console, args);
+//   };
+// }
 
 const site = "https://xingwangzhe.fun";
 // https://astro.build/config
@@ -92,8 +92,8 @@ export default defineConfig({
     },
   },
   markdown: {
-    remarkPlugins: [[remarkToc, { heading: "toc", maxDepth: 7 }], remarkMath],
-    rehypePlugins: [rehypeKatex, rehypePhotoswipe],
+    remarkPlugins: [remarkPostBody, [remarkToc, { heading: "toc", maxDepth: 7 }], remarkMath],
+    rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
     smartypants: true, // 智能标点符号
     gfm: true, // GitHub 风格的 Markdown 支持
   },

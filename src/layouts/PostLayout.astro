@@ -13,6 +13,7 @@ interface Props {
     date?: string;
     updated?: string;
     readingTime?: string;
+    wordCount?: number;
     tags?: string[];
     categories?: string[];
     headings?: Array<{ depth: number; slug: string; text: string }>;
@@ -28,6 +29,7 @@ const {
     date,
     updated,
     readingTime,
+    wordCount,
     tags = [],
     categories = [],
     headings = [],
@@ -55,6 +57,7 @@ const walineConfig = stalux?.comment?.waline;
             date={date}
             updated={updated}
             readingTime={readingTime}
+            wordCount={wordCount}
         >
             <slot />
             <PostCC

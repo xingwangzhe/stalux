@@ -1,7 +1,6 @@
 ---
 title: 关于
 description: 学习,生活,计算机科学与技术,js,ts,c,c++,rust,技术,分享,知识,开源,web开发,算法,数据结构,编程笔记,软件,前端开发
-priority: 1
 ---
 
 ## 姓王者
@@ -51,9 +50,9 @@ hi，这里是姓王者，一个热爱计算机技术(尤其是软件,web方向�
 
 为了验证我的身份真实性，您可以通过以下两把 GPG 公钥进行验证，它们都可以直接在 [keys.openpgp.org](https://keys.openpgp.org) 查询：
 
-| 邮箱 | 密钥 ID | 指纹 | 获取方式 |
-| --- | --- | --- | --- |
-| `20235883@stu.neu.edu.cn` | `D0531D3594C415B9` | `EA65 35C0 CFC6 2CF2 00B6 496A D053 1D35 94C4 15B9` | [keys.openpgp.org/vks/v1/by-fingerprint/EA6535C0CFC62CF200B6496AD0531D3594C415B9](https://keys.openpgp.org/vks/v1/by-fingerprint/EA6535C0CFC62CF200B6496AD0531D3594C415B9) · [直接下载此公钥](/edu_public.asc)|
+| 邮箱                      | 密钥 ID            | 指纹                                                | 获取方式                                                                                                                                                                                                               |
+| ------------------------- | ------------------ | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `20235883@stu.neu.edu.cn` | `D0531D3594C415B9` | `EA65 35C0 CFC6 2CF2 00B6 496A D053 1D35 94C4 15B9` | [keys.openpgp.org/vks/v1/by-fingerprint/EA6535C0CFC62CF200B6496AD0531D3594C415B9](https://keys.openpgp.org/vks/v1/by-fingerprint/EA6535C0CFC62CF200B6496AD0531D3594C415B9) · [直接下载此公钥](/edu_public.asc)         |
 | `xingwangzhe@outlook.com` | `5CBCD856D54BA9CD` | `AC13 70EE 760A F87D E4FD D290 5CBC D856 D54B A9CD` | [keys.openpgp.org/vks/v1/by-fingerprint/AC1370EE760AF87DE4FDD2905CBCD856D54BA9CD](https://keys.openpgp.org/vks/v1/by-fingerprint/AC1370EE760AF87DE4FDD2905CBCD856D54BA9CD) · [直接下载此公钥](/xingwangzhe_public.asc) |
 
 您也可以直接使用命令行从 `keys.openpgp.org` 拉取对应 Fingerprint：
@@ -67,11 +66,6 @@ gpg --keyserver keys.openpgp.org --recv-keys AC1370EE760AF87DE4FDD2905CBCD856D54
 ```
 
 验证完成后，务必使用 GPG 工具对我发出的签名**进行校验**，确保通信内容的完整性与真实性。
-
-
-
-
-
 
 ## 支持与鼓励
 
@@ -89,4 +83,3 @@ gpg --keyserver keys.openpgp.org --recv-keys AC1370EE760AF87DE4FDD2905CBCD856D54
 <p align="center" style="color: #666; font-size: 14px; margin-top: 10px;">
     感谢您的支持与认可！您的鼓励是我持续创作的动力 ❤️
 </p>
-
