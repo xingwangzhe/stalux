@@ -9,13 +9,17 @@ export interface Props {
     iscolum?: boolean | false;
 }
 const props = Astro.props as Props;
+
+// 判断当前页面是否是首页，如果是则跳转到about，否则跳转到首页
+const isHomePage = Astro.url.pathname === "/";
+const navigationHref = isHomePage ? "/about" : "/";
 ---
 
 <article class={styles.author} transition:persist-props>
     <figure
         class={`${styles.authorFigure} ${props.iscolum ? styles.figureColumn : ""}`}
     >
-        <a href="/" class="a-none">
+        <a href={navigationHref} class="a-none">
             <Image
                 src={stalux.author.avatar}
                 alt={stalux.author.name}
