@@ -1,0 +1,14 @@
+---
+import { getCollection } from "astro:content";
+const configCollection = await getCollection("config");
+const config = configCollection[0];
+const umamiID = config.data.head?.umami?.id;
+const umamiURL = config.data.head?.umami?.url;
+---
+
+<script
+    defer
+    src={umamiURL}
+    data-website-id={umamiID}
+    type="text/partytown"
+    data-astro-rerun></script>

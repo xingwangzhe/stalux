@@ -47,7 +47,15 @@ const config = defineCollection({
     twitterSite: z.string().optional(),
     noindex: z.boolean().optional().default(false),
     nofollow: z.boolean().optional().default(false),
-    anyhead: z.string().optional(),
+    head: z.object({
+      googleAnalyticsId: z.string().optional(),
+      bingClarityId: z.string().optional(),
+      umami: z.object({
+        id: z.string().optional(),
+        url: z.string().optional(),
+      }).optional(),
+      anyhead: z.string().optional(),
+    }).optional(),
     favicon: z.string().optional().default("/favicon.ico"),
     author: z.object({
       name: z.string(),

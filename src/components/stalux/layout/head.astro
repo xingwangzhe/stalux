@@ -1,8 +1,16 @@
 ---
 import { SEO } from "astro-seo";
 import { ClientRouter } from "astro:transitions";
-import VerCount from "../common/verCount.astro";
+import { getCollection } from "astro:content";
+import VerCount from "@components/stalux/common/verCount.astro";
+import GoogleAnalytics from "@components/stalux/analytics/google.astro";
+import BingClarity from "@components/stalux/analytics/clarity.astro";
 import "@styles/base/init.css";
+import Umami from "@components/stalux/analytics/umami.astro";
+
+const configCollection = await getCollection("config");
+const config = configCollection[0];
+
 // Twitter 卡片类型定义
 export type TwitterCardType = "summary" | "summary_large_image";
 
@@ -78,6 +86,9 @@ const ldJson = JSON.stringify(schema);
     }}
   />
   {props.anyhead && <Fragment set:html={props.anyhead} />}
+  {config.data.head?.googleAnalyticsId && <GoogleAnalytics />}
+  {config.data.head?.bingClarityId && <BingClarity />}
+  {config.data.head?.umami?.id && config.data.head?.umami?.url && <Umami />}
   <script type="application/ld+json" set:html={ldJson} />
   <VerCount />
 </head>
