@@ -2,7 +2,6 @@
 import { defineConfig } from "astro/config";
 import pagefind from "astro-pagefind";
 import readingTime from "astro-reading-time";
-import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
 import remarkMath from "remark-math";
@@ -58,11 +57,6 @@ export default defineConfig({
       },
       changefreq: "weekly",
       priority: 0.7,
-    }),
-    partytown({
-      config: {
-        forward: ["dataLayer.push"],
-      },
     }),
     expressiveCode({
       themes: ["dark-plus", "github-light"],
