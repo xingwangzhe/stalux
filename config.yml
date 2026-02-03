@@ -8,7 +8,7 @@ stalux:
     bingClarityId: "syapyoange"
     umami:
       id: "b28b14f6-a7b6-4c6c-8e4f-347f618ba998"
-      url: "https://umami.xingwangzhe.fun/umami.js"
+      url: "https://umami.xingwangzhe.fun/script.js"
     anyhead: |
       <link rel="prefetch" as="image" href="https://www.blogsclub.org/badge/xingwangzhe.fun">
   favicon: "/favicon.ico" # 网站图标路径，默认为根路径下
