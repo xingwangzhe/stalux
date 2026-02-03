@@ -14,6 +14,7 @@ async function runChecker(args = "--json --production") {
   const { stdout } = await execP(`bun license-checker-rseidelsohn ${args}`);
   try {
     return JSON.parse(stdout) as Record<string, any>;
+    // oxlint-disable-next-line no-unused-vars
   } catch (e) {
     // If parsing fails, throw with original stdout for debugging
     const err = new Error("Failed to parse JSON output from license-checker");

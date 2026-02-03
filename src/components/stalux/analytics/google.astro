@@ -8,8 +8,8 @@ const gaID = config.data.head?.googleAnalyticsId;
 <script
     async
     src={`https://www.googletagmanager.com/gtag/js?id=${gaID}`}
-    type="text/partytown"></script>
-<script define:vars={{ gaID }} type="text/partytown" data-astro-rerun>
+    type="text/javascript"></script>
+<script define:vars={{ gaID }} type="text/javascript" data-astro-rerun>
     window.dataLayer = window.dataLayer || [];
     function gtag() {
         dataLayer.push(arguments);

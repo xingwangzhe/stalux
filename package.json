@@ -14,7 +14,6 @@
     "license-checker": "bun license-checker.ts"
   },
   "dependencies": {
-    "@astrojs/partytown": "^2.1.4",
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
     "@expressive-code/plugin-line-numbers": "^0.41.6",
