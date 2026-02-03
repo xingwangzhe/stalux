@@ -25,6 +25,7 @@ export interface Props {
   nofollow?: boolean;
   anyhead?: string;
   favicon?: string;
+  ogImage?: string; // 社交分享图片，默认可用 author.avatar
 }
 
 const props = Astro.props as Props;
@@ -32,12 +33,14 @@ const effectiveTitle = props.title;
 const effectiveDescription = props.description;
 
 const faviconPath = props.favicon || config.data.favicon || "/favicon.ico";
+// 社交分享图片：优先使用传入的 ogImage，否则使用作者头像
+const ogImagePath = props.ogImage || config.data.author.avatar || faviconPath;
 
 const openGraphConfig = {
   basic: {
     title: effectiveTitle,
     type: "website",
-    image: faviconPath,
+    image: ogImagePath,
     url: props.canonical || props.url || Astro.url.href,
   },
   optional: {
@@ -50,7 +53,7 @@ const twitterConfig = {
   card: "summary_large_image" as TwitterCardType,
   title: effectiveTitle,
   description: effectiveDescription,
-  image: faviconPath,
+  image: ogImagePath,
   ...(props.twitterSite ? { site: props.twitterSite } : {}),
 };
 

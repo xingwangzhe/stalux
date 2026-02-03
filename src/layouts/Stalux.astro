@@ -13,6 +13,8 @@ export interface Props {
     noindex?: boolean;
     nofollow?: boolean;
     anyhead?: string;
+    favicon?: string;
+    ogImage?: string;
   };
 }
 ---
@@ -27,6 +29,8 @@ export interface Props {
     noindex={props.stalux.noindex}
     nofollow={props.stalux.nofollow}
     anyhead={props.stalux.anyhead}
+    favicon={props.stalux.favicon}
+    ogImage={props.stalux.ogImage}
   />
   <script>
     import "../scripts/background.ts";
