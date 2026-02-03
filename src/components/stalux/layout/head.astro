@@ -31,7 +31,7 @@ const props = Astro.props as Props;
 const effectiveTitle = props.title;
 const effectiveDescription = props.description;
 
-const faviconPath = props.favicon || "/favicon.ico";
+const faviconPath = props.favicon || config.data.favicon || "/favicon.ico";
 
 const openGraphConfig = {
   basic: {
