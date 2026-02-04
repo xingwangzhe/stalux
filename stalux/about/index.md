@@ -7,7 +7,7 @@ description: 学习,生活,计算机科学与技术,js,ts,c,c++,rust,技术,分�
 
 本站域名: [xingwangzhe.fun](https://xingwangzhe.fun)
 
-镜像备份站域名: [xingwangzhe.site](https://xingwangzhe.site)
+镜像备份站域名: [xingwangzhe.site](https://xingwangzhe.site),[xingwangzhe.needhelp.icu](https://xingwangzhe.needhelp.icu)
 
 一般情况下请访问主站，备份站**禁止评论**
 
