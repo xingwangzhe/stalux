@@ -88,7 +88,11 @@ const ldJson = JSON.stringify(schema);
       meta: extendedMeta,
     }}
   />
-  {props.anyhead && <Fragment set:html={props.anyhead} />}
+  {
+    config.data.head?.anyhead && (
+      <Fragment set:html={config.data.head.anyhead} />
+    )
+  }
   {config.data.head?.googleAnalyticsId && <GoogleAnalytics />}
   {config.data.head?.bingClarityId && <BingClarity />}
   {config.data.head?.umami?.id && config.data.head?.umami?.url && <Umami />}
