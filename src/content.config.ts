@@ -11,8 +11,8 @@ const posts = defineCollection({
   loader: glob({
     pattern: ["*.{md,mdx}"],
     base: "stalux/posts/",
-    generateId: ({ data }) => String(data['abbrlink']),
-    retainBody: false
+    generateId: ({ data }) => String(data["abbrlink"]),
+    retainBody: false,
   }),
   schema: z.object({
     title: z.string(),
@@ -47,15 +47,19 @@ const config = defineCollection({
     twitterSite: z.string().optional(),
     noindex: z.boolean().optional().default(false),
     nofollow: z.boolean().optional().default(false),
-    head: z.object({
-      googleAnalyticsId: z.string().optional(),
-      bingClarityId: z.string().optional(),
-      umami: z.object({
-        id: z.string().optional(),
-        url: z.string().optional(),
-      }).optional(),
-      anyhead: z.string().optional(),
-    }).optional(),
+    head: z
+      .object({
+        googleAnalyticsId: z.string().optional(),
+        bingClarityId: z.string().optional(),
+        umami: z
+          .object({
+            id: z.string().optional(),
+            url: z.string().optional(),
+          })
+          .optional(),
+        anyhead: z.string().optional(),
+      })
+      .optional(),
     favicon: z.string().optional().default("/favicon.ico"),
     author: z.object({
       name: z.string(),
@@ -90,66 +94,89 @@ const config = defineCollection({
         }),
       ),
     }),
-    footer: z.object({
-      startYear: z.number().optional(),
-      icp: z.string().optional(),
-      pubsec: z.string().optional(),
-      pubsecNumber: z.string().optional(),
-      buildtime: z.string().optional(),
-      copyright: z.object({
-        enabled: z.boolean().optional().default(true),
+    footer: z
+      .object({
         startYear: z.number().optional(),
-        customText: z.string().optional(),
-      }).optional(),
-      theme: z.object({
-        showPoweredBy: z.boolean().optional().default(true),
-        showThemeInfo: z.boolean().optional().default(true),
-      }).optional(),
-      beian: z.object({
-        icp: z.object({
-          enabled: z.boolean().optional().default(false),
-          number: z.string().optional(),
-        }).optional(),
-        security: z.object({
-          enabled: z.boolean().optional().default(false),
-          text: z.string().optional(),
-          number: z.string().optional(),
-        }).optional(),
-      }).optional(),
-      badges: z.array(z.object({
-        label: z.string(),
-        message: z.string(),
-        color: z.string().optional(),
-        style: z.string().optional(),
-        alt: z.string().optional(),
-        href: z.string().optional(),
-      })).optional(),
-      custom: z.string().optional(),
-    }).optional(),
-    comment: z.object({
-      enabled: z.boolean().optional().default(false),
-      waline: z.object({
-        serverURL: z.string().url().optional(),
-        lang: z.string().optional().default("zh-CN"),
-        locale: z.any().optional(),
-        emoji: z.array(z.string()).optional().default(["https://unpkg.com/@waline/emojis@1.1.0/weibo"]),
-        reaction: z.boolean().optional().default(false),
-        meta: z.array(z.string()).optional().default(["nick", "mail", "link"]),
-        requiredMeta: z.array(z.string()).optional().default([]),
-        login: z.string().optional().default("enable"),
-        recaptchaV3Key: z.string().optional(),
-        turnstileKey: z.string().optional(),
-        dark: z.union([z.string(), z.boolean()]).optional().default(true),
-        noCopyright: z.boolean().optional().default(false),
-        commentSorting: z.string().optional().default("latest"),
-        imageUploader: z.any().optional(),
-        highlighter: z.any().optional(),
-        texRenderer: z.any().optional(),
-        search: z.any().optional(),
-        wordLimit: z.number().optional().default(200),
-        pageSize: z.number().optional().default(10),
-      }).optional(),
-    }).optional(),
+        icp: z.string().optional(),
+        pubsec: z.string().optional(),
+        pubsecNumber: z.string().optional(),
+        buildtime: z.string().optional(),
+        copyright: z
+          .object({
+            enabled: z.boolean().optional().default(true),
+            startYear: z.number().optional(),
+            customText: z.string().optional(),
+          })
+          .optional(),
+        theme: z
+          .object({
+            showPoweredBy: z.boolean().optional().default(true),
+            showThemeInfo: z.boolean().optional().default(true),
+          })
+          .optional(),
+        beian: z
+          .object({
+            icp: z
+              .object({
+                enabled: z.boolean().optional().default(false),
+                number: z.string().optional(),
+              })
+              .optional(),
+            security: z
+              .object({
+                enabled: z.boolean().optional().default(false),
+                text: z.string().optional(),
+                number: z.string().optional(),
+              })
+              .optional(),
+          })
+          .optional(),
+        badges: z
+          .array(
+            z.object({
+              label: z.string(),
+              message: z.string(),
+              color: z.string().optional(),
+              style: z.string().optional(),
+              alt: z.string().optional(),
+              href: z.string().optional(),
+            }),
+          )
+          .optional(),
+        custom: z.string().optional(),
+      })
+      .optional(),
+    comment: z
+      .object({
+        enabled: z.boolean().optional().default(false),
+        waline: z
+          .object({
+            serverURL: z.string().url().optional(),
+            lang: z.string().optional().default("zh-CN"),
+            locale: z.any().optional(),
+            emoji: z
+              .array(z.string())
+              .optional()
+              .default(["https://unpkg.com/@waline/emojis@1.1.0/weibo"]),
+            reaction: z.boolean().optional().default(false),
+            meta: z.array(z.string()).optional().default(["nick", "mail", "link"]),
+            requiredMeta: z.array(z.string()).optional().default([]),
+            login: z.string().optional().default("enable"),
+            recaptchaV3Key: z.string().optional(),
+            turnstileKey: z.string().optional(),
+            dark: z.union([z.string(), z.boolean()]).optional().default(true),
+            noCopyright: z.boolean().optional().default(false),
+            commentSorting: z.string().optional().default("latest"),
+            imageUploader: z.any().optional(),
+            highlighter: z.any().optional(),
+            texRenderer: z.any().optional(),
+            search: z.any().optional(),
+            wordLimit: z.number().optional().default(200),
+            pageSize: z.number().optional().default(10),
+          })
+          .optional(),
+      })
+      .optional(),
   }),
 });
 const about = defineCollection({
