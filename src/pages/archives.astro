@@ -15,5 +15,5 @@ const posts = await getCollection("posts");
     <div class={styles.description}>
         时间轴上的所有文章（共 {posts.length} 篇）
     </div>
-    <ArchivesList />
+    <ArchivesList posts={posts} />
 </Stalux>

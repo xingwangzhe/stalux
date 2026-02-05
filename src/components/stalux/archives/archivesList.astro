@@ -1,23 +1,36 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import styles from "@styles/components/archives/archivesList.module.css";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
-const posts = await getCollection("posts");
-const archivesByYearMonth: Record<number, Record<number, any[]>> = {};
-posts.forEach((post: any) => {
+
+interface Props {
+    posts?: CollectionEntry<"posts">[];
+}
+
+const props = Astro.props as Props;
+const posts = props.posts ?? (await getCollection("posts"));
+const archivesByYearMonth: Record<
+    number,
+    Record<number, CollectionEntry<"posts">[]>
+> = {};
+const yearCounts: Record<number, number> = {};
+
+posts.forEach((post) => {
     if (!post.data.date) return;
     const date = dayjs.utc(post.data.date);
     const year = date.year();
     const month = date.month() + 1; // dayjs 月份从 0 开始
     if (!archivesByYearMonth[year]) {
         archivesByYearMonth[year] = {};
+        yearCounts[year] = 0;
     }
     if (!archivesByYearMonth[year][month]) {
         archivesByYearMonth[year][month] = [];
     }
     archivesByYearMonth[year][month].push(post);
+    yearCounts[year] += 1;
 });
 
 // 对每个月内的文章按 date 字段降序排序
@@ -50,12 +63,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
                             <div class={styles.yearHeader}>
                                 <h2 class={styles.yearTitle}>{year}</h2>
                                 <div class={styles.yearCount}>
-                                    {
-                                        Object.values(
-                                            archivesByYearMonth[year],
-                                        ).flat().length
-                                    }{" "}
-                                    篇文章
+                                    {yearCounts[year] ?? 0} 篇文章
                                 </div>
                             </div>
                             {Object.keys(archivesByYearMonth[year])
