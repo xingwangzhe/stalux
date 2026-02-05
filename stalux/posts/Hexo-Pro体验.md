@@ -2,15 +2,15 @@
 title: Hexo Pro体验
 abbrlink: 32951
 date: 2024-10-29 09:21:27+00:00
-updated: '2025-07-04T18:44:32.346+08:00'
+updated: "2025-07-04T18:44:32.346+08:00"
 categories:
-- hexo
+  - hexo
 tags:
-- 记录
-- 教程
-- 前端
-- github
-- hexo
+  - 记录
+  - 教程
+  - 前端
+  - github
+  - hexo
 ---
 
 <center>
@@ -40,7 +40,7 @@ tags:
 npm install --save hexo-pro
 ```
 
-#### 配置博客根目录的_config.yml配置项
+#### 配置博客根目录的\_config.yml配置项
 
 需要在hexo的\_config.yml中增加以下配置来使用账户密码登陆后台，不配置后台会直接登陆。 配置后使用jwt来保护后台访问的接口
 
@@ -62,4 +62,3 @@ open http://localhost:4000/pro/
 输入账号密码，然后开始你的写作吧！
 
 我的博客即将同步至腾讯云开发者社区，邀请大家一同入驻：[https://cloud.tencent.com/developer/support-plan?invite_code=wmzg31unp3h2](https://cloud.tencent.com/developer/support-plan?invite_code=wmzg31unp3h2)
-

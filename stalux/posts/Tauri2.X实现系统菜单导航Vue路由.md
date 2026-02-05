@@ -1,14 +1,14 @@
 ---
 title: Tauri2.x实现系统菜单导航Vue路由
 abbrlink: 1c1f2d49
-date: '2025-09-21T16:37:14.735+08:00'
-updated: '2025-09-21T16:52:39.386+08:00'
+date: "2025-09-21T16:37:14.735+08:00"
+updated: "2025-09-21T16:52:39.386+08:00"
 categories:
-- Tauri
+  - Tauri
 tags:
-- Tauri
-- Vue
-- Router
+  - Tauri
+  - Vue
+  - Router
 ---
 
 本文介绍如何在 Tauri 2 应用中使用系统菜单控制 Vue 路由切换。过程涉及在 Rust 后端设置菜单，并通过事件发射处理前端的路由变更。
@@ -105,8 +105,8 @@ createApp(App).use(router).mount("#app");
 
 ### 效果
 
-
 ![切换路由](https://i.ibb.co/KcBCNXmJ/2025-09-21-16-47-17.webp)
+
 > 在我Ubuntu 24.04LTS上的效果
 
 ### 完整过程

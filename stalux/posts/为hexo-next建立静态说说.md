@@ -2,22 +2,24 @@
 title: 为hexo-next建立静态说说
 abbrlink: f513b372
 date: 2024-09-20 17:22:58+00:00
-updated: '2024-09-20 17:23:00'
+updated: "2024-09-20 17:23:00"
 categories:
-- hexo
+  - hexo
 tags:
-- 记录
-- 教程
-- hexo
+  - 记录
+  - 教程
+  - hexo
 ---
 
 曾经考虑使用Artitalk,但由于网络原因以及github无法备案等原因，暂时放弃，转而使用静态方法写说说
 ![123](https://i.ibb.co/1tsjzQCK/123.png)
+
 <!--more-->
 
 ## 改改改
 
 ## 新建essay.swig
+
 在 `hexo/themes/next/layout/` 下创建 essay.swig 并写入以下内容
 
 ```css
@@ -139,8 +141,11 @@ a.fancybox {
     {######################}
 
 ```
+
 ## 修改page.swig
+
 然后打开 `hexo/themes/next/layout/`page.swig在 {% block title %}{% endblock %} 内的 (%- else %) 前添加
+
 ```css
 {%- elif page.type === 'essay' and not page.title %}
     {{- __('title.essay') + page_title_suffix }}
@@ -153,7 +158,7 @@ a.fancybox {
   {%- include 'essay.njk' -%}
 ```
 
->注意对齐格式
+> 注意对齐格式
 
 ## 创建essay.yml
 
@@ -166,9 +171,9 @@ a.fancybox {
       date: #（必须）日期 格式：年-月-日（月与日必须是 2 位数，如2024年3月9号为 2024-03-09）
       link: #（可选）链接，可以在下方插入一条链接
       image: #（可选），插入图片，可插入多张，写法如下，注意缩进
-        - #图片路径
-        - #图片路径
-        - #图片路径
+        -  #图片路径
+        -  #图片路径
+        -  #图片路径
     - content:
       date:
     - content:
@@ -177,10 +182,12 @@ a.fancybox {
 
 ## 创建页面
 
-运行 
+运行
+
 ```
 hexo new page essay
-``` 
+```
+
 其会创建 `hexo/source/essay/index.md`文件
 设置标题日期，type 要设置为 "essay"
 
@@ -190,21 +197,23 @@ title: 说来亦无妨
 type: "essay"
 date: 2024-09-19 17:22:12
 ---
-
 ```
->注意，如果你想在说说页面添加自己的样式，请修改essay.yml文件，修改index.md文件不会产生效果
+
+> 注意，如果你想在说说页面添加自己的样式，请修改essay.yml文件，修改index.md文件不会产生效果
 
 ## 在侧边栏添加说说
 
 打开`hexo\themes\next\_config.yml`在menu处添加
+
 ```
 说说: /essay/ || fas fa-pen
 ```
+
 这样侧边栏会显示说说
 
 ## 后续更新
 
-在 hexo/source/_data/essay.yml 更新内容就可以了，需要注意的是，内容的先后顺序与渲染出来的结果是一致的，即越写在上面的，在渲染结果中也就越排在上方
+在 hexo/source/\_data/essay.yml 更新内容就可以了，需要注意的是，内容的先后顺序与渲染出来的结果是一致的，即越写在上面的，在渲染结果中也就越排在上方
 
 ```
 - content: 因为在最上面，所以网页中在最上方
@@ -213,7 +222,6 @@ date: 2024-09-19 17:22:12
   date: 2024-03-09
 
 ```
-
 
 ## 参考
 

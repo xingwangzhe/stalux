@@ -1,13 +1,13 @@
 ---
 title: chen-er 专为Chen式ER图打造的npm包
 abbrlink: b8eb3b61
-date: '2025-12-03T15:34:31.751+08:00'
-updated: '2025-12-03T16:44:40.670+08:00'
+date: "2025-12-03T15:34:31.751+08:00"
+updated: "2025-12-03T16:44:40.670+08:00"
 categories:
-- npm
+  - npm
 tags:
-- npm
-- ER
+  - npm
+  - ER
 ---
 
 ![chenER图演示](/chenER/chenER.webp)
@@ -16,18 +16,17 @@ tags:
 
 现代 Web 的各种图形库基本上都默认存在 **ER 图** 渲染，尤其是 **Mermaid** 这种“文本到图形”更是不例外，但遗憾的是，这些图形库完全都是按照 **Crow's Foot 方法**
 
->Crow's Foot 方法（也称 "乌鸦脚表示法"）是一种用于数据库设计的实体 - 关系 (ER) 图可视化表示方法，以其表示 "多" 关系的独特三分支符号（类似鸟爪）得名。它是数据库设计中最流行的 ER 表示法之一，广泛应用于软件工程、信息工程和数据库建模领域。
+> Crow's Foot 方法（也称 "乌鸦脚表示法"）是一种用于数据库设计的实体 - 关系 (ER) 图可视化表示方法，以其表示 "多" 关系的独特三分支符号（类似鸟爪）得名。它是数据库设计中最流行的 ER 表示法之一，广泛应用于软件工程、信息工程和数据库建模领域。
 
 来写的，但学校是按照 **Chen's Notation**，也就是经典的 **菱形关系、椭圆属性、矩形实体**
 
->Chen 表示法（也称 “陈式 ER 表示法”）是由华裔计算机科学家陈品山（Peter Pin-Shan Chen） 于 1976 年在《ACM Transactions on Database Systems》发表的《The Entity-Relationship Model—Toward a Unified View of Data》中首次提出的实体 - 关系（ER）模型可视化规范，是原始 ER 模型的官方表示法，也是数据库建模、软件工程教学中最经典的 ER 可视化范式。
+> Chen 表示法（也称 “陈式 ER 表示法”）是由华裔计算机科学家陈品山（Peter Pin-Shan Chen） 于 1976 年在《ACM Transactions on Database Systems》发表的《The Entity-Relationship Model—Toward a Unified View of Data》中首次提出的实体 - 关系（ER）模型可视化规范，是原始 ER 模型的官方表示法，也是数据库建模、软件工程教学中最经典的 ER 可视化范式。
 
 个人来讲，**ER 图** 表示法是我在学校的数据库课中学来的。为了方便自己快速从文本绘制 **ER 图**（就像 **Mermaid** 那样）而不是通过第三方工具手动拖拽拼凑那样**繁琐麻烦**
 
 那么作为**计算机学生**，发现网上缺少这样的实现，不免心痒，于是就诞生了下面的 **npm 包**
 
-
-## chen-er 
+## chen-er
 
 github/chen-er: [https://github.com/xingwangzhe/chen-er/](https://github.com/xingwangzhe/chen-er/)
 
@@ -35,10 +34,7 @@ npm/chen-er: [https://www.npmjs.com/package/chen-er](https://www.npmjs.com/packa
 
 在线体验！！！: [https://codesandbox.io/p/sandbox/m248ws](https://codesandbox.io/p/sandbox/m248ws)
 
-
 chen-er 是基于 [Peggy](https://peggyjs.org/) 和 [ECharts](https://echarts.apache.org/zh/index.html) 开发的、从文本转到 **ER 图** 的 **npm 包**，其中，**Peggy** 用来将文本进行解析/序列化，**ECharts** 用来实现**图形渲染与自动布局**
-
-
 
 ### 技术细节
 
@@ -94,11 +90,11 @@ entity Customer {
 import { Identifier, hws, newline, _ , __, comment } from "./common.peggy"
 
 // start   // 解析入口
-//   = _ entities:entity+ _ { return entities; } 
+//   = _ entities:entity+ _ { return entities; }
 
 // 注释在 common.peggy 中
 
-    
+
 entity // 解析实体定义（允许前置空白）
   = _ "entity" __ name:Identifier _ "{" _ fields:fieldBlock _ "}" {
         return { type: "entity", name: name, fields: fields };
@@ -131,7 +127,7 @@ rel Order -- Address  (1:1) "shipped to" # 订单发货地址
 // 引用公共规则
 import { Identifier, hws, newline, _ , __, comment } from "./common.peggy"
 
-// start // 解析入口 
+// start // 解析入口
 //     = _ rels:rel+ _ { return rels; }
 
 // 关系定义：rel <实体1> -- <实体2> : (基数) "<关系名>"
@@ -168,7 +164,6 @@ start // 解析入口：支持实体和关系混合定义
 ```
 
 至此，语法解析的部分基本结束。同时，这些 **Peggy** 编译后输出的 **JS** 代码会自动输出序列化的数据，接下来将在 **ECharts** 中使用。
-
 
 #### **ECharts** 渲染
 
@@ -208,7 +203,6 @@ export interface ERRelation {
  * ER 图 JSON 节点类型
  */
 export type ERJson = EREntity | ERRelation;
-
 ```
 
 “桥接”点，方便引入 **Peggy** 编译产生的 **JS** 解析器和序列化功能
@@ -241,13 +235,11 @@ export function parseERSchema(input: string): ERJson[] {
 export function parseERSchemaToJSON(input: string): string {
   return JSON.stringify(parseERSchema(input), null, 2);
 }
-
 ```
 
 为了方便叙述，下面代码改成**高度概括**的版本
 
 仅保留三个关键步骤——**解析**（`parseERSchema`）→ **映射**（实体/属性/关系三类节点与连边）→ **渲染**（ECharts Graph + **力导向布局**）。形状遵循 **Chen 表示法**：实体=矩形，属性=椭圆（主键红色描边），关系=菱形；基数标注到边标签上。通过 `chenERRbyClass`/`chenERRbyId` 即可把容器内的 **ER 文本** 直接渲染为可交互图。
-
 
 ```ts title="graph.ts"
 import * as echarts from "echarts/core";
@@ -332,11 +324,7 @@ export function renderChenER(cls = "chenER") {
           roam: true,
           data: nodes,
           links: edges,
-          categories: [
-            { name: "entity" },
-            { name: "relation" },
-            { name: "attribute" },
-          ],
+          categories: [{ name: "entity" }, { name: "relation" }, { name: "attribute" }],
           label: { show: true, position: "inside" },
           edgeLabel: { show: true, formatter: (p: any) => p?.data?.name ?? "" },
           edgeSymbol: ["none", "none"],

@@ -1,25 +1,25 @@
 ---
 title: 中秋-来试试Moonbit吧
 abbrlink: 32faf407
-date: '2025-10-06T16:11:55.899+08:00'
-updated: '2025-10-06T16:34:58.470+08:00'
+date: "2025-10-06T16:11:55.899+08:00"
+updated: "2025-10-06T16:34:58.470+08:00"
 categories:
-- 编程
+  - 编程
 tags:
-- Moonbit
-- files_tree
-- mooncake
-- 编程
+  - Moonbit
+  - files_tree
+  - mooncake
+  - 编程
 ---
 
 大家中秋🎑快乐啊
 
 ## 什么是Moonbit
 
-
 [Moonbit](https://www.moonbitlang.cn/)是国产的一门编程语言，它很年轻，预计26年左右发布**1.0版本**
 
 特点：
+
 - 支持函数式和面向对象等多种编程范式，兼具动态灵活与安全高效
 - 实用的类型系统，面向数据的语言设计，让任何背景的开发者迅速上手
 - 支持WebAssembly、JavaScript等多后端，应用场景广阔
@@ -31,7 +31,6 @@ tags:
 [xingwangzhe/files_tree](https://mooncakes.io/docs/xingwangzhe/files_tree)
 
 这个包依赖官方的[moonbitlang/x](https://mooncakes.io/docs/moonbitlang/x),因为官方的`fs`方法尚在beta，还未纳入到[moonbitlang/core](https://github.com/moonbitlang/core)官方核心包，未来我可能还得再改一下
-
 
 ### 原理逻辑
 

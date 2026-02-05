@@ -4,27 +4,24 @@ abbrlink: 2f7208c4
 date: 2025-05-11 13:44:12+08:00
 updated: 2025-05-11 15:59:12+08:00
 categories:
-- 编程
+  - 编程
 tags:
-- 胡思乱想
-- 学习
+  - 胡思乱想
+  - 学习
 ---
 
 **推荐资料**
+
 - [Rust 程序设计语言(官网)](https://www.rust-lang.org/zh-CN/)
 - [Rust语言圣经(Rust Course)](https://course.rs/about-book.html)
-
 
 ## rust是什么
 
 官网介绍道:一门赋予每个人,构建可靠且高效软件能力的语言。
 
-
-
-
-**高性能** | **可靠性** | **生产力** |
----| ---| ---|
-Rust 速度快且内存利用率高。没有运行时和垃圾回收，能胜任高性能要求的服务，可在嵌入式设备上运行，易于与其他语言集成。| Rust 的类型系统和所有权模型保证内存安全和线程安全，在编译期就能消除各类错误。| Rust 有优秀的文档、友好的编译器和清晰的错误提示，集成了包管理器、构建工具、编辑器支持和自动格式化等工具。|
+| **高性能**                                                                                                          | **可靠性**                                                                    | **生产力**                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Rust 速度快且内存利用率高。没有运行时和垃圾回收，能胜任高性能要求的服务，可在嵌入式设备上运行，易于与其他语言集成。 | Rust 的类型系统和所有权模型保证内存安全和线程安全，在编译期就能消除各类错误。 | Rust 有优秀的文档、友好的编译器和清晰的错误提示，集成了包管理器、构建工具、编辑器支持和自动格式化等工具。 |
 
 由于我是初学者,还什么都不会,有些概念不太熟悉,用ai写了一些例子来更好地理解
 
@@ -47,9 +44,7 @@ fn main() {
 
 比如说,rust默认变量是**不变的**,除非声明为可变量,这倒是为编译器省大量内存了,类型也非常精细,比如说i32,i64等等,还有所有权与引用与借用等等
 
-
 举个栗子
-
 
 ```rs title="hello_world.rs"
 fn main() {
@@ -64,7 +59,7 @@ fn main() {
 
 `let`定义符,`mut`标识可变量,`String`为动态字符串类型
 
-> ```rs let s = "world"``` 是字符串字面量(`&str`)类型,不能变动值(即使你加了`mut`标识)
+> `rs let s = "world"` 是字符串字面量(`&str`)类型,不能变动值(即使你加了`mut`标识)
 
 ### Rust 还支持中文字符串
 
@@ -96,6 +91,7 @@ fn main() {
     }
 }
 ```
+
 > 你应该知道这段代码是什么意思,如果可以的话,建议你亲自试一试: )
 
 ### 所有权(Ownership)
@@ -125,7 +121,7 @@ fn main() {
 fn main() {
     let s1 = String::from("hello");
     let s2 = s1; // s1 的所有权被移动到 s2
-    
+
     // println!("{}", s1); // 错误！s1 已经无效
     println!("{}", s2); // 正常
 }
@@ -137,7 +133,7 @@ fn main() {
 fn main() {
     let s1 = String::from("hello");
     let s2 = s1.clone(); // 深拷贝数据
-    
+
     println!("s1 = {}, s2 = {}", s1, s2); // 两个都有效
 }
 ```
@@ -151,10 +147,10 @@ fn main() {
 ```rs title="ownership_function.rs"
 fn main() {
     let s = String::from("hello");
-    
+
     takes_ownership(s); // s 的值移动到函数里
     // 这里 s 已经无效
-    
+
     let x = 5;
     makes_copy(x); // i32 是 Copy 的，所以 x 依然可用
     println!("{}", x); // 正常
@@ -176,9 +172,9 @@ fn makes_copy(some_integer: i32) {
 ```rs title="reference.rs"
 fn main() {
     let s1 = String::from("hello");
-    
+
     let len = calculate_length(&s1); // 传递 s1 的引用
-    
+
     println!("{} 的长度是 {}", s1, len); // s1 仍然有效
 }
 
@@ -192,9 +188,9 @@ fn calculate_length(s: &String) -> usize { // s 是对 String 的引用
 ```rs title="mutable_reference.rs"
 fn main() {
     let mut s = String::from("hello");
-    
+
     change(&mut s); // 传递可变引用
-    
+
     println!("{}", s);
 }
 
@@ -204,6 +200,7 @@ fn change(some_string: &mut String) {
 ```
 
 引用的限制：
+
 - 在特定作用域中，对于某一块数据，要么只能有一个可变引用，要么只能有多个不可变引用
 - 引用必须始终有效（避免悬垂引用）
 
@@ -214,12 +211,12 @@ fn change(some_string: &mut String) {
 ```rs title="slice.rs"
 fn main() {
     let s = String::from("hello world");
-    
+
     let hello = &s[0..5]; // 或者简写为 &s[..5]
     let world = &s[6..11]; // 或者简写为 &s[6..]
-    
+
     println!("{} {}", hello, world);
-    
+
     // 获取整个字符串的切片
     let whole = &s[..]; // 等同于 &s[0..s.len()]
 }
@@ -246,10 +243,10 @@ fn main() {
         active: true,
         sign_in_count: 1,
     };
-    
+
     // 修改字段（需要整个实例是可变的）
     user1.email = String::from("anotheremail@example.com");
-    
+
     // 使用已有的实例创建新实例
     let user2 = User {
         email: String::from("another@example.com"),
@@ -269,7 +266,7 @@ struct Point(i32, i32, i32);
 fn main() {
     let black = Color(0, 0, 0);
     let origin = Point(0, 0, 0);
-    
+
     // 访问字段
     println!("黑色的红色值：{}", black.0);
 }
@@ -286,7 +283,7 @@ enum IpAddrKind {
 fn main() {
     let four = IpAddrKind::V4;
     let six = IpAddrKind::V6;
-    
+
     route(four);
     route(six);
 }
@@ -315,7 +312,7 @@ enum Message {
 fn main() {
     let home = IpAddr::V4(String::from("127.0.0.1"));
     let loopback = IpAddr::V6(String::from("::1"));
-    
+
     let msg = Message::Write(String::from("hello"));
 }
 ```
@@ -356,20 +353,19 @@ fn main() {
     let some_number = Some(5);
     let some_string = Some("一个字符串");
     let absent_number: Option<i32> = None; // 必须指定类型
-    
+
     // 使用 match 处理 Option
     match some_number {
         Some(i) => println!("数字是: {}", i),
         None => println!("没有数字"),
     }
-    
+
     // 使用 if let 简化
     if let Some(i) = some_number {
         println!("数字是: {}", i);
     }
 }
 ```
-
 
 Rust 也被用于游戏开发，比如使用 Bevy 引擎：
 
@@ -402,7 +398,6 @@ fn setup(mut commands: Commands) {
 }
 ```
 
-
 ### 总结
 
 Rust 是一门面向系统级编程的现代语言，凭借其卓越的性能、内存安全和并发安全特性脱颖而出。虽然其学习曲线较陡，但一旦掌握了所有权、生命周期等核心概念，你将能够编写既安全又高效的代码 ~~当然不是我~~
@@ -410,4 +405,3 @@ Rust 是一门面向系统级编程的现代语言，凭借其卓越的性能、
 Rust 的严格编译时检查机制是其安全基础，能在代码运行前就发现并阻止许多常见错误。即使我们不能完全掌握 Rust 的所有细节，从 Rust 编程实践中获得的思维模式和经验也会帮助我们在其他语言中构建更高质量的代码
 
 作为一门现代系统编程语言，Rust 正在云服务、嵌入式系统、Web 开发和游戏引擎等众多领域展现出强大的适用性和潜力。~~但对我来说还是只能望其项背~~
-

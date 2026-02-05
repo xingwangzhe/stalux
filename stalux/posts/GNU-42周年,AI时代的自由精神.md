@@ -1,14 +1,14 @@
 ---
 title: GNU 42周年，AI时代的自由精神
 abbrlink: c08b9de1
-date: '2025-09-29T08:52:20.231+08:00'
-updated: '2025-09-29T09:17:36.409+08:00'
+date: "2025-09-29T08:52:20.231+08:00"
+updated: "2025-09-29T09:17:36.409+08:00"
 categories:
-- GNU
+  - GNU
 tags:
-- GNU
-- AI
-- 自由
+  - GNU
+  - AI
+  - 自由
 ---
 
 ## 转载声明
@@ -64,28 +64,32 @@ GNU 项目不仅在操作系统领域引领自由软件运动，在人工智能�
 > I've been doing applied research on auditing black-box algorithms and AI systems with a team at Princeton and MIT and CU Boulder, backed by Mozilla (say what you will about them and their 2024 layoffs, restructuring, and turn towards AI -- and in general). One of my teammates, Samantha Dalal (CU Boulder), interviewed Sayash Kapoor (Princeton) for a podcast about his popular writing in AISnakeOil.com. You might enjoy listening - https://kgnu.org/looks-like-new-what-is-artificial-intelligence-capable-of/
 >
 > And to get at the heart of the question here about AI and code, Sayash cites a presentation (see slides at https://www.cs.princeton.edu/~arvindn/talks/MIT-STS-AI-snakeoil.pdf) from Nov. 2019 (almost six years ago!), three categories of use for AI their relative accuracy:
+>
 > 1. Perception, e.g. image or music recognition like Shazam — genuine progress
 > 2. Automating judgement, e.g. spam filtering — imperfect, but improving
 > 3. Predicting social outcomes, e.g. prison recidivism — fundamentally dubious, "no matter how much data you throw at it"
-> The presentation concluded with the following takeaway (with my comments):
-> * AI excels at some tasks, but can't predict social outcomes (especially for racial and economic justice, let alone technical skill and ability in the form of writing and reviewing code).
-> * We must resist the enormous commercial interests that aim to obfuscate this fact (hence, FLOSS - but more, of course, as evidence by this list).
-> * In most cases, manual scoring rules are just as accurate, far more transparent, and worth considering (yay for the enduring human spirit and dignified work).
-> I hope this helps!
-> FLOSS is undead, long live FLOSS!
+>    The presentation concluded with the following takeaway (with my comments):
+>
+> - AI excels at some tasks, but can't predict social outcomes (especially for racial and economic justice, let alone technical skill and ability in the form of writing and reviewing code).
+> - We must resist the enormous commercial interests that aim to obfuscate this fact (hence, FLOSS - but more, of course, as evidence by this list).
+> - In most cases, manual scoring rules are just as accurate, far more transparent, and worth considering (yay for the enduring human spirit and dignified work).
+>   I hope this helps!
+>   FLOSS is undead, long live FLOSS!
 
 **中文翻译**：我一直在与普林斯顿大学、MIT 和科罗拉多大学博尔德分校的一个团队进行应用研究，审计黑箱算法和 AI 系统，由 Mozilla 支持（随便你怎么说他们和他们的 2024 年裁员、重构以及转向 AI——以及一般情况）。我的队友 Samantha Dalal（科罗拉多大学博尔德分校）采访了 Sayash Kapoor（普林斯顿大学），关于他在 AISnakeOil.com 的流行写作。你可能会喜欢听听 - https://kgnu.org/looks-like-new-what-is-artificial-intelligence-capable-of/
 
 说到这里关于 AI 和代码的核心问题，Sayash 引用了一个演示，AI 使用的三个类别及其相对准确性：
+
 1. 感知，例如图像或音乐识别如 Shazam ——真正进步
 2. 自动化判断，例如垃圾邮件过滤 ——不完美，但正在改进
 3. 预测社会结果，例如监狱 recidivism ——根本可疑，“无论你扔多少数据进去”
-演示以以下要点结束（附带我的评论）：
-* AI 在某些任务上表现出色，但无法预测社会结果（尤其是种族和经济正义，更不用说编写和审查代码的技术技能和能力）。
-* 我们必须抵抗巨大的商业利益，这些利益旨在模糊这一事实（因此，FLOSS - 但更多，当然，如这个列表所证明）。
-* 在大多数情况下，手动评分规则同样准确，更透明，值得考虑（赞美持久的人类精神和尊严工作）。
-希望这有帮助！
-FLOSS 永存，FLOSS 万岁！
+   演示以以下要点结束（附带我的评论）：
+
+- AI 在某些任务上表现出色，但无法预测社会结果（尤其是种族和经济正义，更不用说编写和审查代码的技术技能和能力）。
+- 我们必须抵抗巨大的商业利益，这些利益旨在模糊这一事实（因此，FLOSS - 但更多，当然，如这个列表所证明）。
+- 在大多数情况下，手动评分规则同样准确，更透明，值得考虑（赞美持久的人类精神和尊严工作）。
+  希望这有帮助！
+  FLOSS 永存，FLOSS 万岁！
 
 （以上内容原文转载自 LibrePlanet 讨论邮件列表，遵守相关版权协议。）
 

@@ -2,16 +2,17 @@
 title: hexo创建一个友情链接页面
 abbrlink: 62fedd1e
 date: 2024-09-14 19:16:27+00:00
-updated: '2024-09-14 19:16:29'
+updated: "2024-09-14 19:16:29"
 categories:
-- hexo
+  - hexo
 tags:
-- 教程
-- 记录
-- hexo
+  - 教程
+  - 记录
+  - hexo
 ---
 
 尽管hexo自带links功能，但是这样看起来单一无趣，那么为了改善友链，我们可以自定义一个页面
+
 <!--more-->
 
 ## 创建新页面
@@ -30,9 +31,10 @@ date: 2024-09-12 20:35:40
 ```
 
 ## 添加代码
-如下一大长串
-```md
 
+如下一大长串
+
+```md
 ---
 title: 友情与链接
 date: 2024-09-12 20:35:40
@@ -251,5 +253,6 @@ date: 2024-09-12 20:35:40
 你可以自定义后续的内容：）
 
 ## 参考推荐
+
 [Hexo个人博客自定义友链页面](https://enfangzhong.github.io/2019/12/08/Hexo%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%8B%E9%93%BE%E9%A1%B5%E9%9D%A2/)
 [hexo NexT 添加友链页面](https://wangjiezhe.com/posts/2021-03-30-add-link-page/?highlight=%E5%8F%8B)

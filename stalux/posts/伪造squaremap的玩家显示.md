@@ -1,18 +1,17 @@
 ---
 title: 伪造squaremap的玩家显示
 abbrlink: 828e66c0
-date: '2025-08-13T14:03:57.651+08:00'
-updated: '2025-08-13T14:49:32.251+08:00'
+date: "2025-08-13T14:03:57.651+08:00"
+updated: "2025-08-13T14:49:32.251+08:00"
 categories:
-- minecraft
+  - minecraft
 tags:
-- squaremap
-- minecraft
-- js
+  - squaremap
+  - minecraft
+  - js
 ---
 
 ![fakeplayer位置显示](https://i.ibb.co/RGnPmym3/2025-08-11-23-41-55.webp)
-
 
 ## 前言
 
@@ -22,7 +21,7 @@ squaremap是我的世界知名的网页地图之一，它可以做到玩家位�
 
 通过分析squaremap的前端代码，我们可以了解到它通过定期从服务器获取玩家数据来显示玩家位置。主要的数据源是`players.json`文件，其中包含了所有在线玩家的信息。
 
-从[https://map.***.cn/tiles/players.json](https://map.***.cn/tiles/players.json)可以看到如下格式的数据：
+从[https://map.\*\*\*.cn/tiles/players.json](https://map.***.cn/tiles/players.json)可以看到如下格式的数据：
 
 ```json title="players.json"
 {
@@ -55,16 +54,16 @@ squaremap通过一个主类`SquaremapMap`来管理整个地图系统，其中包
 
 ```javascript title="squaremap.js"
 class SquaremapMap {
-    constructor() {
-        this.map = L.map("map", {
-            crs: L.CRS.Simple,
-            center: [0, 0],
-            attributionControl: false,
-            preferCanvas: true,
-            noWrap: true
-        });
-        // ... 其他初始化代码
-    }
+  constructor() {
+    this.map = L.map("map", {
+      crs: L.CRS.Simple,
+      center: [0, 0],
+      attributionControl: false,
+      preferCanvas: true,
+      noWrap: true,
+    });
+    // ... 其他初始化代码
+  }
 }
 ```
 
@@ -72,21 +71,21 @@ class SquaremapMap {
 
 ```javascript title="squaremap.js"
 class PlayerList {
-    constructor(json) {
-        this.players = new Map();
-        this.markers = new Map();
-        this.following = null;
-        this.firstTick = true;
+  constructor(json) {
+    this.players = new Map();
+    this.markers = new Map();
+    this.following = null;
+    this.firstTick = true;
+  }
+
+  tick() {
+    if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
+      P.getJSON("tiles/players.json", (json) => {
+        this.updatePlayerList(json.players);
+        // ... 更新玩家列表标题
+      });
     }
-    
-    tick() {
-        if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
-            P.getJSON("tiles/players.json", (json) => {
-                this.updatePlayerList(json.players);
-                // ... 更新玩家列表标题
-            });
-        }
-    }
+  }
 }
 ```
 
@@ -96,27 +95,27 @@ class PlayerList {
 
 ```javascript title="squaremap.js"
 class Player {
-    constructor(json) {
-        this.name = json.name;
-        this.uuid = json.uuid;
-        this.world = json.world;
-        this.displayName = json.display_name !== undefined ? json.display_name : json.name;
-        this.x = 0;
-        this.z = 0;
-        this.armor = 0;
-        this.health = 20;
-        
-        // 创建地图标记
-        this.marker = L.marker(P.toLatLng(json.x, json.z), {
-            icon: L.icon({
-                iconUrl: 'images/icon/player.png',
-                iconSize: [17, 16],
-                iconAnchor: [8, 9],
-                tooltipAnchor: [0, 0]
-            }),
-            rotationAngle: (180 + json.yaw)
-        });
-    }
+  constructor(json) {
+    this.name = json.name;
+    this.uuid = json.uuid;
+    this.world = json.world;
+    this.displayName = json.display_name !== undefined ? json.display_name : json.name;
+    this.x = 0;
+    this.z = 0;
+    this.armor = 0;
+    this.health = 20;
+
+    // 创建地图标记
+    this.marker = L.marker(P.toLatLng(json.x, json.z), {
+      icon: L.icon({
+        iconUrl: "images/icon/player.png",
+        iconSize: [17, 16],
+        iconAnchor: [8, 9],
+        tooltipAnchor: [0, 0],
+      }),
+      rotationAngle: 180 + json.yaw,
+    });
+  }
 }
 ```
 
@@ -131,15 +130,15 @@ class Player {
 ```javascript title="any.js"
 // 在获取玩家数据后，手动添加当前玩家信息
 function addCurrentPlayer(jsonData, currentPlayerData) {
-    // 检查当前玩家是否已经在列表中
-    const playerExists = jsonData.players.some(player => player.uuid === currentPlayerData.uuid);
-    
-    // 如果不存在，则添加当前玩家
-    if (!playerExists) {
-        jsonData.players.push(currentPlayerData);
-    }
-    
-    return jsonData;
+  // 检查当前玩家是否已经在列表中
+  const playerExists = jsonData.players.some((player) => player.uuid === currentPlayerData.uuid);
+
+  // 如果不存在，则添加当前玩家
+  if (!playerExists) {
+    jsonData.players.push(currentPlayerData);
+  }
+
+  return jsonData;
 }
 ```
 
@@ -150,41 +149,44 @@ function addCurrentPlayer(jsonData, currentPlayerData) {
 ```javascript title="any.js"
 // 保存玩家位置到本地存储
 function savePlayerLocation(playerData) {
-    localStorage.setItem('myPosition', JSON.stringify({
-        x: playerData.x,
-        y: playerData.y,
-        z: playerData.z,
-        world: playerData.world,
-        lastUpdate: Date.now()
-    }));
+  localStorage.setItem(
+    "myPosition",
+    JSON.stringify({
+      x: playerData.x,
+      y: playerData.y,
+      z: playerData.z,
+      world: playerData.world,
+      lastUpdate: Date.now(),
+    }),
+  );
 }
 
 // 从本地存储获取玩家位置并添加到玩家列表
 function addLocalPlayerPosition(playersJson) {
-    const localPosition = localStorage.getItem('myPosition');
-    if (localPosition) {
-        const position = JSON.parse(localPosition);
-        // 检查数据是否过期（例如超过5分钟）
-        if (Date.now() - position.lastUpdate < 5 * 60 * 1000) {
-            // 创建一个虚拟玩家对象
-            const virtualPlayer = {
-                world: position.world,
-                armor: 0,
-                name: "You",
-                x: position.x,
-                y: position.y,
-                health: 20,
-                z: position.z,
-                display_name: "You (Local)",
-                uuid: "local-player",
-                yaw: 0
-            };
-            
-            // 添加到玩家列表
-            playersJson.players.push(virtualPlayer);
-        }
+  const localPosition = localStorage.getItem("myPosition");
+  if (localPosition) {
+    const position = JSON.parse(localPosition);
+    // 检查数据是否过期（例如超过5分钟）
+    if (Date.now() - position.lastUpdate < 5 * 60 * 1000) {
+      // 创建一个虚拟玩家对象
+      const virtualPlayer = {
+        world: position.world,
+        armor: 0,
+        name: "You",
+        x: position.x,
+        y: position.y,
+        health: 20,
+        z: position.z,
+        display_name: "You (Local)",
+        uuid: "local-player",
+        yaw: 0,
+      };
+
+      // 添加到玩家列表
+      playersJson.players.push(virtualPlayer);
     }
-    return playersJson;
+  }
+  return playersJson;
 }
 ```
 
@@ -205,7 +207,7 @@ public class PlayerInformation {
     private double x, y, z;
     private String world;
     private float yaw, pitch;
-    
+
     // 获取玩家信息的方法
     public static PlayerInformation getCurrentPlayerInfo() {
         PlayerEntity player = MinecraftClient.getInstance().player;
@@ -235,7 +237,7 @@ public class API {
             "window.updatePlayerPosition && window.updatePlayerPosition(%f, %f, %f, '%s', %f, %f);",
             info.x, info.y, info.z, info.world, info.yaw, info.pitch
         );
-        
+
         // 执行JavaScript代码
         BasicBrowser.executeJavaScript(jsCode);
     }
@@ -249,7 +251,7 @@ BasicBrowser类负责管理嵌入的浏览器实例：
 ```java title="BasicBrowser.java"
 public class BasicBrowser {
     private MCEFBrowser browser;
-    
+
     public void loadMapUrl(String url) {
         if (browser != null) {
             browser.loadURL(url);
@@ -257,7 +259,7 @@ public class BasicBrowser {
             injectPlayerPositionHandler();
         }
     }
-    
+
     private void injectPlayerPositionHandler() {
         String jsCode = """
             // 创建更新玩家位置的函数
@@ -272,14 +274,14 @@ public class BasicBrowser {
                     pitch: pitch,
                     timestamp: Date.now()
                 }));
-                
+
                 // 如果页面上有squaremap实例，则更新地图中心点
                 if (typeof P !== 'undefined' && P.map) {
                     var latlng = P.toLatLng(x, z);
                     P.map.setView(latlng, P.map.getZoom());
                 }
             };
-            
+
             // 定期检查本地存储中的玩家位置并更新地图
             setInterval(function() {
                 var position = localStorage.getItem('playerPosition');
@@ -306,10 +308,10 @@ public class BasicBrowser {
                 }
             }, 1000);
             """;
-        
+
         executeJavaScript(jsCode);
     }
-    
+
     public static void executeJavaScript(String jsCode) {
         // 执行JavaScript代码的具体实现
         // 这里会调用MCEF的相关API来执行JavaScript

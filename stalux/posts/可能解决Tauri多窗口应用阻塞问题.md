@@ -1,15 +1,15 @@
 ---
 title: 可能解决Tauri多窗口应用阻塞问题
 abbrlink: 50b9d330
-date: '2025-09-17T14:21:48.659+08:00'
-updated: '2025-09-17T16:56:53.669+08:00'
+date: "2025-09-17T14:21:48.659+08:00"
+updated: "2025-09-17T16:56:53.669+08:00"
 categories:
-- Tauri
+  - Tauri
 tags:
-- Tauri
-- ts
-- 多窗口
-- 阻塞
+  - Tauri
+  - ts
+  - 多窗口
+  - 阻塞
 ---
 
 :::tip
@@ -22,8 +22,8 @@ tags:
 
 ## 我发现的一个有趣现象🤔
 
-
 ### 存在问题的旧版
+
 之前我的主进程`main.ts`都是挂载在`index.astro`上
 
 ```astro title="旧版本 index.astro"
@@ -128,16 +128,19 @@ AI分析：以下是对阻塞问题根本原因的分析
 ### 3. 脚本位置调整的真正效果
 
 **旧版本（底部加载）**：
+
 ```
 页面渲染 → DOM 完成 → 脚本加载 → 模块导入执行 → 托盘创建 → 窗口事件阻塞
 ```
 
 **新版本（头部加载）**：
+
 ```
 脚本加载 → 模块导入执行 → 托盘创建 ↔ 页面渲染 → 窗口事件正常
 ```
 
 通过提前执行脚本：
+
 - 系统托盘的创建与页面渲染并行进行
 - 避免了在窗口显示后才进行大量异步操作
 - 确保 WebView 主线程在关键时刻保持可用
@@ -164,19 +167,19 @@ AI分析：以下是基于代码结构的优化建议
 
 ```javascript
 // 方案1：延迟执行托盘创建
-window.addEventListener('load', async () => {
+window.addEventListener("load", async () => {
   try {
     const menu = await Menu.new({
       items: [about, filespace, notes, autostart, restartItem, quitItem],
     });
     const options = {
-      tooltip: 'Wngtools',
+      tooltip: "Wngtools",
       menu: menu,
       icon: await defaultWindowIcon(),
     };
     const _tray = await TrayIcon.new(options);
   } catch (error) {
-    console.error('创建系统托盘失败:', error);
+    console.error("创建系统托盘失败:", error);
   }
 });
 
@@ -193,8 +196,9 @@ AI分析：以下是验证和调试的建议
 :::
 
 **添加调试日志**：
+
 ```javascript
-console.log('开始创建系统托盘...');
+console.log("开始创建系统托盘...");
 const startTime = Date.now();
 
 // 在关键位置添加时间戳
@@ -202,13 +206,14 @@ console.log(`托盘创建完成，耗时: ${Date.now() - startTime}ms`);
 ```
 
 **监控窗口事件**：
+
 ```javascript
 // 在 main.ts 中添加窗口事件监听
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 const window = getCurrentWindow();
 window.onCloseRequested(() => {
-  console.log('窗口关闭事件被触发');
+  console.log("窗口关闭事件被触发");
 });
 ```
 

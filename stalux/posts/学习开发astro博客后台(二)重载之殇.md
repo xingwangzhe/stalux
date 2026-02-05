@@ -1,14 +1,14 @@
 ---
 title: 学习开发Astro博客后台(二)重载之殇
 abbrlink: 2dd2b505
-date: '2025-07-04T18:44:32.353+08:00'
-updated: '2025-07-04T18:44:32.353+08:00'
+date: "2025-07-04T18:44:32.353+08:00"
+updated: "2025-07-04T18:44:32.353+08:00"
 categories:
-- 后端
+  - 后端
 tags:
-- Astro
-- 博客
-- 后端
+  - Astro
+  - 博客
+  - 后端
 ---
 
 ## 添加md编辑
@@ -70,11 +70,11 @@ export const prerender = false;
       if (autoSaveTimeout) {
         clearTimeout(autoSaveTimeout);
       }
-      
+
       if (!isAutoSaving) {
         updateSaveStatus('正在编辑...', 'editing');
       }
-      
+
       // 设置新的自动保存定时器（防抖）
       autoSaveTimeout = setTimeout(()=>{
         autoSave(vditor.getValue());
@@ -98,7 +98,6 @@ export const prerender = false;
 
 下面是一个技巧,来变相传参 ,这样参数才能正确写入到Vditor中
 
-
 ```astro title="src/components/Editor.astro"
 <script is:inline define:vars={{options,post}}>
   window.editorOptions = options || {};
@@ -117,6 +116,7 @@ export const prerender = false;
   ...
   </script>
 ```
+
 :::
 
 :::danger
@@ -143,6 +143,7 @@ export const prerender = false;
 在开发Astro博客后台时，遇到的核心问题是：**前台页面需要正常刷新以显示最新内容，而后台编辑页面绝对不能刷新**，否则会丢失用户正在编辑的内容。
 
 这个问题的根源在于Astro的HMR（Hot Module Replacement）机制：
+
 - 当`src/content/posts/`目录下的markdown文件发生变化时
 - Astro会触发`astro:content`模块的更新
 - 默认情况下，这会导致所有使用该模块的页面重新加载
@@ -155,14 +156,15 @@ export const prerender = false;
 
 ```javascript
 if (import.meta.hot) {
-  import.meta.hot.on('locastrol-content-update', (data) => {
+  import.meta.hot.on("locastrol-content-update", (data) => {
     // 拦截自定义更新事件，阻止页面重载
-    updateSaveStatus('内容已同步', 'synced');
-  })
+    updateSaveStatus("内容已同步", "synced");
+  });
 }
 ```
 
 **工作原理：**
+
 - `import.meta.hot`是Vite提供的HMR API
 - 通过监听自定义事件`locastrol-content-update`来接收内容更新通知
 - 这个事件是由外部工具（如locastrol）发送的，而不是Astro原生的重载事件
@@ -172,11 +174,13 @@ if (import.meta.hot) {
 这个是容易实现的,但是只是实现了一半,因为`astro:content`会导致所有`.astro`页面刷新
 
 **前台页面（正常刷新）：**
+
 - 使用标准的`astro:content`导入
 - 保持Astro默认的HMR行为
 - 内容更新时自动重载页面
 
 **后台页面（不能阻止刷新）：**
+
 - 即使通过外部API获取内容数据，而不直接使用`astro:content`,也没法阻止刷新
 - 使用自定义HMR事件监听机制,我没实现
 - 手动控制内容同步，避免页面重载,呃呃,体验更不好了,还得手动...
@@ -208,11 +212,11 @@ interface ClientState {
 
 ```typescript
 // 心跳API处理
-if (url === '/api/locastrol/heartbeat' && req.method === 'POST') {
+if (url === "/api/locastrol/heartbeat" && req.method === "POST") {
   clientStates.set(clientId, {
     isEditorPage: Boolean(isEditorPage),
     url: clientUrl,
-    lastActivity: Date.now()
+    lastActivity: Date.now(),
   });
 }
 ```
@@ -226,26 +230,28 @@ if (url === '/api/locastrol/heartbeat' && req.method === 'POST') {
 ```typescript
 // 完全劫持WebSocket的send方法
 const originalSend = server.ws.send;
-server.ws.send = function(payload: any, client?: any) {
+server.ws.send = function (payload: any, client?: any) {
   // 检查是否有编辑器页面活跃
   let hasActiveEditor = false;
   for (const [clientId, state] of clientStates) {
-    if (state.isEditorPage && (Date.now() - state.lastActivity < 30000)) {
+    if (state.isEditorPage && Date.now() - state.lastActivity < 30000) {
       hasActiveEditor = true;
       break;
     }
   }
-  
+
   // 如果有编辑器页面活跃，完全阻止所有WebSocket刷新消息
-  if (hasActiveEditor && typeof payload === 'object' && payload !== null) {
-    if (payload.type === 'full-reload' || 
-        payload.type === 'update' ||
-        payload.type === 'connected' ||
-        payload.type === 'error') {
+  if (hasActiveEditor && typeof payload === "object" && payload !== null) {
+    if (
+      payload.type === "full-reload" ||
+      payload.type === "update" ||
+      payload.type === "connected" ||
+      payload.type === "error"
+    ) {
       return; // 完全阻止消息发送
     }
   }
-  
+
   return originalSend.call(this, payload, client);
 };
 ```
@@ -267,7 +273,7 @@ handleHotUpdate({ file, server }) {
       break;
     }
   }
-  
+
   if (hasActiveEditor) {
     return []; // 阻止HMR更新
   } else {
@@ -308,4 +314,4 @@ handleHotUpdate({ file, server }) {
 
 下个月又要开始课设了,估计没时间写这个后台插件了,只能暂时搁置咯
 
->已经有好几个搁置了,都推到暑假了...没人催的话,我大概会忘记吧...😀💧
+> 已经有好几个搁置了,都推到暑假了...没人催的话,我大概会忘记吧...😀💧

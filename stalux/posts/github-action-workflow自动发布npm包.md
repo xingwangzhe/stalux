@@ -2,13 +2,13 @@
 title: github:action/workflow自动发布npm包
 abbrlink: 5561
 date: 2025-01-06 20:03:44+00:00
-updated: '2025-07-04T18:44:32.348+08:00'
+updated: "2025-07-04T18:44:32.348+08:00"
 categories:
-- github
+  - github
 tags:
-- 学习
-- 记录
-- 教程
+  - 学习
+  - 记录
+  - 教程
 ---
 
 本文介绍
@@ -25,7 +25,7 @@ github action/workflow进行npm自动发包，并自动更新版本号
 ![2025-01-06-195821](https://i.ibb.co/zf5kWKG/2025-01-06-195821.png)
 
 > **Warning**
-> 
+>
 > 请及时复制粘贴，并且不要泄露给他人
 
 ## 设置对应仓库的secerts
@@ -41,7 +41,7 @@ name: Auto Publish to NPM
 
 on:
   push:
-    branches: 
+    branches:
       - main
 
 jobs:
@@ -51,26 +51,26 @@ jobs:
     permissions:
       contents: write
       packages: write
-  
+
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-        
+
       - name: Git Configuration
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions[bot]"
-        
+
       - uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: "20"
           registry-url: https://registry.npmjs.org/
-        
+
       - name: Install dependencies
         run: npm ci || npm install
-        
+
       - name: Get commit message
         id: commit
         run: |
@@ -79,7 +79,7 @@ jobs:
           echo "message<<EOF" >> $GITHUB_OUTPUT
           echo "$FULL_MSG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-        
+
       - name: Determine version bump
         id: version
         if: github.ref == 'refs/heads/main'
@@ -96,15 +96,15 @@ jobs:
             echo "type=patch" >> $GITHUB_OUTPUT
             echo "Default to patch version"
           fi
-        
+
       - name: Automated Version Bump
-        uses: 'phips28/gh-action-bump-version@master'
+        uses: "phips28/gh-action-bump-version@master"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version-type: ${{ steps.version.outputs.type }}
-          commit-message: 'CI: bumps version to {{version}} [skip ci]'
-        
+          commit-message: "CI: bumps version to {{version}} [skip ci]"
+
       - name: Publish to NPM
         run: npm publish --access public
         env:
@@ -123,4 +123,3 @@ jobs:
 - `refactor: 代码重构` -> 修订号+1 (3.0.1 → 3.0.2)
 - `style: 调整样式` -> 修订号+1 (3.0.2 → 3.0.3)
 ```
-

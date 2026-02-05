@@ -2,18 +2,18 @@
 title: 学了点js
 abbrlink: fcbe0bf5
 date: 2024-09-25 21:05:29+00:00
-updated: '2024-10-15 21:05:43'
+updated: "2024-10-15 21:05:43"
 categories:
-- 前端
+  - 前端
 tags:
-- 记录
-- 前端
-- js
-- 学习
-- 进步
+  - 记录
+  - 前端
+  - js
+  - 学习
+  - 进步
 ---
 
-*语法挺有趣的*
+_语法挺有趣的_
 
 <!--more-->
 
@@ -26,21 +26,25 @@ const rows = [];
 let inverted = false;
 
 function padRow(rowNumber, rowCount) {
-return " ".repeat(rowCount - rowNumber) + character.repeat(2 * rowNumber - 1) + " ".repeat(rowCount - rowNumber);
+  return (
+    " ".repeat(rowCount - rowNumber) +
+    character.repeat(2 * rowNumber - 1) +
+    " ".repeat(rowCount - rowNumber)
+  );
 }
 
 for (let i = 1; i <= count; i++) {
-if (inverted) {
-rows.unshift(padRow(i, count));
-} else {
-rows.push(padRow(i, count));
-}
+  if (inverted) {
+    rows.unshift(padRow(i, count));
+  } else {
+    rows.push(padRow(i, count));
+  }
 }
 
-let result = ""
+let result = "";
 
 for (const row of rows) {
-result = result + "\n" + row;
+  result = result + "\n" + row;
 }
 
 console.log(result);
@@ -58,7 +62,7 @@ console.log(result);
 
 使用`function`关键字进行声明，同样不分变量类型，内部和c/cpp差不多，而且似乎某些类型变量自带方法，就比如第一个函数的`.repreat()`方法，似乎是字符串自带的，很方便地进行了重复，不用我再写一遍循环。
 
-还有`.push``.unshift``.等方法，看来可以实现栈，队列等数据结构。
+还有`.push`.unshift`.等方法，看来可以实现栈，队列等数据结构。
 
 ## 输出
 
@@ -71,15 +75,15 @@ console.log(result);
 // tests completed
 // console output
 
-         !     
-        !!!    
-       !!!!!   
-      !!!!!!!  
-     !!!!!!!!!   
-    !!!!!!!!!!!  
-   !!!!!!!!!!!!!   
-  !!!!!!!!!!!!!!!  
- !!!!!!!!!!!!!!!!! 
+         !
+        !!!
+       !!!!!
+      !!!!!!!
+     !!!!!!!!!
+    !!!!!!!!!!!
+   !!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!
+ !!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!
 ```
 

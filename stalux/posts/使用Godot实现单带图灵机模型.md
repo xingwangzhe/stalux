@@ -2,34 +2,34 @@
 title: 使用Godot实现单带图灵机模型
 abbrlink: 58216
 date: 2024-11-19 16:33:23+00:00
-updated: '2025-07-04T18:44:32.351+08:00'
+updated: "2025-07-04T18:44:32.351+08:00"
 categories:
-- 开发
+  - 开发
 tags:
-- 学习
-- 编程
-- 记录
-- 进步
+  - 学习
+  - 编程
+  - 记录
+  - 进步
 ---
 
-*如你所见，虽然Ui不好看，但是也还凑合*
+_如你所见，虽然Ui不好看，但是也还凑合_
 
 ![2024-11-19-163538](https://i.ibb.co/Tq05mgk/2024-11-19-163538.png)
 
-*本文介绍使用我如何使用godot来实现这个模型*
+_本文介绍使用我如何使用godot来实现这个模型_
 
-*在线使用地址：*
+_在线使用地址：_
 
-*[turing-machine by xingwangzhe](https://xingwangzhe.itch.io/turing-machine)*
+_[turing-machine by xingwangzhe](https://xingwangzhe.itch.io/turing-machine)_
 
-*项目地址：*
+_项目地址：_
 
-*github:*
-*[xingwangzhe/turing\_machine: 图灵机模型，使用godot实现：）](https://github.com/xingwangzhe/turing_machine)*
+_github:_
+_[xingwangzhe/turing_machine: 图灵机模型，使用godot实现：）](https://github.com/xingwangzhe/turing_machine)_
 
-*gitee:*
+_gitee:_
 
-*[turing\_machine: 图灵机模型，使用godot实现：）](https://gitee.com/xingwangzhe/turing_machine)*
+_[turing_machine: 图灵机模型，使用godot实现：）](https://gitee.com/xingwangzhe/turing_machine)_
 
 <!--more-->
 
@@ -74,7 +74,7 @@ func tur_action_2(pos:int,state:int,retain:String):
 	elif(state==1):
 		if($".".text[pos]=='a'||$".".text[pos]=='b'):
 			pos+=1
-			$"../../Panel/VScrollBar/log".text+="\nq1->q1 [retain:"+retain+"]"	
+			$"../../Panel/VScrollBar/log".text+="\nq1->q1 [retain:"+retain+"]"
 		elif ($".".text[pos]=='c'):
 			pos+=1
 			state=2

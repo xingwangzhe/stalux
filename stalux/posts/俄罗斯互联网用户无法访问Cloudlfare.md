@@ -1,41 +1,43 @@
 ---
 title: 俄罗斯互联网用户无法访问Cloudflare
 abbrlink: a30ea8af
-date: '2025-07-04T18:44:32.351+08:00'
-updated: '2025-07-04T18:44:32.351+08:00'
+date: "2025-07-04T18:44:32.351+08:00"
+updated: "2025-07-04T18:44:32.351+08:00"
 categories:
-- 网络
+  - 网络
 tags:
-- 技术
-- 网络
-- cloudlfare
+  - 技术
+  - 网络
+  - cloudlfare
 ---
 
 今天凌晨收到了Cloudflare的blog订阅，内容是关于俄罗斯互联网用户无法访问Cloudflare的服务。
 **[Russian Internet users are unable to access the open Internet](https://blog.cloudflare.com/russian-internet-users-are-unable-to-access-the-open-internet/)**
 
 ![notopen](https://cf-assets.www.cloudflare.com/zkvhlag99gkb/XNNFOLNzIbB8VaUzfUscl/9fb95db75eb9930497d278c6b8962f73/BLOG-2859_1.png)
->图片来自于Cloudflare blog
+
+> 图片来自于Cloudflare blog
 
 ## 事件分析
 
 :::warning
- 因本站作为ICP备案网站
+因本站作为ICP备案网站
 
- 故本文🙅‍♂️不谈及时政内容,只做技术内容
+故本文🙅‍♂️不谈及时政内容,只做技术内容
 :::
 
 简要分析一下
 
 **网络层面现象：**
+
 - 自2025年6月9日起，俄罗斯地区的互联网用户在访问Cloudflare保护的网络服务时出现连接速度严重下降
 - 这种限制是在ISP（互联网服务提供商）层面实施的网络流量控制
 
 **技术实现机制：**
+
 - 通过深度包检测（DPI）技术识别访问Cloudflare服务的流量
 - 实施带宽限制，将数据传输速度降低到极低水平
 - 根据Cloudflare的数据分析，每个连接只允许传输前16KB的数据（这个是真逆天）
-
 
 ## 互联网基建的脆弱性
 
@@ -46,8 +48,9 @@ tags:
 2025年6月12日，全球互联网经历了又一次大规模服务中断。据多方报道，这次故障源于**Google Cloud Platform (GCP)的认证系统故障**，导致全球范围内的多个主要互联网服务受到影响：
 
 **受影响的服务包括：**
+
 - YouTube - 视频加载异常
-- Gmail - 邮件服务中断  
+- Gmail - 邮件服务中断
 - Spotify - 音乐流媒体服务不可用
 - Snapchat - 社交应用功能受限
 - 以及依赖GCP服务的众多企业级应用
@@ -98,10 +101,10 @@ tags:
 
 ---
 
-*参考资料：*
-- *[Russian Internet users are unable to access the open Internet - Cloudflare Blog](https://blog.cloudflare.com/russian-internet-users-are-unable-to-access-the-open-internet/)*
-- *[全球互联网服务遭遇故障，Cloudflare归咎于Google云平台](https://news.aitinytools.com/nz/view/id/9120)*
-- *[2021年Facebook死机事件 - 维基百科](https://zh.wikipedia.org/wiki/2021年Facebook當機事件)*
-- *[CrowdStrike导致全球性IT基础设施中断事件分析报告 - 奇安信](https://www.qianxin.com/news/detail?news_id=12240)*
-- *[2016年Dyn网络攻击 - 维基百科](https://zh.wikipedia.org/wiki/2016年Dyn网络攻击)*
+_参考资料：_
 
+- _[Russian Internet users are unable to access the open Internet - Cloudflare Blog](https://blog.cloudflare.com/russian-internet-users-are-unable-to-access-the-open-internet/)_
+- _[全球互联网服务遭遇故障，Cloudflare归咎于Google云平台](https://news.aitinytools.com/nz/view/id/9120)_
+- _[2021年Facebook死机事件 - 维基百科](https://zh.wikipedia.org/wiki/2021年Facebook當機事件)_
+- _[CrowdStrike导致全球性IT基础设施中断事件分析报告 - 奇安信](https://www.qianxin.com/news/detail?news_id=12240)_
+- _[2016年Dyn网络攻击 - 维基百科](https://zh.wikipedia.org/wiki/2016年Dyn网络攻击)_

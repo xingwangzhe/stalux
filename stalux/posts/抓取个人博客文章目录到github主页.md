@@ -2,18 +2,18 @@
 title: 抓取个人博客文章目录到github主页
 abbrlink: 10908
 date: 2024-11-11 19:51:52+00:00
-updated: '2025-07-04T18:44:32.353+08:00'
+updated: "2025-07-04T18:44:32.353+08:00"
 categories:
-- github
+  - github
 tags:
-- 学习
-- 记录
-- 教程
+  - 学习
+  - 记录
+  - 教程
 ---
 
 ![2024-11-11-194849](https://i.ibb.co/9tk9ZCR/2024-11-11-194849.png)
 
-*如图所见，我在我的github主页上加了我的最近的个人博客的文章*
+_如图所见，我在我的github主页上加了我的最近的个人博客的文章_
 
 ## 所用项目
 
@@ -40,7 +40,7 @@ on:
   #   pull_request:
   #     branches: [ main ]
   schedule: # Run workflow automatically
-    - cron: '0 3 * * *' # Runs at 3:00 # 定时任务，每天3：00触发
+    - cron: "0 3 * * *" # Runs at 3:00 # 定时任务，每天3：00触发
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -96,7 +96,3 @@ jobs:
 
 [利用GitHub Actions自动获取博客rss文章 | 二丫讲梵](https://wiki.eryajf.net/pages/1b1ba3/#%E5%89%8D%E8%A8%80)
 [gautamkrishnar/blog-post-workflow: Show your latest blog posts from any sources or StackOverflow activity or Youtube Videos on your GitHub profile/project readme automatically using the RSS feed](https://github.com/gautamkrishnar/blog-post-workflow)
-
-
-
-

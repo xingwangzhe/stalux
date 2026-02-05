@@ -1,13 +1,13 @@
 ---
 title: 再简单折腾一下ubuntu
 abbrlink: 7b08d50f
-date: '2025-07-04T18:44:32.351+08:00'
-updated: '2025-07-04T18:44:32.351+08:00'
+date: "2025-07-04T18:44:32.351+08:00"
+updated: "2025-07-04T18:44:32.351+08:00"
 categories:
-- ubuntu
+  - ubuntu
 tags:
-- 折腾
-- 胡思乱想
+  - 折腾
+  - 胡思乱想
 ---
 
 ## 接上一回
@@ -47,6 +47,7 @@ export XMODIFIERS=@im=fcitx # 如果你使用 Fcitx 输入法 尤其注意这个
 至此基本能够解决一些中文输入法的问题了！！！
 
 ## 推荐输入法设置
+
 这个博主推荐的中文输入很省心，基本不用改什么就可以直接用
 [Ubuntu 24.10 安装 fcitx5 + rime + 雾凇配置](https://hzbk.net/archives/121389.html)
 而且版本上来讲，也和我的Ubuntu 24.04.2 LTS差不多
@@ -56,7 +57,6 @@ export XMODIFIERS=@im=fcitx # 如果你使用 Fcitx 输入法 尤其注意这个
 火狐没有**lighthouse**,这块对我来说不方便，又由于我经常使用`微软`，`谷歌`账号所以我安装了`edge`和`chrome`
 
 ![2025-06-08-21-36-33桌面信息](https://i.ibb.co/1GkYSTk8/2025-06-08-21-36-33.webp)
-
 
 ## 邮箱轻松配置
 

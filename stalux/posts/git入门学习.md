@@ -2,23 +2,23 @@
 title: git入门学习
 abbrlink: 63416
 date: 2024-11-10 19:48:05+00:00
-updated: '2025-07-04T18:44:32.348+08:00'
+updated: "2025-07-04T18:44:32.348+08:00"
 categories:
-- 开发
+  - 开发
 tags:
-- 学习
-- 记录
-- 教程
-- github
+  - 学习
+  - 记录
+  - 教程
+  - github
 ---
 
 ![Git Logo](https://git-scm.com/images/logos/downloads/Git-Logo-1788C.svg)
 
-*它应该被视作一种基本功，这也是为什么我看别的教程，往往在git命令上困惑的原因:(*
+_它应该被视作一种基本功，这也是为什么我看别的教程，往往在git命令上困惑的原因:(_
 
 <!--more-->
 
-*由于我使用windows,所以以下配置教程均默认为windows.*
+_由于我使用windows,所以以下配置教程均默认为windows._
 
 ## 什么是git
 
@@ -111,4 +111,3 @@ git commit -m "Your commit message"
 
 [简介 - Git教程 - 廖雪峰的官方网站](https://liaoxuefeng.com/books/git/introduction/index.html)
 [30分钟弄懂所有工作Git必备操作 / Git 入门教程\_哔哩哔哩\_bilibili](https://www.bilibili.com/video/BV1pX4y1S7Dq/?spm_id_from=333.337.search-card.all.click&vd_source=15276cfc65b1ac8fad46ad8f5ed33307)
-

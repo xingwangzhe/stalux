@@ -1,14 +1,14 @@
 ---
 title: Waline被莫名索引问题解决
 abbrlink: f654ae55
-date: '2025-07-04T18:44:32.350+08:00'
-updated: '2025-07-04T18:44:32.350+08:00'
+date: "2025-07-04T18:44:32.350+08:00"
+updated: "2025-07-04T18:44:32.350+08:00"
 categories:
-- 前端
+  - 前端
 tags:
-- 记录
-- 教程
-- 胡思乱想
+  - 记录
+  - 教程
+  - 胡思乱想
 ---
 
 :::tip
@@ -29,6 +29,7 @@ tags:
 之前的官方库里有静态文件 `robots.txt`，但 URL 没找到？
 
 ![robots.txt在哪](https://i.ibb.co/tpLhmm9p/2025-06-10-14-06-04.webp)
+
 > 这是测试域名，我已经删除了，不要想搞坏事哟！！！
 
 ### 方案一：现在就更新 Vercel 部署
@@ -41,7 +42,7 @@ tags:
 
 当你通过 Vercel 部署，你的 GitHub 会存在一个私有仓库，修改其 `vercel.json` 文件内容，应该这么改，第二个代码块是方便**复制粘贴**的版本：
 
-```diff lang="json" title="vercel.json" 
+```diff lang="json" title="vercel.json"
 
 {
   "name": "comment",
@@ -65,7 +66,7 @@ tags:
       "destination": "index.cjs"
     }
   ]
-  
+
 }
 
 ```
@@ -95,7 +96,7 @@ tags:
 }
 ```
 
->**注意：** 下面是原理解释，如果你对具体原理不感兴趣，完全可以退出了，上面所讲已经解决了你的问题。
+> **注意：** 下面是原理解释，如果你对具体原理不感兴趣，完全可以退出了，上面所讲已经解决了你的问题。
 
 ## Why and Why?
 
@@ -104,8 +105,9 @@ tags:
 ### 路由：由得自己
 
 默认路由使用这个来引用 Waline 在 Vercel 封装的模块，但从后来的 Waline 首页来看，它能和 SEO 关系上的也只有 `<head>` 标签里面的 meta 元素了，当然实际上也没有在这一层面上禁止索引，所以看看就好，可以跳过这段代码：
+
 ```js title="index.cjs"
-const Application = require('@waline/vercel');
+const Application = require("@waline/vercel");
 module.exports = Application({
   plugins: [],
   async postSave(comment) {
@@ -115,6 +117,7 @@ module.exports = Application({
 ```
 
 查看更重要的 Vercel 路由配置，重写路由这方面：
+
 ```json
   ...
   "rewrites": [
@@ -136,7 +139,8 @@ module.exports = Application({
 
 - `(`：开始一个捕获组，用于将后续匹配的部分作为整体进行处理。
 
-- `(?!robots.txt$)`：这是一个**负向前瞻断言**，意思是当前匹配的位置不能是 `robots.txt` 这个字符串的开头，并且要求 `robots.txt` 必须完整地出现在 URL 路径的末尾（因为 `$` 匹配字符串的结尾）。  
+- `(?!robots.txt$)`：这是一个**负向前瞻断言**，意思是当前匹配的位置不能是 `robots.txt` 这个字符串的开头，并且要求 `robots.txt` 必须完整地出现在 URL 路径的末尾（因为 `$` 匹配字符串的结尾）。
+
   > 也就是说，如果 URL 路径是 `/robots.txt`，则整个正则表达式不会匹配这个路径。
 
 - `.*`：匹配任意数量（包括零个）的任意字符（除了换行符），这里的 `.` 表示任意字符，`*` 表示零次或多次重复前面的 `.`。  
@@ -153,6 +157,7 @@ module.exports = Application({
 #### 别忘静态生成
 
 我得向vercel声明一下这个是静态资源，不用构建，直接复制粘贴就行：
+
 ```json
 ...
 "builds": [
@@ -165,6 +170,5 @@ module.exports = Application({
 
 ...
 ```
-
 
 至此，彻底解惑。

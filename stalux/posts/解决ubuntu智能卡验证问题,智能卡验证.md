@@ -1,15 +1,15 @@
 ---
 title: 解决ubuntu智能卡验证问题,取消智能卡验证
 abbrlink: c1775752
-date: '2025-07-04T18:44:32.356+08:00'
-updated: '2025-07-04T18:44:32.356+08:00'
+date: "2025-07-04T18:44:32.356+08:00"
+updated: "2025-07-04T18:44:32.356+08:00"
 categories:
-- 疑难杂症
+  - 疑难杂症
 tags:
-- 记录
-- 教程
-- 解决
-- Ubuntu
+  - 记录
+  - 教程
+  - 解决
+  - Ubuntu
 ---
 
 ## 起因
@@ -68,36 +68,35 @@ lsblk -f
 
 ```bash title="分区信息示例"
 NAME        FSTYPE FSVER LABEL UUID                                 MOUNTPOINT
-nvme0n1                                                                
-├─nvme0n1p1 vfat   FAT32 SYSTEM           90BF-9404                
-├─nvme0n1p2                                                                 
-├─nvme0n1p3 ntfs                Windows    3C625A326259F15E          
-├─nvme0n1p4 ntfs                Data       36E2D0B6E2D07B95          
-├─nvme0n1p5 vfat   FAT32 WINPE            688C-E17C                
-├─nvme0n1p6 ntfs                Onekey     E4CE8F24CE8EEDDC          
-├─nvme0n1p7 ntfs                WinRE      8AB0BC78B0BC6BF7          
+nvme0n1
+├─nvme0n1p1 vfat   FAT32 SYSTEM           90BF-9404
+├─nvme0n1p2
+├─nvme0n1p3 ntfs                Windows    3C625A326259F15E
+├─nvme0n1p4 ntfs                Data       36E2D0B6E2D07B95
+├─nvme0n1p5 vfat   FAT32 WINPE            688C-E17C
+├─nvme0n1p6 ntfs                Onekey     E4CE8F24CE8EEDDC
+├─nvme0n1p7 ntfs                WinRE      8AB0BC78B0BC6BF7
 └─nvme0n1p8 ext4   1.0                   257a987f-1b7c-4140-a50a-2eb64520fc28
 ```
 
 可以使用以下命令查看分区大小，这有助于识别Ubuntu分区（通常较大），而且当时分区的时候你一定对分区大小有印象！：
 
 ```bash title="查看分区大小"
-lsblk 
+lsblk
 ```
+
 ```bash title="分区大小信息示例"
-nvme0n1     259:0    0 476.9G  0 disk 
+nvme0n1     259:0    0 476.9G  0 disk
 ├─nvme0n1p1 259:1    0   200M  0 part /boot/efi
-├─nvme0n1p2 259:2    0    16M  0 part 
-├─nvme0n1p3 259:3    0   120G  0 part 
-├─nvme0n1p4 259:4    0  87.1G  0 part 
-├─nvme0n1p5 259:5    0   512M  0 part 
-├─nvme0n1p6 259:6    0    18G  0 part 
-├─nvme0n1p7 259:7    0     1G  0 part 
+├─nvme0n1p2 259:2    0    16M  0 part
+├─nvme0n1p3 259:3    0   120G  0 part
+├─nvme0n1p4 259:4    0  87.1G  0 part
+├─nvme0n1p5 259:5    0   512M  0 part
+├─nvme0n1p6 259:6    0    18G  0 part
+├─nvme0n1p7 259:7    0     1G  0 part
 └─nvme0n1p8 259:8    0 250.1G  0 part /
 
 ```
-
-
 
 在这个例子中，`/dev/nvme0n1p8` 是根分区。
 

@@ -1,13 +1,13 @@
 ---
 title: 老外催我升级Minecraft模组版本
 abbrlink: c4479124
-date: '2025-07-04T18:44:32.356+08:00'
-updated: '2025-07-04T18:44:32.356+08:00'
+date: "2025-07-04T18:44:32.356+08:00"
+updated: "2025-07-04T18:44:32.356+08:00"
 categories:
-- 游戏
+  - 游戏
 tags:
-- 胡思乱想
-- 技术
+  - 胡思乱想
+  - 技术
 ---
 
 ## 没想到有老外用我的模组
@@ -19,11 +19,12 @@ tags:
 我本以为不会有多少人用的，没想到有老外在 GitHub 上催我升级模组版本。
 ![催更](https://i.ibb.co/LzyK1kkk/2025-06-27-12-35-14.webp)
 
->[Update to newer versions? #1](https://github.com/xingwangzhe/webmapview/issues/1)
+> [Update to newer versions? #1](https://github.com/xingwangzhe/webmapview/issues/1)
 
 哈哈，我当时想五一之后再更的，没想到现在都六月底了。我还没行动，又有老外来催问，那我也没必要再拖了，开始行动！
 
 ### 报错好难处理
+
 ![Idea报错](https://i.ibb.co/s9PRfqkJ/2025-06-27-12-25-59.webp)
 
 直接 git clone 下来，我需要改各种依赖，比如说 JDK、Gradle，改了发现还是报错，遂作罢，打算重新创建项目。
@@ -78,13 +79,13 @@ dependencies {
 
 #### 渲染系统的重大更改
 
-最显著的变化是在 `BasicBrowser.java` 中的渲染方法。在 1.21.* 中，Minecraft 的渲染系统进行了重构：
+最显著的变化是在 `BasicBrowser.java` 中的渲染方法。在 1.21.\* 中，Minecraft 的渲染系统进行了重构：
 
 ```diff lang="java" title="BasicBrowser.java"
 @Override
 public void render(DrawContext guiGraphics, int i, int j, float f) {
     super.render(guiGraphics, i, j, f);
-    
+
     // 确保浏览器已初始化
     if (browser == null || browser.getRenderer() == null) {
         guiGraphics.drawCenteredTextWithShadow(textRenderer, "浏览器未初始化",
@@ -135,7 +136,6 @@ public void render(DrawContext guiGraphics, int i, int j, float f) {
 1. **BufferBuilder 初始化**：现在需要使用 `tessellator.begin()` 方法直接指定渲染模式和顶点格式
 2. **渲染结束**：使用 `BufferRenderer.drawWithGlobalProgram(buffer.end())` 替代了原来的 `tessellator.draw()`
 
-
 #### 鼠标滚轮事件 API 变化
 
 鼠标滚轮事件的参数也发生了变化：
@@ -169,6 +169,3 @@ public void render(DrawContext guiGraphics, int i, int j, float f) {
 4. **错误处理** - 加强异常处理以提高稳定性
 
 现在模组已经成功升级到 1.21.4，老外们应该满意了吧！😄
-
-
-

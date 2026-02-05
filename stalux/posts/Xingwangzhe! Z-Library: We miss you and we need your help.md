@@ -1,22 +1,22 @@
 ---
 title: Xingwangzhe! Z-Library We miss you and we need your help
 abbrlink: 2dc334d9
-date: '2025-09-16T19:47:21.730+08:00'
-updated: '2025-09-16T20:01:35.149+08:00'
+date: "2025-09-16T19:47:21.730+08:00"
+updated: "2025-09-16T20:01:35.149+08:00"
 categories:
-- z-library
+  - z-library
 tags:
-- z-library
-- book
-- ebook
-- pdf
-- free
-- download
-- archive
-- internet
-- library
-- help
-- support
+  - z-library
+  - book
+  - ebook
+  - pdf
+  - free
+  - download
+  - archive
+  - internet
+  - library
+  - help
+  - support
 ---
 
 :::tip
@@ -24,7 +24,6 @@ tags:
 这是一篇水文，💦💦💦
 
 :::
-
 
 ## **Z-library用户，你收到了吗？**
 

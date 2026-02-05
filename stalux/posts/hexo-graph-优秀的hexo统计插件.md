@@ -2,17 +2,17 @@
 title: hexo-graph:优秀的hexo统计插件
 abbrlink: 55581
 date: 2024-12-14 10:11:05+00:00
-updated: '2025-07-04T18:44:32.348+08:00'
+updated: "2025-07-04T18:44:32.348+08:00"
 categories:
-- hexo
+  - hexo
 tags:
-- 博客
-- 记录
-- 教程
-- hexo
-- Layout
-- 统计
-- 插件
+  - 博客
+  - 记录
+  - 教程
+  - hexo
+  - Layout
+  - 统计
+  - 插件
 ---
 
 hexo-graph，一个基于echarts，集成博客热力图，博客月份统计图，分类统计图，标签统计图的多元化插件。
@@ -46,8 +46,6 @@ theme: "light" #light/dark 不设置或不填默认是light
 以下皆为`<div>`,可以写在md里面或者通过更改主题文件来硬插入
 
 ### 热力图
-
-
 
 ```html
 <div
@@ -104,4 +102,3 @@ theme: "light" #light/dark 不设置或不填默认是light
 ></div>
 
 ## 喜欢就别忘了点个Star⭐
-

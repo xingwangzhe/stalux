@@ -2,13 +2,13 @@
 title: 编译原理:NFA转DFA
 abbrlink: 51944
 date: 2025-03-25 19:18:37+00:00
-updated: '2025-07-04T18:44:32.356+08:00'
+updated: "2025-07-04T18:44:32.356+08:00"
 categories:
-- 学校学习
+  - 学校学习
 tags:
-- 学习
-- 记录
-- 编译原理
+  - 学习
+  - 记录
+  - 编译原理
 ---
 
 不知道写点什么,所以记一下,以防~~失忆~~
@@ -56,12 +56,12 @@ q0 --1--> q1 --0--> q2
 
 这里,$Q = \{q_0, q_1, q_2\}$,$\Sigma = \{0, 1\}$,$q_0$ 是初始状态,$F = \{q_2\}$。状态转移函数 $\delta$ 可以表示为：
 
-* $\delta(q_0, 0) = q_0$
-* $\delta(q_0, 1) = q_1$
-* $\delta(q_1, 0) = q_2$
-* $\delta(q_1, 1) = q_1$
-* $\delta(q_2, 0) = q_0$
-* $\delta(q_2, 1) = q_1$
+- $\delta(q_0, 0) = q_0$
+- $\delta(q_0, 1) = q_1$
+- $\delta(q_1, 0) = q_2$
+- $\delta(q_1, 1) = q_1$
+- $\delta(q_2, 0) = q_0$
+- $\delta(q_2, 1) = q_1$
 
 ## NFA
 
@@ -95,21 +95,21 @@ q0 --0,1--> q0 --0--> q1 --1--> q2
 
 ### 步骤 1：确定初始状态
 
-* 对于 NFA 的初始状态 $q_0$,计算其 $\epsilon$-闭包($\epsilon$-closure),记为 $C_0$。$\epsilon$-闭包是指从某个状态出发,仅通过 $\epsilon$ 转移能够到达的所有状态的集合。
-* 将 $C_0$ 作为 DFA 的初始状态。
+- 对于 NFA 的初始状态 $q_0$,计算其 $\epsilon$-闭包($\epsilon$-closure),记为 $C_0$。$\epsilon$-闭包是指从某个状态出发,仅通过 $\epsilon$ 转移能够到达的所有状态的集合。
+- 将 $C_0$ 作为 DFA 的初始状态。
 
 ### 步骤 2：状态转移计算
 
-* 对于 DFA 中的每个状态(这些状态实际上是 NFA 状态的集合),对于输入符号集合 $\Sigma$ 中的每个符号 $a$,计算该状态在符号 $a$ 下的转移。
-* 具体来说,对于 DFA 的状态 $S$,计算 $\delta'(S, a) = \epsilon\text{-closure}(\bigcup_{q \in S} \delta(q, a))$,其中 $\delta'$ 是 DFA 的状态转移函数。
+- 对于 DFA 中的每个状态(这些状态实际上是 NFA 状态的集合),对于输入符号集合 $\Sigma$ 中的每个符号 $a$,计算该状态在符号 $a$ 下的转移。
+- 具体来说,对于 DFA 的状态 $S$,计算 $\delta'(S, a) = \epsilon\text{-closure}(\bigcup_{q \in S} \delta(q, a))$,其中 $\delta'$ 是 DFA 的状态转移函数。
 
 ### 步骤 3：接受状态确定
 
-* 如果 DFA 的某个状态 $S$ 包含 NFA 的接受状态集合 $F$ 中的至少一个状态,则将 $S$ 标记为 DFA 的接受状态。
+- 如果 DFA 的某个状态 $S$ 包含 NFA 的接受状态集合 $F$ 中的至少一个状态,则将 $S$ 标记为 DFA 的接受状态。
 
 ### 步骤 4：重复步骤 2 和 3
 
-* 不断重复步骤 2 和 3,直到没有新的 DFA 状态产生为止。
+- 不断重复步骤 2 和 3,直到没有新的 DFA 状态产生为止。
 
 ### 示例
 
@@ -123,16 +123,16 @@ q0 --0,1--> q0 --0--> q1 --1--> q2
 
 初始状态为 $q_0$,接受状态为 $q_2$。
 
-* **初始状态**：$\epsilon\text{-closure}(q_0) = \{q_0\}$,所以 DFA 的初始状态为 $\{q_0\}$。
-* **状态转移计算**：
-  * 对于状态 $\{q_0\}$,$\delta'(\{q_0\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0)) = \epsilon\text{-closure}(\{q_0, q_1\}) = \{q_0, q_1\}$。
-  * $\delta'(\{q_0\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1)) = \epsilon\text{-closure}(\{q_0\}) = \{q_0\}$。
-  * 对于状态 $\{q_0, q_1\}$,$\delta'(\{q_0, q_1\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0) \cup \delta(q_1, 0)) = \epsilon\text{-closure}(\{q_0, q_1\} \cup \{\}) = \{q_0, q_1\}$。
-  * $\delta'(\{q_0, q_1\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1) \cup \delta(q_1, 1)) = \epsilon\text{-closure}(\{q_0\} \cup \{q_2\}) = \{q_0, q_2\}$。
-  * 对于状态 $\{q_0, q_2\}$,$\delta'(\{q_0, q_2\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0) \cup \delta(q_2, 0)) = \epsilon\text{-closure}(\{q_0, q_1\} \cup \{\}) = \{q_0, q_1\}$。
-  * $\delta'(\{q_0, q_2\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1) \cup \delta(q_2, 1)) = \epsilon\text{-closure}(\{q_0\} \cup \{\}) = \{q_0\}$。
-* **接受状态确定**：
-  * 状态 $\{q_0, q_2\}$ 包含 NFA 的接受状态 $q_2$,所以 $\{q_0, q_2\}$ 是 DFA 的接受状态。
+- **初始状态**：$\epsilon\text{-closure}(q_0) = \{q_0\}$,所以 DFA 的初始状态为 $\{q_0\}$。
+- **状态转移计算**：
+  - 对于状态 $\{q_0\}$,$\delta'(\{q_0\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0)) = \epsilon\text{-closure}(\{q_0, q_1\}) = \{q_0, q_1\}$。
+  - $\delta'(\{q_0\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1)) = \epsilon\text{-closure}(\{q_0\}) = \{q_0\}$。
+  - 对于状态 $\{q_0, q_1\}$,$\delta'(\{q_0, q_1\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0) \cup \delta(q_1, 0)) = \epsilon\text{-closure}(\{q_0, q_1\} \cup \{\}) = \{q_0, q_1\}$。
+  - $\delta'(\{q_0, q_1\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1) \cup \delta(q_1, 1)) = \epsilon\text{-closure}(\{q_0\} \cup \{q_2\}) = \{q_0, q_2\}$。
+  - 对于状态 $\{q_0, q_2\}$,$\delta'(\{q_0, q_2\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0) \cup \delta(q_2, 0)) = \epsilon\text{-closure}(\{q_0, q_1\} \cup \{\}) = \{q_0, q_1\}$。
+  - $\delta'(\{q_0, q_2\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1) \cup \delta(q_2, 1)) = \epsilon\text{-closure}(\{q_0\} \cup \{\}) = \{q_0\}$。
+- **接受状态确定**：
+  - 状态 $\{q_0, q_2\}$ 包含 NFA 的接受状态 $q_2$,所以 $\{q_0, q_2\}$ 是 DFA 的接受状态。
 
 最终得到的 DFA 状态转移表如下：
 
@@ -143,4 +143,3 @@ q0 --0,1--> q0 --0--> q1 --1--> q2
 | $\{q_0, q_2\}$ | $\{q_0, q_1\}$ | $\{q_0\}$      |
 
 通过以上步骤,我们成功地将 NFA 转换为了 DFA。
-

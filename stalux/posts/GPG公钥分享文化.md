@@ -1,13 +1,13 @@
 ---
 title: GPG公钥分享文化
 abbrlink: f74e64e5
-date: '2025-08-20T08:05:22.148+08:00'
-updated: '2025-08-20T09:18:46.346+08:00'
+date: "2025-08-20T08:05:22.148+08:00"
+updated: "2025-08-20T09:18:46.346+08:00"
 categories:
-- 安全
+  - 安全
 tags:
-- GPG
-- 公钥
+  - GPG
+  - 公钥
 ---
 
 最近这几天看各个博客，发现大家都在分享自己的 **GPG** 公钥，我觉得很有趣，所以我也准备加入。
@@ -48,21 +48,25 @@ tags:
 
 导出 GPG 公私钥（文本格式）备忘
 
-1. 查看自己有哪些密钥（找到 Key ID）  
+1. 查看自己有哪些密钥（找到 Key ID）
+
    ```bash title="bash"
    gpg --list-secret-keys --keyid-format LONG
    ```
+
    假设看到的 Key ID 是 `AABBCCDD12345678`。
 
-2. 导出公钥（*.asc，纯文本）  
+2. 导出公钥（\*.asc，纯文本）
+
    ```bash title="bash"
    gpg --armor --export AABBCCDD12345678 > public.asc
    ```
+
    文件内容以  
    `-----BEGIN PGP PUBLIC KEY BLOCK-----`  
    开头，可直接贴到 GitHub/Gitee 等平台。
 
-3. 导出私钥（*.asc，纯文本，务必保管好）  
+3. 导出私钥（\*.asc，纯文本，务必保管好）
    ```bash title="bash"
    gpg --armor --export-secret-keys AABBCCDD12345678 > private.asc
    ```
@@ -73,23 +77,26 @@ tags:
    gpg --import private.asc
    ```
 
-> **安全提示**  
-> - 私钥文件请存放在加密存储介质。  
+> **安全提示**
+>
+> - 私钥文件请存放在加密存储介质。
 > - 不要上传到云盘、邮件或公开仓库。
 
 ### Git 配置 GPG 签名简明三步法（示例版）
 
-1. **指定签名密钥**  
+1. **指定签名密钥**
+
    ```bash title="bash"
    git config --global user.signingkey AABBCCDD12345678
    ```
 
-2. **默认启用签名**  
+2. **默认启用签名**
+
    ```bash title="bash"
    git config --global commit.gpgsign true
    ```
 
-3. **上传公钥到平台**  
+3. **上传公钥到平台**
    ```bash title="bash"
    gpg --armor --export AABBCCDD12345678 | xclip -sel clip
    ```

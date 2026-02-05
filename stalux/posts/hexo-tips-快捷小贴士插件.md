@@ -2,13 +2,13 @@
 title: hexo-tips:快捷小贴士插件
 abbrlink: 8367
 date: 2025-01-03 22:59:59+00:00
-updated: '2025-07-04T18:44:32.349+08:00'
+updated: "2025-07-04T18:44:32.349+08:00"
 categories:
-- 开发
+  - 开发
 tags:
-- 记录
-- hexo
-- 进步
+  - 记录
+  - hexo
+  - 进步
 ---
 
 我开发了一个快捷小贴士插件
@@ -29,149 +29,149 @@ npm仓库:[hexo-tips](https://www.npmjs.com/package/hexo-tips)
 ```yml
 hexo_tips:
   warning:
-    icon: '⚠'
+    icon: "⚠"
     style:
-      border: '#ffb100'
+      border: "#ffb100"
       light:
-        background: '#fff8e6'
+        background: "#fff8e6"
       dark:
-        background: '#3d371f'  
+        background: "#3d371f"
   danger:
-    icon: '⛔'
+    icon: "⛔"
     style:
-      border: '#ff4545'
+      border: "#ff4545"
       light:
-        background: '#ffeded'
+        background: "#ffeded"
       dark:
-        background: '#3d2222'  
+        background: "#3d2222"
   tip:
-    icon: '💡'
+    icon: "💡"
     style:
-      border: '#409eff'
+      border: "#409eff"
       light:
-        background: '#e6f4ff'
+        background: "#e6f4ff"
       dark:
-        background: '#1f2f3d'  
+        background: "#1f2f3d"
   mention:
-    icon: '💬'
+    icon: "💬"
     style:
-      border: '#b45fff'
+      border: "#b45fff"
       light:
-        background: '#f3e6ff'
+        background: "#f3e6ff"
       dark:
-        background: '#2f1f3d'   
+        background: "#2f1f3d"
   recommend:
-    icon: '👍'
+    icon: "👍"
     style:
-      border: '#67c23a'
+      border: "#67c23a"
       light:
-        background: '#e6ffe6'
+        background: "#e6ffe6"
       dark:
-        background: '#1f3d1f'   
+        background: "#1f3d1f"
   note:
-    icon: '📝'
+    icon: "📝"
     style:
-      border: '#9e9e9e'
+      border: "#9e9e9e"
       light:
-        background: '#f5f5f5'
+        background: "#f5f5f5"
       dark:
-        background: '#363636'   
+        background: "#363636"
   info:
-    icon: 'ℹ️'
+    icon: "ℹ️"
     style:
-      border: '#03a9f4'
+      border: "#03a9f4"
       light:
-        background: '#e3f2fd'
+        background: "#e3f2fd"
       dark:
-        background: '#1f313d'   
+        background: "#1f313d"
   success:
-    icon: '✅'
+    icon: "✅"
     style:
-      border: '#4caf50'
+      border: "#4caf50"
       light:
-        background: '#e8f5e9'
+        background: "#e8f5e9"
       dark:
-        background: '#1f3d24'   
+        background: "#1f3d24"
   error:
-    icon: '❌'
+    icon: "❌"
     style:
-      border: '#f44336'
+      border: "#f44336"
       light:
-        background: '#ffebee'
+        background: "#ffebee"
       dark:
-        background: '#3d1f22'   
+        background: "#3d1f22"
   bug:
-    icon: '🐛'
+    icon: "🐛"
     style:
-      border: '#e91e63'
+      border: "#e91e63"
       light:
-        background: '#fce4ec'
+        background: "#fce4ec"
       dark:
-        background: '#3d1f2a'   
+        background: "#3d1f2a"
   todo:
-    icon: '📋'
+    icon: "📋"
     style:
-      border: '#9c27b0'
+      border: "#9c27b0"
       light:
-        background: '#f3e5f5'
+        background: "#f3e5f5"
       dark:
-        background: '#2f1f3d'   
+        background: "#2f1f3d"
   example:
-    icon: '🔍'
+    icon: "🔍"
     style:
-      border: '#ff9800'
+      border: "#ff9800"
       light:
-        background: '#fff3e0'
+        background: "#fff3e0"
       dark:
-        background: '#3d311f'   
+        background: "#3d311f"
   quote:
-    icon: '💭'
+    icon: "💭"
     style:
-      border: '#607d8b'
+      border: "#607d8b"
       light:
-        background: '#eceff1'
+        background: "#eceff1"
       dark:
-        background: '#1f292d'   
+        background: "#1f292d"
   link:
-    icon: '🔗'
+    icon: "🔗"
     style:
-      border: '#3f51b5'
+      border: "#3f51b5"
       light:
-        background: '#e8eaf6'
+        background: "#e8eaf6"
       dark:
-        background: '#1f2137'   
+        background: "#1f2137"
   code:
-    icon: '💻'
+    icon: "💻"
     style:
-      border: '#616161'
+      border: "#616161"
       light:
-        background: '#fafafa'
+        background: "#fafafa"
       dark:
-        background: '#363636'   
+        background: "#363636"
   update:
-    icon: '🔄'
+    icon: "🔄"
     style:
-      border: '#009688'
+      border: "#009688"
       light:
-        background: '#e0f2f1'
+        background: "#e0f2f1"
       dark:
-        background: '#1f3734'   
+        background: "#1f3734"
   star:
-    icon: '⭐'
+    icon: "⭐"
     style:
-      border: '#ffd700'
+      border: "#ffd700"
       light:
-        background: '#fffde7'
+        background: "#fffde7"
       dark:
-        background: '#3d3a1f'   
+        background: "#3d3a1f"
   time:
-    icon: '⌛'
+    icon: "⌛"
     style:
-      border: '#795548'
+      border: "#795548"
       light:
-        background: '#efebe9'
+        background: "#efebe9"
       dark:
-        background: '#332824'
+        background: "#332824"
 ```
 
 使用方法
@@ -190,7 +190,7 @@ content
 
 ```
 :::warning
- 
+
 这是一个警告提示
 
 :::
@@ -203,8 +203,8 @@ content
 :::warning
 这是一个警告提示
 
-+ 用于提醒用户需要注意的内容
-+ 适合展示警告信息
+- 用于提醒用户需要注意的内容
+- 适合展示警告信息
   :::
 
 :::danger
@@ -260,13 +260,13 @@ content
 
 - [ ] 第一个任务
 - [ ] 第二个任务
-  :::
+      :::
 
 :::example
 这是一个示例框
 
 ```javascript
-console.log('示例代码');
+console.log("示例代码");
 ```
 
 :::
@@ -301,4 +301,3 @@ console.log('示例代码');
 这是一个时间提示
 预计耗时：30分钟
 :::
-

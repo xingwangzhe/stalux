@@ -1,14 +1,14 @@
 ---
 title: 解决Tauri2.x拖拽事件问题
 abbrlink: aed59aad
-date: '2025-09-03T07:58:52.390+08:00'
-updated: '2025-09-03T12:31:56.213+08:00'
+date: "2025-09-03T07:58:52.390+08:00"
+updated: "2025-09-03T12:31:56.213+08:00"
 categories:
-- 开发
+  - 开发
 tags:
-- Tauri
-- ts
-- 问题
+  - Tauri
+  - ts
+  - 问题
 ---
 
 ## 前言
@@ -20,27 +20,27 @@ tags:
 使用前端监听拖拽事件时，发现事件无法触发。例如
 
 ```ts title="示例.ts"
-document.addEventListener('DOMContentLoaded', () => {
-  const uploadZone = document.getElementById('file-upload-zone');
-  const fileList = document.getElementById('file-list');
+document.addEventListener("DOMContentLoaded", () => {
+  const uploadZone = document.getElementById("file-upload-zone");
+  const fileList = document.getElementById("file-list");
 
-  uploadZone.addEventListener('dragover', (e) => {
+  uploadZone.addEventListener("dragover", (e) => {
     e.preventDefault();
-    uploadZone.classList.add('drag-hover');
+    uploadZone.classList.add("drag-hover");
   });
 
-  uploadZone.addEventListener('drop', (e) => {
+  uploadZone.addEventListener("drop", (e) => {
     e.preventDefault();
-    uploadZone.classList.remove('drag-hover');
+    uploadZone.classList.remove("drag-hover");
 
     const files = Array.from(e.dataTransfer.files);
     displayFiles(files);
   });
 
   function displayFiles(files) {
-    fileList.innerHTML = files.map(file =>
-      `<div class="file-item">${file.name} (${file.size} bytes)</div>`
-    ).join('');
+    fileList.innerHTML = files
+      .map((file) => `<div class="file-item">${file.name} (${file.size} bytes)</div>`)
+      .join("");
   }
 });
 ```
@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ### 解决方案
 
 默认情况下，Tauri 配置
+
 ```json title="tauri.conf.json"
 {
   "app": {
@@ -100,7 +101,7 @@ listen("tauri://drag-enter", () => {
 
 当然，根据[官方文档](https://tauri.app/zh-cn/reference/javascript/api/namespaceevent/),**Tauri://** 事件并不能监听到具体的 **DOM** 对象(~~当然，如果你喜欢用相对坐标来判断那我没话说~~)，所以如果你需要监听具体的 DOM 对象的拖拽事件，还是需要把`dragDropEnabled`设置为`false`,并且使用原生的DOM拖拽事件才能行。
 
-
 ## 参考
+
 - [Tauri 官方文档 - 事件](https://tauri.app/zh-cn/reference/javascript/api/namespaceevent/)
 - [解决tauri文件拖放无效问题](https://blog.erio.work/posts/解决tauri文件拖放无效问题/)

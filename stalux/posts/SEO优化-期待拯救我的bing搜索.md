@@ -2,13 +2,13 @@
 title: SEO优化:期待拯救我的bing搜索
 abbrlink: 8811
 date: 2025-01-10 18:43:13+00:00
-updated: '2025-07-04T18:44:32.346+08:00'
+updated: "2025-07-04T18:44:32.346+08:00"
 categories:
-- 胡思乱想
+  - 胡思乱想
 tags:
-- 文学
-- 记录
-- 前端
+  - 文学
+  - 记录
+  - 前端
 ---
 
 啊，好麻烦
@@ -53,7 +53,7 @@ tags:
 
 <% if (page.content) { %>
   <% let rawContent = page.content; %>
-  <% let pureContent = rawContent.replace(/<[^>]*>/g, '') 
+  <% let pureContent = rawContent.replace(/<[^>]*>/g, '')
                                  .replace(/</g, '')
                                  .replace(/\s+/g, '')
                                  .replace(/\n+/g, '')
@@ -107,4 +107,3 @@ tags:
 差不多，再修修补补应该就好了
 
 希望bing能够重新显示我的界面
-

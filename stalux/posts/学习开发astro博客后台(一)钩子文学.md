@@ -1,14 +1,14 @@
 ---
 title: 学习开发astro博客后台(一)钩子文学
 abbrlink: f593cf78
-date: '2025-07-04T18:44:32.352+08:00'
-updated: '2025-07-04T18:44:32.352+08:00'
+date: "2025-07-04T18:44:32.352+08:00"
+updated: "2025-07-04T18:44:32.352+08:00"
 categories:
-- 开发
+  - 开发
 tags:
-- astro
-- 后端
-- 开发
+  - astro
+  - 后端
+  - 开发
 ---
 
 前端会点，后端不怎么会，想着 Astro 默认作为 SSG 前端框架，得需要一个伪后台。我看了官方文档，有很多后台，但都不是我想要的那种 **dev** 开发环境下的后台，所以我准备手搓一个**解耦的后台实现**，也就是作为 **npm** 包来分发。
@@ -38,7 +38,7 @@ npm init
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./src/pages/admin.astro": "./src/pages/admin.astro" 
+    "./src/pages/admin.astro": "./src/pages/admin.astro"
   },
   "files": [
     "dist",
@@ -73,59 +73,62 @@ $ tsc
 ### 测试
 
 ```ts title="src/index.ts"
-import { AstroIntegration } from 'astro';
+import { AstroIntegration } from "astro";
 
-interface Options{
-  collections: String; 
+interface Options {
+  collections: String;
 }
 
-export function locastrol(config: Options = { collections: '' }): AstroIntegration {
+export function locastrol(config: Options = { collections: "" }): AstroIntegration {
   const { collections } = config;
-  
+
   return {
-    name: 'locastrol',
+    name: "locastrol",
     hooks: {
-      'astro:config:setup': ({ injectRoute,updateConfig,command }) => {
-        if(command=='dev'){
+      "astro:config:setup": ({ injectRoute, updateConfig, command }) => {
+        if (command == "dev") {
           // 通过 Vite 环境变量传递 collections 参数
           updateConfig({
             vite: {
               define: {
-                'import.meta.env.LOCASTROL_COLLECTIONS': JSON.stringify(collections)
-              }
-            }
-          });          // 后台首页          
+                "import.meta.env.LOCASTROL_COLLECTIONS": JSON.stringify(collections),
+              },
+            },
+          }); // 后台首页
           // 编辑器路由 - 使用动态路由
           injectRoute({
-            pattern: '/locastrol/editor',
-            entrypoint: 'locastrol/src/pages/index.astro'
+            pattern: "/locastrol/editor",
+            entrypoint: "locastrol/src/pages/index.astro",
           });
           injectRoute({
-            pattern: '/locastrol/editor/[slug]',
-            entrypoint: 'locastrol/src/pages/[slug].astro'
+            pattern: "/locastrol/editor/[slug]",
+            entrypoint: "locastrol/src/pages/[slug].astro",
           });
-            // API 路由
+          // API 路由
           injectRoute({
-            pattern: '/api/locastrol/posts/[slug]',
-            entrypoint: 'locastrol/src/api/posts/[slug].ts'
+            pattern: "/api/locastrol/posts/[slug]",
+            entrypoint: "locastrol/src/api/posts/[slug].ts",
           });
           injectRoute({
-            pattern: '/api/locastrol/posts',
-            entrypoint: 'locastrol/src/api/posts.ts'
+            pattern: "/api/locastrol/posts",
+            entrypoint: "locastrol/src/api/posts.ts",
           });
-      }
-
+        }
       },
-      'astro:server:start': ({ address }) => {
-        console.log('\x1b[43m\x1b[30m%s\x1b[0m \x1b[36m%s\x1b[0m', '✅Locastrol后台已经启动', `http://localhost:${address.port}/locastrol/editor`);
+      "astro:server:start": ({ address }) => {
+        console.log(
+          "\x1b[43m\x1b[30m%s\x1b[0m \x1b[36m%s\x1b[0m",
+          "✅Locastrol后台已经启动",
+          `http://localhost:${address.port}/locastrol/editor`,
+        );
       },
     },
   };
 }
 
 export type { Options };
-
 ```
+
 ...
 
 ```bash title="终端"
@@ -136,7 +139,7 @@ cd d:\test\astrotest && New-Item -ItemType SymbolicLink -Path "node_modules\loca
 
 ![软链接截图](https://i.ibb.co/fVnRCpBV/2025-05-28-110824.webp)
 
-## 奇异搞笑 **astro: content**  导入
+## 奇异搞笑 **astro: content** 导入
 
 我当时不明白，为什么我不能导入来获取这个方法，问了一下 Copilot：
 
@@ -147,8 +150,6 @@ import { getCollection } from "astro:content";
 Copilot 回答说：`astro:content 是 Astro 的虚拟模块，只在 Astro 项目运行时可用`，于是它推荐了各种**疯狂的高超技巧**来实现获取内容合集，我照做了，但是总是感觉别扭。问另一个 AI，让我另辟蹊径，直接写 Astro 组件？
 
 欸，果然只问一个 AI，这个 AI 就会犯轴，转不过弯，好多时间浪费在那了...
-
-
 
 ```astro title="src/pages/admin.astro"
 ---
@@ -177,21 +178,25 @@ const posts = await getCollection(POSTS);
 </html>
 
 ```
->直接通过组件来实现的**内容集合查询**
+
+> 直接通过组件来实现的**内容集合查询**
 
 ## 具体讲讲钩子这块
 
 ### 插件得先注入
+
 这块主要是看官方的文档,首先我得配置一下我这个插件的`注入方式`,
+
 ```ts title="src/index.ts"
 import { AstroIntegration } from 'astro';
 
 interface Options{
-  collections: String; 
+  collections: String;
 }
 
 export function IntergrationName(config: Options = { }): AstroIntegration {...}
 ```
+
 这个应该是**默认插件导出**,导出名就是`Intergration`,然后在`astro.config.mjs`中配置一下
 
 ```js title="astro.config.mjs"
@@ -202,6 +207,7 @@ export default defineConfig({
 });
 
 ```
+
 ### 钩子,对事件的响应,或者说回调?
 
 很明显,钩子总是与事件有关
@@ -242,10 +248,11 @@ hooks: {
   },
 }
 ```
-:::warning
- 加上`if (command == 'dev')`条件判断很重要,不然ssg会把后台页面也渲染出来
 
- 到时候一些私密内存变量就会不小心暴露出来了
+:::warning
+加上`if (command == 'dev')`条件判断很重要,不然ssg会把后台页面也渲染出来
+
+到时候一些私密内存变量就会不小心暴露出来了
 :::
 
 ```js
@@ -253,6 +260,7 @@ hooks: {
         console.log('\x1b[43m\x1b[30m%s\x1b[0m \x1b[36m%s\x1b[0m', '✅Locastrol后台已经启动', `http://localhost:${address.port}/locastrol/editor`);
       },
 ```
+
 这个钩子在服务器启动时触发,我在这里打印了一条日志,告诉用户后台已经启动,并给出访问地址,不过我好奇,为什么ai给我这么*邪乎*的颜色代码,就没有更好的实现吗?
 
 ## roadmap ^ ^

@@ -2,12 +2,12 @@
 title: 本来想搬fishport_serverwiki来着
 abbrlink: 2283d3b7
 date: 2024-07-03 21:07:59+00:00
-updated: '2024-10-15 21:07:58'
+updated: "2024-10-15 21:07:58"
 categories:
-- 游戏
+  - 游戏
 tags:
-- 游戏
-- 记录
+  - 游戏
+  - 记录
 ---
 
 <center>
@@ -59,7 +59,7 @@ tags:
 
 ~~[ppp]:https://fishportsever.fandom.com/zh/wiki/FishPort_Wiki~~
 
-[![ppp](https://i.ibb.co/XpnwWk3/202406222147179.webp)](https://fishportsever.fandom.com/zh/wiki/FishPort_Wiki )
+[![ppp](https://i.ibb.co/XpnwWk3/202406222147179.webp)](https://fishportsever.fandom.com/zh/wiki/FishPort_Wiki)
 
 有兴趣的话欢迎加入游玩哦
 

@@ -1,14 +1,14 @@
 ---
 title: 再也不见Windows10
 abbrlink: ac8ebba9
-date: '2025-10-14T08:25:26.839+08:00'
-updated: '2025-10-14T09:10:46.581+08:00'
+date: "2025-10-14T08:25:26.839+08:00"
+updated: "2025-10-14T09:10:46.581+08:00"
 categories:
-- windows
+  - windows
 tags:
-- windows
-- linux
-- 记录
+  - windows
+  - linux
+  - 记录
 ---
 
 ## 前言
@@ -20,7 +20,6 @@ tags:
 2025年10月14日，太平洋时区(PT)(UTC-8)时起，正式停止 **Windows 10** 的更新与维护
 
 对应的北京时间为 2025 年 10 月 14 日 15:00 (UTC+8)(换算考虑美国夏令时)
-
 
 ## 我曾用过 **Windows 10**
 
