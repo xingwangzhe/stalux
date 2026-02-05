@@ -43,22 +43,22 @@ export async function getStaticPaths() {
     }));
 }
 
-const { category, count, posts, lastUpdateDate } = Astro.props;
+interface Props {
+    category: string;
+    count: number;
+    posts: CollectionEntry<"posts">[];
+    lastUpdateDate: string;
+}
+
+const props = Astro.props as Props;
 ---
 
 <Stalux
-    stalux={{
-        title: "分类: " + category + " | " + stalux.title,
-        description: `浏览分类 ${category} 下的 ${count} 篇文章，涵盖相关领域的深度思考与见解。最后更新于 ${lastUpdateDate}`,
-        url: Astro.url.href,
-        twitterSite: stalux.twitterSite,
-        noindex: stalux.noindex,
-        nofollow: stalux.nofollow,
-        anyhead: stalux.anyhead,
-    }}
+    title={"分类: " + props.category + " | " + stalux.title}
+    description={`浏览分类 ${props.category} 下的 ${props.count} 篇文章，涵盖相关领域的深度思考与见解。最后更新于 ${props.lastUpdateDate}`}
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <TagHeader type={"分类"} name={category} count={count} />
-    <PostList posts={posts} />
+    <TagHeader type={"分类"} name={props.category} count={props.count} />
+    <PostList posts={props.posts} />
 </Stalux>

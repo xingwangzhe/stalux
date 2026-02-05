@@ -11,17 +11,7 @@ import SocialMedia from "@components/stalux/links/socialMedia.astro";
 import ToArchive from "@components/stalux/archives/toArchive.astro";
 ---
 
-<Stalux
-  stalux={{
-    title: stalux.title,
-    description: stalux.description,
-    url: Astro.url.href,
-    twitterSite: stalux.twitterSite,
-    noindex: stalux.noindex,
-    nofollow: stalux.nofollow,
-    anyhead: stalux.anyhead,
-  }}
->
+<Stalux title={stalux.title} description={stalux.description}>
   <div class={styles.homeBody}>
     <h1 class={styles.homeTitle}>{stalux.title}</h1>
     <div class={styles.homeNavs}>

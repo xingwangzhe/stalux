@@ -19,15 +19,8 @@ const author = stalux?.author?.name;
 ---
 
 <Stalux
-    stalux={{
-        title: aboutPage.data.title + " | " + stalux.title,
-        description: aboutPage.data.description,
-        url: Astro.url.href,
-        twitterSite: stalux.twitterSite,
-        noindex: stalux.noindex,
-        nofollow: stalux.nofollow,
-        anyhead: stalux.anyhead,
-    }}
+    title={aboutPage.data.title + " | " + stalux.title}
+    description={aboutPage.data.description}
 >
     <div style="height: 3em;"></div>
     <Navs />

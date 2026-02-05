@@ -8,8 +8,8 @@ import BingClarity from "@components/stalux/analytics/clarity.astro";
 import "@styles/base/init.css";
 import Umami from "@components/stalux/analytics/umami.astro";
 
-const configCollection = await getCollection("config");
-const config = configCollection[0];
+const staluxCollection = await getCollection("config");
+const stalux = staluxCollection[0];
 
 // Twitter 卡片类型定义
 export type TwitterCardType = "summary" | "summary_large_image";
@@ -17,31 +17,31 @@ export type TwitterCardType = "summary" | "summary_large_image";
 // 最小必要 SEO 配置
 export interface Props {
   title: string;
-  url?: URL | string;
   description: string;
-  canonical?: URL | string;
-  twitterSite?: string;
-  noindex?: boolean;
-  nofollow?: boolean;
-  anyhead?: string;
-  favicon?: string;
-  ogImage?: string; // 社交分享图片，默认可用 author.avatar
 }
 
 const props = Astro.props as Props;
 const effectiveTitle = props.title;
 const effectiveDescription = props.description;
 
-const faviconPath = props.favicon || config.data.favicon || "/favicon.ico";
-// 社交分享图片：优先使用传入的 ogImage，否则使用作者头像
-const ogImagePath = props.ogImage || config.data.author.avatar || faviconPath;
+const canonicalBase = stalux.data.canonical || stalux.data.url;
+const canonicalUrl = canonicalBase
+  ? new URL(Astro.url.pathname, canonicalBase).href
+  : Astro.url.href;
+const faviconPath = stalux.data.favicon || "/favicon.ico";
+// 社交分享图片：默认使用作者头像
+const ogImagePath = stalux.data.author.avatar || faviconPath;
+const isNotFoundPage =
+  Astro.url.pathname === "/404" || Astro.url.pathname === "/404/";
+const resolvedNoindex = Boolean(stalux.data.noindex) || isNotFoundPage;
+const resolvedNofollow = Boolean(stalux.data.nofollow) || isNotFoundPage;
 
 const openGraphConfig = {
   basic: {
     title: effectiveTitle,
     type: "website",
     image: ogImagePath,
-    url: props.canonical || props.url || Astro.url.href,
+    url: canonicalUrl,
   },
   optional: {
     description: effectiveDescription,
@@ -54,7 +54,7 @@ const twitterConfig = {
   title: effectiveTitle,
   description: effectiveDescription,
   image: ogImagePath,
-  ...(props.twitterSite ? { site: props.twitterSite } : {}),
+  ...(stalux.data.twitterSite ? { site: stalux.data.twitterSite } : {}),
 };
 
 const extendedLink = [{ rel: "icon", href: faviconPath }];
@@ -65,7 +65,7 @@ const extendedMeta = [
 const schema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  url: props.canonical || Astro.url.href,
+  url: canonicalUrl,
   name: effectiveTitle,
   description: effectiveDescription,
 };
@@ -78,9 +78,9 @@ const ldJson = JSON.stringify(schema);
   <SEO
     title={effectiveTitle}
     description={effectiveDescription}
-    canonical={props.canonical}
-    nofollow={props.nofollow || false}
-    noindex={props.noindex || false}
+    canonical={canonicalUrl}
+    nofollow={resolvedNofollow}
+    noindex={resolvedNoindex}
     openGraph={openGraphConfig}
     twitter={twitterConfig}
     extend={{
@@ -89,13 +89,13 @@ const ldJson = JSON.stringify(schema);
     }}
   />
   {
-    config.data.head?.anyhead && (
-      <Fragment set:html={config.data.head.anyhead} />
+    stalux.data.head?.anyhead && (
+      <Fragment set:html={stalux.data.head.anyhead} />
     )
   }
-  {config.data.head?.googleAnalyticsId && <GoogleAnalytics />}
-  {config.data.head?.bingClarityId && <BingClarity />}
-  {config.data.head?.umami?.id && config.data.head?.umami?.url && <Umami />}
+  {stalux.data.head?.googleAnalyticsId && <GoogleAnalytics />}
+  {stalux.data.head?.bingClarityId && <BingClarity />}
+  {stalux.data.head?.umami?.id && stalux.data.head?.umami?.url && <Umami />}
   <script type="application/ld+json" set:html={ldJson} />
   <VerCount />
 </head>

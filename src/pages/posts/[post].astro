@@ -11,13 +11,13 @@ interface Props {
     next?: { url: string; title: string };
 }
 const stalux = (await getCollection("config"))[0].data;
-const { post, prev, next } = Astro.props;
-const { Content, headings, remarkPluginFrontmatter } = await render(post);
+const props = Astro.props as Props;
+const { Content, headings, remarkPluginFrontmatter } = await render(props.post);
 // 从 remark 插件获取虚拟 frontmatter：阅读时间、字数、自动生成的描述
 const minutesRead = remarkPluginFrontmatter.minutesRead || "";
 const wordCount = remarkPluginFrontmatter.wordCount || 0;
 // 优先使用 remark 插件生成的描述（前125字符），如果没有则使用文章自身的 desc
-const autoDesc = remarkPluginFrontmatter.desc || post.data.desc || "";
+const autoDesc = remarkPluginFrontmatter.desc || props.post.data.desc || "";
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts");
@@ -57,34 +57,29 @@ export async function getStaticPaths() {
 ---
 
 <Stalux
-    stalux={{
-        title: post.data.title + " | " + stalux.title,
-        description: autoDesc,
-        url: Astro.url.href,
-        twitterSite: stalux.twitterSite,
-        noindex: stalux.noindex,
-        nofollow: stalux.nofollow,
-        anyhead: stalux.anyhead,
-    }}
+    title={props.post.data.title + " | " + stalux.title}
+    description={autoDesc}
 >
     <div style="height: 3em;"></div>
     <Navs />
     <div style="height: 3em;"></div>
     <PostLayout
-        title={post.data.title}
-        date={post.data.date ? post.data.date.toISOString() : undefined}
-        updated={post.data.updated
-            ? post.data.updated.toISOString()
+        title={props.post.data.title}
+        date={props.post.data.date
+            ? props.post.data.date.toISOString()
+            : undefined}
+        updated={props.post.data.updated
+            ? props.post.data.updated.toISOString()
             : undefined}
         readingTime={minutesRead}
-        tags={post.data.tags || []}
-        categories={post.data.categories || []}
+        tags={props.post.data.tags || []}
+        categories={props.post.data.categories || []}
         headings={headings}
         author={stalux.author.name}
         authorAvatar={stalux.author.avatar}
-        prev={prev}
-        next={next}
-        cc={post.data.cc}
+        prev={props.prev}
+        next={props.next}
+        cc={props.post.data.cc}
         wordCount={wordCount}
     >
         <Content />

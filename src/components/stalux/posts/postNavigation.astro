@@ -6,16 +6,16 @@ interface Props {
     next?: { url: string; title: string };
 }
 
-const { prev, next } = Astro.props;
+const props = Astro.props as Props;
 ---
 
 {
-    (prev || next) && (
+    (props.prev || props.next) && (
         <nav class={style.postNavigation} aria-label="文章导航">
             <div class={style.postNavigationInner}>
-                {prev ? (
+                {props.prev ? (
                     <a
-                        href={prev.url}
+                        href={props.prev.url}
                         class={`${style.postNavLink} ${style.prevPost}`}
                         rel="prev"
                     >
@@ -36,7 +36,9 @@ const { prev, next } = Astro.props;
                         </span>
                         <div class={style.postNavContent}>
                             <span class={style.postNavLabel}>上一篇</span>
-                            <span class={style.postNavTitle}>{prev.title}</span>
+                            <span class={style.postNavTitle}>
+                                {props.prev.title}
+                            </span>
                         </div>
                     </a>
                 ) : (
@@ -67,15 +69,17 @@ const { prev, next } = Astro.props;
                     </span>
                 )}
 
-                {next ? (
+                {props.next ? (
                     <a
-                        href={next.url}
+                        href={props.next.url}
                         class={`${style.postNavLink} ${style.nextPost}`}
                         rel="next"
                     >
                         <div class={style.postNavContent}>
                             <span class={style.postNavLabel}>下一篇</span>
-                            <span class={style.postNavTitle}>{next.title}</span>
+                            <span class={style.postNavTitle}>
+                                {props.next.title}
+                            </span>
                         </div>
                         <span class={style.postNavArrow}>
                             <svg

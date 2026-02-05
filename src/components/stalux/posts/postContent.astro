@@ -15,7 +15,7 @@ interface Props {
     wordCount?: number;
 }
 
-const { title, date, updated, readingTime, wordCount } = Astro.props;
+const props = Astro.props as Props;
 
 // 格式化：若包含时间则显示 YYYY-MM-DD HH:mm:ss，否则退级为 YYYY-MM-DD
 const formatDateTime = (d?: string | Date) => {
@@ -37,37 +37,37 @@ const formatDateTime = (d?: string | Date) => {
 <article class={style.articleContent}>
     <!-- Article Header -->
     <header class={style.articleHeader}>
-        <h1 class={style.title}>{title}</h1>
+        <h1 class={style.title}>{props.title}</h1>
         <div class={style.metadata}>
             {
-                date && (
-                    <time class={style.metaItem} datetime={date}>
+                props.date && (
+                    <time class={style.metaItem} datetime={props.date}>
                         发布时间：
-                        {formatDateTime(date)}
+                        {formatDateTime(props.date)}
                     </time>
                 )
             }
 
             {
-                updated && (
+                props.updated && (
                     <span class={style.metaItem}>
                         更新时间：
-                        {formatDateTime(updated)}
+                        {formatDateTime(props.updated)}
                     </span>
                 )
             }
         </div>
         {
-            (readingTime || true) && (
+            (props.readingTime || true) && (
                 <div class={style.pageStats}>
-                    {readingTime && (
+                    {props.readingTime && (
                         <span class={style.readingTime}>
-                            🕒 阅读时间：{readingTime}
+                            🕒 阅读时间：{props.readingTime}
                         </span>
                     )}
-                    {wordCount && wordCount > 0 && (
+                    {props.wordCount && props.wordCount > 0 && (
                         <span class={style.wordCount}>
-                            📝 字数：{wordCount}
+                            📝 字数：{props.wordCount}
                         </span>
                     )}
                     <span id="vercount_container_page_pv">

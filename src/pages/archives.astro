@@ -8,17 +8,7 @@ const stalux = (await getCollection("config"))[0].data;
 const posts = await getCollection("posts");
 ---
 
-<Stalux
-    stalux={{
-        title: "文章归档 | " + stalux.title,
-        description: "本站文章归档页面",
-        url: Astro.url.href,
-        twitterSite: stalux.twitterSite,
-        noindex: stalux.noindex,
-        nofollow: stalux.nofollow,
-        anyhead: stalux.anyhead,
-    }}
->
+<Stalux title={"文章归档 | " + stalux.title} description={"本站文章归档页面"}>
     <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.h1}>文章归档</h1>

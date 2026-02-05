@@ -7,17 +7,7 @@ import styles from "@styles/pages/links.module.css";
 const stalux = (await getCollection("config"))[0].data;
 ---
 
-<Stalux
-    stalux={{
-        title: stalux.title,
-        description: stalux.description,
-        url: Astro.url.href,
-        twitterSite: stalux.twitterSite,
-        noindex: stalux.noindex,
-        nofollow: stalux.nofollow,
-        anyhead: stalux.anyhead,
-    }}
->
+<Stalux title={stalux.title} description={stalux.description}>
     <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.title}>{stalux.links.title}</h1>

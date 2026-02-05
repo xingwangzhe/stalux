@@ -24,21 +24,11 @@ interface Props {
     cc?: string;
 }
 
-const {
-    title,
-    date,
-    updated,
-    readingTime,
-    wordCount,
-    tags = [],
-    categories = [],
-    headings = [],
-    author = "Author",
-    authorAvatar,
-    prev,
-    next,
-    cc,
-} = Astro.props;
+const props = Astro.props as Props;
+const tags = props.tags ?? [];
+const categories = props.categories ?? [];
+const headings = props.headings ?? [];
+const author = props.author ?? "Author";
 
 // 获取 Waline 配置
 const stalux = (await getCollection("config"))[0].data;
@@ -49,30 +39,30 @@ const walineConfig = stalux?.comment?.waline;
 <div class={layoutStyle.postLayout}>
     <div class={layoutStyle.container}>
         <!-- Left Sidebar -->
-        <PostLeft author={author} authorAvatar={authorAvatar} />
+        <PostLeft author={author} authorAvatar={props.authorAvatar} />
 
         <!-- Main Content -->
         <PostContent
-            title={title}
-            date={date}
-            updated={updated}
-            readingTime={readingTime}
-            wordCount={wordCount}
+            title={props.title}
+            date={props.date}
+            updated={props.updated}
+            readingTime={props.readingTime}
+            wordCount={props.wordCount}
         >
             <slot />
             <PostCC
-                title={title}
+                title={props.title}
                 author={author}
                 url={Astro.url.href}
-                cc={cc}
+                cc={props.cc}
             />
-            <PostNavigation prev={prev} next={next} />
+            <PostNavigation prev={props.prev} next={props.next} />
             {
                 commentEnabled && walineConfig?.serverURL && (
                     <WalineComment
                         serverURL={walineConfig.serverURL}
                         path={Astro.url.pathname}
-                        title={title}
+                        title={props.title}
                         lang={walineConfig.lang}
                         locale={(walineConfig as any).locale}
                         emoji={walineConfig.emoji}

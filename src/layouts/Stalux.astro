@@ -5,33 +5,14 @@ import "@styles/base/init.css";
 const props = Astro.props as Props;
 
 export interface Props {
-  stalux: {
-    title: string;
-    description: string;
-    url: string;
-    twitterSite?: string;
-    noindex?: boolean;
-    nofollow?: boolean;
-    anyhead?: string;
-    favicon?: string;
-    ogImage?: string;
-  };
+  title: string;
+  description: string;
 }
 ---
 
 <!doctype html>
 <html lang="zh-CN">
-  <Head
-    title={props.stalux.title}
-    description={props.stalux.description}
-    canonical={props.stalux.url}
-    twitterSite={props.stalux.twitterSite}
-    noindex={props.stalux.noindex}
-    nofollow={props.stalux.nofollow}
-    anyhead={props.stalux.anyhead}
-    favicon={props.stalux.favicon}
-    ogImage={props.stalux.ogImage}
-  />
+  <Head title={props.title} description={props.description} />
   <script>
     import "../scripts/background.ts";
   </script>

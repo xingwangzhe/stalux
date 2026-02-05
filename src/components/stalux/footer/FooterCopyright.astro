@@ -4,17 +4,17 @@ interface Props {
     startYear?: number;
 }
 
-const { author = "", startYear } = Astro.props;
+const props = Astro.props as Props;
 
 const currentYear = new Date().getFullYear();
 const copyrightYear =
-    startYear && startYear < currentYear
-        ? `${startYear}-${currentYear}`
+    props.startYear && props.startYear < currentYear
+        ? `${props.startYear}-${currentYear}`
         : currentYear;
 ---
 
 <div class="copyright">
-    <span>&copy; {copyrightYear} {author}. 保留权利.</span>
+    <span>&copy; {copyrightYear} {props.author || ""}. 保留权利.</span>
 </div>
 
 <style>
