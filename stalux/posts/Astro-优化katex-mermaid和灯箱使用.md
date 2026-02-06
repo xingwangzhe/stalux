@@ -10,7 +10,7 @@ tags:
   - 前端
 ---
 
-在前文[ Astro 5.17构建性能优化实践：从18s到13s](/posts/astro-517-performance-optimization/)中,我已经成功减少了构建时间,这次,通过继续优化 **`katex`**、**`mermaid`** 和 **灯箱** 的使用,我进一步提升了博客的 **客户端** 和 **构建时** 性能。
+在前文[ Astro 5.17构建性能优化实践：从18s到13s](https://xingwangzhe.fun/posts/astro-517-performance-optimization/)中,我已经成功减少了构建时间,这次,通过继续优化 **`katex`**、**`mermaid`** 和 **灯箱** 的使用,我进一步提升了博客的 **客户端** 和 **构建时** 性能。
 
 ## 核心问题
 
