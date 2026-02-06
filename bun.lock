@@ -22,6 +22,7 @@
         "lightningcss": "^1.31.1",
         "mermaid": "^11.12.2",
         "photoswipe": "^5.4.4",
+        "reading-time": "^1.5.0",
         "rehype-katex": "^7.0.1",
         "remark-math": "^6.0.0",
         "simple-icons": "^16.7.0",
@@ -1106,6 +1107,8 @@
     "read-package-json": ["read-package-json@6.0.4", "", { "dependencies": { "glob": "^10.2.2", "json-parse-even-better-errors": "^3.0.0", "normalize-package-data": "^5.0.0", "npm-normalize-package-bin": "^3.0.0" } }, "sha512-AEtWXYfopBj2z5N5PbkAOeNHRPUg5q+Nen7QLxV8M2zJq1ym6/lCz3fYNTCXe19puu2d06jfHhrP7v/S2PtMMw=="],
 
     "readdirp": ["readdirp@5.0.0", "", {}, "sha512-9u/XQ1pvrQtYyMpZe7DXKv2p5CNvyVwzUB6uhLAnQwHMSgKMBR62lc7AHljaeteeHXn11XTAaLLUVZYVZyuRBQ=="],
+
+    "reading-time": ["reading-time@1.5.0", "", {}, "sha512-onYyVhBNr4CmAxFsKS7bz+uTLRakypIe4R+5A824vBSkQy/hB3fZepoVEf8OVAxzLvK+H/jm9TzpI3ETSm64Kg=="],
 
     "recaptcha-v3": ["recaptcha-v3@1.11.3", "", {}, "sha512-sEE6J0RzUkS+sKEBpgCD/AqCU0ffrAVOADGjvAx9vcttN+VLK42SWMkj/J/I6vHu3Kew+xcfbBqDVb65N0QGDw=="],
 
