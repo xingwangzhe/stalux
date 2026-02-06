@@ -5,7 +5,6 @@ import sitemap from "@astrojs/sitemap";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
-import mermaid from "astro-mermaid";
 import { remarkPostBody } from "./src/utils/remark-post-body";
 import expressiveCode from "astro-expressive-code";
 
@@ -32,10 +31,6 @@ export default defineConfig({
     concurrency: 10,
   },
   integrations: [
-    mermaid({
-      theme: "dark",
-      autoTheme: true,
-    }),
     pagefind(),
     sitemap({
       filter: (page) => {

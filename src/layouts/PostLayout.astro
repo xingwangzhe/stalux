@@ -5,6 +5,8 @@ import PostRight from "@components/stalux/posts/postRight.astro";
 import PostNavigation from "@components/stalux/posts/postNavigation.astro";
 import PostCC from "@components/stalux/posts/postCC.astro";
 import WalineComment from "@components/stalux/posts/WalineComment.astro";
+import KatexStyle from "@components/stalux/posts/KatexStyle.astro";
+import PhotoSwipeStyle from "@components/stalux/posts/PhotoSwipeStyle.astro";
 import { getCollection } from "astro:content";
 import layoutStyle from "@styles/components/posts/postLayout.module.css";
 
@@ -22,6 +24,9 @@ interface Props {
     prev?: { url: string; title: string };
     next?: { url: string; title: string };
     cc?: string;
+    hasMermaid?: boolean;
+    hasKatex?: boolean;
+    hasImage?: boolean;
 }
 
 const props = Astro.props as Props;
@@ -29,12 +34,14 @@ const tags = props.tags ?? [];
 const categories = props.categories ?? [];
 const headings = props.headings ?? [];
 const author = props.author ?? "Author";
-
 // 获取 Waline 配置
 const stalux = (await getCollection("config"))[0].data;
 const commentEnabled = stalux?.comment?.enabled ?? false;
 const walineConfig = stalux?.comment?.waline;
 ---
+
+{props.hasKatex && <KatexStyle />}
+{props.hasImage && <PhotoSwipeStyle />}
 
 <div class={layoutStyle.postLayout}>
     <div class={layoutStyle.container}>
@@ -48,6 +55,7 @@ const walineConfig = stalux?.comment?.waline;
             updated={props.updated}
             readingTime={props.readingTime}
             wordCount={props.wordCount}
+            hasImage={props.hasImage}
         >
             <slot />
             <PostCC
@@ -89,3 +97,21 @@ const walineConfig = stalux?.comment?.waline;
         <PostRight headings={headings} tags={tags} categories={categories} />
     </div>
 </div>
+
+{
+    props.hasMermaid && (
+        <script>
+            import mermaid from "mermaid";
+            const renderMermaid = async () => {
+                if (document.querySelector(".mermaid")) {
+                    mermaid.initialize({
+                        startOnLoad: false,
+                        theme: "dark",
+                    });
+                    await mermaid.run();
+                }
+            };
+            document.addEventListener("astro:page-load", renderMermaid);
+        </script>
+    )
+}

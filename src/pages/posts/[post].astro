@@ -81,6 +81,9 @@ export async function getStaticPaths() {
         next={props.next}
         cc={props.post.data.cc}
         wordCount={wordCount}
+        hasMermaid={remarkPluginFrontmatter.hasMermaid}
+        hasKatex={remarkPluginFrontmatter.hasKatex}
+        hasImage={remarkPluginFrontmatter.hasImage}
     >
         <Content />
     </PostLayout>
