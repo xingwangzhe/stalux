@@ -1,9 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import pagefind from "astro-pagefind";
-import readingTime from "astro-reading-time";
 import sitemap from "@astrojs/sitemap";
-import remarkToc from "remark-toc";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
@@ -38,7 +36,6 @@ export default defineConfig({
       theme: "dark",
       autoTheme: true,
     }),
-    readingTime(),
     pagefind(),
     sitemap({
       filter: (page) => {
@@ -86,7 +83,7 @@ export default defineConfig({
     },
   },
   markdown: {
-    remarkPlugins: [remarkPostBody, [remarkToc, { heading: "toc", maxDepth: 7 }], remarkMath],
+    remarkPlugins: [remarkPostBody, remarkMath],
     rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
     smartypants: true, // 智能标点符号
     gfm: true, // GitHub 风格的 Markdown 支持

@@ -132,7 +132,6 @@ MIT @iconify/utils
 MIT @img/colour
 MIT @jridgewell/sourcemap-codec
 MIT @mermaid-js/parser
-MIT @mogeko/utils
 MIT @oslojs/encoding
 MIT @pagefind/default-ui
 MIT @pagefind/linux-x64
@@ -189,7 +188,6 @@ MIT @types/nlcst
 MIT @types/node
 MIT @types/sax
 MIT @types/trusted-types
-MIT @types/ungap__structured-clone
 MIT @types/unist
 MIT @types/web-bluetooth
 MIT @volar/kit
@@ -227,7 +225,6 @@ MIT astro
 MIT astro-expressive-code
 MIT astro-mermaid
 MIT astro-pagefind
-MIT astro-reading-time
 MIT astro-seo
 MIT astro-typewriter
 MIT autosize
@@ -355,7 +352,6 @@ MIT mdast-util-phrasing
 MIT mdast-util-to-hast
 MIT mdast-util-to-markdown
 MIT mdast-util-to-string
-MIT mdast-util-toc
 MIT mermaid
 MIT micromark
 MIT micromark-core-commonmark
@@ -424,7 +420,6 @@ MIT prompts
 MIT property-information
 MIT radix3
 MIT readdirp
-MIT reading-time
 MIT regex
 MIT regex-recursion
 MIT regex-utilities
@@ -440,7 +435,6 @@ MIT remark-parse
 MIT remark-rehype
 MIT remark-smartypants
 MIT remark-stringify
-MIT remark-toc
 MIT remove-markdown
 MIT request-light
 MIT require-directory
