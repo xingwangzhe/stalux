@@ -300,7 +300,7 @@ stalux:
       serverURL: "https://walines.xingwangzhe.fun"
       lang: "zh-CN"
       # locale: # 可选，自定义语言配置
-      login: "disable" # 'enable' | 'disable' | 'force'（开启强制登录可防止伪造）
+      login: "enable" # 'enable' | 'disable' | 'force'（开启强制登录可防止伪造）
       recaptchaV3Key: "" # 可选，配置 reCAPTCHA v3 网站 key 以启用验证码
       turnstileKey: "" # 可选，配置 Cloudflare Turnstile key 以启用验证码
       dark: true
