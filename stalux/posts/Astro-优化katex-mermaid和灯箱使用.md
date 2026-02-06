@@ -1,6 +1,6 @@
 ---
 title: "Astro: 优化katex,mermaid和灯箱使用"
-abbrlink: 55667
+abbrlink: astro-optimize-katex-mermaid-photoswipe
 date: 2026-02-06 18:13:00
 categories:
   - 技术
