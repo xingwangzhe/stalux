@@ -20,6 +20,16 @@ export const GET: APIRoute = async (context) => {
   const items = await Promise.all(
     sortedPosts.map(async (post) => {
       const { remarkPluginFrontmatter } = await render(post);
+      
+      // 构建自定义数据，包含更新时间和版权信息
+      let customData = '';
+      if (post.data.updated) {
+        customData += `<atom:updated>${post.data.updated.toISOString()}</atom:updated>`;
+      }
+      if (post.data.cc) {
+        customData += `<rights>${post.data.cc}</rights>`;
+      }
+      
       return {
         title: post.data.title,
         pubDate: new Date(post.data.date),
@@ -27,6 +37,7 @@ export const GET: APIRoute = async (context) => {
         description: remarkPluginFrontmatter.desc || post.data.desc || "",
         link: `/posts/${post.data.abbrlink}/`,
         categories: post.data.categories || [],
+        customData: customData,
       };
     }),
   );
