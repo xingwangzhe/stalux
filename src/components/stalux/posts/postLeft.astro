@@ -3,11 +3,16 @@ import PostAuthor from "@components/stalux/posts/postAuthor.astro";
 import style from "@styles/components/posts/postLeft.module.css";
 import SocialMedia from "@components/stalux/links/socialMedia.astro";
 import RandomPost from "@components/stalux/posts/randomPost.astro";
+import { fade } from "astro:transitions";
 // 判断是否为文章页面
 const isPostPage = Astro.url.pathname.includes("/posts/");
 ---
 
-<aside class={style.leftSidebar}>
+<aside
+    class={style.leftSidebar}
+    transition:name="left-sidebar"
+    transition:animate={fade({ duration: "0.3s" })}
+>
     <PostAuthor />
     <div class={style.sidebarContainer}>
         <SocialMedia />

@@ -4,6 +4,7 @@ import Date from "@components/stalux/common/date.astro";
 import PostToc from "@components/stalux/posts/postToc.astro";
 import PostTags from "@components/stalux/posts/postTags.astro";
 import PostCategories from "@components/stalux/posts/postCategories.astro";
+import { fade } from "astro:transitions";
 interface Props {
     headings?: Array<{ depth: number; slug: string; text: string }>;
     tags?: string[];
@@ -13,7 +14,11 @@ interface Props {
 const { headings = [], tags = [], categories = [] } = Astro.props;
 ---
 
-<aside class={style.rightSidebar}>
+<aside
+    class={style.rightSidebar}
+    transition:name="right-sidebar"
+    transition:animate={fade({ duration: "0.3s" })}
+>
     <div class={style.sidebarContainer}>
         <Date />
     </div>
