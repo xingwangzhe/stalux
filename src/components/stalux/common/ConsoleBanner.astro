@@ -2,9 +2,10 @@
 // Console Banner - 控制台横幅组件
 ---
 
-<script is:inline data-astro-rerun defer>
-    // ASCII Art Banner
-    const banner = `
+<script is:inline defer>
+    (function () {
+        // ASCII Art Banner
+        const banner = `
   ███████╗████████╗ █████╗ ██╗     ██╗   ██╗██╗  ██╗
   ██╔════╝╚══██╔══╝██╔══██╗██║     ██║   ██║╚██╗██╔╝
   ███████╗   ██║   ███████║██║     ██║   ██║ ╚███╔╝ 
@@ -13,99 +14,101 @@
   ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝
     `;
 
-    const info = {
-        theme: "Stalux - 现代 Astro 博客主题 [简称:星博客]",
-        version: "V1.1.0",
-        author: "王兴家 (xingwangzhe)",
-        repository: "https://github.com/xingwangzhe/stalux",
-        copyright: "© 王兴家. All rights reserved.",
-        copyrightRegNumber: "2025SR2258474",
-        license: "软著登字第16914672号",
-        licensePdf: "https://stalux.needhelp.icu/软著证明.pdf",
-        openSourceLicense: "MIT License",
-        licenseUrl: "https://github.com/xingwangzhe/stalux/blob/master/LICENSE",
-        registrationDate: "2025年11月24日",
-        website: "https://stalux.needhelp.icu",
-    };
+        const info = {
+            theme: "Stalux - 现代 Astro 博客主题 [简称:星博客]",
+            version: "V1.1.0",
+            author: "王兴家 (xingwangzhe)",
+            repository: "https://github.com/xingwangzhe/stalux",
+            copyright: "© 王兴家. All rights reserved.",
+            copyrightRegNumber: "2025SR2258474",
+            license: "软著登字第16914672号",
+            licensePdf: "https://stalux.needhelp.icu/软著证明.pdf",
+            openSourceLicense: "MIT License",
+            licenseUrl:
+                "https://github.com/xingwangzhe/stalux/blob/master/LICENSE",
+            registrationDate: "2025年11月24日",
+            website: "https://stalux.needhelp.icu",
+        };
 
-    // 样式定义
-    const styles = {
-        banner: "color: #a855f7; font-weight: bold; font-size: 14px; line-height: 1.2;",
-        title: "color: #fbbf24; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px rgba(251, 191, 36, 0.3);",
-        key: "color: #06b6d4; font-weight: bold;",
-        value: "color: #f472b6;",
-        link: "color: #10b981; text-decoration: underline;",
-        copyright: "color: #a78bfa; font-style: italic;",
-        separator: "color: #6366f1; font-weight: bold;",
-    };
+        // 样式定义
+        const styles = {
+            banner: "color: #a855f7; font-weight: bold; font-size: 14px; line-height: 1.2;",
+            title: "color: #fbbf24; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px rgba(251, 191, 36, 0.3);",
+            key: "color: #06b6d4; font-weight: bold;",
+            value: "color: #f472b6;",
+            link: "color: #10b981; text-decoration: underline;",
+            copyright: "color: #a78bfa; font-style: italic;",
+            separator: "color: #6366f1; font-weight: bold;",
+        };
 
-    // 打印函数
-    function printBanner() {
-        const separator = "═".repeat(60);
-        const mitLicenseStyle = "color: #34d399; font-weight: bold;";
-        const authStyle = "color: #60a5fa;";
-        const tipStyle = "color: #fbbf24;";
+        // 打印函数
+        function printBanner() {
+            const separator = "═".repeat(60);
+            const mitLicenseStyle = "color: #34d399; font-weight: bold;";
+            const authStyle = "color: #60a5fa;";
+            const tipStyle = "color: #fbbf24;";
 
-        // 使用一个 console.log 打印所有内容
-        console.log(
-            `%c${banner}` +
-                `%c\n✨ ${info.theme} ✨\n` +
-                `%c${separator}\n` +
-                `%c📦 版本：%c${info.version}\n` +
-                `%c👤 著作权人：%c${info.author}\n` +
-                `%c🔗 仓库：%c${info.repository}\n` +
-                `%c🌐 官网：%c${info.website}\n` +
-                `%c📜 软著证书：%c${info.license} %c→ ${info.licensePdf}\n` +
-                `%c🎫 登记号：%c${info.copyrightRegNumber}\n` +
-                `%c📅 登记日期：%c${info.registrationDate}\n` +
-                `%c${separator}\n` +
-                `%c⚖️  开源协议：%c${info.openSourceLicense} %c→ ${info.licenseUrl}\n` +
-                `%c✅ 授权说明：%c遵守 MIT 协议即获得授权使用\n` +
-                `%c${separator}\n` +
-                `%c💡 提示：%c如果你喜欢这个主题，欢迎 Star ⭐\n` +
-                `%c🐛 问题反馈：%c${info.repository}/issues`,
-            // 所有样式参数
-            styles.banner, // banner
-            styles.title, // 标题
-            styles.separator, // 分隔线1
-            styles.key,
-            styles.value, // 版本
-            styles.key,
-            styles.value, // 著作权人
-            styles.key,
-            styles.link, // 仓库
-            styles.key,
-            styles.link, // 官网
-            styles.key,
-            styles.value,
-            styles.link, // 软著证书
-            styles.key,
-            styles.value, // 登记号
-            styles.key,
-            styles.value, // 登记日期
-            styles.separator, // 分隔线2
-            styles.key,
-            mitLicenseStyle,
-            styles.link, // 开源协议
-            styles.key,
-            authStyle, // 授权说明
-            styles.separator, // 分隔线3
-            styles.key,
-            tipStyle, // 提示
-            styles.key,
-            styles.link, // 问题反馈
-        );
-    }
+            // 使用一个 console.log 打印所有内容
+            console.log(
+                `%c${banner}` +
+                    `%c\n✨ ${info.theme} ✨\n` +
+                    `%c${separator}\n` +
+                    `%c📦 版本：%c${info.version}\n` +
+                    `%c👤 著作权人：%c${info.author}\n` +
+                    `%c🔗 仓库：%c${info.repository}\n` +
+                    `%c🌐 官网：%c${info.website}\n` +
+                    `%c📜 软著证书：%c${info.license} %c→ ${info.licensePdf}\n` +
+                    `%c🎫 登记号：%c${info.copyrightRegNumber}\n` +
+                    `%c📅 登记日期：%c${info.registrationDate}\n` +
+                    `%c${separator}\n` +
+                    `%c⚖️  开源协议：%c${info.openSourceLicense} %c→ ${info.licenseUrl}\n` +
+                    `%c✅ 授权说明：%c遵守 MIT 协议即获得授权使用\n` +
+                    `%c${separator}\n` +
+                    `%c💡 提示：%c如果你喜欢这个主题，欢迎 Star ⭐\n` +
+                    `%c🐛 问题反馈：%c${info.repository}/issues`,
+                // 所有样式参数
+                styles.banner, // banner
+                styles.title, // 标题
+                styles.separator, // 分隔线1
+                styles.key,
+                styles.value, // 版本
+                styles.key,
+                styles.value, // 著作权人
+                styles.key,
+                styles.link, // 仓库
+                styles.key,
+                styles.link, // 官网
+                styles.key,
+                styles.value,
+                styles.link, // 软著证书
+                styles.key,
+                styles.value, // 登记号
+                styles.key,
+                styles.value, // 登记日期
+                styles.separator, // 分隔线2
+                styles.key,
+                mitLicenseStyle,
+                styles.link, // 开源协议
+                styles.key,
+                authStyle, // 授权说明
+                styles.separator, // 分隔线3
+                styles.key,
+                tipStyle, // 提示
+                styles.key,
+                styles.link, // 问题反馈
+            );
+        }
 
-    // 在页面加载完成后打印
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", printBanner, {
-            once: true,
-        });
-    } else {
-        printBanner();
-    }
+        // 在页面加载完成后打印
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", printBanner, {
+                once: true,
+            });
+        } else {
+            printBanner();
+        }
 
-    // 视图过渡后也打印（可选，避免过于频繁可以注释掉）
-    // document.addEventListener("astro:page-load", printBanner);
+        // 视图过渡后也打印（可选，避免过于频繁可以注释掉）
+        // document.addEventListener("astro:page-load", printBanner);
+    })();
 </script>
