@@ -99,6 +99,8 @@ const walineConfig = {
 <script>
     import { init } from "@waline/client";
     let walineInstance: ReturnType<typeof init> | null = null;
+
+    // 安全销毁 Waline 实例
     const safeDestroy = () => {
         try {
             if (walineInstance?.destroy) {
@@ -107,15 +109,19 @@ const walineConfig = {
                     walineInstance.destroy();
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn("Waline destroy error:", e);
+        }
         walineInstance = null;
     };
+
+    // 初始化 Waline 评论系统
     const initWaline = async () => {
         const container = document.getElementById("waline-container");
         if (!container) {
-            console.warn("Waline container not found");
             return;
         }
+
         let walineConfig;
         try {
             // base64 可逆混淆解码（无 unescape，兼容 Node/浏览器）
@@ -127,16 +133,20 @@ const walineConfig = {
             console.error("Failed to decode Waline config:", error);
             return;
         }
+
+        // 先销毁旧实例
         safeDestroy();
+
         if (!walineConfig.serverURL) {
             console.warn("Waline serverURL not configured");
             return;
         }
+
         const commentEl = document.getElementById("waline-comment");
         if (!commentEl) {
-            console.warn("Waline comment element not found");
             return;
         }
+
         try {
             walineInstance = init({
                 el: commentEl,
@@ -166,7 +176,7 @@ const walineConfig = {
         }
     };
 
-    // 首屏 SSR 兼容
+    // 首屏加载
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initWaline, {
             once: true,
@@ -174,13 +184,12 @@ const walineConfig = {
     } else {
         setTimeout(initWaline, 0);
     }
-    // 关键：每次页面导航后都重新执行
+
+    // 视图过渡：页面导航前清理
+    document.addEventListener("astro:before-swap", safeDestroy);
+
+    // 视图过渡：页面导航后重新初始化
     document.addEventListener("astro:page-load", initWaline);
-    // 清理
-    window.addEventListener("beforeunload", () => {
-        safeDestroy();
-        document.removeEventListener("astro:page-load", initWaline);
-    });
 </script>
 
 <style is:global>

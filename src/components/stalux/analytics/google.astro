@@ -5,12 +5,23 @@ const config = configCollection[0];
 const gaID = config.data.head?.googleAnalyticsId;
 ---
 
-<Fragment set:html={`<script async src="https://www.googletagmanager.com/gtag/js?id=${gaID}" type="text/javascript"></script>
-<script type="text/javascript">
+<script
+    is:inline
+    async
+    src={`https://www.googletagmanager.com/gtag/js?id=${gaID}`}
+    type="text/javascript"></script>
+<script is:inline define:vars={{ gaID }}>
     window.dataLayer = window.dataLayer || [];
     function gtag() {
         dataLayer.push(arguments);
     }
     gtag("js", new Date());
-    gtag("config", "${gaID}");
-</script>`} />
+    gtag("config", gaID);
+
+    // 视图过渡后重新跟踪页面浏览
+    document.addEventListener("astro:page-load", () => {
+        gtag("event", "page_view", {
+            page_path: window.location.pathname,
+        });
+    });
+</script>

@@ -5,7 +5,7 @@ const config = configCollection[0];
 const id = config.data.head?.bingClarityId;
 ---
 
-<Fragment set:html={`<script type="text/javascript">
+<script is:inline data-astro-rerun define:vars={{ id }}>
     (function (c, l, a, r, i, t, y) {
         c[a] =
             c[a] ||
@@ -17,5 +17,5 @@ const id = config.data.head?.bingClarityId;
         t.src = "https://www.clarity.ms/tag/" + i;
         y = l.getElementsByTagName(r)[0];
         y.parentNode.insertBefore(t, y);
-    })(window, document, "clarity", "script", "${id}");
-</script>`} />
+    })(window, document, "clarity", "script", id);
+</script>
