@@ -1,4 +1,5 @@
 ---
+import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postToc.module.css";
 
 interface TocHeading {
@@ -20,24 +21,57 @@ const tocItems = headings
         ...item,
         depth: Math.min(Math.max(item.depth ?? 1, 1), 6),
     }));
+
+// 定义目录内容的过渡动画 - 平滑褶皱效果
+const tocContentAnimation = {
+    old: {
+        name: "fadeSlideDown",
+        duration: "0.3s",
+        easing: "ease-out",
+    },
+    new: {
+        name: "fadeSlideDown",
+        duration: "0.3s",
+        easing: "ease-out",
+    },
+};
 ---
 
-<h3 class={style.title}>{title}</h3>
-{
-    tocItems.length > 0 ? (
-        <ul class={style.list}>
-            {tocItems.map((heading) => (
-                <li>
-                    <a
-                        class={`${style.item} ${style[`depth-${heading.depth}`] || ""} a-none`}
-                        href={`#${heading.slug}`}
-                    >
-                        {heading.text}
-                    </a>
-                </li>
-            ))}
-        </ul>
-    ) : (
-        <div class={style.empty}>暂无目录</div>
-    )
-}
+<div transition:name="toc-container">
+    <h3 class={style.title}>{title}</h3>
+    {
+        tocItems.length > 0 ? (
+            <ul
+                class={style.list}
+                transition:name="toc-content"
+                transition:animate={fade({ duration: "0.3s" })}
+            >
+                {tocItems.map((heading) => (
+                    <li>
+                        <a
+                            class={`${style.item} ${style[`depth-${heading.depth}`] || ""} a-none`}
+                            href={`#${heading.slug}`}
+                        >
+                            {heading.text}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <div class={style.empty}>暂无目录</div>
+        )
+    }
+</div>
+
+<style is:global>
+    @keyframes fadeSlideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

@@ -1,4 +1,5 @@
 ---
+import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postTags.module.css";
 
 interface Props {
@@ -7,13 +8,31 @@ interface Props {
 }
 
 const { tags = [], title = "标签" } = Astro.props;
+
+// 定义标签内容的过渡动画 - 平滑褶皱效果
+const tagContentAnimation = {
+    old: {
+        name: "fadeScale",
+        duration: "0.3s",
+        easing: "ease-out",
+    },
+    new: {
+        name: "fadeScale",
+        duration: "0.3s",
+        easing: "ease-out",
+    },
+};
 ---
 
-<div class={style.tagsContainer}>
+<div class={style.tagsContainer} transition:name="tags-container">
     {tags.length > 0 && <h3 class={style.title}>{title}</h3>}
     {
         tags.length > 0 ? (
-            <div class={style.tagList}>
+            <div
+                class={style.tagList}
+                transition:name="tags-content"
+                transition:animate={fade({ duration: "0.3s" })}
+            >
                 {tags.map((tag) => (
                     <a href={`/tags/${tag}/`} class={`${style.tag} a-none`}>
                         {tag}
@@ -25,3 +44,16 @@ const { tags = [], title = "标签" } = Astro.props;
         )
     }
 </div>
+
+<style is:global>
+    @keyframes fadeScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
