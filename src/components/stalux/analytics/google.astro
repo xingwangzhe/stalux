@@ -18,10 +18,13 @@ const gaID = config.data.head?.googleAnalyticsId;
     gtag("js", new Date());
     gtag("config", gaID);
 
-    // 视图过渡后重新跟踪页面浏览
-    document.addEventListener("astro:page-load", () => {
-        gtag("event", "page_view", {
-            page_path: window.location.pathname,
+    // 视图过渡后重新跟踪页面浏览（仅添加一次）
+    if (!window.__gtagListenerAdded) {
+        document.addEventListener("astro:page-load", () => {
+            gtag("event", "page_view", {
+                page_path: window.location.pathname,
+            });
         });
-    });
+        window.__gtagListenerAdded = true;
+    }
 </script>
