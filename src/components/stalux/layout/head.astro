@@ -3,6 +3,7 @@ import { SEO } from "astro-seo";
 import { ClientRouter } from "astro:transitions";
 import { getCollection } from "astro:content";
 import VerCount from "@components/stalux/common/verCount.astro";
+import ConsoleBanner from "@components/stalux/common/ConsoleBanner.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
 import "@styles/base/init.css";
@@ -98,4 +99,5 @@ const ldJson = JSON.stringify(schema);
   {stalux.data.head?.umami?.id && stalux.data.head?.umami?.url && <Umami />}
   <script type="application/ld+json" set:html={ldJson} />
   <VerCount />
+  <ConsoleBanner />
 </head>
