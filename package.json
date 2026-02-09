@@ -34,10 +34,10 @@
     "reading-time": "^1.5.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
-    "simple-icons": "^16.7.0"
+    "simple-icons": "^16.8.0"
   },
   "devDependencies": {
-    "@types/node": "^25.2.1",
+    "@types/node": "^25.2.2",
     "license-checker-rseidelsohn": "^4.4.2",
     "oxfmt": "^0.28.0",
     "oxlint": "^1.43.0"
