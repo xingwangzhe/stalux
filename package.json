@@ -37,9 +37,9 @@
     "simple-icons": "^16.8.0"
   },
   "devDependencies": {
-    "@types/node": "^25.2.2",
+    "@types/node": "^25.2.3",
     "license-checker-rseidelsohn": "^4.4.2",
     "oxfmt": "^0.28.0",
-    "oxlint": "^1.43.0"
+    "oxlint": "^1.46.0"
   }
 }
