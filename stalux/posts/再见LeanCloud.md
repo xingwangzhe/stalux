@@ -12,7 +12,7 @@ tags:
 
 这两天收到了📧,leancloud要结束服务了...
 
-```email
+```txt
 关于 LeanCloud 停止对外提供服务的通知
 
 尊敬的 LeanCloud 用户：
