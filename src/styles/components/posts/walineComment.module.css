@@ -315,11 +315,11 @@
 /* 响应式调整 */
 @media (max-width: 768px) {
   .walineCommentContainer {
-    padding: 0.8rem;
+    padding: 1rem;
     margin-top: 2rem;
-    margin-left: -1.5rem;
-    margin-right: -1.5rem;
-    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 12px;
   }
 
   .walineCommentTitle {
@@ -368,11 +368,11 @@
 
 @media (max-width: 480px) {
   .walineCommentContainer {
-    padding: 0.6rem;
+    padding: 1rem;
     margin-top: 1.5rem;
-    margin-left: -1rem;
-    margin-right: -1rem;
-    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 12px;
   }
 
   .walineCommentTitle {

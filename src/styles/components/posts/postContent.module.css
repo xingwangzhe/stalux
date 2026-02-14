@@ -342,13 +342,19 @@
   .articleContent {
     margin: 0;
     width: 100%;
-    padding: 1rem;
+    padding: 0;
     box-sizing: border-box;
+  }
+
+  .body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   .articleHeader {
     margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
+    padding: 1rem 1rem 0;
   }
 
   .title {
@@ -370,27 +376,31 @@
     font-size: 1.5rem;
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
+    padding: 0 1rem;
   }
 
   :global(.articleContent h2) {
     font-size: 1.25rem;
     margin-top: 1.5rem;
+    padding: 0 1rem;
   }
 
   :global(.articleContent h3) {
     font-size: 1rem;
+    padding: 0 1rem;
   }
 
   :global(.articleContent p) {
     font-size: 0.9rem;
     line-height: 1.7;
     margin: 0.75rem 0;
+    padding: 0 1rem;
   }
 
   :global(.articleContent ul),
   :global(.articleContent ol) {
     margin: 1rem 0;
-    padding-left: 1.5rem;
+    padding-left: 2.5rem;
   }
 
   :global(.articleContent li) {
@@ -411,6 +421,7 @@
 
   :global(.articleContent table) {
     font-size: 0.85rem;
+    margin: 1rem;
   }
 
   :global(.articleContent th),
