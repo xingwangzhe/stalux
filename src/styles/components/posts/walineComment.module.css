@@ -325,6 +325,8 @@
 
   .walineComment :global(.wl-panel) {
     padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .walineComment :global(.wl-header) {
@@ -334,6 +336,12 @@
   .walineComment :global(.wl-header-item) {
     width: 100%;
     margin-bottom: 0.5rem;
+  }
+
+  .walineComment :global(.wl-editor),
+  .walineComment :global(.wl-input) {
+    width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -345,6 +353,12 @@
 
   .walineCommentTitle {
     font-size: 1.6rem;
+  }
+
+  .walineComment :global(.wl-panel) {
+    padding: 0.8rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .walineComment :global(.wl-reaction-list) {
@@ -359,5 +373,11 @@
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
+  }
+
+  .walineComment :global(.wl-editor),
+  .walineComment :global(.wl-input) {
+    width: 100%;
+    box-sizing: border-box;
   }
 }
