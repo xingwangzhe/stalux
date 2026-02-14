@@ -339,6 +339,13 @@
 }
 
 @media (max-width: 768px) {
+  .articleContent {
+    margin: 0;
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
   .articleHeader {
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;

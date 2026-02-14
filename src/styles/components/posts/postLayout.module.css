@@ -69,14 +69,14 @@
 /* 手机端 */
 @media (max-width: 768px) {
   .postLayout {
-    padding: 1rem;
+    padding: 0;
   }
 
   .container {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding: 1.5rem 0;
+    padding: 0;
     margin: 0;
   }
 
@@ -97,12 +97,12 @@
 /* 小屏幕手机 */
 @media (max-width: 480px) {
   .postLayout {
-    padding: 0.5rem;
+    padding: 0;
   }
 
   .container {
     gap: 1.25rem;
-    padding: 1rem 0;
+    padding: 0;
   }
 }
 

@@ -541,6 +541,23 @@ const walineConfig = {
             width: 100%;
             margin-bottom: 0.5rem;
         }
+
+        /* 平板设备上的嵌套评论处理 */
+        .wl-card {
+            padding: 0.8rem;
+            margin-left: 0;
+        }
+
+        .wl-children {
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        .wl-children .wl-card {
+            margin-left: 0;
+            border-left: 3px solid rgba(1, 162, 190, 0.4);
+            padding-left: 0.8rem;
+        }
     }
 
     @media (max-width: 480px) {
@@ -553,12 +570,39 @@ const walineConfig = {
             font-size: 1.6rem;
         }
 
+        .wl-panel {
+            padding: 0.8rem;
+        }
+
         .wl-reaction-list {
             gap: 5px;
         }
 
         .wl-card {
-            padding: 1rem;
+            padding: 0.75rem;
+            margin-left: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 小屏幕上的嵌套评论处理 */
+        .wl-children {
+            margin-left: 0;
+            padding-left: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .wl-children .wl-card {
+            margin-left: 0;
+            border-left: 3px solid rgba(1, 162, 190, 0.4);
+            padding-left: 0.6rem;
+            width: 100%;
+        }
+
+        .wl-children .wl-children .wl-card {
+            border-left: 3px solid rgba(1, 162, 190, 0.3);
+            padding-left: 0.6rem;
         }
 
         .wl-meta-head {

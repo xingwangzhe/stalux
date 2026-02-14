@@ -315,8 +315,11 @@
 /* 响应式调整 */
 @media (max-width: 768px) {
   .walineCommentContainer {
-    padding: 1.5rem;
+    padding: 0.8rem;
     margin-top: 2rem;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    border-radius: 0;
   }
 
   .walineCommentTitle {
@@ -343,12 +346,33 @@
     width: 100%;
     box-sizing: border-box;
   }
+
+  /* 平板及以下设备的嵌套评论处理 */
+  .walineComment :global(.wl-card) {
+    padding: 0.8rem;
+    margin-left: 0;
+    margin-top: 0.8rem;
+  }
+
+  .walineComment :global(.wl-children) {
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .walineComment :global(.wl-children .wl-card) {
+    margin-left: 0;
+    border-left: 3px solid rgba(1, 162, 190, 0.4);
+    padding-left: 0.8rem;
+  }
 }
 
 @media (max-width: 480px) {
   .walineCommentContainer {
-    padding: 1rem;
+    padding: 0.6rem;
     margin-top: 1.5rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0;
   }
 
   .walineCommentTitle {
@@ -366,7 +390,31 @@
   }
 
   .walineComment :global(.wl-card) {
-    padding: 1rem;
+    padding: 0.75rem;
+    margin-left: 0;
+    margin-top: 0.8rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* 小屏幕上的嵌套评论处理 */
+  .walineComment :global(.wl-children) {
+    margin-left: 0;
+    padding-left: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .walineComment :global(.wl-children .wl-card) {
+    margin-left: 0;
+    border-left: 3px solid rgba(1, 162, 190, 0.4);
+    padding-left: 0.6rem;
+    width: 100%;
+  }
+
+  .walineComment :global(.wl-children .wl-children .wl-card) {
+    border-left: 3px solid rgba(1, 162, 190, 0.3);
+    padding-left: 0.6rem;
   }
 
   .walineComment :global(.wl-meta-head) {
