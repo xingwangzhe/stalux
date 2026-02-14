@@ -17,8 +17,8 @@
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
     "@expressive-code/plugin-line-numbers": "^0.41.6",
-    "@waline/client": "^3.8.0",
-    "animejs": "^4.3.5",
+    "@waline/client": "^3.10.0",
+    "animejs": "^4.3.6",
     "astro": "^5.17.2",
     "astro-expressive-code": "^0.41.6",
     "astro-pagefind": "^1.8.5",
@@ -40,6 +40,6 @@
     "@types/node": "^25.2.3",
     "license-checker-rseidelsohn": "^4.4.2",
     "oxfmt": "^0.28.0",
-    "oxlint": "^1.46.0"
+    "oxlint": "^1.47.0"
   }
 }
