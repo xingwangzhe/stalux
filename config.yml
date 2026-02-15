@@ -5,7 +5,7 @@ stalux:
   canonical: "https://xingwangzhe.fun"
   head:
     googleAnalyticsId: "G-NHFWWSE5KJ"
-    bingClarityId: "syapyoange"
+    # bingClarityId: "syapyoange"
     umami:
       id: "b28b14f6-a7b6-4c6c-8e4f-347f618ba998"
       url: "https://umami.xingwangzhe.fun/script.js"

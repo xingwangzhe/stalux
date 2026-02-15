@@ -8,8 +8,8 @@
         "@astrojs/rss": "^4.0.15",
         "@astrojs/sitemap": "^3.7.0",
         "@expressive-code/plugin-line-numbers": "^0.41.6",
-        "@waline/client": "^3.8.0",
-        "animejs": "^4.3.5",
+        "@waline/client": "^3.10.0",
+        "animejs": "^4.3.6",
         "astro": "^5.17.2",
         "astro-expressive-code": "^0.41.6",
         "astro-pagefind": "^1.8.5",
@@ -31,7 +31,7 @@
         "@types/node": "^25.2.3",
         "license-checker-rseidelsohn": "^4.4.2",
         "oxfmt": "^0.28.0",
-        "oxlint": "^1.46.0",
+        "oxlint": "^1.47.0",
       },
     },
   },
@@ -494,7 +494,7 @@
 
     "@waline/api": ["@waline/api@1.0.0", "", {}, "sha512-o0lWjt+/oZH1/4q3DJxTf5kdkgNbSmoLRXIiGznW225A6hq9/9IkOO1DiAijIsxGYJS6psFC+58+IzkD1EerBA=="],
 
-    "@waline/client": ["@waline/client@3.10.0", "", { "dependencies": { "@vueuse/core": "^14.2.1", "@waline/api": "1.0.0", "autosize": "^6.0.1", "marked": "^17.0.2", "marked-highlight": "^2.2.3", "recaptcha-v3": "^1.11.3", "vue": "^3.5.28" } }, "sha512-evFXEILVd/g/1s+3GOEF0PrEHuB0eG4OFd+rASy9+uXqkeAxvICeK6E7PrFbsMVsTGfa6+bLBKCJ+vTPDvmFkg=="],
+    "@waline/client": ["@waline/client@3.11.0", "", { "dependencies": { "@vueuse/core": "^14.2.1", "@waline/api": "1.0.0", "autosize": "^6.0.1", "marked": "^17.0.2", "marked-highlight": "^2.2.3", "recaptcha-v3": "^1.11.3", "vue": "^3.5.28" } }, "sha512-GBYzE5zwbyMK00ykNx4P3qQyB6Xfp/91SEVXw9yL0N4A2xD8RbnrHDGKNmIOkhDTvcLNT6BVFaJib+2+/vrxTQ=="],
 
     "abbrev": ["abbrev@2.0.0", "", {}, "sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ=="],
 
@@ -1202,7 +1202,7 @@
 
     "signal-exit": ["signal-exit@4.1.0", "", {}, "sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw=="],
 
-    "simple-icons": ["simple-icons@16.8.0", "", {}, "sha512-JOqFl9rXrUkEVwYryZVvfySG6znMg+79KpDIDtAd9mXZAPfLyhVdhhGKg7EYioYzozxXd+5KvURTMguTl0QfbA=="],
+    "simple-icons": ["simple-icons@16.9.0", "", {}, "sha512-aKst2C7cLkFyaiQ/Crlwxt9xYOpGPk05XuJZ0ZTJNNCzHCKYrGWz2ebJSi5dG8CmTCxUF/BGs6A8uyJn/EQxqw=="],
 
     "sirv": ["sirv@3.0.2", "", { "dependencies": { "@polka/url": "^1.0.0-next.24", "mrmime": "^2.0.0", "totalist": "^3.0.0" } }, "sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g=="],
 
