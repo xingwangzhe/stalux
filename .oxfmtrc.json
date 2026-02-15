@@ -1,9 +1,44 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": [],
+  "ignorePatterns": [
+    "node_modules/**",
+    ".git/**",
+    "dist/**",
+    "build/**",
+    "licenses/**",
+    "licenses.txt"
+  ],
   "overrides": [
     {
-      "files": ["**/*.mjs"]
+      "files": [
+        "**/*.mjs"
+      ]
+    },
+    {
+      "files": [
+        "**/*.cjs",
+        "**/*.js"
+      ],
+      "options": {
+        "parser": "babel"
+      }
+    },
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "options": {
+        "parser": "typescript"
+      }
+    },
+    {
+      "files": [
+        "**/*.astro"
+      ],
+      "options": {
+        "parser": "astro"
+      }
     }
   ]
 }
