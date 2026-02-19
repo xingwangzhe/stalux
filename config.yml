@@ -160,7 +160,10 @@ stalux:
         description: "温暖的灵魂终将相遇"
         link: "https://www.iloli.xin"
         icon: "https://jsd.gymxbl.com/avatar/links/@gymxbl.com@iloli.xin/logo2.png"
-
+      - name: "Vind Blog"
+        description: "真心走过每个瞬间。"
+        link: "https://blog.vind.ink"
+        icon: "https://blog.vind.ink/images/icon.png"
   footer:
     # 站点构建时间，用于计算运行时长
     buildtime: "2024-06-20T10:00:00"
