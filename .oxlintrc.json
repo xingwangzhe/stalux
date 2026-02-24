@@ -1,10 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "unicorn",
-    "typescript",
-    "oxc"
-  ],
+  "plugins": ["unicorn", "typescript", "oxc"],
   "categories": {},
   "rules": {
     "constructor-super": "warn",
@@ -119,31 +115,20 @@
       "attributes": {}
     },
     "next": {
-      "rootDir": [
-        "src",
-        "public"
-      ]
+      "rootDir": ["src", "public"]
     },
     "overrides": [
       {
-        "files": [
-          "**/*.{ts,tsx,mts,mjs,js,jsx}"
-        ],
-        "plugins": [
-          "typescript"
-        ],
+        "files": ["**/*.{ts,tsx,mts,mjs,js,jsx}"],
+        "plugins": ["typescript"],
         "rules": {
           "typescript/no-floating-promises": "error",
           "typescript/no-unsafe-assignment": "warn"
         }
       },
       {
-        "files": [
-          "**/*.astro"
-        ],
-        "plugins": [
-          "typescript"
-        ],
+        "files": ["**/*.astro"],
+        "plugins": ["typescript"],
         "rules": {
           "no-undef": "off",
           "no-unused-vars": "warn"

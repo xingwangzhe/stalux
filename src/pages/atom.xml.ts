@@ -20,16 +20,16 @@ export const GET: APIRoute = async (context) => {
   const items = await Promise.all(
     sortedPosts.map(async (post) => {
       const { remarkPluginFrontmatter } = await render(post);
-      
+
       // 构建自定义数据，包含更新时间和版权信息
-      let customData = '';
+      let customData = "";
       if (post.data.updated) {
         customData += `<updated>${post.data.updated.toISOString()}</updated>`;
       }
       if (post.data.cc) {
         customData += `<rights>${post.data.cc}</rights>`;
       }
-      
+
       return {
         title: post.data.title,
         pubDate: new Date(post.data.date),

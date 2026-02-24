@@ -10,32 +10,22 @@
   ],
   "overrides": [
     {
-      "files": [
-        "**/*.mjs"
-      ]
+      "files": ["**/*.mjs"]
     },
     {
-      "files": [
-        "**/*.cjs",
-        "**/*.js"
-      ],
+      "files": ["**/*.cjs", "**/*.js"],
       "options": {
         "parser": "babel"
       }
     },
     {
-      "files": [
-        "**/*.ts",
-        "**/*.tsx"
-      ],
+      "files": ["**/*.ts", "**/*.tsx"],
       "options": {
         "parser": "typescript"
       }
     },
     {
-      "files": [
-        "**/*.astro"
-      ],
+      "files": ["**/*.astro"],
       "options": {
         "parser": "astro"
       }
