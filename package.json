@@ -16,20 +16,20 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
-    "@expressive-code/plugin-line-numbers": "^0.41.6",
-    "@waline/client": "^3.11.0",
+    "@expressive-code/plugin-line-numbers": "^0.41.7",
+    "@waline/client": "^3.12.2",
     "animejs": "^4.3.6",
-    "astro": "^5.17.2",
-    "astro-expressive-code": "^0.41.6",
+    "astro": "^5.17.3",
+    "astro-expressive-code": "^0.41.7",
     "astro-pagefind": "^1.8.5",
     "astro-seo": "^1.1.0",
     "astro-typewriter": "^1.1.0",
     "badge-maker": "^5.0.2",
     "dayjs": "^1.11.19",
     "feather-icons": "^4.29.2",
-    "katex": "^0.16.28",
+    "katex": "^0.16.33",
     "lightningcss": "^1.31.1",
-    "mermaid": "^11.12.2",
+    "mermaid": "^11.12.3",
     "photoswipe": "^5.4.4",
     "reading-time": "^1.5.0",
     "rehype-katex": "^7.0.1",
@@ -37,9 +37,9 @@
     "simple-icons": "^16.9.0"
   },
   "devDependencies": {
-    "@types/node": "^25.2.3",
+    "@types/node": "^25.3.0",
     "license-checker-rseidelsohn": "^4.4.2",
     "oxfmt": "^0.28.0",
-    "oxlint": "^1.47.0"
+    "oxlint": "^1.50.0"
   }
 }
