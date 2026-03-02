@@ -8,9 +8,9 @@
         "@astrojs/rss": "^4.0.15",
         "@astrojs/sitemap": "^3.7.0",
         "@expressive-code/plugin-line-numbers": "^0.41.7",
-        "@waline/client": "^3.12.2",
+        "@waline/client": "^3.13.0",
         "animejs": "^4.3.6",
-        "astro": "^5.17.3",
+        "astro": "^5.18.0",
         "astro-expressive-code": "^0.41.7",
         "astro-pagefind": "^1.8.5",
         "astro-seo": "^1.1.0",
@@ -28,7 +28,7 @@
         "simple-icons": "^16.9.0",
       },
       "devDependencies": {
-        "@types/node": "^25.3.0",
+        "@types/node": "^25.3.2",
         "license-checker-rseidelsohn": "^4.4.2",
         "oxfmt": "^0.28.0",
         "oxlint": "^1.50.0",
@@ -440,7 +440,7 @@
 
     "@types/nlcst": ["@types/nlcst@2.0.3", "", { "dependencies": { "@types/unist": "*" } }, "sha512-vSYNSDe6Ix3q+6Z7ri9lyWqgGhJTmzRjZRqyq15N0Z/1/UnVsno9G/N40NBijoYx2seFDIl0+B2mgAb9mezUCA=="],
 
-    "@types/node": ["@types/node@25.3.2", "", { "dependencies": { "undici-types": "~7.18.0" } }, "sha512-RpV6r/ij22zRRdyBPcxDeKAzH43phWVKEjL2iksqo1Vz3CuBUrgmPpPhALKiRfU7OMCmeeO9vECBMsV0hMTG8Q=="],
+    "@types/node": ["@types/node@25.3.3", "", { "dependencies": { "undici-types": "~7.18.0" } }, "sha512-DpzbrH7wIcBaJibpKo9nnSQL0MTRdnWttGyE5haGwK86xgMOkFLp7vEyfQPGLOJh5wNYiJ3V9PmUMDhV9u8kkQ=="],
 
     "@types/sax": ["@types/sax@1.2.7", "", { "dependencies": { "@types/node": "*" } }, "sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A=="],
 
@@ -1202,7 +1202,7 @@
 
     "signal-exit": ["signal-exit@4.1.0", "", {}, "sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw=="],
 
-    "simple-icons": ["simple-icons@16.9.0", "", {}, "sha512-aKst2C7cLkFyaiQ/Crlwxt9xYOpGPk05XuJZ0ZTJNNCzHCKYrGWz2ebJSi5dG8CmTCxUF/BGs6A8uyJn/EQxqw=="],
+    "simple-icons": ["simple-icons@16.10.0", "", {}, "sha512-62kuxaG3pE+cFNerudUtwb9BLmudzayHrlHkvU9gf8Nxcj7VYOm9dh3WNbGaFk60aQtfnRyzViZaouFG2B45kg=="],
 
     "sirv": ["sirv@3.0.2", "", { "dependencies": { "@polka/url": "^1.0.0-next.24", "mrmime": "^2.0.0", "totalist": "^3.0.0" } }, "sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g=="],
 
