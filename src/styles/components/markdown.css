@@ -5,143 +5,253 @@
 
 /* 标题样式 */
 [data-pagefind-body] h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-top: 2rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
 [data-pagefind-body] h2 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-top: 2.5rem;
-  margin-bottom: 1.2rem;
-  line-height: 1.3;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-top: 2.5rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.3;
 }
 
 [data-pagefind-body] h3 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  line-height: 1.4;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
 }
 
 [data-pagefind-body] h4 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-top: 1.5rem;
-  margin-bottom: 0.8rem;
-  line-height: 1.4;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
 }
 
 [data-pagefind-body] h5 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-top: 1.5rem;
-  margin-bottom: 0.8rem;
-  line-height: 1.5;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
 }
 
 [data-pagefind-body] h6 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-top: 1.5rem;
-  margin-bottom: 0.8rem;
-  line-height: 1.5;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
 }
 
 /* 段落和文本 */
 [data-pagefind-body] p {
-  line-height: 1.7;
-  margin-bottom: 1.5rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
 }
 
 [data-pagefind-body] strong {
-  font-weight: 600;
-  color: #ffd966;
+    font-weight: 600;
+    color: #ffd966;
 }
 
 [data-pagefind-body] code {
-  color: #ff79c6;
-  background-color: rgba(255, 121, 198, 0.1);
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  font-size: 0.9em;
-  font-family: var(--font-mono, "Courier New", monospace);
+    color: #ff79c6;
+    background-color: rgba(255, 121, 198, 0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+    font-family: var(--font-mono, "Courier New", monospace);
 }
 
 [data-pagefind-body] pre code {
-  background-color: transparent;
-  padding: 0;
-  color: inherit;
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
 }
 
 /* 列表样式 */
+[data-pagefind-body] ul,
+[data-pagefind-body] ol {
+    margin: 0 0 1.5rem 1.5rem;
+    padding-left: 1.25rem;
+}
+
+[data-pagefind-body] li {
+    margin: 0.4rem 0;
+    line-height: 1.7;
+}
+
+[data-pagefind-body] ul li {
+    list-style: disc;
+}
+
+[data-pagefind-body] ol li {
+    list-style: decimal;
+}
+
+[data-pagefind-body] li>ul,
+[data-pagefind-body] li>ol {
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
+}
 
 /* 引用块 */
+[data-pagefind-body] blockquote {
+    margin: 1.5rem 0;
+    padding: 0.8rem 1.2rem;
+    border-left: 4px solid var(--accent-60p, rgba(1, 162, 190, 0.6));
+    background-color: var(--white-05p);
+    color: var(--white-80p);
+}
+
+[data-pagefind-body] blockquote p {
+    margin: 0.4rem 0;
+}
 
 /* 代码块 */
+[data-pagefind-body] pre {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--white-10p);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    font-size: 0.95em;
+    line-height: 1.6;
+    font-family: var(--font-mono, "Courier New", monospace);
+}
 
 /* 表格样式 */
 [data-pagefind-body] table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 2rem 0;
-  overflow-x: auto;
-  display: block;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    overflow-x: auto;
+    display: block;
 }
 
 [data-pagefind-body] table th,
 [data-pagefind-body] table td {
-  border: 1px solid var(--white-20p);
-  padding: 0.75rem;
-  text-align: left;
+    border: 1px solid var(--white-20p);
+    padding: 0.75rem;
+    text-align: left;
 }
 
 [data-pagefind-body] table th {
-  background-color: var(--white-10p);
+    background-color: var(--white-10p);
 }
 
 [data-pagefind-body] table tr:nth-child(even) {
-  background-color: var(--white-05p);
+    background-color: var(--white-05p);
 }
 
 /* 链接样式 */
 [data-pagefind-body] a {
-  color: var(--accent-80p, #01a2be);
-  text-decoration: underline;
-  text-decoration-color: var(--accent-50p, rgba(1, 162, 190, 0.5));
-  text-underline-offset: 0.18em;
-  text-decoration-thickness: 2px;
-  transition:
-    color var(--transition-medium, 0.2s ease),
-    text-decoration-color var(--transition-medium, 0.2s ease);
+    color: var(--accent-80p, #01a2be);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-50p, rgba(1, 162, 190, 0.5));
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 2px;
+    transition:
+        color var(--transition-medium, 0.2s ease),
+        text-decoration-color var(--transition-medium, 0.2s ease);
 }
 
 [data-pagefind-body] a:hover,
 [data-pagefind-body] a:focus-visible {
-  color: var(--stalux-accent-color, #01a2be);
-  text-decoration-color: var(--stalux-accent-color, #01a2be);
+    color: var(--stalux-accent-color, #01a2be);
+    text-decoration-color: var(--stalux-accent-color, #01a2be);
 }
 
 /* 图片样式 */
 [data-pagefind-body] img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 1rem auto;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1rem auto;
 }
 
 /* 媒体响应式 */
 [data-pagefind-body] iframe,
 [data-pagefind-body] embed,
 [data-pagefind-body] video {
-  max-width: 100%;
-  height: auto;
+    max-width: 100%;
+    height: auto;
 }
 
 /* 分隔线 */
+[data-pagefind-body] hr {
+    border: none;
+    border-top: 1px solid var(--white-15p);
+    margin: 2rem 0;
+}
 
 /* 其他元素 */
+[data-pagefind-body] mark {
+    background-color: rgba(255, 217, 102, 0.25);
+    color: inherit;
+    padding: 0.1em 0.2em;
+}
+
+[data-pagefind-body] kbd {
+    font-family: var(--font-mono, "Courier New", monospace);
+    font-size: 0.85em;
+    background-color: var(--white-10p);
+    border: 1px solid var(--white-20p);
+    border-radius: 4px;
+    padding: 0.15em 0.4em;
+}
+
+[data-pagefind-body] del {
+    color: var(--white-60p);
+}
+
+[data-pagefind-body] sup,
+[data-pagefind-body] sub {
+    font-size: 0.8em;
+}
+
+[data-pagefind-body] details {
+    margin: 1.2rem 0;
+    padding: 0.6rem 0.8rem;
+    background-color: var(--white-05p);
+    border: 1px solid var(--white-10p);
+    border-radius: 6px;
+}
+
+[data-pagefind-body] summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+[data-pagefind-body] figure {
+    margin: 1.5rem 0;
+}
+
+[data-pagefind-body] figcaption {
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--white-70p);
+    margin-top: 0.5rem;
+}
+
+[data-pagefind-body] .footnotes {
+    font-size: 0.9em;
+    color: var(--white-80p);
+    border-top: 1px solid var(--white-15p);
+    margin-top: 2rem;
+    padding-top: 1rem;
+}
+
+[data-pagefind-body] .footnotes ol {
+    margin-left: 1.2rem;
+}
