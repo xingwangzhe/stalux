@@ -33,3 +33,5 @@ tags: [阿里云, ESA]
 > [https://tianchi.aliyun.com/competition/entrance/532441/customize817](https://tianchi.aliyun.com/competition/entrance/532441/customize817)
 
 我这算少的，有的参赛者得了25张! 当然我自己用不上什么天猫卡，所以我直接变现xx%，卡给二道贩子了，不过我有点疑惑，奖金扣税，但天猫卡不扣税却使劲发，早知道我也多投一点作品好了... 剩下的就是等真正的奖金到账支付宝了😄
+
+推荐大家都去使用阿里ESA [https://tianchi.aliyun.com/specials/promotion/freetier/esa?taskCode=25254&recordId=f499b7be2b6b164f06e0d982897e3be1](https://tianchi.aliyun.com/specials/promotion/freetier/esa?taskCode=25254&recordId=f499b7be2b6b164f06e0d982897e3be1)
