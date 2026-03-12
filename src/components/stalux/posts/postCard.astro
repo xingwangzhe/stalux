@@ -1,9 +1,7 @@
 ---
 import style from "@styles/components/posts/postCard.module.css";
 import { render } from "astro:content";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-dayjs.extend(utc);
+import dayjs from "@utils/dayjs";
 
 import type { CollectionEntry } from "astro:content";
 

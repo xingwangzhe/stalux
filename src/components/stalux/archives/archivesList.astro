@@ -1,9 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import styles from "@styles/components/archives/archivesList.module.css";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-dayjs.extend(utc);
+import dayjs from "@utils/dayjs";
 
 interface Props {
     posts?: CollectionEntry<"posts">[];

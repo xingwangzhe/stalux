@@ -2,9 +2,7 @@
 import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postContent.module.css";
 import "@styles/components/markdown.css";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-dayjs.extend(utc);
+import dayjs from "@utils/dayjs";
 
 interface Props {
     title: string;
@@ -34,7 +32,7 @@ const formatDateTime = (d?: string | Date) => {
 };
 ---
 
-<article 
+<article
     class={style.articleContent}
     transition:name="post-content"
     transition:animate={fade({ duration: "1.2s" })}>
