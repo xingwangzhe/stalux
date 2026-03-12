@@ -3,6 +3,7 @@
     "version": "1.1.0",
     "type": "module",
     "scripts": {
+        "detect": "echo '---OS---' && cat /etc/os-release 2>/dev/null || echo 'No os-release' && echo '---ARCH---' && uname -m && uname -a && echo '---LIBC---' && ldd --version 2>/dev/null || echo 'No ldd' && echo '---NODE---' && node -p 'process.arch' && node -p 'process.platform' && node -p 'process.versions'",
         "dev": "astro dev ",
         "build": "astro build ",
         "preview": "astro preview ",
