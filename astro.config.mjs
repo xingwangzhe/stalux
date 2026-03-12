@@ -15,9 +15,11 @@ export default defineConfig({
     output: "static",
     site: site,
     experimental: {
-        rustCompiler: false,
+        rustCompiler: true,
         queuedRendering: {
-            enabled: false,
+            enabled: true,
+            contentCache: true,
+            poolSize: 3000,
         },
     },
     build: {
