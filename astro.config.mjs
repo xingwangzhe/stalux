@@ -9,17 +9,6 @@ import { remarkPostBody } from "./src/utils/remark-post-body";
 
 import expressiveCode from "astro-expressive-code";
 
-if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
-    const originalError = console.error;
-    console.error = function (...args) {
-        const message = args[0]?.toString?.() || "";
-        if (message.includes("Could not parse CSS stylesheet")) {
-            return;
-        }
-        originalError.apply(console, args);
-    };
-}
-
 const site = "https://xingwangzhe.fun";
 // https://astro.build/config
 export default defineConfig({
@@ -28,7 +17,7 @@ export default defineConfig({
     experimental: {
         rustCompiler: false,
         queuedRendering: {
-            enabled: true,
+            enabled: false,
         },
     },
     build: {
