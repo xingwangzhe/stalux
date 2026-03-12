@@ -3,12 +3,12 @@ title: ESA Pages 边缘开发大赛获奖
 abbrlink: esa-pages-awards
 date: 2026-2-6 19:50:32
 categories:
-  - pages
+    - pages
 tags:
-  - esa
-  - awards
-  - pages
-  - 博客
+    - esa
+    - awards
+    - pages
+    - 博客
 ---
 
 **ESA**上线之后,为了扩大影响力,所以举办了[ **ESA Pages 边缘开发大赛**](https://rank.event.alibabacloud-esa.com/)

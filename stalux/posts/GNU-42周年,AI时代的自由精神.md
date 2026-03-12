@@ -4,11 +4,11 @@ abbrlink: c08b9de1
 date: "2025-09-29T08:52:20.231+08:00"
 updated: "2025-09-29T09:17:36.409+08:00"
 categories:
-  - GNU
+    - GNU
 tags:
-  - GNU
-  - AI
-  - 自由
+    - GNU
+    - AI
+    - 自由
 ---
 
 ## 转载声明

@@ -4,10 +4,10 @@ abbrlink: a2c639ef
 date: "2025-08-18T20:24:07.923+08:00"
 updated: "2025-08-18T20:44:30.696+08:00"
 categories:
-  - ubuntu
+    - ubuntu
 tags:
-  - vscode
-  - ubuntu
+    - vscode
+    - ubuntu
 ---
 
 **ERROR: Extension entrypoint(s) missing. Make sure these files exist and aren't ignored by '.vscodeignore': extension/dist/extension.js**

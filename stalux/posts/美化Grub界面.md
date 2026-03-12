@@ -4,11 +4,11 @@ abbrlink: 5f776910
 date: "2025-09-09T12:43:44.126+08:00"
 updated: "2025-09-09T16:24:14.233+08:00"
 categories:
-  - Linux
+    - Linux
 tags:
-  - Linux
-  - Grub
-  - 美化
+    - Linux
+    - Grub
+    - 美化
 ---
 
 :::tip

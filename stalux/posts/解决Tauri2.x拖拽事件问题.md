@@ -4,11 +4,11 @@ abbrlink: aed59aad
 date: "2025-09-03T07:58:52.390+08:00"
 updated: "2025-09-03T12:31:56.213+08:00"
 categories:
-  - 开发
+    - 开发
 tags:
-  - Tauri
-  - ts
-  - 问题
+    - Tauri
+    - ts
+    - 问题
 ---
 
 ## 前言
@@ -21,27 +21,27 @@ tags:
 
 ```ts title="示例.ts"
 document.addEventListener("DOMContentLoaded", () => {
-  const uploadZone = document.getElementById("file-upload-zone");
-  const fileList = document.getElementById("file-list");
+    const uploadZone = document.getElementById("file-upload-zone");
+    const fileList = document.getElementById("file-list");
 
-  uploadZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    uploadZone.classList.add("drag-hover");
-  });
+    uploadZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadZone.classList.add("drag-hover");
+    });
 
-  uploadZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    uploadZone.classList.remove("drag-hover");
+    uploadZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove("drag-hover");
 
-    const files = Array.from(e.dataTransfer.files);
-    displayFiles(files);
-  });
+        const files = Array.from(e.dataTransfer.files);
+        displayFiles(files);
+    });
 
-  function displayFiles(files) {
-    fileList.innerHTML = files
-      .map((file) => `<div class="file-item">${file.name} (${file.size} bytes)</div>`)
-      .join("");
-  }
+    function displayFiles(files) {
+        fileList.innerHTML = files
+            .map((file) => `<div class="file-item">${file.name} (${file.size} bytes)</div>`)
+            .join("");
+    }
 });
 ```
 
@@ -86,13 +86,13 @@ Tauri 的安全策略阻止了拖拽事件。默认情况下，前端事件被 T
 ```ts title="filespace.ts"
 import { listen } from "@tauri-apps/api/event";
 listen("tauri://drag-drop", (e) => {
-  console.log("Dropped files:", e);
+    console.log("Dropped files:", e);
 });
 listen("tauri://drag-leave", () => {
-  console.log("Drag leave");
+    console.log("Drag leave");
 });
 listen("tauri://drag-enter", () => {
-  console.log("Drag enter");
+    console.log("Drag enter");
 });
 ```
 

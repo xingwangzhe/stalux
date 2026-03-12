@@ -1,270 +1,270 @@
 /* 全局设置 */
 html,
 body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  color: white;
-  main {
-    flex: 1;
-  }
-  scrollbar-color: #4a4a4a #2a2a2a;
-  display: block;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    main {
+        flex: 1;
+    }
+    scrollbar-color: #4a4a4a #2a2a2a;
+    display: block;
 }
 body.dark {
-  --pagefind-ui-primary: #eeeeee;
-  --pagefind-ui-text: #eeeeee;
-  --pagefind-ui-background: #152028;
-  --pagefind-ui-border: #152028;
-  --pagefind-ui-tag: #152028;
+    --pagefind-ui-primary: #eeeeee;
+    --pagefind-ui-text: #eeeeee;
+    --pagefind-ui-background: #152028;
+    --pagefind-ui-border: #152028;
+    --pagefind-ui-tag: #152028;
 }
 /* 将所有链接初始化为无视觉状态，但保留键盘可见焦点 */
 a {
-  color: inherit;
-  text-decoration: none;
-  background-color: transparent;
-  cursor: pointer;
-  text-decoration-skip-ink: auto;
+    color: inherit;
+    text-decoration: none;
+    background-color: transparent;
+    cursor: pointer;
+    text-decoration-skip-ink: auto;
 }
 
 .a-none {
-  color: inherit !important;
-  text-decoration: none !important;
-  background-color: transparent;
-  cursor: pointer;
-  text-decoration-skip-ink: auto;
+    color: inherit !important;
+    text-decoration: none !important;
+    background-color: transparent;
+    cursor: pointer;
+    text-decoration-skip-ink: auto;
 }
 
 .a-none::after {
-  display: none !important;
+    display: none !important;
 }
 
 a {
-  position: relative;
-  transition:
-    color 0.2s ease,
-    text-shadow 0.2s ease;
+    position: relative;
+    transition:
+        color 0.2s ease,
+        text-shadow 0.2s ease;
 }
 
 /* 下划线动画 */
 a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  height: 1px;
-  width: 100%;
-  background: linear-gradient(90deg, var(--stalux-accent-color), rgba(1, 162, 190, 0.5));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s cubic-bezier(0.25, 0.9, 0.2, 1);
-  pointer-events: none;
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--stalux-accent-color), rgba(1, 162, 190, 0.5));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s cubic-bezier(0.25, 0.9, 0.2, 1);
+    pointer-events: none;
 }
 
 a:hover::after,
 a:focus-visible::after,
 a:active::after {
-  transform: scaleX(1);
+    transform: scaleX(1);
 }
 
 a:hover,
 a:active,
 a:focus-visible {
-  text-decoration: none;
-  /* 保持颜色不变，避免 hover 时颜色跳变 */
+    text-decoration: none;
+    /* 保持颜色不变，避免 hover 时颜色跳变 */
 }
 
 a:focus {
-  outline: none;
+    outline: none;
 }
 
 a:focus-visible {
-  outline: 2px solid var(--stalux-accent-color);
-  outline-offset: 2px;
+    outline: 2px solid var(--stalux-accent-color);
+    outline-offset: 2px;
 }
 ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 .none {
-  display: none;
+    display: none;
 }
 /* 布局：使 body 成为列 flex 容器，并让 main 填充可用高度 */
 .stalux-root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  color: white; /* 默认文本颜色，适用于深色背景 */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: white; /* 默认文本颜色，适用于深色背景 */
 }
 
 /* 默认 stalux 背景的 CSS 变量（非动态默认值） */
 :root {
-  --stalux-bg-color: #202020;
-  --stalux-bg-filter: none;
-  --stalux-text-shadow: rgb(1, 162, 190) 0.1rem 0.1rem 0.2rem;
-  --stalux-accent-color: rgb(1, 162, 190);
-  --stalux-search-backdrop: rgba(0, 0, 0, 0.1);
-  --stalux-search-box-bg: rgba(0, 0, 0, 0.1);
-  --stalux-search-border: rgba(0, 0, 0, 0.2);
+    --stalux-bg-color: #202020;
+    --stalux-bg-filter: none;
+    --stalux-text-shadow: rgb(1, 162, 190) 0.1rem 0.1rem 0.2rem;
+    --stalux-accent-color: rgb(1, 162, 190);
+    --stalux-search-backdrop: rgba(0, 0, 0, 0.1);
+    --stalux-search-box-bg: rgba(0, 0, 0, 0.1);
+    --stalux-search-border: rgba(0, 0, 0, 0.2);
 
-  /* 卡片和标签颜色 Token（可在这里统一调整主题色/透明度） */
-  --card-bg: rgba(0, 0, 0, 0.2);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --card-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --card-box-shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.5);
+    /* 卡片和标签颜色 Token（可在这里统一调整主题色/透明度） */
+    --card-bg: rgba(0, 0, 0, 0.2);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --card-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --card-box-shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.5);
 
-  --tag-bg: rgba(255, 255, 255, 0.12);
-  --tag-bg-hover: rgba(255, 255, 255, 0.18);
-  --category-bg: rgba(255, 255, 255, 0.08);
-  --category-bg-hover: rgba(255, 255, 255, 0.14);
+    --tag-bg: rgba(255, 255, 255, 0.12);
+    --tag-bg-hover: rgba(255, 255, 255, 0.18);
+    --category-bg: rgba(255, 255, 255, 0.08);
+    --category-bg-hover: rgba(255, 255, 255, 0.14);
 
-  --date-bg: rgba(66, 160, 255, 0.18);
-  --date-border: rgba(66, 160, 255, 0.25);
-  --updated-bg: rgba(255, 201, 71, 0.2);
-  --updated-border: rgba(255, 201, 71, 0.3);
+    --date-bg: rgba(66, 160, 255, 0.18);
+    --date-border: rgba(66, 160, 255, 0.25);
+    --updated-bg: rgba(255, 201, 71, 0.2);
+    --updated-border: rgba(255, 201, 71, 0.3);
 
-  /* 常用颜色值 */
-  --white-full: #ffffff;
-  --white-90p: rgba(255, 255, 255, 0.9);
-  --white-85p: rgba(255, 255, 255, 0.85);
-  --white-80p: rgba(255, 255, 255, 0.8);
-  --white-78p: rgba(255, 255, 255, 0.78);
-  --white-70p: rgba(255, 255, 255, 0.7);
-  --white-60p: rgba(255, 255, 255, 0.6);
-  --white-50p: rgba(255, 255, 255, 0.5);
-  --white-30p: rgba(255, 255, 255, 0.3);
-  --white-20p: rgba(255, 255, 255, 0.2);
-  --white-15p: rgba(255, 255, 255, 0.15);
-  --white-12p: rgba(255, 255, 255, 0.12);
-  --white-10p: rgba(255, 255, 255, 0.1);
-  --white-8p: rgba(255, 255, 255, 0.08);
-  --white-05p: rgba(255, 255, 255, 0.05);
+    /* 常用颜色值 */
+    --white-full: #ffffff;
+    --white-90p: rgba(255, 255, 255, 0.9);
+    --white-85p: rgba(255, 255, 255, 0.85);
+    --white-80p: rgba(255, 255, 255, 0.8);
+    --white-78p: rgba(255, 255, 255, 0.78);
+    --white-70p: rgba(255, 255, 255, 0.7);
+    --white-60p: rgba(255, 255, 255, 0.6);
+    --white-50p: rgba(255, 255, 255, 0.5);
+    --white-30p: rgba(255, 255, 255, 0.3);
+    --white-20p: rgba(255, 255, 255, 0.2);
+    --white-15p: rgba(255, 255, 255, 0.15);
+    --white-12p: rgba(255, 255, 255, 0.12);
+    --white-10p: rgba(255, 255, 255, 0.1);
+    --white-8p: rgba(255, 255, 255, 0.08);
+    --white-05p: rgba(255, 255, 255, 0.05);
 
-  --black-full: #000000;
-  --black-30p: rgba(0, 0, 0, 0.3);
-  --black-28p: rgba(0, 0, 0, 0.28);
-  --black-20p: rgba(0, 0, 0, 0.2);
-  --black-15p: rgba(0, 0, 0, 0.15);
-  --black-10p: rgba(0, 0, 0, 0.1);
-  --black-05p: rgba(0, 0, 0, 0.05);
-  --black-03p: rgba(0, 0, 0, 0.03);
+    --black-full: #000000;
+    --black-30p: rgba(0, 0, 0, 0.3);
+    --black-28p: rgba(0, 0, 0, 0.28);
+    --black-20p: rgba(0, 0, 0, 0.2);
+    --black-15p: rgba(0, 0, 0, 0.15);
+    --black-10p: rgba(0, 0, 0, 0.1);
+    --black-05p: rgba(0, 0, 0, 0.05);
+    --black-03p: rgba(0, 0, 0, 0.03);
 
-  /* 强调色变体 */
-  --accent-90p: rgba(1, 162, 190, 0.9);
-  --accent-85p: rgba(1, 162, 190, 0.85);
-  --accent-80p: rgba(1, 162, 190, 0.8);
-  --accent-70p: rgba(1, 162, 190, 0.7);
-  --accent-60p: rgba(1, 162, 190, 0.6);
-  --accent-50p: rgba(1, 162, 190, 0.5);
-  --accent-40p: rgba(1, 162, 190, 0.4);
-  --accent-30p: rgba(1, 162, 190, 0.3);
-  --accent-20p: rgba(1, 162, 190, 0.2);
-  --accent-10p: rgba(1, 162, 190, 0.1);
+    /* 强调色变体 */
+    --accent-90p: rgba(1, 162, 190, 0.9);
+    --accent-85p: rgba(1, 162, 190, 0.85);
+    --accent-80p: rgba(1, 162, 190, 0.8);
+    --accent-70p: rgba(1, 162, 190, 0.7);
+    --accent-60p: rgba(1, 162, 190, 0.6);
+    --accent-50p: rgba(1, 162, 190, 0.5);
+    --accent-40p: rgba(1, 162, 190, 0.4);
+    --accent-30p: rgba(1, 162, 190, 0.3);
+    --accent-20p: rgba(1, 162, 190, 0.2);
+    --accent-10p: rgba(1, 162, 190, 0.1);
 
-  /* 常用过渡和动画 */
-  --transition-fast: 0.18s ease;
-  --transition-medium: 0.2s ease;
-  --transition-normal: 0.25s ease;
-  --transition-slow: 0.3s ease;
-  --transition-slower: 0.5s ease;
-  --transition-slowest: 0.6s ease;
+    /* 常用过渡和动画 */
+    --transition-fast: 0.18s ease;
+    --transition-medium: 0.2s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.3s ease;
+    --transition-slower: 0.5s ease;
+    --transition-slowest: 0.6s ease;
 
-  --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  --easing-smooth: cubic-bezier(0.25, 0.9, 0.2, 1);
+    --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --easing-smooth: cubic-bezier(0.25, 0.9, 0.2, 1);
 
-  /* 常用间距值 */
-  --space-2xs: 0.25rem;
-  --space-xs: 0.75rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
+    /* 常用间距值 */
+    --space-2xs: 0.25rem;
+    --space-xs: 0.75rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
 
-  /* 常用圆角半径值 */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
-  --radius-full: 9999px;
-  --radius-circle: 50%;
+    /* 常用圆角半径值 */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 10px;
+    --radius-full: 9999px;
+    --radius-circle: 50%;
 
-  /* 常用阴影 */
-  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 12px 26px rgba(0, 0, 0, 0.28);
-  --shadow-sidebar: 0 4px 6px rgba(0, 0, 0, 0.753);
-  --shadow-dark: rgba(0, 0, 0, 0.753);
+    /* 常用阴影 */
+    --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 12px 26px rgba(0, 0, 0, 0.28);
+    --shadow-sidebar: 0 4px 6px rgba(0, 0, 0, 0.753);
+    --shadow-dark: rgba(0, 0, 0, 0.753);
 
-  /* 语义化颜色 */
-  --date-text-color: #e8f2ff;
-  --updated-text-color: #fff7de;
-  --muted-text: #bbb;
-  --border-color-light: #e5e5e5;
+    /* 语义化颜色 */
+    --date-text-color: #e8f2ff;
+    --updated-text-color: #fff7de;
+    --muted-text: #bbb;
+    --border-color-light: #e5e5e5;
 
-  /* 字体大小系统 */
-  --font-size-title: 2.5rem;
-  --font-size-h2: 1.8rem;
-  --font-size-subtitle: 1.2rem;
-  --font-size-base: 1rem;
-  --font-size-small: 0.9rem;
-  --font-size-smaller: 0.85rem;
-  --font-size-tiny: 0.8rem;
+    /* 字体大小系统 */
+    --font-size-title: 2.5rem;
+    --font-size-h2: 1.8rem;
+    --font-size-subtitle: 1.2rem;
+    --font-size-base: 1rem;
+    --font-size-small: 0.9rem;
+    --font-size-smaller: 0.85rem;
+    --font-size-tiny: 0.8rem;
 
-  /* 边框宽度 */
-  --border-thin: 1px;
-  --border-medium: 2px;
-  --border-thick: 3px;
-  --border-thicker: 4px;
+    /* 边框宽度 */
+    --border-thin: 1px;
+    --border-medium: 2px;
+    --border-thick: 3px;
+    --border-thicker: 4px;
 }
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #2a2a2a;
-  border-radius: 4px;
+    background: #2a2a2a;
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
-  border-radius: 4px;
-  transition: background 0.3s ease-out;
+    background: #4a4a4a;
+    border-radius: 4px;
+    transition: background 0.3s ease-out;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5a5a5a;
+    background: #5a5a5a;
 }
 
 ::-webkit-scrollbar-corner {
-  background: #2a2a2a;
+    background: #2a2a2a;
 }
 
 /* 背景通过 CSS 变量和伪元素处理，因此与 JS 解耦 */
 .stalux-root::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -10;
-  background-image: var(--stalux-bg-image, none);
-  background-repeat: repeat;
-  background-size: auto;
-  background-position: center;
-  background-color: var(--stalux-bg-color, transparent);
-  filter: var(--stalux-bg-filter, none);
-  pointer-events: none;
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    background-image: var(--stalux-bg-image, none);
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: center;
+    background-color: var(--stalux-bg-color, transparent);
+    filter: var(--stalux-bg-filter, none);
+    pointer-events: none;
 }
 
 /* footer 基础样式，保证页脚始终可见且不覆盖内容 */
 footer {
-  padding: var(--space-lg) var(--space-md);
-  text-align: center;
-  color: var(--muted-text);
-  background: transparent;
-  position: relative;
-  z-index: 1;
+    padding: var(--space-lg) var(--space-md);
+    text-align: center;
+    color: var(--muted-text);
+    background: transparent;
+    position: relative;
+    z-index: 1;
 }

@@ -4,11 +4,11 @@ abbrlink: 5561
 date: 2025-01-06 20:03:44+00:00
 updated: "2025-07-04T18:44:32.348+08:00"
 categories:
-  - github
+    - github
 tags:
-  - 学习
-  - 记录
-  - 教程
+    - 学习
+    - 记录
+    - 教程
 ---
 
 本文介绍
@@ -40,75 +40,75 @@ github action/workflow进行npm自动发包，并自动更新版本号
 name: Auto Publish to NPM
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Git Configuration
-        run: |
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions[bot]"
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-          registry-url: https://registry.npmjs.org/
-
-      - name: Install dependencies
-        run: npm ci || npm install
-
-      - name: Get commit message
-        id: commit
-        run: |
-          # 获取最后一次提交信息并处理多行信息
-          FULL_MSG=$(git log -1 --pretty=format:"%B")
-          echo "message<<EOF" >> $GITHUB_OUTPUT
-          echo "$FULL_MSG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Determine version bump
-        id: version
+    publish:
+        runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
-        run: |
-          MESSAGE="${{ steps.commit.outputs.message }}"
-          # 检查提交信息中的关键字
-          if [[ $MESSAGE =\x7e "BREAKING CHANGE:" ]] || [[ $MESSAGE =~ "!" ]]; then
-            echo "type=major" >> $GITHUB_OUTPUT
-            echo "Found major change trigger in commit message"
-          elif [[ $MESSAGE =~ ^feat:.*$ ]] || [[ $MESSAGE =~ ^feature:.*$ ]]; then
-            echo "type=minor" >> $GITHUB_OUTPUT
-            echo "Found minor change trigger in commit message"
-          else
-            echo "type=patch" >> $GITHUB_OUTPUT
-            echo "Default to patch version"
-          fi
+        permissions:
+            contents: write
+            packages: write
 
-      - name: Automated Version Bump
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          version-type: ${{ steps.version.outputs.type }}
-          commit-message: "CI: bumps version to {{version}} [skip ci]"
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish to NPM
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - name: Git Configuration
+              run: |
+                  git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git config --global user.name "GitHub Actions[bot]"
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: "20"
+                  registry-url: https://registry.npmjs.org/
+
+            - name: Install dependencies
+              run: npm ci || npm install
+
+            - name: Get commit message
+              id: commit
+              run: |
+                  # 获取最后一次提交信息并处理多行信息
+                  FULL_MSG=$(git log -1 --pretty=format:"%B")
+                  echo "message<<EOF" >> $GITHUB_OUTPUT
+                  echo "$FULL_MSG" >> $GITHUB_OUTPUT
+                  echo "EOF" >> $GITHUB_OUTPUT
+
+            - name: Determine version bump
+              id: version
+              if: github.ref == 'refs/heads/main'
+              run: |
+                  MESSAGE="${{ steps.commit.outputs.message }}"
+                  # 检查提交信息中的关键字
+                  if [[ $MESSAGE =\x7e "BREAKING CHANGE:" ]] || [[ $MESSAGE =~ "!" ]]; then
+                    echo "type=major" >> $GITHUB_OUTPUT
+                    echo "Found major change trigger in commit message"
+                  elif [[ $MESSAGE =~ ^feat:.*$ ]] || [[ $MESSAGE =~ ^feature:.*$ ]]; then
+                    echo "type=minor" >> $GITHUB_OUTPUT
+                    echo "Found minor change trigger in commit message"
+                  else
+                    echo "type=patch" >> $GITHUB_OUTPUT
+                    echo "Default to patch version"
+                  fi
+
+            - name: Automated Version Bump
+              uses: "phips28/gh-action-bump-version@master"
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  version-type: ${{ steps.version.outputs.type }}
+                  commit-message: "CI: bumps version to {{version}} [skip ci]"
+
+            - name: Publish to NPM
+              run: npm publish --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
 ## 提交信息格式

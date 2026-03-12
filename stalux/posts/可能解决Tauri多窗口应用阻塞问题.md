@@ -4,12 +4,12 @@ abbrlink: 50b9d330
 date: "2025-09-17T14:21:48.659+08:00"
 updated: "2025-09-17T16:56:53.669+08:00"
 categories:
-  - Tauri
+    - Tauri
 tags:
-  - Tauri
-  - ts
-  - 多窗口
-  - 阻塞
+    - Tauri
+    - ts
+    - 多窗口
+    - 阻塞
 ---
 
 :::tip
@@ -111,19 +111,19 @@ AI分析：以下是对阻塞问题根本原因的分析
 **模块级别异步执行的陷阱**：
 
 1. **导入阻塞效应**：
-   - 导入的模块（`filespace`、`autostart` 等）可能包含复杂的初始化逻辑
-   - 这些模块的导入和执行会阻塞 JavaScript 的执行线程
-   - 在旧版本中，这发生在页面渲染完成后，干扰了窗口事件处理
+    - 导入的模块（`filespace`、`autostart` 等）可能包含复杂的初始化逻辑
+    - 这些模块的导入和执行会阻塞 JavaScript 的执行线程
+    - 在旧版本中，这发生在页面渲染完成后，干扰了窗口事件处理
 
 2. **系统托盘创建的时序问题**：
-   - `TrayIcon.new()` 是一个异步操作
-   - 在旧版本中，这个操作在窗口已经显示后才开始
-   - 可能导致系统托盘初始化与窗口事件循环产生冲突
+    - `TrayIcon.new()` 是一个异步操作
+    - 在旧版本中，这个操作在窗口已经显示后才开始
+    - 可能导致系统托盘初始化与窗口事件循环产生冲突
 
 3. **WebView 线程阻塞**：
-   - 模块级别的异步代码执行会占用 WebView 的主线程
-   - 窗口事件处理也依赖于这个主线程
-   - 结果是窗口事件无法及时响应
+    - 模块级别的异步代码执行会占用 WebView 的主线程
+    - 窗口事件处理也依赖于这个主线程
+    - 结果是窗口事件无法及时响应
 
 ### 3. 脚本位置调整的真正效果
 
@@ -168,24 +168,24 @@ AI分析：以下是基于代码结构的优化建议
 ```javascript
 // 方案1：延迟执行托盘创建
 window.addEventListener("load", async () => {
-  try {
-    const menu = await Menu.new({
-      items: [about, filespace, notes, autostart, restartItem, quitItem],
-    });
-    const options = {
-      tooltip: "Wngtools",
-      menu: menu,
-      icon: await defaultWindowIcon(),
-    };
-    const _tray = await TrayIcon.new(options);
-  } catch (error) {
-    console.error("创建系统托盘失败:", error);
-  }
+    try {
+        const menu = await Menu.new({
+            items: [about, filespace, notes, autostart, restartItem, quitItem],
+        });
+        const options = {
+            tooltip: "Wngtools",
+            menu: menu,
+            icon: await defaultWindowIcon(),
+        };
+        const _tray = await TrayIcon.new(options);
+    } catch (error) {
+        console.error("创建系统托盘失败:", error);
+    }
 });
 
 // 方案2：使用 setTimeout 延迟执行
 setTimeout(async () => {
-  // 托盘创建代码
+    // 托盘创建代码
 }, 100);
 ```
 
@@ -213,7 +213,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 
 const window = getCurrentWindow();
 window.onCloseRequested(() => {
-  console.log("窗口关闭事件被触发");
+    console.log("窗口关闭事件被触发");
 });
 ```
 

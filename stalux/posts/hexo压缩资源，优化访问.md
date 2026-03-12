@@ -4,11 +4,11 @@ abbrlink: 42cabe35
 date: 2024-09-21 17:38:24+00:00
 updated: "2024-09-21 17:38:28"
 categories:
-  - hexo
+    - hexo
 tags:
-  - 记录
-  - 教程
-  - hexo
+    - 记录
+    - 教程
+    - hexo
 ---
 
 [Hexo-all-minifier](https://github.com/chenzhutian/hexo-all-minifier)压缩资源，优化访问

@@ -4,13 +4,13 @@ abbrlink: 42695
 date: 2025-01-02 18:56:17+00:00
 updated: "2025-07-04T18:44:32.348+08:00"
 categories:
-  - 开发
+    - 开发
 tags:
-  - 学习
-  - 记录
-  - hexo
-  - 数据结构
-  - 算法
+    - 学习
+    - 记录
+    - hexo
+    - 数据结构
+    - 算法
 ---
 
 应该算是技术债：（
@@ -27,7 +27,7 @@ tags:
 
 ```javascript
 categoriesChart.on("click", function (params) {
-  window.location.href = "/categories/" + params.name;
+    window.location.href = "/categories/" + params.name;
 });
 ```
 
@@ -52,10 +52,10 @@ categoriesChart.on("click", function (params) {
 
 ```javascript
 const categoryTree = {
-  name: hexo.config.title || "Categories",
-  children: [],
-  count: 0,
-  path: "",
+    name: hexo.config.title || "Categories",
+    children: [],
+    count: 0,
+    path: "",
 };
 ```
 
@@ -65,35 +65,35 @@ const categoryTree = {
 
 ```javascript
 if (post.categories.length > 0) {
-  let current = categoryTree;
-  let path = "";
-  post.categories.data.forEach((category, index) => {
-    path = path ? `${path}/${category.name}` : `${category.name}`;
-    let found = false;
-    if (!current.children) {
-      current.children = [];
-    }
-    // 找到现有的分类
-    for (let child of current.children) {
-      if (child.name === category.name) {
-        child.count += 1;
-        current = child;
-        found = true;
-        break;
-      }
-    }
-    // 创建新的分类
-    if (!found) {
-      let newNode = {
-        name: category.name,
-        children: [],
-        count: 1,
-        path: path,
-      };
-      current.children.push(newNode);
-      current = newNode;
-    }
-  });
+    let current = categoryTree;
+    let path = "";
+    post.categories.data.forEach((category, index) => {
+        path = path ? `${path}/${category.name}` : `${category.name}`;
+        let found = false;
+        if (!current.children) {
+            current.children = [];
+        }
+        // 找到现有的分类
+        for (let child of current.children) {
+            if (child.name === category.name) {
+                child.count += 1;
+                current = child;
+                found = true;
+                break;
+            }
+        }
+        // 创建新的分类
+        if (!found) {
+            let newNode = {
+                name: category.name,
+                children: [],
+                count: 1,
+                path: path,
+            };
+            current.children.push(newNode);
+            current = newNode;
+        }
+    });
 }
 ```
 
@@ -112,8 +112,8 @@ if (post.categories.length > 0) {
 
 ```javascript
 function generateCategoriesTreeChart(categoryTree, darkMode, colors) {
-  const data = JSON.stringify([categoryTree]); //只有一个根节点，就是博客标题
-  return `
+    const data = JSON.stringify([categoryTree]); //只有一个根节点，就是博客标题
+    return `
         <script>
             const treeChart = echarts.init(document.getElementById('categoriesTreeChart'), '${darkMode}');
             treeChart.setOption({

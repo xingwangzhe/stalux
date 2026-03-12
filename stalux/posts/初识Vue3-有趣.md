@@ -4,15 +4,15 @@ abbrlink: 218fcad3
 date: 2024-09-27 22:19:55+00:00
 updated: "2024-09-27 22:19:53"
 categories:
-  - 前端
+    - 前端
 tags:
-  - Vue3
-  - 前端
-  - HTML
-  - CSS
-  - Typescript
-  - 记录
-  - 教程
+    - Vue3
+    - 前端
+    - HTML
+    - CSS
+    - Typescript
+    - 记录
+    - 教程
 ---
 
 _初识前端工程_

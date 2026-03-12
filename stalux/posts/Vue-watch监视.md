@@ -4,11 +4,11 @@ abbrlink: b0f770c3
 date: 2024-09-30 21:19:04+00:00
 updated: "2024-09-30 21:19:06"
 categories:
-  - 前端
+    - 前端
 tags:
-  - Vue3
-  - 前端
-  - 记录
+    - Vue3
+    - 前端
+    - 记录
 ---
 
 _👁️👁️watching you!👁️👁️_
@@ -53,26 +53,26 @@ Change.vue:19 [object Object]和新数据1和旧数据11110000101101001
 
 ```ts
 let person = ref({
-  name: "李四",
-  age: 30,
+    name: "李四",
+    age: 30,
 });
 watch(num2, (newvalue, oldvalue) => {
-  console.log(num2 + "和新数据" + newvalue + "和旧数据" + oldvalue);
+    console.log(num2 + "和新数据" + newvalue + "和旧数据" + oldvalue);
 });
 function changeAge() {
-  person.value.age++;
+    person.value.age++;
 }
 function changeName() {
-  person.value.name += "~";
+    person.value.name += "~";
 }
 function changePerson() {
-  person.value = {
-    name: "王二",
-    age: 90,
-  };
+    person.value = {
+        name: "王二",
+        age: 90,
+    };
 }
 watch(person, (newvalue, oldvalue) => {
-  console.log(newvalue + "和" + oldvalue);
+    console.log(newvalue + "和" + oldvalue);
 });
 ```
 
@@ -81,11 +81,11 @@ watch(person, (newvalue, oldvalue) => {
 
 ```ts
 watch(
-  person,
-  (newvalue, oldvalue) => {
-    console.log(newvalue + "和" + oldvalue);
-  },
-  { deep: true },
+    person,
+    (newvalue, oldvalue) => {
+        console.log(newvalue + "和" + oldvalue);
+    },
+    { deep: true },
 );
 ```
 

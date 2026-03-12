@@ -4,28 +4,28 @@
  */
 // 背景图片数组
 const backgroundImages = Array.from({ length: 42 }, (_, i) => {
-  const index = i + 1;
-  return new URL(`../assets/background/pattern-${index}.min.svg`, import.meta.url).href;
+    const index = i + 1;
+    return new URL(`../assets/background/pattern-${index}.min.svg`, import.meta.url).href;
 });
 
 let currentBackgroundIndex = -1;
 
 // 随机选择背景
 function selectRandomBackground(): void {
-  let randomIndex;
-  do {
-    randomIndex = Math.floor(Math.random() * backgroundImages.length);
-  } while (randomIndex === currentBackgroundIndex && backgroundImages.length > 1);
+    let randomIndex;
+    do {
+        randomIndex = Math.floor(Math.random() * backgroundImages.length);
+    } while (randomIndex === currentBackgroundIndex && backgroundImages.length > 1);
 
-  currentBackgroundIndex = randomIndex;
-  applyBackground(backgroundImages[randomIndex]);
+    currentBackgroundIndex = randomIndex;
+    applyBackground(backgroundImages[randomIndex]);
 }
 
 // 应用背景：通过设置 CSS 变量，由 CSS 伪元素渲染背景
 function applyBackground(imageUrl: string): void {
-  const root = document.documentElement;
-  // 设置 CSS 变量
-  root.style.setProperty("--stalux-bg-image", `url('${imageUrl}')`);
+    const root = document.documentElement;
+    // 设置 CSS 变量
+    root.style.setProperty("--stalux-bg-image", `url('${imageUrl}')`);
 }
 
 // 初始化

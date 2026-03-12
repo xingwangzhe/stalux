@@ -4,11 +4,11 @@ abbrlink: 1c1f2d49
 date: "2025-09-21T16:37:14.735+08:00"
 updated: "2025-09-21T16:52:39.386+08:00"
 categories:
-  - Tauri
+    - Tauri
 tags:
-  - Tauri
-  - Vue
-  - Router
+    - Tauri
+    - Vue
+    - Router
 ---
 
 本文介绍如何在 Tauri 2 应用中使用系统菜单控制 Vue 路由切换。过程涉及在 Rust 后端设置菜单，并通过事件发射处理前端的路由变更。
@@ -83,19 +83,19 @@ import About from "./pages/About.vue";
 import Settings from "./pages/Settings.vue";
 
 const routes = [
-  { path: "/", component: Home },
-  { path: "/about", component: About },
-  { path: "/settings", component: Settings },
+    { path: "/", component: Home },
+    { path: "/about", component: About },
+    { path: "/settings", component: Settings },
 ];
 
 const router = createRouter({
-  history: createMemoryHistory(),
-  routes,
+    history: createMemoryHistory(),
+    routes,
 });
 
 listen<String>("change_router", (event) => {
-  console.log(event.payload);
-  router.push({ path: event.payload });
+    console.log(event.payload);
+    router.push({ path: event.payload });
 });
 
 createApp(App).use(router).mount("#app");

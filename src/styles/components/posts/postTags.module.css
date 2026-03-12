@@ -1,51 +1,51 @@
 .tagsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
 }
 
 .title {
-  margin: 0;
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  color: var(--white-90p);
-  padding-bottom: var(--space-sm);
-  border-bottom: var(--border-thin) solid var(--white-20p);
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--white-90p);
+    padding-bottom: var(--space-sm);
+    border-bottom: var(--border-thin) solid var(--white-20p);
 }
 
 .tagList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
 }
 
 .tag {
-  display: inline-block;
-  padding: 0.4rem 0.8rem;
-  background: var(--white-10p);
-  border: none;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-smaller);
-  text-decoration: none;
-  transition:
-    color var(--transition-medium),
-    transform var(--transition-medium);
-  white-space: nowrap;
-  transform: translateY(0);
-  color: var(--white-85p);
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background: var(--white-10p);
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-smaller);
+    text-decoration: none;
+    transition:
+        color var(--transition-medium),
+        transform var(--transition-medium);
+    white-space: nowrap;
+    transform: translateY(0);
+    color: var(--white-85p);
 }
 
 .tag:hover {
-  transform: translateY(-2px);
+    transform: translateY(-2px);
 }
 
 .tag:active {
-  transform: translateY(-1px);
+    transform: translateY(-1px);
 }
 
 .empty {
-  color: var(--white-50p);
-  font-size: var(--font-size-small);
-  text-align: center;
-  padding: var(--space-md) 0;
+    color: var(--white-50p);
+    font-size: var(--font-size-small);
+    text-align: center;
+    padding: var(--space-md) 0;
 }

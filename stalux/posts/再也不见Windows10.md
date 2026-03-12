@@ -4,11 +4,11 @@ abbrlink: ac8ebba9
 date: "2025-10-14T08:25:26.839+08:00"
 updated: "2025-10-14T09:10:46.581+08:00"
 categories:
-  - windows
+    - windows
 tags:
-  - windows
-  - linux
-  - 记录
+    - windows
+    - linux
+    - 记录
 ---
 
 ## 前言

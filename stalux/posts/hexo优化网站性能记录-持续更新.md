@@ -4,13 +4,13 @@ abbrlink: 9f6ebe30
 date: 2024-10-15 14:36:06+00:00
 updated: "2024-10-15 14:36:08"
 categories:
-  - hexo
+    - hexo
 tags:
-  - 记录
-  - HTML
-  - CSS
-  - js
-  - "404"
+    - 记录
+    - HTML
+    - CSS
+    - js
+    - "404"
 ---
 
 ![2024-10-15-135544](https://i.ibb.co/sQqSRzh/2024-10-15-135544.png)
@@ -28,40 +28,40 @@ _优化前的效果:(_
 all_minifier: true
 
 js_concator:
-  enable: true
-  bundle_path: "/js/bundle.js"
-  front: false
-  silent: true
+    enable: true
+    bundle_path: "/js/bundle.js"
+    front: false
+    silent: true
 
 html_minifier:
-  enable: true
-  ignore_error: false
-  silent: true
-  exclude:
+    enable: true
+    ignore_error: false
+    silent: true
+    exclude:
 
 css_minifier:
-  enable: true
-  silent: true
-  exclude:
-    - "*.min.css"
+    enable: true
+    silent: true
+    exclude:
+        - "*.min.css"
 
 js_minifier:
-  enable: true
-  mangle: true
-  silent: true
-  output:
-  compress:
-  exclude:
-    - "*.min.js"
+    enable: true
+    mangle: true
+    silent: true
+    output:
+    compress:
+    exclude:
+        - "*.min.js"
 
 image_minifier:
-  enable: true
-  interlaced: false
-  multipass: false
-  optimizationLevel: 2
-  pngquant: false
-  progressive: false
-  silent: true
+    enable: true
+    interlaced: false
+    multipass: false
+    optimizationLevel: 2
+    pngquant: false
+    progressive: false
+    silent: true
 ```
 
 这个是优化后的效果

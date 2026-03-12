@@ -4,11 +4,11 @@ abbrlink: 45780
 date: 2024-12-11 17:28:32+00:00
 updated: "2025-07-04T18:44:32.349+08:00"
 categories:
-  - 后端
+    - 后端
 tags:
-  - node.js
-  - 后端
-  - js
+    - node.js
+    - 后端
+    - js
 ---
 
 有意思，实现文件访问了
@@ -50,24 +50,24 @@ let filePath = path.join(__dirname, pathname);
 
 ```js
 fs.readFile(filePath, (err, data) => {
-  if (err) {
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not found");
-    return;
-  } else {
-    // 根据文件扩展名设置Content-Type
-    // const ext = path.extname(filePath).toLowerCase();
-    //const mimeTypes = {
-    //'.html': 'text/html',
-    //'.js': 'application/javascript',
-    //'.css': 'text/css',
-    // 其他文件类型...
-    //现代浏览器的资源嗅探已经足够先进，因此对文件扩展名设置Content-Type并不是必要的
-    //};
-    // const contentType = mimeTypes[ext] || 'application/octet-stream';
-    // res.writeHead(200, {'Content-Type': contentType});
-    res.end(data);
-  }
+    if (err) {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        res.end("Not found");
+        return;
+    } else {
+        // 根据文件扩展名设置Content-Type
+        // const ext = path.extname(filePath).toLowerCase();
+        //const mimeTypes = {
+        //'.html': 'text/html',
+        //'.js': 'application/javascript',
+        //'.css': 'text/css',
+        // 其他文件类型...
+        //现代浏览器的资源嗅探已经足够先进，因此对文件扩展名设置Content-Type并不是必要的
+        //};
+        // const contentType = mimeTypes[ext] || 'application/octet-stream';
+        // res.writeHead(200, {'Content-Type': contentType});
+        res.end(data);
+    }
 });
 ```
 
@@ -75,7 +75,7 @@ fs.readFile(filePath, (err, data) => {
 
 ```js
 server.listen(3000, () => {
-  console.log("Server running at http://localhost:3000/");
+    console.log("Server running at http://localhost:3000/");
 });
 ```
 
@@ -83,39 +83,39 @@ server.listen(3000, () => {
 
 ```js
 const server = http.createServer((req, res) => {
-  // 使用req.url和req.headers.host来创建完整的URL对象
-  let url = new URL(req.url, `http://${req.headers.host}`);
-  let pathname = url.pathname;
+    // 使用req.url和req.headers.host来创建完整的URL对象
+    let url = new URL(req.url, `http://${req.headers.host}`);
+    let pathname = url.pathname;
 
-  // 构建文件系统路径
-  let filePath = path.join(__dirname, pathname);
+    // 构建文件系统路径
+    let filePath = path.join(__dirname, pathname);
 
-  console.log("Request for:", filePath);
+    console.log("Request for:", filePath);
 
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      res.end("Not found");
-      return;
-    } else {
-      //   // 根据文件扩展名设置Content-Type
-      //   const ext = path.extname(filePath).toLowerCase();
-      //   const mimeTypes = {
-      //     '.html': 'text/html',
-      //     '.js': 'application/javascript',
-      //     '.css': 'text/css',
-      //     // 其他文件类型...
-      //  现代浏览器的资源嗅探已经足够先进，因此对文件扩展名设置Content-Type并不是必要的
-      //   };
-      //   const contentType = mimeTypes[ext] || 'application/octet-stream';
-      //   res.writeHead(200, {'Content-Type': contentType});
-      res.end(data);
-    }
-  });
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            res.writeHead(404, { "Content-Type": "text/plain" });
+            res.end("Not found");
+            return;
+        } else {
+            //   // 根据文件扩展名设置Content-Type
+            //   const ext = path.extname(filePath).toLowerCase();
+            //   const mimeTypes = {
+            //     '.html': 'text/html',
+            //     '.js': 'application/javascript',
+            //     '.css': 'text/css',
+            //     // 其他文件类型...
+            //  现代浏览器的资源嗅探已经足够先进，因此对文件扩展名设置Content-Type并不是必要的
+            //   };
+            //   const contentType = mimeTypes[ext] || 'application/octet-stream';
+            //   res.writeHead(200, {'Content-Type': contentType});
+            res.end(data);
+        }
+    });
 });
 
 server.listen(3000, () => {
-  console.log("Server running at http://localhost:3000/");
+    console.log("Server running at http://localhost:3000/");
 });
 ```
 

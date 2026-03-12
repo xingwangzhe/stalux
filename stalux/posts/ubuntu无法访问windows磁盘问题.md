@@ -4,12 +4,12 @@ abbrlink: 05db3c92
 date: "2025-07-04T18:44:32.350+08:00"
 updated: "2025-07-04T18:44:32.350+08:00"
 categories:
-  - 疑难杂症
+    - 疑难杂症
 tags:
-  - Ubuntu
-  - Windows
-  - 磁盘问题
-  - 教程
+    - Ubuntu
+    - Windows
+    - 磁盘问题
+    - 教程
 ---
 
 ## 问题描述

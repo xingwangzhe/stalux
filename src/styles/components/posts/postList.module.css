@@ -1,22 +1,22 @@
 .container {
-  width: 100%;
-  height: auto;
-  margin: 5px 0;
-  ul {
-    /* 使用 CSS columns 实现自然瀑布流（masonry） */
-    column-width: 22rem; /* 调宽列宽，使卡片更接近“宽长方形” */
-    column-gap: 2rem;
-    padding: 0;
-    margin: 3em;
-    list-style: none;
-  }
-
-  ul > li {
-    display: inline-block; /* 在列中按块排列 */
     width: 100%;
-    margin: 0 0 2rem; /* 底部间距 */
-    break-inside: avoid;
-    -webkit-column-break-inside: avoid;
-    page-break-inside: avoid;
-  }
+    height: auto;
+    margin: 5px 0;
+    ul {
+        /* 使用 CSS columns 实现自然瀑布流（masonry） */
+        column-width: 22rem; /* 调宽列宽，使卡片更接近“宽长方形” */
+        column-gap: 2rem;
+        padding: 0;
+        margin: 3em;
+        list-style: none;
+    }
+
+    ul > li {
+        display: inline-block; /* 在列中按块排列 */
+        width: 100%;
+        margin: 0 0 2rem; /* 底部间距 */
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+        page-break-inside: avoid;
+    }
 }

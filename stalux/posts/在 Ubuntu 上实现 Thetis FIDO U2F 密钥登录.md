@@ -4,13 +4,13 @@ abbrlink: f69680bd
 date: "2025-07-04T18:44:32.352+08:00"
 updated: "2025-07-04T18:44:32.352+08:00"
 categories:
-  - 安全
+    - 安全
 tags:
-  - FIDO U2F
-  - Thetis
-  - Ubuntu
-  - 密码登录
-  - 安全认证
+    - FIDO U2F
+    - Thetis
+    - Ubuntu
+    - 密码登录
+    - 安全认证
 ---
 
 :::warning
@@ -101,11 +101,11 @@ auth    sufficient    pam_u2f.so   cue authfile=/etc/u2f_keys
 
 1. **测试 sudo 认证**：在不关闭当前终端的情况下，打开一个新的终端窗口，运行以下命令进行测试：
 
-   ```bash
-   sudo echo
-   ```
+    ```bash
+    sudo echo
+    ```
 
-   如果系统提示 "Please touch the device."，则表示 U2F 密钥认证已正常工作。触摸密钥上的按钮后，命令将成功执行。
+    如果系统提示 "Please touch the device."，则表示 U2F 密钥认证已正常工作。触摸密钥上的按钮后，命令将成功执行。
 
 2. **测试登录认证**：可以通过注销当前用户并尝试重新登录来测试登录时的 U2F 密钥认证。如果一切正常，插入密钥后系统会提示触摸密钥以完成登录。
 

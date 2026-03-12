@@ -4,11 +4,11 @@ abbrlink: fc7dd4b4
 date: 2024-09-15 10:08:12+00:00
 updated: "2024-09-15 10:08:15"
 categories:
-  - github
+    - github
 tags:
-  - github
-  - 记录
-  - 教程
+    - github
+    - 记录
+    - 教程
 ---
 
 [![readme](https://i.ibb.co/23KtNMg7/githubreadme.png)](https://github.com/xingwangzhe/)

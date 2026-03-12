@@ -4,11 +4,11 @@ abbrlink: f654ae55
 date: "2025-07-04T18:44:32.350+08:00"
 updated: "2025-07-04T18:44:32.350+08:00"
 categories:
-  - 前端
+    - 前端
 tags:
-  - 记录
-  - 教程
-  - 胡思乱想
+    - 记录
+    - 教程
+    - 胡思乱想
 ---
 
 :::tip
@@ -73,26 +73,26 @@ tags:
 
 ```json
 {
-  "name": "comment",
-  "github": {
-    "silent": true
-  },
-  "builds": [
-    {
-      "src": "robots.txt",
-      "use": "@vercel/static"
+    "name": "comment",
+    "github": {
+        "silent": true
     },
-    {
-      "src": "index.cjs",
-      "use": "@vercel/node"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/((?!robots\\.txt$).*)",
-      "destination": "index.cjs"
-    }
-  ]
+    "builds": [
+        {
+            "src": "robots.txt",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "index.cjs",
+            "use": "@vercel/node"
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/((?!robots\\.txt$).*)",
+            "destination": "index.cjs"
+        }
+    ]
 }
 ```
 
@@ -109,10 +109,10 @@ tags:
 ```js title="index.cjs"
 const Application = require("@waline/vercel");
 module.exports = Application({
-  plugins: [],
-  async postSave(comment) {
-    // do what ever you want after comment saved
-  },
+    plugins: [],
+    async postSave(comment) {
+        // do what ever you want after comment saved
+    },
 });
 ```
 
@@ -141,7 +141,7 @@ module.exports = Application({
 
 - `(?!robots.txt$)`：这是一个**负向前瞻断言**，意思是当前匹配的位置不能是 `robots.txt` 这个字符串的开头，并且要求 `robots.txt` 必须完整地出现在 URL 路径的末尾（因为 `$` 匹配字符串的结尾）。
 
-  > 也就是说，如果 URL 路径是 `/robots.txt`，则整个正则表达式不会匹配这个路径。
+    > 也就是说，如果 URL 路径是 `/robots.txt`，则整个正则表达式不会匹配这个路径。
 
 - `.*`：匹配任意数量（包括零个）的任意字符（除了换行符），这里的 `.` 表示任意字符，`*` 表示零次或多次重复前面的 `.`。  
   所以这部分会匹配 `/` 后面的所有字符，只要这些字符不构成一个以 `robots.txt` 结尾的路径。

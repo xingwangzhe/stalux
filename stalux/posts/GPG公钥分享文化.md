@@ -4,10 +4,10 @@ abbrlink: f74e64e5
 date: "2025-08-20T08:05:22.148+08:00"
 updated: "2025-08-20T09:18:46.346+08:00"
 categories:
-  - 安全
+    - 安全
 tags:
-  - GPG
-  - 公钥
+    - GPG
+    - 公钥
 ---
 
 最近这几天看各个博客，发现大家都在分享自己的 **GPG** 公钥，我觉得很有趣，所以我也准备加入。
@@ -50,32 +50,32 @@ tags:
 
 1. 查看自己有哪些密钥（找到 Key ID）
 
-   ```bash title="bash"
-   gpg --list-secret-keys --keyid-format LONG
-   ```
+    ```bash title="bash"
+    gpg --list-secret-keys --keyid-format LONG
+    ```
 
-   假设看到的 Key ID 是 `AABBCCDD12345678`。
+    假设看到的 Key ID 是 `AABBCCDD12345678`。
 
 2. 导出公钥（\*.asc，纯文本）
 
-   ```bash title="bash"
-   gpg --armor --export AABBCCDD12345678 > public.asc
-   ```
+    ```bash title="bash"
+    gpg --armor --export AABBCCDD12345678 > public.asc
+    ```
 
-   文件内容以  
-   `-----BEGIN PGP PUBLIC KEY BLOCK-----`  
-   开头，可直接贴到 GitHub/Gitee 等平台。
+    文件内容以  
+    `-----BEGIN PGP PUBLIC KEY BLOCK-----`  
+    开头，可直接贴到 GitHub/Gitee 等平台。
 
 3. 导出私钥（\*.asc，纯文本，务必保管好）
-   ```bash title="bash"
-   gpg --armor --export-secret-keys AABBCCDD12345678 > private.asc
-   ```
-   文件内容以  
-   `-----BEGIN PGP PRIVATE KEY BLOCK-----`  
-   开头，导入/备份时使用：
-   ```bash title="bash"
-   gpg --import private.asc
-   ```
+    ```bash title="bash"
+    gpg --armor --export-secret-keys AABBCCDD12345678 > private.asc
+    ```
+    文件内容以  
+    `-----BEGIN PGP PRIVATE KEY BLOCK-----`  
+    开头，导入/备份时使用：
+    ```bash title="bash"
+    gpg --import private.asc
+    ```
 
 > **安全提示**
 >
@@ -86,21 +86,21 @@ tags:
 
 1. **指定签名密钥**
 
-   ```bash title="bash"
-   git config --global user.signingkey AABBCCDD12345678
-   ```
+    ```bash title="bash"
+    git config --global user.signingkey AABBCCDD12345678
+    ```
 
 2. **默认启用签名**
 
-   ```bash title="bash"
-   git config --global commit.gpgsign true
-   ```
+    ```bash title="bash"
+    git config --global commit.gpgsign true
+    ```
 
 3. **上传公钥到平台**
-   ```bash title="bash"
-   gpg --armor --export AABBCCDD12345678 | xclip -sel clip
-   ```
-   把剪贴板内容粘贴到 GitHub / Gitee 的「GPG 公钥」设置页即可。
+    ```bash title="bash"
+    gpg --armor --export AABBCCDD12345678 | xclip -sel clip
+    ```
+    把剪贴板内容粘贴到 GitHub / Gitee 的「GPG 公钥」设置页即可。
 
 完成后，所有新 commit 都会自动带有 GPG 签名，并在平台显示绿色 **Verified** 标识。
 

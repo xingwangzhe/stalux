@@ -4,10 +4,10 @@ abbrlink: 9fe82262
 date: "2025-10-12T17:50:44.618+08:00"
 updated: "2025-10-12T18:12:28.469+08:00"
 categories:
-  - Packet Tracer
+    - Packet Tracer
 tags:
-  - Ubuntu
-  - Packet Tracer
+    - Ubuntu
+    - Packet Tracer
 ---
 
 ## 引言
@@ -33,67 +33,67 @@ tags:
 1. **安装真实库**
    提供 `libGL.so.1`、`libGLX_mesa.so.0` 等实际文件，确保功能不缺。
 
-   ```bash
-   sudo apt install -y libgl1 libglx-mesa0 libxcb-xinerama0
-   ```
+    ```bash
+    sudo apt install -y libgl1 libglx-mesa0 libxcb-xinerama0
+    ```
 
 2. **解除 apt 阻塞**
    将之前半拉子安装的 **packettracer** 清掉，使 **apt** 恢复可用。
 
-   ```bash
-   sudo apt --fix-broken install
-   ```
+    ```bash
+    sudo apt --fix-broken install
+    ```
 
 3. **安装造包工具**
 
-   ```bash
-   sudo apt install -y equivs
-   ```
+    ```bash
+    sudo apt install -y equivs
+    ```
 
 4. **生成最小控制文件**
 
-   ```bash
-   cat >/tmp/libgl1-mesa-glx <<'EOF'
-   Section: misc
-   Priority: optional
-   Standards-Version: 4.5.1
-   Package: libgl1-mesa-glx
-   Version: 23.0.4-0ubuntu1
-   Maintainer: dummy <dummy@localhost>
-   Description: Dummy transitional package for libgl1-mesa-glx
-   EOF
-   ```
+    ```bash
+    cat >/tmp/libgl1-mesa-glx <<'EOF'
+    Section: misc
+    Priority: optional
+    Standards-Version: 4.5.1
+    Package: libgl1-mesa-glx
+    Version: 23.0.4-0ubuntu1
+    Maintainer: dummy <dummy@localhost>
+    Description: Dummy transitional package for libgl1-mesa-glx
+    EOF
+    ```
 
 5. **构建空壳 deb**
 
-   ```bash
-   equivs-build /tmp/libgl1-mesa-glx
-   ```
+    ```bash
+    equivs-build /tmp/libgl1-mesa-glx
+    ```
 
-   这将生成 `libgl1-mesa-glx_23.0.4-0ubuntu1_all.deb`。
+    这将生成 `libgl1-mesa-glx_23.0.4-0ubuntu1_all.deb`。
 
 6. **将空壳包装进系统**
    在 `/var/lib/dpkg/status` 中添加已安装记录，使 **dpkg** 依赖检查通过。
 
-   ```bash
-   sudo dpkg -i libgl1-mesa-glx_23.0.4-0ubuntu1_all.deb
-   ```
+    ```bash
+    sudo dpkg -i libgl1-mesa-glx_23.0.4-0ubuntu1_all.deb
+    ```
 
 7. **正式安装 Packet Tracer**
 
-   ```bash
-   sudo dpkg -i ./Packet_Tracer822_amd64_signed.deb
-   ```
+    ```bash
+    sudo dpkg -i ./Packet_Tracer822_amd64_signed.deb
+    ```
 
-   此时不再报依赖错误，图标、菜单项、`/opt/pt` 目录一次性到位。
+    此时不再报依赖错误，图标、菜单项、`/opt/pt` 目录一次性到位。
 
 8. **验证**
 
-   ```bash
-   packettracer
-   ```
+    ```bash
+    packettracer
+    ```
 
-   能弹出登录窗口即宣告成功。
+    能弹出登录窗口即宣告成功。
 
 ## 核心要点
 

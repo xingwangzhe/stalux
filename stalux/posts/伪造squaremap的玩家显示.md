@@ -4,11 +4,11 @@ abbrlink: 828e66c0
 date: "2025-08-13T14:03:57.651+08:00"
 updated: "2025-08-13T14:49:32.251+08:00"
 categories:
-  - minecraft
+    - minecraft
 tags:
-  - squaremap
-  - minecraft
-  - js
+    - squaremap
+    - minecraft
+    - js
 ---
 
 ![fakeplayer位置显示](https://i.ibb.co/RGnPmym3/2025-08-11-23-41-55.webp)
@@ -25,22 +25,22 @@ squaremap是我的世界知名的网页地图之一，它可以做到玩家位�
 
 ```json title="players.json"
 {
-  "max": 200,
-  "players": [
-    {
-      "world": "minecraft_overworld",
-      "armor": 0,
-      "name": "Comecat",
-      "x": 267652,
-      "y": 72,
-      "health": 40,
-      "z": -67070,
-      "display_name": "Comecat",
-      "uuid": "83691f9849133901819b0bc29ab5883e",
-      "yaw": -91
-    }
-    // ... 更多玩家数据
-  ]
+    "max": 200,
+    "players": [
+        {
+            "world": "minecraft_overworld",
+            "armor": 0,
+            "name": "Comecat",
+            "x": 267652,
+            "y": 72,
+            "health": 40,
+            "z": -67070,
+            "display_name": "Comecat",
+            "uuid": "83691f9849133901819b0bc29ab5883e",
+            "yaw": -91
+        }
+        // ... 更多玩家数据
+    ]
 }
 ```
 
@@ -54,16 +54,16 @@ squaremap通过一个主类`SquaremapMap`来管理整个地图系统，其中包
 
 ```javascript title="squaremap.js"
 class SquaremapMap {
-  constructor() {
-    this.map = L.map("map", {
-      crs: L.CRS.Simple,
-      center: [0, 0],
-      attributionControl: false,
-      preferCanvas: true,
-      noWrap: true,
-    });
-    // ... 其他初始化代码
-  }
+    constructor() {
+        this.map = L.map("map", {
+            crs: L.CRS.Simple,
+            center: [0, 0],
+            attributionControl: false,
+            preferCanvas: true,
+            noWrap: true,
+        });
+        // ... 其他初始化代码
+    }
 }
 ```
 
@@ -71,21 +71,21 @@ class SquaremapMap {
 
 ```javascript title="squaremap.js"
 class PlayerList {
-  constructor(json) {
-    this.players = new Map();
-    this.markers = new Map();
-    this.following = null;
-    this.firstTick = true;
-  }
-
-  tick() {
-    if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
-      P.getJSON("tiles/players.json", (json) => {
-        this.updatePlayerList(json.players);
-        // ... 更新玩家列表标题
-      });
+    constructor(json) {
+        this.players = new Map();
+        this.markers = new Map();
+        this.following = null;
+        this.firstTick = true;
     }
-  }
+
+    tick() {
+        if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
+            P.getJSON("tiles/players.json", (json) => {
+                this.updatePlayerList(json.players);
+                // ... 更新玩家列表标题
+            });
+        }
+    }
 }
 ```
 
@@ -95,27 +95,27 @@ class PlayerList {
 
 ```javascript title="squaremap.js"
 class Player {
-  constructor(json) {
-    this.name = json.name;
-    this.uuid = json.uuid;
-    this.world = json.world;
-    this.displayName = json.display_name !== undefined ? json.display_name : json.name;
-    this.x = 0;
-    this.z = 0;
-    this.armor = 0;
-    this.health = 20;
+    constructor(json) {
+        this.name = json.name;
+        this.uuid = json.uuid;
+        this.world = json.world;
+        this.displayName = json.display_name !== undefined ? json.display_name : json.name;
+        this.x = 0;
+        this.z = 0;
+        this.armor = 0;
+        this.health = 20;
 
-    // 创建地图标记
-    this.marker = L.marker(P.toLatLng(json.x, json.z), {
-      icon: L.icon({
-        iconUrl: "images/icon/player.png",
-        iconSize: [17, 16],
-        iconAnchor: [8, 9],
-        tooltipAnchor: [0, 0],
-      }),
-      rotationAngle: 180 + json.yaw,
-    });
-  }
+        // 创建地图标记
+        this.marker = L.marker(P.toLatLng(json.x, json.z), {
+            icon: L.icon({
+                iconUrl: "images/icon/player.png",
+                iconSize: [17, 16],
+                iconAnchor: [8, 9],
+                tooltipAnchor: [0, 0],
+            }),
+            rotationAngle: 180 + json.yaw,
+        });
+    }
 }
 ```
 
@@ -130,15 +130,15 @@ class Player {
 ```javascript title="any.js"
 // 在获取玩家数据后，手动添加当前玩家信息
 function addCurrentPlayer(jsonData, currentPlayerData) {
-  // 检查当前玩家是否已经在列表中
-  const playerExists = jsonData.players.some((player) => player.uuid === currentPlayerData.uuid);
+    // 检查当前玩家是否已经在列表中
+    const playerExists = jsonData.players.some((player) => player.uuid === currentPlayerData.uuid);
 
-  // 如果不存在，则添加当前玩家
-  if (!playerExists) {
-    jsonData.players.push(currentPlayerData);
-  }
+    // 如果不存在，则添加当前玩家
+    if (!playerExists) {
+        jsonData.players.push(currentPlayerData);
+    }
 
-  return jsonData;
+    return jsonData;
 }
 ```
 
@@ -149,44 +149,44 @@ function addCurrentPlayer(jsonData, currentPlayerData) {
 ```javascript title="any.js"
 // 保存玩家位置到本地存储
 function savePlayerLocation(playerData) {
-  localStorage.setItem(
-    "myPosition",
-    JSON.stringify({
-      x: playerData.x,
-      y: playerData.y,
-      z: playerData.z,
-      world: playerData.world,
-      lastUpdate: Date.now(),
-    }),
-  );
+    localStorage.setItem(
+        "myPosition",
+        JSON.stringify({
+            x: playerData.x,
+            y: playerData.y,
+            z: playerData.z,
+            world: playerData.world,
+            lastUpdate: Date.now(),
+        }),
+    );
 }
 
 // 从本地存储获取玩家位置并添加到玩家列表
 function addLocalPlayerPosition(playersJson) {
-  const localPosition = localStorage.getItem("myPosition");
-  if (localPosition) {
-    const position = JSON.parse(localPosition);
-    // 检查数据是否过期（例如超过5分钟）
-    if (Date.now() - position.lastUpdate < 5 * 60 * 1000) {
-      // 创建一个虚拟玩家对象
-      const virtualPlayer = {
-        world: position.world,
-        armor: 0,
-        name: "You",
-        x: position.x,
-        y: position.y,
-        health: 20,
-        z: position.z,
-        display_name: "You (Local)",
-        uuid: "local-player",
-        yaw: 0,
-      };
+    const localPosition = localStorage.getItem("myPosition");
+    if (localPosition) {
+        const position = JSON.parse(localPosition);
+        // 检查数据是否过期（例如超过5分钟）
+        if (Date.now() - position.lastUpdate < 5 * 60 * 1000) {
+            // 创建一个虚拟玩家对象
+            const virtualPlayer = {
+                world: position.world,
+                armor: 0,
+                name: "You",
+                x: position.x,
+                y: position.y,
+                health: 20,
+                z: position.z,
+                display_name: "You (Local)",
+                uuid: "local-player",
+                yaw: 0,
+            };
 
-      // 添加到玩家列表
-      playersJson.players.push(virtualPlayer);
+            // 添加到玩家列表
+            playersJson.players.push(virtualPlayer);
+        }
     }
-  }
-  return playersJson;
+    return playersJson;
 }
 ```
 

@@ -1,32 +1,32 @@
 /* 作者卡片组件样式 */
 
 .sidebarContainer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
 }
 
 .authorSection {
-  width: 100%;
+    width: 100%;
 }
 
 .authorCard {
-  display: flex;
-  flex-direction: column;
-  background: var(--black-10p);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md);
-  box-shadow: var(--shadow-sidebar);
-  transition: all var(--transition-normal) ease;
+    display: flex;
+    flex-direction: column;
+    background: var(--black-10p);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-sidebar);
+    transition: all var(--transition-normal) ease;
 }
 
 .authorBio {
-  font-size: var(--font-size-small);
-  color: var(--white-70p);
-  margin: var(--space-md) 0 0;
-  line-height: 1.6;
-  text-align: center;
-  padding-top: var(--space-md);
-  border-top: var(--border-thin) solid var(--white-10p);
-  width: 100%;
+    font-size: var(--font-size-small);
+    color: var(--white-70p);
+    margin: var(--space-md) 0 0;
+    line-height: 1.6;
+    text-align: center;
+    padding-top: var(--space-md);
+    border-top: var(--border-thin) solid var(--white-10p);
+    width: 100%;
 }

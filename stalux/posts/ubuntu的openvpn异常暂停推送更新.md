@@ -1,17 +1,18 @@
 ---
 title: "ubuntu的openvpn异常暂停推送更新"
 categories:
-  - ubuntu 
+    - ubuntu
 tags:
-  - openvpn
-  - ubuntu
-abbrlink: 'error-push-openvpn-on-ubuntu'
+    - openvpn
+    - ubuntu
+abbrlink: "error-push-openvpn-on-ubuntu"
 date: 2026-03-10 13:54:01
 ---
 
 ## **本文具有时效性，不代表长期状况，请注意文章发布时间，问题可能会很快解决**
 
 > ⚠️ **过期提醒**：如果本文信息已过期（例如 [Bug #2112561](https://bugs.launchpad.net/bugs/2112561) 已修复），请勿依赖本文建议。建议读者在操作前先检查以下 Bug 的最新状态：
+>
 > - [Bug #2112561](https://bugs.launchpad.net/bugs/2112561) — NetworkManager OpenVPN 认证失败（**撰文时仍处于 Confirmed 状态**）
 
 ---
@@ -22,7 +23,7 @@ date: 2026-03-10 13:54:01
 sudo apt upgrade
 正在读取软件包列表... 完成
 正在分析软件包的依赖关系树... 完成
-正在读取状态信息... 完成                 
+正在读取状态信息... 完成
 正在计算更新... 完成
 下列软件包新版本的升级因阶段更新而被推迟：
   network-manager-openvpn network-manager-openvpn-gnome

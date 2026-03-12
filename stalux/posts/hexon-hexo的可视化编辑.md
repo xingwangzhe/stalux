@@ -4,11 +4,11 @@ abbrlink: 59a1e261
 date: 2024-09-04 15:02:00+00:00
 updated: "2024-09-04 15:02:29"
 categories:
-  - hexo
+    - hexo
 tags:
-  - 记录
-  - 教程
-  - hexo
+    - 记录
+    - 教程
+    - hexo
 ---
 
 ## <div style="text-align: center;"> 你是否对这些命令感到枯燥乏味？</div>

@@ -1,51 +1,51 @@
 .homeBody {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding-bottom: var(--space-3xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-bottom: var(--space-3xl);
 }
 
 .homeTitle {
-  font-size: 4em;
-  margin-top: 1.5em;
-  text-shadow: var(--stalux-text-shadow);
-  text-align: center;
-  color: var(--white-full);
+    font-size: 4em;
+    margin-top: 1.5em;
+    text-shadow: var(--stalux-text-shadow);
+    text-align: center;
+    color: var(--white-full);
 }
 
 .homeNavs {
-  display: flex;
+    display: flex;
 }
 
 #showPostList {
-  margin-top: 3em;
-  font-size: 1.5em;
-  cursor: pointer;
-  text-shadow: var(--stalux-text-shadow);
+    margin-top: 3em;
+    font-size: 1.5em;
+    cursor: pointer;
+    text-shadow: var(--stalux-text-shadow);
 }
 
 /* 移动端响应式优化 */
 @media (max-width: 768px) {
-  .homeBody {
-    height: auto;
-    padding: 2rem 0.5rem 1.5rem 0.5rem;
-    max-width: 95vw;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .homeTitle {
-    font-size: 2em;
-    margin-top: 1em;
-    word-break: break-all;
-  }
-  .homeNavs {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5em;
-  }
-  #showPostList {
-    margin-top: 2em;
-    font-size: 1.1em;
-  }
+    .homeBody {
+        height: auto;
+        padding: 2rem 0.5rem 1.5rem 0.5rem;
+        max-width: 95vw;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .homeTitle {
+        font-size: 2em;
+        margin-top: 1em;
+        word-break: break-all;
+    }
+    .homeNavs {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5em;
+    }
+    #showPostList {
+        margin-top: 2em;
+        font-size: 1.1em;
+    }
 }

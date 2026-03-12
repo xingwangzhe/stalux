@@ -4,11 +4,11 @@ abbrlink: 69cc9e5f
 date: 2024-09-14 18:38:52+00:00
 updated: "2024-09-14 18:38:55"
 categories:
-  - hexo
+    - hexo
 tags:
-  - hexo
-  - 教程
-  - 记录
+    - hexo
+    - 教程
+    - 记录
 ---
 
 显示如下
@@ -36,10 +36,10 @@ tags:
 
 ```html
 <div class="where is your ip">
-  <h3>访客信息</h3>
-  <a href="https://tool.lu/ip/">
-    <img src="https://tool.lu/netcard/" alt="1213" />
-  </a>
+    <h3>访客信息</h3>
+    <a href="https://tool.lu/ip/">
+        <img src="https://tool.lu/netcard/" alt="1213" />
+    </a>
 </div>
 ```
 

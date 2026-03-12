@@ -4,11 +4,11 @@ abbrlink: dad78c45
 date: 2024-09-13 19:36:15+00:00
 updated: "2024-09-13 19:36:12"
 categories:
-  - github
+    - github
 tags:
-  - 记录
-  - 进步
-  - 学习
+    - 记录
+    - 进步
+    - 学习
 ---
 
 有趣

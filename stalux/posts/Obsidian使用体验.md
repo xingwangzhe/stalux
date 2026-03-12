@@ -4,12 +4,12 @@ abbrlink: d5f89da4
 date: "2025-10-02T16:58:57.432+08:00"
 updated: "2025-10-02T18:49:26.486+08:00"
 categories:
-  - 记录
+    - 记录
 tags:
-  - 记录
-  - CSS
-  - 通知
-  - obsidian
+    - 记录
+    - CSS
+    - 通知
+    - obsidian
 ---
 
 [Obsidan](https://obsidian.md/)官网

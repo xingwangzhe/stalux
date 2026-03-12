@@ -3,11 +3,11 @@ title: 出租人类：AI时代的荒诞与真实
 abbrlink: ai-rentahuman
 date: "2026-02-04 16:18:32"
 categories:
-  - 胡思乱想
+    - 胡思乱想
 tags:
-  - AI
-  - 思考
-  - 社会
+    - AI
+    - 思考
+    - 社会
 ---
 
 > "robots need your body" —— 这不是科幻小说的开头，而是 [rentahuman.ai](https://rentahuman.ai/) 的首页标语。

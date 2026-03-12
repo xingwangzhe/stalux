@@ -4,12 +4,12 @@ date: 2026-1-28 15:06:10
 updated: 2026-1-28 15:30:10
 abbrlink: "move-hexo-permalink-to-astro"
 tags:
-  - Astro
-  - Hexo
-  - 永久链接
-  - 迁移
+    - Astro
+    - Hexo
+    - 永久链接
+    - 迁移
 categories:
-  - Astro
+    - Astro
 ---
 
 从 **Hexo** 生态过来的朋友们，可能会遇到一个问题，就是 Hexo 的 `permalink`（或 `abbrlink`）和 **Astro** 的路由规则不太一样，导致之前的文章链接可能需要大批量更改而无法访问。今天我们就来讲讲如何把 Hexo 的永久链接迁移到 Astro。

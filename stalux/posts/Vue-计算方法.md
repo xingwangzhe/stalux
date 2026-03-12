@@ -4,11 +4,11 @@ abbrlink: ffe80f36
 date: 2024-09-29 18:19:17+00:00
 updated: "2024-09-29 18:19:19"
 categories:
-  - 前端
+    - 前端
 tags:
-  - Vue3
-  - 前端
-  - 记录
+    - Vue3
+    - 前端
+    - 记录
 ---
 
 _默认只读_
@@ -27,22 +27,22 @@ vue官方不建议我们在模板这么写，这看起来过于 **复杂**
 
 ```html
 <template>
-  <div class="person">
-    姓：<input type="text" v-model="firstName" /> <br />
-    名：<input type="text" v-model="lastName" /> <br />
-    全名：<span>{{fullName}}</span><br />
-    <button @click="changeName">修改姓名</button>
-    <!-- 全名 <span>{{firstName}}-{{lastName}}</span> <br> -->
-  </div>
+    <div class="person">
+        姓：<input type="text" v-model="firstName" /> <br />
+        名：<input type="text" v-model="lastName" /> <br />
+        全名：<span>{{fullName}}</span><br />
+        <button @click="changeName">修改姓名</button>
+        <!-- 全名 <span>{{firstName}}-{{lastName}}</span> <br> -->
+    </div>
 </template>
 
 <script setup lang="ts" name="Personsss">
-  import { computed, ref } from "vue";
-  let firstName = ref("章");
-  let lastName = ref("礼");
-  let fullName = computed(
-    () => firstName.value.slice(0, 1).toUpperCase() + firstName.value.slice(1) + lastName.value,
-  );
+    import { computed, ref } from "vue";
+    let firstName = ref("章");
+    let lastName = ref("礼");
+    let fullName = computed(
+        () => firstName.value.slice(0, 1).toUpperCase() + firstName.value.slice(1) + lastName.value,
+    );
 </script>
 ```
 
@@ -56,7 +56,7 @@ vue官方不建议我们在模板这么写，这看起来过于 **复杂**
 
 ```js
 function changeName() {
-  fullName.value = "李四";
+    fullName.value = "李四";
 }
 ```
 
@@ -73,22 +73,22 @@ function changeName() {
 
 ```html
 <script setup>
-  import { ref, computed } from "vue";
+    import { ref, computed } from "vue";
 
-  const firstName = ref("John");
-  const lastName = ref("Doe");
+    const firstName = ref("John");
+    const lastName = ref("Doe");
 
-  const fullName = computed({
-    // getter
-    get() {
-      return firstName.value + " " + lastName.value;
-    },
-    // setter
-    set(newValue) {
-      // 注意：我们这里使用的是解构赋值语法
-      [firstName.value, lastName.value] = newValue.split(" ");
-    },
-  });
+    const fullName = computed({
+        // getter
+        get() {
+            return firstName.value + " " + lastName.value;
+        },
+        // setter
+        set(newValue) {
+            // 注意：我们这里使用的是解构赋值语法
+            [firstName.value, lastName.value] = newValue.split(" ");
+        },
+    });
 </script>
 ```
 

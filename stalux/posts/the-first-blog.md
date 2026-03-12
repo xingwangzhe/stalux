@@ -4,10 +4,10 @@ abbrlink: 38c422a2
 date: 2024-06-30 14:48:26+00:00
 updated: "2024-10-14 14:49:17"
 categories:
-  - 日常
+    - 日常
 tags:
-  - hexo
-  - 记录
+    - hexo
+    - 记录
 ---
 
 <center>

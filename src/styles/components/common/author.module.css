@@ -1,73 +1,73 @@
 .author {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border: 1px solid var(--color-border);
-  margin-top: 4em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    margin-top: 4em;
 }
 
 .authorFigure {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  img {
-    border-radius: 50%;
-    transition: transform 1s ease;
-    box-shadow: 0 0 10px var(--stalux-accent-color);
-  }
+    img {
+        border-radius: 50%;
+        transition: transform 1s ease;
+        box-shadow: 0 0 10px var(--stalux-accent-color);
+    }
 
-  img:hover {
-    transform: rotate(360deg);
-  }
+    img:hover {
+        transform: rotate(360deg);
+    }
 
-  figcaption {
-    margin-left: 1em;
-    font-size: 2.5em;
-    font-weight: bold;
-    text-shadow: var(--stalux-text-shadow);
-    color: var(--white-full);
-  }
+    figcaption {
+        margin-left: 1em;
+        font-size: 2.5em;
+        font-weight: bold;
+        text-shadow: var(--stalux-text-shadow);
+        color: var(--white-full);
+    }
 }
 
 .figureColumn {
-  flex-direction: column;
+    flex-direction: column;
 }
 
 .figureColumn figcaption {
-  margin-left: 0;
-  margin-top: 0.5em;
-  text-align: center;
+    margin-left: 0;
+    margin-top: 0.5em;
+    text-align: center;
 }
 
 /* 移动端响应式优化 */
 @media (max-width: 768px) {
-  .author {
-    margin-top: 2em;
-    padding: 1em 0.5em;
-    border-width: 0.5px;
-    max-width: 95vw;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .authorFigure {
-    flex-direction: column !important;
-    gap: 0.5em;
-  }
-  .authorFigure img {
-    width: 64px !important;
-    height: 64px !important;
-    max-width: 20vw;
-    max-height: 20vw;
-  }
-  .authorFigure figcaption {
-    font-size: 1.5em;
-    margin-left: 0;
-    margin-top: 0.5em;
-    text-align: center;
-    word-break: break-all;
-    max-width: 90vw;
-    overflow-wrap: break-word;
-    white-space: normal;
-  }
+    .author {
+        margin-top: 2em;
+        padding: 1em 0.5em;
+        border-width: 0.5px;
+        max-width: 95vw;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .authorFigure {
+        flex-direction: column !important;
+        gap: 0.5em;
+    }
+    .authorFigure img {
+        width: 64px !important;
+        height: 64px !important;
+        max-width: 20vw;
+        max-height: 20vw;
+    }
+    .authorFigure figcaption {
+        font-size: 1.5em;
+        margin-left: 0;
+        margin-top: 0.5em;
+        text-align: center;
+        word-break: break-all;
+        max-width: 90vw;
+        overflow-wrap: break-word;
+        white-space: normal;
+    }
 }

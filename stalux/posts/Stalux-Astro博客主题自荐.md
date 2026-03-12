@@ -3,12 +3,12 @@ title: Stalux Astro博客主题自荐
 date: 2026-1-30 19:53:49
 abbrlink: stalux-astro
 tags:
-  - stalux
-  - astro
-  - 博客主题
-  - 自荐
+    - stalux
+    - astro
+    - 博客主题
+    - 自荐
 categories:
-  - astro
+    - astro
 ---
 
 历经多次打磨和稍微的优化,终于完成了[Stalux](https://github.com/xingwangzhe/stalux)这一个astro主题,也就是当前[xingwangzhe.fun](https://xingwangzhe.fun)所使用的主题.
@@ -41,7 +41,7 @@ Astro有特点,那就是**静态站点生成**(SSG),所以在页面跳转时,会
 
 ```ts title="hello world"
 function world(params: type) {
-  console.log("hello world");
+    console.log("hello world");
 }
 ```
 

@@ -169,54 +169,54 @@ npm run preview
 
 ```yaml
 stalux:
-  title: 你的博客名称
-  url: https://yourdomain.com
-  description: 博客描述
+    title: 你的博客名称
+    url: https://yourdomain.com
+    description: 博客描述
 
-  author:
-    name: 作者名
-    avatar: /avatar.png
-    bio: 个人简介
+    author:
+        name: 作者名
+        avatar: /avatar.png
+        bio: 个人简介
 
-  navs:
-    - title: 首页
-      icon: home
-      link: /
-    # 更多导航项...
+    navs:
+        - title: 首页
+          icon: home
+          link: /
+        # 更多导航项...
 
-  # 评论系统（Waline）
-  waline:
-    serverURL: https://your-waline-server.com
-    # login: 'enable' | 'disable' | 'force'  # 强制登录可防止伪造
-    # recaptchaV3Key: ""  # 可选，配置 reCAPTCHA v3 网站 key
-    # turnstileKey: ""  # 可选，配置 Cloudflare Turnstile key
-    # dark: true  # 是否启用暗色模式适配
-    # reaction: false
-    # meta: ["nick", "mail", "link"]
-    # requiredMeta: []  # 必填字段示例, 可设置为 ['nick'] 或 ['nick','mail']
-    # commentSorting: "latest"  # 评论排序方式
-    # imageUploader: # 自定义图片上传
-    # highlighter: # 自定义代码高亮
-    # texRenderer: # 自定义 TeX 渲染
-    # search: # 自定义搜索功能
+    # 评论系统（Waline）
+    waline:
+        serverURL: https://your-waline-server.com
+        # login: 'enable' | 'disable' | 'force'  # 强制登录可防止伪造
+        # recaptchaV3Key: ""  # 可选，配置 reCAPTCHA v3 网站 key
+        # turnstileKey: ""  # 可选，配置 Cloudflare Turnstile key
+        # dark: true  # 是否启用暗色模式适配
+        # reaction: false
+        # meta: ["nick", "mail", "link"]
+        # requiredMeta: []  # 必填字段示例, 可设置为 ['nick'] 或 ['nick','mail']
+        # commentSorting: "latest"  # 评论排序方式
+        # imageUploader: # 自定义图片上传
+        # highlighter: # 自定义代码高亮
+        # texRenderer: # 自定义 TeX 渲染
+        # search: # 自定义搜索功能
 
-  # 友情链接
-  links:
-    title: 友情链接
-    sites:
-      - name: 友链名称
-        url: https://example.com
-        avatar: /avatar.jpg
-        description: 描述
+    # 友情链接
+    links:
+        title: 友情链接
+        sites:
+            - name: 友链名称
+              url: https://example.com
+              avatar: /avatar.jpg
+              description: 描述
 
-  # 页脚配置
-  footer:
-    buildtime: "2024-01-01"
-    copyright:
-      enabled: true
-      startYear: 2024
-    beian:
-      icp: 备案号
+    # 页脚配置
+    footer:
+        buildtime: "2024-01-01"
+        copyright:
+            enabled: true
+            startYear: 2024
+        beian:
+            icp: 备案号
 ```
 
 完整配置参考 `BACK.yml`。
@@ -231,10 +231,10 @@ title: 文章标题
 date: 2024-01-26T00:00:00+08:00
 abbrlink: unique-slug
 tags:
-  - 标签1
-  - 标签2
+    - 标签1
+    - 标签2
 categories:
-  - 分类名
+    - 分类名
 ---
 
 文章内容...

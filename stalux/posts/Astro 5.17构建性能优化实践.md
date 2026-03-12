@@ -26,21 +26,21 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 const posts = defineCollection({
-  loader: glob({
-    pattern: ["*.{md,mdx}"],
-    base: "stalux/posts/",
-    generateId: ({ data }) => String(data["abbrlink"]),
-    // 注意：这里没有 retainBody 选项，默认为 true
-  }),
-  schema: z.object({
-    title: z.string(),
-    abbrlink: z.string(),
-    date: z.date(),
-    // ... 其他字段
-    desc: z.string().optional(),
-    minutesRead: z.string().optional(),
-    wordCount: z.number().optional(),
-  }),
+    loader: glob({
+        pattern: ["*.{md,mdx}"],
+        base: "stalux/posts/",
+        generateId: ({ data }) => String(data["abbrlink"]),
+        // 注意：这里没有 retainBody 选项，默认为 true
+    }),
+    schema: z.object({
+        title: z.string(),
+        abbrlink: z.string(),
+        date: z.date(),
+        // ... 其他字段
+        desc: z.string().optional(),
+        minutesRead: z.string().optional(),
+        wordCount: z.number().optional(),
+    }),
 });
 ```
 
@@ -105,19 +105,19 @@ import getReadingTime from "reading-time";
 import { toString } from "mdast-util-to-string";
 
 export function remarkPostBody() {
-  return function (tree: unknown, { data }: { data: any }) {
-    // 将 AST 转换为纯文本
-    const textOnPage = toString(tree);
+    return function (tree: unknown, { data }: { data: any }) {
+        // 将 AST 转换为纯文本
+        const textOnPage = toString(tree);
 
-    // 计算阅读时间
-    const readingTime = getReadingTime(textOnPage);
+        // 计算阅读时间
+        const readingTime = getReadingTime(textOnPage);
 
-    // 直接将数据写入 frontmatter
-    // 这些数据会被自动保存到文章元数据中
-    data.astro.frontmatter.wordCount = textOnPage.length;
-    data.astro.frontmatter.desc = textOnPage.slice(0, 125) + "...";
-    data.astro.frontmatter.minutesRead = readingTime.text;
-  };
+        // 直接将数据写入 frontmatter
+        // 这些数据会被自动保存到文章元数据中
+        data.astro.frontmatter.wordCount = textOnPage.length;
+        data.astro.frontmatter.desc = textOnPage.slice(0, 125) + "...";
+        data.astro.frontmatter.minutesRead = readingTime.text;
+    };
 }
 ```
 
@@ -135,13 +135,13 @@ import remarkToc from "remark-toc";
 import remarkMath from "remark-math";
 
 export default defineConfig({
-  markdown: {
-    // 确保 remarkPostBody 最先执行
-    remarkPlugins: [remarkPostBody, [remarkToc, { heading: "toc", maxDepth: 7 }], remarkMath],
-    rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
-    smartypants: true,
-    gfm: true,
-  },
+    markdown: {
+        // 确保 remarkPostBody 最先执行
+        remarkPlugins: [remarkPostBody, [remarkToc, { heading: "toc", maxDepth: 7 }], remarkMath],
+        rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
+        smartypants: true,
+        gfm: true,
+    },
 });
 ```
 
@@ -155,49 +155,49 @@ import { glob, file } from "astro/loaders";
 import { z } from "astro/zod";
 
 const posts = defineCollection({
-  loader: glob({
-    pattern: ["*.{md,mdx}"],
-    base: "stalux/posts/",
-    generateId: ({ data }) => String(data["abbrlink"]),
-    // ✨ 关键配置：不保留原始 body
-    retainBody: false,
-  }),
-  schema: z.object({
-    title: z.string(),
-    abbrlink: z.string().or(z.number().transform((num) => num.toString())),
-    date: z.preprocess((v) => (typeof v === "string" ? new Date(v) : v), z.date()),
-    updated: z.preprocess(
-      (v) => (v == null ? undefined : typeof v === "string" ? new Date(v) : v),
-      z.date().optional(),
-    ),
-    draft: z.boolean().optional().default(false),
-    tags: z.preprocess(
-      (val) => (typeof val === "string" ? [val] : val),
-      z.array(z.string()).optional(),
-    ),
-    categories: z.preprocess(
-      (val) => (typeof val === "string" ? [val] : val),
-      z.array(z.string()).optional(),
-    ),
-    // ✨ 这些字段现在由 remark 插件自动填充
-    desc: z.string().optional(),
-    minutesRead: z.string().optional(),
-    wordCount: z.number().optional(),
-    cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
-  }),
+    loader: glob({
+        pattern: ["*.{md,mdx}"],
+        base: "stalux/posts/",
+        generateId: ({ data }) => String(data["abbrlink"]),
+        // ✨ 关键配置：不保留原始 body
+        retainBody: false,
+    }),
+    schema: z.object({
+        title: z.string(),
+        abbrlink: z.string().or(z.number().transform((num) => num.toString())),
+        date: z.preprocess((v) => (typeof v === "string" ? new Date(v) : v), z.date()),
+        updated: z.preprocess(
+            (v) => (v == null ? undefined : typeof v === "string" ? new Date(v) : v),
+            z.date().optional(),
+        ),
+        draft: z.boolean().optional().default(false),
+        tags: z.preprocess(
+            (val) => (typeof val === "string" ? [val] : val),
+            z.array(z.string()).optional(),
+        ),
+        categories: z.preprocess(
+            (val) => (typeof val === "string" ? [val] : val),
+            z.array(z.string()).optional(),
+        ),
+        // ✨ 这些字段现在由 remark 插件自动填充
+        desc: z.string().optional(),
+        minutesRead: z.string().optional(),
+        wordCount: z.number().optional(),
+        cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
+    }),
 });
 
 // 关于页面同样优化
 const about = defineCollection({
-  loader: glob({
-    base: "stalux/about",
-    pattern: "**/*.{md,mdx}",
-    retainBody: false,
-  }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-  }),
+    loader: glob({
+        base: "stalux/about",
+        pattern: "**/*.{md,mdx}",
+        retainBody: false,
+    }),
+    schema: z.object({
+        title: z.string(),
+        description: z.string(),
+    }),
 });
 
 export const collections = { posts, about, config };
@@ -242,33 +242,33 @@ import { getCollection, render } from "astro:content";
  * 需要通过 render() 函数获取
  */
 export async function getTotalWordCount(): Promise<number> {
-  try {
-    const posts = await getCollection("posts");
-    let totalWords = 0;
+    try {
+        const posts = await getCollection("posts");
+        let totalWords = 0;
 
-    for (const post of posts) {
-      // render() 会返回 remarkPluginFrontmatter
-      const { remarkPluginFrontmatter } = await render(post);
-      totalWords += remarkPluginFrontmatter.wordCount || 0;
+        for (const post of posts) {
+            // render() 会返回 remarkPluginFrontmatter
+            const { remarkPluginFrontmatter } = await render(post);
+            totalWords += remarkPluginFrontmatter.wordCount || 0;
+        }
+
+        return totalWords;
+    } catch (error) {
+        console.error("计算文章总字数时出错:", error);
+        return 0;
     }
-
-    return totalWords;
-  } catch (error) {
-    console.error("计算文章总字数时出错:", error);
-    return 0;
-  }
 }
 
 /**
  * 格式化字数显示
  */
 export function formatWordCount(count: number): string {
-  if (count >= 10000) {
-    return `${(count / 10000).toFixed(1)}万`;
-  } else if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}k`;
-  }
-  return count.toString();
+    if (count >= 10000) {
+        return `${(count / 10000).toFixed(1)}万`;
+    } else if (count >= 1000) {
+        return `${(count / 1000).toFixed(1)}k`;
+    }
+    return count.toString();
 }
 ```
 

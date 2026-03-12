@@ -4,11 +4,11 @@ abbrlink: 2dd2b505
 date: "2025-07-04T18:44:32.353+08:00"
 updated: "2025-07-04T18:44:32.353+08:00"
 categories:
-  - 后端
+    - 后端
 tags:
-  - Astro
-  - 博客
-  - 后端
+    - Astro
+    - 博客
+    - 后端
 ---
 
 ## 添加md编辑
@@ -156,10 +156,10 @@ export const prerender = false;
 
 ```javascript
 if (import.meta.hot) {
-  import.meta.hot.on("locastrol-content-update", (data) => {
-    // 拦截自定义更新事件，阻止页面重载
-    updateSaveStatus("内容已同步", "synced");
-  });
+    import.meta.hot.on("locastrol-content-update", (data) => {
+        // 拦截自定义更新事件，阻止页面重载
+        updateSaveStatus("内容已同步", "synced");
+    });
 }
 ```
 
@@ -198,9 +198,9 @@ if (import.meta.hot) {
 const clientStates = new Map<string, ClientState>();
 
 interface ClientState {
-  isEditorPage: boolean;
-  url: string;
-  lastActivity: number;
+    isEditorPage: boolean;
+    url: string;
+    lastActivity: number;
 }
 ```
 
@@ -213,11 +213,11 @@ interface ClientState {
 ```typescript
 // 心跳API处理
 if (url === "/api/locastrol/heartbeat" && req.method === "POST") {
-  clientStates.set(clientId, {
-    isEditorPage: Boolean(isEditorPage),
-    url: clientUrl,
-    lastActivity: Date.now(),
-  });
+    clientStates.set(clientId, {
+        isEditorPage: Boolean(isEditorPage),
+        url: clientUrl,
+        lastActivity: Date.now(),
+    });
 }
 ```
 
@@ -231,28 +231,28 @@ if (url === "/api/locastrol/heartbeat" && req.method === "POST") {
 // 完全劫持WebSocket的send方法
 const originalSend = server.ws.send;
 server.ws.send = function (payload: any, client?: any) {
-  // 检查是否有编辑器页面活跃
-  let hasActiveEditor = false;
-  for (const [clientId, state] of clientStates) {
-    if (state.isEditorPage && Date.now() - state.lastActivity < 30000) {
-      hasActiveEditor = true;
-      break;
+    // 检查是否有编辑器页面活跃
+    let hasActiveEditor = false;
+    for (const [clientId, state] of clientStates) {
+        if (state.isEditorPage && Date.now() - state.lastActivity < 30000) {
+            hasActiveEditor = true;
+            break;
+        }
     }
-  }
 
-  // 如果有编辑器页面活跃，完全阻止所有WebSocket刷新消息
-  if (hasActiveEditor && typeof payload === "object" && payload !== null) {
-    if (
-      payload.type === "full-reload" ||
-      payload.type === "update" ||
-      payload.type === "connected" ||
-      payload.type === "error"
-    ) {
-      return; // 完全阻止消息发送
+    // 如果有编辑器页面活跃，完全阻止所有WebSocket刷新消息
+    if (hasActiveEditor && typeof payload === "object" && payload !== null) {
+        if (
+            payload.type === "full-reload" ||
+            payload.type === "update" ||
+            payload.type === "connected" ||
+            payload.type === "error"
+        ) {
+            return; // 完全阻止消息发送
+        }
     }
-  }
 
-  return originalSend.call(this, payload, client);
+    return originalSend.call(this, payload, client);
 };
 ```
 

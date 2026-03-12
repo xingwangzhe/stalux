@@ -4,11 +4,11 @@ abbrlink: 51944
 date: 2025-03-25 19:18:37+00:00
 updated: "2025-07-04T18:44:32.356+08:00"
 categories:
-  - 学校学习
+    - 学校学习
 tags:
-  - 学习
-  - 记录
-  - 编译原理
+    - 学习
+    - 记录
+    - 编译原理
 ---
 
 不知道写点什么,所以记一下,以防~~失忆~~
@@ -125,14 +125,14 @@ q0 --0,1--> q0 --0--> q1 --1--> q2
 
 - **初始状态**：$\epsilon\text{-closure}(q_0) = \{q_0\}$,所以 DFA 的初始状态为 $\{q_0\}$。
 - **状态转移计算**：
-  - 对于状态 $\{q_0\}$,$\delta'(\{q_0\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0)) = \epsilon\text{-closure}(\{q_0, q_1\}) = \{q_0, q_1\}$。
-  - $\delta'(\{q_0\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1)) = \epsilon\text{-closure}(\{q_0\}) = \{q_0\}$。
-  - 对于状态 $\{q_0, q_1\}$,$\delta'(\{q_0, q_1\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0) \cup \delta(q_1, 0)) = \epsilon\text{-closure}(\{q_0, q_1\} \cup \{\}) = \{q_0, q_1\}$。
-  - $\delta'(\{q_0, q_1\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1) \cup \delta(q_1, 1)) = \epsilon\text{-closure}(\{q_0\} \cup \{q_2\}) = \{q_0, q_2\}$。
-  - 对于状态 $\{q_0, q_2\}$,$\delta'(\{q_0, q_2\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0) \cup \delta(q_2, 0)) = \epsilon\text{-closure}(\{q_0, q_1\} \cup \{\}) = \{q_0, q_1\}$。
-  - $\delta'(\{q_0, q_2\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1) \cup \delta(q_2, 1)) = \epsilon\text{-closure}(\{q_0\} \cup \{\}) = \{q_0\}$。
+    - 对于状态 $\{q_0\}$,$\delta'(\{q_0\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0)) = \epsilon\text{-closure}(\{q_0, q_1\}) = \{q_0, q_1\}$。
+    - $\delta'(\{q_0\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1)) = \epsilon\text{-closure}(\{q_0\}) = \{q_0\}$。
+    - 对于状态 $\{q_0, q_1\}$,$\delta'(\{q_0, q_1\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0) \cup \delta(q_1, 0)) = \epsilon\text{-closure}(\{q_0, q_1\} \cup \{\}) = \{q_0, q_1\}$。
+    - $\delta'(\{q_0, q_1\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1) \cup \delta(q_1, 1)) = \epsilon\text{-closure}(\{q_0\} \cup \{q_2\}) = \{q_0, q_2\}$。
+    - 对于状态 $\{q_0, q_2\}$,$\delta'(\{q_0, q_2\}, 0) = \epsilon\text{-closure}(\delta(q_0, 0) \cup \delta(q_2, 0)) = \epsilon\text{-closure}(\{q_0, q_1\} \cup \{\}) = \{q_0, q_1\}$。
+    - $\delta'(\{q_0, q_2\}, 1) = \epsilon\text{-closure}(\delta(q_0, 1) \cup \delta(q_2, 1)) = \epsilon\text{-closure}(\{q_0\} \cup \{\}) = \{q_0\}$。
 - **接受状态确定**：
-  - 状态 $\{q_0, q_2\}$ 包含 NFA 的接受状态 $q_2$,所以 $\{q_0, q_2\}$ 是 DFA 的接受状态。
+    - 状态 $\{q_0, q_2\}$ 包含 NFA 的接受状态 $q_2$,所以 $\{q_0, q_2\}$ 是 DFA 的接受状态。
 
 最终得到的 DFA 状态转移表如下：
 

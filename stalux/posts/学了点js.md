@@ -4,13 +4,13 @@ abbrlink: fcbe0bf5
 date: 2024-09-25 21:05:29+00:00
 updated: "2024-10-15 21:05:43"
 categories:
-  - 前端
+    - 前端
 tags:
-  - 记录
-  - 前端
-  - js
-  - 学习
-  - 进步
+    - 记录
+    - 前端
+    - js
+    - 学习
+    - 进步
 ---
 
 _语法挺有趣的_
@@ -26,25 +26,25 @@ const rows = [];
 let inverted = false;
 
 function padRow(rowNumber, rowCount) {
-  return (
-    " ".repeat(rowCount - rowNumber) +
-    character.repeat(2 * rowNumber - 1) +
-    " ".repeat(rowCount - rowNumber)
-  );
+    return (
+        " ".repeat(rowCount - rowNumber) +
+        character.repeat(2 * rowNumber - 1) +
+        " ".repeat(rowCount - rowNumber)
+    );
 }
 
 for (let i = 1; i <= count; i++) {
-  if (inverted) {
-    rows.unshift(padRow(i, count));
-  } else {
-    rows.push(padRow(i, count));
-  }
+    if (inverted) {
+        rows.unshift(padRow(i, count));
+    } else {
+        rows.push(padRow(i, count));
+    }
 }
 
 let result = "";
 
 for (const row of rows) {
-  result = result + "\n" + row;
+    result = result + "\n" + row;
 }
 
 console.log(result);

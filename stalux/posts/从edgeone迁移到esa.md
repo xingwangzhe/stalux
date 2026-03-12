@@ -3,11 +3,11 @@ title: 从edgeone迁移到esa
 date: 2026-2-5 17:55:30
 abbrlink: mv-edgeone-to-esa
 tags:
-  - esa
-  - edgeone
-  - pages
+    - esa
+    - edgeone
+    - pages
 categories:
-  - 迁移
+    - 迁移
 ---
 
 ## 引言

@@ -4,12 +4,12 @@ abbrlink: c5742cd5
 date: "2025-07-04T18:49:22.118+08:00"
 updated: "2025-07-04T19:44:57.084+08:00"
 categories:
-  - 折腾
+    - 折腾
 tags:
-  - 折腾
-  - 抽象
-  - discord
-  - 兑换码
+    - 折腾
+    - 抽象
+    - discord
+    - 兑换码
 ---
 
 [腾讯云EdgeOne免费计划兑换码 - 立即体验](https://edgeone.ai/zh/redemption)

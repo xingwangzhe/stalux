@@ -4,11 +4,11 @@ abbrlink: f593cf78
 date: "2025-07-04T18:44:32.352+08:00"
 updated: "2025-07-04T18:44:32.352+08:00"
 categories:
-  - 开发
+    - 开发
 tags:
-  - astro
-  - 后端
-  - 开发
+    - astro
+    - 后端
+    - 开发
 ---
 
 前端会点，后端不怎么会，想着 Astro 默认作为 SSG 前端框架，得需要一个伪后台。我看了官方文档，有很多后台，但都不是我想要的那种 **dev** 开发环境下的后台，所以我准备手搓一个**解耦的后台实现**，也就是作为 **npm** 包来分发。
@@ -76,54 +76,55 @@ $ tsc
 import { AstroIntegration } from "astro";
 
 interface Options {
-  collections: String;
+    collections: String;
 }
 
 export function locastrol(config: Options = { collections: "" }): AstroIntegration {
-  const { collections } = config;
+    const { collections } = config;
 
-  return {
-    name: "locastrol",
-    hooks: {
-      "astro:config:setup": ({ injectRoute, updateConfig, command }) => {
-        if (command == "dev") {
-          // 通过 Vite 环境变量传递 collections 参数
-          updateConfig({
-            vite: {
-              define: {
-                "import.meta.env.LOCASTROL_COLLECTIONS": JSON.stringify(collections),
-              },
+    return {
+        name: "locastrol",
+        hooks: {
+            "astro:config:setup": ({ injectRoute, updateConfig, command }) => {
+                if (command == "dev") {
+                    // 通过 Vite 环境变量传递 collections 参数
+                    updateConfig({
+                        vite: {
+                            define: {
+                                "import.meta.env.LOCASTROL_COLLECTIONS":
+                                    JSON.stringify(collections),
+                            },
+                        },
+                    }); // 后台首页
+                    // 编辑器路由 - 使用动态路由
+                    injectRoute({
+                        pattern: "/locastrol/editor",
+                        entrypoint: "locastrol/src/pages/index.astro",
+                    });
+                    injectRoute({
+                        pattern: "/locastrol/editor/[slug]",
+                        entrypoint: "locastrol/src/pages/[slug].astro",
+                    });
+                    // API 路由
+                    injectRoute({
+                        pattern: "/api/locastrol/posts/[slug]",
+                        entrypoint: "locastrol/src/api/posts/[slug].ts",
+                    });
+                    injectRoute({
+                        pattern: "/api/locastrol/posts",
+                        entrypoint: "locastrol/src/api/posts.ts",
+                    });
+                }
             },
-          }); // 后台首页
-          // 编辑器路由 - 使用动态路由
-          injectRoute({
-            pattern: "/locastrol/editor",
-            entrypoint: "locastrol/src/pages/index.astro",
-          });
-          injectRoute({
-            pattern: "/locastrol/editor/[slug]",
-            entrypoint: "locastrol/src/pages/[slug].astro",
-          });
-          // API 路由
-          injectRoute({
-            pattern: "/api/locastrol/posts/[slug]",
-            entrypoint: "locastrol/src/api/posts/[slug].ts",
-          });
-          injectRoute({
-            pattern: "/api/locastrol/posts",
-            entrypoint: "locastrol/src/api/posts.ts",
-          });
-        }
-      },
-      "astro:server:start": ({ address }) => {
-        console.log(
-          "\x1b[43m\x1b[30m%s\x1b[0m \x1b[36m%s\x1b[0m",
-          "✅Locastrol后台已经启动",
-          `http://localhost:${address.port}/locastrol/editor`,
-        );
-      },
-    },
-  };
+            "astro:server:start": ({ address }) => {
+                console.log(
+                    "\x1b[43m\x1b[30m%s\x1b[0m \x1b[36m%s\x1b[0m",
+                    "✅Locastrol后台已经启动",
+                    `http://localhost:${address.port}/locastrol/editor`,
+                );
+            },
+        },
+    };
 }
 
 export type { Options };

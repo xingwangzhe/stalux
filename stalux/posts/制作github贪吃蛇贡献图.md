@@ -4,14 +4,14 @@ abbrlink: 16664
 date: 2024-11-11 09:19:33+00:00
 updated: "2025-07-04T18:44:32.352+08:00"
 categories:
-  - github
+    - github
 tags:
-  - 学习
-  - 记录
-  - 教程
-  - 前端
-  - HTML
-  - github
+    - 学习
+    - 记录
+    - 教程
+    - 前端
+    - HTML
+    - github
 ---
 
 ![蛇图](https://raw.githubusercontent.com/xingwangzhe/xingwangzhe/29ce52882c33be28a727b27630e8a4e9227e273f/github-snake.svg)
@@ -38,51 +38,51 @@ _你可以查看我的主页仓库来看具体效果：）_
 name: Generate snake animation
 
 on:
-  schedule:
-    - cron: "0 0 * * *" # run daily at mignight UTC
+    schedule:
+        - cron: "0 0 * * *" # run daily at mignight UTC
 
-  workflow_dispatch:
+    workflow_dispatch:
 
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
 jobs:
-  generate:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    generate:
+        permissions:
+            contents: write
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
 
-    steps:
-      - name: generate snake.svg
-        uses: Platane/snk@v3
-        with:
-          # github user name to read the contribution graph from (**required**)
-          # using action context var `github.repository_owner` or specified user
-          github_user_name: ${{ github.repository_owner }}
+        steps:
+            - name: generate snake.svg
+              uses: Platane/snk@v3
+              with:
+                  # github user name to read the contribution graph from (**required**)
+                  # using action context var `github.repository_owner` or specified user
+                  github_user_name: ${{ github.repository_owner }}
 
-          # list of files to generate.
-          # one file per line. Each output can be customized with options as query string.
-          #
-          #  supported options:
-          #  - palette:     A preset of color, one of [github, github-dark, github-light]
-          #  - color_snake: Color of the snake
-          #  - color_dots:  Coma separated list of dots color.
-          #                 The first one is 0 contribution, then it goes from the low contribution to the highest.
-          #                 Exactly 5 colors are expected.
-          outputs: |
-            dist/github-snake.svg
-            dist/github-snake-dark.svg?palette=github-dark
-            dist/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9
+                  # list of files to generate.
+                  # one file per line. Each output can be customized with options as query string.
+                  #
+                  #  supported options:
+                  #  - palette:     A preset of color, one of [github, github-dark, github-light]
+                  #  - color_snake: Color of the snake
+                  #  - color_dots:  Coma separated list of dots color.
+                  #                 The first one is 0 contribution, then it goes from the low contribution to the highest.
+                  #                 Exactly 5 colors are expected.
+                  outputs: |
+                      dist/github-snake.svg
+                      dist/github-snake-dark.svg?palette=github-dark
+                      dist/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9
 
-      - name: Deploy to GitHub Pages
-        uses: crazy-max/ghaction-github-pages@v4
-        with:
-          target_branch: output
-          build_dir: dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Deploy to GitHub Pages
+              uses: crazy-max/ghaction-github-pages@v4
+              with:
+                  target_branch: output
+                  build_dir: dist
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 然后点击上部导航栏的`Actions`查看snake.yml的状态，创建完毕后，会出现新的分支`output`。打开这个分支
@@ -98,15 +98,15 @@ jobs:
 ```html
 <!-- snake -->
 <picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="https://github.com/xingwangzhe/xingwangzhe/blob/output/github-snake-dark.svg"
-  />
-  <source
-    media="(prefers-color-scheme: light)"
-    srcset="https://github.com/xingwangzhe/xingwangzhe/blob/output/github-snake.svg"
-  />
-  ![github-snake](github-snake.svg)
+    <source
+        media="(prefers-color-scheme: dark)"
+        srcset="https://github.com/xingwangzhe/xingwangzhe/blob/output/github-snake-dark.svg"
+    />
+    <source
+        media="(prefers-color-scheme: light)"
+        srcset="https://github.com/xingwangzhe/xingwangzhe/blob/output/github-snake.svg"
+    />
+    ![github-snake](github-snake.svg)
 </picture>
 ```
 

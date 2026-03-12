@@ -4,12 +4,12 @@ abbrlink: 261d7eb2
 date: 2024-09-19 07:59:02+00:00
 updated: "2024-09-19 07:58:59"
 categories:
-  - hexo
+    - hexo
 tags:
-  - webpusher
-  - 记录
-  - 教程
-  - hexo
+    - webpusher
+    - 记录
+    - 教程
+    - hexo
 ---
 
 Web-push的优势
@@ -36,9 +36,9 @@ Web push notification 还是一个较新的技术。浏览器通知的信噪比�
 
 ```yml
 webPushNotification:
-  webpushrKey: "your webpushr rest api key"
-  webpushrAuthToken: "your webpushr authorize token"
-  trackingCode: "AEGlpbdgvBCWXqXI6PtsUzobY7TLV9gwJU8bzMktrwfrSERg_xnLVbjpCw8x2GmFmi1ZcLTz0ni6OnX5MAwoM88"
+    webpushrKey: "your webpushr rest api key"
+    webpushrAuthToken: "your webpushr authorize token"
+    trackingCode: "AEGlpbdgvBCWXqXI6PtsUzobY7TLV9gwJU8bzMktrwfrSERg_xnLVbjpCw8x2GmFmi1ZcLTz0ni6OnX5MAwoM88"
 ```
 
 记住这三个关键词`Key Token Code`
@@ -71,9 +71,9 @@ webPushNotification:
 
 ```yml
 webPushNotification:
-  webpushrKey: "your webpushr rest api key"
-  webpushrAuthToken: "your webpushr authorize token"
-  trackingCode: "AEGlpbdgvBCWXqXI6PtsUzobY7TLV9gwJU8bzMktrwfrSERg_xnLVbjpCw8x2GmFmi1ZcLTz0ni6OnX5MAwoM88"
+    webpushrKey: "your webpushr rest api key"
+    webpushrAuthToken: "your webpushr authorize token"
+    trackingCode: "AEGlpbdgvBCWXqXI6PtsUzobY7TLV9gwJU8bzMktrwfrSERg_xnLVbjpCw8x2GmFmi1ZcLTz0ni6OnX5MAwoM88"
 ```
 
 设置基本完成

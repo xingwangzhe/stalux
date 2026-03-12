@@ -4,15 +4,15 @@ abbrlink: 55581
 date: 2024-12-14 10:11:05+00:00
 updated: "2025-07-04T18:44:32.348+08:00"
 categories:
-  - hexo
+    - hexo
 tags:
-  - 博客
-  - 记录
-  - 教程
-  - hexo
-  - Layout
-  - 统计
-  - 插件
+    - 博客
+    - 记录
+    - 教程
+    - hexo
+    - Layout
+    - 统计
+    - 插件
 ---
 
 hexo-graph，一个基于echarts，集成博客热力图，博客月份统计图，分类统计图，标签统计图的多元化插件。
@@ -49,8 +49,8 @@ theme: "light" #light/dark 不设置或不填默认是light
 
 ```html
 <div
-  id="heatmapChart"
-  style="width: 100%; height: 200px; margin: 0 auto; border-radius: 10px; padding: 10px;box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);"
+    id="heatmapChart"
+    style="width: 100%; height: 200px; margin: 0 auto; border-radius: 10px; padding: 10px;box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);"
 ></div>
 ```
 
@@ -63,8 +63,8 @@ theme: "light" #light/dark 不设置或不填默认是light
 
 ```html
 <div
-  id="monthlyChart"
-  style="width: 100%; height: 350px; margin: 0 auto; border-radius: 10px; padding: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);"
+    id="monthlyChart"
+    style="width: 100%; height: 350px; margin: 0 auto; border-radius: 10px; padding: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);"
 ></div>
 ```
 

@@ -4,11 +4,11 @@ abbrlink: 10908
 date: 2024-11-11 19:51:52+00:00
 updated: "2025-07-04T18:44:32.353+08:00"
 categories:
-  - github
+    - github
 tags:
-  - 学习
-  - 记录
-  - 教程
+    - 学习
+    - 记录
+    - 教程
 ---
 
 ![2024-11-11-194849](https://i.ibb.co/9tk9ZCR/2024-11-11-194849.png)
@@ -34,37 +34,37 @@ name: Latest blog post workflow
 
 ## Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  #   push:
-  #     branches: [ main ]
-  #   pull_request:
-  #     branches: [ main ]
-  schedule: # Run workflow automatically
-    - cron: "0 3 * * *" # Runs at 3:00 # 定时任务，每天3：00触发
+    # Triggers the workflow on push or pull request events but only for the main branch
+    #   push:
+    #     branches: [ main ]
+    #   pull_request:
+    #     branches: [ main ]
+    schedule: # Run workflow automatically
+        - cron: "0 3 * * *" # Runs at 3:00 # 定时任务，每天3：00触发
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
 
 ## A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  update-readme-with-blog:
-    name: Update README with latest blog posts
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    # This workflow contains a single job called "build"
+    update-readme-with-blog:
+        name: Update README with latest blog posts
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout
-        uses: actions/checkout@v2
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+            - name: Checkout
+              uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Update posts
-        uses: gautamkrishnar/blog-post-workflow@master
-        with:
-          feed_list: "https://xingwangzhe.fun/atom.xml" #这里应该替换成自己的rss地址
-          max_post_count: 7 # 顾名思义，最大文章数。
+            # Runs a single command using the runners shell
+            - name: Update posts
+              uses: gautamkrishnar/blog-post-workflow@master
+              with:
+                  feed_list: "https://xingwangzhe.fun/atom.xml" #这里应该替换成自己的rss地址
+                  max_post_count: 7 # 顾名思义，最大文章数。
 ```
 
 ## 添加关键词

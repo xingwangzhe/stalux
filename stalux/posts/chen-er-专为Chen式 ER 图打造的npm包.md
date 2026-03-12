@@ -4,10 +4,10 @@ abbrlink: b8eb3b61
 date: "2025-12-03T15:34:31.751+08:00"
 updated: "2025-12-03T16:44:40.670+08:00"
 categories:
-  - npm
+    - npm
 tags:
-  - npm
-  - ER
+    - npm
+    - ER
 ---
 
 ![chenER图演示](/chenER/chenER.webp)
@@ -174,29 +174,29 @@ start // 解析入口：支持实体和关系混合定义
  * 字段定义
  */
 export interface ERField {
-  type: "field";
-  name: string;
-  pk: boolean;
+    type: "field";
+    name: string;
+    pk: boolean;
 }
 
 /**
  * 实体定义
  */
 export interface EREntity {
-  type: "entity";
-  name: string;
-  fields: ERField[];
+    type: "entity";
+    name: string;
+    fields: ERField[];
 }
 
 /**
  * 关系定义
  */
 export interface ERRelation {
-  type: "relation";
-  left: string;
-  right: string;
-  cardinality: string;
-  name: string;
+    type: "relation";
+    left: string;
+    right: string;
+    cardinality: string;
+    name: string;
 }
 
 /**
@@ -219,12 +219,12 @@ import type { ERJson } from "./type";
  * @returns 解析后的 AST 数组
  */
 export function parseERSchema(input: string): ERJson[] {
-  try {
-    return peggyParse(input) as ERJson[];
-  } catch (e: any) {
-    console.error("解析失败:", e?.message, "\n位置:", e?.location);
-    throw e;
-  }
+    try {
+        return peggyParse(input) as ERJson[];
+    } catch (e: any) {
+        console.error("解析失败:", e?.message, "\n位置:", e?.location);
+        throw e;
+    }
 }
 
 /**
@@ -233,7 +233,7 @@ export function parseERSchema(input: string): ERJson[] {
  * @returns JSON 字符串
  */
 export function parseERSchemaToJSON(input: string): string {
-  return JSON.stringify(parseERSchema(input), null, 2);
+    return JSON.stringify(parseERSchema(input), null, 2);
 }
 ```
 
@@ -259,105 +259,107 @@ const ELLIPSE = "path://M50 0 A50 50 0 1 1 49.999 0 Z";
 
 // AST -> Graph（节点、连边）
 function astToGraph(ast: any[]) {
-  const nodes: any[] = [];
-  const edges: any[] = [];
-  for (const it of ast) {
-    if (it.type === "entity") {
-      const id = it.name;
-      nodes.push({
-        id,
-        name: id,
-        symbol: "rect",
-        category: "entity",
-        symbolSize: [Math.max(140, id.length * 14 + 40), 48],
-        label: { show: true },
-        attrs: (it.fields || []).map((f: any) => ({ name: f.name, pk: !!f.pk })),
-      });
-      for (const f of it.fields || []) {
-        const aid = `${id}.${f.name}`;
-        nodes.push({
-          id: aid,
-          name: f.name,
-          symbol: ELLIPSE,
-          symbolKeepAspect: false,
-          symbolSize: [Math.max(90, f.name.length * 16), 36],
-          category: "attribute",
-          label: { show: true },
-          itemStyle: {
-            borderColor: f.pk ? "#d62728" : "#5470c6",
-            borderWidth: f.pk ? 3 : 1,
-          },
-        });
-        edges.push({ source: aid, target: id });
-      }
-    } else if (it.type === "relation") {
-      const rid = `rel:${it.name}-${it.left}-${it.right}`;
-      const [l = "", r = ""] = (it.cardinality || "").split(":");
-      nodes.push({
-        id: rid,
-        name: it.name,
-        symbol: "diamond",
-        symbolSize: [110, 60],
-        category: "relation",
-        label: { show: true },
-      });
-      edges.push({ source: rid, target: it.left, name: l });
-      edges.push({ source: rid, target: it.right, name: r });
+    const nodes: any[] = [];
+    const edges: any[] = [];
+    for (const it of ast) {
+        if (it.type === "entity") {
+            const id = it.name;
+            nodes.push({
+                id,
+                name: id,
+                symbol: "rect",
+                category: "entity",
+                symbolSize: [Math.max(140, id.length * 14 + 40), 48],
+                label: { show: true },
+                attrs: (it.fields || []).map((f: any) => ({ name: f.name, pk: !!f.pk })),
+            });
+            for (const f of it.fields || []) {
+                const aid = `${id}.${f.name}`;
+                nodes.push({
+                    id: aid,
+                    name: f.name,
+                    symbol: ELLIPSE,
+                    symbolKeepAspect: false,
+                    symbolSize: [Math.max(90, f.name.length * 16), 36],
+                    category: "attribute",
+                    label: { show: true },
+                    itemStyle: {
+                        borderColor: f.pk ? "#d62728" : "#5470c6",
+                        borderWidth: f.pk ? 3 : 1,
+                    },
+                });
+                edges.push({ source: aid, target: id });
+            }
+        } else if (it.type === "relation") {
+            const rid = `rel:${it.name}-${it.left}-${it.right}`;
+            const [l = "", r = ""] = (it.cardinality || "").split(":");
+            nodes.push({
+                id: rid,
+                name: it.name,
+                symbol: "diamond",
+                symbolSize: [110, 60],
+                category: "relation",
+                label: { show: true },
+            });
+            edges.push({ source: rid, target: it.left, name: l });
+            edges.push({ source: rid, target: it.right, name: r });
+        }
     }
-  }
-  return { nodes, edges };
+    return { nodes, edges };
 }
 
 // 批量渲染指定类名容器
 export function renderChenER(cls = "chenER") {
-  const list = document.getElementsByClassName(cls) as HTMLCollectionOf<HTMLElement>;
-  for (let i = 0; i < list.length; i++) {
-    const el = list[i];
-    const { nodes, edges } = astToGraph(parseERSchema(el.textContent || ""));
-    el.innerHTML = "";
-    const chart = echarts.init(el);
-    const option: ECOption = {
-      series: [
-        {
-          type: "graph",
-          layout: "force",
-          roam: true,
-          data: nodes,
-          links: edges,
-          categories: [{ name: "entity" }, { name: "relation" }, { name: "attribute" }],
-          label: { show: true, position: "inside" },
-          edgeLabel: { show: true, formatter: (p: any) => p?.data?.name ?? "" },
-          edgeSymbol: ["none", "none"],
-          lineStyle: { color: "#888", curveness: 0.2 },
-          force: { repulsion: 600, edgeLength: 140, friction: 0.2 },
-          tooltip: {
-            show: true,
-            formatter: (p: any) => {
-              if (p.dataType === "node" && p?.data?.category === "relation") {
-                return p.data.name || "";
-              }
-              if (p.dataType === "node" && p?.data?.category === "entity") {
-                const d = p.data as any;
-                const attrs = (d.attrs || []).map((a: any) => (a.pk ? `*${a.name}` : a.name));
-                return [d.name, ...attrs].join("<br/>");
-              }
-              return p.name || "";
-            },
-          },
-        },
-      ],
-    };
-    chart.setOption(option);
-    addEventListener("resize", () => chart.resize());
-  }
+    const list = document.getElementsByClassName(cls) as HTMLCollectionOf<HTMLElement>;
+    for (let i = 0; i < list.length; i++) {
+        const el = list[i];
+        const { nodes, edges } = astToGraph(parseERSchema(el.textContent || ""));
+        el.innerHTML = "";
+        const chart = echarts.init(el);
+        const option: ECOption = {
+            series: [
+                {
+                    type: "graph",
+                    layout: "force",
+                    roam: true,
+                    data: nodes,
+                    links: edges,
+                    categories: [{ name: "entity" }, { name: "relation" }, { name: "attribute" }],
+                    label: { show: true, position: "inside" },
+                    edgeLabel: { show: true, formatter: (p: any) => p?.data?.name ?? "" },
+                    edgeSymbol: ["none", "none"],
+                    lineStyle: { color: "#888", curveness: 0.2 },
+                    force: { repulsion: 600, edgeLength: 140, friction: 0.2 },
+                    tooltip: {
+                        show: true,
+                        formatter: (p: any) => {
+                            if (p.dataType === "node" && p?.data?.category === "relation") {
+                                return p.data.name || "";
+                            }
+                            if (p.dataType === "node" && p?.data?.category === "entity") {
+                                const d = p.data as any;
+                                const attrs = (d.attrs || []).map((a: any) =>
+                                    a.pk ? `*${a.name}` : a.name,
+                                );
+                                return [d.name, ...attrs].join("<br/>");
+                            }
+                            return p.name || "";
+                        },
+                    },
+                },
+            ],
+        };
+        chart.setOption(option);
+        addEventListener("resize", () => chart.resize());
+    }
 }
 
 export const chenERRbyClass = renderChenER;
 export function chenERRbyId(id: string) {
-  const el = document.getElementById(id) as HTMLElement | null;
-  if (!el) throw new Error(`Container #${id} not found`);
-  el.classList.add("chenER");
-  renderChenER("chenER");
+    const el = document.getElementById(id) as HTMLElement | null;
+    if (!el) throw new Error(`Container #${id} not found`);
+    el.classList.add("chenER");
+    renderChenER("chenER");
 }
 ```
 

@@ -4,11 +4,11 @@ abbrlink: 50aa0545
 date: 2024-09-04 16:03:03+00:00
 updated: "2024-09-04 16:03:05"
 categories:
-  - hexo
+    - hexo
 tags:
-  - hexo
-  - 记录
-  - 教程
+    - hexo
+    - 记录
+    - 教程
 ---
 
 ![cp1](https://i.ibb.co/tPDwBMwJ/cp1.png)
@@ -26,10 +26,10 @@ tags:
 ## You can set a language value if you prefer a translated version of CC license, e.g. deed.zh
 ## CC licenses are available in 39 languages, you can find the specific and correct abbreviation you need on https://creativecommons.org
 creative_commons:
-  license: by-nc-sa
-  sidebar: false
-  post: true
-  language:
+    license: by-nc-sa
+    sidebar: false
+    post: true
+    language:
 ```
 
 post的值改为true表示文章开启添加版权信息。

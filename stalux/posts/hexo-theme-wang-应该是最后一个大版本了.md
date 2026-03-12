@@ -4,13 +4,13 @@ abbrlink: 38915
 date: 2024-12-28 20:35:19+00:00
 updated: "2025-07-04T18:44:32.349+08:00"
 categories:
-  - 自己的博客
+    - 自己的博客
 tags:
-  - 博客
-  - 编程
-  - 记录
-  - 前端
-  - 解决
+    - 博客
+    - 编程
+    - 记录
+    - 前端
+    - 解决
 ---
 
 ![2024-12-28-201604](https://i.ibb.co/dJhV1Fk/2024-12-28-201604.webp)
@@ -67,80 +67,80 @@ theme: hexo-theme-wang
 ## 主题配置文件，图片路径都是在主题文件夹下的source文件夹下
 ### 额外的<head>标签内插入内容，你可能会需要插入一些第三方的js库，例如统计代码等
 head: '<script>
-  console.log("Hello hexo-theme-wang");
-  </script>'
+    console.log("Hello hexo-theme-wang");
+    </script>'
 
 ## 头像配置
 avatar:
-  src: images/avatar.webp #头像路径
-  isround: true #是否是圆形
+    src: images/avatar.webp #头像路径
+    isround: true #是否是圆形
 
 ## 导航栏菜单 用 || 隔开，前面是菜单名称，后面是图标名称，位置在source/images/menu_ico
 menu:
-  Home: / ||home
-  Archives: /archives ||archives
-  Categories: /categories || categories
-  Tags: /tags || tags
-  About: /about || about
-  Links: /links || links
-  RSS: /atom.xml || rss ##需要安装 hexo-generator-feed
-  Travelling: https://www.travellings.cn/go.html || train
+    Home: / ||home
+    Archives: /archives ||archives
+    Categories: /categories || categories
+    Tags: /tags || tags
+    About: /about || about
+    Links: /links || links
+    RSS: /atom.xml || rss ##需要安装 hexo-generator-feed
+    Travelling: https://www.travellings.cn/go.html || train
 
 ## 展示社交媒体链接 前面是名称，后面是图标名称 位置在source/images/social_links
 social_links:
-  Github: https://github.com/xingwangzhe || github
-  Email: mailto:xingwangzhe@outloock.com || envelope
+    Github: https://github.com/xingwangzhe || github
+    Email: mailto:xingwangzhe@outloock.com || envelope
 
-  # 需要安装hexo-generator-searchdb
+    # 需要安装hexo-generator-searchdb
 search:
-  enable: false # 是否启用搜索功能
-  path: /search.xml # 添加前导斜杠，表示从网站根目录开始
+    enable: false # 是否启用搜索功能
+    path: /search.xml # 添加前导斜杠，表示从网站根目录开始
 
 ## 时间是否显示秒
 time:
-  show_seconds: true
+    show_seconds: true
 
 ## Waline评论,需要设置serverURL，详情请访问Waline官网:https://waline.js.org
 comments:
-  enable: false # 是否启用评论功能
-  serverURL: ""
+    enable: false # 是否启用评论功能
+    serverURL: ""
 
 ## 友链,需要设置name，link，img，description
 friend_links:
-  - name: 姓王者
-    link: https://xingwangzhe.fun/
-    img: https://i.ibb.co/vLC0cft/202406212107148.jpg
-    description: 记录学习生活的琐事，或技术文章
-  - name:
-    link:
-    img:
-    description:
+    - name: 姓王者
+      link: https://xingwangzhe.fun/
+      img: https://i.ibb.co/vLC0cft/202406212107148.jpg
+      description: 记录学习生活的琐事，或技术文章
+    - name:
+      link:
+      img:
+      description:
 
 ## 底部链接,需要设置name，link，img
 footer_links:
-  - name: 开往-友链接力
-    link: https://www.travellings.cn/go.html
-    img: https://www.travellings.cn/assets/logo.gif
-  - name: 阿里云支持
-    link: https://www.aliyun.com/minisite/goods?userCode=lmvvqvl9
-    img: https://i.ibb.co/h7XJkfm/LOGO.png
-  - name: 大佬论坛
-    link: https://www.dalao.net/
-    img: https://www.dalao.net/img/dalao-svg.svg
-  - name: BlogFinder
-    link: https://bf.zzxworld.com/
-    img: https://bf.zzxworld.com/images/logo-v2.png
-  - name: 2024-10-29-133009
-    link: https://storeweb.cn/
-    img: https://i.ibb.co/tc0z0Y5/2024-10-29-133009.png
-  - name: 空间穿梭-随机访问BlogsClub成员博客
-    link: https://www.blogsclub.org/go
-    img: https://www.blogsclub.org/images/shuttle_4.png
+    - name: 开往-友链接力
+      link: https://www.travellings.cn/go.html
+      img: https://www.travellings.cn/assets/logo.gif
+    - name: 阿里云支持
+      link: https://www.aliyun.com/minisite/goods?userCode=lmvvqvl9
+      img: https://i.ibb.co/h7XJkfm/LOGO.png
+    - name: 大佬论坛
+      link: https://www.dalao.net/
+      img: https://www.dalao.net/img/dalao-svg.svg
+    - name: BlogFinder
+      link: https://bf.zzxworld.com/
+      img: https://bf.zzxworld.com/images/logo-v2.png
+    - name: 2024-10-29-133009
+      link: https://storeweb.cn/
+      img: https://i.ibb.co/tc0z0Y5/2024-10-29-133009.png
+    - name: 空间穿梭-随机访问BlogsClub成员博客
+      link: https://www.blogsclub.org/go
+      img: https://www.blogsclub.org/images/shuttle_4.png
 
 ## 底部文字链接,需要设置name，link
 footer_links_text:
-  - name: 文字链接
-    link:
+    - name: 文字链接
+      link:
 ```
 
 ## 最后，祝您使用愉快！

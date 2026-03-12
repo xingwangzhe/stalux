@@ -4,12 +4,12 @@ abbrlink: 4568800c
 date: "2025-07-04T18:44:32.348+08:00"
 updated: "2025-07-04T18:44:32.348+08:00"
 categories:
-  - 疑难杂症
+    - 疑难杂症
 tags:
-  - github
-  - github-actions
-  - 教程
-  - 静态博客
+    - github
+    - github-actions
+    - 教程
+    - 静态博客
 ---
 
 ## 一次偶然的发现
@@ -54,35 +54,35 @@ tags:
 ```javascript title="file-timestamps.mjs" {12-16} showLineNumbers
 // 在开发环境保存时间戳
 function saveTimestamps(timestamps) {
-  // 仅在开发环境写入，生产环境只使用内存缓存
-  if (process.env.NODE_ENV === "production") return;
+    // 仅在开发环境写入，生产环境只使用内存缓存
+    if (process.env.NODE_ENV === "production") return;
 
-  try {
-    writeFileSync("file-timestamps.json", JSON.stringify(timestamps, null, 2), "utf-8");
-    // 保存成功提示
-    console.log("✅ 时间戳已保存");
-  } catch (error) {
-    // 错误处理
-    console.error("❌ 保存时间戳失败:", error);
-  }
+    try {
+        writeFileSync("file-timestamps.json", JSON.stringify(timestamps, null, 2), "utf-8");
+        // 保存成功提示
+        console.log("✅ 时间戳已保存");
+    } catch (error) {
+        // 错误处理
+        console.error("❌ 保存时间戳失败:", error);
+    }
 }
 
 // 初始化文件时间戳
 function initFileTimestamp(filepath) {
-  const timestamps = loadTimestamps();
-  const relPath = getRelativePath(filepath);
+    const timestamps = loadTimestamps();
+    const relPath = getRelativePath(filepath);
 
-  // 如果没有记录，从文件系统获取时间
-  if (!timestamps[relPath]) {
-    const stats = statSync(filepath);
-    timestamps[relPath] = {
-      created: stats.birthtime.toISOString(),
-      modified: stats.mtime.toISOString(),
-    };
-    saveTimestamps(timestamps);
-  }
+    // 如果没有记录，从文件系统获取时间
+    if (!timestamps[relPath]) {
+        const stats = statSync(filepath);
+        timestamps[relPath] = {
+            created: stats.birthtime.toISOString(),
+            modified: stats.mtime.toISOString(),
+        };
+        saveTimestamps(timestamps);
+    }
 
-  return timestamps[relPath];
+    return timestamps[relPath];
 }
 ```
 
@@ -92,11 +92,11 @@ function initFileTimestamp(filepath) {
 import timestampIntegration from "./src/integrations/timestamp-integration.mjs";
 
 export default defineConfig({
-  integrations: [
-    timestampIntegration(),
-    // 其他集成...
-  ],
-  // 其他配置...
+    integrations: [
+        timestampIntegration(),
+        // 其他集成...
+    ],
+    // 其他配置...
 });
 ```
 
@@ -107,7 +107,7 @@ export default defineConfig({
 ```yml title="github-workflow.yml" frame="terminal"
 - name: 构建博客
   env:
-    TZ: "Asia/Shanghai" # 设置时区为中国标准时间
+      TZ: "Asia/Shanghai" # 设置时区为中国标准时间
   run: bun run build
 ```
 
@@ -131,32 +131,36 @@ import { loadTimestamps } from "./file-timestamps.mjs";
  * Astro 集成，用于恢复文件时间戳
  */
 export default function () {
-  return {
-    name: "timestamp-integration",
-    hooks: {
-      "astro:config:setup": ({ updateConfig }) => {
-        // 加载已保存的时间戳数据
-        const timestamps = loadTimestamps();
+    return {
+        name: "timestamp-integration",
+        hooks: {
+            "astro:config:setup": ({ updateConfig }) => {
+                // 加载已保存的时间戳数据
+                const timestamps = loadTimestamps();
 
-        updateConfig({
-          markdown: {
-            remarkPlugins: [
-              () => (tree, file) => {
-                // 获取文件相对路径
-                const relativePath = file.history[0].replace(process.cwd(), "").replace(/^\//, "");
+                updateConfig({
+                    markdown: {
+                        remarkPlugins: [
+                            () => (tree, file) => {
+                                // 获取文件相对路径
+                                const relativePath = file.history[0]
+                                    .replace(process.cwd(), "")
+                                    .replace(/^\//, "");
 
-                // 应用时间戳到文章的 frontmatter
-                if (timestamps[relativePath]) {
-                  file.data.astro.frontmatter.pubDate = timestamps[relativePath].created;
-                  file.data.astro.frontmatter.updatedDate = timestamps[relativePath].modified;
-                }
-              },
-            ],
-          },
-        });
-      },
-    },
-  };
+                                // 应用时间戳到文章的 frontmatter
+                                if (timestamps[relativePath]) {
+                                    file.data.astro.frontmatter.pubDate =
+                                        timestamps[relativePath].created;
+                                    file.data.astro.frontmatter.updatedDate =
+                                        timestamps[relativePath].modified;
+                                }
+                            },
+                        ],
+                    },
+                });
+            },
+        },
+    };
 }
 ```
 

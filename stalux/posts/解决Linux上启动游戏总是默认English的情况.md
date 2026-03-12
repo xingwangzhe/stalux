@@ -4,13 +4,13 @@ abbrlink: 81fc36f0
 date: "2025-09-27T20:32:44.584+08:00"
 updated: "2025-09-27T20:59:18.645+08:00"
 categories:
-  - Steam
+    - Steam
 tags:
-  - Linux
-  - steam
-  - 英文
-  - 问题解决
-  - 技术分享
+    - Linux
+    - steam
+    - 英文
+    - 问题解决
+    - 技术分享
 ---
 
 ## 前言

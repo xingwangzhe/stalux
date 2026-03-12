@@ -4,10 +4,10 @@ abbrlink: 7c604030
 date: "2026-01-13T13:08:50.333+08:00"
 updated: "2026-01-13T13:34:05.763+08:00"
 categories:
-  - 再见
+    - 再见
 tags:
-  - leancloud
-  - walines
+    - leancloud
+    - walines
 ---
 
 这两天收到了📧,leancloud要结束服务了...

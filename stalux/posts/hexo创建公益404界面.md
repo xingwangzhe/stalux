@@ -4,12 +4,12 @@ abbrlink: 6ec2376e
 date: 2024-09-20 21:06:33+00:00
 updated: "2024-10-15 21:06:45"
 categories:
-  - hexo
+    - hexo
 tags:
-  - 公益
-  - "404"
-  - 记录
-  - 教程
+    - 公益
+    - "404"
+    - 记录
+    - 教程
 ---
 
 ![4044](https://i.ibb.co/cKGNZfd/4044.png)
@@ -41,21 +41,21 @@ _让世界更美好_
 ```html
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="content-type" content="text/html;charset=utf-8;" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="robots" content="all" />
-    <meta name="robots" content="index,follow" />
-  </head>
-  <body>
-    <script
-      type="text/javascript"
-      src="//qzonestyle.gtimg.cn/qzone/hybrid/app/404/search_children.js"
-      charset="utf-8"
-      homePageUrl="http://xingwangzhe.fun"
-      homePageName="回到我的主页"
-    ></script>
-  </body>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8;" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="robots" content="all" />
+        <meta name="robots" content="index,follow" />
+    </head>
+    <body>
+        <script
+            type="text/javascript"
+            src="//qzonestyle.gtimg.cn/qzone/hybrid/app/404/search_children.js"
+            charset="utf-8"
+            homePageUrl="http://xingwangzhe.fun"
+            homePageName="回到我的主页"
+        ></script>
+    </body>
 </html>
 ```
 

@@ -4,11 +4,11 @@ abbrlink: 65110
 date: 2025-03-09 18:57:06+00:00
 updated: "2025-07-04T18:44:32.350+08:00"
 categories:
-  - 开发
+    - 开发
 tags:
-  - 学习
-  - 记录
-  - RustedWarfare
+    - 学习
+    - 记录
+    - RustedWarfare
 ---
 
 我并没有重复造轮子,因为根本就没轮子 :(
@@ -54,34 +54,34 @@ const dataBaseKey = JSON.parse(dataBaseKeyJson);
 
 // 定义 CompletionItemKind 常量
 const CompletionItemKind = {
-  Text: 1,
+    Text: 1,
 };
 
 // 定义一个函数来生成 CompletionItem[] 数据
 function generateCompletionItems(section, items) {
-  return Object.entries(items).map(
-    ([label, [type, descriptionSection, detail, documentation]], index) => ({
-      label,
-      insertText: `${label}:`,
-      labelDetails: { description: `[${section}]` },
-      kind: CompletionItemKind.Text,
-      detail,
-      documentation,
-      type,
-    }),
-  );
+    return Object.entries(items).map(
+        ([label, [type, descriptionSection, detail, documentation]], index) => ({
+            label,
+            insertText: `${label}:`,
+            labelDetails: { description: `[${section}]` },
+            kind: CompletionItemKind.Text,
+            detail,
+            documentation,
+            type,
+        }),
+    );
 }
 
 // 遍历 dataBaseKey 中的每个 section
 for (const [section, items] of Object.entries(dataBaseKey)) {
-  const completionItems = generateCompletionItems(section, items);
+    const completionItems = generateCompletionItems(section, items);
 
-  // 生成文件内容
-  const importStatement = `import { CompletionItem, CompletionItemKind } from 'vscode-languageserver';`;
-  const exportStatement = `export const ${section.toUpperCase()}: CompletionItem[] = [`;
-  const itemsContent = completionItems
-    .map(
-      (item) => `    {
+    // 生成文件内容
+    const importStatement = `import { CompletionItem, CompletionItemKind } from 'vscode-languageserver';`;
+    const exportStatement = `export const ${section.toUpperCase()}: CompletionItem[] = [`;
+    const itemsContent = completionItems
+        .map(
+            (item) => `    {
         label: '${item.label || ""}',
         insertText: '${item.insertText || ""}',
         labelDetails: { detail :' ${(item.type || "") + " " + (item.detail || "").replace(/'/g, "\\'")}', description: '[${section}]' },
@@ -90,15 +90,15 @@ for (const [section, items] of Object.entries(dataBaseKey)) {
         documentation :'${(item.documentation || "").replace(/'/g, "\\'")}',
         data: '${(item.type || "").replace(/'/g, "\\'")}'
     },`,
-    )
-    .join("\n");
-  const closingBracket = `];`;
+        )
+        .join("\n");
+    const closingBracket = `];`;
 
-  const fileContent = `${importStatement}\n${exportStatement}\n${itemsContent}\n${closingBracket}`;
+    const fileContent = `${importStatement}\n${exportStatement}\n${itemsContent}\n${closingBracket}`;
 
-  // 写入文件
-  const filePath = path.join(__dirname, `${section}.ts`);
-  fs.writeFileSync(filePath, fileContent, "utf-8");
+    // 写入文件
+    const filePath = path.join(__dirname, `${section}.ts`);
+    fs.writeFileSync(filePath, fileContent, "utf-8");
 }
 
 console.log("文件生成完成");
@@ -116,32 +116,32 @@ const dataBaseValue = JSON.parse(dataBaseValueJson);
 
 // 定义 CompletionItemKind 常量
 const CompletionItemKind = {
-  Text: 1,
+    Text: 1,
 };
 
 // 定义一个函数来生成 CompletionItem[] 数据
 function generateCompletionItems(section, items) {
-  return Object.entries(items).map(([label, [type, description, detail]], index) => ({
-    label,
-    insertText: `${label}`,
-    labelDetails: { description: `[${section}]` },
-    kind: CompletionItemKind.Text,
-    detail,
-    documentation: description,
-    type,
-  }));
+    return Object.entries(items).map(([label, [type, description, detail]], index) => ({
+        label,
+        insertText: `${label}`,
+        labelDetails: { description: `[${section}]` },
+        kind: CompletionItemKind.Text,
+        detail,
+        documentation: description,
+        type,
+    }));
 }
 
 // 遍历 dataBaseValue 中的每个 section
 for (const [section, items] of Object.entries(dataBaseValue)) {
-  const completionItems = generateCompletionItems(section, items);
+    const completionItems = generateCompletionItems(section, items);
 
-  // 生成文件内容
-  const importStatement = `import { CompletionItem, CompletionItemKind } from 'vscode-languageserver';`;
-  const exportStatement = `export const ${section.toUpperCase()}: CompletionItem[] = [`;
-  const itemsContent = completionItems
-    .map(
-      (item) => `    {
+    // 生成文件内容
+    const importStatement = `import { CompletionItem, CompletionItemKind } from 'vscode-languageserver';`;
+    const exportStatement = `export const ${section.toUpperCase()}: CompletionItem[] = [`;
+    const itemsContent = completionItems
+        .map(
+            (item) => `    {
         label: '${item.label || ""}',
         insertText: '${item.insertText || ""}',
         labelDetails: { detail :' ${(item.type || "") + " " + (item.detail || "").replace(/'/g, "\\'")}', description: '[${section}]' },
@@ -150,15 +150,15 @@ for (const [section, items] of Object.entries(dataBaseValue)) {
         documentation :'${(item.documentation || "").replace(/'/g, "\\'")}',
         data: '${(item.type || "").replace(/'/g, "\\'")}'
     },`,
-    )
-    .join("\n");
-  const closingBracket = `];`;
+        )
+        .join("\n");
+    const closingBracket = `];`;
 
-  const fileContent = `${importStatement}\n${exportStatement}\n${itemsContent}\n${closingBracket}`;
+    const fileContent = `${importStatement}\n${exportStatement}\n${itemsContent}\n${closingBracket}`;
 
-  // 写入文件
-  const filePath = path.join(__dirname, `${section}.ts`);
-  fs.writeFileSync(filePath, fileContent, "utf-8");
+    // 写入文件
+    const filePath = path.join(__dirname, `${section}.ts`);
+    fs.writeFileSync(filePath, fileContent, "utf-8");
 }
 
 console.log("文件生成完成");
@@ -400,7 +400,7 @@ javascript
 ```javascript
 const document = documents.get(_textDocumentPosition.textDocument.uri);
 if (!document) {
-  return [];
+    return [];
 }
 ```
 
@@ -424,15 +424,15 @@ javascript
 ```javascript
 let currentSectionName = null;
 for (let i = cursorLine; i >= 0; i--) {
-  const lineStart = document.positionAt(document.offsetAt({ line: i, character: 0 }));
-  const lineEnd = document.positionAt(document.offsetAt({ line: i + 1, character: 0 }) - 1);
-  const lineContent = document.getText({ start: lineStart, end: lineEnd }).trim();
+    const lineStart = document.positionAt(document.offsetAt({ line: i, character: 0 }));
+    const lineEnd = document.positionAt(document.offsetAt({ line: i + 1, character: 0 }) - 1);
+    const lineContent = document.getText({ start: lineStart, end: lineEnd }).trim();
 
-  const sectionMatch = lineContent.match(/^\[(.+)\]$/);
-  if (sectionMatch) {
-    currentSectionName = sectionMatch[1];
-    break;
-  }
+    const sectionMatch = lineContent.match(/^\[(.+)\]$/);
+    if (sectionMatch) {
+        currentSectionName = sectionMatch[1];
+        break;
+    }
 }
 ```
 
@@ -461,10 +461,10 @@ javascript
 const openBracketIndex = currentLineContent.lastIndexOf("[", cursorCharacter);
 const closeBracketIndex = currentLineContent.indexOf("]", cursorCharacter);
 const isInsideBrackets =
-  openBracketIndex !== -1 && (closeBracketIndex === -1 || openBracketIndex > closeBracketIndex);
+    openBracketIndex !== -1 && (closeBracketIndex === -1 || openBracketIndex > closeBracketIndex);
 
 if (isInsideBrackets) {
-  return SECTIONSNAME;
+    return SECTIONSNAME;
 }
 ```
 
@@ -480,62 +480,62 @@ javascript
 const colonIndex = currentLineContent.indexOf(":");
 const pointIndex = currentLineContent.indexOf(".");
 if (!currentSectionName) {
-  return [];
+    return [];
 } else if (colonIndex !== -1 && cursorCharacter > colonIndex) {
-  if (pointIndex !== -1 && cursorCharacter == pointIndex + 1) {
-    return ALLVALUES.UNITPROPERTY;
-  }
+    if (pointIndex !== -1 && cursorCharacter == pointIndex + 1) {
+        return ALLVALUES.UNITPROPERTY;
+    }
 
-  const key = currentLineContent.substring(0, colonIndex).trim();
-  let sectionName = currentSectionName;
-  sectionName = sectionName.toUpperCase();
-  const sectionConfig = ALLSECTIONS[sectionName];
-  let keyConfig = null;
-  if (sectionConfig) {
-    for (const item of sectionConfig) {
-      if (item.label === key) {
-        keyConfig = item;
-        break;
-      }
+    const key = currentLineContent.substring(0, colonIndex).trim();
+    let sectionName = currentSectionName;
+    sectionName = sectionName.toUpperCase();
+    const sectionConfig = ALLSECTIONS[sectionName];
+    let keyConfig = null;
+    if (sectionConfig) {
+        for (const item of sectionConfig) {
+            if (item.label === key) {
+                keyConfig = item;
+                break;
+            }
+        }
     }
-  }
-  if (keyConfig) {
-    const data = keyConfig.data;
-    if (data.includes("bool")) {
-      return ALLVALUES.BOOL;
-    } else if (data.includes("logicBoolean")) {
-      return [
-        ...ALLVALUES.LOGICBBOOLEAN,
-        ...ALLVALUES.BOOL,
-        ...ALLVALUES.FUNCTION,
-        ...ALLVALUES.UNITREF,
-      ];
-    } else if (key.includes("spawnUnits")) {
-      return [
-        ...ALLVALUES.LOGICBBOOLEAN,
-        ...ALLVALUES.BOOL,
-        ...ALLVALUES.FUNCTION,
-        ...ALLVALUES.UNITREF,
-        ...ALLVALUES.SPAWNUNIT,
-      ];
-    } else if (data.includes("projectileRef")) {
-      return [...ALLVALUES.PROJECTILE];
-    } else if (data.includes("event")) {
-      return [...ALLVALUES.EVENTS];
+    if (keyConfig) {
+        const data = keyConfig.data;
+        if (data.includes("bool")) {
+            return ALLVALUES.BOOL;
+        } else if (data.includes("logicBoolean")) {
+            return [
+                ...ALLVALUES.LOGICBBOOLEAN,
+                ...ALLVALUES.BOOL,
+                ...ALLVALUES.FUNCTION,
+                ...ALLVALUES.UNITREF,
+            ];
+        } else if (key.includes("spawnUnits")) {
+            return [
+                ...ALLVALUES.LOGICBBOOLEAN,
+                ...ALLVALUES.BOOL,
+                ...ALLVALUES.FUNCTION,
+                ...ALLVALUES.UNITREF,
+                ...ALLVALUES.SPAWNUNIT,
+            ];
+        } else if (data.includes("projectileRef")) {
+            return [...ALLVALUES.PROJECTILE];
+        } else if (data.includes("event")) {
+            return [...ALLVALUES.EVENTS];
+        }
     }
-  }
-  return [];
+    return [];
 }
 ```
 
 - 查找当前行中冒号和点号的位置。
 - 如果没有找到节名，则返回一个空数组。
 - 如果光标在冒号之后，进一步判断：
-  - 如果光标在点号之后，则返回 `ALLVALUES.UNITPROPERTY` 数组作为补全项。
-  - 提取冒号之前的键名，并将节名转换为大写。
-  - 根据节名从 `ALLSECTIONS` 对象中获取对应的配置信息。
-  - 在配置信息中查找与键名匹配的项。
-  - 根据匹配项的 `data` 属性，返回不同的补全项数组。
+    - 如果光标在点号之后，则返回 `ALLVALUES.UNITPROPERTY` 数组作为补全项。
+    - 提取冒号之前的键名，并将节名转换为大写。
+    - 根据节名从 `ALLSECTIONS` 对象中获取对应的配置信息。
+    - 在配置信息中查找与键名匹配的项。
+    - 根据匹配项的 `data` 属性，返回不同的补全项数组。
 
 #### 8. 根据节名返回补全项
 

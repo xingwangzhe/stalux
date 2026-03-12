@@ -22,71 +22,71 @@ import expressiveCode from "astro-expressive-code";
 const site = "https://xingwangzhe.fun";
 // https://astro.build/config
 export default defineConfig({
-  output: "static",
-  site: site,
-  experimental: {
-    preserveScriptOrder: true,
-  },
-  build: {
-    concurrency: 10,
-  },
-  integrations: [
-    pagefind(),
-    sitemap({
-      filter: (page) => {
-        // 只包含指定页面
-        return (
-          page.includes("/posts/") ||
-          page.includes("/about/") ||
-          page.includes("/links/") ||
-          page === site + "/" ||
-          page === site + "/archives/" ||
-          page === site + "/tags/" ||
-          page === site + "/categories/" ||
-          page.includes("/tags/") || // 所有标签页面
-          page.includes("/categories/")
-        ); // 所有分类页面
-      },
-      changefreq: "weekly",
-      priority: 0.7,
-    }),
-    expressiveCode({
-      themes: ["dark-plus", "github-light"],
-      styleOverrides: {
-        borderRadius: "0.5rem",
-        frames: {
-          shadowColor: "#124",
-        },
-      },
-      // 性能优化选项
-      // 性能优化选项
-      useDarkModeMediaQuery: true,
-      minSyntaxHighlightingColorContrast: 5.5,
-      defaultProps: {
-        wrap: true,
-        overridesByLang: {
-          "bash,ps,sh": { preserveIndent: false },
-        },
-      },
-    }),
-  ],
-  vite: {
-    define: {
-      // Vue feature flags for Waline
-      __VUE_OPTIONS_API__: true,
-      __VUE_PROD_DEVTOOLS__: false,
-      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+    output: "static",
+    site: site,
+    experimental: {
+        preserveScriptOrder: true,
     },
     build: {
-      cssMinify: "lightningcss",
-      target: "es2022",
-      sourcemap: false,
+        concurrency: 10,
     },
-  },
-  markdown: {
-    remarkPlugins: [remarkPostBody, remarkMath],
-    rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
-    smartypants: true, // 智能标点符号
-    gfm: true, // GitHub 风格的 Markdown 支持
-  },
+    integrations: [
+        pagefind(),
+        sitemap({
+            filter: (page) => {
+                // 只包含指定页面
+                return (
+                    page.includes("/posts/") ||
+                    page.includes("/about/") ||
+                    page.includes("/links/") ||
+                    page === site + "/" ||
+                    page === site + "/archives/" ||
+                    page === site + "/tags/" ||
+                    page === site + "/categories/" ||
+                    page.includes("/tags/") || // 所有标签页面
+                    page.includes("/categories/")
+                ); // 所有分类页面
+            },
+            changefreq: "weekly",
+            priority: 0.7,
+        }),
+        expressiveCode({
+            themes: ["dark-plus", "github-light"],
+            styleOverrides: {
+                borderRadius: "0.5rem",
+                frames: {
+                    shadowColor: "#124",
+                },
+            },
+            // 性能优化选项
+            // 性能优化选项
+            useDarkModeMediaQuery: true,
+            minSyntaxHighlightingColorContrast: 5.5,
+            defaultProps: {
+                wrap: true,
+                overridesByLang: {
+                    "bash,ps,sh": { preserveIndent: false },
+                },
+            },
+        }),
+    ],
+    vite: {
+        define: {
+            // Vue feature flags for Waline
+            __VUE_OPTIONS_API__: true,
+            __VUE_PROD_DEVTOOLS__: false,
+            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+        },
+        build: {
+            cssMinify: "lightningcss",
+            target: "es2022",
+            sourcemap: false,
+        },
+    },
+    markdown: {
+        remarkPlugins: [remarkPostBody, remarkMath],
+        rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
+        smartypants: true, // 智能标点符号
+        gfm: true, // GitHub 风格的 Markdown 支持
+    },
 });

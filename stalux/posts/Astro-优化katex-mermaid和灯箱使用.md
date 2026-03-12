@@ -3,11 +3,11 @@ title: "Astro: 优化katex,mermaid和灯箱使用"
 abbrlink: astro-optimize-katex-mermaid-photoswipe
 date: 2026-02-06 18:13:00
 categories:
-  - 技术
+    - 技术
 tags:
-  - stro
-  - 性能优化
-  - 前端
+    - stro
+    - 性能优化
+    - 前端
 ---
 
 在前文[ Astro 5.17构建性能优化实践：从18s到13s](https://xingwangzhe.fun/posts/astro-517-performance-optimization/)中,我已经成功减少了构建时间,这次,通过继续优化 **`katex`**、**`mermaid`** 和 **灯箱** 的使用,我进一步提升了博客的 **客户端** 和 **构建时** 性能。
@@ -27,14 +27,14 @@ tags:
 ```typescript title="src/utils/remark-post-body.ts"
 // 伪代码示例
 visit(tree, (node: any) => {
-  if (node.type === "image") hasImage = true;
-  if (node.type === "math") hasKatex = true;
-  if (node.type === "code" && node.lang === "mermaid") {
-    hasMermaid = true;
-    // 将代码块转换为特定格式以便前端渲染
-    node.type = "html";
-    node.value = `<pre class="mermaid">${node.value}</pre>`;
-  }
+    if (node.type === "image") hasImage = true;
+    if (node.type === "math") hasKatex = true;
+    if (node.type === "code" && node.lang === "mermaid") {
+        hasMermaid = true;
+        // 将代码块转换为特定格式以便前端渲染
+        node.type = "html";
+        node.value = `<pre class="mermaid">${node.value}</pre>`;
+    }
 });
 ```
 

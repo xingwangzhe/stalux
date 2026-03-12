@@ -4,13 +4,13 @@ abbrlink: 8d9bb0f3
 date: "2025-08-29T15:14:05.989+08:00"
 updated: "2025-08-29T15:28:35.880+08:00"
 categories:
-  - Tauri
+    - Tauri
 tags:
-  - Tauri
-  - GNOME
-  - 通知
-  - Wayland
-  - 解决方案
+    - Tauri
+    - GNOME
+    - 通知
+    - Wayland
+    - 解决方案
 ---
 
 起因是我在我的ubuntu24.04上，无法调用Tauri的同时函数，后来找了一下资料，发现竟然还是bug。
