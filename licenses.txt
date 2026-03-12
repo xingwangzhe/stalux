@@ -1,4 +1,5 @@
 === POSSIBLY NOT COMPATIBLE WITH MIT (REVIEW REQUIRED) ===
+BLUEOAK-1.0.0 common-ancestor-path
 BLUEOAK-1.0.0 lru-cache
 BLUEOAK-1.0.0 sax
 LGPL-3.0-OR-LATER @img/sharp-libvips-linux-x64
@@ -6,11 +7,9 @@ LGPL-3.0-OR-LATER @img/sharp-libvips-linuxmusl-x64
 MIT* color-convert
 MIT* khroma
 MIT* stalux
-MIT* zod-to-ts
 UNLICENSE robust-predicates
 
 === LIKELY MIT-COMPATIBLE (PERMISSIVE) ===
-(MIT OR CC0-1.0) type-fest
 (MPL-2.0 OR APACHE-2.0) dompurify
 APACHE-2.0 @chevrotain/cst-dts-gen
 APACHE-2.0 @chevrotain/gast
@@ -50,11 +49,9 @@ CC0-1.0 mdn-data
 CC0-1.0 simple-icons
 ISC @emmetio/html-matcher
 ISC @ungap/structured-clone
-ISC ansi-align
 ISC anymatch
 ISC boolbase
 ISC cliui
-ISC common-ancestor-path
 ISC d3
 ISC d3-array
 ISC d3-axis
@@ -96,10 +93,13 @@ ISC semver
 ISC y18n
 ISC yaml
 ISC yargs-parser
-ISC zod-to-json-schema
 MIT @antfu/install-pkg
 MIT @astrojs/check
 MIT @astrojs/compiler
+MIT @astrojs/compiler-binding
+MIT @astrojs/compiler-binding-linux-x64-gnu
+MIT @astrojs/compiler-binding-linux-x64-musl
+MIT @astrojs/compiler-rs
 MIT @astrojs/internal-helpers
 MIT @astrojs/language-server
 MIT @astrojs/markdown-remark
@@ -114,6 +114,8 @@ MIT @babel/parser
 MIT @babel/types
 MIT @braintree/sanitize-url
 MIT @capsizecss/unpack
+MIT @clack/core
+MIT @clack/prompts
 MIT @ctrl/tinycolor
 MIT @emmetio/abbreviation
 MIT @emmetio/css-abbreviation
@@ -143,6 +145,7 @@ MIT @shikijs/core
 MIT @shikijs/engine-javascript
 MIT @shikijs/engine-oniguruma
 MIT @shikijs/langs
+MIT @shikijs/primitive
 MIT @shikijs/themes
 MIT @shikijs/types
 MIT @shikijs/vscode-textmate
@@ -190,6 +193,7 @@ MIT @types/sax
 MIT @types/trusted-types
 MIT @types/unist
 MIT @types/web-bluetooth
+MIT @upsetjs/venn.js
 MIT @volar/kit
 MIT @volar/language-core
 MIT @volar/language-server
@@ -223,18 +227,13 @@ MIT arg
 MIT array-iterate
 MIT astro
 MIT astro-expressive-code
-MIT astro-mermaid
 MIT astro-pagefind
 MIT astro-seo
 MIT astro-typewriter
 MIT autosize
 MIT bail
-MIT base-64
 MIT bcp-47-match
-MIT boxen
-MIT camelcase
 MIT ccount
-MIT chalk
 MIT char-width-table-consumer
 MIT character-entities
 MIT character-entities-html4
@@ -243,7 +242,6 @@ MIT chevrotain-allstar
 MIT chokidar
 MIT ci-info
 MIT classnames
-MIT cli-boxes
 MIT clsx
 MIT color-convert
 MIT color-name
@@ -272,7 +270,6 @@ MIT decode-named-character-reference
 MIT defu
 MIT dequal
 MIT destr
-MIT deterministic-object-hash
 MIT devalue
 MIT devlop
 MIT direction
@@ -290,13 +287,13 @@ MIT eventemitter3
 MIT expressive-code
 MIT extend
 MIT fast-deep-equal
+MIT fast-xml-builder
 MIT fast-xml-parser
 MIT fdir
 MIT feather-icons
 MIT flattie
 MIT fontace
 MIT fontkitten
-MIT get-east-asian-width
 MIT h3
 MIT hachure-fill
 MIT hast-util-from-html
@@ -316,7 +313,6 @@ MIT hastscript
 MIT html-escaper
 MIT html-void-elements
 MIT iconv-lite
-MIT import-meta-resolve
 MIT iron-webcrypto
 MIT is-docker
 MIT is-fullwidth-code-point
@@ -392,6 +388,7 @@ MIT nlcst-to-string
 MIT node-fetch-native
 MIT node-mock-http
 MIT normalize-path
+MIT obug
 MIT ofetch
 MIT ohash
 MIT oniguruma-parser
@@ -405,6 +402,7 @@ MIT parse-latin
 MIT parse5
 MIT path-browserify
 MIT path-data-parser
+MIT path-expression-matcher
 MIT pathe
 MIT photoswipe
 MIT picomatch
@@ -416,10 +414,10 @@ MIT postcss-nested
 MIT postcss-selector-parser
 MIT prettier
 MIT prismjs
-MIT prompts
 MIT property-information
 MIT radix3
 MIT readdirp
+MIT reading-time
 MIT regex
 MIT regex-recursion
 MIT regex-utilities
@@ -435,7 +433,6 @@ MIT remark-parse
 MIT remark-rehype
 MIT remark-smartypants
 MIT remark-stringify
-MIT remove-markdown
 MIT request-light
 MIT require-directory
 MIT require-from-string
@@ -459,6 +456,7 @@ MIT strnum
 MIT stylis
 MIT svgo
 MIT tiny-inflate
+MIT tinyclip
 MIT tinyexec
 MIT tinyglobby
 MIT totalist
@@ -511,14 +509,11 @@ MIT vscode-uri
 MIT vue
 MIT web-namespaces
 MIT which-pm-runs
-MIT widest-line
 MIT wrap-ansi
 MIT xxhash-wasm
 MIT yaml-language-server
 MIT yargs
 MIT yocto-queue
-MIT yocto-spinner
-MIT yoctocolors
 MIT zod
 MIT zwitch
 MPL-2.0 lightningcss
