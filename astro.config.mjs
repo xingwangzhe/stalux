@@ -6,18 +6,19 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
 import { remarkPostBody } from "./src/utils/remark-post-body";
+
 import expressiveCode from "astro-expressive-code";
 
-// if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
-//   const originalError = console.error;
-//   console.error = function (...args) {
-//     const message = args[0]?.toString?.() || "";
-//     if (message.includes("Could not parse CSS stylesheet")) {
-//       return;
-//     }
-//     originalError.apply(console, args);
-//   };
-// }
+if (process.env.NODE_ENV === "production" || process.argv.includes("build")) {
+    const originalError = console.error;
+    console.error = function (...args) {
+        const message = args[0]?.toString?.() || "";
+        if (message.includes("Could not parse CSS stylesheet")) {
+            return;
+        }
+        originalError.apply(console, args);
+    };
+}
 
 const site = "https://xingwangzhe.fun";
 // https://astro.build/config
@@ -25,7 +26,10 @@ export default defineConfig({
     output: "static",
     site: site,
     experimental: {
-        preserveScriptOrder: true,
+        rustCompiler: true,
+        queuedRendering: {
+            enabled: true,
+        },
     },
     build: {
         concurrency: 10,
@@ -34,21 +38,17 @@ export default defineConfig({
         pagefind(),
         sitemap({
             filter: (page) => {
-                // 只包含指定页面
                 return (
                     page.includes("/posts/") ||
                     page.includes("/about/") ||
                     page.includes("/links/") ||
                     page === site + "/" ||
                     page === site + "/archives/" ||
-                    page === site + "/tags/" ||
-                    page === site + "/categories/" ||
-                    page.includes("/tags/") || // 所有标签页面
+                    page.includes("/tags/") ||
                     page.includes("/categories/")
-                ); // 所有分类页面
+                );
             },
-            changefreq: "weekly",
-            priority: 0.7,
+            lastmod: new Date(),
         }),
         expressiveCode({
             themes: ["dark-plus", "github-light"],
@@ -58,7 +58,6 @@ export default defineConfig({
                     shadowColor: "#124",
                 },
             },
-            // 性能优化选项
             // 性能优化选项
             useDarkModeMediaQuery: true,
             minSyntaxHighlightingColorContrast: 5.5,

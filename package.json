@@ -24,7 +24,7 @@
         "astro-expressive-code": "^0.41.7",
         "astro-pagefind": "^1.8.5",
         "astro-seo": "^1.1.0",
-        "astro-typewriter": "^1.1.0",
+        "astro-typewriter": "^1.2.0",
         "badge-maker": "^5.0.2",
         "dayjs": "^1.11.19",
         "feather-icons": "^4.29.2",
@@ -41,6 +41,6 @@
         "@types/node": "^25.4.0",
         "license-checker-rseidelsohn": "^4.4.2",
         "oxfmt": "^0.28.0",
-        "oxlint": "^1.52.0"
+        "oxlint": "^1.53.0"
     }
 }

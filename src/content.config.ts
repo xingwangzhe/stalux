@@ -151,7 +151,7 @@ const config = defineCollection({
                 enabled: z.boolean().optional().default(false),
                 waline: z
                     .object({
-                        serverURL: z.string().url().optional(),
+                        serverURL: z.url().optional(),
                         lang: z.string().optional().default("zh-CN"),
                         locale: z.any().optional(),
                         emoji: z
