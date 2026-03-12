@@ -26,7 +26,7 @@ export default defineConfig({
     output: "static",
     site: site,
     experimental: {
-        rustCompiler: true,
+        rustCompiler: false,
         queuedRendering: {
             enabled: true,
         },
