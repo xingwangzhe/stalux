@@ -59,10 +59,10 @@ FOLLOW(A):可能在某个句型中,紧跟在A后边的非终结符a的集合
 
 $$
 \begin{array}{lcl}
-① & E \to TE' & \text{FIRST}(E) = \{ (, \text{id} \} \quad \text{FOLLOW}(E) = \{ \#, ) \}\\
-② & E' \to +TE' \mid \varepsilon & \text{FIRST}(E') = \{ +, \varepsilon \} \quad \text{FOLLOW}(E') = \{ \#, ) \}\\
-③ & T \to FT' & \text{FIRST}(T) = \{ (, \text{id} \} \quad \text{FOLLOW}(T) = \{ +, \#, ) \}\\
-④ & T' \to *FT' \mid \varepsilon & \text{FIRST}(T') = \{ *, \varepsilon \} \quad \text{FOLLOW}(T') = \{ +, \#, ) \}\\
-⑤ & F \to (E) \mid \text{id} & \text{FIRST}(F) = \{ (, \text{id} \} \quad \text{FOLLOW}(F) = \{ *, +, \#, ) \}
+\textcircled{1} & E \to TE' & \text{FIRST}(E) = \{ (, \text{id} \} \quad \text{FOLLOW}(E) = \{ \#, ) \}\\
+\textcircled{2} & E' \to +TE' \mid \varepsilon & \text{FIRST}(E') = \{ +, \varepsilon \} \quad \text{FOLLOW}(E') = \{ \#, ) \}\\
+\textcircled{3} & T \to FT' & \text{FIRST}(T) = \{ (, \text{id} \} \quad \text{FOLLOW}(T) = \{ +, \#, ) \}\\
+\textcircled{4} & T' \to *FT' \mid \varepsilon & \text{FIRST}(T') = \{ *, \varepsilon \} \quad \text{FOLLOW}(T') = \{ +, \#, ) \}\\
+\textcircled{5} & F \to (E) \mid \text{id} & \text{FIRST}(F) = \{ (, \text{id} \} \quad \text{FOLLOW}(F) = \{ *, +, \#, ) \}
 \end{array}
 $$
