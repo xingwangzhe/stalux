@@ -15,13 +15,13 @@
         "license-checker": "bun license-checker.ts"
     },
     "dependencies": {
-        "@astrojs/compiler-rs": "^0.1.4",
+        "@astrojs/compiler-rs": "^0.1.5",
         "@astrojs/rss": "4.0.17",
         "@astrojs/sitemap": "3.7.1",
         "@expressive-code/plugin-line-numbers": "^0.41.7",
         "@waline/client": "^3.13.0",
         "animejs": "^4.3.6",
-        "astro": "^6.0.4",
+        "astro": "^6.0.5",
         "astro-expressive-code": "^0.41.7",
         "astro-pagefind": "^1.8.5",
         "astro-seo": "^1.1.0",
