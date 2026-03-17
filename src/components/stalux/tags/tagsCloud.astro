@@ -1,25 +1,8 @@
 ---
-import { getCollection } from "astro:content";
+import { getTagCountList } from "@utils/collections-stats";
 import styles from "@styles/components/tags/tagsCloud.module.css";
-const posts = await getCollection("posts");
 
-const tags = (posts: any[]) => {
-    let tagMap = new Map();
-    posts.forEach((post: { data: { tags: any[] } }) => {
-        if (post.data.tags) {
-            post.data.tags.forEach((tag: any) => {
-                if (tagMap.has(tag)) {
-                    tagMap.set(tag, tagMap.get(tag) + 1);
-                } else {
-                    tagMap.set(tag, 1);
-                }
-            });
-        }
-    });
-    return Array.from(tagMap, ([name, count]) => ({ name, count }));
-};
-
-const tagList = tags(posts);
+const tagList = await getTagCountList();
 ---
 
 <div class={styles.tagsCloud}>
