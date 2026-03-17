@@ -41,7 +41,7 @@
     "devDependencies": {
         "@types/node": "^25.5.0",
         "license-checker-rseidelsohn": "^4.4.2",
-        "oxfmt": "^0.28.0",
+        "oxfmt": "^0.41.0",
         "oxlint": "^1.56.0"
     }
 }
