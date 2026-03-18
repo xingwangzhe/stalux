@@ -1,6 +1,6 @@
 import rss from "@astrojs/rss";
-import { getCollection, render } from "astro:content";
 import type { APIRoute } from "astro";
+import { getCollection, render } from "astro:content";
 
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");

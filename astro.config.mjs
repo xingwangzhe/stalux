@@ -1,13 +1,13 @@
+import sitemap from "@astrojs/sitemap";
+import expressiveCode from "astro-expressive-code";
+import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig } from "astro/config";
-import pagefind from "astro-pagefind";
-import sitemap from "@astrojs/sitemap";
-import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+
 import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
 import { remarkPostBody } from "./src/utils/remark-post-body";
-
-import expressiveCode from "astro-expressive-code";
 
 const site = "https://xingwangzhe.fun";
 // https://astro.build/config

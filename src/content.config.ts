@@ -1,10 +1,9 @@
-// 1. 从 `astro:content` 导入工具函数
-import { defineCollection } from "astro:content";
 // 2. 导入加载器
 import { glob, file } from "astro/loaders";
-
 // 3. 导入 Zod
 import { z } from "astro/zod";
+// 1. 从 `astro:content` 导入工具函数
+import { defineCollection } from "astro:content";
 
 // 4. 定义你的集合
 const posts = defineCollection({

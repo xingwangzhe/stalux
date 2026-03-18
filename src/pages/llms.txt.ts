@@ -1,5 +1,5 @@
-import { getCollection, render } from "astro:content";
 import type { APIRoute } from "astro";
+import { getCollection, render } from "astro:content";
 
 export const prerender = true;
 
