@@ -10,7 +10,7 @@ abbrlink: contribute-vite-plus
 
 ## 前情提要
 
-[前文: Vite8 - 统一的基建开始](https:/xingwangzhe.fun/posts/vite-voidzero-features/)
+[前文: Vite8 - 统一的基建开始](https://xingwangzhe.fun/posts/vite-voidzero-features/)
 
 前文提到我提交了一些代码，我今天看，原来几天前就已经有Release了！
 
