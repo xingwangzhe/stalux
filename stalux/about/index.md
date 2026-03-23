@@ -48,21 +48,30 @@ hi，这里是姓王者，一个热爱计算机技术(尤其是软件,web方向�
     </a>
 </div>
 
-为了验证我的身份真实性，您可以通过以下两把 GPG 公钥进行验证，它们都可以直接在 [keys.openpgp.org](https://keys.openpgp.org) 查询：
+为了验证我的身份真实性，您可以通过以下 GPG 公钥进行验证，它可以直接在 [keys.openpgp.org](https://keys.openpgp.org) 查询：
 
-| 邮箱                      | 密钥 ID            | 指纹                                                | 获取方式                                                                                                                                                                                                               |
-| ------------------------- | ------------------ | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `20235883@stu.neu.edu.cn` | `D0531D3594C415B9` | `EA65 35C0 CFC6 2CF2 00B6 496A D053 1D35 94C4 15B9` | [keys.openpgp.org/vks/v1/by-fingerprint/EA6535C0CFC62CF200B6496AD0531D3594C415B9](https://keys.openpgp.org/vks/v1/by-fingerprint/EA6535C0CFC62CF200B6496AD0531D3594C415B9) · [直接下载此公钥](/edu_public.asc)         |
-| `xingwangzhe@outlook.com` | `5CBCD856D54BA9CD` | `AC13 70EE 760A F87D E4FD D290 5CBC D856 D54B A9CD` | [keys.openpgp.org/vks/v1/by-fingerprint/AC1370EE760AF87DE4FDD2905CBCD856D54BA9CD](https://keys.openpgp.org/vks/v1/by-fingerprint/AC1370EE760AF87DE4FDD2905CBCD856D54BA9CD) · [直接下载此公钥](/xingwangzhe_public.asc) |
+- **邮箱**: `xingwangzhe@outlook.com`
+- **密钥 ID**:
 
-您也可以直接使用命令行从 `keys.openpgp.org` 拉取对应 Fingerprint：
+  ```
+  3067B770E2103FA6
+  ```
+
+- **指纹**:
+
+  ```
+  3F18 8883 8EAA E1A4 EA68 D2D7 3067 B770 E210 3FA6
+  ```
+
+- **创建时间**: `2026-03-23`
+- **有效期至**: `2026-09-23`
+- **获取方式**: [keys.openpgp.org/vks/v1/by-fingerprint/3F1888838EAAE1A4EA68D2D73067B770E2103FA6](https://keys.openpgp.org/vks/v1/by-fingerprint/3F1888838EAAE1A4EA68D2D73067B770E2103FA6) · [直接下载此公钥](/xingwangzhe_public.asc)
+
+您也可以直接使用命令行从 `keys.openpgp.org` 拉取对应指纹：
 
 ```bash
-# 学校邮箱密钥
-gpg --keyserver keys.openpgp.org --recv-keys EA6535C0CFC62CF200B6496AD0531D3594C415B9
-
 # Outlook 邮箱密钥
-gpg --keyserver keys.openpgp.org --recv-keys AC1370EE760AF87DE4FDD2905CBCD856D54BA9CD
+gpg --keyserver keys.openpgp.org --recv-keys 3F1888838EAAE1A4EA68D2D73067B770E2103FA6
 ```
 
 验证完成后，务必使用 GPG 工具对我发出的签名**进行校验**，确保通信内容的完整性与真实性。
