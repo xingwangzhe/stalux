@@ -11,7 +11,7 @@
         "@expressive-code/plugin-line-numbers": "^0.41.7",
         "@waline/client": "^3.13.0",
         "animejs": "^4.3.6",
-        "astro": "^6.0.7",
+        "astro": "^6.0.8",
         "astro-expressive-code": "^0.41.7",
         "astro-pagefind": "^1.8.5",
         "astro-seo": "^1.1.0",
@@ -19,7 +19,7 @@
         "badge-maker": "^5.0.2",
         "dayjs": "^1.11.20",
         "feather-icons": "^4.29.2",
-        "katex": "^0.16.39",
+        "katex": "^0.16.40",
         "lightningcss": "^1.32.0",
         "mermaid": "^11.13.0",
         "photoswipe": "^5.4.4",
@@ -1251,7 +1251,7 @@
 
     "signal-exit": ["signal-exit@4.1.0", "https://registry.npmmirror.com/signal-exit/-/signal-exit-4.1.0.tgz", {}, "sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw=="],
 
-    "simple-icons": ["simple-icons@16.12.0", "", {}, "sha512-fDJDqXUpkb2twqH+eBQpJsCYUE6jEH7VkuuPL9dH16sbLf6KKnwyijULmcx7SCoy3c2L6pl8WCzt+4rpYjoWfw=="],
+    "simple-icons": ["simple-icons@16.13.0", "", {}, "sha512-N4AMZvFERU5YLEtUudtUesiM2H4O5xQ9qfS3K0oOV5II5KVtxOUAlmZ7KqBgiTSGBgCVkuLD/Z9dJKBtnI3kKQ=="],
 
     "sirv": ["sirv@3.0.2", "https://registry.npmmirror.com/sirv/-/sirv-3.0.2.tgz", { "dependencies": { "@polka/url": "^1.0.0-next.24", "mrmime": "^2.0.0", "totalist": "^3.0.0" } }, "sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g=="],
 
