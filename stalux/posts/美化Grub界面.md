@@ -1,8 +1,8 @@
 ---
 title: 美化Grub界面
 abbrlink: 5f776910
-date: 2025-09-09 12:43:44
-updated: 2025-09-09 16:24:14
+date: "2025-09-09 12:43:44"
+updated: "2025-09-09 16:24:14"
 categories:
     - Linux
 tags:

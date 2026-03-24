@@ -1,6 +1,6 @@
 ---
 title: Stalux Astro博客主题自荐
-date: 2026-01-30 19:53:49
+date: "2026-01-30 19:53:49"
 abbrlink: stalux-astro
 tags:
     - stalux

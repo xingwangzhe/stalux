@@ -1,8 +1,8 @@
 ---
 title: 再简单折腾一下ubuntu
 abbrlink: 7b08d50f
-date: 2025-07-04 18:44:32
-updated: 2025-07-04 18:44:32
+date: "2025-07-04 18:44:32"
+updated: "2025-07-04 18:44:32"
 categories:
     - ubuntu
 tags:

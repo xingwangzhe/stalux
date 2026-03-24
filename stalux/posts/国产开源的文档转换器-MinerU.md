@@ -1,8 +1,8 @@
 ---
 title: 国产开源的文档转换器:MinerU
 abbrlink: 64756
-date: 2025-03-27 19:11:43
-updated: 2025-07-04 18:44:32
+date: "2025-03-27 19:11:43"
+updated: "2025-07-04 18:44:32"
 categories:
     - 推荐
 tags:

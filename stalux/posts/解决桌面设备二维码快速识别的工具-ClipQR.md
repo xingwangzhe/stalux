@@ -1,7 +1,7 @@
 ---
 title: 解决桌面设备二维码快速识别的工具-ClipQR
 abbrlink: clipqr
-date: 2026-03-19 19:40:36
+date: "2026-03-19 19:40:36"
 categories:
     - 技术
 tags:

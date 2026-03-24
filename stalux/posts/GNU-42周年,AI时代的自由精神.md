@@ -1,8 +1,8 @@
 ---
 title: GNU 42周年，AI时代的自由精神
 abbrlink: c08b9de1
-date: 2025-09-29 08:52:20
-updated: 2025-09-29 09:17:36
+date: "2025-09-29 08:52:20"
+updated: "2025-09-29 09:17:36"
 categories:
     - GNU
 tags:

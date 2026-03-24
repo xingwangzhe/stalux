@@ -1,8 +1,8 @@
 ---
 title: 在 Ubuntu 上实现 Thetis FIDO U2F 密码登录
 abbrlink: f69680bd
-date: 2025-07-04 18:44:32
-updated: 2025-07-04 18:44:32
+date: "2025-07-04 18:44:32"
+updated: "2025-07-04 18:44:32"
 categories:
     - 安全
 tags:

@@ -1,7 +1,7 @@
 ---
 title: Moonbit 0.8.0 重大发布,我也要改一下我的包
 abbrlink: moonbit-0-8-0-release-change-my-package
-date: 2026-02-10 20:25:34
+date: "2026-02-10 20:25:34"
 categories:
     - moonbit
 tags:

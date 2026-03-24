@@ -1,7 +1,7 @@
 ---
 title: Moonbit License Checker 开发使用
 abbrlink: moonbit-license-checker
-date: 2026-01-31 11:52:09
+date: "2026-01-31 11:52:09"
 tags:
     - moonbit
     - license-checker

@@ -1,8 +1,8 @@
 ---
 title: 解决在ubuntu上，打包vscode插件问题
 abbrlink: a2c639ef
-date: 2025-08-18 20:24:07
-updated: 2025-08-18 20:44:30
+date: "2025-08-18 20:24:07"
+updated: "2025-08-18 20:44:30"
 categories:
     - ubuntu
 tags:

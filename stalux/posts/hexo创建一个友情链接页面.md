@@ -1,8 +1,8 @@
 ---
 title: hexo创建一个友情链接页面
 abbrlink: 62fedd1e
-date: 2024-09-14 19:16:27
-updated: 2024-09-14 19:16:29
+date: "2024-09-14 19:16:27"
+updated: "2024-09-14 19:16:29"
 categories:
     - hexo
 tags:

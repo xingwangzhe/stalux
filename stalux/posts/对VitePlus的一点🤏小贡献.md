@@ -4,7 +4,7 @@ categories: 开源
 tags:
     - vite
     - viteplus
-date: 2026-03-21 17:09:55
+date: "2026-03-21 17:09:55"
 abbrlink: contribute-vite-plus
 ---
 

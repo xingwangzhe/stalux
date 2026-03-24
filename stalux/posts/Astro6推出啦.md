@@ -1,6 +1,6 @@
 ---
 title: Astro 6 推出啦
-date: 2026-03-12 09:27:03
+date: "2026-03-12 09:27:03"
 category: [astro]
 tags: [astro, vite]
 abbrlink: astro6-release

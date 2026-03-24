@@ -1,8 +1,8 @@
 ---
 title: forever
 abbrlink: f5bf34a0
-date: 2024-06-23 16:33:26
-updated: 2025-07-04 18:44:32
+date: "2024-06-23 16:33:26"
+updated: "2025-07-04 18:44:32"
 categories:
     - hexo
 tags:

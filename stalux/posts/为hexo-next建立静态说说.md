@@ -1,8 +1,8 @@
 ---
 title: 为hexo-next建立静态说说
 abbrlink: f513b372
-date: 2024-09-20 17:22:58
-updated: 2024-09-20 17:23:00
+date: "2024-09-20 17:22:58"
+updated: "2024-09-20 17:23:00"
 categories:
     - hexo
 tags:

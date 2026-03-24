@@ -3,7 +3,7 @@ title: 'GPL"2,3"事'
 tags: ["GPL2", "GPL3", "治愈条款"]
 categories: "自由软件"
 abbrlink: gpl-2-3-thing
-date: 2026-03-22 10:10:34
+date: "2026-03-22 10:10:34"
 ---
 
 ## 前言

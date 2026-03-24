@@ -1,8 +1,8 @@
 ---
 title: 偷梁换柱，解决Ubuntu24.04安装Packet Tracer缺失依赖问题
 abbrlink: 9fe82262
-date: 2025-10-12 17:50:44
-updated: 2025-10-12 18:12:28
+date: "2025-10-12 17:50:44"
+updated: "2025-10-12 18:12:28"
 categories:
     - Packet Tracer
 tags:

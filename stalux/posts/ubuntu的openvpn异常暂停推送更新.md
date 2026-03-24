@@ -6,7 +6,7 @@ tags:
     - openvpn
     - ubuntu
 abbrlink: "error-push-openvpn-on-ubuntu"
-date: 2026-03-10 13:54:01
+date: "2026-03-10 13:54:01"
 ---
 
 ## **本文具有时效性，不代表长期状况，请注意文章发布时间，问题可能会很快解决**

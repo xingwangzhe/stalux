@@ -1,8 +1,8 @@
 ---
 title: bat脚本使用教程
 abbrlink: 50463
-date: 2024-12-11 20:10:06
-updated: 2025-07-04 18:44:32
+date: "2024-12-11 20:10:06"
+updated: "2025-07-04 18:44:32"
 categories:
     - 开发
 tags:

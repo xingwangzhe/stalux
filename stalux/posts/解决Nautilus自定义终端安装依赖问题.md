@@ -1,7 +1,7 @@
 ---
 title: 解决 Nautilus 自定义终端插件安装依赖问题
 abbrlink: nautilus-open-any-terminal
-date: 2026-03-18 14:40:00
+date: "2026-03-18 14:40:00"
 categories:
     - ubuntu
 tags:

@@ -1,8 +1,8 @@
 ---
 title: 使用Godot实现单带图灵机模型
 abbrlink: 58216
-date: 2024-11-19 16:33:23
-updated: 2025-07-04 18:44:32
+date: "2024-11-19 16:33:23"
+updated: "2025-07-04 18:44:32"
 categories:
     - 开发
 tags:

@@ -1,8 +1,8 @@
 ---
 title: 许可合规-fancybox
 abbrlink: 2da95e5f
-date: 2025-12-16 20:12:09
-updated: 2025-12-16 20:50:10
+date: "2025-12-16 20:12:09"
+updated: "2025-12-16 20:50:10"
 categories:
     - 开源协议
 tags:
