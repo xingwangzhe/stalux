@@ -2,7 +2,8 @@
 import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postContent.module.css";
 import "@styles/components/markdown.css";
-import dayjs from "@utils/dayjs";
+import { getCollection } from "astro:content";
+import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
     title: string;
@@ -14,22 +15,8 @@ interface Props {
 }
 
 const props = Astro.props as Props;
-
-// 格式化：若包含时间则显示 YYYY-MM-DD HH:mm:ss，否则退级为 YYYY-MM-DD
-const formatDateTime = (d?: string | Date) => {
-    if (!d) return "";
-    const dt = dayjs.utc(d);
-    if (!dt.isValid()) return "";
-    if (
-        dt.hour() === 0 &&
-        dt.minute() === 0 &&
-        dt.second() === 0 &&
-        dt.millisecond() === 0
-    ) {
-        return dt.format("YYYY-MM-DD");
-    }
-    return dt.format("YYYY-MM-DD HH:mm:ss");
-};
+const stalux = (await getCollection("config"))[0]?.data;
+const timezone = stalux?.timezone;
 ---
 
 <article
@@ -42,19 +29,19 @@ const formatDateTime = (d?: string | Date) => {
         <div class={style.metadata}>
             {
                 props.date && (
-                    <time class={style.metaItem} datetime={props.date}>
+                    <time class={style.metaItem} datetime={timezone ? toMachineDateTime(props.date, timezone) : props.date}>
                         发布时间：
-                        {formatDateTime(props.date)}
+                        {props.date}
                     </time>
                 )
             }
 
             {
                 props.updated && (
-                    <span class={style.metaItem}>
+                    <time class={style.metaItem} datetime={timezone ? toMachineDateTime(props.updated, timezone) : props.updated}>
                         更新时间：
-                        {formatDateTime(props.updated)}
-                    </span>
+                        {props.updated}
+                    </time>
                 )
             }
         </div>

@@ -1,6 +1,8 @@
 import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
 import { getCollection, render } from "astro:content";
+import dayjs from "@utils/dayjs";
+import { toMachineDateTime } from "@utils/semantic-time";
 
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");
@@ -11,9 +13,9 @@ export const GET: APIRoute = async (context) => {
 
     // 按日期排序
     const sortedPosts = posts.sort((a, b) => {
-        const dateA = new Date(b.data.updated || b.data.date);
-        const dateB = new Date(a.data.updated || a.data.date);
-        return dateA.getTime() - dateB.getTime();
+        const dateA = dayjs(b.data.updated || b.data.date).valueOf();
+        const dateB = dayjs(a.data.updated || a.data.date).valueOf();
+        return dateA - dateB;
     });
 
     // 获取每篇文章的 remarkPluginFrontmatter 以使用动态生成的描述
@@ -24,7 +26,11 @@ export const GET: APIRoute = async (context) => {
             // 构建自定义数据，包含更新时间和版权信息
             let customData = "";
             if (post.data.updated) {
-                customData += `<atom:updated>${post.data.updated.toISOString()}</atom:updated>`;
+                const parsed = dayjs(post.data.updated);
+                if (parsed.isValid()) {
+                    const updatedIso = parsed.tz(stalux.timezone).toISOString();
+                    customData += `<atom:updated>${updatedIso}</atom:updated>`;
+                }
             }
             if (post.data.cc) {
                 customData += `<rights>${post.data.cc}</rights>`;
@@ -32,7 +38,7 @@ export const GET: APIRoute = async (context) => {
 
             return {
                 title: post.data.title,
-                pubDate: new Date(post.data.date),
+                pubDate: new Date(toMachineDateTime(post.data.date, stalux.timezone)),
                 // 优先使用 remark 插件生成的描述，如果没有则使用文章自身的 desc
                 description: remarkPluginFrontmatter.desc || post.data.desc || "",
                 link: `/posts/${post.data.abbrlink}/`,

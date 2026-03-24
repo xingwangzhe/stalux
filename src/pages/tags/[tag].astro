@@ -11,7 +11,7 @@ export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const tagMap = new Map<
         string,
-        { posts: CollectionEntry<"posts">[]; latestTime: Date }
+        { posts: CollectionEntry<"posts">[]; latestTime: string }
     >();
 
     for (const post of posts) {
@@ -23,7 +23,7 @@ export async function getStaticPaths() {
             }
             const entry = tagMap.get(t)!;
             entry.posts.push(post);
-            if (postTime > entry.latestTime) {
+            if (dayjs(postTime).valueOf() > dayjs(entry.latestTime).valueOf()) {
                 entry.latestTime = postTime;
             }
         }
@@ -35,9 +35,7 @@ export async function getStaticPaths() {
             tag,
             count: entry.posts.length,
             posts: entry.posts,
-            lastUpdateDate: dayjs
-                .utc(entry.latestTime)
-                .format("YYYY年MM月DD日"),
+            lastUpdateDate: entry.latestTime,
         },
     }));
 }

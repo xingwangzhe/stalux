@@ -16,11 +16,8 @@ const posts = defineCollection({
     schema: z.object({
         title: z.string(),
         abbrlink: z.string().or(z.number().transform((num) => num.toString())),
-        date: z.preprocess((v) => (typeof v === "string" ? new Date(v) : v), z.date()),
-        updated: z.preprocess(
-            (v) => (v == null ? undefined : typeof v === "string" ? new Date(v) : v),
-            z.date().optional(),
-        ),
+        date: z.string(),
+        updated: z.string().optional(),
         draft: z.boolean().optional().default(false),
         tags: z.preprocess(
             (val) => (typeof val === "string" ? [val] : val),
@@ -41,6 +38,7 @@ const config = defineCollection({
     schema: z.object({
         title: z.string(),
         url: z.string().url(),
+        timezone: z.string().optional().default("Asia/Shanghai"),
         description: z.string(),
         canonical: z.string().url().optional(),
         twitterSite: z.string().optional(),

@@ -1,6 +1,7 @@
 stalux:
     title: "姓王者的博客"
     url: "https://xingwangzhe.fun"
+    timezone: "Asia/Shanghai"
     description: "探索、学习、进步、创造无限可能！姓王者的博客致力于分享前端开发技术，包括JavaScript、TypeScript、Vue等web开发知识。作为计算机科学与技术专业的博主，我相信终身学习的价值，这里记录了我的技术成长历程、实用教程和开发心得，希望能为大家提供有价值的参考和启发。可以不会，但不能不学！"
     canonical: "https://xingwangzhe.fun"
     head:

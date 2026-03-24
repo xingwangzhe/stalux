@@ -1,7 +1,8 @@
 ---
 import style from "@styles/components/posts/postCard.module.css";
 import { render } from "astro:content";
-import dayjs from "@utils/dayjs";
+import { toMachineDateTime } from "@utils/semantic-time";
+import { getCollection } from "astro:content";
 
 import type { CollectionEntry } from "astro:content";
 
@@ -10,6 +11,8 @@ export interface Props {
 }
 
 const post = Astro.props.post;
+const stalux = (await getCollection("config"))[0]?.data;
+const timezone = stalux?.timezone;
 
 const { remarkPluginFrontmatter } = await render(post);
 // 描述：优先使用 remark 插件生成的描述（前125字符），如果没有则使用文章自身的 desc
@@ -22,15 +25,21 @@ const description = remarkPluginFrontmatter.desc || post.data.desc || "";
         <div class={style.time}>
             {
                 post.data.date && (
-                    <time class={style.postDate}>
-                        {dayjs.utc(post.data.date).format("YYYY年M月D日")}
+                    <time
+                        class={style.postDate}
+                        datetime={timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date}
+                    >
+                        {post.data.date}
                     </time>
                 )
             }
             {
                 post.data.updated && (
-                    <time class={style.postUpdated}>
-                        {dayjs.utc(post.data.updated).format("YYYY年M月D日")}
+                    <time
+                        class={style.postUpdated}
+                        datetime={timezone ? toMachineDateTime(post.data.updated, timezone) : post.data.updated}
+                    >
+                        {post.data.updated}
                     </time>
                 )
             }

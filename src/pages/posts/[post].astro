@@ -2,6 +2,7 @@
 import Stalux from "@layouts/Stalux.astro";
 import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry, render } from "astro:content";
+import dayjs from "@utils/dayjs";
 
 import Navs from "@components/stalux/layout/navs.astro";
 
@@ -24,8 +25,8 @@ export async function getStaticPaths() {
 
     // 按日期排序（降序）
     const sortedPosts = posts.sort((a, b) => {
-        const dateA = a.data.date?.getTime() || 0;
-        const dateB = b.data.date?.getTime() || 0;
+        const dateA = a.data.date ? dayjs(a.data.date).valueOf() : 0;
+        const dateB = b.data.date ? dayjs(b.data.date).valueOf() : 0;
         return dateB - dateA;
     });
 
@@ -65,12 +66,8 @@ export async function getStaticPaths() {
     <div style="height: 3em;"></div>
     <PostLayout
         title={props.post.data.title}
-        date={props.post.data.date
-            ? props.post.data.date.toISOString()
-            : undefined}
-        updated={props.post.data.updated
-            ? props.post.data.updated.toISOString()
-            : undefined}
+        date={props.post.data.date}
+        updated={props.post.data.updated}
         readingTime={minutesRead}
         tags={props.post.data.tags || []}
         categories={props.post.data.categories || []}
