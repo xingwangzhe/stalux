@@ -1,6 +1,6 @@
 ---
 title: OpenClaw 该熄火了
-date: 2026-3-16
+date: 2026-03-16 00:00:00
 abbrlink: openclaw-no
 categories: ai
 tags: [openclaw, clawbot, ai, 网络安全]

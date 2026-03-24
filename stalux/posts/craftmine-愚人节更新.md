@@ -1,8 +1,8 @@
 ---
 title: craftmine:愚人节更新
 abbrlink: 52599
-date: 2025-04-02 19:18:07+00:00
-updated: "2025-07-04T18:44:32.348+08:00"
+date: 2025-04-02 19:18:07
+updated: 2025-07-04 18:44:32
 categories:
     - 胡思乱想
 tags:

@@ -1,8 +1,8 @@
 ---
 title: 再见👋 LeanCloud
 abbrlink: 7c604030
-date: "2026-01-13T13:08:50.333+08:00"
-updated: "2026-01-13T13:34:05.763+08:00"
+date: 2026-01-13 13:08:50
+updated: 2026-01-13 13:34:05
 categories:
     - 再见
 tags:

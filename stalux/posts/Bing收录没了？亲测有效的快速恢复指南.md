@@ -3,7 +3,7 @@ title: Bing收录没了？亲测有效的快速恢复指南
 categories: Bing
 tags: [Bing, 收录, 网站, site]
 abbrlink: bing-re-index
-date: 2026-3-20 10:30:00
+date: 2026-03-20 10:30:00
 ---
 
 ## 前言

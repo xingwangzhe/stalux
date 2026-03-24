@@ -1,7 +1,7 @@
 ---
 title: 把Hexo永久链接迁移到Astro
-date: 2026-1-28 15:06:10
-updated: 2026-1-28 15:30:10
+date: 2026-01-28 15:06:10
+updated: 2026-01-28 15:30:10
 abbrlink: "move-hexo-permalink-to-astro"
 tags:
     - Astro

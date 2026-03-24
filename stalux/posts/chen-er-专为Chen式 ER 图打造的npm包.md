@@ -1,8 +1,8 @@
 ---
 title: chen-er 专为Chen式ER图打造的npm包
 abbrlink: b8eb3b61
-date: "2025-12-03T15:34:31.751+08:00"
-updated: "2025-12-03T16:44:40.670+08:00"
+date: 2025-12-03 15:34:31
+updated: 2025-12-03 16:44:40
 categories:
     - npm
 tags:

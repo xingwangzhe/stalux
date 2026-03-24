@@ -1,7 +1,7 @@
 ---
 title: 出租人类：AI时代的荒诞与真实
 abbrlink: ai-rentahuman
-date: "2026-02-04 16:18:32"
+date: 2026-02-04 16:18:32
 categories:
     - 胡思乱想
 tags:

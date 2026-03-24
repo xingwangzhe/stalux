@@ -1,6 +1,6 @@
 ---
 title: Vite8 - 统一的基建开始
-date: 2026-3-14 13:24:32
+date: 2026-03-14 13:24:32
 tags: ["vite", "voidzero", "serverless"]
 categories: vite
 abbrlink: vite-voidzero-features

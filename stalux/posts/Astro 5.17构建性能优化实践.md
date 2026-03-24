@@ -1,7 +1,7 @@
 ---
 title: Astro 5.17构建性能优化实践：从18s到13s
 abbrlink: astro-517-performance-optimization
-date: 2026-02-2 19:52:00
+date: 2026-02-02 19:52:00
 tags: [Astro, 性能优化, 前端, ssg]
 categories: 技术
 ---

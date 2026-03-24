@@ -1,8 +1,8 @@
 ---
 title: 抓取个人博客文章目录到github主页
 abbrlink: 10908
-date: 2024-11-11 19:51:52+00:00
-updated: "2025-07-04T18:44:32.353+08:00"
+date: 2024-11-11 19:51:52
+updated: 2025-07-04 18:44:32
 categories:
     - github
 tags:

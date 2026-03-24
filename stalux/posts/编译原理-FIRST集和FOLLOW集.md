@@ -1,8 +1,8 @@
 ---
 title: 编译原理:FIRST集和FOLLOW集
 abbrlink: 8237
-date: 2025-03-27 09:01:02+00:00
-updated: "2025-07-04T18:44:32.356+08:00"
+date: 2025-03-27 09:01:02
+updated: 2025-07-04 18:44:32
 categories:
     - 学校学习
 tags:

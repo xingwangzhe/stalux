@@ -1,8 +1,8 @@
 ---
 title: 解决Tauri2.x拖拽事件问题
 abbrlink: aed59aad
-date: "2025-09-03T07:58:52.390+08:00"
-updated: "2025-09-03T12:31:56.213+08:00"
+date: 2025-09-03 07:58:52
+updated: 2025-09-03 12:31:56
 categories:
     - 开发
 tags:

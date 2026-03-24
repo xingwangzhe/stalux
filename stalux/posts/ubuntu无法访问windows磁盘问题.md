@@ -1,8 +1,8 @@
 ---
 title: ubuntu无法访问windows磁盘问题
 abbrlink: 05db3c92
-date: "2025-07-04T18:44:32.350+08:00"
-updated: "2025-07-04T18:44:32.350+08:00"
+date: 2025-07-04 18:44:32
+updated: 2025-07-04 18:44:32
 categories:
     - 疑难杂症
 tags:

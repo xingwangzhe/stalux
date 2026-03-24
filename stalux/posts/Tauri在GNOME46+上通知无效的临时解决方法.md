@@ -1,8 +1,8 @@
 ---
 title: Tauri在GNOME46+上通知无效的临时解决方法
 abbrlink: 8d9bb0f3
-date: "2025-08-29T15:14:05.989+08:00"
-updated: "2025-08-29T15:28:35.880+08:00"
+date: 2025-08-29 15:14:05
+updated: 2025-08-29 15:28:35
 categories:
     - Tauri
 tags:

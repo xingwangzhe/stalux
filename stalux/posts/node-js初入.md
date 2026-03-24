@@ -1,8 +1,8 @@
 ---
 title: node.js初入
 abbrlink: 36480
-date: 2024-12-10 20:10:22+00:00
-updated: "2025-07-04T18:44:32.349+08:00"
+date: 2024-12-10 20:10:22
+updated: 2025-07-04 18:44:32
 categories:
     - 后端
 tags:

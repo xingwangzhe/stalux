@@ -1,8 +1,8 @@
 ---
 title: Thetis物理密钥，为什么我们应该使用物理密钥
 abbrlink: eaafd5fa
-date: "2025-07-04T18:44:32.349+08:00"
-updated: "2025-07-04T18:44:32.349+08:00"
+date: 2025-07-04 18:44:32
+updated: 2025-07-04 18:44:32
 categories:
     - 胡思乱想
 tags:

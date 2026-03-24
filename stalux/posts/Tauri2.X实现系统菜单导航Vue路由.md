@@ -1,8 +1,8 @@
 ---
 title: Tauri2.x实现系统菜单导航Vue路由
 abbrlink: 1c1f2d49
-date: "2025-09-21T16:37:14.735+08:00"
-updated: "2025-09-21T16:52:39.386+08:00"
+date: 2025-09-21 16:37:14
+updated: 2025-09-21 16:52:39
 categories:
     - Tauri
 tags:

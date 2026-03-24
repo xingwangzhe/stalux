@@ -1,8 +1,8 @@
 ---
 title: Ubuntu 24.04 安装 Vivado 2018.3
 abbrlink: 1a282b79
-date: "2025-07-08T14:35:39.532+08:00"
-updated: "2025-07-08T15:18:52.641+08:00"
+date: 2025-07-08 14:35:39
+updated: 2025-07-08 15:18:52
 categories:
     - ubuntu
 tags:

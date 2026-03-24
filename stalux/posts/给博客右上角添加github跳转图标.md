@@ -1,8 +1,8 @@
 ---
 title: 给博客右上角添加github跳转图标
 abbrlink: c42bc0f8
-date: 2024-09-11 17:28:10+00:00
-updated: "2024-09-11 17:28:13"
+date: 2024-09-11 17:28:10
+updated: 2024-09-11 17:28:13
 categories:
     - hexo
 tags:

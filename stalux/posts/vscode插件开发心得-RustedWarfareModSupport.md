@@ -1,8 +1,8 @@
 ---
 title: vscode插件开发心得:RustedWarfareModSupport
 abbrlink: 65110
-date: 2025-03-09 18:57:06+00:00
-updated: "2025-07-04T18:44:32.350+08:00"
+date: 2025-03-09 18:57:06
+updated: 2025-07-04 18:44:32
 categories:
     - 开发
 tags:

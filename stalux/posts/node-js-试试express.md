@@ -1,8 +1,8 @@
 ---
 title: node.js:试试express
 abbrlink: 8479
-date: 2024-12-18 18:05:43+00:00
-updated: "2025-07-04T18:44:32.349+08:00"
+date: 2024-12-18 18:05:43
+updated: 2025-07-04 18:44:32
 categories:
     - node.js
 tags:

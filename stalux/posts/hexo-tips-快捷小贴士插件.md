@@ -1,8 +1,8 @@
 ---
 title: hexo-tips:快捷小贴士插件
 abbrlink: 8367
-date: 2025-01-03 22:59:59+00:00
-updated: "2025-07-04T18:44:32.349+08:00"
+date: 2025-01-03 22:59:59
+updated: 2025-07-04 18:44:32
 categories:
     - 开发
 tags:

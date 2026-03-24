@@ -1,8 +1,8 @@
 ---
 title: 中秋-来试试Moonbit吧
 abbrlink: 32faf407
-date: "2025-10-06T16:11:55.899+08:00"
-updated: "2025-10-06T16:34:58.470+08:00"
+date: 2025-10-06 16:11:55
+updated: 2025-10-06 16:34:58
 categories:
     - 编程
 tags:

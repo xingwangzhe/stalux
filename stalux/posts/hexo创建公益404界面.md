@@ -1,8 +1,8 @@
 ---
 title: hexo创建公益404界面
 abbrlink: 6ec2376e
-date: 2024-09-20 21:06:33+00:00
-updated: "2024-10-15 21:06:45"
+date: 2024-09-20 21:06:33
+updated: 2024-10-15 21:06:45
 categories:
     - hexo
 tags:

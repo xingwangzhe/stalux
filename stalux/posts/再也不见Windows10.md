@@ -1,8 +1,8 @@
 ---
 title: 再也不见Windows10
 abbrlink: ac8ebba9
-date: "2025-10-14T08:25:26.839+08:00"
-updated: "2025-10-14T09:10:46.581+08:00"
+date: 2025-10-14 08:25:26
+updated: 2025-10-14 09:10:46
 categories:
     - windows
 tags:

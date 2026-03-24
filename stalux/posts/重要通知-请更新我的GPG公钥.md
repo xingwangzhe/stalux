@@ -2,7 +2,7 @@
 title: "重要通知-请更新我的GPG公钥"
 tags: ["GPG", "加密", "邮件"]
 categories: GPG
-date: 2026-3-23 19:19:20
+date: 2026-03-23 19:19:20
 abbrlink: 2026-3-gpg-update
 ---
 

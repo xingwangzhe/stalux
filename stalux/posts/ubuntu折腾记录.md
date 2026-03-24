@@ -1,8 +1,8 @@
 ---
 title: ubuntu折腾记录
 abbrlink: 6900d932
-date: "2025-07-04T18:44:32.349+08:00"
-updated: "2025-07-04T18:44:32.349+08:00"
+date: 2025-07-04 18:44:32
+updated: 2025-07-04 18:44:32
 categories:
     - ubuntu
 tags:

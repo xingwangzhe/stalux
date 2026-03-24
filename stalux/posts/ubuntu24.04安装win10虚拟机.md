@@ -1,6 +1,6 @@
 ---
 title: "Ubuntu 24.04 安装 Win10 虚拟机"
-date: 2026-3-6 17:40:01
+date: 2026-03-06 17:40:01
 tags: ["Ubuntu", "Win10", "QEMU", "KVM"]
 categories: ["虚拟机"]
 abbrlink: "ubuntu-24.04-install-win10-vm"

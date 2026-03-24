@@ -1,8 +1,8 @@
 ---
 title: VSCode Remote 远程连接服务器记录
 abbrlink: f67204e7
-date: "2025-09-03T20:20:00.239+08:00"
-updated: "2025-09-03T20:20:00.239+08:00"
+date: 2025-09-03 20:20:00
+updated: 2025-09-03 20:20:00
 categories:
     - 记录
 tags:

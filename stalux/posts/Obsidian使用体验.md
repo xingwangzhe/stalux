@@ -1,8 +1,8 @@
 ---
 title: Obsidian使用体验
 abbrlink: d5f89da4
-date: "2025-10-02T16:58:57.432+08:00"
-updated: "2025-10-02T18:49:26.486+08:00"
+date: 2025-10-02 16:58:57
+updated: 2025-10-02 18:49:26
 categories:
     - 记录
 tags:

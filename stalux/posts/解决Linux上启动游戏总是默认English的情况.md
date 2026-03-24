@@ -1,8 +1,8 @@
 ---
 title: 解决Linux上启动游戏总是默认English的情况
 abbrlink: 81fc36f0
-date: "2025-09-27T20:32:44.584+08:00"
-updated: "2025-09-27T20:59:18.645+08:00"
+date: 2025-09-27 20:32:44
+updated: 2025-09-27 20:59:18
 categories:
     - Steam
 tags:

@@ -2,7 +2,7 @@
 title: 不要再用微软auth验证器了!
 abbrlink: 52579
 date: 2025-04-13 14:03:41
-updated: "2025-07-04T18:44:32.350+08:00"
+updated: 2025-07-04 18:44:32
 categories:
     - 胡思乱想
 tags:
