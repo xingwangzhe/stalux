@@ -7,5 +7,5 @@ import dayjs from "@utils/dayjs";
  * @returns 带时区的 ISO 8601 格式字符串
  */
 export function toMachineDateTime(dateStr: string, timezone: string): string {
-  return dayjs(dateStr).tz(timezone).format();
+    return dayjs(dateStr).tz(timezone).format();
 }

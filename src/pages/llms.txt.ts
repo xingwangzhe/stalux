@@ -1,6 +1,6 @@
+import dayjs from "@utils/dayjs";
 import type { APIRoute } from "astro";
 import { getCollection, render } from "astro:content";
-import dayjs from "@utils/dayjs";
 
 export const prerender = true;
 

@@ -1,8 +1,8 @@
 import rss from "@astrojs/rss";
-import type { APIRoute } from "astro";
-import { getCollection, render } from "astro:content";
 import dayjs from "@utils/dayjs";
 import { toMachineDateTime } from "@utils/semantic-time";
+import type { APIRoute } from "astro";
+import { getCollection, render } from "astro:content";
 
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");
