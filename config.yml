@@ -165,6 +165,10 @@ stalux:
               description: "真心走过每个瞬间。"
               link: "https://blog.vind.ink"
               icon: "https://blog.vind.ink/images/icon.png"
+            - name: "Frederick's Blog"
+              description: "Sky is the limit."
+              link: "https://www.ooowl.net"
+              icon: "http://www.ooowl.net/avatar.jpeg"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
