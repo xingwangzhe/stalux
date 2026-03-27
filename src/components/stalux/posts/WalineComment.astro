@@ -193,6 +193,11 @@ const walineConfig = {
 </script>
 
 <style is:global>
+    :root {
+        --waline-accent: var(--stalux-accent-color);
+        --waline-accent-rgb: 100, 255, 218;
+    }
+
     /* 评论区容器与博客风格一致 */
     .waline-comment-container {
         margin-top: 3rem;
@@ -211,8 +216,8 @@ const walineConfig = {
         text-align: center;
         background: linear-gradient(
             90deg,
-            rgba(255, 255, 255, 0.9),
-            rgba(1, 162, 190, 0.9)
+            var(--white-90p),
+            rgba(var(--waline-accent-rgb), 0.9)
         );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -232,7 +237,7 @@ const walineConfig = {
     .wl-editor,
     .wl-input {
         background-color: rgba(17, 17, 17, 0.5) !important;
-        color: rgba(255, 255, 255, 0.9) !important;
+        color: var(--white-90p) !important;
         border: 1px solid rgba(100, 100, 100, 0.3) !important;
         border-radius: 8px;
         transition: all 0.3s ease;
@@ -241,15 +246,15 @@ const walineConfig = {
     /* 输入框焦点状态 */
     .wl-editor:focus,
     .wl-input:focus {
-        border-color: rgba(1, 162, 190, 0.5) !important;
-        box-shadow: 0 0 5px rgba(1, 162, 190, 0.3) !important;
+        border-color: rgba(var(--waline-accent-rgb), 0.5) !important;
+        box-shadow: 0 0 5px rgba(var(--waline-accent-rgb), 0.3) !important;
         outline: none;
     }
 
     /* 按钮样式统一 */
     .wl-btn {
-        background: rgba(1, 162, 190, 0.8) !important;
-        color: #fff !important;
+        background: rgba(var(--waline-accent-rgb), 0.6) !important;
+        color: var(--white-full) !important;
         border: none !important;
         border-radius: 6px;
         transition: all 0.2s ease;
@@ -259,30 +264,24 @@ const walineConfig = {
     }
 
     .wl-btn:hover {
-        background: rgba(1, 162, 190, 1) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 3px 8px rgba(1, 162, 190, 0.3) !important;
+        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        transform: none;
+        box-shadow: none !important;
     }
 
     .wl-btn.primary {
-        background: linear-gradient(
-            135deg,
-            rgba(1, 162, 190, 0.8),
-            rgba(1, 130, 170, 0.8)
-        ) !important;
+        background: rgba(var(--waline-accent-rgb), 0.6) !important;
     }
 
     .wl-btn.primary:hover {
-        background: linear-gradient(
-            135deg,
-            rgba(1, 162, 190, 1),
-            rgba(1, 130, 170, 1)
-        ) !important;
+        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        transform: none;
+        box-shadow: none !important;
     }
 
     /* 标签文字颜色 */
     .wl-header label {
-        color: rgba(255, 255, 255, 0.85);
+        color: var(--white-85p);
         font-weight: 500;
     }
 
@@ -299,23 +298,23 @@ const walineConfig = {
     .wl-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        border-color: rgba(1, 162, 190, 0.3) !important;
+        border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
     }
 
     /* 修改用户名样式 */
     .wl-nick {
-        color: rgba(1, 162, 190, 0.95) !important;
+        color: rgba(var(--waline-accent-rgb), 0.95) !important;
         font-weight: 600;
         transition: all 0.2s ease;
     }
 
     .wl-nick:hover {
-        color: rgba(1, 162, 190, 1) !important;
+        color: rgba(var(--waline-accent-rgb), 1) !important;
     }
 
     /* 评论内容样式 */
     .wl-content {
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--white-90p);
         line-height: 1.7;
         margin: 0.8rem 0;
         word-break: break-word;
@@ -349,7 +348,7 @@ const walineConfig = {
     }
 
     .wl-emoji-popup button:hover {
-        background-color: rgba(1, 162, 190, 0.2);
+        background-color: rgba(var(--waline-accent-rgb), 0.2);
         transform: scale(1.05);
     }
 
@@ -366,7 +365,7 @@ const walineConfig = {
     .wl-reaction-title {
         font-size: 1.1rem;
         margin-bottom: 1rem;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--white-90p);
     }
 
     .wl-reaction-list {
@@ -388,7 +387,7 @@ const walineConfig = {
         transform: translateY(-3px);
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
         background-color: rgba(40, 40, 40, 0.8) !important;
-        border-color: rgba(1, 162, 190, 0.3) !important;
+        border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
     }
 
     .wl-reaction-img {
@@ -406,8 +405,8 @@ const walineConfig = {
     .wl-reaction-votes {
         font-size: 0.8rem;
         padding: 5px 0;
-        background-color: rgba(1, 162, 190, 0.7);
-        color: #fff;
+        background-color: rgba(var(--waline-accent-rgb), 0.7);
+        color: var(--white-full);
     }
 
     /* 评论计数和排序 */
@@ -423,7 +422,7 @@ const walineConfig = {
     .wl-count {
         font-size: 1.1rem;
         font-weight: 500;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--white-90p);
     }
 
     .wl-sort {
@@ -434,15 +433,15 @@ const walineConfig = {
     .wl-sort li {
         cursor: pointer;
         transition: all 0.2s ease;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--white-70p);
     }
 
     .wl-sort li:hover {
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--white-90p);
     }
 
     .wl-sort li.active {
-        color: rgba(1, 162, 190, 1);
+        color: rgba(var(--waline-accent-rgb), 1);
         font-weight: 500;
     }
 
@@ -454,7 +453,7 @@ const walineConfig = {
 
     .wl-page button {
         background: rgba(30, 30, 30, 0.5) !important;
-        color: rgba(255, 255, 255, 0.8) !important;
+        color: var(--white-80p) !important;
         border: 1px solid rgba(70, 70, 70, 0.3) !important;
         border-radius: 6px;
         margin: 0 5px;
@@ -463,14 +462,14 @@ const walineConfig = {
     }
 
     .wl-page button:hover:not(:disabled) {
-        background: rgba(1, 162, 190, 0.7) !important;
-        color: #fff !important;
+        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        color: var(--white-full) !important;
         transform: translateY(-2px);
     }
 
     .wl-page button.active {
-        background: rgba(1, 162, 190, 0.8) !important;
-        color: #fff !important;
+        background: rgba(var(--waline-accent-rgb), 0.8) !important;
+        color: var(--white-full) !important;
     }
 
     /* Waline底部版权信息 */
@@ -482,13 +481,13 @@ const walineConfig = {
     }
 
     .wl-power a {
-        color: rgba(1, 162, 190, 0.9);
+        color: rgba(var(--waline-accent-rgb), 0.9);
         text-decoration: none;
         transition: all 0.2s ease;
     }
 
     .wl-power a:hover {
-        color: rgba(1, 162, 190, 1);
+        color: rgba(var(--waline-accent-rgb), 1);
         text-decoration: underline;
     }
 
@@ -496,14 +495,14 @@ const walineConfig = {
     .wl-empty {
         text-align: center;
         padding: 2rem 0;
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--white-60p);
         font-size: 1.1rem;
     }
 
     /* 支持文字数量统计 */
     .wl-text-number {
         font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--white-60p);
     }
 
     /* 添加动画效果 */
@@ -516,6 +515,21 @@ const walineConfig = {
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    /* 降低选中文本高亮程度，移除外边框 */
+    .waline-comment-container *::selection {
+        background: rgba(var(--waline-accent-rgb), 0.25);
+        color: inherit;
+        border: none;
+        outline: none;
+    }
+
+    .waline-comment-container *::-moz-selection {
+        background: rgba(var(--waline-accent-rgb), 0.25);
+        color: inherit;
+        border: none;
+        outline: none;
     }
 
     /* 响应式调整 */
@@ -555,7 +569,7 @@ const walineConfig = {
 
         .wl-children .wl-card {
             margin-left: 0;
-            border-left: 3px solid rgba(1, 162, 190, 0.4);
+            border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
             padding-left: 0.8rem;
         }
     }
@@ -595,13 +609,13 @@ const walineConfig = {
 
         .wl-children .wl-card {
             margin-left: 0;
-            border-left: 3px solid rgba(1, 162, 190, 0.4);
+            border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
             padding-left: 0.6rem;
             width: 100%;
         }
 
         .wl-children .wl-children .wl-card {
-            border-left: 3px solid rgba(1, 162, 190, 0.3);
+            border-left: 3px solid rgba(var(--waline-accent-rgb), 0.3);
             padding-left: 0.6rem;
         }
 

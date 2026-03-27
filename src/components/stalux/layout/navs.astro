@@ -56,14 +56,15 @@ const stalux = (await getCollection("config"))[0].data;
             ))
         }
         <li class={styles.navItem}>
-            <button
+            <a
+                href="javascript:void(0)"
                 class={styles.navLink}
                 data-ref="stalux-search-btn"
                 aria-label="打开搜索"
             >
                 <Fragment set:html={getIconSvg("search")} />
                 <span class={styles.navText}>搜索</span>
-            </button>
+            </a>
         </li>
     </ul>
 </nav>

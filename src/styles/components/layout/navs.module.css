@@ -17,6 +17,16 @@
     padding: 0;
 }
 
+.navLink :global(.nav-icon) {
+    stroke: var(--white-full);
+}
+
+.navLink:hover :global(.nav-icon),
+.navLink:hover .navText {
+    stroke: var(--stalux-accent-color);
+    color: var(--stalux-accent-color);
+}
+
 .navItem {
     font-size: 1.3em;
     margin-right: 1em;
