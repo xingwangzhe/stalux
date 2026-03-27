@@ -44,7 +44,7 @@
 }
 
 .ccBox a:hover {
-    color: var(--accent-full);
+    color: var(--stalux-accent-color);
     border-bottom-color: var(--accent-80p);
 }
 

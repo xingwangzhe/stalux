@@ -1,6 +1,5 @@
 import getReadingTime from "reading-time";
 import { visit } from "unist-util-visit";
-import { toString } from "mdast-util-to-string";
 
 // 自定义统计纯文本，排除 URL，只保留可见内容
 function getCleanText(tree: any): string {
