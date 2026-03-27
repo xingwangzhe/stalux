@@ -3,7 +3,6 @@
     "version": "1.1.0",
     "type": "module",
     "scripts": {
-        "detect": "echo '---OS---' && cat /etc/os-release 2>/dev/null || echo 'No os-release' && echo '---ARCH---' && uname -m && uname -a && echo '---LIBC---' && ldd --version 2>/dev/null || echo 'No ldd' && echo '---NODE---' && node -p 'process.arch' && node -p 'process.platform' && node -p 'process.versions'",
         "dev": "astro dev ",
         "build": "astro build ",
         "preview": "astro preview ",
@@ -12,16 +11,16 @@
         "fmt:check": "oxfmt --check",
         "lint": "oxlint",
         "lint:fix": "oxlint --fix",
-        "license-checker": "bun license-checker.ts"
+        "licenses-checker": "bun licenses-checker.ts"
     },
     "dependencies": {
         "@astrojs/compiler-rs": "^0.1.6",
-        "@astrojs/rss": "4.0.17",
-        "@astrojs/sitemap": "3.7.1",
+        "@astrojs/rss": "^4.0.18",
+        "@astrojs/sitemap": "^3.7.2",
         "@expressive-code/plugin-line-numbers": "^0.41.7",
         "@waline/client": "^3.13.0",
         "animejs": "^4.3.6",
-        "astro": "^6.0.8",
+        "astro": "^6.1.1",
         "astro-expressive-code": "^0.41.7",
         "astro-pagefind": "^1.8.6",
         "astro-seo": "^1.1.0",
@@ -29,7 +28,7 @@
         "badge-maker": "^5.0.2",
         "dayjs": "^1.11.20",
         "feather-icons": "^4.29.2",
-        "katex": "^0.16.42",
+        "katex": "^0.16.43",
         "lightningcss": "^1.32.0",
         "mermaid": "^11.13.0",
         "photoswipe": "^5.4.4",
