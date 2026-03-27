@@ -54,7 +54,7 @@ a::after {
     bottom: -2px;
     height: 1px;
     width: 100%;
-    background: linear-gradient(90deg, var(--stalux-accent-color), rgba(1, 162, 190, 0.5));
+    background: linear-gradient(90deg, var(--stalux-accent-color), rgba(100, 255, 218, 0.5));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s cubic-bezier(0.25, 0.9, 0.2, 1);
@@ -102,8 +102,8 @@ ul {
 :root {
     --stalux-bg-color: #202020;
     --stalux-bg-filter: none;
-    --stalux-text-shadow: rgb(1, 162, 190) 0.1rem 0.1rem 0.2rem;
-    --stalux-accent-color: rgb(1, 162, 190);
+    --stalux-text-shadow: #64ffda 0.1rem 0.1rem 0.2rem;
+    --stalux-accent-color: #64ffda;
     --stalux-search-backdrop: rgba(0, 0, 0, 0.1);
     --stalux-search-box-bg: rgba(0, 0, 0, 0.1);
     --stalux-search-border: rgba(0, 0, 0, 0.2);
@@ -151,16 +151,16 @@ ul {
     --black-03p: rgba(0, 0, 0, 0.03);
 
     /* 强调色变体 */
-    --accent-90p: rgba(1, 162, 190, 0.9);
-    --accent-85p: rgba(1, 162, 190, 0.85);
-    --accent-80p: rgba(1, 162, 190, 0.8);
-    --accent-70p: rgba(1, 162, 190, 0.7);
-    --accent-60p: rgba(1, 162, 190, 0.6);
-    --accent-50p: rgba(1, 162, 190, 0.5);
-    --accent-40p: rgba(1, 162, 190, 0.4);
-    --accent-30p: rgba(1, 162, 190, 0.3);
-    --accent-20p: rgba(1, 162, 190, 0.2);
-    --accent-10p: rgba(1, 162, 190, 0.1);
+    --accent-90p: rgba(100, 255, 218, 0.9);
+    --accent-85p: rgba(100, 255, 218, 0.85);
+    --accent-80p: rgba(100, 255, 218, 0.8);
+    --accent-70p: rgba(100, 255, 218, 0.7);
+    --accent-60p: rgba(100, 255, 218, 0.6);
+    --accent-50p: rgba(100, 255, 218, 0.5);
+    --accent-40p: rgba(100, 255, 218, 0.4);
+    --accent-30p: rgba(100, 255, 218, 0.3);
+    --accent-20p: rgba(100, 255, 218, 0.2);
+    --accent-10p: rgba(100, 255, 218, 0.1);
 
     /* 常用过渡和动画 */
     --transition-fast: 0.18s ease;
