@@ -28,7 +28,7 @@
         "badge-maker": "^5.0.2",
         "dayjs": "^1.11.20",
         "feather-icons": "^4.29.2",
-        "katex": "^0.16.43",
+        "katex": "^0.16.44",
         "lightningcss": "^1.32.0",
         "mermaid": "^11.13.0",
         "photoswipe": "^5.4.4",
