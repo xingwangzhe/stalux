@@ -1,6 +1,6 @@
 ---
 title: Ubuntu26.04-beta体验:坚毅浣熊!
-abbrlink: a8f2c7d9
+abbrlink: ubuntu-26-04-beta
 date: "2026-03-28 14:17:00"
 updated: "2026-03-28 14:50:00"
 categories:
