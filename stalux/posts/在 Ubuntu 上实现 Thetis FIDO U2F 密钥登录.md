@@ -1,8 +1,8 @@
 ---
-title: 在 Ubuntu 上实现 Thetis FIDO U2F 密码登录
+title: 在 Ubuntu 上实现 Thetis FIDO U2F 密钥登录
 abbrlink: f69680bd
 date: "2025-07-04 18:44:32"
-updated: "2026-03-29 15:00:00"
+updated: "2026-03-29 16:05:00"
 categories:
     - 安全
 tags:
@@ -89,16 +89,28 @@ auth    sufficient    pam_u2f.so   cue authfile=/etc/u2f_keys
 
 ## 配置登录使用密钥
 
-编辑 `/etc/pam.d/gdm-password` 文件，在文件开头添加以下内容，并调整 `pam_gnome_keyring.so` 的位置：
+编辑 `/etc/pam.d/gdm-password` 文件，在文件开头添加以下内容：
 
 ```bash
-auth    sufficient    pam_u2f.so   cue authfile=/etc/u2f_keys
 auth    optional        pam_gnome_keyring.so
+auth    sufficient    pam_u2f.so   cue authfile=/etc/u2f_keys
 ```
 
-> **重要**：由于 `pam_u2f.so` 使用 `sufficient` 标记，认证成功后PAM会立即返回，因此必须将 `pam_gnome_keyring.so` 紧随 `pam_u2f.so` 放置。如果 `pam_gnome_keyring.so` 原本在 `@include common-auth` 之后，需要将它移动到这里，否则FIDO登录成功后GNOME密钥环无法自动解锁，登录后会反复弹出"解锁登录密钥环"对话框。
+> **重要更新 (2026-03-29)**：网上很多教程说要把 `pam_gnome_keyring.so` 放在 `pam_u2f.so` 后面，但实际情况是：
+>
+> 由于 `pam_u2f.so` 使用 `sufficient` 标记，如果FIDO认证成功，PAM会立即返回成功，**不会执行后面的任何模块**。所以如果 `pam_gnome_keyring.so` 放在 `pam_u2f.so` 后面，它永远不会被执行。
+>
+> 但即使把 `pam_gnome_keyring.so` 放在前面，**纯FIDO无密码登录依然无法自动解锁密钥环**——因为全程你没有输入过密码，PAM拿不到密码，自然无法解锁。
+>
+> **结论**：纯FIDO无密码登录Ubuntu/GNOME，目前**确实存在**"登录桌面后仍需手动输入密码解锁密钥环"的问题，这是已知问题，无法通过调整PAM顺序解决。如果你不能接受，可以：
+> - 方案一：将Login密钥环密码设为空（单用户足够安全，一劳永逸）
+> - 方案二：接受每次登录手动输入一次密码
+>
+> 详见：<https://stalux.fun/posts/thetis物理密钥,为什么我们应该使用物理密钥/>
 
 与配置 sudo 类似，这里的参数含义相同。配置完成后，登录系统时如果密钥已插入，会先提示使用密钥进行认证，认证成功即可登录；若未插入密钥或认证失败，则继续通过密码登录。
+
+**注意**：如果你配置的是"FIDO + 密码"双因子登录（必须FIDO+密码都验证才能登录），那么密码输入后PAM可以拿到密码自动解锁密钥环，不会有这个问题。问题只出在**纯FIDO无密码登录**场景。
 
 ## 测试验证
 
