@@ -2,7 +2,7 @@
 title: 在 Ubuntu 上实现 Thetis FIDO U2F 密码登录
 abbrlink: f69680bd
 date: "2025-07-04 18:44:32"
-updated: "2025-07-04 18:44:32"
+updated: "2026-03-29 15:00:00"
 categories:
     - 安全
 tags:
@@ -89,11 +89,14 @@ auth    sufficient    pam_u2f.so   cue authfile=/etc/u2f_keys
 
 ## 配置登录使用密钥
 
-编辑 `/etc/pam.d/gdm-password` 文件，在包含 `@include common-auth` 这一行之前添加以下内容：
+编辑 `/etc/pam.d/gdm-password` 文件，在文件开头添加以下内容，并调整 `pam_gnome_keyring.so` 的位置：
 
 ```bash
 auth    sufficient    pam_u2f.so   cue authfile=/etc/u2f_keys
+auth    optional        pam_gnome_keyring.so
 ```
+
+> **重要**：由于 `pam_u2f.so` 使用 `sufficient` 标记，认证成功后PAM会立即返回，因此必须将 `pam_gnome_keyring.so` 紧随 `pam_u2f.so` 放置。如果 `pam_gnome_keyring.so` 原本在 `@include common-auth` 之后，需要将它移动到这里，否则FIDO登录成功后GNOME密钥环无法自动解锁，登录后会反复弹出"解锁登录密钥环"对话框。
 
 与配置 sudo 类似，这里的参数含义相同。配置完成后，登录系统时如果密钥已插入，会先提示使用密钥进行认证，认证成功即可登录；若未插入密钥或认证失败，则继续通过密码登录。
 
