@@ -23,7 +23,7 @@ tags:
 Load /opt/apps/com.alibabainc.dingtalk/files/8.1.0-Release.6021101//dingtalk_dll.so failed! Err=/opt/apps/com.alibabainc.dingtalk/files/8.1.0-Release.6021101//dingtalk_dll.so: cannot enable executable stack as shared object requires: Invalid argument
 ```
 
-错误很明显：** dingtalk_dll.so 无法启用可执行栈**。
+错误很明显：**dingtalk_dll.so 无法启用可执行栈**。
 
 ## 问题分析
 
