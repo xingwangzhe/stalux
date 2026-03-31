@@ -4,16 +4,16 @@ abbrlink: dingtalk-linux-fix-execstack
 date: "2026-03-31 09:00:00"
 updated: "2026-03-31 09:21:00"
 categories:
-    - Linux
+    - linux
 tags:
     - 钉钉
-    - Dingtalk
+    - dingtalk
     - 内核
     - 安全
     - 可执行栈
 ---
 
-> 本文问题排查与资料整理感谢 Claude AI 协助。
+> 本文问题排查与资料整理感谢 AI 协助。
 
 ## 问题描述
 
