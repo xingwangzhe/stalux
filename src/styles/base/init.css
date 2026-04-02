@@ -244,13 +244,31 @@ ul {
     background: #2a2a2a;
 }
 
-/* 背景通过 CSS 变量和伪元素处理，因此与 JS 解耦 */
-.stalux-root::before {
-    content: "";
+/* 背景层 - 与 Astro View Transitions 同步的双层 crossfade 系统 */
+.bg-layer {
     position: fixed;
     inset: 0;
     z-index: -10;
-    background-image: var(--stalux-bg-image, none);
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: center;
+    background-color: var(--stalux-bg-color, transparent);
+    filter: var(--stalux-bg-filter, none);
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* 被 View Transition 捕获的活跃层 */
+.bg-layer.vt-active {
+    view-transition-name: stalux-bg;
+}
+
+/* 确保 View Transition 的伪元素也正确铺满全屏 */
+::view-transition-old(stalux-bg),
+::view-transition-new(stalux-bg) {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
     background-repeat: repeat;
     background-size: auto;
     background-position: center;

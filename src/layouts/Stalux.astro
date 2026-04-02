@@ -8,15 +8,44 @@ export interface Props {
   title: string;
   description: string;
 }
+
+const bgModules = import.meta.glob<{ default: { src: string } }>(
+    "../assets/background/pattern-*.min.svg",
+    { eager: true },
+);
+const bgUrls = Object.values(bgModules)
+    .map((m) => m.default.src)
+    .sort((a, b) => {
+        const na = parseInt(a.match(/pattern-(\d+)/)?.[1] || "0", 10);
+        const nb = parseInt(b.match(/pattern-(\d+)/)?.[1] || "0", 10);
+        return na - nb;
+    });
+const randomIndex = Math.floor(Math.random() * bgUrls.length);
+const initialBg = bgUrls[randomIndex];
 ---
 
 <!doctype html>
 <html lang="zh-CN">
   <Head title={props.title} description={props.description} />
+  <script define:vars={{ bgUrls, randomIndex }}>
+    window.__STALUX_BG_URLS__ = bgUrls;
+    window.__STALUX_BG_INDEX__ = randomIndex;
+  </script>
   <script>
     import "../scripts/background.ts";
   </script>
-  <body class="stalux-root dark">
+  <body
+    class="stalux-root dark"
+    data-stalux-bg-layer="a"
+    data-stalux-bg-index={randomIndex}
+  >
+    <div
+      class="bg-layer bg-a"
+      style={`background-image: url('${initialBg}'); opacity: 1;`}
+      aria-hidden="true"
+    >
+    </div>
+    <div class="bg-layer bg-b" aria-hidden="true"></div>
     <main class="stalux-main">
       <slot />
     </main>
