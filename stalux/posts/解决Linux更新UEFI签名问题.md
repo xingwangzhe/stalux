@@ -1,7 +1,8 @@
 ---
-title: 解决Linux更新UEFI签名问题
+title: Linux用户Secure Boot自主维护指南
 abbrlink: linux-uefi-ca-update
 date: "2026-04-07 17:30:00"
+updated: "2026-04-07 19:30:00"
 categories: 技术
 tags:
     - linux
@@ -14,9 +15,9 @@ cc: CC-BY-SA-4.0
 
 ## 前言
 
-最近看到一个技术新闻：微软的 **UEFI CA 2011** 证书将于 **2026年6月27日** 过期。这对于 Windows 用户来说可能没啥感知，毕竟微软会通过 **Windows Update** 自动推送新的证书到固件中。但作为一名把原厂 Windows 笔记本完全刷成 **Ubuntu 单系统**的用户，我突然意识到一个问题——我失去了 OEM 厂商的固件推送通道，需要自己动手维护 UEFI 安全基础设施了。
+最近看到一个技术新闻：微软的 **UEFI CA 2011** 证书将于 **2026年6月27日** 过期。这件事很容易让人误以为只要往 `MOK` 里导入证书就能“更新 UEFI 签名”，但这并不准确。**MOK 不会改变固件里的 UEFI 信任数据库**，它只影响 `shim` 后面的那一段启动链。
 
-说实话，之前还真没关注过这个证书问题。经过一番研究，我发现这确实是纯 Linux 主机需要面对的一个现实问题。今天就来分享一下如何在没有 Windows 生态支持的情况下，手动更新 UEFI 证书。
+如果你的目标是更新 **固件 db/KEK**，那得走 OEM 固件更新、`fwupd` 或厂商推送；如果你的目标是让纯 Linux 机器在现有 Secure Boot 环境下继续**自主管理内核和模块签名**，那才轮到 `MOK` 出场。本文重点讲后者，也就是 Linux 用户在已有信任链基础上的自主维护。
 
 ## 背景：证书过期意味着什么
 
@@ -28,18 +29,18 @@ cc: CC-BY-SA-4.0
 
 更深层的问题是：当时的 PC 市场几乎被 Windows 垄断，各大 OEM 厂商的固件只内置了微软的证书。这意味着 Linux 发行版如果想在 Secure Boot 开启的状态下启动，就必须让自己的引导程序也得到微软的签名——这显然与自由软件的精神相悖。
 
-经过自由软件社区与微软的协商，一个折中方案诞生了：微软同意提供 **第三方 UEFI CA 服务**，但 Linux 发行版不直接提交整个 GRUB 和内核去签名，而是提交一个极小的中间程序——`shim`。这个设计的精妙之处在于：
+经过自由软件社区与微软的协商，一个折中方案诞生了：微软同意提供 **第三方 UEFI CA 服务**，Linux 发行版先用微软签名的 `shim` 进入启动链，再由 `shim` 去信任发行版自己的证书。这个设计的精妙之处在于：
 
 ```mermaid
 flowchart TD
-    A[Microsoft UEFI CA<br/>微软根证书] -->|固件内置信任锚点| B[shim.efi<br/>微软第三方CA签名]
-    B -->|验证通过后被加载| C[发行版公钥<br/>内置在shim中]
-    C -->|shim验证下一级| D[grubx64.efi<br/>发行版私钥签名]
-    D -->|引导加载器| E[vmlinuz 内核<br/>发行版私钥签名]
+    A[固件 db/KEK<br/>内置 Microsoft UEFI CA] -->|固件先验证| B[shim.efi<br/>微软第三方CA签名]
+    B -->|进入 Linux 启动链后| C[MOK 数据库<br/>shim 信任的证书]
+    C -->|shim 验证下一级| D[grubx64.efi<br/>发行版或自定义签名]
+    D -->|引导加载器| E[vmlinuz 内核<br/>发行版或自定义签名]
     E -->|实际操作系统| F[系统启动]
 ```
 
-**shim 的核心价值**在于：微软只签名 shim 这一个程序，而 shim 内置了发行版自己的公钥。这样发行版可以**自主更新 GRUB 和内核**，无需每次改动都找微软重新签名。这种"委托信任"的机制既满足了 Secure Boot 的安全要求，又保留了发行版的自主权。这个用于签名 shim 的证书就是 `Microsoft UEFI CA`。
+**shim 的核心价值**在于：微软只签名 `shim` 这一个程序，而 `shim` 再去信任发行版自己的公钥或用户导入的 `MOK` 证书。这样发行版可以**自主更新 GRUB 和内核**，无需每次改动都找微软重新签名。这种"委托信任"的机制既满足了 Secure Boot 的安全要求，又保留了发行版的自主权。
 
 目前，`Microsoft 3rd Party UEFI CA 2011` 证书将于 **2026年6月27日** 到期，而新的 `Windows UEFI CA 2023` 证书（有效期至 **2035年6月13日**）已经签发，多数现代 Linux 发行版（Ubuntu、Fedora、Debian 等）的 shim 也已更新使用新证书。
 
@@ -47,7 +48,7 @@ flowchart TD
 
 **现有系统将继续正常启动**。证书过期只影响**签署新二进制文件**的能力，不影响已安装系统的启动。在过期日期前签名的 `shim` 会保持永久有效。
 
-但是，未来如果你要全新安装使用新证书签名的 Linux 发行版、升级到新版本的 `shim`，或者在 Secure Boot 开启的情况下启动新签名的安装介质，这些操作都可能需要设备固件中包含 **2023 证书**。
+但是，未来如果你要全新安装使用新证书签名的 Linux 发行版、升级到新版本的 `shim`，或者在 Secure Boot 开启的情况下启动新签名的安装介质，这些操作都需要**设备固件的 db/KEK 里真的有 2023 证书**。`MOK` 本身不会把证书写进固件，也不会改变固件对 `shim` 的第一层信任。
 
 ## 问题：Linux 用户的固件断层
 
@@ -65,38 +66,70 @@ flowchart TD
 
 如果设备固件中没有 **Microsoft UEFI CA 2023** 证书，2026年后你可能面临无法安装使用新证书签名的 Linux 发行版、无法启动使用新 `shim` 的系统，或者 Secure Boot 验证失败导致启动被拒绝等问题。
 
-## 解决方案：手动导入 2023 证书
+## 两个不同层面的证书管理
 
-经过一番研究，我找到了一个可行的方案：手动将 `Windows UEFI CA 2023` 证书导入 UEFI 的 **MOK（Machine Owner Key）** 数据库。
+### 层面一：固件 db（设备信任根）
+
+- **管理对象**：微软 UEFI CA、厂商证书
+- **验证目标**：`shim.efi` 能否被固件加载
+- **Linux 用户可控性**：受限，依赖厂商推送或 `fwupd`
+
+### 层面二：shim MOK（用户信任扩展）
+
+- **管理对象**：用户自定义密钥
+- **验证目标**：`GRUB`、内核、第三方模块
+- **Linux 用户可控性**：完全自主，通过 `mokutil`
+
+本文重点介绍**层面二**，但要明确：层面一的缺失无法通过层面二弥补。
 
 ### 准备工作
 
-首先确保系统已安装必要的工具：
+首先确认这台机器是否能通过厂商渠道更新固件：
 
-```bash title="安装 mokutil 和 openssl"
-sudo apt update
-sudo apt install mokutil openssl
+```bash title="检查可用固件更新"
+fwupdmgr get-devices
+fwupdmgr get-updates
 ```
 
-### 下载证书
+如果存在可用更新，优先安装：
 
-从微软官方下载 **Windows UEFI CA 2023** 证书：
-
-```bash title="下载证书文件"
-wget https://go.microsoft.com/fwlink/?linkid=2239872 -O win2023.crt
+```bash title="安装固件更新"
+sudo fwupdmgr update
 ```
 
-你也可以从 [Microsoft PKI 文档页面](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/windows-secure-boot-key-creation-and-management-guidance) 了解详情。
+### 如果要自主管理启动链
 
-### 导入 MOK 数据库
+如果你只是想让自己的内核、`GRUB` 或模块在 Secure Boot 下继续加载，那么应该生成并导入**自己的** MOK 证书：
 
-`mokutil` 可以直接导入 `.crt` 格式的证书，无需格式转换：
+```bash title="生成 MOK 证书"
+openssl req -new -x509 -newkey rsa:2048 -keyout MOK.priv -out MOK.der -nodes -days 3650 -subj "/CN=My MOK/"
+```
 
 ```bash title="注册证书到 MOK 队列"
-sudo mokutil --import win2023.crt
+sudo mokutil --import MOK.der
 ```
 
-系统会提示你设置一个 **临时密码**（建议用简单的数字，比如 `12345678`），这个密码在下一步确认时会用到。
+系统会提示你设置一个 **临时密码**，这个密码在下一步确认时会用到。
+
+### MOK 的实际能力边界
+
+#### MOK 能解决的问题
+
+- 自编译内核的安全启动签名
+- 第三方驱动模块（NVIDIA、VirtualBox 等）的加载
+- 多发行版共存时的统一信任管理
+- 发行版 `GRUB` 更新后的重新签名
+
+#### MOK 不能解决的问题
+
+- 固件缺失 `Windows UEFI CA 2023` 导致无法启动新 `shim`
+- `dbx` 更新后导致的 shim 哈希撤销
+- 固件层面的证书过期验证
+
+#### 需要配合的方案
+
+- 证书缺失问题：优先检查 `fwupdmgr`，或联系厂商
+- 作为过渡方案：评估禁用 Secure Boot 的风险收益
 
 ### 重启确认导入
 
@@ -124,7 +157,7 @@ sudo reboot
 sudo mokutil --list-enrolled
 ```
 
-如果看到包含 `Microsoft Windows UEFI CA 2023` 或类似名称的证书，说明导入成功
+如果看到你自己生成的证书名称，说明导入成功。
 
 你也可以检查当前的 Secure Boot 状态：
 
@@ -146,13 +179,19 @@ sudo mokutil --sb-state
 
 当然，如果你对上述场景没有需求，禁用 Secure Boot 确实是最简单的方案。
 
-## 总结
+## 总结：Linux 用户的 Secure Boot 自主空间
 
-通过手动导入 `Windows UEFI CA 2023` 证书，我们**保持了兼容性**（未来使用新证书签名的 `shim` 可以正常启动）、**避免了启动危机**（防止 2026 年后证书过期导致的启动失败）、**维护了自主权**（不依赖 OEM 的 Windows 推送，自主管理固件安全），就是这样，完成我们的自主性.
+作为纯 Linux 用户，我们在 UEFI 安全启动生态中确实面临**结构性限制**：厂商固件更新渠道主要服务 Windows 用户，LVFS 覆盖不全，db 证书更新困难。
 
-> 考虑到Windows用户对禁止更新的顽固性，微软推送强制更新的日子迫在眉睫
+但这并不意味着我们只能**被动接受或完全放弃** Secure Boot。通过 MOK 机制，我们在**已有证书环境**下获得了：
 
-保持系统更新，保持折腾精神 😊
+- **内核层面的完全自主权**：自编译、自签名、自管理
+- **模块加载的可控性**：第三方驱动不再受限于发行版签名节奏
+- **多系统灵活性**：统一信任锚点管理
+
+对于 `Windows UEFI CA 2023` 证书缺失的设备，建议优先通过 `fwupd` 或厂商渠道获取固件更新；若不可行，禁用 Secure Boot 是务实的过渡方案，而 MOK 知识将在未来证书环境完善后立即发挥作用。
+
+保持对底层机制的理解，保持折腾精神，这就是 Linux 用户的自主之道。
 
 ---
 
