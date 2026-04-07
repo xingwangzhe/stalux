@@ -67,27 +67,18 @@ function initBackground(): void {
 // @ts-ignore - Astro custom event
 document.addEventListener("astro:before-swap", (event: any) => {
     const newDoc = event.newDocument as Document;
-    const currentLayer =
-        (document.body.dataset.staluxBgLayer as "a" | "b") || "a";
+    const currentLayer = (document.body.dataset.staluxBgLayer as "a" | "b") || "a";
     const nextLayer = currentLayer === "a" ? "b" : "a";
 
-    const currentIndex = parseInt(
-        document.body.dataset.staluxBgIndex || "-1",
-        10,
-    );
-    const nextIndex =
-        backgroundImages.length > 0 ? getRandomIndex(currentIndex) : -1;
+    const currentIndex = parseInt(document.body.dataset.staluxBgIndex || "-1", 10);
+    const nextIndex = backgroundImages.length > 0 ? getRandomIndex(currentIndex) : -1;
 
     // 旧页面：标记当前层，让浏览器捕获它的快照
     getLayerEl(currentLayer)?.classList.add("vt-active");
 
     // 新页面：预先设置隐藏层为背景目标层，并赋予相同 view-transition-name
-    const nextEl = newDoc.querySelector(
-        `.bg-layer.bg-${nextLayer}`,
-    ) as HTMLElement | null;
-    const otherEl = newDoc.querySelector(
-        `.bg-layer.bg-${currentLayer}`,
-    ) as HTMLElement | null;
+    const nextEl = newDoc.querySelector(`.bg-layer.bg-${nextLayer}`) as HTMLElement | null;
+    const otherEl = newDoc.querySelector(`.bg-layer.bg-${currentLayer}`) as HTMLElement | null;
     if (nextEl) {
         if (nextIndex >= 0) {
             nextEl.style.backgroundImage = `url('${backgroundImages[nextIndex]}')`;
