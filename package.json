@@ -20,7 +20,7 @@
         "@expressive-code/plugin-line-numbers": "^0.41.7",
         "@waline/client": "^3.13.0",
         "animejs": "^4.3.6",
-        "astro": "^6.1.4",
+        "astro": "^6.1.5",
         "astro-expressive-code": "^0.41.7",
         "astro-pagefind": "^1.8.6",
         "astro-seo": "^1.1.0",
