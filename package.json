@@ -35,12 +35,12 @@
         "reading-time": "^1.5.0",
         "rehype-katex": "^7.0.1",
         "remark-math": "^6.0.0",
-        "simple-icons": "^16.15.0"
+        "simple-icons": "^16.16.0"
     },
     "devDependencies": {
-        "@types/node": "^25.5.2",
+        "@types/node": "^25.6.0",
         "license-checker-rseidelsohn": "^4.4.2",
         "oxfmt": "^0.43.0",
-        "oxlint": "^1.59.0"
+        "oxlint": "^1.60.0"
     }
 }
