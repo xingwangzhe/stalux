@@ -1,6 +1,6 @@
 ---
 title: Ubuntu26.04正式推出
-date: "2026-04-24 00:00:00"
+date: "2026-04-24 01:00:00"
 abbrlink: ubuntu-26-04-official-release
 tags:
     - Linux
