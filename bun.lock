@@ -31,7 +31,7 @@
       "devDependencies": {
         "@types/node": "^25.6.0",
         "license-checker-rseidelsohn": "^4.4.2",
-        "oxfmt": "0.46.0",
+        "oxfmt": "^0.46.0",
         "oxlint": "^1.61.0",
       },
     },
@@ -43,27 +43,27 @@
 
     "@astrojs/compiler": ["@astrojs/compiler@3.0.1", "", {}, "sha512-z97oYbdebO5aoWzuJ/8q5hLK232+17KcLZ7cJ8BCWk6+qNzVxn/gftC0KzMBUTD8WAaBkPpNSQK6PXLnNrZ0CA=="],
 
-    "@astrojs/compiler-binding": ["@astrojs/compiler-binding@0.1.8", "", { "optionalDependencies": { "@astrojs/compiler-binding-darwin-arm64": "0.1.8", "@astrojs/compiler-binding-darwin-x64": "0.1.8", "@astrojs/compiler-binding-linux-arm64-gnu": "0.1.8", "@astrojs/compiler-binding-linux-arm64-musl": "0.1.8", "@astrojs/compiler-binding-linux-x64-gnu": "0.1.8", "@astrojs/compiler-binding-linux-x64-musl": "0.1.8", "@astrojs/compiler-binding-wasm32-wasi": "0.1.8", "@astrojs/compiler-binding-win32-arm64-msvc": "0.1.8", "@astrojs/compiler-binding-win32-x64-msvc": "0.1.8" } }, "sha512-IRKtLTTu1OP9Z++0KOxyTx/EsiCu4RArLzItdgkVowuos3zkZIMXtGcJsAdzncndAeD6rvGP77tHXZ4cR4AMvw=="],
+    "@astrojs/compiler-binding": ["@astrojs/compiler-binding@0.1.9", "", { "optionalDependencies": { "@astrojs/compiler-binding-darwin-arm64": "0.1.9", "@astrojs/compiler-binding-darwin-x64": "0.1.9", "@astrojs/compiler-binding-linux-arm64-gnu": "0.1.9", "@astrojs/compiler-binding-linux-arm64-musl": "0.1.9", "@astrojs/compiler-binding-linux-x64-gnu": "0.1.9", "@astrojs/compiler-binding-linux-x64-musl": "0.1.9", "@astrojs/compiler-binding-wasm32-wasi": "0.1.9", "@astrojs/compiler-binding-win32-arm64-msvc": "0.1.9", "@astrojs/compiler-binding-win32-x64-msvc": "0.1.9" } }, "sha512-CsFiSCxAlFOTYqR/2QKOQhjaO+VDCdnQyv5TwkBoURk4qlNPHiE+3eGwcR3v9yni+BQFNVOJME3SvlSYRIsvdA=="],
 
-    "@astrojs/compiler-binding-darwin-arm64": ["@astrojs/compiler-binding-darwin-arm64@0.1.8", "", { "os": "darwin", "cpu": "arm64" }, "sha512-o52blB+aO6mUcnL+PJM3mW9bYXefpVa1bEV39EoK0C5c7YUxXeWWrcCfCZgIW9kVkYXGI7tYTxQ8euTBeIbyWw=="],
+    "@astrojs/compiler-binding-darwin-arm64": ["@astrojs/compiler-binding-darwin-arm64@0.1.9", "", { "os": "darwin", "cpu": "arm64" }, "sha512-WnqB9sqIFe1o6cMaNrl54XoOG6sQYml4pwVtGJKDeKHIVaZMX8BWx4L2lrM3WzUrAui/9FJlDkyZa9za9A6rnA=="],
 
-    "@astrojs/compiler-binding-darwin-x64": ["@astrojs/compiler-binding-darwin-x64@0.1.8", "", { "os": "darwin", "cpu": "x64" }, "sha512-5FcpRu+pQR52Rg0zfqtb1qPommUEj+4/StzuVZjU2ApFhYjCaXNj2x+A6AMya5XFVwfhznWtqn8AuFwAwhsNVQ=="],
+    "@astrojs/compiler-binding-darwin-x64": ["@astrojs/compiler-binding-darwin-x64@0.1.9", "", { "os": "darwin", "cpu": "x64" }, "sha512-OyMFBbKKm5OfG+6ad12tMLE05bNFdzEbUjmjxFTdTsnVCJ5LIRMZeLNGMa9QQAJvxJkyRi3LB7W0hqKWw4SXZg=="],
 
-    "@astrojs/compiler-binding-linux-arm64-gnu": ["@astrojs/compiler-binding-linux-arm64-gnu@0.1.8", "", { "os": "linux", "cpu": "arm64" }, "sha512-Thv4plIl++ksKeJsvBvMqAKe5VzsmrS6OhO6WISFsPjWx6mqgYlsc4R2BIp6Q9vsD1mZ7fIoItUo9AHLIsI/BA=="],
+    "@astrojs/compiler-binding-linux-arm64-gnu": ["@astrojs/compiler-binding-linux-arm64-gnu@0.1.9", "", { "os": "linux", "cpu": "arm64" }, "sha512-ykDHs4//IDnQY3JK8St1ERIz5HGR2FiK+j98DxcXOS0i+ped/igB/K18wgsS2qJ5I5BAzmdkx+egDdTS9t6SEg=="],
 
-    "@astrojs/compiler-binding-linux-arm64-musl": ["@astrojs/compiler-binding-linux-arm64-musl@0.1.8", "", { "os": "linux", "cpu": "arm64" }, "sha512-6ojx3hpxt1kO1yflFcRUXWETFQsX7rrILTe9Nnb4okksF10Cs858iAtCPTJeyt7Rrgwt76QrXOvnKgx2c80Zeg=="],
+    "@astrojs/compiler-binding-linux-arm64-musl": ["@astrojs/compiler-binding-linux-arm64-musl@0.1.9", "", { "os": "linux", "cpu": "arm64" }, "sha512-IqxyiVK6PNM0BqgM8G8p3iDQkgi0CK0HekRtCBrYLWC5NaZxUjQIFZLYR8qfJ6MFHyNqFPL/U41IAdSLW1sctw=="],
 
-    "@astrojs/compiler-binding-linux-x64-gnu": ["@astrojs/compiler-binding-linux-x64-gnu@0.1.8", "", { "os": "linux", "cpu": "x64" }, "sha512-yyZfz2dwQbMTFFMOO7z7+evaUYOOo/hGyNLy0p8glUVSrPf8ZVaL/QFBM7UyXN6DBIJbGF5Q73TV6fUZZOB/cw=="],
+    "@astrojs/compiler-binding-linux-x64-gnu": ["@astrojs/compiler-binding-linux-x64-gnu@0.1.9", "", { "os": "linux", "cpu": "x64" }, "sha512-bdBigL864fuJcjwTeymONUZ5LhwzbGvcedXFJXKKZBi+2sKantZSwcfRIrtwiyY5ViY5XHYGR6IAVvFfMCAjVg=="],
 
-    "@astrojs/compiler-binding-linux-x64-musl": ["@astrojs/compiler-binding-linux-x64-musl@0.1.8", "", { "os": "linux", "cpu": "x64" }, "sha512-8KpXBjfFDi8T3m5SW1edGbQvhwHJVfIq3E1dGbPpM2phO/CSixbnJYvgwHhNBxEfyHbmq3pK410bFcgiM3mI7A=="],
+    "@astrojs/compiler-binding-linux-x64-musl": ["@astrojs/compiler-binding-linux-x64-musl@0.1.9", "", { "os": "linux", "cpu": "x64" }, "sha512-pR9qcmEWy2OchjopN2DGnMv9KE4u2UQ0zmT4aTrCWAIbyUSTt858zTzM7MOxXi1/EHr+6yiDzHvnMrISsy5jRg=="],
 
-    "@astrojs/compiler-binding-wasm32-wasi": ["@astrojs/compiler-binding-wasm32-wasi@0.1.8", "", { "dependencies": { "@napi-rs/wasm-runtime": "^1.1.4" }, "cpu": "none" }, "sha512-sN3EtHo8m+AW8VT8fZRZ963lDcRpXekq1fKuQ4IuGGNnAyeMSbo5SsJr7G0Uv6PVQO6vug5pTMal7Alh0O1CSg=="],
+    "@astrojs/compiler-binding-wasm32-wasi": ["@astrojs/compiler-binding-wasm32-wasi@0.1.9", "", { "dependencies": { "@napi-rs/wasm-runtime": "^1.1.4" }, "cpu": "none" }, "sha512-7cpoBqOdQt4URfF3HjLKNoNVDbwnh4T1lPgaAf818wRxZSmRnGZ73fSA0+panyT2Sbwucj9MM6PCQDoUpGu8Fg=="],
 
-    "@astrojs/compiler-binding-win32-arm64-msvc": ["@astrojs/compiler-binding-win32-arm64-msvc@0.1.8", "", { "os": "win32", "cpu": "arm64" }, "sha512-gRWvwXZP8Q23pkVjQWLEIHP9tTy0I7wypllx//TfKComks8tIZ3/CqCn8YoE9nzJamNCQLJ/pf7B9EuiKIpi3g=="],
+    "@astrojs/compiler-binding-win32-arm64-msvc": ["@astrojs/compiler-binding-win32-arm64-msvc@0.1.9", "", { "os": "win32", "cpu": "arm64" }, "sha512-y++nHuYLfEXwZQT14cXMonQj0YtVbwpMaOUVJHacIZd5O62EsjuaLy02d4vG4ixRn4wLgWbubIw+glGgjYJgvA=="],
 
-    "@astrojs/compiler-binding-win32-x64-msvc": ["@astrojs/compiler-binding-win32-x64-msvc@0.1.8", "", { "os": "win32", "cpu": "x64" }, "sha512-kEoeMdVscyKilee5Qc9Uce8SKSqb9T5uV/l8fFE6PD51wsp6ofN26819mRChqm8cRmlMZ6rwy2wtIi4GrR10uA=="],
+    "@astrojs/compiler-binding-win32-x64-msvc": ["@astrojs/compiler-binding-win32-x64-msvc@0.1.9", "", { "os": "win32", "cpu": "x64" }, "sha512-sY9L02cIM8jTDlUbvIWxZHBCh5TiVbLVWmb8pxJf+wJMlftgwE22FRidyP8FPFUuSgT/g1bj4Qbd2m/GQxiiEw=="],
 
-    "@astrojs/compiler-rs": ["@astrojs/compiler-rs@0.1.8", "", { "dependencies": { "@astrojs/compiler-binding": "0.1.8" } }, "sha512-rpbK3RlpMdIjpD0neQTVpzyYAqLXO80x9zO/Lg4oCTqEZ4m25yWZS6sqiUH9TmSgjD2KNghw36w2UaXTau+j+w=="],
+    "@astrojs/compiler-rs": ["@astrojs/compiler-rs@0.1.9", "", { "dependencies": { "@astrojs/compiler-binding": "0.1.9" } }, "sha512-50EPRCswlONOJ546h7uyI+HrsgvViT9nrcoLlH59Ju8BZQf5++sPHwkza/Tfr0BoQIIj5PrCC3vbRYlHCB/QkQ=="],
 
     "@astrojs/internal-helpers": ["@astrojs/internal-helpers@0.9.0", "", { "dependencies": { "picomatch": "^4.0.4" } }, "sha512-GdYkzR26re8izmyYlBqf4z2s7zNngmWLFuxw0UKiPNqHraZGS6GKWIwSHgS22RDlu2ePFJ8bzmpBcUszut/SDg=="],
 
