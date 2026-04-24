@@ -14,7 +14,7 @@
         "licenses-checker": "bun licenses-checker.ts"
     },
     "dependencies": {
-        "@astrojs/compiler-rs": "^0.1.8",
+        "@astrojs/compiler-rs": "^0.1.9",
         "@astrojs/rss": "^4.0.18",
         "@astrojs/sitemap": "^3.7.2",
         "@expressive-code/plugin-line-numbers": "^0.41.7",
