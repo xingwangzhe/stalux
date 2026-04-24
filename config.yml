@@ -169,6 +169,10 @@ stalux:
               description: "Sky is the limit."
               link: "https://www.ooowl.net"
               icon: "http://www.ooowl.net/avatar.jpeg"
+            - name: "Liseezn'blog"
+              description: "分享学习，项目，及一些教程"
+              link: "https://blog.liseezn.top"
+              icon: "https://blog.liseezn.top/logo.webp"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
