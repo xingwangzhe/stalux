@@ -1,33 +1,15 @@
-import getReadingTime from "reading-time";
+import { readingTime } from "reading-time-estimator";
+import { toString } from "mdast-util-to-string";
 import { visit } from "unist-util-visit";
-
-// 自定义统计纯文本，排除 URL，只保留可见内容
-function getCleanText(tree: any): string {
-    let text = "";
-    visit(tree, (node: any) => {
-        // 图片：只保留 alt 文本，跳过 URL
-        if (node.type === "image" || node.type === "imageReference") {
-            if (node.alt) {
-                text += node.alt;
-            }
-            return;
-        }
-        // 链接：跳过 URL，只保留链接文本（会被子节点处理）
-        if (node.type === "link" || node.type === "linkReference") {
-            return;
-        }
-        // 正常添加文本节点
-        if (node.value && typeof node.value === "string") {
-            text += node.value;
-        }
-    });
-    return text;
-}
 
 export function remarkPostBody() {
     return function (tree: unknown, { data }: { data: any }) {
-        const textOnPage = getCleanText(tree);
-        const readingTime = getReadingTime(textOnPage);
+        const textOnPage = toString(tree);
+
+        const result = readingTime(textOnPage, {
+            wordsPerMinute: 400,
+            language: "zh-cn",
+        });
 
         let hasKatex = false;
         let hasMermaid = false;
@@ -47,10 +29,9 @@ export function remarkPostBody() {
             }
         });
 
-        // 设置文章描述,阅读时间,字数到 frontmatter
-        data.astro.frontmatter.wordCount = textOnPage.length;
+        data.astro.frontmatter.wordCount = result.words;
         data.astro.frontmatter.desc = textOnPage.slice(0, 125) + "...";
-        data.astro.frontmatter.minutesRead = readingTime.text;
+        data.astro.frontmatter.minutesRead = result.text;
 
         data.astro.frontmatter.hasKatex = hasKatex;
         data.astro.frontmatter.hasMermaid = hasMermaid;
