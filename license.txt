@@ -267,6 +267,7 @@ MIT dagre-d3-es
 MIT dayjs
 MIT debug
 MIT decode-named-character-reference
+MIT deepmerge
 MIT defu
 MIT dequal
 MIT destr
@@ -312,12 +313,14 @@ MIT hast-util-whitespace
 MIT hastscript
 MIT html-escaper
 MIT html-void-elements
+MIT htmlparser2
 MIT iconv-lite
 MIT iron-webcrypto
 MIT is-docker
 MIT is-fullwidth-code-point
 MIT is-inside-container
 MIT is-plain-obj
+MIT is-plain-object
 MIT is-wsl
 MIT js-yaml
 MIT json-schema-traverse
@@ -399,6 +402,7 @@ MIT p-timeout
 MIT package-manager-detector
 MIT pagefind
 MIT parse-latin
+MIT parse-srcset
 MIT parse5
 MIT path-browserify
 MIT path-data-parser
@@ -417,7 +421,7 @@ MIT prismjs
 MIT property-information
 MIT radix3
 MIT readdirp
-MIT reading-time
+MIT reading-time-estimator
 MIT regex
 MIT regex-recursion
 MIT regex-utilities
@@ -443,6 +447,7 @@ MIT retext-stringify
 MIT rollup
 MIT roughjs
 MIT safer-buffer
+MIT sanitize-html
 MIT shiki
 MIT sirv
 MIT sisteransi
