@@ -1,5 +1,5 @@
-import { readingTime } from "reading-time-estimator";
 import { toString } from "mdast-util-to-string";
+import { readingTime } from "reading-time-estimator";
 import { visit } from "unist-util-visit";
 
 export function remarkPostBody() {
