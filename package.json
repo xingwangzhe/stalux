@@ -19,6 +19,7 @@
         "@astrojs/sitemap": "^3.7.2",
         "@expressive-code/plugin-line-numbers": "^0.41.7",
         "@waline/client": "^3.13.0",
+        "alfaaz": "^1.1.0",
         "animejs": "^4.4.0",
         "astro": "^6.1.10",
         "astro-expressive-code": "^0.41.7",
@@ -33,7 +34,6 @@
         "mdast-util-to-string": "^4.0.0",
         "mermaid": "^11.14.0",
         "photoswipe": "^5.4.4",
-        "reading-time": "^1.5.0",
         "rehype-katex": "^7.0.1",
         "remark-math": "^6.0.0",
         "simple-icons": "^16.18.0"

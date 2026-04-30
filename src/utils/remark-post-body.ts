@@ -1,22 +1,19 @@
 import { toString } from "mdast-util-to-string";
-import readingTime from "reading-time";
+import { countWords } from "alfaaz";
 import { visit } from "unist-util-visit";
 
-function formatReadingTime(minutes: number): string {
-    const mins = Math.ceil(minutes);
-    if (mins < 1) {
+function formatReadingTime(words: number, wordsPerMinute: number): string {
+    const minutes = Math.ceil(words / wordsPerMinute);
+    if (minutes < 1) {
         return "小于 1 分钟";
     }
-    return `${mins} 分钟`;
+    return `${minutes} 分钟`;
 }
 
 export function remarkPostBody() {
     return function (tree: unknown, { data }: { data: any }) {
         const textOnPage = toString(tree);
-
-        const result = readingTime(textOnPage, {
-            wordsPerMinute: 400,
-        });
+        const words = countWords(textOnPage);
 
         let hasKatex = false;
         let hasMermaid = false;
@@ -36,9 +33,9 @@ export function remarkPostBody() {
             }
         });
 
-        data.astro.frontmatter.wordCount = result.words;
+        data.astro.frontmatter.wordCount = words;
         data.astro.frontmatter.desc = textOnPage.slice(0, 125) + "...";
-        data.astro.frontmatter.minutesRead = formatReadingTime(result.minutes);
+        data.astro.frontmatter.minutesRead = formatReadingTime(words, 400);
 
         data.astro.frontmatter.hasKatex = hasKatex;
         data.astro.frontmatter.hasMermaid = hasMermaid;
