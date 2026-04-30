@@ -570,7 +570,7 @@
 
     "anafanafo": ["anafanafo@2.0.0", "https://registry.npmmirror.com/anafanafo/-/anafanafo-2.0.0.tgz", { "dependencies": { "char-width-table-consumer": "^1.0.0" } }, "sha512-Nlfq7NC4AOkTJerWRIZcOAiMNtIDVIGWGvQ98O7Jl6Kr2Dk0dX5u4MqN778kSRTy5KRqchpLdF2RtLFEz9FVkQ=="],
 
-    "animejs": ["animejs@4.4.0", "", {}, "sha512-GcMGjPjWP6VLjOi8Z0RCLfKS4LiPc2TkXNtdCadsDFsVkRoKt/hyXyV8MSKOUy1KULLzXt0yigdRYfEcxlo9Dw=="],
+    "animejs": ["animejs@4.4.1", "", {}, "sha512-XimhJw4vPb6tAd6Zaoa6BaspJ8UteQMKvL7Pvrt6MW/6u2UvJs0TB/LLqR1sigaiYvpVPC3Tokr9emcCMhWFhw=="],
 
     "ansi-regex": ["ansi-regex@5.0.1", "https://registry.npmmirror.com/ansi-regex/-/ansi-regex-5.0.1.tgz", {}, "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ=="],
 
