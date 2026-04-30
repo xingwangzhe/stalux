@@ -1,6 +1,14 @@
 import { toString } from "mdast-util-to-string";
-import { readingTime } from "reading-time-estimator";
+import readingTime from "reading-time";
 import { visit } from "unist-util-visit";
+
+function formatReadingTime(minutes: number): string {
+    const mins = Math.ceil(minutes);
+    if (mins < 1) {
+        return "小于 1 分钟";
+    }
+    return `${mins} 分钟`;
+}
 
 export function remarkPostBody() {
     return function (tree: unknown, { data }: { data: any }) {
@@ -8,7 +16,6 @@ export function remarkPostBody() {
 
         const result = readingTime(textOnPage, {
             wordsPerMinute: 400,
-            language: "zh-cn",
         });
 
         let hasKatex = false;
@@ -31,7 +38,7 @@ export function remarkPostBody() {
 
         data.astro.frontmatter.wordCount = result.words;
         data.astro.frontmatter.desc = textOnPage.slice(0, 125) + "...";
-        data.astro.frontmatter.minutesRead = result.text;
+        data.astro.frontmatter.minutesRead = formatReadingTime(result.minutes);
 
         data.astro.frontmatter.hasKatex = hasKatex;
         data.astro.frontmatter.hasMermaid = hasMermaid;
