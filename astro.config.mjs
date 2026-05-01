@@ -14,14 +14,7 @@ const site = "https://xingwangzhe.fun";
 export default defineConfig({
     output: "static",
     site: site,
-    experimental: {
-        rustCompiler: true,
-        queuedRendering: {
-            enabled: true,
-            poolSize: 1000,
-            contentCache: false,
-        },
-    },
+    experimental: {},
     integrations: [
         pagefind(),
         sitemap({
@@ -65,9 +58,11 @@ export default defineConfig({
             __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
         },
         build: {
+            minify: "oxc",
             cssMinify: "lightningcss",
-            target: "es2022",
+            target: "esnext",
             sourcemap: false,
+            chunkSizeWarningLimit: 1000,
         },
     },
     markdown: {
