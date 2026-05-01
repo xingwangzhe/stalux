@@ -15,12 +15,6 @@ export default defineConfig({
     output: "static",
     site: site,
     experimental: {
-        rustCompiler: true,
-        queuedRendering: {
-            enabled: true,
-            poolSize: 1000,
-            contentCache: false,
-        },
     },
     integrations: [
         pagefind(),
@@ -68,6 +62,7 @@ export default defineConfig({
             cssMinify: "lightningcss",
             target: "es2022",
             sourcemap: false,
+            chunkSizeWarningLimit: 1000,
         },
     },
     markdown: {
