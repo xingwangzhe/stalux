@@ -1,5 +1,5 @@
-import { toString } from "mdast-util-to-string";
 import { countWords } from "alfaaz";
+import { toString } from "mdast-util-to-string";
 import { visit } from "unist-util-visit";
 
 function formatReadingTime(words: number, wordsPerMinute: number): string {
