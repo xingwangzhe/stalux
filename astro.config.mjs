@@ -14,8 +14,7 @@ const site = "https://stalux.needhelp.icu";
 export default defineConfig({
     output: "static",
     site: site,
-    experimental: {
-    },
+    experimental: {},
     integrations: [
         pagefind(),
         sitemap({
@@ -59,8 +58,9 @@ export default defineConfig({
             __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
         },
         build: {
+            minify: "oxc",
             cssMinify: "lightningcss",
-            target: "es2022",
+            target: "esnext",
             sourcemap: false,
             chunkSizeWarningLimit: 1000,
         },
