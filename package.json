@@ -39,7 +39,7 @@
         "simple-icons": "^16.18.1"
     },
     "devDependencies": {
-        "@types/node": "^25.6.0",
+        "@types/node": "^25.6.2",
         "license-checker-rseidelsohn": "^4.4.2",
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0"
