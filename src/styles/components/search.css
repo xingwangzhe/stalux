@@ -1,126 +1,13 @@
-/* 自定义Pagefind UI样式 - 纯透明块风格 */
-.pagefind-ui {
-    width: 100%;
-    max-width: 100%;
-    font-family: inherit;
-    color: var(--white-90p) !important;
-}
-
-/* 搜索输入框 */
-.pagefind-ui .pagefind-ui__search-input {
-    border: 1px solid var(--white-10p);
-    border-radius: var(--radius-lg);
-    padding: var(--space-md);
-    font-size: var(--font-size-base);
-    width: 100%;
-    background-color: transparent;
-    color: var(--white-90p);
-    transition: all var(--transition-fast);
-}
-
-.pagefind-ui .pagefind-ui__search-input:focus {
-    outline: none;
-    border-color: var(--stalux-accent-color);
-    background-color: rgba(255, 255, 255, 0.02);
-    box-shadow: inset 0 0 0 2px rgba(100, 255, 218, 0.1);
-}
-
-.pagefind-ui .pagefind-ui__search-input::placeholder {
-    color: var(--white-50p);
-}
-
-/* 结果容器 */
-.pagefind-ui .pagefind-ui__results {
-    margin-top: var(--space-lg);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-}
-
-/* 结果项 - 纯透明块风格 */
-.pagefind-ui .pagefind-ui__result {
-    padding: var(--space-lg);
-    border-radius: var(--radius-lg);
-    background-color: var(--black-10p);
-    border: 1px solid var(--white-10p) !important;
-    box-shadow: var(--shadow-sidebar);
-    transition: all var(--transition-fast) ease;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-}
-
-.pagefind-ui .pagefind-ui__result:hover {
-    transform: translateY(-2px);
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: var(--white-15p);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* 结果标题 */
-.pagefind-ui .pagefind-ui__result-title {
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    margin: 0;
-    color: var(--white-90p);
-    text-decoration: none;
-    line-height: 1.4;
-    word-break: break-word;
-    padding-left: var(--space-md) !important;
-}
-
-.pagefind-ui .pagefind-ui__result-title:hover {
-    color: var(--stalux-accent-color);
-}
-
-/* 结果摘要 */
-.pagefind-ui .pagefind-ui__result-excerpt {
-    font-size: var(--font-size-small);
-    color: var(--white-90p);
-    line-height: 1.6;
-    margin: 0;
-    word-break: break-word;
-}
-
-/* 高亮文本 */
+/* 搜索高亮 */
 mark {
     background-color: rgba(100, 255, 218, 0.25);
-    color: var(--stalux-accent-color);
+    color: var(--pf-mark, var(--stalux-accent-color));
     padding: 0 2px;
     border-radius: 2px;
     font-weight: 500;
 }
 
-/* 消息提示 */
-.pagefind-ui .pagefind-ui__message {
-    padding: var(--space-lg);
-    background-color: var(--black-10p);
-    border: 1px solid var(--white-10p);
-    border-radius: var(--radius-lg);
-    text-align: center;
-    color: var(--white-90p);
-    box-shadow: var(--shadow-sidebar);
-}
-
-/* 加载指示器 */
-.pagefind-ui .pagefind-ui__button {
-    background-color: var(--stalux-accent-color);
-    color: var(--stalux-bg-color);
-    border: none;
-    border-radius: var(--radius-md);
-    padding: var(--space-sm) var(--space-md);
-    font-size: var(--font-size-small);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.pagefind-ui .pagefind-ui__button:hover {
-    background-color: rgba(100, 255, 218, 0.85);
-    transform: translateY(-1px);
-}
-
-/* 修改搜索悬浮框样式 */
+/* 搜索模态框 */
 .search-container {
     position: fixed;
     top: 0;
@@ -129,10 +16,12 @@ mark {
     height: 100%;
     z-index: 9999;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding-top: min(15vh, 120px);
     visibility: hidden;
     opacity: 0;
+    pointer-events: none;
     transition:
         visibility 0s linear 0.25s,
         opacity 0.25s var(--easing-smooth);
@@ -141,6 +30,7 @@ mark {
 .search-container.active {
     visibility: visible;
     opacity: 1;
+    pointer-events: auto;
     transition-delay: 0s;
 }
 
@@ -154,16 +44,20 @@ mark {
     backdrop-filter: blur(4px);
 }
 
+.search-container:not(.active) .search-backdrop,
+.search-container:not(.active) .search-box {
+    pointer-events: none;
+}
+
 .search-container .search-box {
     position: relative;
     width: 90%;
     max-width: 600px;
-    max-height: 80vh;
+    max-height: calc(100dvh - min(15vh, 120px) - 40px);
     background-color: transparent;
     border: 1px solid var(--white-10p);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sidebar);
-    overflow: hidden;
     z-index: 10000;
     animation: searchAppear 0.25s var(--easing-smooth);
     display: flex;
@@ -171,6 +65,9 @@ mark {
 }
 
 .search-container .search-box .search-header {
+    flex-shrink: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow: hidden;
     padding: var(--space-lg);
     border-bottom: 1px solid var(--white-10p);
     display: flex;
@@ -205,26 +102,33 @@ mark {
     color: var(--white-90p);
 }
 
-.search-container .search-box .search-content {
+.search-container .search-box .search-input-area {
+    flex-shrink: 0;
     padding: var(--space-lg);
+    padding-bottom: 0;
+}
+
+.search-container .search-box .search-results {
+    padding: var(--space-lg);
+    padding-top: var(--space-md);
     overflow-y: auto;
     flex: 1;
 }
 
-.search-container .search-box .search-content::-webkit-scrollbar {
+.search-container .search-box .search-results::-webkit-scrollbar {
     width: 6px;
 }
 
-.search-container .search-box .search-content::-webkit-scrollbar-track {
+.search-container .search-box .search-results::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.search-container .search-box .search-content::-webkit-scrollbar-thumb {
+.search-container .search-box .search-results::-webkit-scrollbar-thumb {
     background-color: var(--white-20p);
     border-radius: var(--radius-full);
 }
 
-.search-container .search-box .search-content::-webkit-scrollbar-thumb:hover {
+.search-container .search-box .search-results::-webkit-scrollbar-thumb:hover {
     background-color: var(--white-30p);
 }
 
@@ -239,7 +143,6 @@ mark {
     }
 }
 
-/* 响应式样式 */
 @media (max-width: 768px) {
     .search-container .search-box {
         width: 95%;
@@ -248,46 +151,28 @@ mark {
     }
 }
 
-.pagefind-ui__search-clear {
-    background-color: transparent !important;
-    color: var(--white-90p) !important;
-    border: none;
-    border-radius: var(--radius-md);
-    padding: var(--space-sm) var(--space-md);
-    font-size: var(--font-size-small);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.pagefind-ui__search-clear:hover {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    color: var(--white-90p) !important;
-}
-
-.pagefind-ui__result-link {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    text-align: center;
-}
-
-.pagefind-ui a {
-    transition: none !important;
-    color: inherit !important;
-    text-decoration: none !important;
-    background: none !important;
-    -webkit-background-clip: unset !important;
-    -webkit-text-fill-color: unset !important;
-    background-clip: unset !important;
-}
-
-.pagefind-ui a:hover {
-    color: inherit !important;
-    text-shadow: none !important;
-}
-
-.pagefind-ui a {
-    transition: none !important;
+/* Pagefind Component UI 暗色主题覆盖 */
+.search-container[data-pf-theme="dark"] {
+    --pf-text: var(--white-90p);
+    --pf-text-secondary: var(--white-70p);
+    --pf-text-muted: var(--white-50p);
+    --pf-background: transparent;
+    --pf-border: var(--white-10p);
+    --pf-border-focus: var(--stalux-accent-color);
+    --pf-hover: rgba(255, 255, 255, 0.05);
+    --pf-skeleton: rgba(255, 255, 255, 0.05);
+    --pf-skeleton-shine: rgba(255, 255, 255, 0.08);
+    --pf-mark: var(--stalux-accent-color);
+    --pf-outline-focus: var(--stalux-accent-color);
+    --pf-font: inherit;
+    --pf-input-font-size: var(--font-size-base);
+    --pf-input-height: 44px;
+    --pf-result-title-font-size: var(--font-size-base);
+    --pf-result-excerpt-font-size: var(--font-size-small);
+    --pf-summary-font-size: var(--font-size-tiny);
+    --pf-border-radius: var(--radius-lg);
+    --pf-results-gap: var(--space-md);
+    --pf-shadow-sm: none;
+    --pf-shadow-md: none;
+    --pf-shadow-lg: none;
 }
