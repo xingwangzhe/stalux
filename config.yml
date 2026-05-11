@@ -176,7 +176,7 @@ stalux:
             - name: "字节星球"
               description: "技术博客与知识分享，涵盖 C++、Golang、DevOps 等内容"
               link: "https://www.bytecho.net/"
-              icon: "https://cdn.bytecho.net/static/bar_icon.png"
+              icon: "https://weavatar.com/avatar/aeb50911e9d7d2869e2eab408a0abafe?d=identicon&s=128"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
