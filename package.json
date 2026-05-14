@@ -14,7 +14,7 @@
         "licenses-checker": "bun licenses-checker.ts"
     },
     "dependencies": {
-        "@astrojs/compiler-rs": "^0.1.10",
+        "@astrojs/compiler-rs": "^0.2.0",
         "@astrojs/rss": "^4.0.18",
         "@astrojs/sitemap": "^3.7.2",
         "@expressive-code/plugin-line-numbers": "^0.42.0",
@@ -29,7 +29,7 @@
         "badge-maker": "^5.0.2",
         "dayjs": "^1.11.20",
         "feather-icons": "^4.29.2",
-        "katex": "^0.16.45",
+        "katex": "^0.16.46",
         "lightningcss": "^1.32.0",
         "mdast-util-to-string": "^4.0.0",
         "mermaid": "^11.15.0",
