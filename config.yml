@@ -60,6 +60,8 @@ stalux:
           link: "mailto:xingwangzhe@outlook.com"
         - icon: juejin
           link: "https://juejin.cn/user/1795939693507712"
+        - icon: x
+          link: "https://x.com/xingwangzhe"
 
     links:
         title: "友情链接"
