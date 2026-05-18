@@ -6,6 +6,8 @@ import styles from "@styles/components/links/socialLinks.module.css";
 const stalux = (await getCollection("config"))[0].data;
 const mediaLinks = stalux.mediaLinks || [];
 
+const isPostPage = Astro.url.pathname.startsWith("/posts/");
+
 // 在构建时获取图标
 function getIconByTitle(iconName: string): SimpleIcon | undefined {
     // 标准化名称为 simple-icons 的格式 (去除非字母数字字符，转换为小写)
@@ -62,22 +64,26 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
     </ul>
 </div>
 
-<script>
-    import { animate } from "animejs";
-    document.addEventListener("DOMContentLoaded", () => {
-        animate(".social_icon", {
-            y: [
-                { to: "-2.75rem", ease: "outExpo", duration: 600 },
-                { to: 0, ease: "outBounce", duration: 800, delay: 100 },
-            ],
-            rotate: {
-                from: "-1turn",
-                delay: 0,
-            },
-            delay: (_, i) => i * 50, // 基于函数的延迟值
-            ease: "inOutCirc",
-            loopDelay: 1000,
-            loop: true,
-        });
-    });
-</script>
+{
+    !isPostPage && (
+        <script>
+            import { animate } from "animejs";
+            document.addEventListener("DOMContentLoaded", () => {
+                animate(".social_icon", {
+                    y: [
+                        { to: "-2.75rem", ease: "outExpo", duration: 600 },
+                        { to: 0, ease: "outBounce", duration: 800, delay: 100 },
+                    ],
+                    rotate: {
+                        from: "-1turn",
+                        delay: 0,
+                    },
+                    delay: (_, i) => i * 50, // 基于函数的延迟值
+                    ease: "inOutCirc",
+                    loopDelay: 1000,
+                    loop: true,
+                });
+            });
+        </script>
+    )
+}
