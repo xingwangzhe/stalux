@@ -58,7 +58,15 @@ const twitterConfig = {
   ...(stalux.data.twitterSite ? { site: stalux.data.twitterSite } : {}),
 };
 
-const extendedLink = [{ rel: "icon", href: faviconPath }];
+const extendedLink = [
+  { rel: "icon", href: faviconPath },
+  {
+    rel: "alternate",
+    type: "application/rss+xml",
+    title: stalux.data.title || "RSS Feed",
+    href: "/rss.xml",
+  },
+];
 const extendedMeta = [
   { name: "viewport", content: "width=device-width, initial-scale=1" },
 ];
