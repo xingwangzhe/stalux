@@ -14,7 +14,7 @@
         "licenses-checker": "bun licenses-checker.ts"
     },
     "dependencies": {
-        "@astrojs/compiler-rs": "^0.2.0",
+        "@astrojs/compiler-rs": "^0.2.1",
         "@astrojs/rss": "^4.0.18",
         "@astrojs/sitemap": "^3.7.2",
         "@expressive-code/plugin-line-numbers": "^0.42.0",
@@ -27,21 +27,21 @@
         "astro-seo": "^1.1.0",
         "astro-typewriter": "^1.2.0",
         "badge-maker": "^5.0.2",
-        "dayjs": "^1.11.20",
+        "dayjs": "^1.11.21",
         "feather-icons": "^4.29.2",
-        "katex": "^0.16.46",
+        "katex": "^0.17.0",
         "lightningcss": "^1.32.0",
         "mdast-util-to-string": "^4.0.0",
         "mermaid": "^11.15.0",
         "photoswipe": "^5.4.4",
         "rehype-katex": "^7.0.1",
         "remark-math": "^6.0.0",
-        "simple-icons": "^16.19.0"
+        "simple-icons": "^16.21.0"
     },
     "devDependencies": {
-        "@types/node": "^25.7.0",
+        "@types/node": "^25.9.1",
         "license-checker-rseidelsohn": "^4.4.2",
-        "oxfmt": "0.49.0",
-        "oxlint": "^1.64.0"
+        "oxfmt": "^0.52.0",
+        "oxlint": "^1.67.0"
     }
 }
