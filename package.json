@@ -16,7 +16,7 @@
     "dependencies": {
         "@astrojs/compiler-rs": "^0.2.1",
         "@astrojs/rss": "^4.0.18",
-        "@astrojs/sitemap": "^3.7.2",
+        "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "^0.42.0",
         "@waline/client": "^3.13.0",
         "alfaaz": "^1.1.0",
@@ -40,7 +40,7 @@
     },
     "devDependencies": {
         "@types/node": "^25.9.1",
-        "license-checker-rseidelsohn": "^4.4.2",
+        "license-checker-rseidelsohn": "5.0.0",
         "oxfmt": "^0.52.0",
         "oxlint": "^1.67.0"
     }
