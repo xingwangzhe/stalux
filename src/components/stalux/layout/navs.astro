@@ -74,7 +74,9 @@ const stalux = (await getCollection("config"))[0].data;
         const searchBtn = document.querySelector(
             '[data-ref="stalux-search-btn"]',
         );
-        searchBtn?.addEventListener("click", () => {
+        searchBtn?.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeNav();
             const event = new CustomEvent("openSearch");
             document.dispatchEvent(event);
         });

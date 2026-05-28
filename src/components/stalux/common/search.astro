@@ -52,10 +52,15 @@ import * as feather from "feather-icons";
 
         document.addEventListener("openSearch", () => {
             container?.classList.add("active");
-            const input = container?.querySelector(
-                "pagefind-input",
-            ) as HTMLElement & { focus?: () => void };
-            input?.focus?.();
+            // 延迟聚焦，避免移动端侧边栏点击时立即弹出键盘
+            // 只在桌面端主动聚焦；移动端用户手动点击输入框时再聚焦
+            const isMobile = window.matchMedia("(max-width: 768px)").matches;
+            if (!isMobile) {
+                const input = container?.querySelector(
+                    "pagefind-input",
+                ) as HTMLElement & { focus?: () => void };
+                setTimeout(() => input?.focus?.(), 150);
+            }
         });
 
         closeBtn?.addEventListener("click", closeSearch);

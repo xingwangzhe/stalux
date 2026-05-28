@@ -14,7 +14,12 @@
     border: none;
     cursor: pointer;
     font: inherit;
-    padding: 0;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 44px;
 }
 
 .navLink :global(.nav-icon) {
@@ -34,7 +39,6 @@
     text-shadow: var(--stalux-text-shadow);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
 }
 
 .navText {
@@ -49,13 +53,15 @@
     border: none;
     color: inherit;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.75rem;
     z-index: 1001;
+    min-width: 48px;
+    min-height: 48px;
 }
 
 .navToggle :global(svg) {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
 }
 
 /* 遮罩层 */
@@ -105,14 +111,14 @@
         position: fixed;
         top: 0;
         right: 0;
-        width: 140px;
+        width: 220px;
         height: 100vh;
         background: var(--black-20p);
         backdrop-filter: blur(20px);
         flex-direction: column;
         align-items: flex-start;
         gap: 0;
-        padding: 4rem 1.5rem 2rem;
+        padding: 4rem 1rem 2rem 1rem;
         transform: translateX(100%);
         z-index: 1000;
         overflow-y: auto;
@@ -126,7 +132,6 @@
 
     .navItem {
         width: 100%;
-        padding: 1rem 0.5rem;
         margin: 0;
         border-bottom: 1px solid var(--white-10p);
         font-size: 1.1em;
@@ -138,5 +143,6 @@
 
     .navLink {
         width: 100%;
+        padding: 1rem 0.75rem;
     }
 }
