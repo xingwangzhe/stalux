@@ -5,7 +5,7 @@ import "@styles/components/search.css";
 import * as feather from "feather-icons";
 ---
 
-<div id="search-container" class="search-container" data-pf-theme="dark">
+<div id="search-container" class="search-container" data-pf-theme="dark" inert>
     <div class="search-backdrop"></div>
     <div class="search-box">
         <div class="search-header">
@@ -48,9 +48,11 @@ import * as feather from "feather-icons";
 
         const closeSearch = () => {
             container?.classList.remove("active");
+            container?.setAttribute("inert", "");
         };
 
         document.addEventListener("openSearch", () => {
+            container?.removeAttribute("inert");
             container?.classList.add("active");
             // 延迟聚焦，避免移动端侧边栏点击时立即弹出键盘
             // 只在桌面端主动聚焦；移动端用户手动点击输入框时再聚焦

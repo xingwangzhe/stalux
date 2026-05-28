@@ -34,6 +34,13 @@ mark {
     transition-delay: 0s;
 }
 
+/* inert 保底：阻止隐藏状态的搜索框接收任何交互 */
+.search-container[inert],
+.search-container[inert] * {
+    pointer-events: none !important;
+    user-select: none !important;
+}
+
 .search-container .search-backdrop {
     position: absolute;
     top: 0;
