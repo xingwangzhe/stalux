@@ -1,12 +1,10 @@
 {
     "lsp": {
+        "oxlint": {
+            "initialization_options": {}
+        },
         "oxfmt": {
-            "initialization_options": {
-                "settings": {
-                    "fmt.configPath": null,
-                    "run": "onSave"
-                }
-            }
+            "initialization_options": {}
         }
     },
     "languages": {
@@ -88,6 +86,19 @@
                 }
             ]
         },
+        "SCSS": {
+            "format_on_save": "on",
+            "prettier": {
+                "allowed": false
+            },
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt"
+                    }
+                }
+            ]
+        },
         "Markdown": {
             "format_on_save": "on",
             "prettier": {
@@ -101,7 +112,39 @@
                 }
             ]
         },
+        "MDX": {
+            "format_on_save": "on",
+            "prettier": {
+                "allowed": false
+            },
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt"
+                    }
+                }
+            ]
+        },
         "YAML": {
+            "format_on_save": "on",
+            "prettier": {
+                "allowed": false
+            },
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt"
+                    }
+                }
+            ]
+        },
+        "Astro": {
+            "format_on_save": "on",
+            "prettier": {
+                "allowed": false
+            }
+        },
+        "HTML": {
             "format_on_save": "on",
             "prettier": {
                 "allowed": false
