@@ -1,12 +1,10 @@
 {
     "lsp": {
+        "oxlint": {
+            "initialization_options": {}
+        },
         "oxfmt": {
-            "initialization_options": {
-                "settings": {
-                    "fmt.configPath": null,
-                    "run": "onSave"
-                }
-            }
+            "initialization_options": {}
         }
     },
     "languages": {
@@ -128,6 +126,25 @@
             ]
         },
         "YAML": {
+            "format_on_save": "on",
+            "prettier": {
+                "allowed": false
+            },
+            "formatter": [
+                {
+                    "language_server": {
+                        "name": "oxfmt"
+                    }
+                }
+            ]
+        },
+        "Astro": {
+            "format_on_save": "on",
+            "prettier": {
+                "allowed": false
+            }
+        },
+        "HTML": {
             "format_on_save": "on",
             "prettier": {
                 "allowed": false
