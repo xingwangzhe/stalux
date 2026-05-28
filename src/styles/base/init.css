@@ -254,6 +254,8 @@ ul {
     filter: var(--stalux-bg-filter, none);
     pointer-events: none;
     opacity: 0;
+    /* 禁止浏览器强制色彩模式（高对比度/暗黑模式）调整背景图颜色 */
+    forced-color-adjust: none;
 }
 
 /* 被 View Transition 捕获的活跃层 */
