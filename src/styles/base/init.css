@@ -1,4 +1,9 @@
 /* 全局设置 */
+/* 告知浏览器本页已自行处理深色模式，禁止浏览器自动调整背景图/图片颜色 */
+:root {
+    color-scheme: dark;
+}
+
 html,
 body {
     margin: 0;
