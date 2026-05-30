@@ -18,7 +18,7 @@
         "@astrojs/rss": "^4.0.18",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "^0.42.0",
-        "@waline/client": "^3.13.0",
+        "@waline/client": "3.15.0",
         "alfaaz": "^1.1.0",
         "animejs": "^4.4.1",
         "astro": "7.0.0-alpha.1",
@@ -40,7 +40,7 @@
     },
     "devDependencies": {
         "@types/node": "^25.9.1",
-        "license-checker-rseidelsohn": "5.0.0",
+        "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.52.0",
         "oxlint": "^1.67.0"
     }
