@@ -10,7 +10,7 @@ import { getCollection, render } from "astro:content";
  */
 export async function getTotalWordCount(): Promise<number> {
     try {
-        const posts = await getCollection("posts");
+        const posts = await getCollection("posts", ({ data }) => !data.draft);
         let totalWords = 0;
 
         for (const post of posts) {

@@ -8,7 +8,7 @@ interface Props {
 }
 
 const props = Astro.props as Props;
-const posts = props.posts ?? (await getCollection("posts"));
+const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
 const archivesByYearMonth: Record<
     number,
     Record<number, CollectionEntry<"posts">[]>

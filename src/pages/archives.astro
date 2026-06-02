@@ -5,7 +5,7 @@ import ArchivesList from "@components/stalux/archives/archivesList.astro";
 import { getCollection } from "astro:content";
 import styles from "@styles/pages/archives.module.css";
 const stalux = (await getCollection("config"))[0].data;
-const posts = await getCollection("posts");
+const posts = await getCollection("posts", ({ data }) => !data.draft);
 ---
 
 <Stalux title={"文章归档 | " + stalux.title} description={"本站文章归档页面"}>
