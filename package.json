@@ -36,12 +36,12 @@
         "photoswipe": "^5.4.4",
         "rehype-katex": "^7.0.1",
         "remark-math": "^6.0.0",
-        "simple-icons": "^16.21.0"
+        "simple-icons": "^16.22.0"
     },
     "devDependencies": {
         "@types/node": "^25.9.1",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.52.0",
-        "oxlint": "^1.67.0"
+        "oxlint": "^1.68.0"
     }
 }
