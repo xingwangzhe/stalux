@@ -21,7 +21,7 @@ const wordCount = remarkPluginFrontmatter.wordCount || 0;
 const autoDesc = remarkPluginFrontmatter.desc || props.post.data.desc || "";
 
 export async function getStaticPaths() {
-    const posts = await getCollection("posts");
+    const posts = await getCollection("posts", ({ data }) => !data.draft);
 
     // 按日期排序（降序）
     const sortedPosts = posts.sort((a, b) => {

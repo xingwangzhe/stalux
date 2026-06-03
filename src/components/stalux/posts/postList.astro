@@ -9,7 +9,7 @@ interface Props {
 
 const props = Astro.props as Props;
 // Allow callers to pass filtered posts to avoid re-fetching the full list.
-const posts = props.posts ?? (await getCollection("posts"));
+const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
 ---
 
 <div data-stalux="postlist" class={styles["container"]}>

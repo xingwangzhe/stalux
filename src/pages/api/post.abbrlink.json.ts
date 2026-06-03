@@ -4,7 +4,7 @@ import { getCollection } from "astro:content";
 export const prerender = true;
 
 export const GET: APIRoute = async () => {
-    const posts = await getCollection("posts");
+    const posts = await getCollection("posts", ({ data }) => !data.draft);
 
     const payload = posts.map((post) => ({
         title: post.data.title,

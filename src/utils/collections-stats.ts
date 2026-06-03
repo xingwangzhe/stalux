@@ -28,7 +28,7 @@ export async function getTagCountList() {
  * @returns Array<{ name: string; count: number }>
  */
 export async function getCategoryCountList() {
-    const posts = await getCollection("posts");
+    const posts = await getCollection("posts", ({ data }) => !data.draft);
     const categoryMap = new Map<string, number>();
 
     posts.forEach((post) => {
