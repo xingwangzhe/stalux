@@ -322,6 +322,7 @@ stalux:
             recaptchaV3Key: "" # 可选，配置 reCAPTCHA v3 网站 key 以启用验证码
             turnstileKey: "" # 可选，配置 Cloudflare Turnstile key 以启用验证码
             dark: true
+            # emoji 预设列表见 https://waline.js.org/next/guide/features/emoji.html#预设
             reaction: false
             meta:
                 - "nick"

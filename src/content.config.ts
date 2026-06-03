@@ -154,7 +154,10 @@ const config = defineCollection({
                         emoji: z
                             .array(z.string())
                             .optional()
-                            .default(["https://unpkg.com/@waline/emojis@1.1.0/weibo"]),
+                            .default([
+                                "https://unpkg.com/@waline/emojis@1.1.0/bilibili",
+                                "https://unpkg.com/@waline/emojis@1.1.0/bmoji",
+                            ]),
                         reaction: z.boolean().optional().default(false),
                         meta: z.array(z.string()).optional().default(["nick", "mail", "link"]),
                         requiredMeta: z.array(z.string()).optional().default([]),
