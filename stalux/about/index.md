@@ -76,6 +76,17 @@ gpg --keyserver keys.openpgp.org --recv-keys 3F1888838EAAE1A4EA68D2D73067B770E21
 
 验证完成后，务必使用 GPG 工具对我发出的签名**进行校验**，确保通信内容的完整性与真实性。
 
+## 友链信息
+
+欢迎交换友链，以下是本站信息：
+
+| 项目 | 内容 |
+|---|---|
+| 名称 | 姓王者的博客 |
+| 图标 | `https://xingwangzhe.fun/avatar.webp` |
+| 网址 | `https://xingwangzhe.fun/` |
+| 描述 | 探索、学习、进步、创造无限可能！ |
+
 ## 支持与鼓励
 
 <div align="center" style="display: flex; justify-content: center; gap: 20px; margin: 20px 0;">
