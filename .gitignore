@@ -20,5 +20,8 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# lighthouse ci
+.lighthouseci/
+
 # jetbrains setting folder
 .idea/
