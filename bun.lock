@@ -27,13 +27,13 @@
         "photoswipe": "^5.4.4",
         "rehype-katex": "^7.0.1",
         "remark-math": "^6.0.0",
-        "simple-icons": "^16.21.0",
+        "simple-icons": "^16.22.0",
       },
       "devDependencies": {
-        "@types/node": "^25.9.1",
+        "@types/node": "^25.9.2",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.52.0",
-        "oxlint": "^1.67.0",
+        "oxlint": "^1.68.0",
       },
     },
   },
@@ -572,7 +572,7 @@
 
     "@types/nlcst": ["@types/nlcst@2.0.3", "https://registry.npmmirror.com/@types/nlcst/-/nlcst-2.0.3.tgz", { "dependencies": { "@types/unist": "*" } }, "sha512-vSYNSDe6Ix3q+6Z7ri9lyWqgGhJTmzRjZRqyq15N0Z/1/UnVsno9G/N40NBijoYx2seFDIl0+B2mgAb9mezUCA=="],
 
-    "@types/node": ["@types/node@25.9.1", "https://registry.npmmirror.com/@types/node/-/node-25.9.1.tgz", { "dependencies": { "undici-types": ">=7.24.0 <7.24.7" } }, "sha512-xfrlY7UD5rMJk3ZVJP8BNzS28J36YJg+xp+LPXV1TdWxr8uMH5A860QNxYDGQe/ylDSgjxE52Q9VnO7p75tJxg=="],
+    "@types/node": ["@types/node@25.9.2", "https://registry.npmmirror.com/@types/node/-/node-25.9.2.tgz", { "dependencies": { "undici-types": ">=7.24.0 <7.24.7" } }, "sha512-G05zqtJhcDLb8uslf5EjCxXg9G1KQxiV8OS0R26IC//Eoyitzqe8z37I7cqvnZlrlSfgocQRfSn/AHBZJJFyGw=="],
 
     "@types/sax": ["@types/sax@1.2.7", "https://registry.npmmirror.com/@types/sax/-/sax-1.2.7.tgz", { "dependencies": { "@types/node": "*" } }, "sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A=="],
 
