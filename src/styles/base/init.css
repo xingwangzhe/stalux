@@ -255,6 +255,8 @@ ul {
     opacity: 0;
     /* 禁止浏览器强制色彩模式（高对比度/暗黑模式）调整背景图颜色 */
     forced-color-adjust: none;
+    /* 关键：防止 Safari/WebKit 在暗色模式下自动调整 SVG 背景图颜色 */
+    color-scheme: only light;
 }
 
 /* 被 View Transition 捕获的活跃层 */
@@ -274,6 +276,9 @@ ul {
     background-color: var(--stalux-bg-color, transparent);
     filter: var(--stalux-bg-filter, none);
     pointer-events: none;
+    /* 防止 Safari/WebKit 在暗色模式下自动调整 SVG 背景图颜色 */
+    color-scheme: only light;
+    forced-color-adjust: none;
 }
 
 /* footer 基础样式，保证页脚始终可见且不覆盖内容 */
