@@ -36,7 +36,7 @@
         "photoswipe": "^5.4.4",
         "rehype-katex": "^7.0.1",
         "remark-math": "^6.0.0",
-        "simple-icons": "^16.22.0"
+        "simple-icons": "^16.23.0"
     },
     "devDependencies": {
         "@types/node": "^25.9.2",
