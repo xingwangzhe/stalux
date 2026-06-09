@@ -187,6 +187,10 @@ stalux:
               description: "初心如初见，然忆似流年。"
               link: "https://www.imcry.vip"
               icon: "https://www.imcry.vip/img/avatar.png"
+            - name: "皓子的小站"
+              description: "互联网是一片海洋，网站犹如一座座孤岛漂浮在其上，唯有超链接将它们联系起来。而此处恰好就是一座小岛，欢迎访问皓子的小站。"
+              link: "https://howiehz.top"
+              icon: "https://howiehz.top/upload/ico.ico"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
