@@ -183,6 +183,10 @@ stalux:
               description: "梁栋烨的博客网站。"
               link: "https://090909.top/"
               icon: "https://090909.top/assets/images/logo.ico"
+            - name: "初然忆"
+              description: "初心如初见，然忆似流年。"
+              link: "https://www.imcry.vip"
+              icon: "https://www.imcry.vip/img/avatar.png"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
