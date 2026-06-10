@@ -122,7 +122,12 @@ const sortedYears = Object.keys(archivesByYearMonth)
     <script>
         import { createTimeline, stagger } from "animejs";
 
-        document.addEventListener("astro:after-swap", () => {
+        document.addEventListener("astro:page-load", () => {
+            // guard: 防止 VT 软导航重复初始化
+            const archivesRoot = document.querySelector<HTMLElement>("[data-year]")?.parentElement;
+            if (archivesRoot && (archivesRoot as HTMLElement).dataset.archivesInited === "1") return;
+            if (archivesRoot) (archivesRoot as HTMLElement).dataset.archivesInited = "1";
+
             let visibleYears = 2;
             const yearSections = document.querySelectorAll<HTMLElement>("[data-year]");
             const totalYears = yearSections.length;
