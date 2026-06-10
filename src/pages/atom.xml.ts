@@ -1,5 +1,5 @@
 import rss from "@astrojs/rss";
-import dayjs from "@utils/dayjs";
+import { toTimestamp, parseDate, isValid, formatInTimeZone } from "@utils/dayjs";
 import { toMachineDateTime } from "@utils/semantic-time";
 import type { APIRoute } from "astro";
 import { getCollection, render } from "astro:content";
@@ -13,8 +13,8 @@ export const GET: APIRoute = async (context) => {
 
     // 按日期排序
     const sortedPosts = posts.sort((a, b) => {
-        const dateA = dayjs(b.data.updated || b.data.date).valueOf();
-        const dateB = dayjs(a.data.updated || a.data.date).valueOf();
+        const dateA = toTimestamp(b.data.updated || b.data.date);
+        const dateB = toTimestamp(a.data.updated || a.data.date);
         return dateA - dateB;
     });
 
@@ -26,9 +26,9 @@ export const GET: APIRoute = async (context) => {
             // 构建自定义数据，包含更新时间和版权信息
             let customData = "";
             if (post.data.updated) {
-                const parsed = dayjs(post.data.updated);
-                if (parsed.isValid()) {
-                    const updatedIso = parsed.tz(stalux.timezone).toISOString();
+                const parsed = parseDate(post.data.updated);
+                if (isValid(parsed)) {
+                    const updatedIso = formatInTimeZone(parsed, stalux.timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
                     customData += `<updated>${updatedIso}</updated>`;
                 }
             }

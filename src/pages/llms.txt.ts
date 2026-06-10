@@ -1,4 +1,4 @@
-import dayjs from "@utils/dayjs";
+import { toTimestamp } from "@utils/dayjs";
 import type { APIRoute } from "astro";
 import { getCollection, render } from "astro:content";
 
@@ -12,8 +12,8 @@ export const GET: APIRoute = async (context) => {
     let posts = await getCollection("posts", ({ data }) => !data.draft);
 
     posts = posts.sort((a, b) => {
-        const dateA = dayjs(b.data.date || 0).valueOf();
-        const dateB = dayjs(a.data.date || 0).valueOf();
+        const dateA = toTimestamp(b.data.date || 0);
+        const dateB = toTimestamp(a.data.date || 0);
         return dateA - dateB;
     });
 

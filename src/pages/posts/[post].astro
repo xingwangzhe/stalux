@@ -2,7 +2,7 @@
 import Stalux from "@layouts/Stalux.astro";
 import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry, render } from "astro:content";
-import dayjs from "@utils/dayjs";
+import { toTimestamp } from "@utils/dayjs";
 
 import Navs from "@components/stalux/layout/navs.astro";
 
@@ -25,8 +25,8 @@ export async function getStaticPaths() {
 
     // 按日期排序（降序）
     const sortedPosts = posts.sort((a, b) => {
-        const dateA = a.data.date ? dayjs(a.data.date).valueOf() : 0;
-        const dateB = b.data.date ? dayjs(b.data.date).valueOf() : 0;
+        const dateA = toTimestamp(a.data.date);
+        const dateB = toTimestamp(b.data.date);
         return dateB - dateA;
     });
 
