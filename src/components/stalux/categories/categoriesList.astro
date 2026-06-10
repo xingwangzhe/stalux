@@ -20,7 +20,12 @@ const categoryList = await getCategoryCountList();
     import { createTimeline, stagger } from "animejs";
 
     document.addEventListener("astro:page-load", () => {
-        const grid = document.getElementById("categories-grid")!;
+        const grid = document.getElementById("categories-grid");
+        if (!grid) return;
+        // guard: 防止 VT 软导航重复初始化
+        if (grid.dataset.inited === "1") return;
+        grid.dataset.inited = "1";
+
         const items = document.querySelectorAll<HTMLElement>("[data-category-item]");
         if (items.length === 0) return;
 
