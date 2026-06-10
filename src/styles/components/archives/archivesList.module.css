@@ -23,8 +23,6 @@
 .yearSection {
     margin-bottom: var(--space-2xl);
     position: relative;
-    animation: fadeIn 0.6s ease forwards;
-    opacity: 0;
 }
 
 .yearSection::before {

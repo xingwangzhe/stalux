@@ -53,12 +53,13 @@ const sortedYears = Object.keys(archivesByYearMonth)
         <div class={styles.timelineContainer}>
             {
                 sortedYears.length > 0 ? (
-                    sortedYears.map((year) => (
+                    sortedYears.map((year, yi) => (
                         <div
                             class={styles.yearSection}
                             data-year={String(year)}
+                            style={yi < 2 ? "opacity:0" : "display:none"}
                         >
-                            <div class={styles.yearHeader}>
+                            <div class={styles.yearHeader} data-year-header>
                                 <h2 class={styles.yearTitle}>{year}</h2>
                                 <div class={styles.yearCount}>
                                     {yearCounts[year] ?? 0} 篇文章
@@ -66,9 +67,9 @@ const sortedYears = Object.keys(archivesByYearMonth)
                             </div>
                             {Object.keys(archivesByYearMonth[year])
                                 .map(Number)
-                                .sort((a, b) => b - a) // 月份降序排列
+                                .sort((a, b) => b - a)
                                 .map((month) => (
-                                    <div class={styles.monthSection}>
+                                    <div class={styles.monthSection} data-month-section>
                                         <h3 class={styles.monthTitle}>
                                             {month}月
                                         </h3>
@@ -76,7 +77,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
                                             {archivesByYearMonth[year][
                                                 month
                                             ].map((post) => (
-                                                <li class={styles.postItem}>
+                                                <li class={styles.postItem} data-post-item>
                                                     <time
                                                         class={styles.postDate}
                                                         datetime={post.data.date}
@@ -119,120 +120,69 @@ const sortedYears = Object.keys(archivesByYearMonth)
     </div>
 
     <script>
-        // 懒加载实现（脚本与原始页面相同）
-        document.addEventListener("DOMContentLoaded", () => {
-            let visibleYears = 2;
-            // 通过数据属性选择，以便在使用 CSS 模块时不会破坏 JS
-            const yearSections = document.querySelectorAll("[data-year]");
-            const totalYears = yearSections.length;
-            const lazyloadObserver =
-                document.getElementById("lazyload-observer");
+        import { createTimeline, stagger } from "animejs";
 
-            // 默认隐藏懒加载指示器，仅当还有未显示年份时才显示（避免在全部已加载时出现“加载更多内容”）
+        document.addEventListener("astro:page-load", () => {
+            let visibleYears = 2;
+            const yearSections = document.querySelectorAll<HTMLElement>("[data-year]");
+            const totalYears = yearSections.length;
+            const lazyloadObserver = document.getElementById("lazyload-observer");
+
             if (lazyloadObserver) {
-                if (totalYears > visibleYears) {
-                    (lazyloadObserver as HTMLElement).style.display = "flex";
-                } else {
-                    (lazyloadObserver as HTMLElement).style.display = "none";
-                }
+                lazyloadObserver.style.display = totalYears > visibleYears ? "flex" : "none";
             }
 
-            const updateLoadingIndicator = (
-                isLoading: boolean,
-                isComplete: boolean,
-            ) => {
+            const updateLoadingIndicator = (isLoading: boolean, isComplete: boolean) => {
                 if (!lazyloadObserver) return;
-                const loadingText = lazyloadObserver.querySelector(
-                    "[data-loading-text]",
-                ) as HTMLElement;
-                const loadingSpinner = lazyloadObserver.querySelector(
-                    "[data-loading-spinner]",
-                ) as HTMLElement;
+                const lt = lazyloadObserver.querySelector("[data-loading-text]") as HTMLElement;
+                const ls = lazyloadObserver.querySelector("[data-loading-spinner]") as HTMLElement;
                 if (isComplete) {
-                    if (loadingText) loadingText.textContent = "已加载全部内容";
-                    if (loadingSpinner) loadingSpinner.style.display = "none";
+                    if (lt) lt.textContent = "已加载全部内容";
+                    if (ls) ls.style.display = "none";
                     setTimeout(() => {
-                        if (lazyloadObserver) {
-                            (lazyloadObserver as HTMLElement).style.opacity =
-                                "0";
-                            setTimeout(() => {
-                                if (lazyloadObserver) {
-                                    (
-                                        lazyloadObserver as HTMLElement
-                                    ).style.display = "none";
-                                }
-                            }, 500);
-                        }
+                        lazyloadObserver!.style.opacity = "0";
+                        setTimeout(() => { lazyloadObserver!.style.display = "none"; }, 500);
                     }, 3000);
                 } else {
-                    if (loadingText)
-                        loadingText.textContent = isLoading
-                            ? "正在加载..."
-                            : "滚动加载更多";
+                    if (lt) lt.textContent = isLoading ? "正在加载..." : "滚动加载更多";
                 }
             };
 
             const showYearSection = (index: number) => {
-                if (index >= 0 && index < totalYears && yearSections[index]) {
-                    const section = yearSections[index] as HTMLElement;
-                    section.style.display = "block";
-                    section.style.opacity = "0";
-                    setTimeout(() => {
-                        section.style.opacity = "1";
-                        section.style.transform = "translateY(0)";
-                    }, 50);
-                }
+                const section = yearSections[index];
+                if (!section) return;
+                const yh = section.querySelector<HTMLElement>("[data-year-header]");
+                const mb = section.querySelectorAll<HTMLElement>("[data-month-section]");
+                const pi = section.querySelectorAll<HTMLElement>("[data-post-item]");
+                section.style.display = "block";
+                if (yh) yh.style.opacity = "0";
+                mb.forEach(el => { el.style.opacity = "0"; });
+                pi.forEach(el => { el.style.opacity = "0"; });
+                section.style.opacity = "";
+                const tl = createTimeline();
+                if (yh) tl.add(yh, { opacity: [0, 1], translateY: [10, 0], duration: 150, ease: "outExpo" });
+                if (mb.length) tl.add(mb, { opacity: [0, 1], translateX: [-15, 0], duration: 200, ease: "outExpo", delay: stagger(40) }, "+=30");
+                if (pi.length) tl.add(pi, { opacity: [0, 1], translateX: [-10, 0], duration: 180, ease: "outExpo", delay: stagger(25) }, "-=100");
             };
-            if (totalYears > 0) {
-                for (let i = 0; i < totalYears; i++) {
-                    if (i < visibleYears) {
-                        showYearSection(i);
-                    } else {
-                        (yearSections[i] as HTMLElement).style.display = "none";
-                    }
-                }
-                if (totalYears <= visibleYears && lazyloadObserver) {
-                    updateLoadingIndicator(false, true);
-                }
+
+            for (let i = 0; i < totalYears; i++) {
+                if (i < visibleYears) showYearSection(i);
+                else yearSections[i].style.display = "none";
             }
+            if (totalYears <= visibleYears && lazyloadObserver) updateLoadingIndicator(false, true);
 
             const observer = new IntersectionObserver(
                 (entries) => {
-                    entries.forEach((entry) => {
-                        if (entry.isIntersecting && visibleYears < totalYears) {
+                    entries.forEach(e => {
+                        if (e.isIntersecting && visibleYears < totalYears) {
                             updateLoadingIndicator(true, false);
-                            setTimeout(() => {
-                                showYearSection(visibleYears);
-                                visibleYears++;
-                                if (visibleYears >= totalYears) {
-                                    updateLoadingIndicator(false, true);
-                                } else {
-                                    updateLoadingIndicator(false, false);
-                                }
-                            }, 300);
+                            setTimeout(() => { showYearSection(visibleYears); visibleYears++; updateLoadingIndicator(false, visibleYears >= totalYears); }, 300);
                         }
                     });
                 },
-                {
-                    rootMargin: "300px",
-                    threshold: 0.1,
-                },
+                { rootMargin: "300px", threshold: 0.1 },
             );
-
-            if (lazyloadObserver) {
-                observer.observe(lazyloadObserver);
-            } else {
-                console.warn("懒加载指示器元素未找到");
-            }
-
-            window.addEventListener("error", (e) => {
-                if (
-                    e.message.includes("lazyload") ||
-                    e.message.includes("observer")
-                ) {
-                    console.error("懒加载功能出现错误:", e);
-                }
-            });
+            if (lazyloadObserver) observer.observe(lazyloadObserver);
         });
     </script>
 </div>
