@@ -1,6 +1,7 @@
 ---
 import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postToc.module.css";
+import { initTocScrollSpy } from "@utils/toc-scrollspy";
 
 interface TocHeading {
     depth: number;
@@ -23,7 +24,7 @@ const tocItems = headings
     }));
 ---
 
-<div transition:name="toc-container">
+<div transition:name="toc-container" data-toc-active-class={style.active}>
     <h3 class={style.title}>{title}</h3>
     {
         tocItems.length > 0 ? (
@@ -37,6 +38,7 @@ const tocItems = headings
                         <a
                             class={`${style.item} ${style[`depth-${heading.depth}`] || ""} a-none`}
                             href={`#${heading.slug}`}
+                            data-toc-link
                         >
                             {heading.text}
                         </a>
@@ -48,3 +50,13 @@ const tocItems = headings
         )
     }
 </div>
+
+<script>
+    import { initTocScrollSpy } from "@utils/toc-scrollspy";
+
+    document.addEventListener("astro:page-load", () => {
+        const container = document.querySelector("[data-toc-active-class]");
+        const activeClass = container?.getAttribute("data-toc-active-class");
+        if (activeClass) initTocScrollSpy(activeClass);
+    });
+</script>

@@ -24,7 +24,11 @@
     font-size: var(--font-size-small);
     border-left: var(--border-thick) solid transparent;
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    transition: transform var(--transition-medium);
+    transition:
+        color var(--transition-medium),
+        background-color var(--transition-medium),
+        border-left-color var(--transition-medium),
+        transform var(--transition-medium);
     line-height: 1.4;
     word-break: break-word;
 }
