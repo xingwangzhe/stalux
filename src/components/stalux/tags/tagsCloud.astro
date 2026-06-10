@@ -3,19 +3,22 @@ import { getTagCountList } from "@utils/collections-stats";
 import styles from "@styles/components/tags/tagsCloud.module.css";
 
 const tagList = await getTagCountList();
+const topTags = tagList.slice(0, 100);
+const tagTexts = topTags.map((t) => t.name);
 ---
 
-<div class={styles.tagsCloud}>
+<!-- 移动端：SSR 卡片 -->
+<div class={styles.cards} id="tags-cards">
     {
         tagList.length > 0 ? (
-            tagList.map(({ name, count }) => (
+            topTags.map(({ name, count }) => (
                 <a
                     href={`/tags/${name}/`}
-                    class={styles.tagItem}
+                    class={styles.tagCard}
                     data-count={count}
                 >
-                    <div class={styles.tagName}>{name}</div>
-                    <div class={styles.tagCount}>{count}</div>
+                    <span class={styles.tagName}>{name}</span>
+                    <span class={styles.tagCount}>{count}</span>
                 </a>
             ))
         ) : (
@@ -23,3 +26,62 @@ const tagList = await getTagCountList();
         )
     }
 </div>
+
+<!-- 桌面端：Canvas 标签云 -->
+<div
+    class={styles.canvas}
+    id="tags-canvas"
+    data-tags={JSON.stringify(tagTexts)}
+></div>
+
+<script>
+    import { TagCloud } from "@xingwangzhe/tags-cloud";
+    import { stagger, createTimeline } from "animejs";
+
+    document.addEventListener("astro:page-load", () => {
+        // ── 移动端卡片入场动画 ──
+        const cardsContainer = document.getElementById("tags-cards");
+        if (cardsContainer && window.matchMedia("(max-width: 768px)").matches) {
+            if (!cardsContainer.dataset.animated) {
+                cardsContainer.dataset.animated = "1";
+                const cards = cardsContainer.querySelectorAll<HTMLElement>(".tagCard");
+                if (cards.length > 0) {
+                    cards.forEach((c) => (c.style.opacity = "0"));
+                    createTimeline().add(
+                        cards,
+                        { opacity: [0, 1], duration: 400, ease: "outExpo", delay: stagger(30, { start: 0 }) },
+                        0,
+                    );
+                }
+            }
+        }
+
+        // ── 桌面端：3D 标签云 ──
+        const canvasContainer = document.getElementById("tags-canvas");
+        if (!canvasContainer) return;
+        if (canvasContainer.dataset.inited === "1") return;
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        canvasContainer.dataset.inited = "1";
+
+        const TAG_TEXTS: string[] = JSON.parse(canvasContainer.dataset.tags || "[]");
+        if (TAG_TEXTS.length === 0) return;
+
+        const vw = window.innerWidth;
+        const radius = vw < 1024 ? 220 : vw < 1440 ? 280 : 320;
+
+        new TagCloud(canvasContainer, {
+            tags: TAG_TEXTS,
+            radius,
+            spinY: 0.15,
+            fontSize: 16,
+            color: "#ffffff",
+            fontFamily: "system-ui, -apple-system, sans-serif",
+            onTagClick(item) {
+                if (typeof item === "string") {
+                    window.location.href = `/tags/${item}/`;
+                }
+            },
+        });
+    });
+</script>

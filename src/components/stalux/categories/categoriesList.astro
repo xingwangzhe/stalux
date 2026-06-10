@@ -6,12 +6,35 @@ import CategoriesCard from "@components/stalux/categories/categoriesCard.astro";
 const categoryList = await getCategoryCountList();
 ---
 
-<ul class={styles.categoriesList}>
+<ul class={styles.categoriesList} id="categories-grid">
     {
         categoryList.map((category) => (
-            <li>
+            <li data-category-item style="opacity:0">
                 <CategoriesCard category={category} />
             </li>
         ))
     }
 </ul>
+
+<script>
+    import { createTimeline, stagger } from "animejs";
+
+    document.addEventListener("astro:page-load", () => {
+        const grid = document.getElementById("categories-grid")!;
+        const items = document.querySelectorAll<HTMLElement>("[data-category-item]");
+        if (items.length === 0) return;
+
+        // 根据 grid 容器宽度和列宽动态计算行列数
+        const colWidth = 300 + 28.8; // minmax 300px + gap 1.8rem
+        const cols = Math.max(1, Math.floor(grid.clientWidth / colWidth));
+        const rows = Math.ceil(items.length / cols);
+
+        createTimeline().add(items, {
+            opacity: [0, 1],
+            translateY: [30, 0],
+            duration: 800,
+            ease: "outExpo",
+            delay: stagger(100, { grid: [cols, rows], from: "first", axis: "y" }),
+        });
+    });
+</script>
