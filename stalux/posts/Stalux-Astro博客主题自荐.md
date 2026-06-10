@@ -201,7 +201,7 @@ const config = defineCollection({
 
 ### 丰富的功能
 
-waline评论区配置,社交媒体链接 使用`simple-icons`图标库,导航图标 使用`feather`图标库,多种徽章支持,等等就不一一列举
+waline评论区配置,社交媒体链接 使用`simple-icons`图标库,导航图标 使用`lucide`图标库,多种徽章支持,等等就不一一列举
 
 ## 结语
 
