@@ -12,6 +12,9 @@
     gap: var(--space-lg);
     padding: var(--space-lg) 0;
 
+    /* 为 scrollIntoView 预留底部空间，确保长目录的激活项不会被裁切 */
+    scroll-padding-bottom: 8rem;
+
     /* 隐藏滚动条但保留滚动功能 */
     scrollbar-width: none;
     -ms-overflow-style: none;
