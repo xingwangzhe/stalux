@@ -64,10 +64,11 @@
 }
 
 [data-pagefind-body] code {
-    color: #ff79c6;
-    background-color: rgba(255, 121, 198, 0.1);
+    color: #ff92d0;
+    background-color: rgba(255, 121, 198, 0.15);
     padding: 0.2em 0.4em;
     border-radius: 3px;
+    border: 1px solid rgba(255, 121, 198, 0.25);
     font-size: 0.9em;
     font-family: var(--font-mono, "Courier New", monospace);
 }
