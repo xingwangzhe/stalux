@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import styles from "@styles/components/archives/archivesList.module.css";
-import dayjs from "@utils/dayjs";
+import { toTimestamp, parseDate, format } from "@utils/dayjs";
 
 interface Props {
     posts?: CollectionEntry<"posts">[];
@@ -17,9 +17,9 @@ const yearCounts: Record<number, number> = {};
 
 posts.forEach((post) => {
     if (!post.data.date) return;
-    const date = dayjs.utc(post.data.date);
-    const year = date.year();
-    const month = date.month() + 1; // dayjs 月份从 0 开始
+    const date = parseDate(post.data.date);
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth() + 1;
     if (!archivesByYearMonth[year]) {
         archivesByYearMonth[year] = {};
         yearCounts[year] = 0;
@@ -35,8 +35,8 @@ posts.forEach((post) => {
 Object.keys(archivesByYearMonth).forEach((year) => {
     Object.keys(archivesByYearMonth[Number(year)]).forEach((month) => {
         archivesByYearMonth[Number(year)][Number(month)].sort((a, b) => {
-            const da = dayjs.utc(a.data.date || 0).valueOf();
-            const db = dayjs.utc(b.data.date || 0).valueOf();
+            const da = toTimestamp(a.data.date || 0);
+            const db = toTimestamp(b.data.date || 0);
             return db - da;
         });
     });
@@ -81,7 +81,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
                                                         class={styles.postDate}
                                                         datetime={post.data.date}
                                                     >
-                                                        {dayjs.utc(post.data.date).format("YYYY-MM-DD")}
+                                                        {format(parseDate(post.data.date), 'yyyy-MM-dd')}
                                                     </time>
                                                     <a
                                                         href={`/posts/${post.data.abbrlink}/`}

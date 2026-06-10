@@ -8,20 +8,20 @@ import styles from "@styles/components/common/date.module.css";
 </div>
 
 <script>
-    import dayjs from "dayjs";
-    import "dayjs/locale/zh-cn";
-    dayjs.locale();
+    import { format } from "date-fns";
+    import { zhCN } from "date-fns/locale/zh-CN";
+
     function updateDateTime() {
-        const now = dayjs();
+        const now = new Date();
         const dateEl = document.querySelector('[data-ref="date"]');
         const timeEl = document.querySelector('[data-ref="time"]');
         if (dateEl) {
-            dateEl.textContent = now.format("YYYY年MM月DD日");
-            dateEl.setAttribute("datetime", now.format("YYYY-MM-DD"));
+            dateEl.textContent = format(now, "yyyy年MM月dd日", { locale: zhCN });
+            dateEl.setAttribute("datetime", format(now, "yyyy-MM-dd"));
         }
         if (timeEl) {
-            timeEl.textContent = now.format("HH:mm:ss");
-            timeEl.setAttribute("datetime", now.format("HH:mm:ss"));
+            timeEl.textContent = format(now, "HH:mm:ss");
+            timeEl.setAttribute("datetime", format(now, "HH:mm:ss"));
         }
     }
     document.addEventListener("astro:page-load", () => {
