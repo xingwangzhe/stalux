@@ -1,6 +1,6 @@
 ---
 title: 我做了一个现代Web版本的标签云，支持图片视频Web组件
-abbrlink: 384eafa7
+abbrlink: modern-tags-cloud-3d
 date: "2026-06-10 20:00:00"
 tags:
     - 标签云
