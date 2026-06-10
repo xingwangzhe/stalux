@@ -1,25 +1,19 @@
 ---
-//@ts-ignore
-import * as feather from "feather-icons"; // 导入 feather-icons 以便使用图标
+import { Icon } from "@lucide/astro";
+import { icons } from "lucide";
 import { getCollection } from "astro:content";
 import styles from "@styles/components/layout/navs.module.css";
 import Search from "@components/stalux/common/search.astro";
-function getIconSvg(iconName: string): string {
-    if (!iconName) return "";
-    try {
-        const icon = feather.icons[iconName];
-        return icon
-            ? icon.toSvg({
-                  width: 20,
-                  height: 20,
-                  "stroke-width": 2,
-                  class: "nav-icon",
-              })
-            : "";
-    } catch (error) {
-        console.error(`Icon '${iconName}' not found in feather-icons`);
-        return "";
-    }
+/** 将 lucide 官网的 kebab-case 名称转为 icons 对象的 PascalCase key */
+function getIconNode(iconName: string) {
+    if (!iconName) return null;
+    const pascal = iconName
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join("");
+    const node = icons[pascal];
+    if (!node) console.error(`lucide 图标 '${iconName}' 未找到`);
+    return node;
 }
 const stalux = (await getCollection("config"))[0].data;
 ---
@@ -31,7 +25,7 @@ const stalux = (await getCollection("config"))[0].data;
         class={styles.navToggle}
         aria-label="打开导航菜单"
     >
-        <Fragment set:html={getIconSvg("menu")} />
+        <Icon iconNode={getIconNode("menu")} size={20} stroke-width={2} class="nav-icon" />
     </button>
 
     <!-- 侧边栏遮罩 -->
@@ -48,7 +42,7 @@ const stalux = (await getCollection("config"))[0].data;
                         data-ref="stalux-nav-link"
                     >
                         {item.icon && (
-                            <Fragment set:html={getIconSvg(item.icon)} />
+                            <Icon iconNode={getIconNode(item.icon)} size={20} stroke-width={2} class="nav-icon" />
                         )}
                         <span class={styles.navText}>{item.title}</span>
                     </a>
@@ -62,7 +56,7 @@ const stalux = (await getCollection("config"))[0].data;
                 data-ref="stalux-search-btn"
                 aria-label="打开搜索"
             >
-                <Fragment set:html={getIconSvg("search")} />
+                <Icon iconNode={getIconNode("search")} size={20} stroke-width={2} class="nav-icon" />
                 <span class={styles.navText}>搜索</span>
             </a>
         </li>

@@ -82,7 +82,7 @@ navs:
 
 说明：
 
-- `link` 支持站内路径或完整外链；`icon` 使用 Feather Icons 名称。
+- `link` 支持站内路径或完整外链；`icon` 使用 [Lucide Icons](https://lucide.dev/icons/) 标准名称（如 `home`、`train-front`）。
 - 需要新增导航项时，按相同结构追加；搜索入口已内置，无需手动配置。
 
 ## 常见操作

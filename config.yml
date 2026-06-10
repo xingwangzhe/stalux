@@ -28,6 +28,8 @@ stalux:
         bio: 博客主题Stalux
 
     navs:
+        # icon 请使用 Lucide 图标库的标准名称
+        # 图标列表: https://lucide.dev/icons/
         - title: 首页
           icon: home
           link: /
@@ -47,7 +49,7 @@ stalux:
           icon: user
           link: /about
         - title: 开往
-          icon: airplay
+          icon: train-front
           link: https://www.travellings.cn/go
 
     typetexts:

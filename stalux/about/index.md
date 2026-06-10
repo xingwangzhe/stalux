@@ -10,7 +10,7 @@ description: 博客的关于页面,介绍这个博客
 ## ⚙️ 你能配置什么
 
 - 站点信息：标题、描述、作者、favicon、社交头部信息
-- 导航菜单：名称、图标（Feather Icons）、内外链
+- 导航菜单：名称、图标（Lucide Icons）、内外链
 - 评论系统：Waline 服务器地址、语言、表情、分页等
 - 社交链接：多平台入口，基于 simple-icons 渲染 SVG
 - 友情链接：站点名称、描述、图标、链接
@@ -23,7 +23,7 @@ description: 博客的关于页面,介绍这个博客
 - [Astro](https://astro.build/) — 内容驱动的现代静态框架
 - [MDN Web Docs](https://developer.mozilla.org/) — Web 技术权威参考
 - [Simple Icons](https://simpleicons.org/) — 品牌 SVG 图标库
-- [Feather Icons](https://feathericons.com/) — 轻量简洁的开源图标
+- [Lucide Icons](https://lucide.dev/) — 美观一致的开源图标库
 
 ## 💡 使用建议
 

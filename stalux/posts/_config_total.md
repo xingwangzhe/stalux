@@ -94,10 +94,10 @@ stalux:
                   icon: "https://animejs.com/assets/images/favicon.png",
               }
             - {
-                  name: "feather-icons",
-                  description: "简洁且美观的开源图标库，适用于各种设计项目。",
-                  link: "https://feathericons.com/",
-                  icon: "https://feathericons.com/favicon.ico",
+                  name: "lucide",
+                  description: "美观一致的开源图标库，基于 Lucide 图标系统。",
+                  link: "https://lucide.dev/",
+                  icon: "https://lucide.dev/favicon.ico",
               }
             - {
                   name: "simple-icons",
@@ -211,7 +211,7 @@ stalux:
     - `head.umami`: Umami 分析配置（包含 `id` 和 `url`）
     - `head.anyhead`: 额外的自定义头部 HTML
 - 作者信息: `author.name`、`author.avatar`、`author.bio` 显示在文章和侧边栏等位置。
-- 导航与动效: `navs` 为顶部导航，`icon` 使用 Feather Icons 名称；`typetexts` 是首页打字机动效的随机文案。
+- 导航与动效: `navs` 为顶部导航，`icon` 使用 Lucide Icons 标准 PascalCase 名称（参见 https://lucide.dev/icons/）；`typetexts` 是首页打字机动效的随机文案。
 - 社交与友链: `mediaLinks` 渲染社交图标；`links` 定义友链分组标题、描述和站点列表。
 - 页脚: `footer.buildtime` 用于站点运行时长；`copyright` 控制版权显示；`theme` 控制主题信息展示；`beian` 提供 ICP/公安备案开关；`badges` 为页脚徽章列表；`custom` 支持自定义插槽 HTML。
 - 评论开关: `comment.enabled` 控制是否在全站渲染评论区（默认 `false`）。
@@ -220,7 +220,7 @@ stalux:
 ## 常见修改
 
 - 部署到新域名时，更新 `url` 与可选的 `canonical`，并检查导航外链。
-- 新增导航项时，仿照 `navs` 结构添加，并选择 Feather Icons 名称。
+- 新增导航项时，仿照 `navs` 结构添加，并从 [Lucide Icons](https://lucide.dev/icons/) 选择 PascalCase 图标名称。
 - 需要更多社交或友链时，分别补充到 `mediaLinks` 或 `links.sites`。
 - 页脚徽章可按 `{ label, message, color, style?, alt?, href }` 追加；备案信息只在对应开关开启后显示。
 - Waline 服务地址或表情包源变更时，同步修改 `comment.waline`，并参考专篇确认客户端是否需要额外参数。
@@ -351,7 +351,7 @@ stalux:
           link: /about
 ```
 
-图标名称来自 [Feather Icons](https://feathericons.com/)。
+图标名称来自 [Lucide Icons](https://lucide.dev/icons/)，使用 PascalCase 命名（如 Home、ChevronDown）。
 
 ### 第三步：其他可选配置
 

@@ -1,8 +1,8 @@
 ---
+import { Icon } from "@lucide/astro";
+import { icons } from "lucide";
 import PagefindConfig from "astro-pagefind/components/PagefindConfig.astro";
 import "@styles/components/search.css";
-//@ts-ignore
-import * as feather from "feather-icons";
 ---
 
 <div id="search-container" class="search-container" data-pf-theme="dark" inert>
@@ -15,12 +15,7 @@ import * as feather from "feather-icons";
                 class="search-close"
                 aria-label="关闭搜索"
             >
-                <Fragment
-                    set:html={feather.icons["x"].toSvg({
-                        width: 24,
-                        height: 24,
-                    })}
-                />
+                <Icon iconNode={icons.X} size={24} />
             </button>
         </div>
         <PagefindConfig instance="search" lang="zh-cn" />

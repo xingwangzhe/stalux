@@ -68,21 +68,19 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
     !isPostPage && (
         <script>
             import { animate } from "animejs";
-            document.addEventListener("DOMContentLoaded", () => {
-                animate(".social_icon", {
-                    y: [
-                        { to: "-2.75rem", ease: "outExpo", duration: 600 },
-                        { to: 0, ease: "outBounce", duration: 800, delay: 100 },
-                    ],
-                    rotate: {
-                        from: "-1turn",
-                        delay: 0,
-                    },
-                    delay: (_, i) => i * 50, // 基于函数的延迟值
-                    ease: "inOutCirc",
-                    loopDelay: 1000,
-                    loop: true,
-                });
+            animate(".social_icon", {
+                y: [
+                    { to: "-2.75rem", ease: "outExpo", duration: 600 },
+                    { to: 0, ease: "outBounce", duration: 800, delay: 100 },
+                ],
+                rotate: {
+                    from: "-1turn",
+                    delay: 0,
+                },
+                delay: (_, i) => i * 50,
+                ease: "inOutCirc",
+                loopDelay: 1000,
+                loop: true,
             });
         </script>
     )
