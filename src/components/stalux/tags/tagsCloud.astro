@@ -75,6 +75,9 @@ const tagTexts = tagList.map((t) => t.name);
         const maxRadius = Math.round(containerWidth * 0.6);
         const radius = Math.min(Math.round(baseRadius * densityScale), maxRadius);
 
+        // 扩展容器高度以容纳球体垂直投影（宽度保持 100% 自然居中）
+        canvasContainer.style.height = `${Math.round(radius * 2)}px`;
+
         new TagCloud(canvasContainer, {
             tags: TAG_TEXTS,
             radius,
