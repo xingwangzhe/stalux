@@ -66,8 +66,14 @@ const tagTexts = tagList.map((t) => t.name);
         const TAG_TEXTS: string[] = JSON.parse(canvasContainer.dataset.tags || "[]");
         if (TAG_TEXTS.length === 0) return;
 
+        const N = TAG_TEXTS.length;
         const vw = window.innerWidth;
-        const radius = vw < 1024 ? 330 : vw < 1440 ? 420 : 480;
+        const baseRadius = vw < 1024 ? 330 : vw < 1440 ? 420 : 480;
+        const baseN = 100;
+        const densityScale = Math.sqrt(Math.max(N, baseN) / baseN);
+        const containerWidth = canvasContainer.getBoundingClientRect().width;
+        const maxRadius = Math.round(containerWidth * 0.6);
+        const radius = Math.min(Math.round(baseRadius * densityScale), maxRadius);
 
         new TagCloud(canvasContainer, {
             tags: TAG_TEXTS,
