@@ -75,9 +75,24 @@ const tagTexts = tagList.map((t) => t.name);
         const maxRadius = Math.round(containerWidth * 0.6);
         const radius = Math.min(Math.round(baseRadius * densityScale), maxRadius);
 
+        const canvasSize = Math.round(radius * 2);
+
+        // 构造前设好容器尺寸，确保 TagCloud 初始化时读到正确的 cx/cy
+        canvasContainer.style.width = `${canvasSize}px`;
+        canvasContainer.style.height = `${canvasSize}px`;
+
+        // 若超出父级宽度，居中偏移
+        if (canvasSize > containerWidth) {
+            canvasContainer.style.position = "relative";
+            canvasContainer.style.left = "50%";
+            canvasContainer.style.transform = "translateX(-50%)";
+        }
+
         new TagCloud(canvasContainer, {
             tags: TAG_TEXTS,
             radius,
+            width: canvasSize,
+            height: canvasSize,
             spinY: 0.15,
             fontSize: 16,
             color: "#ffffff",
