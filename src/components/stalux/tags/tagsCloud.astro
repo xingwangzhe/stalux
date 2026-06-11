@@ -3,15 +3,14 @@ import { getTagCountList } from "@utils/collections-stats";
 import styles from "@styles/components/tags/tagsCloud.module.css";
 
 const tagList = await getTagCountList();
-const topTags = tagList.slice(0, 100);
-const tagTexts = topTags.map((t) => t.name);
+const tagTexts = tagList.map((t) => t.name);
 ---
 
 <!-- 移动端：SSR 卡片 -->
 <div class={styles.cards} id="tags-cards">
     {
         tagList.length > 0 ? (
-            topTags.map(({ name, count }) => (
+            tagList.map(({ name, count }) => (
                 <a
                     href={`/tags/${name}/`}
                     class={styles.tagCard}
