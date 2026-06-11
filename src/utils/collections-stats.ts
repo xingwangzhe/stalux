@@ -5,7 +5,7 @@ import { getCollection } from "astro:content";
  * @returns Array<{ name: string; count: number }>
  */
 export async function getTagCountList() {
-    const posts = await getCollection("posts");
+    const posts = await getCollection("posts", ({ data }) => !data.draft);
     const tagMap = new Map<string, number>();
 
     posts.forEach((post) => {
