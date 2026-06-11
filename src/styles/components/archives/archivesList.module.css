@@ -112,45 +112,45 @@
 [data-year-header],
 [data-month-section],
 [data-post-item] {
-    animation: fadeInUp 0.35s ease both;
+    animation: fadeInUp 0.53s ease both;
 }
 
 [data-year-header] {
-    animation-duration: 0.25s;
+    animation-duration: 0.38s;
 }
 
 [data-post-item] {
     animation-name: fadeInLeft;
-    animation-duration: 0.25s;
+    animation-duration: 0.38s;
 }
 
 /* yearSection 内部阶梯延迟（yearHeader + monthSections 同为子元素） */
 [data-year-header]:nth-child(1) { animation-delay: 0s; }
 
-[data-month-section]:nth-child(2) { animation-delay: 0.12s; }
-[data-month-section]:nth-child(3) { animation-delay: 0.16s; }
-[data-month-section]:nth-child(4) { animation-delay: 0.20s; }
-[data-month-section]:nth-child(5) { animation-delay: 0.24s; }
-[data-month-section]:nth-child(6) { animation-delay: 0.28s; }
-[data-month-section]:nth-child(7) { animation-delay: 0.32s; }
-[data-month-section]:nth-child(8) { animation-delay: 0.36s; }
-[data-month-section]:nth-child(9) { animation-delay: 0.40s; }
-[data-month-section]:nth-child(10) { animation-delay: 0.44s; }
-[data-month-section]:nth-child(11) { animation-delay: 0.48s; }
-[data-month-section]:nth-child(12) { animation-delay: 0.52s; }
+[data-month-section]:nth-child(2) { animation-delay: 0.18s; }
+[data-month-section]:nth-child(3) { animation-delay: 0.24s; }
+[data-month-section]:nth-child(4) { animation-delay: 0.30s; }
+[data-month-section]:nth-child(5) { animation-delay: 0.36s; }
+[data-month-section]:nth-child(6) { animation-delay: 0.42s; }
+[data-month-section]:nth-child(7) { animation-delay: 0.48s; }
+[data-month-section]:nth-child(8) { animation-delay: 0.54s; }
+[data-month-section]:nth-child(9) { animation-delay: 0.60s; }
+[data-month-section]:nth-child(10) { animation-delay: 0.66s; }
+[data-month-section]:nth-child(11) { animation-delay: 0.72s; }
+[data-month-section]:nth-child(12) { animation-delay: 0.78s; }
 
 /* postItem 阶梯延迟 */
 [data-post-item]:nth-child(1) { animation-delay: 0s; }
-[data-post-item]:nth-child(2) { animation-delay: 0.03s; }
-[data-post-item]:nth-child(3) { animation-delay: 0.06s; }
-[data-post-item]:nth-child(4) { animation-delay: 0.09s; }
-[data-post-item]:nth-child(5) { animation-delay: 0.12s; }
-[data-post-item]:nth-child(6) { animation-delay: 0.15s; }
-[data-post-item]:nth-child(7) { animation-delay: 0.18s; }
-[data-post-item]:nth-child(8) { animation-delay: 0.21s; }
-[data-post-item]:nth-child(9) { animation-delay: 0.24s; }
-[data-post-item]:nth-child(10) { animation-delay: 0.27s; }
-[data-post-item]:nth-child(n+11) { animation-delay: 0.30s; }
+[data-post-item]:nth-child(2) { animation-delay: 0.045s; }
+[data-post-item]:nth-child(3) { animation-delay: 0.09s; }
+[data-post-item]:nth-child(4) { animation-delay: 0.135s; }
+[data-post-item]:nth-child(5) { animation-delay: 0.18s; }
+[data-post-item]:nth-child(6) { animation-delay: 0.225s; }
+[data-post-item]:nth-child(7) { animation-delay: 0.27s; }
+[data-post-item]:nth-child(8) { animation-delay: 0.315s; }
+[data-post-item]:nth-child(9) { animation-delay: 0.36s; }
+[data-post-item]:nth-child(10) { animation-delay: 0.405s; }
+[data-post-item]:nth-child(n+11) { animation-delay: 0.45s; }
 
 /* 懒加载指示器样式 */
 .lazyloadObserver {
