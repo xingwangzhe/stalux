@@ -20,7 +20,7 @@
         "@expressive-code/plugin-line-numbers": "0.43.1",
         "@lucide/astro": "^1.17.0",
         "@waline/client": "^3.15.2",
-        "@xingwangzhe/tags-cloud": "^1.0.5",
+        "@xingwangzhe/tags-cloud": "^1.2.0",
         "TagCloud": "^2.5.0",
         "alfaaz": "^1.1.0",
         "animejs": "^4.4.1",
