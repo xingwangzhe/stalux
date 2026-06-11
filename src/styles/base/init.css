@@ -11,6 +11,10 @@ body {
     scrollbar-color: #4a4a4a #2a2a2a;
     display: block;
 }
+
+html[data-clarity-id] {
+    opacity: 1 !important;
+}
 /* 将所有链接初始化为无视觉状态，但保留键盘可见焦点 */
 a {
     color: inherit;
@@ -237,7 +241,7 @@ ul {
     background: #2a2a2a;
 }
 
-/* 背景层 - 与 Astro View Transitions 同步的双层 crossfade 系统 */
+/* 背景层 - 双层随机背景（不在 View Transition 中 crossfade，避免 SVG 双倍光栅化卡顿） */
 .bg-layer {
     position: fixed;
     inset: 0;
@@ -253,28 +257,6 @@ ul {
     forced-color-adjust: none;
     /* 关键：防止 Safari/WebKit 在暗色模式下自动调整 SVG 背景图颜色 */
     color-scheme: only light;
-}
-
-/* 被 View Transition 捕获的活跃层 */
-.bg-layer.vt-active {
-    view-transition-name: stalux-bg;
-}
-
-/* 确保 View Transition 的伪元素也正确铺满全屏 */
-::view-transition-old(stalux-bg),
-::view-transition-new(stalux-bg) {
-    position: fixed;
-    inset: 0;
-    z-index: -10;
-    background-repeat: repeat;
-    background-size: auto;
-    background-position: center;
-    background-color: var(--stalux-bg-color, transparent);
-    filter: var(--stalux-bg-filter, none);
-    pointer-events: none;
-    /* 防止 Safari/WebKit 在暗色模式下自动调整 SVG 背景图颜色 */
-    color-scheme: only light;
-    forced-color-adjust: none;
 }
 
 /* footer 基础样式，保证页脚始终可见且不覆盖内容 */
