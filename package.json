@@ -14,9 +14,9 @@
         "licenses-checker": "bun licenses-checker.ts"
     },
     "dependencies": {
-        "@astrojs/compiler-rs": "^0.2.1",
-        "@astrojs/rss": "^4.0.18",
-        "@astrojs/sitemap": "3.7.3",
+        "@astrojs/compiler-rs": "^0.2.2",
+        "@astrojs/rss": "4.0.15-beta.4",
+        "@astrojs/sitemap": "3.6.1-beta.3",
         "@expressive-code/plugin-line-numbers": "0.43.1",
         "@lucide/astro": "^1.17.0",
         "@waline/client": "^3.15.2",
@@ -24,7 +24,7 @@
         "TagCloud": "^2.5.0",
         "alfaaz": "^1.1.0",
         "animejs": "^4.4.1",
-        "astro": "7.0.0-alpha.1",
+        "astro": "7.0.0-beta.3",
         "astro-expressive-code": "0.43.1",
         "astro-pagefind": "^2.0.0",
         "astro-seo": "^1.1.0",
@@ -43,7 +43,7 @@
         "simple-icons": "^16.23.0"
     },
     "devDependencies": {
-        "@types/node": "^25.9.2",
+        "@types/node": "^25.9.3",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "0.54.0",
         "oxlint": "^1.69.0"
