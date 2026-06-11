@@ -11,7 +11,7 @@
         "@expressive-code/plugin-line-numbers": "0.43.1",
         "@lucide/astro": "^1.17.0",
         "@waline/client": "3.15.2",
-        "@xingwangzhe/tags-cloud": "^0.9.2",
+        "@xingwangzhe/tags-cloud": "^0.9.3",
         "TagCloud": "^2.5.0",
         "alfaaz": "^1.1.0",
         "animejs": "^4.4.1",
@@ -636,7 +636,7 @@
 
     "@waline/client": ["@waline/client@3.15.2", "https://registry.npmmirror.com/@waline/client/-/client-3.15.2.tgz", { "dependencies": { "@vueuse/core": "^14.3.0", "@waline/api": "1.1.2", "autosize": "^6.0.1", "marked": "^18.0.4", "marked-highlight": "^2.2.4", "recaptcha-v3": "^1.11.3", "vue": "^3.5.35" } }, "sha512-QBAVbruefDR+IKyQdM/Ao9fd07Xxpx1WEJ7xI8lBVNDjMQBr1PpdwrTpLC8RrYbgUR9ymNBvtLDJi0xK3pbORQ=="],
 
-    "@xingwangzhe/tags-cloud": ["@xingwangzhe/tags-cloud@0.9.2", "", {}, "sha512-O1iy+F2BDeZdAIVGbTg4ia7FdxxV6I692LnhPBfQ0cEh94BfblKCCas0t82O8WysxRAyhj6j4p17kR8ZMkrfQQ=="],
+    "@xingwangzhe/tags-cloud": ["@xingwangzhe/tags-cloud@0.9.3", "", {}, "sha512-n/zslA3LoaJ+zFS2zqwWMc1/SYY/2ODPHJbJlD5bweNg7Rlgkcz7eMWYcKu/nr+YTu2oyLxdBriiaYl55Nqitw=="],
 
     "TagCloud": ["TagCloud@2.5.0", "https://registry.npmmirror.com/TagCloud/-/TagCloud-2.5.0.tgz", {}, "sha512-lMr8UCbOLOyP9iKc/lJalpNTm25rjmplbQ20ljw02tyx4ITBxDh4TRBhSpayC6QGjtRtvslUljfr2SGoPOGnXw=="],
 
