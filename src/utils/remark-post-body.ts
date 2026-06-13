@@ -1,6 +1,10 @@
-import { countWords } from "alfaaz";
 import { toString } from "mdast-util-to-string";
 import { visit } from "unist-util-visit";
+
+function countWords(text: string): number {
+    const segmenter = new Intl.Segmenter("zh", { granularity: "word" });
+    return [...segmenter.segment(text)].filter((s) => s.isWordLike).length;
+}
 
 function formatReadingTime(words: number, wordsPerMinute: number): string {
     const minutes = Math.ceil(words / wordsPerMinute);
