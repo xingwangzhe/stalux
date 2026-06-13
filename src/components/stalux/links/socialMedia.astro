@@ -1,6 +1,14 @@
 ---
-import type { SimpleIcon } from "simple-icons";
-import * as simpleIcons from "simple-icons";
+// 按需导入图标 — Vite tree-shake 只打包用到的图标
+import {
+    siGithub,
+    siBilibili,
+    siQq,
+    siMaildotru,
+    siJuejin,
+    siX,
+    type SimpleIcon,
+} from "simple-icons";
 import { getCollection } from "astro:content";
 import styles from "@styles/components/links/socialLinks.module.css";
 const stalux = (await getCollection("config"))[0].data;
@@ -8,14 +16,18 @@ const mediaLinks = stalux.mediaLinks || [];
 
 const isPostPage = Astro.url.pathname.startsWith("/posts/");
 
-// 在构建时获取图标
-function getIconByTitle(iconName: string): SimpleIcon | undefined {
-    // 标准化名称为 simple-icons 的格式 (去除非字母数字字符，转换为小写)
-    const normalizedName = iconName.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+// 静态图标映射表：新增图标时只需添加对应的 simple-icons 导入和映射
+const iconMap: Record<string, SimpleIcon> = {
+    github: siGithub,
+    bilibili: siBilibili,
+    qq: siQq,
+    maildotru: siMaildotru,
+    juejin: siJuejin,
+    x: siX,
+};
 
-    // 尝试使用 simple-icons 的命名约定获取图标
-    const iconKey = `si${normalizedName.charAt(0).toUpperCase() + normalizedName.slice(1)}`;
-    return (simpleIcons as any)[iconKey];
+function getIconByTitle(iconName: string): SimpleIcon | undefined {
+    return iconMap[iconName];
 }
 ---
 
