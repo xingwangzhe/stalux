@@ -3,7 +3,7 @@ import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig } from "astro/config";
-import rehypeTemml from "./src/utils/rehype-temml";
+import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 
 import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
@@ -33,7 +33,6 @@ export default defineConfig({
         }),
         expressiveCode({
             themes: ["dark-plus", "github-light"],
-            shiki: { engine: "javascript" },
             styleOverrides: {
                 borderRadius: "0.5rem",
                 frames: {
@@ -68,7 +67,7 @@ export default defineConfig({
     },
     markdown: {
         remarkPlugins: [remarkPostBody, remarkMath],
-        rehypePlugins: [rehypeTemml, rehypePhotoswipe],
+        rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
         smartypants: true, // 智能标点符号
         gfm: true, // GitHub 风格的 Markdown 支持
     },
