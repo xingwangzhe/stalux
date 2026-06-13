@@ -1,6 +1,7 @@
 import { toTimestamp } from "@utils/dayjs";
 import type { APIRoute } from "astro";
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
+import { getPostDescriptions } from "@utils/word-count-utils";
 
 export const prerender = true;
 
@@ -17,14 +18,15 @@ export const GET: APIRoute = async (context) => {
         return dateA - dateB;
     });
 
-    // 获取每篇文章的 remarkPluginFrontmatter 以使用动态生成的描述
+    // 使用共享缓存的文章描述，避免每个 feed 各自渲染
+    const descriptions = await getPostDescriptions();
     const parts = await Promise.all(
         posts.map(async (post) => {
             const title = post.data.title || "Untitled";
             const link = site.replace(/\/$/, "") + `/posts/${post.data.abbrlink}/`;
-            const { remarkPluginFrontmatter } = await render(post);
+            const cached = descriptions.get(String(post.data.abbrlink));
             // 优先使用 remark 插件生成的描述，如果没有则使用文章自身的 desc
-            const bodyText = remarkPluginFrontmatter.desc || post.data.desc || "";
+            const bodyText = cached?.desc || post.data.desc || "";
             return `Title: ${title}\nLink: ${link}\n\n${bodyText}\n\n----\n`;
         }),
     );
