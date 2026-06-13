@@ -2,7 +2,8 @@ import rss from "@astrojs/rss";
 import { toTimestamp, parseDate, isValid, formatInTimeZone } from "@utils/dayjs";
 import { toMachineDateTime } from "@utils/semantic-time";
 import type { APIRoute } from "astro";
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
+import { getPostDescriptions } from "@utils/word-count-utils";
 
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");
@@ -18,10 +19,11 @@ export const GET: APIRoute = async (context) => {
         return dateA - dateB;
     });
 
-    // 获取每篇文章的 remarkPluginFrontmatter 以使用动态生成的描述
+    // 使用共享缓存的文章描述，避免每个 feed 各自渲染
+    const descriptions = await getPostDescriptions();
     const items = await Promise.all(
         sortedPosts.map(async (post) => {
-            const { remarkPluginFrontmatter } = await render(post);
+            const cached = descriptions.get(String(post.data.abbrlink));
 
             // 构建自定义数据，包含更新时间和版权信息
             let customData = "";
@@ -40,7 +42,7 @@ export const GET: APIRoute = async (context) => {
                 title: post.data.title,
                 pubDate: new Date(toMachineDateTime(post.data.date, stalux.timezone)),
                 // 优先使用 remark 插件生成的描述，如果没有则使用文章自身的 desc
-                description: remarkPluginFrontmatter.desc || post.data.desc || "",
+                description: cached?.desc || post.data.desc || "",
                 link: `/posts/${post.data.abbrlink}/`,
                 categories: post.data.categories || [],
                 customData: customData,
