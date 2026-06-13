@@ -11,7 +11,7 @@
         "fmt:check": "oxfmt --check",
         "lint": "oxlint",
         "lint:fix": "oxlint --fix",
-        "licenses-checker": "bun licenses-checker.ts"
+        "licenses-checker": "bun license-checker.ts"
     },
     "dependencies": {
         "@astrojs/compiler-rs": "^0.2.2",

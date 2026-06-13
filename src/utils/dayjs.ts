@@ -1,7 +1,7 @@
 /**
  * 日期工具 — 基于 date-fns，提供与旧 dayjs 封装兼容的辅助函数
  */
-export { format, isValid, getMonth, getYear } from "date-fns";
+export { format, isValid } from "date-fns";
 export { formatInTimeZone } from "date-fns-tz";
 
 /** 解析日期字符串，返回 Date 对象 */
