@@ -5,6 +5,7 @@
     "scripts": {
         "dev": "astro dev ",
         "build": "astro build ",
+        "postbuild": "bun scripts/minify-html.ts",
         "preview": "astro preview ",
         "astro": "astro",
         "fmt": "oxfmt",
@@ -19,6 +20,7 @@
         "@astrojs/sitemap": "3.6.1-beta.3",
         "@expressive-code/plugin-line-numbers": "0.43.1",
         "@lucide/astro": "^1.17.0",
+        "@minify-html/node": "^0.18.1",
         "@waline/client": "3.15.2",
         "@xingwangzhe/tags-cloud": "^1.2.2",
         "animejs": "^4.4.1",
@@ -30,15 +32,14 @@
         "badge-maker": "^5.0.2",
         "date-fns": "^4.4.0",
         "date-fns-tz": "^3.2.0",
-        "katex": "^0.17.0",
         "lightningcss": "^1.32.0",
         "lucide": "^1.17.0",
         "mdast-util-to-string": "^4.0.0",
         "mermaid": "^11.15.0",
         "photoswipe": "^5.4.4",
-        "rehype-katex": "^7.0.1",
         "remark-math": "^6.0.0",
-        "simple-icons": "16.23.0"
+        "simple-icons": "16.23.0",
+        "temml": "^0.13.3"
     },
     "devDependencies": {
         "@types/node": "25.9.2",
