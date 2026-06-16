@@ -2,86 +2,47 @@
 import Stalux from "@layouts/Stalux.astro";
 import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry, render } from "astro:content";
+import { computePostStats } from "@utils/compute-post-stats";
+import { popFlags } from "@utils/satteri-mermaid";
 import { toTimestamp } from "@utils/dayjs";
-
 import Navs from "@components/stalux/layout/navs.astro";
 
 interface Props {
     post: CollectionEntry<"posts">;
     prev?: { url: string; title: string };
     next?: { url: string; title: string };
+    stats?: { wordCount: number; minutesRead: string; desc: string };
 }
 const stalux = (await getCollection("config"))[0].data;
 const props = Astro.props as Props;
-const { Content, headings, remarkPluginFrontmatter } = await render(props.post);
-// 从 remark 插件获取虚拟 frontmatter：阅读时间、字数、自动生成的描述
-const minutesRead = remarkPluginFrontmatter.minutesRead || "";
-const wordCount = remarkPluginFrontmatter.wordCount || 0;
-// 优先使用 remark 插件生成的描述（前125字符），如果没有则使用文章自身的 desc
-const autoDesc = remarkPluginFrontmatter.desc || props.post.data.desc || "";
+const { Content, headings } = await render(props.post);
+const flags = popFlags();
+const s = props.stats!;
+const minutesRead = s.minutesRead || "";
+const wordCount = s.wordCount || 0;
+const autoDesc = s.desc || props.post.data.desc || "";
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
-
-    // 按日期排序（降序）
-    const sortedPosts = posts.sort((a, b) => {
-        const dateA = toTimestamp(a.data.date);
-        const dateB = toTimestamp(b.data.date);
-        return dateB - dateA;
-    });
-
-    return sortedPosts.map((post, index) => {
-        const next = index > 0 ? sortedPosts[index - 1] : undefined;
-        const prev =
-            index < sortedPosts.length - 1 ? sortedPosts[index + 1] : undefined;
-
+    const sorted = posts.sort((a,b) => toTimestamp(b.data.date) - toTimestamp(a.data.date));
+    return sorted.map((post, i) => {
+        const n = i>0?sorted[i-1]:undefined;
+        const p = i<sorted.length-1?sorted[i+1]:undefined;
+        const stats = computePostStats(post.body||"");
         return {
-            params: { post: post.data.abbrlink },
-            props: {
-                post,
-                prev: prev
-                    ? {
-                          url: `/posts/${prev.data.abbrlink}`,
-                          title: prev.data.title,
-                      }
-                    : undefined,
-                next: next
-                    ? {
-                          url: `/posts/${next.data.abbrlink}`,
-                          title: next.data.title,
-                      }
-                    : undefined,
-            },
+            params:{post:post.data.abbrlink},
+            props:{post,stats,
+                prev: p?{url:'/posts/'+p.data.abbrlink,title:p.data.title}:undefined,
+                next: n?{url:'/posts/'+n.data.abbrlink,title:n.data.title}:undefined
+            }
         };
     });
 }
 ---
-
-<Stalux
-    title={props.post.data.title + " | " + stalux.title}
-    description={autoDesc}
->
-    <div style="height: 3em;"></div>
-    <Navs />
-    <div style="height: 3em;"></div>
-    <PostLayout
-        title={props.post.data.title}
-        date={props.post.data.date}
-        updated={props.post.data.updated}
-        readingTime={minutesRead}
-        tags={props.post.data.tags || []}
-        categories={props.post.data.categories || []}
-        headings={headings}
-        author={stalux.author.name}
-        authorAvatar={stalux.author.avatar}
-        prev={props.prev}
-        next={props.next}
-        cc={props.post.data.cc}
-        wordCount={wordCount}
-        hasMermaid={remarkPluginFrontmatter.hasMermaid}
-        hasKatex={remarkPluginFrontmatter.hasKatex}
-        hasImage={remarkPluginFrontmatter.hasImage}
-    >
-        <Content />
+<Stalux title={props.post.data.title + " | " + stalux.title} description={autoDesc}>
+    <div style="height:3em"></div>
+    <Navs /><div style="height:3em"></div>
+    <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={stalux.author.name} authorAvatar={stalux.author.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasMermaid={flags.hasMermaid} hasKatex={flags.hasKatex} hasImage={flags.hasImage}>
+        <Content/>
     </PostLayout>
 </Stalux>

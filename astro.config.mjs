@@ -3,12 +3,11 @@ import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig } from "astro/config";
-import { unified } from "@astrojs/markdown-remark";
-import rehypeKatex from "rehype-katex";
-import remarkMath from "remark-math";
+import { satteri } from "@astrojs/markdown-satteri";
+import { katex } from "@nullpinter/satteri-katex";
 
-import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
-import { remarkPostBody } from "./src/utils/remark-post-body";
+import { featurePlugin } from "./src/utils/satteri-mermaid";
+import { photoswipePlugin } from "./src/utils/satteri-photoswipe";
 
 const site = "https://xingwangzhe.fun";
 // https://astro.build/config
@@ -32,6 +31,7 @@ export default defineConfig({
             },
             lastmod: new Date(),
         }),
+        // astro-expressive-code 0.43.1 auto-detects Sätteri and uses its HAST pipeline
         expressiveCode({
             themes: ["dark-plus", "github-light"],
             styleOverrides: {
@@ -40,7 +40,6 @@ export default defineConfig({
                     shadowColor: "#124",
                 },
             },
-            // 性能优化选项
             useDarkModeMediaQuery: true,
             minSyntaxHighlightingColorContrast: 5.5,
             defaultProps: {
@@ -53,7 +52,6 @@ export default defineConfig({
     ],
     vite: {
         define: {
-            // Vue feature flags for Waline
             __VUE_OPTIONS_API__: true,
             __VUE_PROD_DEVTOOLS__: false,
             __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
@@ -67,11 +65,16 @@ export default defineConfig({
         },
     },
     markdown: {
-        processor: unified({
-            remarkPlugins: [remarkPostBody, remarkMath],
-            rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
-            smartypants: true, // 智能标点符号
-            gfm: true, // GitHub 风格的 Markdown 支持
+        processor: satteri({
+            features: {
+                math: true,
+                smartPunctuation: true,
+                gfm: true,
+            },
+            // MDAST plugins run on the Markdown AST
+            mdastPlugins: [katex(), featurePlugin],
+            // HAST plugins run on the HTML AST
+            hastPlugins: [photoswipePlugin],
         }),
     },
 });
