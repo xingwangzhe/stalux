@@ -3,12 +3,14 @@ import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig } from "astro/config";
-import { unified } from "@astrojs/markdown-remark";
-import rehypeKatex from "rehype-katex";
-import remarkMath from "remark-math";
+import { satteri } from "@astrojs/markdown-satteri";
+import { katex } from "@nullpinter/satteri-katex";
 
-import rehypePhotoswipe from "./src/utils/rehype-photoswipe";
-import { remarkPostBody } from "./src/utils/remark-post-body";
+
+
+import { featurePlugin } from "./src/utils/satteri-mermaid";
+import { photoswipePlugin } from "./src/utils/satteri-photoswipe";
+
 
 const site = "https://stalux.needhelp.icu";
 // https://astro.build/config
@@ -67,11 +69,14 @@ export default defineConfig({
         },
     },
     markdown: {
-        processor: unified({
-            remarkPlugins: [remarkPostBody, remarkMath],
-            rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
-            smartypants: true, // 智能标点符号
-            gfm: true, // GitHub 风格的 Markdown 支持
+        processor: satteri({
+            features: {
+                math: true,
+                smartPunctuation: true,
+                gfm: true,
+            },
+            mdastPlugins: [katex(), featurePlugin],
+            hastPlugins: [photoswipePlugin],
         }),
     },
 });
