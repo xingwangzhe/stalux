@@ -11,7 +11,7 @@
         "fmt:check": "oxfmt --check",
         "lint": "oxlint",
         "lint:fix": "oxlint --fix",
-        "licenses-checker": "bun licenses-checker.ts"
+        "licenses-checker": "bun license-checker.ts"
     },
     "dependencies": {
         "@astrojs/compiler-rs": "^0.2.2",
@@ -22,7 +22,7 @@
         "@expressive-code/plugin-line-numbers": "0.43.1",
         "@lucide/astro": "^1.17.0",
         "@nullpinter/satteri-katex": "0.1.1",
-        "@waline/client": "^3.15.2",
+        "@waline/client": "3.15.2",
         "@xingwangzhe/tags-cloud": "^1.2.2",
         "animejs": "^4.4.1",
         "astro": "7.0.0-beta.4",
@@ -38,10 +38,10 @@
         "lucide": "^1.17.0",
         "mermaid": "^11.15.0",
         "photoswipe": "^5.4.4",
-        "simple-icons": "^16.23.0"
+        "simple-icons": "16.23.0"
     },
     "devDependencies": {
-        "@types/node": "^25.9.3",
+        "@types/node": "25.9.2",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "0.54.0",
         "oxlint": "^1.69.0"

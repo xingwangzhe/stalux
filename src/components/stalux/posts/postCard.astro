@@ -1,7 +1,8 @@
 ---
 import style from "@styles/components/posts/postCard.module.css";
-import { render, getCollection } from "astro:content";
+import { computePostStats } from "@utils/compute-post-stats";
 import { toMachineDateTime } from "@utils/semantic-time";
+import { getCollection } from "astro:content";
 
 import type { CollectionEntry } from "astro:content";
 

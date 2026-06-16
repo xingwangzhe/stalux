@@ -37,9 +37,10 @@ const config = defineCollection({
     loader: file("config.yml"),
     schema: z.object({
         title: z.string(),
-        url: z.url(),
+        url: z.string().url(),
+        timezone: z.string().optional().default("Asia/Shanghai"),
         description: z.string(),
-        canonical: z.url().optional(),
+        canonical: z.string().url().optional(),
         twitterSite: z.string().optional(),
         noindex: z.boolean().optional().default(false),
         nofollow: z.boolean().optional().default(false),
@@ -57,7 +58,6 @@ const config = defineCollection({
             })
             .optional(),
         favicon: z.string().optional().default("/favicon.ico"),
-        timezone: z.string().optional().default("Asia/Shanghai"),
         author: z.object({
             name: z.string(),
             avatar: z.string(),
