@@ -3,6 +3,7 @@ import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig } from "astro/config";
+import { unified } from "@astrojs/markdown-remark";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 
@@ -66,9 +67,11 @@ export default defineConfig({
         },
     },
     markdown: {
-        remarkPlugins: [remarkPostBody, remarkMath],
-        rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
-        smartypants: true, // 智能标点符号
-        gfm: true, // GitHub 风格的 Markdown 支持
+        processor: unified({
+            remarkPlugins: [remarkPostBody, remarkMath],
+            rehypePlugins: [[rehypeKatex, { strict: false }], rehypePhotoswipe],
+            smartypants: true, // 智能标点符号
+            gfm: true, // GitHub 风格的 Markdown 支持
+        }),
     },
 });
