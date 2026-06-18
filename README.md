@@ -26,7 +26,26 @@
 
 在体验上，Stalux 兼顾 SSG 的高性能与无刷新页面切换的流畅感。通过对视图过渡（view transitions）以及对 `astro:page-load` 事件的处理，主题在导航或主内容切换时尽量保持头部、脚部等公用组件的状态，减少白屏闪烁并保证评论、搜索等脚本在跳转后继续正常工作。
 
-内容优先是主题的核心理念之一：写作和呈现被视为第一位。主题开箱即支持 CommonMark、代码高亮、Mermaid 流程图与 KaTeX 数学公式，文章支持自动生成目录与阅读时长，并且内容集合默认放在 `stalux/posts` 与 `stalux/about` 下，便于作者以文件夹级别管理个人内容。
+内容优先是主题的核心理念之一：写作和呈现被视为第一位。主题开箱即支持 CommonMark、代码高亮、Mermaid 流程图与 KaTeX 数学公式，文章支持自动生成目录与阅读时长，并且内容集合默认放在 `stalux/posts`、`stalux/about` 与 `stalux/words` 下，便于作者以文件夹级别管理个人内容。
+
+### 新增页面：一言（/words）
+
+主题内置了「一言」语录页面，用于收集短句、代码片段或任何想记录的只言片语。在 `stalux/words/` 下新建 Markdown 文件即可：
+
+```yaml
+---
+source: "来源或作者"
+link: "https://来源链接"      # 可选；存在时来源会显示为可点击外链
+sourceDate: "1999"           # 可选；来源对应的时间，会斜体显示在右下角
+date: "2026-06-18 20:45:00" # 可选；写这条一言的时间，显示在左下角
+updated: "2026-06-18 21:00:00" # 可选
+draft: false                 # 可选；默认 false，true 时不显示
+---
+
+这里写语录正文，支持 **Markdown**、`行内代码` 和代码块。
+```
+
+同时在 `config.yml` 的 `navs` 里添加 `- title: 一言 / icon: quote / link: /words` 即可进入导航。
 
 配置方面，Stalux 使用 YAML 作为主配置载体（`config.yml`），并通过 `content.config.ts` 做类型校验与加载，既保持了配置的可读性，也能在构建时捕捉常见错误。仓库还提供 `BACK.yml`作为示例与备份。
 
@@ -71,6 +90,9 @@ stalux:
         - title: 标签
           icon: tag
           link: /tags
+        - title: 一言
+          icon: quote
+          link: /words
         - title: 友链
           icon: link
           link: /links
@@ -78,7 +100,7 @@ stalux:
           icon: user
           link: /about
         - title: 开往
-          icon: airplay
+          icon: train-front
           link: https://www.travellings.cn/go
 
     typetexts:
@@ -254,6 +276,6 @@ bun run dev
 # npm install && npm run dev
 ```
 
-写文章只需在 `stalux/posts/` 下新建 Markdown 文件，Frontmatter 最少包含 `title`、`abbrlink`、`date` 三项（可选字段如 `tags`、`categories`、`cc` 等将增强文章元数据的展示）。有关更详细的配置与使用示例，请参阅仓库中的 `BACK.yml`、`license.txt`（依赖许可清单）与 `LICENSE`。
+写文章只需在 `stalux/posts/` 下新建 Markdown 文件，Frontmatter 最少包含 `title`、`abbrlink`、`date` 三项（可选字段如 `tags`、`categories`、`cc` 等将增强文章元数据的展示）；想写「一言」则放到 `stalux/words/` 下。有关更详细的配置与使用示例，请参阅仓库中的 `BACK.yml`、`license.txt`（依赖许可清单）与 `LICENSE`。
 
 如果你喜欢这个主题，也欢迎点个 ⭐️ 支持。

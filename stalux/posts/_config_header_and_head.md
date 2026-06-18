@@ -69,6 +69,9 @@ navs:
     - title: 标签
       icon: tag
       link: /tags
+    - title: 一言
+      icon: quote
+      link: /words
     - title: 友链
       icon: link
       link: /links
@@ -76,7 +79,7 @@ navs:
       icon: user
       link: /about
     - title: 开往
-      icon: airplay
+      icon: train-front
       link: https://www.travellings.cn/go
 ```
 

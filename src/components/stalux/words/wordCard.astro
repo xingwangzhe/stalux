@@ -1,0 +1,62 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { render } from "astro:content";
+import styles from "@styles/components/words/wordCard.module.css";
+import "@styles/components/markdown.css";
+import { toMachineDateTime } from "@utils/semantic-time";
+
+interface Props {
+    entry: CollectionEntry<"words">;
+    timezone?: string;
+}
+
+const { entry, timezone } = Astro.props;
+const { Content } = await render(entry);
+const { source, link, sourceDate, date } = entry.data;
+
+const machineDate = date && timezone
+    ? toMachineDateTime(date, timezone)
+    : date;
+---
+
+<article class={styles.card}>
+    <div class={styles.body} data-pagefind-body>
+        <Content />
+    </div>
+    {
+        (date || source || sourceDate) && (
+            <footer class={styles.footer}>
+                {date ? (
+                    <time class={styles.date} datetime={machineDate}>
+                        {date}
+                    </time>
+                ) : (
+                    <span />
+                )}
+                {
+                    (source || sourceDate) && (
+                        <div class={styles.sourceMeta}>
+                            {sourceDate && (
+                                <span class={styles.sourceDate}>{sourceDate}</span>
+                            )}
+                            {source && (
+                                link ? (
+                                    <a
+                                        href={link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class={styles.sourceLink}
+                                    >
+                                        — {source}
+                                    </a>
+                                ) : (
+                                    <span class={styles.sourceText}>— {source}</span>
+                                )
+                            )}
+                        </div>
+                    )
+                }
+            </footer>
+        )
+    }
+</article>

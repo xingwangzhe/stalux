@@ -52,9 +52,10 @@ stalux:
         - { title: "文章", icon: archive, link: "/archives" }
         - { title: "分类", icon: folder, link: "/categories" }
         - { title: "标签", icon: tag, link: "/tags" }
+        - { title: "一言", icon: quote, link: "/words" }
         - { title: "友链", icon: link, link: "/links" }
         - { title: "关于", icon: user, link: "/about" }
-        - { title: "开往", icon: airplay, link: "https://www.travellings.cn/go" }
+        - { title: "开往", icon: train-front, link: "https://www.travellings.cn/go" }
 
     typetexts:
         - "Free for free, not free for charge!"
@@ -211,11 +212,48 @@ stalux:
     - `head.umami`: Umami 分析配置（包含 `id` 和 `url`）
     - `head.anyhead`: 额外的自定义头部 HTML
 - 作者信息: `author.name`、`author.avatar`、`author.bio` 显示在文章和侧边栏等位置。
-- 导航与动效: `navs` 为顶部导航，`icon` 使用 Lucide Icons 标准 PascalCase 名称（参见 https://lucide.dev/icons/）；`typetexts` 是首页打字机动效的随机文案。
+- 导航与动效: `navs` 为顶部导航，可配置首页、文章、分类、标签、一言、友链、关于等；`icon` 使用 Lucide Icons 标准 PascalCase 名称（参见 https://lucide.dev/icons/）；`typetexts` 是首页打字机动效的随机文案。
+- 内容集合: 文章放在 `stalux/posts/`，关于页面放在 `stalux/about/`，一言语录放在 `stalux/words/`。
 - 社交与友链: `mediaLinks` 渲染社交图标；`links` 定义友链分组标题、描述和站点列表。
 - 页脚: `footer.buildtime` 用于站点运行时长；`copyright` 控制版权显示；`theme` 控制主题信息展示；`beian` 提供 ICP/公安备案开关；`badges` 为页脚徽章列表；`custom` 支持自定义插槽 HTML。
 - 评论开关: `comment.enabled` 控制是否在全站渲染评论区（默认 `false`）。
 - 评论: `comment.waline` 配置 Waline.
+
+## 一言语录（words）
+
+`/words` 页面用于收集短句、代码片段或语录，内容放在 `stalux/words/*.md`。
+
+frontmatter 可选字段：
+
+- `source`: 来源或作者。
+- `link`: 来源链接；存在时 `source` 显示为可点击外链。
+- `sourceDate`: 来源对应的时间，斜体显示在卡片右下角。
+- `date`: 写这条一言的时间，显示在卡片左下角并用于排序。
+- `updated`: 更新日期。
+- `draft`: 默认 `false`；`true` 时不显示。
+
+示例：
+
+```markdown
+---
+source: "Quake III Arena"
+link: "https://en.wikipedia.org/wiki/Fast_inverse_square_root"
+sourceDate: "1999"
+date: "2026-06-18 20:45:00"
+updated: "2026-06-18 21:00:00"
+draft: false
+---
+
+Talk is cheap. Show me the `code`.
+```
+
+要在导航中显示，在 `navs` 里添加：
+
+```yaml
+- title: 一言
+  icon: quote
+  link: /words
+```
 
 ## 常见修改
 
@@ -267,7 +305,8 @@ Stalux 主题使用 `config.yml` 文件进行配置，该文件位于项目根�
 │   └── content.config.ts  # 配置结构定义（定义了所有可用的配置项）
 └── stalux/
     ├── posts/          # 存放文章
-    └── about/          # 存放关于页面
+    ├── about/          # 存放关于页面
+    └── words/          # 存放一言语录
 ```
 
 ### 配置结构概览

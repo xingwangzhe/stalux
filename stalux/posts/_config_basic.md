@@ -26,13 +26,15 @@ stalux/
 │   │       ├── layout/ # 布局
 │   │       ├── links/  # 友链
 │   │       ├── posts/  # 文章
-│   │       └── tags/   # 标签
+│   │       ├── tags/   # 标签
+│   │       └── words/  # 一言卡片
 │   ├── layouts/ # 布局文件
 │   ├── pages/ # 页面文件
 │   │   ├── api/ # API 文件夹
 │   │   ├── categories/ # 分类页面
 │   │   ├── posts/ # 文章页面
-│   │   └── tags/ # 标签页面
+│   │   ├── tags/ # 标签页面
+│   │   └── words.astro # 一言页面
 │   ├── scripts/ # 脚本文件
 │   ├── styles/
 │   │   ├── base/ # 基础样式
@@ -47,12 +49,14 @@ stalux/
 │   │   │   ├── posts/  # 文章
 │   │   │   ├── search.css # 搜索样式
 │   │   │   ├── tags/   # 标签
+│   │   │   └── words/  # 一言
 │   │   └── pages/ # 页面样式
 │   ├── utils/ # 工具文件
 │   └── content.config.ts # 内容配置文件
 ├── stalux
 │   ├── about/ # 关于 .md
 │   ├── posts/ # 文章 .md
+│   └── words/ # 一言 .md
 ├── astro.config.mjs
 ├── tsconfig.json
 ├── package.json
@@ -66,6 +70,7 @@ stalux/
 
 - `stalux/posts/`：文章 Markdown/MDX，受 posts 集合 schema 约束。
 - `stalux/about/`：关于页面 Markdown/MDX，受 about 集合 schema 约束。
+- `stalux/words/`：一言/语录 Markdown，受 words 集合 schema 约束。
 
 ## posts/\*.md frontmatter
 
@@ -118,6 +123,36 @@ description: 个人简介与站点信息
 ---
 
 内容...
+```
+
+## words/\*.md frontmatter
+
+用于 `/words` 一言页面，适合收集短句、代码片段或语录。
+
+必填：无。
+
+可选：
+
+- `source`: 来源或作者名。
+- `link`: 来源链接；存在时 `source` 会渲染为可点击外链。
+- `sourceDate`: 来源对应的时间，会斜体显示在卡片右下角。
+- `date`: 写这条一言的时间，显示在卡片左下角；也用于排序。
+- `updated`: 更新日期，字符串，格式同 `date`。
+- `draft`: 布尔，默认 `false`；为 `true` 时不显示。
+
+示例：
+
+```markdown
+---
+source: "Quake III Arena"
+link: "https://en.wikipedia.org/wiki/Fast_inverse_square_root"
+sourceDate: "1999"
+date: "2026-06-18 20:45:00"
+updated: "2026-06-18 21:00:00"
+draft: false
+---
+
+Talk is cheap. Show me the `code`.
 ```
 
 ## 书写注意

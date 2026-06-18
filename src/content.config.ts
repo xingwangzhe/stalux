@@ -187,5 +187,21 @@ const about = defineCollection({
     }),
 });
 
+const words = defineCollection({
+    loader: glob({
+        pattern: ["*.md"],
+        base: "stalux/words/",
+        retainBody: false,
+    }),
+    schema: z.object({
+        source: z.string().optional(),
+        link: z.string().url().optional(),
+        sourceDate: z.string().optional(),
+        date: z.string().optional(),
+        updated: z.string().optional(),
+        draft: z.boolean().optional().default(false),
+    }),
+});
+
 // 5. 导出一个 `collections` 对象来注册你的集合
-export const collections = { posts, about, config };
+export const collections = { posts, about, config, words };

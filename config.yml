@@ -42,6 +42,9 @@ stalux:
         - title: 标签
           icon: tag
           link: /tags
+        - title: 一言
+          icon: quote
+          link: /words
         - title: 友链
           icon: link
           link: /links

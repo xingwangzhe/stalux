@@ -13,7 +13,7 @@ abbrlink: f31dae4f
 
 ## 概要
 
-本篇按照当前 schema（见 src/content.config.ts）重写，列出 posts 与 about 的 frontmatter 要求及示例。避免使用项目内相对链接，确保发布到站点时不会出现无效链接。
+本篇按照当前 schema（见 src/content.config.ts）重写，列出 posts、about 与 words 的 frontmatter 要求及示例。避免使用项目内相对链接，确保发布到站点时不会出现无效链接。
 
 ## posts/\*.md frontmatter
 
@@ -79,6 +79,34 @@ description: 个人简介、技能与联系方式
 ---
 
 这里是关于页面正文...
+```
+
+## words/\*.md frontmatter
+
+loader: base 为 `stalux/words/`，pattern `*.md`/`*.mdx`。
+
+所有字段均为可选：
+
+- `source`: 来源或作者名。
+- `link`: 来源链接；存在时 `source` 会渲染为可点击外链。
+- `sourceDate`: 来源对应的时间，斜体显示在卡片右下角。
+- `date`: 写这条一言的时间，显示在卡片左下角并用于排序；格式同 posts 的 `date`。
+- `updated`: 更新日期，字符串，格式同 `date`。
+- `draft`: 布尔，默认 `false`；为 `true` 时不显示。
+
+示例：
+
+```markdown
+---
+source: "Quake III Arena"
+link: "https://en.wikipedia.org/wiki/Fast_inverse_square_root"
+sourceDate: "1999"
+date: "2026-06-18 20:45:00"
+updated: "2026-06-18 21:00:00"
+draft: false
+---
+
+Talk is cheap. Show me the `code`.
 ```
 
 ## 写作与校验
