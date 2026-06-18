@@ -23,6 +23,7 @@ export default defineConfig({
                     page.includes("/posts/") ||
                     page.includes("/about/") ||
                     page.includes("/links/") ||
+                    page.includes("/words/") ||
                     page === site + "/" ||
                     page === site + "/archives/" ||
                     page.includes("/tags/") ||

@@ -135,7 +135,8 @@
         width: 100%;
         margin: 0;
         border-bottom: 1px solid var(--white-10p);
-        font-size: 0.95em;
+        font-size: 0.9em;
+        flex-shrink: 0;
     }
 
     .navText {
@@ -144,8 +145,13 @@
 
     .navLink {
         width: 100%;
-        padding: 0.7rem 0.75rem;
-        min-height: 40px;
+        padding: 0.45rem 0.75rem;
+        min-height: 34px;
         font-size: inherit;
+    }
+
+    .navLink :global(.nav-icon) {
+        width: 18px;
+        height: 18px;
     }
 }

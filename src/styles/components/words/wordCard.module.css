@@ -1,0 +1,102 @@
+.card {
+    width: 100%;
+    background: var(--white-10p);
+    border-radius: var(--radius-lg, 12px);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-normal) ease,
+                box-shadow var(--transition-normal) ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.body {
+    color: var(--white-80p);
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+.body :global(h1),
+.body :global(h2),
+.body :global(h3),
+.body :global(h4),
+.body :global(h5),
+.body :global(h6) {
+    font-size: 1.1em;
+    margin: 0.5rem 0;
+}
+
+.body :global(p) {
+    margin: 0.5rem 0;
+}
+
+.body :global(blockquote) {
+    margin: 0.5rem 0;
+    padding: 0.6rem 1rem;
+    border-left: 3px solid var(--accent-60p);
+    background: var(--white-05p);
+}
+
+/* 长代码块自动换行，避免卡片内出现横向滚动条 */
+.body :global(pre) {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: visible;
+}
+
+.body :global(code) {
+    word-break: break-word;
+}
+
+.footer {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--white-10p);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--white-60p);
+}
+
+.date {
+    font-variant-numeric: tabular-nums;
+    color: var(--white-50p);
+}
+
+.sourceMeta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.sourceDate {
+    font-style: italic;
+    color: var(--white-50p);
+}
+
+.sourceText {
+    font-style: italic;
+}
+
+.sourceLink {
+    color: var(--accent-80p);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-50p);
+    text-underline-offset: 0.15em;
+    font-style: italic;
+    transition: color var(--transition-fast) ease;
+}
+
+.sourceLink:hover {
+    color: var(--accent-90p);
+}

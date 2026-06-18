@@ -1,0 +1,29 @@
+---
+import WordCard from "@components/stalux/words/wordCard.astro";
+import styles from "@styles/components/words/wordList.module.css";
+import type { CollectionEntry } from "astro:content";
+import { toTimestamp } from "@utils/dayjs";
+
+interface Props {
+    entries: CollectionEntry<"words">[];
+    timezone?: string;
+}
+
+const { entries, timezone } = Astro.props;
+
+const sorted = [...entries].sort((a, b) => {
+    const ta = toTimestamp(a.data.date || a.id);
+    const tb = toTimestamp(b.data.date || b.id);
+    return tb - ta;
+});
+---
+
+<ul class={styles.list}>
+    {
+        sorted.map((entry) => (
+            <li class={styles.item}>
+                <WordCard entry={entry} timezone={timezone} />
+            </li>
+        ))
+    }
+</ul>
