@@ -20,7 +20,7 @@
         },
         "desc": {
             "type": "string",
-            "minLength": 10,
+            "minLength": 1,
             "maxLength": 200,
             "description": "文章描述，用于 SEO meta description，必须手写"
         },
