@@ -102,16 +102,22 @@ const walineConfig = stalux?.comment?.waline;
     props.hasMermaid && (
         <script>
             import mermaid from "mermaid";
+
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: "dark",
+            });
+
             const renderMermaid = async () => {
-                if (document.querySelector(".mermaid")) {
-                    mermaid.initialize({
-                        startOnLoad: false,
-                        theme: "dark",
-                    });
-                    await mermaid.run();
-                }
+                const nodes = document.querySelectorAll(
+                    '.mermaid:not([data-processed="true"])',
+                );
+                if (nodes.length === 0) return;
+                await mermaid.run({ nodes });
             };
+
             document.addEventListener("astro:page-load", renderMermaid);
+            renderMermaid();
         </script>
     )
 }
