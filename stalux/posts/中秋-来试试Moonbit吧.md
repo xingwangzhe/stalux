@@ -3,6 +3,7 @@ title: 中秋-来试试Moonbit吧
 abbrlink: 32faf407
 date: "2025-10-06 16:11:55"
 updated: "2025-10-06 16:34:58"
+desc: Moonbit是国产的一门编程语言，它很年轻，预计26年左右发布1.0版本
 categories:
     - 编程
 tags:

@@ -3,6 +3,7 @@ title: 国产开源的文档转换器:MinerU
 abbrlink: 64756
 date: "2025-03-27 19:11:43"
 updated: "2025-07-04 18:44:32"
+desc: MinerU是由OpenDataLab团队打造的大模型时代的文档提取/转换神器
 categories:
     - 推荐
 tags:

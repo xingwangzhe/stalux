@@ -3,6 +3,7 @@ title: hexo-graph:新增分类树状图
 abbrlink: 42695
 date: "2025-01-02 18:56:17"
 updated: "2025-07-04 18:44:32"
+desc: "[[bug]Category图表，如果点击的对象并不是最高级Category，而是次级Category，跳转链接的路径拼接就有问题。 · Issue #7 · codepzj/hexo-graph](https://github.com/codepzj/hexo-graph/issues/7)"
 categories:
     - 开发
 tags:

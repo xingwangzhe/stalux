@@ -3,6 +3,7 @@ title: Linux用户Secure Boot自主维护指南
 abbrlink: linux-uefi-ca-update
 date: "2026-04-07 17:30:00"
 updated: "2026-04-07 19:30:00"
+desc: 最近看到一个技术新闻：微软的 UEFI CA 2011 证书将于 2026年6月27日 过期。这件事很容易让人误以为只要往 MOK 里导入证书就能“更新 UEFI 签名”，但这并不准确。MOK 不会改变固件里的 UEFI 信任数据库，它只影响 shim 后面的那一段启动链。
 categories: 技术
 tags:
     - linux

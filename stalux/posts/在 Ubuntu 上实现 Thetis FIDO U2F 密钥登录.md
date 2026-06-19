@@ -3,6 +3,7 @@ title: 在 Ubuntu 上实现 Thetis FIDO U2F 密钥登录
 abbrlink: f69680bd
 date: "2025-07-04 18:44:32"
 updated: "2026-03-29 16:05:00"
+desc: 注意本文是在配置可选的密钥登录，并非2FA,让物理密钥作为唯一的2FA认证方式可能会导致无法登录系统
 categories:
     - 安全
 tags:

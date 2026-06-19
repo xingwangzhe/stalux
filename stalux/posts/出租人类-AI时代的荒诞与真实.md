@@ -2,6 +2,7 @@
 title: 出租人类：AI时代的荒诞与真实
 abbrlink: ai-rentahuman
 date: "2026-02-04 16:18:32"
+desc: 当我在x上浏览,发现了这个网站,第一次打开 rentahuman.ai 时，我以为这是个玩笑。但它不是。这个网站一本正经地告诉你：AI 无法触碰现实世界，而你可以。所以，把你的身体租给 AI 吧。
 categories:
     - 胡思乱想
 tags:

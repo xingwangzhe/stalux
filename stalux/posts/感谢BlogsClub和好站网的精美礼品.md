@@ -2,6 +2,7 @@
 title: 感谢BlogsClub和好站网的精美礼品
 abbrlink: thanks-blogsclub-haozhanwang
 date: "2026-06-06 17:30:00"
+desc: 最近收到了两份来自中文独立博客社区的惊喜礼物，实在按捺不住心中的喜悦与感动，特此写一篇博文记录并感谢！
 categories:
     - 生活记录
 tags:

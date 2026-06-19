@@ -1,6 +1,7 @@
 ---
 title: MAD Bugs 已经开始——关于信息安全的军备竞赛
 date: "2026-04-06 16:07:09"
+desc: 两分钟后，Claude 给出了答案——一个存在于 Vim 编辑器中、CVSS 评分高达 9.2 的远程代码执行漏洞（CVE-2026-34714）。攻击者只需要诱导受害者打开一个恶意构造的文件，就能在目标系统上执行任意代码。
 abbrlink: mad-bugs-begin
 categories: 技术
 tags:

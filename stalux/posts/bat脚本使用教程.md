@@ -3,6 +3,7 @@ title: bat脚本使用教程
 abbrlink: 50463
 date: "2024-12-11 20:10:06"
 updated: "2025-07-04 18:44:32"
+desc: .bat 文件是 Windows 批处理文件（Batch File）的扩展名。批处理文件是一种包含一系列命令的脚本文件，这些命令可以由 Windows 命令解释器（cmd.exe）执行。批处理文件用于自动化简单的任务，如文件操作、程序执行、系统配置等。
 categories:
     - 开发
 tags:

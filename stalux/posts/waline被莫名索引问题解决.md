@@ -3,6 +3,7 @@ title: Waline被莫名索引问题解决
 abbrlink: f654ae55
 date: "2025-07-04 18:44:32"
 updated: "2025-07-04 18:44:32"
+desc: "- fix: route to robots.txt"
 categories:
     - 前端
 tags:

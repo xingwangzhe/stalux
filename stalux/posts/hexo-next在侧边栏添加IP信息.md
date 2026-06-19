@@ -3,6 +3,7 @@ title: hexo-next在侧边栏添加IP信息
 abbrlink: 69cc9e5f
 date: "2024-09-14 18:38:52"
 updated: "2024-09-14 18:38:55"
+desc: "![tool](https://tool.lu/ip/)"
 categories:
     - hexo
 tags:

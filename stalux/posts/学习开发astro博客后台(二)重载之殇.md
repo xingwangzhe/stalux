@@ -3,6 +3,7 @@ title: 学习开发Astro博客后台(二)重载之殇
 abbrlink: 2dd2b505
 date: "2025-07-04 18:44:32"
 updated: "2025-07-04 18:44:32"
+desc: 在前文中,已经实现了非常简陋的功能,下一步准备粗略地写一个md编辑,然后再通过fetch请求将数据发送到后端。
 categories:
     - 后端
 tags:

@@ -3,6 +3,7 @@ title: 可能解决Tauri多窗口应用阻塞问题
 abbrlink: 50b9d330
 date: "2025-09-17 14:21:48"
 updated: "2025-09-17 16:56:53"
+desc: 之前我的主进程main.ts都是挂载在index.astro上
 categories:
     - Tauri
 tags:

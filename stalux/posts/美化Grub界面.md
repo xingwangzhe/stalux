@@ -3,6 +3,7 @@ title: 美化Grub界面
 abbrlink: 5f776910
 date: "2025-09-09 12:43:44"
 updated: "2025-09-09 16:24:14"
+desc: 本机使用环境为Ubuntu,其它发行版可能会有所差别，但文件路径都是一致的
 categories:
     - Linux
 tags:

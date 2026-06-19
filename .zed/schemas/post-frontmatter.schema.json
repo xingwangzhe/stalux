@@ -1,0 +1,52 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Blog Post Frontmatter",
+    "description": "Required frontmatter fields for stalux/posts/*.md",
+    "type": "object",
+    "required": ["title", "abbrlink", "date", "desc"],
+    "properties": {
+        "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "文章标题"
+        },
+        "abbrlink": {
+            "type": ["string", "number"],
+            "description": "唯一短链接标识"
+        },
+        "date": {
+            "type": "string",
+            "description": "发布日期，格式 YYYY-MM-DD HH:mm:ss"
+        },
+        "desc": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 200,
+            "description": "文章描述，用于 SEO meta description，必须手写"
+        },
+        "updated": {
+            "type": "string",
+            "description": "最后更新日期"
+        },
+        "draft": {
+            "type": "boolean",
+            "default": false,
+            "description": "是否为草稿"
+        },
+        "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "标签列表"
+        },
+        "categories": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "分类列表"
+        },
+        "cc": {
+            "type": "string",
+            "default": "CC-BY-NC-SA-4.0",
+            "description": "版权许可协议"
+        }
+    }
+}

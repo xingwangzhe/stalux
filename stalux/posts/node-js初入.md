@@ -3,6 +3,7 @@ title: node.js初入
 abbrlink: 36480
 date: "2024-12-10 20:10:22"
 updated: "2025-07-04 18:44:32"
+desc: Node.js® 是一个免费、开源、跨平台的 JavaScript 运行时环境, 它让开发人员能够创建服务器 Web 应用、命令行工具和脚本。
 categories:
     - 后端
 tags:

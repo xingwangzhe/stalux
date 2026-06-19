@@ -3,6 +3,7 @@ title: hexo-theme-wang:一个简约的暗色主题
 abbrlink: 59667
 date: "2024-11-25 21:33:54"
 updated: "2025-07-04 18:44:32"
+desc: "xingwangzhe/hexo-theme-wang: 一个hexo主题"
 categories:
     - 开发
 tags:

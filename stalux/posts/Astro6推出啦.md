@@ -1,6 +1,7 @@
 ---
 title: Astro 6 推出啦
 date: "2026-03-12 09:27:03"
+desc: "bash title=\"升级你的Astro版本到 6!\""
 category: [astro]
 tags: [astro, vite]
 abbrlink: astro6-release

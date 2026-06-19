@@ -3,6 +3,7 @@ title: github:action/workflow自动发布npm包
 abbrlink: 5561
 date: "2025-01-06 20:03:44"
 updated: "2025-07-04 18:44:32"
+desc: github action/workflow进行npm自动发包，并自动更新版本号
 categories:
     - github
 tags:

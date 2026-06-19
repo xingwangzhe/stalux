@@ -3,6 +3,7 @@ title: 为hexo-next建立静态说说
 abbrlink: f513b372
 date: "2024-09-20 17:22:58"
 updated: "2024-09-20 17:23:00"
+desc: 曾经考虑使用Artitalk,但由于网络原因以及github无法备案等原因，暂时放弃，转而使用静态方法写说说
 categories:
     - hexo
 tags:

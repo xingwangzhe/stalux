@@ -3,6 +3,7 @@ title: 解决ubuntu智能卡验证问题,取消智能卡验证
 abbrlink: c1775752
 date: "2025-07-04 18:44:32"
 updated: "2025-07-04 18:44:32"
+desc: 可能是我昨晚瞎折腾，今天起来开机输入sudo su,发现需要智能卡验证？我寻思我从来没在ubuntu上设置什么智能卡啊，我只在windows上设置过物理密钥，这肯定出了问题
 categories:
     - 疑难杂症
 tags:

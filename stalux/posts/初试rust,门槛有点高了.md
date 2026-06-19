@@ -3,6 +3,7 @@ title: 初试rust,门槛有点高
 abbrlink: 2f7208c4
 date: "2025-05-11 13:44:12"
 updated: "2025-05-11 15:59:12"
+desc: "- Rust语言圣经(Rust Course)"
 categories:
     - 编程
 tags:

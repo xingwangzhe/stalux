@@ -3,6 +3,7 @@ title: 为Hexo博客提供订阅服务
 abbrlink: 261d7eb2
 date: "2024-09-19 07:59:02"
 updated: "2024-09-19 07:58:59"
+desc: 与传统的邮件列表相比，Web push Notification 有这样几点不同：
 categories:
     - hexo
 tags:

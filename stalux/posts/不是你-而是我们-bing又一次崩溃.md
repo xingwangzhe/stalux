@@ -3,6 +3,7 @@ title: 不是你,而是我们:bing又一次崩溃
 abbrlink: 48826
 date: "2025-03-13 10:43:49"
 updated: "2025-07-04 18:44:32"
+desc: 很难想象,在2025年,bing例行维护,还是没做到无感更新
 categories:
     - 胡思乱想
 tags:

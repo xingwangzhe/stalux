@@ -2,6 +2,7 @@
 title: Moonbit License Checker 开发使用
 abbrlink: moonbit-license-checker
 date: "2026-01-31 11:52:09"
+desc: 随着Monnbit社区不断发展壮大，管理和合规项目中的许可证信息变得尤为重要。为此，我用Copilot开发了一个名为 license_checker 的工具，旨在帮助开发者自动检测和生成项目中所有包的许可证报告。
 tags:
     - moonbit
     - license-checker

@@ -3,6 +3,7 @@ title: Webmapview:一个我的世界内置网页地图浏览Fabric模组
 abbrlink: 4628
 date: "2025-01-12 19:02:28"
 updated: "2025-09-16 19:54:26"
+desc: xingwangzhe/webmapview
 categories:
     - 开发
 tags:

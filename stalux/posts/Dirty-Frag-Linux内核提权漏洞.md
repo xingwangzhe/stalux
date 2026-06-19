@@ -2,6 +2,7 @@
 title: Dirty Frag——又一个Linux内核提权漏洞，Ubuntu又双叒叕中招了
 abbrlink: dirty-frag-linux-lpe
 date: "2026-05-08 10:00:00"
+desc: 本文存在AI生成内容（漏洞技术流程分析与 PoC 解读）
 categories: 技术
 tags: [linux, cve, 安全, 漏洞, 内核, ubuntu]
 ---

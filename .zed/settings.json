@@ -1,4 +1,10 @@
 {
+    "json_schemas": [
+        {
+            "file_match": ["stalux/posts/*.md"],
+            "schema": ".zed/schemas/post-frontmatter.schema.json"
+        }
+    ],
     "lsp": {
         "oxlint": {
             "initialization_options": {}

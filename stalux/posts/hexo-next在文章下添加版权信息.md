@@ -3,6 +3,7 @@ title: hexo-next在文章下添加版权信息
 abbrlink: 50aa0545
 date: "2024-09-04 16:03:03"
 updated: "2024-09-04 16:03:05"
+desc: themes/next/_config.yml
 categories:
     - hexo
 tags:

@@ -3,6 +3,7 @@ title: 再也不见Windows10
 abbrlink: ac8ebba9
 date: "2025-10-14 08:25:26"
 updated: "2025-10-14 09:10:46"
+desc: Windows 10 will reach end of support on October 14, 2025
 categories:
     - windows
 tags:

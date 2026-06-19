@@ -1,6 +1,7 @@
 ---
 title: 别让AI替你捣乱-致零软件工程经验新人的指南
 date: "2026-6-9 9:11:00"
+desc: GitHub 最近这几个月频繁崩溃，由于我订阅了 GitHub status 的邮件通知，导致某一天半夜连续受到几十封邮件轰炸！
 categories: 指南
 tags:
     - AI

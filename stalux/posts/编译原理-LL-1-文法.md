@@ -3,6 +3,7 @@ title: 编译原理:LL(1)文法
 abbrlink: 23217
 date: "2025-03-26 16:19:06"
 updated: "2025-07-04 18:44:32"
+desc: S\_文法不含$\varepsilon$产生式
 categories:
     - 学校学习
 tags:

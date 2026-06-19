@@ -3,6 +3,7 @@ title: 偷梁换柱，解决Ubuntu24.04安装Packet Tracer缺失依赖问题
 abbrlink: 9fe82262
 date: "2025-10-12 17:50:44"
 updated: "2025-10-12 18:12:28"
+desc: 由于学校的计算机网络实验课指导书基于 Windows，而我默认使用 Ubuntu，为了适应实验要求，我下载了 Packet Tracer。发现官网版本 (8.2.2) 支持的是 Ubuntu 22.04 而非 24.04，安装时缺少依赖。经过一番折腾，通过“偷梁换柱”的方法，成功解决了依赖问题。
 categories:
     - Packet Tracer
 tags:

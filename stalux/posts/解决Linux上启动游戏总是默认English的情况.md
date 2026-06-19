@@ -3,6 +3,7 @@ title: 解决Linux上启动游戏总是默认English的情况
 abbrlink: 81fc36f0
 date: "2025-09-27 20:32:44"
 updated: "2025-09-27 20:59:18"
+desc: 虽然我使用 Linux 已经好几个月了，可以说是完全沉浸其中，很少玩游戏了，但最近心血来潮，想玩 Rusted Warfare，却发现通过 Steam 的 Proton 兼容层启动游戏，默认都是 English，且游戏内没有语言选项，这让我感到不便，于是仔细研究了一下...
 categories:
     - Steam
 tags:

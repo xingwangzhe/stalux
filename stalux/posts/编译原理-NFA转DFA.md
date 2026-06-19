@@ -3,6 +3,7 @@ title: 编译原理:NFA转DFA
 abbrlink: 51944
 date: "2025-03-25 19:18:37"
 updated: "2025-07-04 18:44:32"
+desc: 不知道写点什么,所以记一下,以防~~失忆~~
 categories:
     - 学校学习
 tags:

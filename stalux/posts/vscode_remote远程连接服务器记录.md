@@ -3,6 +3,7 @@ title: VSCode Remote 远程连接服务器记录
 abbrlink: f67204e7
 date: "2025-09-03 20:20:00"
 updated: "2025-09-03 20:20:00"
+desc: 起因是我想直接把构建好的静态页面上传到服务器。
 categories:
     - 记录
 tags:

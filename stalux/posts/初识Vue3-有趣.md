@@ -3,6 +3,7 @@ title: 初识Vue3,有趣
 abbrlink: 218fcad3
 date: "2024-09-27 22:19:55"
 updated: "2024-09-27 22:19:53"
+desc: 老三件：html css javascript虽然不敢说熟练吧，但也算是基本掌握，但是我想如果构建前端页面的话，写这些似乎有点太过冗杂，看来前端工程化是必要的！
 categories:
     - 前端
 tags:

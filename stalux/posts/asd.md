@@ -3,6 +3,7 @@ title: LeetCode:2. 两数相加
 abbrlink: f899f771
 date: "2024-09-22 21:08:27"
 updated: "2024-10-15 21:08:44"
+desc: 按题意来，两个链遍历，取个位，进十位就行了。
 categories:
     - 算法题
 tags:

@@ -3,6 +3,7 @@ title: craftmine:愚人节更新
 abbrlink: 52599
 date: "2025-04-02 19:18:07"
 updated: "2025-07-04 18:44:32"
+desc: 哈哈,怎么变成绿色黑客风格了,搞得像有什么技术更新一样😀
 categories:
     - 胡思乱想
 tags:

@@ -3,6 +3,7 @@ title: 第一次Pull requests :)
 abbrlink: dad78c45
 date: "2024-09-13 19:36:15"
 updated: "2024-09-13 19:36:12"
+desc: 虽然我是计算机学生，但是对github等平台工具使用不够熟练，但还好~~我没酿成删库的惨剧~~
 categories:
     - github
 tags:

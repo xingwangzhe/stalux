@@ -3,6 +3,7 @@ title: GNU 42周年，AI时代的自由精神
 abbrlink: c08b9de1
 date: "2025-09-29 08:52:20"
 updated: "2025-09-29 09:17:36"
+desc: 本文中所有转载内容均遵守原作者的版权协议。除特别声明外，本文其余部分默认遵守 Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC-BY-NC-SA-4.0)。
 categories:
     - GNU
 tags:

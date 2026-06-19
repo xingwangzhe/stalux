@@ -1,6 +1,7 @@
 ---
 title: Vite8 - 统一的基建开始
 date: "2026-03-14 13:24:32"
+desc: 在 Astro 6 发布不久后，Vite 8 正式推出，标志着 Vite 终于统一了工具链，彻底结束了 rollup 和 esbuild 的混合使用。Vite+ 也最终宣布开源，同时 VoidZero 推出了 Vite 专属的平台，似乎是要与 Vercel 展开竞争。
 tags: ["vite", "voidzero", "serverless"]
 categories: vite
 abbrlink: vite-voidzero-features

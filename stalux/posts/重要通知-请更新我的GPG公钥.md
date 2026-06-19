@@ -3,6 +3,7 @@ title: "重要通知-请更新我的GPG公钥"
 tags: ["GPG", "加密", "邮件"]
 categories: GPG
 date: "2026-03-23 19:19:20"
+desc: 我已废弃旧的 GPG 公钥，更换原因主要有两点：
 abbrlink: 2026-3-gpg-update
 ---
 

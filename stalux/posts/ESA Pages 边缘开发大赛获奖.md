@@ -2,6 +2,7 @@
 title: ESA Pages 边缘开发大赛获奖
 abbrlink: esa-pages-awards
 date: "2026-02-06 19:50:32"
+desc: ESA上线之后,为了扩大影响力,所以举办了 ESA Pages 边缘开发大赛
 categories:
     - pages
 tags:

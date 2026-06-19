@@ -2,6 +2,7 @@
 title: 解决 Nautilus 自定义终端插件安装依赖问题
 abbrlink: nautilus-open-any-terminal
 date: "2026-03-18 14:40:00"
+desc: 默认的 GNOME Nautilus 只支持打开 gnome-terminal，如果你像我一样使用 Ghostty、Alacritty 或 Kitty 这样的第三方终端，就需要一个扩展来添加右键菜单。
 categories:
     - ubuntu
 tags:

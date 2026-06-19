@@ -1,6 +1,7 @@
 ---
 title: OpenClaw 该熄火了
 date: "2026-03-16 00:00:00"
+desc: 近期 OpenClaw 的走红速度令人心惊。尤其是一些云服务厂商，为了收割流量，竟然将目标对准了缺乏技术背景的普通用户，诱导他们在 Token 消耗和服务器租赁上投入大量的时间与金钱。这已经不再是简单的盲目跟风，而是一场波及广泛的 工程灾难 与 信息安全威胁。
 abbrlink: openclaw-no
 categories: ai
 tags: [openclaw, clawbot, ai, 网络安全]

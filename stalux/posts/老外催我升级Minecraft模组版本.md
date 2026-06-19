@@ -3,6 +3,7 @@ title: 老外催我升级Minecraft模组版本
 abbrlink: c4479124
 date: "2025-07-04 18:44:32"
 updated: "2025-07-04 18:44:32"
+desc: 距离上一次提及我的模组已经是很久以前的事情了，Webmapview 一个我的世界内置网页地图浏览 Fabric 模组
 categories:
     - 游戏
 tags:

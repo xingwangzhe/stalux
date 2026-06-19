@@ -2,6 +2,7 @@
 title: Moonbit 0.8.0 重大发布,我也要改一下我的包
 abbrlink: moonbit-0-8-0-release-change-my-package
 date: "2026-02-10 20:25:34"
+desc: 就在不久之前，MoonBit 官方博客发布了 MoonBit 0.8.0，工具链更新中最让人眼前一亮的就是新增的 moon install 命令。这意味着我们终于可以像使用 cargo install 或 npm install -g 那样，直接从远程仓库安装预编译的二进制工具了。看到这个消息，我第一反应是——得...
 categories:
     - moonbit
 tags:

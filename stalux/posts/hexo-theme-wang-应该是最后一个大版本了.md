@@ -3,6 +3,7 @@ title: hexo-theme-wang:应该是最后一个大版本了
 abbrlink: 38915
 date: "2024-12-28 20:35:19"
 updated: "2025-07-04 18:44:32"
+desc: "xingwangzhe/hexo-theme-wang: 一个简约的hexo主题"
 categories:
     - 自己的博客
 tags:

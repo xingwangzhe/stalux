@@ -3,6 +3,7 @@ title: SEO优化:期待拯救我的bing搜索
 abbrlink: 8811
 date: "2025-01-10 18:43:13"
 updated: "2025-07-04 18:44:32"
+desc: "经过进一步审查，您的网站似乎 https://xingwangzhe.fun/ 上次爬网时不符合 Bing 设定的标准。"
 categories:
     - 胡思乱想
 tags:

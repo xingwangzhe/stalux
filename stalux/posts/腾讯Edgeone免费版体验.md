@@ -3,6 +3,7 @@ title: 腾讯Edgeone免费版体验
 abbrlink: c5742cd5
 date: "2025-07-04 18:49:22"
 updated: "2025-07-04 19:44:57"
+desc: 腾讯云EdgeOne免费计划兑换码 - 立即体验
 categories:
     - 折腾
 tags:

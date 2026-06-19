@@ -3,6 +3,7 @@ title: 本来想搬fishport_serverwiki来着
 abbrlink: 2283d3b7
 date: "2024-07-03 21:07:59"
 updated: "2024-10-15 21:07:58"
+desc: 感觉\x7e~还行~~,但是能力不足，况且搬到github上托管,对别的玩家来说，写wiki门槛似乎有点高了
 categories:
     - 游戏
 tags:

@@ -3,6 +3,7 @@ title: 给博客右上角添加github跳转图标
 abbrlink: c42bc0f8
 date: "2024-09-11 17:28:10"
 updated: "2024-09-11 17:28:13"
+desc: "themes/next/layout/\\_layout.swig文件中<div class=\"headband\"></div>下面一行"
 categories:
     - hexo
 tags:

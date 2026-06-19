@@ -2,6 +2,7 @@
 title: Cloudflare Pages自定义依赖安装实践
 abbrlink: cf-pages-custom-deps
 date: "2026-05-15 20:03:36"
+desc: 折腾 Cloudflare Pages 的时候，我一度以为它只能跑默认的 npm install，但事实并非如此——Cloudflare Pages 的构建系统其实相当灵活。
 categories: 技术
 tags:
     - cloudflare

@@ -1,6 +1,7 @@
 ---
 title: ESA-后记:热爱阿里云
 date: "2026-03-02 18:52:30"
+desc: 前文 ESA Pages 边缘开发大赛获奖 提到我获奖了。如今春节结束返工，快递也就运过来了。
 abbrlink: esa-to-aliyun
 category: ESA
 tags: [阿里云, ESA]

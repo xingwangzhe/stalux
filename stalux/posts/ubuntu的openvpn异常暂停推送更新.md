@@ -7,6 +7,7 @@ tags:
     - ubuntu
 abbrlink: "error-push-openvpn-on-ubuntu"
 date: "2026-03-10 13:54:01"
+desc: "今天是东八区2026年3月10日13:54:01时，这已经是我不知道第几次sudo apt update && sudo apt upgrade了，但是依然存在两个依赖迟迟不更新，重要的是，已经好几天都在推迟"
 ---
 
 ## **本文具有时效性，不代表长期状况，请注意文章发布时间，问题可能会很快解决**

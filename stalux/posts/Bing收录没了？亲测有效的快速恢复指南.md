@@ -4,6 +4,7 @@ categories: Bing
 tags: [Bing, 收录, 网站, site]
 abbrlink: bing-re-index
 date: "2026-03-20 10:30:00"
+desc: 我的 Bing 收录掉了一年了，期间写了无数封邮件，最终在今天终于成功恢复索引！不同于网上的各种玄学方法，这篇是亲测有效的实战经验。
 ---
 
 ## 前言

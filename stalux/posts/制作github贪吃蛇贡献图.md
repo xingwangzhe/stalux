@@ -3,6 +3,7 @@ title: 制作github贪吃蛇贡献图
 abbrlink: 16664
 date: "2024-11-11 09:19:33"
 updated: "2025-07-04 18:44:32"
+desc: "xingwangzhe/xingwangzhe: My personal repository"
 categories:
     - github
 tags:

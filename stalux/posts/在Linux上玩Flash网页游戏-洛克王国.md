@@ -1,6 +1,7 @@
 ---
 title: 在Linux上玩Flash网页游戏-洛克王国
 date: "2026-03-27 11:30:00"
+desc: 昨天晚上，群友分享了《洛克王国：世界》的宣传二维码，扫码就能看到当前QQ号在经典网页版洛克王国的注册时间，这勾起了我的回忆。我突然想起了十二年前注册的QQ号，找回账号之后，就想在Linux上再玩一次洛克王国。
 abbrlink: linux-flash-roco
 categories: 技术
 tags:

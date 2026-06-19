@@ -1,6 +1,7 @@
 ---
 title: Ubuntu26.04正式推出
 date: "2026-04-24 01:00:00"
+desc: 期待许久，Ubuntu 26.04 正式版——代号坚毅浣熊（Resolute Raccoon）终于推出。面对 AI 时代的浪潮，Ubuntu 正在努力把自己打造成 AI 开发的优先易用平台 🦝
 abbrlink: ubuntu-26-04-official-release
 tags:
     - Linux

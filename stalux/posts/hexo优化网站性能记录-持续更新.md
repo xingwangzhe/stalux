@@ -3,6 +3,7 @@ title: hexo优化网站性能记录-持续更新
 abbrlink: 9f6ebe30
 date: "2024-10-15 14:36:06"
 updated: "2024-10-15 14:36:08"
+desc: 如果你访问github有困难，可以访问此镜像库hexo-all-minifier
 categories:
     - hexo
 tags:

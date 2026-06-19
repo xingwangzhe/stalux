@@ -1,10 +1,9 @@
-/** Compute word count, description, and feature flags from raw Markdown body. */
+/** Compute word count and feature flags from raw Markdown body. */
 import { markdownToMdast } from "satteri";
 
 export interface PostStats {
     wordCount: number;
     minutesRead: string;
-    desc: string;
     hasKatex: boolean;
     hasMermaid: boolean;
     hasImage: boolean;
@@ -28,7 +27,6 @@ export function computePostStats(body: string): PostStats {
         return {
             wordCount: 0,
             minutesRead: "< 1 min",
-            desc: "",
             hasKatex: false,
             hasMermaid: false,
             hasImage: false,
@@ -68,7 +66,6 @@ export function computePostStats(body: string): PostStats {
     return {
         wordCount: wc,
         minutesRead: formatReadingTime(wc, 400),
-        desc: plainText.slice(0, 125) + (plainText.length > 125 ? "…" : ""),
         hasKatex,
         hasMermaid,
         hasImage,

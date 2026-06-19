@@ -3,6 +3,7 @@ title: Obsidian使用体验
 abbrlink: d5f89da4
 date: "2025-10-02 16:58:57"
 updated: "2025-10-02 18:49:26"
+desc: 说实话，写了一年多的md,我基本上都是在Vscode,IDEA,Zed 这些代码编辑器上写，从来没想着要去用专门的Markdown编辑器上去写,但文章多了起来，管理frontmatter就成了问题,很多时候需要复用categories和tags但我又不能一个个去找，这太浪费时间了，于是我打算找一个专业的md编辑器...
 categories:
     - 记录
 tags:

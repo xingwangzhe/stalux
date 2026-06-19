@@ -3,6 +3,7 @@ title: hexo创建公益404界面
 abbrlink: 6ec2376e
 date: "2024-09-20 21:06:33"
 updated: "2024-10-15 21:06:45"
+desc: 然后你的博客blog\source\404\
 categories:
     - hexo
 tags:

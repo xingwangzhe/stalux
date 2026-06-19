@@ -3,6 +3,7 @@ title: hexo创建一个友情链接页面
 abbrlink: 62fedd1e
 date: "2024-09-14 19:16:27"
 updated: "2024-09-14 19:16:29"
+desc: 尽管hexo自带links功能，但是这样看起来单一无趣，那么为了改善友链，我们可以自定义一个页面
 categories:
     - hexo
 tags:

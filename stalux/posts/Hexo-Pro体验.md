@@ -3,6 +3,7 @@ title: Hexo Pro体验
 abbrlink: 32951
 date: "2024-10-29 09:21:27"
 updated: "2025-07-04 18:44:32"
+desc: "项目地址:https://github.com/wuzheng228/hexo-pro"
 categories:
     - hexo
 tags:

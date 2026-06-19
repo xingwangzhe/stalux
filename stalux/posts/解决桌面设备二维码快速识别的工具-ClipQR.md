@@ -2,6 +2,7 @@
 title: 解决桌面设备二维码快速识别的工具-ClipQR
 abbrlink: clipqr
 date: "2026-03-19 19:40:36"
+desc: 不知道你有没有遇到过这样的场景：在电脑上看到一个二维码，想要扫码识别内容，却不得不——
 categories:
     - 技术
 tags:

@@ -2,6 +2,7 @@
 title: Astro 5.17构建性能优化实践：从18s到13s
 abbrlink: astro-517-performance-optimization
 date: "2026-02-02 19:52:00"
+desc: 在维护个人博客主题 Stalux 的过程中，随着文章数量增长到 150+ 篇，我发现构建时间逐渐变得非常的慢,对于调试来说很不方便(因为当前astro依赖的vite版本build和dev结果是不一样的)。每次 astro build 都要等待 18 秒以上，这不仅影响了开发体验，也让 CI/CD 流程变得拖沓。
 tags: [Astro, 性能优化, 前端, ssg]
 categories: 技术
 ---

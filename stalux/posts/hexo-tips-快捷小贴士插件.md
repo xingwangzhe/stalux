@@ -3,6 +3,7 @@ title: hexo-tips:快捷小贴士插件
 abbrlink: 8367
 date: "2025-01-03 22:59:59"
 updated: "2025-07-04 18:44:32"
+desc: "github仓库:xingwangzhe/hexo-tips: Use tooltips more conveniently in hexo"
 categories:
     - 开发
 tags:

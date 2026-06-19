@@ -3,6 +3,7 @@ title: hexo压缩资源，优化访问
 abbrlink: 42cabe35
 date: "2024-09-21 17:38:24"
 updated: "2024-09-21 17:38:28"
+desc: Hexo-all-minifier压缩资源，优化访问
 categories:
     - hexo
 tags:

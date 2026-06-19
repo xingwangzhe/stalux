@@ -3,6 +3,7 @@ title: ubuntu无法访问windows磁盘问题
 abbrlink: 05db3c92
 date: "2025-07-04 18:44:32"
 updated: "2025-07-04 18:44:32"
+desc: 在Ubuntu中无法访问Windows磁盘，尝试挂载时出现错误提示。
 categories:
     - 疑难杂症
 tags:

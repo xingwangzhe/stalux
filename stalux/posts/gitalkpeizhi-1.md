@@ -3,6 +3,7 @@ title: 在hexo-next配置gitalk
 abbrlink: 8403dd78
 date: "2024-09-20 18:58:27"
 updated: "2024-09-20 18:58:30"
+desc: 你是否也想在你的博客里面添加这样的评论区？
 categories:
     - hexo
 tags:

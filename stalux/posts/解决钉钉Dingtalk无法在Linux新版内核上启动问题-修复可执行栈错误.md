@@ -3,6 +3,7 @@ title: 解决钉钉Dingtalk无法在Linux新版内核上启动问题-修复可�
 abbrlink: dingtalk-linux-fix-execstack
 date: "2026-03-31 09:00:00"
 updated: "2026-03-31 09:21:00"
+desc: 最近更新系统到 Linux 内核 7.0 后，发现钉钉无法启动了。运行钉钉时出现以下错误：
 categories:
     - linux
 tags:

@@ -3,6 +3,7 @@ title: node.js:试试express
 abbrlink: 8479
 date: "2024-12-18 18:05:43"
 updated: "2025-07-04 18:44:32"
+desc: Express 框架是一个快速、开放、极简的 web 应用开发框架，用于构建灵活和强大的 web 应用和 API。它是 Node.js 平台上最流行的框架之一，因为它提供了一套丰富的功能来简化和加速 web 开发过程。
 categories:
     - node.js
 tags:

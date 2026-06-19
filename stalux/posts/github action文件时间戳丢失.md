@@ -3,6 +3,7 @@ title: GitHub Actions 文件时间戳丢失问题及解决方案
 abbrlink: 4568800c
 date: "2025-07-04 18:44:32"
 updated: "2025-07-04 18:44:32"
+desc: 我有一次创建 GitHub Actions workflow 之后，发现构建完的文章的创建时间和修改时间都变成构建时间了。我试了好多次发现结果都一样，我就明白了这是构建阶段文件时间戳丢失的问题。
 categories:
     - 疑难杂症
 tags:

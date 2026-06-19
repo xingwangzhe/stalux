@@ -1,6 +1,7 @@
 ---
 title: Stalux Astro博客主题自荐
 date: "2026-01-30 19:53:49"
+desc: 历经多次打磨和稍微的优化,终于完成了Stalux这一个astro主题,也就是当前xingwangzhe.fun所使用的主题.
 abbrlink: stalux-astro
 tags:
     - stalux

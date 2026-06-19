@@ -3,6 +3,7 @@ title: 俄罗斯互联网用户无法访问Cloudflare
 abbrlink: a30ea8af
 date: "2025-07-04 18:44:32"
 updated: "2025-07-04 18:44:32"
+desc: 今天凌晨收到了Cloudflare的blog订阅，内容是关于俄罗斯互联网用户无法访问Cloudflare的服务。
 categories:
     - 网络
 tags:

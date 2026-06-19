@@ -3,6 +3,7 @@ title: chen-er 专为Chen式ER图打造的npm包
 abbrlink: b8eb3b61
 date: "2025-12-03 15:34:31"
 updated: "2025-12-03 16:44:40"
+desc: "现代 Web 的各种图形库基本上都默认存在 ER 图 渲染，尤其是 Mermaid 这种“文本到图形”更是不例外，但遗憾的是，这些图形库完全都是按照 Crow's Foot 方法"
 categories:
     - npm
 tags:

@@ -1,6 +1,7 @@
 ---
 title: Debian 14 强制可重现构建：从"信任我们"到"验证我们"
 date: "2026-05-12 09:00:00"
+desc: "说实话，当我在 debian-devel-announce 看到那条公告时，第一反应是\"终于来了\"。"
 abbrlink: debian-14-reproducible-builds
 tags:
     - Linux

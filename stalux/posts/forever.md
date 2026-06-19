@@ -3,6 +3,7 @@ title: forever
 abbrlink: f5bf34a0
 date: "2024-06-23 16:33:26"
 updated: "2025-07-04 18:44:32"
+desc: "[Hexo 个人博客搭建及主题配置教程][1]"
 categories:
     - hexo
 tags:

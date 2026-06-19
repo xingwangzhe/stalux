@@ -3,6 +3,7 @@ title: Thetis物理密钥，为什么我们应该使用物理密钥
 abbrlink: eaafd5fa
 date: "2025-07-04 18:44:32"
 updated: "2026-03-29 16:02:32"
+desc: 我选用的是 Thetis Pro FIDO2 安全密钥，这是一款支持多功能安全密钥。
 categories:
     - 胡思乱想
 tags:

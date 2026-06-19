@@ -1,6 +1,7 @@
 ---
 title: 从edgeone迁移到esa
 date: "2026-02-05 17:55:30"
+desc: 之前我一直用edgeone托管我的博客,后来阿里云推出esa后,所以我决定把博客从edgeone迁移到esa.
 abbrlink: mv-edgeone-to-esa
 tags:
     - esa

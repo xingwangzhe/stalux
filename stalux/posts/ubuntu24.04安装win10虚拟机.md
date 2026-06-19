@@ -1,6 +1,7 @@
 ---
 title: "Ubuntu 24.04 安装 Win10 虚拟机"
 date: "2026-03-06 17:40:01"
+desc: 我看网上太多教程都是win安装ubuntu虚拟机的了，所以这次来写一下如何在ubuntu上安装win10虚拟机。
 tags: ["Ubuntu", "Win10", "QEMU", "KVM"]
 categories: ["虚拟机"]
 abbrlink: "ubuntu-24.04-install-win10-vm"

@@ -3,6 +3,7 @@ title: Tauri在GNOME46+上通知无效的临时解决方法
 abbrlink: 8d9bb0f3
 date: "2025-08-29 15:14:05"
 updated: "2025-08-29 15:28:35"
+desc: 起因是我在我的ubuntu24.04上，无法调用Tauri的同时函数，后来找了一下资料，发现竟然还是bug。
 categories:
     - Tauri
 tags:
