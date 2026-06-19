@@ -5,7 +5,10 @@ BLUEOAK-1.0.0 sax
 LGPL-3.0-OR-LATER @img/sharp-libvips-linux-x64
 LGPL-3.0-OR-LATER @img/sharp-libvips-linuxmusl-x64
 MIT* color-convert
+MIT* khroma
+MIT* satteri
 MIT* stalux
+UNKNOWN @bruits/satteri-linux-x64-gnu
 UNLICENSE robust-predicates
 
 === LIKELY MIT-COMPATIBLE (PERMISSIVE) ===
@@ -42,6 +45,7 @@ CC0-1.0 binary-search
 CC0-1.0 mdn-data
 CC0-1.0 simple-icons
 ISC @emmetio/html-matcher
+ISC @lucide/astro
 ISC @ungap/structured-clone
 ISC anymatch
 ISC boolbase
@@ -79,8 +83,8 @@ ISC d3-zoom
 ISC delaunator
 ISC get-caller-file
 ISC github-slugger
-ISC hast-util-from-dom
 ISC internmap
+ISC lucide
 ISC piccolore
 ISC picocolors
 ISC semver
@@ -97,6 +101,7 @@ MIT @astrojs/compiler-rs
 MIT @astrojs/internal-helpers
 MIT @astrojs/language-server
 MIT @astrojs/markdown-remark
+MIT @astrojs/markdown-satteri
 MIT @astrojs/prism
 MIT @astrojs/rss
 MIT @astrojs/sitemap
@@ -180,9 +185,9 @@ MIT @types/d3-transition
 MIT @types/d3-zoom
 MIT @types/debug
 MIT @types/estree
+MIT @types/estree-jsx
 MIT @types/geojson
 MIT @types/hast
-MIT @types/katex
 MIT @types/mdast
 MIT @types/ms
 MIT @types/nlcst
@@ -214,11 +219,12 @@ MIT @vueuse/metadata
 MIT @vueuse/shared
 MIT @waline/api
 MIT @waline/client
+MIT @xingwangzhe/tags-cloud
 MIT acorn
 MIT adequate-little-templates
 MIT ajv
 MIT ajv-draft-04
-MIT alfaaz
+MIT am-i-vibing
 MIT anafanafo
 MIT animejs
 MIT ansi-regex
@@ -241,7 +247,6 @@ MIT character-entities-html4
 MIT character-entities-legacy
 MIT chokidar
 MIT ci-info
-MIT classnames
 MIT clsx
 MIT color-convert
 MIT color-name
@@ -250,7 +255,6 @@ MIT commander
 MIT confbox
 MIT cookie
 MIT cookie-es
-MIT core-js
 MIT cose-base
 MIT crossws
 MIT css-color-converter
@@ -264,6 +268,8 @@ MIT cytoscape
 MIT cytoscape-cose-bilkent
 MIT cytoscape-fcose
 MIT dagre-d3-es
+MIT date-fns
+MIT date-fns-tz
 MIT dayjs
 MIT debug
 MIT decode-named-character-reference
@@ -290,7 +296,6 @@ MIT fast-deep-equal
 MIT fast-xml-builder
 MIT fast-xml-parser
 MIT fdir
-MIT feather-icons
 MIT flattie
 MIT fontace
 MIT fontkitten
@@ -298,7 +303,6 @@ MIT get-tsconfig
 MIT h3
 MIT hachure-fill
 MIT hast-util-from-html
-MIT hast-util-from-html-isomorphic
 MIT hast-util-from-parse5
 MIT hast-util-has-property
 MIT hast-util-is-element
@@ -346,7 +350,6 @@ MIT mdast-util-gfm-footnote
 MIT mdast-util-gfm-strikethrough
 MIT mdast-util-gfm-table
 MIT mdast-util-gfm-task-list-item
-MIT mdast-util-math
 MIT mdast-util-phrasing
 MIT mdast-util-to-hast
 MIT mdast-util-to-markdown
@@ -361,7 +364,6 @@ MIT micromark-extension-gfm-strikethrough
 MIT micromark-extension-gfm-table
 MIT micromark-extension-gfm-tagfilter
 MIT micromark-extension-gfm-task-list-item
-MIT micromark-extension-math
 MIT micromark-factory-destination
 MIT micromark-factory-label
 MIT micromark-factory-space
@@ -417,6 +419,7 @@ MIT postcss-nested
 MIT postcss-selector-parser
 MIT prettier
 MIT prismjs
+MIT process-ancestry
 MIT property-information
 MIT radix3
 MIT readdirp
@@ -425,12 +428,10 @@ MIT regex-recursion
 MIT regex-utilities
 MIT rehype
 MIT rehype-expressive-code
-MIT rehype-katex
 MIT rehype-parse
 MIT rehype-raw
 MIT rehype-stringify
 MIT remark-gfm
-MIT remark-math
 MIT remark-parse
 MIT remark-rehype
 MIT remark-smartypants
@@ -519,8 +520,8 @@ MIT yargs
 MIT yocto-queue
 MIT zod
 MIT zwitch
+MPL-2.0 @nullpinter/satteri-katex
 MPL-2.0 lightningcss
 MPL-2.0 lightningcss-linux-x64-gnu
 MPL-2.0 lightningcss-linux-x64-musl
 PYTHON-2.0 argparse
-UNDEFINED khroma

@@ -41,7 +41,6 @@
         "simple-icons": "16.23.0"
     },
     "devDependencies": {
-        "@types/node": "25.9.2",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "0.54.0",
         "oxlint": "^1.69.0"
