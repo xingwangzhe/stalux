@@ -7,7 +7,7 @@ categories:
     - 主题配置
 date: "2025-05-10 11:00:00"
 updated: "2026-01-26 12:00:00"
-desc: "├── public/  # 公共资源文件夹"
+desc: 站点基本信息配置指南，包括文件结构、内容合集位置、frontmatter 必填与可选字段及书写注意。
 abbrlink: ad81245d
 ---
 
@@ -80,10 +80,12 @@ stalux/
 - `title`: 文章标题。
 - `abbrlink`: 永久链接标识，字符串或数字（数字会自动转为字符串）；用于生成 `/posts/{abbrlink}` 路由。
 - `date`: 发布时间，支持 ISO 8601 格式（如 `2025-05-10T09:30:00+08:00`）或 `YYYY-MM-DD HH:mm:ss` 格式。
+- `desc`: 文章描述，用于 SEO meta description 和 Open Graph。**必须手写**，不能为空，建议 50–160 字符。
 
 可选：
 
-- `updated`: 更新日期，**字符串**，支持 ISO 8601 格式或 `YYYY-MM-DD HH:mm:ss` 格式，可为空。
+- `updated`: 更新日期，支持 ISO 8601 格式或 `YYYY-MM-DD HH:mm:ss` 格式。
+- `draft`: 草稿状态，默认 `false`；为 `true` 时文章不会出现在发布列表中。
 - `tags`: 标签数组；单字符串也会被转换为数组。
 - `categories`: 分类数组；单字符串也会被转换为数组。
 - `cc`: 版权标识，默认 `CC-BY-NC-SA-4.0`。
@@ -95,6 +97,7 @@ stalux/
 title: 示例文章
 abbrlink: sample-post
 date: 2025-05-10T12:00:00+08:00
+desc: 这是一篇示例文章，演示 Stalux 主题的 frontmatter 写法。
 updated: 2025-05-12T09:00:00+08:00
 tags:
     - 技术
