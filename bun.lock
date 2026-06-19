@@ -8,10 +8,10 @@
         "@astrojs/compiler-rs": "^0.2.2",
         "@astrojs/markdown-remark": "^7.2.0",
         "@astrojs/markdown-satteri": "0.3.0",
-        "@astrojs/rss": "4.0.15-beta.4",
-        "@astrojs/sitemap": "3.6.1-beta.3",
+        "@astrojs/rss": "^4.0.18",
+        "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.43.1",
-        "@lucide/astro": "^1.17.0",
+        "@lucide/astro": "^1.21.0",
         "@nullpinter/satteri-katex": "0.1.1",
         "@waline/client": "3.15.2",
         "@xingwangzhe/tags-cloud": "^1.2.2",
@@ -26,7 +26,7 @@
         "date-fns-tz": "^3.2.0",
         "katex": "^0.17.0",
         "lightningcss": "^1.32.0",
-        "lucide": "^1.17.0",
+        "lucide": "^1.21.0",
         "mermaid": "^11.15.0",
         "photoswipe": "^5.4.4",
         "simple-icons": "16.23.0",
@@ -77,9 +77,9 @@
 
     "@astrojs/prism": ["@astrojs/prism@4.0.2", "", { "dependencies": { "prismjs": "^1.30.0" } }, "sha512-KTivpmnz6lDsC6o9H4+DNm2SrE/GHzw8cNAvEJwAvUT+eoaEnn/4NtbDNfRRaxaJHdp15gf+tfHAWiXR4wB3BA=="],
 
-    "@astrojs/rss": ["@astrojs/rss@4.0.15-beta.4", "", { "dependencies": { "fast-xml-parser": "^5.3.7", "piccolore": "^0.1.3", "zod": "^4.3.6" } }, "sha512-BeVo8kgXu29HMYhmAX7MbEQXKEOUMga4XouYWAYLvtQMVnvgEtQhpAqxauljfCCQ1S2tRvKeu/fiZ6GAGxrtEQ=="],
+    "@astrojs/rss": ["@astrojs/rss@4.0.18", "", { "dependencies": { "fast-xml-parser": "^5.5.7", "piccolore": "^0.1.3", "zod": "^4.3.6" } }, "sha512-wc5DwKlbTEdgVAWnHy8krFTeQ42t1v/DJqeq5HtulYK3FYHE4krtRGjoyhS3eXXgfdV6Raoz2RU3wrMTFAitRg=="],
 
-    "@astrojs/sitemap": ["@astrojs/sitemap@3.6.1-beta.3", "", { "dependencies": { "sitemap": "^9.0.0", "stream-replace-string": "^2.0.0", "zod": "^4.3.6" } }, "sha512-DPILjSDo0BoITSLhs+8WoiLY7GFiiDNQkfb3+tSEyPd94i700jCdkM9jYZEZ6OrCSfHoBYzOaEgiZ1NTSA1/5Q=="],
+    "@astrojs/sitemap": ["@astrojs/sitemap@3.7.3", "", { "dependencies": { "sitemap": "^9.0.0", "stream-replace-string": "^2.0.0", "zod": "^4.3.6" } }, "sha512-f8euLVsyeAmAkSm/1M2Kb8sL8byQmfgbvBNaHFItCheTj/IpiJYSEWVcqDHZ/yEHxiS7+w87mQkzwZaPHmk5GA=="],
 
     "@astrojs/telemetry": ["@astrojs/telemetry@3.3.2", "https://registry.npmmirror.com/@astrojs/telemetry/-/telemetry-3.3.2.tgz", { "dependencies": { "ci-info": "^4.4.0", "dset": "^3.1.4", "is-docker": "^4.0.0", "is-wsl": "^3.1.1", "which-pm-runs": "^1.1.0" } }, "sha512-j8DNruA8ors99Al39RYZPJK4DC1bKkoNm93mAMuBhY9TCNC4R8n1q7ovFnJ5qhGh5Lsh7pa1gpQVpYpsJPeTHQ=="],
 
@@ -259,7 +259,7 @@
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "https://registry.npmmirror.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
-    "@lucide/astro": ["@lucide/astro@1.17.0", "https://registry.npmmirror.com/@lucide/astro/-/astro-1.17.0.tgz", { "peerDependencies": { "astro": "^4 || ^5 || ^6" } }, "sha512-wF5wyjF8zThvI5JVUWG1WLoFdbTcMNXouxnholAyR0EEFfWNnGP1DGsvuu7cym/2mj2vUEjPbIPPDgWwjabFRQ=="],
+    "@lucide/astro": ["@lucide/astro@1.21.0", "", { "peerDependencies": { "astro": "^4 || ^5 || ^6" } }, "sha512-RSz8xUah+eApcVKuQJXuLzcaYwK++tTLHa34peSln3h8n/RblaohSmsHdOj1JUQT/KutfbXw19u2x5g0zMTT0w=="],
 
     "@mermaid-js/parser": ["@mermaid-js/parser@1.1.1", "https://registry.npmmirror.com/@mermaid-js/parser/-/parser-1.1.1.tgz", { "dependencies": { "@chevrotain/types": "~11.1.1" } }, "sha512-VuHdsYMK1bT6X2JbcAaWAhugTRvRBRyuZgd+c22swUeI9g/ntaxF7CY7dYarhZovofCbUNO0G7JesfmNtjYOCw=="],
 
@@ -1083,7 +1083,7 @@
 
     "lru-cache": ["lru-cache@11.3.5", "https://registry.npmmirror.com/lru-cache/-/lru-cache-11.3.5.tgz", {}, "sha512-NxVFwLAnrd9i7KUBxC4DrUhmgjzOs+1Qm50D3oF1/oL+r1NpZ4gA7xvG0/zJ8evR7zIKn4vLf7qTNduWFtCrRw=="],
 
-    "lucide": ["lucide@1.17.0", "https://registry.npmmirror.com/lucide/-/lucide-1.17.0.tgz", {}, "sha512-icbHK+hG15rWoacjNi3aw+UXHRmZ9Ee1fJ6ZSu7lbC4GOig7evVEXYCfK77FvjQHusPgi0D/QN7zTO+5wZ8PwQ=="],
+    "lucide": ["lucide@1.21.0", "", {}, "sha512-m8g+tPjt1am9YBygKb36o2JOu5xOg7usbz0EORvPjn6MacIVy7desH1SNnV1ziMFHRGMGCcF5r1Jj80TxF2UTw=="],
 
     "magic-string": ["magic-string@0.30.21", "https://registry.npmmirror.com/magic-string/-/magic-string-0.30.21.tgz", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.5" } }, "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ=="],
 
