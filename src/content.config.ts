@@ -14,9 +14,13 @@ const posts = defineCollection({
         retainBody: true,
     }),
     schema: z.object({
-        title: z.string(),
-        abbrlink: z.string().or(z.number().transform((num) => num.toString())),
-        date: z.string(),
+        title: z.string().min(1, "title 不能为空"),
+        abbrlink: z
+            .string({ invalid_type_error: "abbrlink 必须是字符串或数字" })
+            .or(z.number().transform((num) => num.toString())),
+        date: z
+            .string({ required_error: "date 为必填字段", invalid_type_error: "date 必须是字符串" })
+            .min(1, "date 不能为空，格式: YYYY-MM-DD HH:mm:ss"),
         updated: z.string().optional(),
         draft: z.boolean().optional().default(false),
         tags: z.preprocess(
@@ -27,7 +31,9 @@ const posts = defineCollection({
             (val) => (typeof val === "string" ? [val] : val),
             z.array(z.string()).optional(),
         ),
-        desc: z.string().min(1, "desc 不能为空"),
+        desc: z
+            .string({ required_error: "desc 为必填字段，请手写文章描述", invalid_type_error: "desc 必须是字符串" })
+            .min(1, "desc 不能为空"),
         minutesRead: z.string().optional(),
         wordCount: z.number().optional(),
         cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
@@ -36,11 +42,11 @@ const posts = defineCollection({
 const config = defineCollection({
     loader: file("config.yml"),
     schema: z.object({
-        title: z.string(),
-        url: z.string().url(),
+        title: z.string().min(1, "config.title 不能为空"),
+        url: z.string().url("config.url 必须是合法 URL，例如 https://example.com"),
         timezone: z.string().optional().default("Asia/Shanghai"),
-        description: z.string(),
-        canonical: z.string().url().optional(),
+        description: z.string().min(1, "config.description 不能为空"),
+        canonical: z.string().url("config.canonical 必须是合法 URL").optional(),
         twitterSite: z.string().optional(),
         noindex: z.boolean().optional().default(false),
         nofollow: z.boolean().optional().default(false),
@@ -59,35 +65,35 @@ const config = defineCollection({
             .optional(),
         favicon: z.string().optional().default("/favicon.ico"),
         author: z.object({
-            name: z.string(),
-            avatar: z.string(),
-            bio: z.string(),
+            name: z.string().min(1, "config.author.name 不能为空"),
+            avatar: z.string().min(1, "config.author.avatar 不能为空"),
+            bio: z.string().min(1, "config.author.bio 不能为空"),
         }),
         navs: z.array(
             z.object({
-                title: z.string(),
-                icon: z.string(),
-                link: z.string(),
+                title: z.string().min(1, "navs[].title 不能为空"),
+                icon: z.string().min(1, "navs[].icon 不能为空"),
+                link: z.string().min(1, "navs[].link 不能为空"),
             }),
         ),
         typetexts: z.array(z.string()).optional(),
         mediaLinks: z
             .array(
                 z.object({
-                    icon: z.string(),
-                    link: z.string(),
+                    icon: z.string().min(1, "mediaLinks[].icon 不能为空"),
+                    link: z.string().min(1, "mediaLinks[].link 不能为空"),
                 }),
             )
             .optional(),
         links: z.object({
-            title: z.string(),
+            title: z.string().min(1, "links.title 不能为空"),
             description: z.string(),
             sites: z.array(
                 z.object({
-                    name: z.string(),
+                    name: z.string().min(1, "links.sites[].name 不能为空"),
                     description: z.string(),
-                    icon: z.string(),
-                    link: z.string(),
+                    icon: z.string().min(1, "links.sites[].icon 不能为空"),
+                    link: z.string().min(1, "links.sites[].link 不能为空"),
                 }),
             ),
         }),
@@ -131,8 +137,8 @@ const config = defineCollection({
                 badges: z
                     .array(
                         z.object({
-                            label: z.string(),
-                            message: z.string(),
+                            label: z.string().min(1, "footer.badges[].label 不能为空"),
+                            message: z.string().min(1, "footer.badges[].message 不能为空"),
                             color: z.string().optional(),
                             style: z.string().optional(),
                             alt: z.string().optional(),
@@ -148,7 +154,7 @@ const config = defineCollection({
                 enabled: z.boolean().optional().default(false),
                 waline: z
                     .object({
-                        serverURL: z.url().optional(),
+                        serverURL: z.string().url("comment.waline.serverURL 必须是合法 URL").optional(),
                         lang: z.string().optional().default("zh-CN"),
                         locale: z.any().optional(),
                         emoji: z
@@ -182,8 +188,8 @@ const config = defineCollection({
 const about = defineCollection({
     loader: glob({ base: "stalux/about", pattern: "**/*.{md,mdx}", retainBody: false }),
     schema: z.object({
-        title: z.string(),
-        description: z.string(),
+        title: z.string().min(1, "about.title 不能为空"),
+        description: z.string().min(1, "about.description 不能为空"),
     }),
 });
 
@@ -195,7 +201,7 @@ const words = defineCollection({
     }),
     schema: z.object({
         source: z.string().optional(),
-        link: z.string().url().optional(),
+        link: z.string().url("words.link 必须是合法 URL").optional(),
         sourceDate: z.string().optional(),
         date: z.string().optional(),
         updated: z.string().optional(),
