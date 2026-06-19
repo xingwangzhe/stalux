@@ -42,7 +42,7 @@
     },
     "devDependencies": {
         "license-checker-rseidelsohn": "5.0.1",
-        "oxfmt": "0.54.0",
-        "oxlint": "^1.69.0"
+        "oxfmt": "^0.55.0",
+        "oxlint": "^1.70.0"
     }
 }

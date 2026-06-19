@@ -26,16 +26,16 @@ categories: 技术
 
 AI 帮我搜到的信息印证了几个月前我的直觉判断。国内主流移动浏览器的内核全是基于 Chromium 或 WebKit 的**魔改版本**，它们在标准内核之上加了自己的"强制暗色模式"：
 
-| 浏览器 | 内核代号 | 魔改基础 | 强制暗色模式实现方式 |
-|---|---|---|---|
-| **QQ 浏览器** | X5 内核 | Chromium（版本滞后的 fork） | 合成器层注入 `filter: invert()` |
-| **夸克浏览器** | 夸克自研渲染引擎 | Blink + 自研暗色引擎 | CIELAB 空间色彩映射 + 选择性反转 |
-| **UC 浏览器** | U3 内核 | WebKit 魔改分支 | Viewport 级反色滤镜 |
-| **360 浏览器** | 极速/兼容双核 | Chromium + Trident | 极速模式下走 Chromium 原生 force-dark |
-| **搜狗浏览器** | 高速内核 | Chromium 魔改 | 类似 QQ X5 的合成器层反色 |
-| **华为浏览器** | 华为 WebView | Chromium + HMS 覆盖层 | Android WebView Algorithmic Darkening |
-| **小米 MIUI 浏览器** | 系统 WebView | Chromium + MIUI 注入 | 系统级强制暗色（勾选"强制深色"后） |
-| **微信内置浏览器** | X5 WebView | 腾讯魔改 Chromium | 跟随系统暗色模式，自定义反色策略 |
+| 浏览器               | 内核代号         | 魔改基础                    | 强制暗色模式实现方式                  |
+| -------------------- | ---------------- | --------------------------- | ------------------------------------- |
+| **QQ 浏览器**        | X5 内核          | Chromium（版本滞后的 fork） | 合成器层注入 `filter: invert()`       |
+| **夸克浏览器**       | 夸克自研渲染引擎 | Blink + 自研暗色引擎        | CIELAB 空间色彩映射 + 选择性反转      |
+| **UC 浏览器**        | U3 内核          | WebKit 魔改分支             | Viewport 级反色滤镜                   |
+| **360 浏览器**       | 极速/兼容双核    | Chromium + Trident          | 极速模式下走 Chromium 原生 force-dark |
+| **搜狗浏览器**       | 高速内核         | Chromium 魔改               | 类似 QQ X5 的合成器层反色             |
+| **华为浏览器**       | 华为 WebView     | Chromium + HMS 覆盖层       | Android WebView Algorithmic Darkening |
+| **小米 MIUI 浏览器** | 系统 WebView     | Chromium + MIUI 注入        | 系统级强制暗色（勾选"强制深色"后）    |
+| **微信内置浏览器**   | X5 WebView       | 腾讯魔改 Chromium           | 跟随系统暗色模式，自定义反色策略      |
 
 这解释了为什么手机上的 Firefox / Edge / Chrome 原版都正常——它们走的是标准渲染管线，没有被注入额外的强制暗色逻辑。
 
@@ -43,19 +43,19 @@ AI 帮我搜到的信息印证了几个月前我的直觉判断。国内主流�
 
 通过 AI 搜索 Chromium 源码和 StackOverflow 上的相关讨论，我发现魔改内核实现强制暗色模式时会按"激进程度"分三个层级：
 
-| 层级 | 名称 | 实现方式 | 激进程度 | 采用方 |
-|---|---|---|---|---|
-| 1 | CSS 层 | 监听 `@media (prefers-color-scheme: dark)`，替换颜色变量；仅影响声明了 `color-scheme` 的元素 | 温和 | 标准浏览器 |
-| 2 | 样式计算层 | hook Blink 的 StyleResolver，对所有计算出的颜色值做 CIELAB 空间映射：`#000` 映射到暗色空间变成非纯黑，`#fff` 保持白色保护可读性 | 中等 | Chromium 原版 `chrome://flags/#enable-force-dark` |
-| 3 | 合成器层 | 在 Compositor 线程上对整个页面注入 `filter: invert(1) hue-rotate(180deg)`，对所有像素无条件反转，再对 `<img>` `<video>` 做二次反转试图"还原"图片 | 激进 | **QQ 浏览器 / 夸克** |
+| 层级 | 名称       | 实现方式                                                                                                                                         | 激进程度 | 采用方                                            |
+| ---- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------------------------------- |
+| 1    | CSS 层     | 监听 `@media (prefers-color-scheme: dark)`，替换颜色变量；仅影响声明了 `color-scheme` 的元素                                                     | 温和     | 标准浏览器                                        |
+| 2    | 样式计算层 | hook Blink 的 StyleResolver，对所有计算出的颜色值做 CIELAB 空间映射：`#000` 映射到暗色空间变成非纯黑，`#fff` 保持白色保护可读性                  | 中等     | Chromium 原版 `chrome://flags/#enable-force-dark` |
+| 3    | 合成器层   | 在 Compositor 线程上对整个页面注入 `filter: invert(1) hue-rotate(180deg)`，对所有像素无条件反转，再对 `<img>` `<video>` 做二次反转试图"还原"图片 | 激进     | **QQ 浏览器 / 夸克**                              |
 
 **问题出在第 3 层**。AI 搜到的 Chromium issue tracker 讨论指出，当魔改内核在合成器层对整个页面做 `invert()` 时：
 
-| 内容类型 | 反转行为 | 结果 |
-|---|---|---|
-| 普通 `<img>` 标签的位图（PNG/JPEG） | 内核再套一层 `invert()` 来"还原" | 颜色大致正常 |
-| 内联文字 | 同样被二次处理 | 保持可读 |
-| **`background-image: url(...)` 中的 SVG** | 只做单次反转，**没有还原步骤** | 图案颜色被反转 |
+| 内容类型                                  | 反转行为                         | 结果           |
+| ----------------------------------------- | -------------------------------- | -------------- |
+| 普通 `<img>` 标签的位图（PNG/JPEG）       | 内核再套一层 `invert()` 来"还原" | 颜色大致正常   |
+| 内联文字                                  | 同样被二次处理                   | 保持可读       |
+| **`background-image: url(...)` 中的 SVG** | 只做单次反转，**没有还原步骤**   | 图案颜色被反转 |
 
 因为 SVG 通过 `background-image` 加载时，它在渲染管线中的身份是"背景图层"而非"图片元素"。**魔改内核的反色逻辑在遍历渲染树时找不到这个 SVG——它已经变成了一个离屏渲染的位图层**。
 
@@ -118,13 +118,12 @@ View Transitions API 的过渡伪元素也要覆盖：
 必须在 SVG 自身的 `<style>` 块中声明：
 
 ```html title="pattern-1.min.svg"
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-     viewBox="0 0 1125 2436" xml:space="preserve">
-<style>
-    :root{color-scheme:only light}
-    .prefix__st0,.prefix__st1{fill:none;stroke:#000;stroke-width:3.3;...}
-</style>
-...
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1125 2436" xml:space="preserve">
+    <style>
+        :root{color-scheme:only light}
+        .prefix__st0,.prefix__st1{fill:none;stroke:#000;stroke-width:3.3;...}
+    </style>
+    ...
 </svg>
 ```
 
@@ -156,11 +155,11 @@ flowchart TB
     shield1 --> shield2 --> result
 ```
 
-| 防护策略 | 效果 | 遗漏风险 |
-|---|---|---|
-| 只做第一层（CSS） | 宿主元素被保护 | 魔改内核在光栅化 SVG 内部时仍可能触发颜色映射 |
-| 只做第二层（SVG 内部） | SVG 本身安全 | 合成器阶段注入 `filter: invert()` 时整个位图都会被反色 |
-| **两层都做** | 反色逻辑在两个阶段都碰壁 | 无 |
+| 防护策略               | 效果                     | 遗漏风险                                               |
+| ---------------------- | ------------------------ | ------------------------------------------------------ |
+| 只做第一层（CSS）      | 宿主元素被保护           | 魔改内核在光栅化 SVG 内部时仍可能触发颜色映射          |
+| 只做第二层（SVG 内部） | SVG 本身安全             | 合成器阶段注入 `filter: invert()` 时整个位图都会被反色 |
+| **两层都做**           | 反色逻辑在两个阶段都碰壁 | 无                                                     |
 
 ## 构建流程注意事项
 
@@ -177,20 +176,20 @@ grep -l "color-scheme" dist/_astro/pattern-*.svg | wc -l
 
 如果你的项目也遇到"某某浏览器下 SVG 颜色不对"的问题，可以按这个顺序排查：
 
-| 步骤 | 排查内容 | 判断依据 |
-|---|---|---|
-| 1 | 先在 Chrome / Firefox 原版上复现 | 能复现是代码 Bug；不能复现大概率是魔改内核的锅 |
-| 2 | 检查 SVG 的加载方式 | `background-image` > `<img>` > `<object>` > inline `<svg>`，越靠左越容易被魔改内核误伤 |
-| 3 | 依次加防护 | `forced-color-adjust: none` -> `color-scheme: only light`（CSS层） -> `:root{color-scheme:only light}`（SVG内部） |
-| 4 | 终极方案 | 把 SVG 内联到 HTML（inline SVG），完全绕过外部文件的独立渲染上下文 |
+| 步骤 | 排查内容                         | 判断依据                                                                                                          |
+| ---- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 1    | 先在 Chrome / Firefox 原版上复现 | 能复现是代码 Bug；不能复现大概率是魔改内核的锅                                                                    |
+| 2    | 检查 SVG 的加载方式              | `background-image` > `<img>` > `<object>` > inline `<svg>`，越靠左越容易被魔改内核误伤                            |
+| 3    | 依次加防护                       | `forced-color-adjust: none` -> `color-scheme: only light`（CSS层） -> `:root{color-scheme:only light}`（SVG内部） |
+| 4    | 终极方案                         | 把 SVG 内联到 HTML（inline SVG），完全绕过外部文件的独立渲染上下文                                                |
 
 ## 总结
 
 这个问题的排查过程其实很简单——好几个月前在 QQ 上分享博客链接，通过 QQ 内置浏览器打开时发现 SVG 图案全白，而手机上的 Firefox/Edge/Chrome 原版都正常，我就知道不是自己的代码问题，而是这些 App 内置的魔改内核在作祟。真正花时间的不是调试，而是**搞清楚魔改内核到底在哪个渲染阶段、用什么方式篡改了 SVG 的颜色**——这部分全靠 AI 搜索 Chromium 源码和社区讨论才补全。
 
-| 要点 | 说明 |
-|---|---|
-| 初步判断 | 手机上的 Firefox / Edge / Chrome 都正常，一定是魔改内核的问题 |
+| 要点     | 说明                                                                    |
+| -------- | ----------------------------------------------------------------------- |
+| 初步判断 | 手机上的 Firefox / Edge / Chrome 都正常，一定是魔改内核的问题           |
 | 关键属性 | `color-scheme: only light`，`only` 关键字是强制声明，区别于普通 `light` |
-| 防护层级 | 必须两层：CSS 宿主元素 + SVG 文件内部，少一层都有漏网之鱼 |
-| AI 参与 | 本文技术细节来自 AI 搜索结果，修复代码由 AI 辅助生成 |
+| 防护层级 | 必须两层：CSS 宿主元素 + SVG 文件内部，少一层都有漏网之鱼               |
+| AI 参与  | 本文技术细节来自 AI 搜索结果，修复代码由 AI 辅助生成                    |

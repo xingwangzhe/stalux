@@ -74,15 +74,30 @@
 }
 
 /* 按标签数量调整尺寸 */
-.tagCard[data-count="1"] { font-size: 0.9rem; padding: 0.3rem 0.8rem; }
-.tagCard[data-count="2"] { font-size: 1rem;   padding: 0.4rem 0.9rem; }
-.tagCard[data-count="3"] { font-size: 1.1rem; padding: 0.5rem 1rem;   }
+.tagCard[data-count="1"] {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+}
+.tagCard[data-count="2"] {
+    font-size: 1rem;
+    padding: 0.4rem 0.9rem;
+}
+.tagCard[data-count="3"] {
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+}
 .tagCard[data-count^="4"],
-.tagCard[data-count^="5"] { font-size: 1.2rem; padding: 0.6rem 1.1rem; }
+.tagCard[data-count^="5"] {
+    font-size: 1.2rem;
+    padding: 0.6rem 1.1rem;
+}
 .tagCard[data-count^="6"],
 .tagCard[data-count^="7"],
 .tagCard[data-count^="8"],
-.tagCard[data-count^="9"] { font-size: 1.3rem; padding: 0.7rem 1.2rem; }
+.tagCard[data-count^="9"] {
+    font-size: 1.3rem;
+    padding: 0.7rem 1.2rem;
+}
 
 .tagName {
     margin-right: 0.5rem;

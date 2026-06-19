@@ -1,10 +1,10 @@
+import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
+import { katex } from "@nullpinter/satteri-katex";
 import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig } from "astro/config";
-import { satteri } from "@astrojs/markdown-satteri";
-import { katex } from "@nullpinter/satteri-katex";
 
 import { featurePlugin } from "./src/utils/satteri-mermaid";
 import { photoswipePlugin } from "./src/utils/satteri-photoswipe";

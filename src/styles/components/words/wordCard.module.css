@@ -4,8 +4,9 @@
     border-radius: var(--radius-lg, 12px);
     padding: 1.5rem;
     box-shadow: var(--shadow-md);
-    transition: transform var(--transition-normal) ease,
-                box-shadow var(--transition-normal) ease;
+    transition:
+        transform var(--transition-normal) ease,
+        box-shadow var(--transition-normal) ease;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;

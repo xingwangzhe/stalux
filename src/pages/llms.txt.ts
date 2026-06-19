@@ -1,7 +1,7 @@
 import { toTimestamp } from "@utils/dayjs";
+import { getPostDescriptions } from "@utils/word-count-utils";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import { getPostDescriptions } from "@utils/word-count-utils";
 
 export const prerender = true;
 

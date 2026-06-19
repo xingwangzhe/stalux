@@ -83,12 +83,12 @@ gpg --keyserver keys.openpgp.org --recv-keys 3F1888838EAAE1A4EA68D2D73067B770E21
 
 欢迎交换友链，以下是本站信息：
 
-| 项目 | 内容 |
-|---|---|
-| 名称 | 姓王者的博客 |
+| 项目 | 内容                                  |
+| ---- | ------------------------------------- |
+| 名称 | 姓王者的博客                          |
 | 图标 | `https://xingwangzhe.fun/avatar.webp` |
-| 网址 | `https://xingwangzhe.fun/` |
-| 描述 | 探索、学习、进步、创造无限可能！ |
+| 网址 | `https://xingwangzhe.fun/`            |
+| 描述 | 探索、学习、进步、创造无限可能！      |
 
 ## 支持与鼓励
 
