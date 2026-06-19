@@ -7,6 +7,7 @@ categories:
     - 主题配置
 date: "2025-05-10 10:00:00"
 updated: "2026-02-03 00:00:00"
+desc: "- 配置结构定义: src/content.config.ts"
 abbrlink: 0b563d42
 ---
 

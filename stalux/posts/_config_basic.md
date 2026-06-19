@@ -7,6 +7,7 @@ categories:
     - 主题配置
 date: "2025-05-10 11:00:00"
 updated: "2026-01-26 12:00:00"
+desc: "├── public/  # 公共资源文件夹"
 abbrlink: ad81245d
 ---
 

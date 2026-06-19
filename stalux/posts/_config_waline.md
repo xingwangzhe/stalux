@@ -8,6 +8,7 @@ categories:
     - 主题配置
 date: "2025-05-10 14:00:00"
 updated: "2026-01-26 00:00:00"
+desc: Waline 是默认集成的评论系统，本篇按当前 config.yml 的值重写，说明每个字段、常见修改和部署要点。
 abbrlink: f4442947
 ---
 

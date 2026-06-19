@@ -8,6 +8,7 @@ categories:
     - 主题配置
 date: "2025-05-10 16:00:00"
 updated: "2026-01-26 00:00:00"
+desc: 本篇按照当前 schema（见 src/content.config.ts）重写，列出 posts、about 与 words 的 frontmatter 要求及示例。避免使用项目内相对链接，确保发布到站点时不会出现无效链接。
 abbrlink: f31dae4f
 ---
 

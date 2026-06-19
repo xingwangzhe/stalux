@@ -8,6 +8,7 @@ categories:
     - 主题配置
 date: "2025-05-10 11:30:00"
 updated: "2026-01-26 12:00:00"
+desc: Stalux主题使用Expressive Code提供强大的代码显示功能，包括语法高亮、编辑器/终端框架和自动换行等功能。本文将介绍如何配置和使用这些功能。
 abbrlink: 55a885fa
 ---
 

@@ -7,6 +7,7 @@ categories:
     - 主题配置
 date: "2025-05-10 15:00:00"
 updated: "2026-01-26 12:00:00"
+desc: 页脚字段来自 config.yml 的 footer 节，默认值如下，发布后不依赖项目内相对链接：
 abbrlink: dd30cf92
 ---
 

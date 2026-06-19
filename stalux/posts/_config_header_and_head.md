@@ -8,6 +8,7 @@ categories:
     - 布局定制
 date: "2025-05-10 12:00:00"
 updated: "2026-02-03 12:00:00"
+desc: 使用 config.yml 的 head 字段配置网站分析工具（Google Analytics、Bing Clarity、Umami）和自定义头部内容：
 abbrlink: 0035a0ee
 ---
 

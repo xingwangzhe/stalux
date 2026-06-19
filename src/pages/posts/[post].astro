@@ -18,7 +18,7 @@ const { Content, headings } = await render(props.post);
 const s = props.stats!;
 const minutesRead = s.minutesRead || "";
 const wordCount = s.wordCount || 0;
-const autoDesc = props.post.data.desc || s.desc || "";
+const autoDesc = props.post.data.desc;
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);

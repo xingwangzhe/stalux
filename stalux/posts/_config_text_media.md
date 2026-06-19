@@ -7,6 +7,7 @@ categories:
     - 主题配置
 date: "2025-05-10 13:00:00"
 updated: "2026-01-26 00:00:00"
+desc: 本篇对照当前 config.yml 重写，涵盖首页打字动效 (typetexts) 和社交媒体链接 (mediaLinks) 的配置与注意事项。
 abbrlink: 8e8c59c4
 ---
 
