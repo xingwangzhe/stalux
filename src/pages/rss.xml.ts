@@ -1,9 +1,9 @@
 import rss from "@astrojs/rss";
 import { toTimestamp, parseDate, isValid, formatInTimeZone } from "@utils/dayjs";
 import { toMachineDateTime } from "@utils/semantic-time";
+import { getPostDescriptions } from "@utils/word-count-utils";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import { getPostDescriptions } from "@utils/word-count-utils";
 
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");
@@ -30,7 +30,11 @@ export const GET: APIRoute = async (context) => {
             if (post.data.updated) {
                 const parsed = parseDate(post.data.updated);
                 if (isValid(parsed)) {
-                    const updatedIso = formatInTimeZone(parsed, stalux.timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+                    const updatedIso = formatInTimeZone(
+                        parsed,
+                        stalux.timezone,
+                        "yyyy-MM-dd'T'HH:mm:ssXXX",
+                    );
                     customData += `<atom:updated>${updatedIso}</atom:updated>`;
                 }
             }

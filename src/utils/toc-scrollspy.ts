@@ -4,13 +4,13 @@
  */
 
 export function initTocScrollSpy(activeClass: string) {
-    const tocLinks = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+    const tocLinks = document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]");
     if (tocLinks.length === 0) return;
 
     // 建立标题 ID → 目录链接元素的映射
     const linkMap = new Map<string, HTMLAnchorElement>();
     tocLinks.forEach((link) => {
-        const id = link.getAttribute('href')?.replace('#', '');
+        const id = link.getAttribute("href")?.replace("#", "");
         if (id) linkMap.set(id, link);
     });
 
@@ -26,10 +26,14 @@ export function initTocScrollSpy(activeClass: string) {
     let sidebarHovered = false;
 
     // 鼠标悬停在侧边栏上时跳过自动滚动，避免跟用户手动操作冲突
-    const sidebar = tocLinks[0]?.closest<HTMLElement>('[data-toc-active-class]');
+    const sidebar = tocLinks[0]?.closest<HTMLElement>("[data-toc-active-class]");
     if (sidebar) {
-        sidebar.addEventListener('mouseenter', () => { sidebarHovered = true; });
-        sidebar.addEventListener('mouseleave', () => { sidebarHovered = false; });
+        sidebar.addEventListener("mouseenter", () => {
+            sidebarHovered = true;
+        });
+        sidebar.addEventListener("mouseleave", () => {
+            sidebarHovered = false;
+        });
     }
 
     // 切换当前高亮的目录项，并将该项滚动到侧边栏可视区域内
@@ -39,7 +43,7 @@ export function initTocScrollSpy(activeClass: string) {
         activeLink = link;
         if (link && !sidebarHovered) {
             link.classList.add(activeClass);
-            link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            link.scrollIntoView({ block: "nearest", behavior: "smooth" });
         } else if (link) {
             // 用户正在操作侧边栏时只高亮，不自动滚动
             link.classList.add(activeClass);
@@ -79,7 +83,7 @@ export function initTocScrollSpy(activeClass: string) {
             });
         },
         {
-            rootMargin: '0px 0px -65% 0px',
+            rootMargin: "0px 0px -65% 0px",
             threshold: 0,
         },
     );
@@ -88,11 +92,11 @@ export function initTocScrollSpy(activeClass: string) {
 
     // 拦截 TOC 锚点点击，替换为平滑滚动
     tocLinks.forEach((link) => {
-        link.addEventListener('click', (e) => {
+        link.addEventListener("click", (e) => {
             e.preventDefault();
-            const id = link.getAttribute('href')?.replace('#', '');
+            const id = link.getAttribute("href")?.replace("#", "");
             const target = id ? document.getElementById(id) : null;
-            target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            target?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
     });
 }
