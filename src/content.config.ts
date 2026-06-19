@@ -27,7 +27,7 @@ const posts = defineCollection({
             (val) => (typeof val === "string" ? [val] : val),
             z.array(z.string()).optional(),
         ),
-        desc: z.string(),
+        desc: z.string().min(1, "desc 不能为空"),
         minutesRead: z.string().optional(),
         wordCount: z.number().optional(),
         cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
