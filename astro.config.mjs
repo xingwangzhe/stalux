@@ -6,7 +6,7 @@ import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig } from "astro/config";
 
-import { featurePlugin } from "./src/utils/satteri-mermaid";
+import { mermaid } from "@xingwangzhe/satteri-mermaid";
 import { photoswipePlugin } from "./src/utils/satteri-photoswipe";
 
 const site = "https://stalux.needhelp.icu";
@@ -73,7 +73,7 @@ export default defineConfig({
                 smartPunctuation: true,
                 gfm: true,
             },
-            mdastPlugins: [katex(), featurePlugin],
+            mdastPlugins: [katex(), mermaid()],
             hastPlugins: [photoswipePlugin],
         }),
     },

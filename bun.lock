@@ -14,6 +14,7 @@
         "@lucide/astro": "^1.21.0",
         "@nullpinter/satteri-katex": "0.1.1",
         "@waline/client": "3.15.2",
+        "@xingwangzhe/satteri-mermaid": "^0.1.2",
         "@xingwangzhe/tags-cloud": "^1.2.2",
         "animejs": "^4.4.1",
         "astro": "7.0.0-beta.6",
@@ -646,6 +647,8 @@
     "@waline/api": ["@waline/api@1.1.2", "https://registry.npmmirror.com/@waline/api/-/api-1.1.2.tgz", {}, "sha512-r1H+XL+/Ww4qXv8vjq09HJQtMvYqMofgfueuokgsDW1kJ9/6CYY7g6LkksYlDJmWm0aqkLR/9ZTI/bbozL4FBA=="],
 
     "@waline/client": ["@waline/client@3.15.2", "https://registry.npmmirror.com/@waline/client/-/client-3.15.2.tgz", { "dependencies": { "@vueuse/core": "^14.3.0", "@waline/api": "1.1.2", "autosize": "^6.0.1", "marked": "^18.0.4", "marked-highlight": "^2.2.4", "recaptcha-v3": "^1.11.3", "vue": "^3.5.35" } }, "sha512-QBAVbruefDR+IKyQdM/Ao9fd07Xxpx1WEJ7xI8lBVNDjMQBr1PpdwrTpLC8RrYbgUR9ymNBvtLDJi0xK3pbORQ=="],
+
+    "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.1.2", "", { "peerDependencies": { "mermaid": ">=11.0.0", "satteri": ">=0.8.0" } }, "sha512-KF9AoRD/Q6zQMwiKCM52jzGc4mAiuZkgB6lXgu9Yzi87GWjaAQyizUZWbQESSKkTbnugZzDf438wJTvbKdCCPw=="],
 
     "@xingwangzhe/tags-cloud": ["@xingwangzhe/tags-cloud@1.2.2", "", {}, "sha512-xJDZhlhulBZ+8Hd3obKgFDg2JHMb1VOSk4DpX43FG/mt4ETKtz3Z0b2UKr6edqBgMyr/O/k0mBuTzO0SXgfszQ=="],
 
