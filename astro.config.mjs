@@ -7,7 +7,7 @@ import pagefind from "astro-pagefind";
 import { defineConfig } from "astro/config";
 
 import { mermaid } from "@xingwangzhe/satteri-mermaid";
-import { photoswipePlugin } from "./src/utils/satteri-photoswipe";
+import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 
 const site = "https://xingwangzhe.fun";
 // https://astro.build/config
@@ -75,7 +75,7 @@ export default defineConfig({
             // MDAST plugins run on the Markdown AST
             mdastPlugins: [katex(), mermaid()],
             // HAST plugins run on the HTML AST
-            hastPlugins: [photoswipePlugin],
+            hastPlugins: [photoswipe()],
         }),
     },
 });
