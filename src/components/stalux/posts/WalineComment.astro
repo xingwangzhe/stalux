@@ -251,6 +251,11 @@ const walineConfig = {
         outline: none;
     }
 
+    /* 修复登录后头像向下偏移 — img 默认 baseline 对齐产生 descender 空隙 */
+    .wl-login-nick img {
+        vertical-align: top;
+    }
+
     /* 按钮样式统一 */
     .wl-btn {
         background: rgba(var(--waline-accent-rgb), 0.6) !important;
