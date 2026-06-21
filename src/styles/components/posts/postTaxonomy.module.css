@@ -1,4 +1,6 @@
-.categoriesContainer {
+/* 文章分类/标签共用样式 — 合并自 postCategories.module.css + postTags.module.css */
+
+.container {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
@@ -13,13 +15,18 @@
     border-bottom: var(--border-thin) solid var(--white-20p);
 }
 
-.categoryList {
+.list {
     display: flex;
-    flex-direction: column;
     gap: var(--space-sm);
 }
 
-.category {
+/* 分类变体：垂直列 + 左边框 */
+.listColumn {
+    composes: list;
+    flex-direction: column;
+}
+
+.itemColumn {
     display: inline-flex;
     padding: var(--space-sm) var(--space-xs);
     background: var(--white-05p);
@@ -34,12 +41,42 @@
     transform: translateX(0);
 }
 
-.category:hover {
+.itemColumn:hover {
     transform: translateX(4px);
 }
 
-.category:active {
+.itemColumn:active {
     transform: translateX(2px);
+}
+
+/* 标签变体：水平换行 + 药丸形状 */
+.listWrap {
+    composes: list;
+    flex-wrap: wrap;
+}
+
+.itemPill {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background: var(--white-10p);
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-smaller);
+    text-decoration: none;
+    transition:
+        color var(--transition-medium),
+        transform var(--transition-medium);
+    white-space: nowrap;
+    transform: translateY(0);
+    color: var(--white-85p);
+}
+
+.itemPill:hover {
+    transform: translateY(-2px);
+}
+
+.itemPill:active {
+    transform: translateY(-1px);
 }
 
 .empty {

@@ -1,6 +1,6 @@
-/* 右侧边栏 - 文章纲要和元数据 */
+/* 通用侧边栏 — 合并自 postLeft.module.css + postRight.module.css */
 
-.rightSidebar {
+.sidebar {
     position: sticky;
     top: 20px;
     width: 100%;
@@ -12,16 +12,19 @@
     gap: var(--space-lg);
     padding: var(--space-lg) 0;
 
-    /* 为 scrollIntoView 预留底部空间，确保长目录的激活项不会被裁切 */
-    scroll-padding-bottom: 8rem;
-
     /* 隐藏滚动条但保留滚动功能 */
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
 
-.rightSidebar::-webkit-scrollbar {
+.sidebar::-webkit-scrollbar {
     display: none;
+}
+
+/* 右侧边栏需要底部留白让 scrollIntoView 不裁切 */
+.sidebarRight {
+    composes: sidebar;
+    scroll-padding-bottom: 8rem;
 }
 
 .sidebarContainer {
@@ -34,22 +37,20 @@
     transition: all var(--transition-normal) ease;
 }
 
-/* 响应式设计 */
-
 @media (max-width: 1400px) {
-    .rightSidebar {
+    .sidebarRight {
         width: 240px;
     }
 }
 
 @media (max-width: 1200px) {
-    .rightSidebar {
+    .sidebar {
         display: none;
     }
 }
 
 @media (max-width: 768px) {
-    .rightSidebar {
+    .sidebarRight {
         position: static;
         width: 100%;
         max-height: none;
@@ -57,16 +58,8 @@
         order: 2;
         padding: 1rem 0;
     }
-}
 
-/* 动画 */
-@keyframes fadeInRight {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+    .sidebarRight {
+        display: flex;
     }
 }

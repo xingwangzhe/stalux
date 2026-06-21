@@ -193,13 +193,18 @@ const walineConfig = {
 </script>
 
 <style is:global>
+    :root {
+        --waline-accent: var(--stalux-accent-color);
+        --waline-accent-rgb: 100, 255, 218;
+    }
+
     /* 评论区容器与博客风格一致 */
     .waline-comment-container {
         margin-top: 3rem;
         margin-bottom: 1rem;
         padding: 2rem;
         border-radius: 12px;
-        animation: fadeInUp 0.8s ease-in-out forwards;
+        animation: fadeInUpComment 0.8s ease-in-out forwards;
         opacity: 0;
         animation-delay: 0.3s;
     }
@@ -224,7 +229,7 @@ const walineConfig = {
         background-color: rgba(17, 17, 17, 0.3);
         border-radius: 12px;
         padding: 1rem;
-        border: 1px solid var(--white-10p);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 1.5rem;
     }
 
@@ -260,7 +265,6 @@ const walineConfig = {
     .waline-comment-container img {
         margin: 0 !important;
     }
-
     .wl-btn {
         background: rgba(var(--waline-accent-rgb), 0.6) !important;
         color: var(--white-full) !important;
@@ -415,7 +419,7 @@ const walineConfig = {
         font-size: 0.8rem;
         padding: 5px 0;
         background-color: rgba(var(--waline-accent-rgb), 0.7);
-        color: #fff;
+        color: var(--white-full);
     }
 
     /* 评论计数和排序 */
@@ -472,13 +476,13 @@ const walineConfig = {
 
     .wl-page button:hover:not(:disabled) {
         background: rgba(var(--waline-accent-rgb), 0.7) !important;
-        color: #fff !important;
+        color: var(--white-full) !important;
         transform: translateY(-2px);
     }
 
     .wl-page button.active {
         background: rgba(var(--waline-accent-rgb), 0.8) !important;
-        color: #fff !important;
+        color: var(--white-full) !important;
     }
 
     /* Waline底部版权信息 */
@@ -515,7 +519,7 @@ const walineConfig = {
     }
 
     /* 添加动画效果 */
-    @keyframes fadeInUp {
+    @keyframes fadeInUpComment {
         from {
             opacity: 0;
             transform: translateY(30px);
@@ -544,11 +548,8 @@ const walineConfig = {
     /* 响应式调整 */
     @media (max-width: 768px) {
         .waline-comment-container {
-            padding: 0.8rem;
+            padding: 1.5rem;
             margin-top: 2rem;
-            margin-left: -1.5rem;
-            margin-right: -1.5rem;
-            border-radius: 0;
         }
 
         .waline-comment-title {
@@ -556,9 +557,7 @@ const walineConfig = {
         }
 
         .wl-panel {
-            padding: 1rem;
-            width: 100%;
-            box-sizing: border-box;
+            padding: 0.8rem;
         }
 
         .wl-header {
@@ -570,17 +569,10 @@ const walineConfig = {
             margin-bottom: 0.5rem;
         }
 
-        .wl-editor,
-        .wl-input {
-            width: 100%;
-            box-sizing: border-box;
-        }
-
         /* 平板设备上的嵌套评论处理 */
         .wl-card {
             padding: 0.8rem;
             margin-left: 0;
-            margin-top: 0.8rem;
         }
 
         .wl-children {
@@ -597,11 +589,8 @@ const walineConfig = {
 
     @media (max-width: 480px) {
         .waline-comment-container {
-            padding: 0.6rem;
+            padding: 1rem;
             margin-top: 1.5rem;
-            margin-left: -1rem;
-            margin-right: -1rem;
-            border-radius: 0;
         }
 
         .waline-comment-title {
@@ -610,8 +599,6 @@ const walineConfig = {
 
         .wl-panel {
             padding: 0.8rem;
-            width: 100%;
-            box-sizing: border-box;
         }
 
         .wl-reaction-list {
@@ -621,7 +608,6 @@ const walineConfig = {
         .wl-card {
             padding: 0.75rem;
             margin-left: 0;
-            margin-top: 0.8rem;
             width: 100%;
             box-sizing: border-box;
         }
@@ -636,7 +622,7 @@ const walineConfig = {
 
         .wl-children .wl-card {
             margin-left: 0;
-            border-left: 3px solid rgba(1, 162, 190, 0.4);
+            border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
             padding-left: 0.6rem;
             width: 100%;
         }
@@ -650,12 +636,6 @@ const walineConfig = {
             flex-direction: column;
             gap: 0.5rem;
             align-items: flex-start;
-        }
-
-        .wl-editor,
-        .wl-input {
-            width: 100%;
-            box-sizing: border-box;
         }
     }
 </style>

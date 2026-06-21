@@ -17,36 +17,9 @@
     display: flex;
 }
 
-/* 渐进动画效果 */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 为每个项目设置不同的延迟 */
-.item:nth-child(1) {
-    animation-delay: 0.1s;
-}
-.item:nth-child(2) {
-    animation-delay: 0.15s;
-}
-.item:nth-child(3) {
-    animation-delay: 0.2s;
-}
-.item:nth-child(4) {
-    animation-delay: 0.25s;
-}
-.item:nth-child(5) {
-    animation-delay: 0.3s;
-}
-.item:nth-child(n + 6) {
-    animation-delay: 0.35s;
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* 大屏幕：5个卡片一行 */

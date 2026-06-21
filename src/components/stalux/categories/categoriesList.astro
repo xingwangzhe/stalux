@@ -6,7 +6,7 @@ import CategoriesCard from "@components/stalux/categories/categoriesCard.astro";
 const categoryList = await getCategoryCountList();
 ---
 
-<ul class={styles.categoriesList}>
+<ul class={`${styles.categoriesList} stagger-children`}>
     {
         categoryList.map((category) => (
             <li class={styles.item} style="opacity:0">

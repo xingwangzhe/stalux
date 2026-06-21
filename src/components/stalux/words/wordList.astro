@@ -18,7 +18,7 @@ const sorted = [...entries].sort((a, b) => {
 });
 ---
 
-<ul class={styles.list}>
+<ul class={`${styles.list} stagger-children`}>
     {
         sorted.map((entry) => (
             <li class={styles.item}>

@@ -6,7 +6,7 @@ import { getCollection } from "astro:content";
 const links = (await getCollection("config"))[0].data.links.sites ?? [];
 ---
 
-<ul class={styles.list}>
+<ul class={`${styles.list} stagger-children`}>
     {
         links.map((link) => (
             <li class={styles.item}>

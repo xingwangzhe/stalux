@@ -87,25 +87,13 @@
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-15px); }
+    to   { opacity: 1; transform: translateX(0); }
 }
 
 /* yearSection 子元素通用入场动画 */
@@ -240,31 +228,14 @@
     animation-delay: 0s;
 }
 
+@keyframes dotPulse {
+    0%, 80%, 100% { transform: scale(0.3); }
+    40%            { transform: scale(1); }
+}
+
 .loadingText {
     font-size: 0.9rem;
     color: var(--white-70p);
-}
-
-@keyframes dotPulse {
-    0%,
-    80%,
-    100% {
-        transform: scale(0.3);
-    }
-    40% {
-        transform: scale(1);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* 文章列表和项目样式（静态 DOM）*/

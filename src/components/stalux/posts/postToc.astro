@@ -22,6 +22,20 @@ const tocItems = headings
         ...item,
         depth: Math.min(Math.max(item.depth ?? 1, 1), 6),
     }));
+
+// 定义目录内容的过渡动画 - 平滑褶皱效果
+const tocContentAnimation = {
+    old: {
+        name: "fadeSlideDown",
+        duration: "0.3s",
+        easing: "ease-out",
+    },
+    new: {
+        name: "fadeSlideDown",
+        duration: "0.3s",
+        easing: "ease-out",
+    },
+};
 ---
 
 <div transition:name="toc-container" data-toc-active-class={style.active}>
@@ -60,3 +74,10 @@ const tocItems = headings
         if (activeClass) initTocScrollSpy(activeClass);
     });
 </script>
+
+<style is:global>
+    @keyframes fadeSlideDown {
+        from { opacity: 0; transform: translateY(-8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
