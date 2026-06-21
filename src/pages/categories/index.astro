@@ -1,19 +1,13 @@
 ---
-import Stalux from "@layouts/Stalux.astro";
-import { getCollection } from "astro:content";
-import Navs from "@components/stalux/layout/navs.astro";
+import ListPage from "@components/stalux/layout/listPage.astro";
 import CategoriesList from "@components/stalux/categories/categoriesList.astro";
-import styles from "@styles/pages/categories.module.css";
-const stalux = (await getCollection("config"))[0].data;
 ---
 
-<Stalux
-    title={"文章分类 | " + stalux.title}
-    description={stalux.title + "的文章分类"}
+<ListPage
+    title="文章分类"
+    description="按主题分类浏览文章"
+    heading="文章分类"
+    subheading="按主题分类浏览"
 >
-    <div style="height: 3em;"></div>
-    <Navs />
-    <h1 class={styles.title}>文章分类</h1>
-    <div class={styles.description}>按主题分类浏览</div>
     <CategoriesList />
-</Stalux>
+</ListPage>
