@@ -32,7 +32,10 @@ const posts = defineCollection({
             z.array(z.string()).optional(),
         ),
         desc: z
-            .string({ required_error: "desc 为必填字段，请手写文章描述", invalid_type_error: "desc 必须是字符串" })
+            .string({
+                required_error: "desc 为必填字段，请手写文章描述",
+                invalid_type_error: "desc 必须是字符串",
+            })
             .min(1, "desc 不能为空"),
         minutesRead: z.string().optional(),
         wordCount: z.number().optional(),
@@ -154,7 +157,10 @@ const config = defineCollection({
                 enabled: z.boolean().optional().default(false),
                 waline: z
                     .object({
-                        serverURL: z.string().url("comment.waline.serverURL 必须是合法 URL").optional(),
+                        serverURL: z
+                            .string()
+                            .url("comment.waline.serverURL 必须是合法 URL")
+                            .optional(),
                         lang: z.string().optional().default("zh-CN"),
                         locale: z.any().optional(),
                         emoji: z
