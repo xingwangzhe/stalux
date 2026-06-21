@@ -256,7 +256,11 @@ const walineConfig = {
         display: none;
     }
 
-    /* 按钮样式统一 */
+    /* 修复 markdown 全局 img margin 误伤 Waline 头像 */
+    .waline-comment-container img {
+        margin: 0 !important;
+    }
+
     .wl-btn {
         background: rgba(var(--waline-accent-rgb), 0.6) !important;
         color: var(--white-full) !important;
