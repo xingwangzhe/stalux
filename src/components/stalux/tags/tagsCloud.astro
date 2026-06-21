@@ -64,8 +64,10 @@ const tagLinks = tagList.map((t) => ({ type: "link" as const, text: t.name, url:
         canvasContainer.dataset.inited = "1";
 
         type LinkTag = { type: "link"; text: string; url: string };
-        const tags: LinkTag[] = JSON.parse(canvasContainer.dataset.tags || "[]");
-        if (tags.length === 0) return;
+        const rawTags: LinkTag[] = JSON.parse(canvasContainer.dataset.tags || "[]");
+        if (rawTags.length === 0) return;
+        // 内部链接不应打开新标签页 — TagCloud 默认 link 类型会 window.open(_, _blank)
+        const tags = rawTags.map((t) => ({ ...t, onClick: () => { window.location.href = t.url; } }));
 
         const N = tags.length;
         const vw = window.innerWidth;

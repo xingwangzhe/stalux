@@ -1,5 +1,5 @@
 ---
-import style from "@styles/components/posts/postRight.module.css";
+import style from "@styles/components/posts/postSidebar.module.css";
 import Date from "@components/stalux/common/date.astro";
 import PostToc from "@components/stalux/posts/postToc.astro";
 import PostTags from "@components/stalux/posts/postTags.astro";
@@ -15,7 +15,7 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
 ---
 
 <aside
-    class={style.rightSidebar}
+    class={style.sidebarRight}
     transition:name="right-sidebar"
     transition:animate={fade({ duration: "0.3s" })}
 >

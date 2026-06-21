@@ -1,6 +1,6 @@
 ---
 import { fade } from "astro:transitions";
-import style from "@styles/components/posts/postCategories.module.css";
+import style from "@styles/components/posts/postTaxonomy.module.css";
 
 interface Props {
     categories?: string[];
@@ -24,19 +24,19 @@ const categoryContentAnimation = {
 };
 ---
 
-<div class={style.categoriesContainer} transition:name="categories-container">
+<div class={style.container} transition:name="categories-container">
     {categories.length > 0 && <h3 class={style.title}>{title}</h3>}
     {
         categories.length > 0 ? (
             <div
-                class={style.categoryList}
+                class={style.listColumn}
                 transition:name="categories-content"
                 transition:animate={fade({ duration: "0.3s" })}
             >
                 {categories.map((category) => (
                     <a
                         href={`/categories/${category}/`}
-                        class={`${style.category} a-none`}
+                        class={`${style.itemColumn} a-none`}
                     >
                         {category}
                     </a>
@@ -50,13 +50,7 @@ const categoryContentAnimation = {
 
 <style is:global>
     @keyframes fadeScale {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
+        from { opacity: 0; transform: scale(0.95); }
+        to   { opacity: 1; transform: scale(1); }
     }
 </style>
