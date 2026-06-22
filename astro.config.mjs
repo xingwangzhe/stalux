@@ -1,13 +1,12 @@
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import { katex } from "@nullpinter/satteri-katex";
+import { mermaid } from "@xingwangzhe/satteri-mermaid";
+import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig } from "astro/config";
-
-import { mermaid } from "@xingwangzhe/satteri-mermaid";
-import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 
 const site = "https://stalux.needhelp.icu";
 // https://astro.build/config

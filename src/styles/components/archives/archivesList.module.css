@@ -87,13 +87,25 @@
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeInLeft {
-    from { opacity: 0; transform: translateX(-15px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* yearSection 子元素通用入场动画 */
@@ -229,8 +241,14 @@
 }
 
 @keyframes dotPulse {
-    0%, 80%, 100% { transform: scale(0.3); }
-    40%            { transform: scale(1); }
+    0%,
+    80%,
+    100% {
+        transform: scale(0.3);
+    }
+    40% {
+        transform: scale(1);
+    }
 }
 
 .loadingText {

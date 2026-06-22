@@ -7,7 +7,7 @@ categories:
 abbrlink: 2cb4f19c
 date: "2025-05-11 20:00:00"
 updated: "2026-01-26 12:00:00"
-desc: "行内代码 var example = \"hello\";"
+desc: '行内代码 var example = "hello";'
 ---
 
 # Markdown 语法全面指南
