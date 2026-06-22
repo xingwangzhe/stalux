@@ -34,7 +34,7 @@
 }
 
 .item:hover {
-    transform: translateX(-var(--space-sm));
+    transform: translateX(calc(-1 * var(--space-sm)));
 }
 
 .item:active,

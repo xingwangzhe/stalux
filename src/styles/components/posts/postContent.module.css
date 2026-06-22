@@ -179,7 +179,7 @@
     transition: all var(--transition-fast) ease;
     overflow-wrap: break-word;
     word-wrap: break-word;
-    word-break: break-all;
+    word-break: break-word;
 }
 
 :global(.articleContent a:hover) {
@@ -427,6 +427,9 @@
     :global(.articleContent table) {
         font-size: 0.85rem;
         margin: 1rem 0.75rem;
+        overflow-x: auto;
+        display: block;
+        -webkit-overflow-scrolling: touch;
     }
 
     :global(.articleContent th),
