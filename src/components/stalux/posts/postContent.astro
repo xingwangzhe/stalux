@@ -107,9 +107,9 @@ const timezone = stalux?.timezone;
             let lightbox = null;
 
             function initLightbox() {
-                // 销毁旧实例，避免 View Transition 导航后残留
+                // 销毁旧实例（View Transition 导航后，旧 DOM 已移除，需安全销毁）
                 if (lightbox) {
-                    lightbox.destroy();
+                    try { lightbox.destroy(); } catch (_) {}
                     lightbox = null;
                 }
 
@@ -124,8 +124,15 @@ const timezone = stalux?.timezone;
                 lightbox.init();
             }
 
-            // astro:page-load 在首次加载和每次 View Transition 导航后都会触发
+            // 1) View Transition 导航后触发
             document.addEventListener("astro:page-load", initLightbox);
+
+            // 2) 首屏兜底：避免 astro:page-load 在监听器注册前已触发
+            if (document.readyState !== "loading") {
+                setTimeout(initLightbox, 0);
+            } else {
+                document.addEventListener("DOMContentLoaded", () => setTimeout(initLightbox, 0));
+            }
         </script>
     )
 }
