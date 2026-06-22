@@ -32,35 +32,55 @@ const stalux = (await getCollection("config"))[0].data;
     <div data-ref="stalux-nav-overlay" class={styles.navOverlay}></div>
 
     <!-- 导航列表 -->
-    <ul data-ref="stalux-nav-list" class={styles.navList}>
-        {
-            stalux.navs.map((item) => (
-                <li class={styles.navItem}>
-                    <a
-                        href={item.link}
-                        class={styles.navLink}
-                        data-ref="stalux-nav-link"
-                    >
-                        {item.icon && (
-                            <Icon iconNode={getIconNode(item.icon)} size={20} stroke-width={2} class="nav-icon" />
-                        )}
-                        <span class={styles.navText}>{item.title}</span>
-                    </a>
-                </li>
-            ))
-        }
-        <li class={styles.navItem}>
-            <a
-                href="javascript:void(0)"
-                class={styles.navLink}
-                data-ref="stalux-search-btn"
-                aria-label="打开搜索"
-            >
-                <Icon iconNode={getIconNode("search")} size={20} stroke-width={2} class="nav-icon" />
-                <span class={styles.navText}>搜索</span>
-            </a>
-        </li>
-    </ul>
+    <div class={styles.navContainer}>
+        <button
+            data-ref="stalux-nav-scroll-left"
+            class={styles.scrollBtn}
+            data-side="left"
+            aria-label="向左滚动导航"
+        >
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+
+        <ul data-ref="stalux-nav-list" class={styles.navList}>
+            {
+                stalux.navs.map((item) => (
+                    <li class={styles.navItem}>
+                        <a
+                            href={item.link}
+                            class={styles.navLink}
+                            data-ref="stalux-nav-link"
+                        >
+                            {item.icon && (
+                                <Icon iconNode={getIconNode(item.icon)} size={20} stroke-width={2} class="nav-icon" />
+                            )}
+                            <span class={styles.navText}>{item.title}</span>
+                        </a>
+                    </li>
+                ))
+            }
+            <li class={styles.navItem}>
+                <a
+                    href="javascript:void(0)"
+                    class={styles.navLink}
+                    data-ref="stalux-search-btn"
+                    aria-label="打开搜索"
+                >
+                    <Icon iconNode={getIconNode("search")} size={20} stroke-width={2} class="nav-icon" />
+                    <span class={styles.navText}>搜索</span>
+                </a>
+            </li>
+        </ul>
+
+        <button
+            data-ref="stalux-nav-scroll-right"
+            class={styles.scrollBtn}
+            data-side="right"
+            aria-label="向右滚动导航"
+        >
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+    </div>
 </nav>
 <Search />
 <script>
@@ -106,5 +126,47 @@ const stalux = (await getCollection("config"))[0].data;
         navLinks?.forEach((link) => {
             link.addEventListener("click", closeNav);
         });
+
+        // --- 动态导航滚动按钮 ---
+        initNavScroll();
     });
+
+    function initNavScroll() {
+        const navList = document.querySelector('[data-ref="stalux-nav-list"]');
+        const btnLeft = document.querySelector('[data-ref="stalux-nav-scroll-left"]');
+        const btnRight = document.querySelector('[data-ref="stalux-nav-scroll-right"]');
+        if (!navList || !btnLeft || !btnRight) return;
+
+        function updateButtons() {
+            const hasOverflow = navList.scrollWidth > navList.clientWidth;
+            const atStart = navList.scrollLeft <= 4;
+            const atEnd = navList.scrollLeft >= navList.scrollWidth - navList.clientWidth - 4;
+
+            if (hasOverflow) {
+                btnLeft.classList.toggle("visible", !atStart);
+                btnRight.classList.toggle("visible", !atEnd);
+            } else {
+                btnLeft.classList.remove("visible");
+                btnRight.classList.remove("visible");
+            }
+        }
+
+        btnLeft.addEventListener("click", () => {
+            navList.scrollBy({ left: -300, behavior: "smooth" });
+        });
+
+        btnRight.addEventListener("click", () => {
+            navList.scrollBy({ left: 300, behavior: "smooth" });
+        });
+
+        // 监听滚动事件更新按钮状态
+        navList.addEventListener("scroll", updateButtons);
+
+        // 用 ResizeObserver 监听容器尺寸变化（窗口缩窄/变宽时重新判断）
+        const ro = new ResizeObserver(updateButtons);
+        ro.observe(navList);
+
+        // 初始检测
+        updateButtons();
+    }
 </script>
