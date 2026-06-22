@@ -78,13 +78,15 @@ const timezone = stalux?.timezone;
         <script>
             import PhotoSwipeLightbox from "photoswipe/lightbox";
             import PhotoSwipe from "photoswipe";
-            import { defaultSelector } from "@xingwangzhe/satteri-photoswipe";
+
+            // 必须与 @xingwangzhe/satteri-photoswipe HAST 插件生成的 class 一致
+            const GALLERY_SELECTOR = "a.pswp-gallery-item";
 
             function enrichPhotoSwipeData() {
                 const container = document.querySelector("[data-pagefind-body]");
                 if (!container) return;
 
-                const links = container.querySelectorAll(defaultSelector);
+                const links = container.querySelectorAll(GALLERY_SELECTOR);
                 links.forEach((link) => {
                     const img = link.querySelector("img");
                     if (!img) return;
@@ -117,7 +119,7 @@ const timezone = stalux?.timezone;
 
                 lightbox = new PhotoSwipeLightbox({
                     gallery: "[data-pagefind-body]",
-                    children: defaultSelector,
+                    children: GALLERY_SELECTOR,
                     pswpModule: PhotoSwipe,
                     initialZoomLevel: "fill",
                 });
