@@ -1,8 +1,20 @@
 /* 共享列表入场动画延迟 — 由 Stalux.astro 全局导入 */
 
-.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.15s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.25s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.3s; }
-.stagger-children > *:nth-child(n+6) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.stagger-children > *:nth-child(2) {
+    animation-delay: 0.15s;
+}
+.stagger-children > *:nth-child(3) {
+    animation-delay: 0.2s;
+}
+.stagger-children > *:nth-child(4) {
+    animation-delay: 0.25s;
+}
+.stagger-children > *:nth-child(5) {
+    animation-delay: 0.3s;
+}
+.stagger-children > *:nth-child(n + 6) {
+    animation-delay: 0.35s;
+}

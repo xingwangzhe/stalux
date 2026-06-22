@@ -3,7 +3,7 @@ title: node.js:简单的HTTP服务器
 abbrlink: 45780
 date: "2024-12-11 17:28:32"
 updated: "2025-07-04 18:44:32"
-desc: "const http = require(\"http\");"
+desc: 'const http = require("http");'
 categories:
     - 后端
 tags:
