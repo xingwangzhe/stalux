@@ -104,13 +104,18 @@ const timezone = stalux?.timezone;
                 });
             }
 
-            let lightboxInitialized = false;
+            let lightbox = null;
 
             function initLightbox() {
-                if (lightboxInitialized) return;
-                lightboxInitialized = true;
+                // 销毁旧实例，避免 View Transition 导航后残留
+                if (lightbox) {
+                    lightbox.destroy();
+                    lightbox = null;
+                }
+
                 enrichPhotoSwipeData();
-                const lightbox = new PhotoSwipeLightbox({
+
+                lightbox = new PhotoSwipeLightbox({
                     gallery: "[data-pagefind-body]",
                     children: defaultSelector,
                     pswpModule: PhotoSwipe,
@@ -119,9 +124,8 @@ const timezone = stalux?.timezone;
                 lightbox.init();
             }
 
+            // astro:page-load 在首次加载和每次 View Transition 导航后都会触发
             document.addEventListener("astro:page-load", initLightbox);
-            // 首屏兜底：astro:page-load 可能在脚本注册监听器之前已触发
-            setTimeout(initLightbox, 0);
         </script>
     )
 }
