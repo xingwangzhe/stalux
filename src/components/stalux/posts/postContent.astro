@@ -104,9 +104,18 @@ const timezone = stalux?.timezone;
                 });
             }
 
+            let lightbox = null;
+
             function initLightbox() {
+                // 销毁旧实例，避免 View Transition 导航后残留
+                if (lightbox) {
+                    lightbox.destroy();
+                    lightbox = null;
+                }
+
                 enrichPhotoSwipeData();
-                const lightbox = new PhotoSwipeLightbox({
+
+                lightbox = new PhotoSwipeLightbox({
                     gallery: "[data-pagefind-body]",
                     children: defaultSelector,
                     pswpModule: PhotoSwipe,
@@ -115,6 +124,7 @@ const timezone = stalux?.timezone;
                 lightbox.init();
             }
 
+            // astro:page-load 在首次加载和每次 View Transition 导航后都会触发
             document.addEventListener("astro:page-load", initLightbox);
         </script>
     )
