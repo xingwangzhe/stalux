@@ -104,7 +104,11 @@ const timezone = stalux?.timezone;
                 });
             }
 
+            let lightboxInitialized = false;
+
             function initLightbox() {
+                if (lightboxInitialized) return;
+                lightboxInitialized = true;
                 enrichPhotoSwipeData();
                 const lightbox = new PhotoSwipeLightbox({
                     gallery: "[data-pagefind-body]",
@@ -116,6 +120,8 @@ const timezone = stalux?.timezone;
             }
 
             document.addEventListener("astro:page-load", initLightbox);
+            // 首屏兜底：astro:page-load 可能在脚本注册监听器之前已触发
+            setTimeout(initLightbox, 0);
         </script>
     )
 }

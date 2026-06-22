@@ -50,16 +50,8 @@
 }
 
 @media (max-width: 768px) {
+    .sidebar,
     .sidebarRight {
-        position: static;
-        width: 100%;
-        max-height: none;
-        top: auto;
-        order: 2;
-        padding: 1rem 0;
-    }
-
-    .sidebarRight {
-        display: flex;
+        display: none;
     }
 }

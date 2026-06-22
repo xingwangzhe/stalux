@@ -1,0 +1,5 @@
+[    1224ms] [WARNING] A preload for 'https://fonts.googleapis.cn/css2?family=Doto:wght@700&display=swap&text=bm.md404' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute. @ https://bm.md/:0
+[    1713ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447:0
+[    7307ms] [WARNING] The resource https://fonts.googleapis.cn/css2?family=Doto:wght@700&display=swap&text=bm.md404 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://bm.md/:0
+[    7307ms] [WARNING] The resource https://bm.md/blur-mask.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://bm.md/:0
+[   24701ms] [INFO] [bm.md] 应用已准备好离线使用 @ https://bm.md/assets/pwa-CkYX9kLT.js:0
