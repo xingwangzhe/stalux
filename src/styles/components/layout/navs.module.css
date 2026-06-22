@@ -4,6 +4,16 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease;
+    /* 当导航项总宽度超过视口时允许横向滚动，防止右侧项被裁剪 */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* 隐藏滚动条但保留滚动功能 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.navList::-webkit-scrollbar {
+    display: none;
 }
 
 .navLink,
@@ -39,6 +49,7 @@
     text-shadow: var(--stalux-text-shadow);
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .navText {
