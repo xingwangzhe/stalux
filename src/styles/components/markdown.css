@@ -167,7 +167,7 @@
         text-decoration-color var(--transition-medium, 0.2s ease);
     overflow-wrap: break-word;
     word-wrap: break-word;
-    word-break: break-all;
+    word-break: break-word;
 }
 
 [data-pagefind-body] a:hover,

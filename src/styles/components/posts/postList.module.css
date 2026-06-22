@@ -4,11 +4,17 @@
     margin: 5px 0;
     ul {
         /* 使用 CSS columns 实现自然瀑布流（masonry） */
-        column-width: 22rem; /* 调宽列宽，使卡片更接近“宽长方形” */
+        column-width: 22rem; /* 调宽列宽，使卡片更接近”宽长方形” */
         column-gap: 2rem;
         padding: 0;
         margin: 3em;
         list-style: none;
+    }
+
+    @media (max-width: 768px) {
+        ul {
+            margin: 1rem;
+        }
     }
 
     ul > li {
