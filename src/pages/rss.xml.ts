@@ -59,7 +59,7 @@ export const GET: APIRoute = async (context) => {
         description: stalux?.description || "A blog powered by Stalux theme",
         site: context.site?.toString() || stalux?.url || "https://stalux.needhelp.icu",
         items,
-        customData: `<language>zh-cn</language>`,
+        customData: `<language>zh-cn</language>\n<copyright>除非另有说明，各文章采用其自身标注的 Creative Commons 许可证</copyright>`,
         xmlns: {
             atom: "http://www.w3.org/2005/Atom",
         },
