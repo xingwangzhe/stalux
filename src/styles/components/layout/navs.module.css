@@ -39,10 +39,11 @@
     backdrop-filter: blur(8px);
     color: var(--white-full);
     cursor: pointer;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.25s ease;
     padding: 0;
     box-shadow: var(--shadow-md);
@@ -54,6 +55,7 @@
 
 .scrollBtn.visible {
     opacity: 1;
+    pointer-events: auto;
 }
 
 .scrollBtn[data-side="left"] {
