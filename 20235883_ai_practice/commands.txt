@@ -1,0 +1,58 @@
+# 人工智能实训 Day1 关键命令记录
+# 学号：20235883
+
+# ========== VS Code / Zed 远程连接 ==========
+whoami
+hostname
+pwd
+uname -a
+
+# ========== Shell 基础操作 ==========
+pwd
+cd ~
+mkdir 20235883_ai_practice
+cd 20235883_ai_practice
+mkdir data src outputs
+ls
+
+# ========== 文件管理 (file1) ==========
+cd 20235883_ai_practice/src
+touch hello.py
+echo 'print("Hello, Ubuntu!")' > hello.py
+cat hello.py
+cd ..
+cp src/hello.py outputs/hello_backup.py
+cat outputs/hello_backup.py
+rm outputs/hello_backup.py
+
+# ========== apt 安装基础工具 ==========
+sudo apt update
+sudo apt install tree
+cd 20235883_ai_practice
+tree
+
+# ========== Miniconda 安装与配置 ==========
+bash 20235883_ai_practice/Miniconda3-latest-Linux-x86_64.sh
+source ~/.bashrc
+conda --version
+conda env list
+conda config --set auto_activate_base false
+
+# ========== Conda 环境搭建 (ai_infer) ==========
+conda create -n ai_infer python=3.10
+conda activate ai_infer
+python --version
+pip --version
+pip install numpy torch
+python -c "import numpy; print(numpy.__version__)"
+python -c "import torch; print(torch.__version__)"
+which python
+
+# ========== 运行推理脚本 (infer1) ==========
+cd 20235883_ai_practice/src
+python inference.py
+
+# ========== 导出环境配置 (export1) ==========
+cd 20235883_ai_practice
+conda env export > environment.yml
+cat environment.yml
