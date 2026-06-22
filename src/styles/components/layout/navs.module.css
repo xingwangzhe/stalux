@@ -1,3 +1,11 @@
+/* 导航容器 — 相对定位，为滚动按钮提供锚点 */
+.navContainer {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
 .navList {
     display: flex;
     gap: 2rem;
@@ -6,6 +14,7 @@
     transition: transform 0.3s ease;
     /* 当导航项总宽度超过视口时允许横向滚动，防止右侧项被裁剪 */
     overflow-x: auto;
+    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     /* 隐藏滚动条但保留滚动功能 */
     scrollbar-width: none;
@@ -14,6 +23,59 @@
 
 .navList::-webkit-scrollbar {
     display: none;
+}
+
+/* 滚动按钮 — 仅当内容溢出时显示 */
+.scrollBtn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--black-30p);
+    backdrop-filter: blur(8px);
+    color: var(--white-full);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    padding: 0;
+    box-shadow: var(--shadow-md);
+}
+
+.scrollBtn:hover {
+    background: var(--black-50p);
+}
+
+.scrollBtn.visible {
+    opacity: 1;
+}
+
+.scrollBtn[data-side="left"] {
+    left: 4px;
+}
+
+.scrollBtn[data-side="right"] {
+    right: 4px;
+}
+
+/* 导航容器 hover 时显示滚动按钮 */
+.navContainer:hover .scrollBtn.visible {
+    opacity: 1;
+}
+
+/* 按钮图标 */
+.scrollBtn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
 }
 
 .navLink,
@@ -116,6 +178,10 @@
 @media (max-width: 600px) {
     .navToggle {
         display: block;
+    }
+
+    .navContainer {
+        overflow: visible;
     }
 
     .navList {
