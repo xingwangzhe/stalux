@@ -1,5 +1,0 @@
-Input: tensor([[1., 2., 3.]])
-Weight: tensor([[0.2000],
-        [0.5000],
-        [0.3000]])
-Output: tensor([[2.1000]])
