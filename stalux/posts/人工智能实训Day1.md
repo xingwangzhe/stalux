@@ -1,7 +1,7 @@
 ---
 title: "人工智能实训Day1：Ubuntu 基础与 Conda 推理环境搭建"
 abbrlink: ai-training-ubuntu-conda-day1
-date: "2026-06-22 10:00:00"
+date: "2026-06-22 15:00:00"
 desc: 人工智能实训预备课笔记：认识 Linux 与 Ubuntu 的差异，使用 VS Code Remote-SSH 连接 Ubuntu 服务器，安装 Miniconda 并创建 ai_infer 环境，为后续模型推理实验做准备。
 categories:
     - 实习
