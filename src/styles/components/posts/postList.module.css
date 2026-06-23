@@ -18,14 +18,7 @@
     }
 
     ul > li {
-        width: calc((100% - 2rem) / 2); /* 每行两列，减去一个 gap */
+        flex: 1 1 22rem; /* 最小宽度 22rem，自动填充每行 */
         margin: 0;
-    }
-
-    /* 一列布局：屏幕宽度不足以放下两列时 */
-    @media (max-width: 50rem) {
-        ul > li {
-            width: 100%;
-        }
     }
 }
