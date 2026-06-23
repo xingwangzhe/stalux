@@ -399,23 +399,15 @@
         line-height: 1.7;
         margin: 0.75rem 0;
         padding: 0 0.75rem;
-    }
-
-    :global(.articleContent ul),
-    :global(.articleContent ol) {
-        margin: 1rem 0;
-        padding-left: 2rem;
-        padding-right: 0.75rem;
-    }
-
-    :global(.articleContent li) {
-        margin: 0.25rem 0;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
     }
 
     :global(.articleContent pre) {
         padding: 1rem;
         font-size: 0.85rem;
         margin: 1rem 0;
+        white-space: pre-wrap;
     }
 
     :global(.articleContent blockquote) {
