@@ -15,7 +15,7 @@
     },
     "dependencies": {
         "@astrojs/compiler-rs": "^0.2.2",
-        "@astrojs/markdown-satteri": "0.3.1",
+        "@astrojs/markdown-satteri": "^0.3.2",
         "@astrojs/rss": "^4.0.18",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.43.1",
@@ -27,7 +27,7 @@
         "@xingwangzhe/satteri-photoswipe": "^0.1.4",
         "@xingwangzhe/tags-cloud": "^1.2.2",
         "animejs": "^4.5.0",
-        "astro": "7.0.0",
+        "astro": "^7.0.2",
         "astro-expressive-code": "0.43.1",
         "astro-pagefind": "^2.0.0",
         "astro-seo": "^1.1.0",
