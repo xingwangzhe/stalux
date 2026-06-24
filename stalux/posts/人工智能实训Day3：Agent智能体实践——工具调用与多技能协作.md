@@ -1,7 +1,7 @@
 ---
 title: "人工智能实训Day3：Agent智能体实践——工具调用与多技能协作"
 abbrlink: ai-training-agent-day3
-date: "2026-06-24 15:00:00"
+date: "2026-06-24 16:00:00"
 desc: 人工智能实训Day3笔记：使用Qwen3-1.7B和AutoGen框架实现Agent智能体，包括基础工具调用、多Skill销售数据分析、GSM8K批量推理与知识库问答自修复。
 categories:
     - 实习
