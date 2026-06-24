@@ -2,6 +2,7 @@
 import { SEO } from "astro-seo";
 import { ClientRouter } from "astro:transitions";
 import { getCollection } from "astro:content";
+import { Font } from "astro:assets";
 import VerCount from "@components/stalux/common/verCount.astro";
 import ConsoleBanner from "@components/stalux/common/ConsoleBanner.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
@@ -98,6 +99,7 @@ const ldJson = JSON.stringify(schema);
       meta: extendedMeta,
     }}
   />
+  <Font cssVariable="--font-body" />
   {
     stalux.data.head?.anyhead && (
       <Fragment set:html={stalux.data.head.anyhead} />
