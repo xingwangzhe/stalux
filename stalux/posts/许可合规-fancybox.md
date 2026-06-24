@@ -30,7 +30,7 @@ npm install -g license-checker
 
 ### 许可问题
 
-![它的商业许可](/软著/fancy合规性.png)
+![它的商业许可](/软著/fancy合规性.webp)
 
 当然，发展壮大之后，它采用了自定义的 **商业许可**，并非是**开源许可**。尽管源代码可见，你仍需参阅其[许可页面](https://fancyapps.com/pricing/)了解具体限制。下面我谈关键的几点：
 
@@ -43,7 +43,7 @@ npm install -g license-checker
 
 我认为，对于大部分个人网站来说，追责的可能性较低，因此很多并未购买商业授权。实际上，fancyapps确实**无能为力**
 
-![无能为力的做法](/软著/fancy无能为力.png)
+![无能为力的做法](/软著/fancy无能为力.webp)
 
 但我的博客主题已获得**软著**，为确保**合规性**并避免未来潜在的法律风险，我决定替换为[PhotoSwipe](https://photoswipe.com/)（MIT 许可证）的灯箱库。
 

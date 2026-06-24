@@ -35,7 +35,7 @@ desc: 我的 Bing 收录掉了一年了，期间写了无数封邮件，最终�
 
 QQ: [1091179649](https://qm.qq.com/q/HbhlPPqLKy)
 
-![群号](/bing/群号.jpg)
+![群号](/bing/群号.webp)
 
 ### 📢 群内官方公告（重点）
 

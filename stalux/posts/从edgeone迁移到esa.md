@@ -32,4 +32,4 @@ categories:
 
 扫描二维码也可以获得免费套餐
 
-![二维码](/pages/esa.png)
+![二维码](/pages/esa.webp)
