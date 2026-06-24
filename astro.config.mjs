@@ -6,7 +6,7 @@ import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 
 const site = "https://stalux.needhelp.icu";
 // https://astro.build/config
@@ -14,6 +14,18 @@ export default defineConfig({
     output: "static",
     site: site,
     experimental: {},
+    fonts: [
+        {
+            provider: fontProviders.local(),
+            name: "LXGW WenKai",
+            cssVariable: "--font-body",
+            options: {
+                variants: [
+                    { weight: 400, style: "normal", src: ["./src/assets/fonts/LXGWWenKai-Regular.woff2"] },
+                ],
+            },
+        },
+    ],
     integrations: [
         pagefind(),
         sitemap({
