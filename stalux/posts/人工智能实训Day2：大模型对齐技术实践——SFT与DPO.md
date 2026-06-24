@@ -23,7 +23,11 @@ tags:
 
 说实话，Day1光是配环境就折腾了一整天——毕竟第一次连上那台内网服务器，从 Remote-SSH 折腾到 Zed，再到装 Miniconda、配 `ai_infer` 环境、装 PyTorch 和 CUDA 对齐，每一步都在跟依赖问题搏斗。不过好消息是，当 `nvidia-smi` 终于能正常显示我那块 **NVIDIA H200 NVL (Docker 分配约 23GB)** 的时候，心里那块石头总算是落地了。关于服务器的具体配置我在 Day1 的登录欢迎信息里已经贴过了，这里就不重复了。
 
-今天我们进入正题——**大模型对齐（Alignment）**。如果说Day1是在"磨刀"，那Day2就是真正开始"砍柴"了。具体来说，我们要完成两个核心实验：
+今天我们进入正题——**大模型对齐（Alignment）**。如果说Day1是在"磨刀"，那Day2就是真正开始"砍柴"了。
+
+![人工智能实训 Day2 封面](/AI/封面-day3.webp)
+
+具体来说，我们要完成两个核心实验：
 
 1. **SFT（Supervised Fine-Tuning，监督微调）**：用 GSM8K 数学数据集教会 Qwen1.5-0.5B-Chat 做数学题
 2. **DPO（Direct Preference Optimization，直接偏好优化）**：用偏好数据进一步优化模型的回答质量
