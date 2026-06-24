@@ -21,7 +21,7 @@
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.43.1",
         "@lucide/astro": "^1.21.0",
-        "@napi-rs/wasm-runtime": "^1.1.5",
+        "@napi-rs/wasm-runtime": "^1.1.6",
         "@nullpinter/satteri-katex": "0.1.1",
         "@waline/client": "3.15.2",
         "@xingwangzhe/satteri-mermaid": "^0.1.3",
