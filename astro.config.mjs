@@ -21,7 +21,11 @@ export default defineConfig({
             cssVariable: "--font-body",
             options: {
                 variants: [
-                    { weight: 400, style: "normal", src: ["./src/assets/fonts/LXGWWenKai-Regular.woff2"] },
+                    {
+                        weight: 400,
+                        style: "normal",
+                        src: ["./src/assets/fonts/LXGWWenKai-Regular.woff2"],
+                    },
                 ],
             },
         },

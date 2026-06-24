@@ -56,11 +56,11 @@ tags:
 
 大模型的训练通常分为几个阶段：
 
-| 阶段 | 名称 | 目标 | 典型数据 |
-|------|------|------|---------|
-| Stage 1 | Pre-training（预训练） | 学习语言知识和世界知识 | 海量无标注文本 |
-| Stage 2 | SFT（监督微调） | 学习指令遵循和对话格式 | 高质量的指令-回答对 |
-| Stage 3 | RLHF/DPO（对齐） | 对齐人类偏好（有用、安全、诚实） | 偏好对比数据 |
+| 阶段    | 名称                   | 目标                             | 典型数据            |
+| ------- | ---------------------- | -------------------------------- | ------------------- |
+| Stage 1 | Pre-training（预训练） | 学习语言知识和世界知识           | 海量无标注文本      |
+| Stage 2 | SFT（监督微调）        | 学习指令遵循和对话格式           | 高质量的指令-回答对 |
+| Stage 3 | RLHF/DPO（对齐）       | 对齐人类偏好（有用、安全、诚实） | 偏好对比数据        |
 
 > **SFT** 的作用是让模型学会"如何正确地回答问题"——包括格式、风格、和基本的推理步骤。  
 > **DPO** 的作用是让模型学会"什么样的回答更好"——通过对比"好的回答"和"差的回答"，让模型更偏好高质量的输出。
@@ -115,7 +115,7 @@ python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA: {
 一个典型的 GSM8K 样本长这样：
 
 ```text
-Question: James decides to run 3 sprints 3 times a week. He runs 60 meters each sprint. 
+Question: James decides to run 3 sprints 3 times a week. He runs 60 meters each sprint.
          How many total meters does he run a week?
 Answer: 540
 ```
@@ -123,6 +123,7 @@ Answer: 540
 注意这里的 answer 只有最终答案（540），没有中间推理过程。这也是为什么 GSM8K 的评测指标通常用 **Exact Match**——只看模型输出的最后数字是否和答案一致。
 
 **Math-Step-DPO-10K** 是一个偏好数据集，约 **10,795 条数据**。它的格式和 GSM8K 不同，每条数据包含：
+
 - `question`：数学题目
 - `chosen`：人类偏好的、正确的、带详细推理步骤的回答
 - `rejected`：相对较差或错误的回答
@@ -218,10 +219,10 @@ llamafactory-cli eval eval_config.yaml
 
 评测结果：
 
-| 指标 | 数值 |
-|------|------|
-| 测试集大小 | 1,319 题 |
-| 正确题数 | 310 题 |
+| 指标                   | 数值      |
+| ---------------------- | --------- |
+| 测试集大小             | 1,319 题  |
+| 正确题数               | 310 题    |
 | **Exact Match 准确率** | **23.5%** |
 
 ![Exact Match](/AI/sft_exact_match.webp)
@@ -239,6 +240,7 @@ llamafactory-cli eval eval_config.yaml
 DPO（Direct Preference Optimization）是 2023 年提出的一种大模型对齐方法。它来源于 RLHF（Reinforcement Learning from Human Feedback），但比 RLHF 更简单直接。
 
 传统 RLHF 的流程是：
+
 1. 训练一个 Reward Model（奖励模型）来学习人类偏好
 2. 用 PPO（Proximal Policy Optimization）等强化学习算法优化策略
 
@@ -251,6 +253,7 @@ DPO 的核心洞察是：**其实不需要显式地训练 Reward Model，也不�
 $$\mathcal{L}_{DPO} = -\log \sigma\left(\beta \cdot \left[\log\frac{\pi_\theta(y_c|x)}{\pi_{ref}(y_c|x)} - \log\frac{\pi_\theta(y_r|x)}{\pi_{ref}(y_r|x)}\right]\right)$$
 
 其中：
+
 - $x$ 是问题（question）
 - $y_c$ 是 chosen（更好的回答）
 - $y_r$ 是 rejected（更差的回答）
@@ -267,7 +270,7 @@ $$\mathcal{L}_{DPO} = -\log \sigma\left(\beta \cdot \left[\log\frac{\pi_\theta(y
 DPO 训练使用的是 Math-Step-DPO-10K 数据集，每条数据都包含 `question`、`chosen` 和 `rejected` 三个字段。
 
 ```yaml title="dpo_config.yaml"
-model_name_or_path: saves/qwen1.5-0.5b/sft  # 基于SFT后的模型
+model_name_or_path: saves/qwen1.5-0.5b/sft # 基于SFT后的模型
 template: qwen
 dataset: math_step_dpo_10k
 cutoff_len: 1024
@@ -326,9 +329,9 @@ DPO 训练比 SFT 慢不少，最终耗时 **约 4 小时 8 分钟**。原因主
 我们用相同的 100 道测试题分别评测了 SFT 模型和 DPO 模型：
 
 | 模型 | 测试题数 | 正确题数 | 准确率 |
-|------|---------|---------|--------|
-| SFT | 100 | 4 | **4%** |
-| DPO | 100 | 1 | **1%** |
+| ---- | -------- | -------- | ------ |
+| SFT  | 100      | 4        | **4%** |
+| DPO  | 100      | 1        | **1%** |
 
 ![DPO对比结果](/AI/dpo_compare_result.webp)
 
@@ -411,13 +414,13 @@ CoT 的核心思想很简单：与其让模型直接输出答案，不如让它"
 
 结果如下：
 
-| 模板 | 准确率 | 描述 |
-|------|--------|------|
-| basic | **7.00%** | 标准逐步推理 |
-| key_info | **7.00%** | 先提取关键条件 |
-| intermediate_check | 6.00% | 每步验证 |
-| comprehensive | 5.00% | 综合策略 |
-| self_check | 4.00% | 推理后自检 |
+| 模板               | 准确率    | 描述           |
+| ------------------ | --------- | -------------- |
+| basic              | **7.00%** | 标准逐步推理   |
+| key_info           | **7.00%** | 先提取关键条件 |
+| intermediate_check | 6.00%     | 每步验证       |
+| comprehensive      | 5.00%     | 综合策略       |
+| self_check         | 4.00%     | 推理后自检     |
 
 ![CoT结果对比](/AI/cot_results_comparison.webp)
 
@@ -491,11 +494,11 @@ num_train_epochs: 1.0
 
 三组实验的数据汇总对比：
 
-| β | 训练方式 | Loss | Reward Margin |
-|---|---------|------|--------------|
-| 0.05 | LoRA 1ep | 0.5807 | ~1.17 |
-| 0.1 | Full 3ep | 0.1567 | ~31.6 |
-| 0.2 | LoRA 1ep | 0.5109 | ~2.11 |
+| β    | 训练方式 | Loss   | Reward Margin |
+| ---- | -------- | ------ | ------------- |
+| 0.05 | LoRA 1ep | 0.5807 | ~1.17         |
+| 0.1  | Full 3ep | 0.1567 | ~31.6         |
+| 0.2  | LoRA 1ep | 0.5109 | ~2.11         |
 
 ![Beta对比](/AI/beta_comparison.webp)
 
@@ -513,13 +516,13 @@ num_train_epochs: 1.0
 
 到今天为止，人工智能实训第二阶段的核心任务就全部完成了。回顾一下今天的收获：
 
-| 实验 | 核心指标 | 结果 |
-|------|---------|------|
-| SFT（GSM8K） | Exact Match | 23.5%（310/1319） |
-| DPO（Math-Step-DPO-10K） | Reward Margin | 从 0 扩大到 ~30 |
-| SFT vs DPO | 100题准确率 | SFT 4% vs DPO 1% |
-| CoT模板对比 | 最佳模板 | basic（7%） |
-| β敏感性分析 | 最优β | 0.05 ~ 0.1 |
+| 实验                     | 核心指标      | 结果              |
+| ------------------------ | ------------- | ----------------- |
+| SFT（GSM8K）             | Exact Match   | 23.5%（310/1319） |
+| DPO（Math-Step-DPO-10K） | Reward Margin | 从 0 扩大到 ~30   |
+| SFT vs DPO               | 100题准确率   | SFT 4% vs DPO 1%  |
+| CoT模板对比              | 最佳模板      | basic（7%）       |
+| β敏感性分析              | 最优β         | 0.05 ~ 0.1        |
 
 几个关键的 take-away：
 

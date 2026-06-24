@@ -27,6 +27,7 @@ Day1 配环境、Day2 跑微调，到了 Day3 终于进入我最期待的环节�
 ![Agent 课程封面](/AI/封面-day3-2.webp)
 
 用到的技术栈：
+
 - **vLLM**：本地模型服务化部署，提供 OpenAI 兼容接口
 - **AutoGen**：微软开源的 Agent 框架，支持多 Agent 协作和工具调用
 - **自定义 Skill**：把 Python 函数封装成工具，让 Agent 按需调用
@@ -86,6 +87,7 @@ CUDA_VISIBLE_DEVICES=0 vllm serve Qwen3-1.7B \
 ```
 
 几个关键参数：
+
 - `--enable-auto-tool-choice`：允许模型根据任务自动选择工具调用
 - `--tool-call-parser hermes`：指定工具调用解析器，使模型输出能被正确解析为工具调用
 
@@ -125,6 +127,7 @@ agent = llm_factory.create_agent(
 ```
 
 任务 prompt：
+
 ```
 Calculate: (23 * 17 + sqrt(81)) / 5
 Convert 3.2 km to m
@@ -137,10 +140,10 @@ Finally, summarize the results in chinese.
 
 Agent 完成了两次工具调用：
 
-| 任务 | 工具 | 参数 | 返回 |
-|------|------|------|------|
-| 数学计算 | safe_calculator | `(23 * 17 + sqrt(81)) / 5` | 80.0 |
-| 单位换算 | unit_converter | `3.2, "km", "m"` | 3.2 km = 3200.0 m |
+| 任务     | 工具            | 参数                       | 返回              |
+| -------- | --------------- | -------------------------- | ----------------- |
+| 数学计算 | safe_calculator | `(23 * 17 + sqrt(81)) / 5` | 80.0              |
+| 单位换算 | unit_converter  | `3.2, "km", "m"`           | 3.2 km = 3200.0 m |
 
 最后用中文总结了结果。整个过程模型自己判断需要什么工具、传什么参数，完全不需要人工干预。这就是 Agent 的魅力——**你只需要说"做什么"，不需要说"怎么做"**。
 
@@ -154,11 +157,11 @@ Agent 完成了两次工具调用：
 
 这个任务比任务一复杂得多，需要多个工具协作完成。设计上把功能分成三个 Skill，每个 Skill 负责一块：
 
-| Skill | 工具 | 作用 |
-|-------|------|------|
-| MathSkill | safe_calculator | 精确计算利润率和平均销售额 |
-| SalesDataSkill | summarize_sales_csv | 读取 sales.csv，按产品汇总 |
-| ReportSkill | write_markdown_report | 把分析结果写入 Markdown 文件 |
+| Skill          | 工具                  | 作用                         |
+| -------------- | --------------------- | ---------------------------- |
+| MathSkill      | safe_calculator       | 精确计算利润率和平均销售额   |
+| SalesDataSkill | summarize_sales_csv   | 读取 sales.csv，按产品汇总   |
+| ReportSkill    | write_markdown_report | 把分析结果写入 Markdown 文件 |
 
 三个 Skill 通过 `skills/__init__.py` 合并成一个 `ALL_TOOLS` 列表，创建 Agent 时统一传入。
 
@@ -167,6 +170,7 @@ Agent 完成了两次工具调用：
 任务二让我深刻体会到了一个关键点：**system_message 怎么写，直接决定了 Agent 会不会正确调用工具。**
 
 我的 system_message 里明确约束了三种情况：
+
 ```python
 system_message = (
     "You are a sales data analysis agent. "
@@ -228,18 +232,18 @@ agent = llm_factory.create_agent(
 
 10 道题的结果：
 
-| 题号 | 答案 | 预测 | 正确 |
-|------|------|------|------|
-| 1 | 60 | 60 | ✓ |
-| 2 | 125 | 125 | ✓ |
-| 3 | 230 | 230 | ✓ |
-| 4 | 57500 | 57500 | ✓ |
-| 5 | 7 | 7 | ✓ |
-| 6 | 6 | 6 | ✓ |
-| 7 | 15 | 15 | ✓ |
-| 8 | 14 | 2 | ✗ |
-| 9 | 7 | 7 | ✓ |
-| 10 | 8 | 8 | ✓ |
+| 题号 | 答案  | 预测  | 正确 |
+| ---- | ----- | ----- | ---- |
+| 1    | 60    | 60    | ✓    |
+| 2    | 125   | 125   | ✓    |
+| 3    | 230   | 230   | ✓    |
+| 4    | 57500 | 57500 | ✓    |
+| 5    | 7     | 7     | ✓    |
+| 6    | 6     | 6     | ✓    |
+| 7    | 15    | 15    | ✓    |
+| 8    | 14    | 2     | ✗    |
+| 9    | 7     | 7     | ✓    |
+| 10   | 8     | 8     | ✓    |
 
 **准确率：9/10 = 90%**
 
@@ -253,12 +257,12 @@ agent = llm_factory.create_agent(
 
 ### (b) 四个 Skill 的设计
 
-| Skill | 工具 | 作用 |
-|-------|------|------|
-| DocumentSkill | list_documents / search_documents / read_document | 文档检索三件套 |
-| PlanSkill | generate_study_plan | 生成学习计划 |
-| ReportSkill | write_markdown_report | 写入 Markdown 报告 |
-| ValidateSkill | validate_report | 验证报告完整性 |
+| Skill         | 工具                                              | 作用               |
+| ------------- | ------------------------------------------------- | ------------------ |
+| DocumentSkill | list_documents / search_documents / read_document | 文档检索三件套     |
+| PlanSkill     | generate_study_plan                               | 生成学习计划       |
+| ReportSkill   | write_markdown_report                             | 写入 Markdown 报告 |
+| ValidateSkill | validate_report                                   | 验证报告完整性     |
 
 特别想说说 **ValidateSkill** 的设计——它检查报告是否包含四个必需章节（Question Answer / Evidence Sources / Study Plan / Summary），以及是否有未替换的模板占位符。这个自检机制非常实用，相当于给 Agent 加了一个"质检员"角色。
 
@@ -279,6 +283,7 @@ Agent 共完成了 12 次工具调用，最终生成的报告包含四个部分�
 今天的 Agent 实训让我对"大模型能做什么"有了全新的认识。从最初的"问答工具"到今天的"自主任务执行者"，Agent 架构打开了无限可能：
 
 **学到的核心概念：**
+
 - **工具调用（Tool Use）**：模型不是只能说话，它可以调用函数、读取文件、执行计算
 - **Skill 模块化**：把功能拆成独立的 Skill，便于复用和维护
 - **system_message 设计**：怎么约束模型调用工具，措辞很关键

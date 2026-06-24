@@ -10,7 +10,13 @@ body {
     }
     scrollbar-color: #4a4a4a #2a2a2a;
     display: block;
-    font-family: var(--font-body), "Noto Sans SC", "Noto Sans CJK SC", system-ui, -apple-system, sans-serif;
+    font-family:
+        var(--font-body),
+        "Noto Sans SC",
+        "Noto Sans CJK SC",
+        system-ui,
+        -apple-system,
+        sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
