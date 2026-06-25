@@ -1,7 +1,7 @@
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import { katex } from "@nullpinter/satteri-katex";
-import { mermaid } from "@xingwangzhe/satteri-mermaid";
+import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
@@ -84,8 +84,8 @@ export default defineConfig({
                 smartPunctuation: true,
                 gfm: true,
             },
-            mdastPlugins: [katex(), mermaid()],
-            hastPlugins: [photoswipe()],
+            mdastPlugins: [katex(), mermaidMdast()],
+            hastPlugins: [photoswipe(), mermaidHast()],
         }),
     },
 });
