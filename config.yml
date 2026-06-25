@@ -151,7 +151,7 @@ stalux:
             - name: "我的飛鳥集"
               description: "代码与诗的世界"
               link: "https://fmcf.cc/"
-              icon: "https://api.fmcf.cc/api/v2/objects/avatar/fvfzp7f411o9qkrba6.jpg"
+              icon: "/fmcf-icon.webp"
             # - name: "J將軍的博客 - BG9JMR的无线电小站~"
             #   description: "欢迎来到J將軍的个人小站！呼号：BG9JMR 请在bilibili或者X上关注我~。"
             #   link: "https://blog.bg9jmr.icu/"
