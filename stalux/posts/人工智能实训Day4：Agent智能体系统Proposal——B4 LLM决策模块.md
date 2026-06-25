@@ -118,7 +118,6 @@ graph TD
 | tool_calling.mode | prompt_json | 通过prompt注入工具描述，非原生function calling API  |
 | save_raw_output   | true        | 保存模型原始输出供调试                              |
 | save_ai_message   | true        | 保存标准化AIMessage                                 |
-| save_prompt_text  | true        | 保存完整prompt供问题追溯                            |
 
 ### 4.2 模块流程设计
 
@@ -150,7 +149,7 @@ _candidate_to_message()
 互斥约束检查"]
     G --> H
     H --> I["持久化输出
-raw_output + ai_message + prompt_text"]
+raw_model_output + ai_message"]
 ```
 
 | 阶段       | 核心函数                    | 输入                        | 输出                    | 关键设计决策                                                 |
@@ -162,17 +161,17 @@ raw_output + ai_message + prompt_text"]
 | 模型推理   | `_prompt_json_generate()`   | config, prompt_messages     | raw_text                | \_MODEL_CACHE缓存复用+只解码新token+无梯度推理               |
 | 输出解析   | `_parse_model_output()`     | raw_text                    | (candidate, ai_message) | 三层递进解析（直接JSON→尾部反引号→tool_calls片段），由严到宽 |
 | 结果封装   | `_candidate_to_message()`   | candidate                   | ai_message              | unknown_key检查+schemas深度校验+content/tool_calls互斥       |
-| 持久化     | `generate_ai_message()`尾部 | artifact_dir, artifact_stem | 三个调试文件            | 完整推理过程可追溯，artifact_stem按llm_call_001递增          |
+| 持久化     | `generate_ai_message()`尾部 | artifact_dir, artifact_stem | 两个调试文件            | 完整推理过程可追溯，artifact_stem按llm_call_001递增          |
 
 异常情况处理：模型加载失败（显存不足/文件缺失）→ 捕获OSError/RuntimeError，返回status="error"；输入格式错误（messages非数组/tools_schema非列表）→ 前置校验raise ValueError，避免浪费模型计算；模型输出无法解析 → 三层解析策略逐级降级，全部失败则返回PARSE_ERROR_CONTENT和status="error"；content与tool_calls同时存在或同时为空 → 互斥检查失败，返回status="error"。所有错误路径最终都收敛到统一的错误响应格式，确保B1能以一致的方式处理B4的所有故障情况。
 
 ### 4.3 具体实施方案设计
 
-**函数式架构与模型缓存机制（设想）**
+**函数式架构与模型缓存机制**
 
-B4计划采用函数式无状态架构，核心入口`generate_ai_message()`不依赖任何外部对象的状态。唯一的状态载体拟设计为模块级全局变量`_MODEL_CACHE`，用于在Agent Loop中避免重复加载模型。预期设计如下伪代码所示：
+B4采用函数式无状态架构，核心入口`generate_ai_message()`不依赖任何外部对象的状态。唯一的状态载体为模块级全局变量`_MODEL_CACHE`，用于在Agent Loop中避免重复加载模型。实现如下：
 
-```python title="模型缓存设计（伪代码）"
+```python title="模型缓存设计"
 _MODEL_CACHE: dict[tuple[str, ...], tuple[Any, Any]] = {}
 
 def _model_cache_key(model_path, tokenizer_path, local_only,
@@ -195,31 +194,31 @@ def _load_model_bundle(auto_model, auto_tokenizer, model_path,
     return tokenizer, model
 ```
 
-缓存键的设计思路是：包含模型路径、tokenizer路径、local_files_only、trust_remote_code、dtype、device_map、max_memory等参数，切换任何配置预期自动触发cache miss，加载新模型，无需手动清空缓存。在典型Agent任务中（3-5轮工具回路），缓存预期可将总推理时间从数十秒缩短到数秒。缓存值设计为存储`(tokenizer, model)`元组，因为tokenizer和模型总是一同使用、一同切换，绑定存储可避免不一致风险。选用模块级全局变量而非类实例属性的考量在于：B4的目标是函数式接口，B1只需调用函数即可，无需维护类的实例，降低B1的复杂度。
+缓存键的设计思路是：包含模型路径、tokenizer路径、local_files_only、trust_remote_code、dtype、device_map、max_memory等参数，切换任何配置会自动触发cache miss，加载新模型，无需手动清空缓存。在典型Agent任务中（3-5轮工具回路），缓存可将总推理时间从数十秒缩短到数秒。缓存值设计为存储`(tokenizer, model)`元组，因为tokenizer和模型总是一同使用、一同切换，绑定存储可避免不一致风险。选用模块级全局变量而非类实例属性的考量在于：B4的目标是函数式接口，B1只需调用函数即可，无需维护类的实例，降低B1的复杂度。
 
-**Prompt双保险策略（设想）**
+**Prompt双保险策略**
 
-计划设计`_build_prompt_messages()`函数，通过双重冗余约束最大化4B模型输出合法JSON的概率：
+设计了`_build_prompt_messages()`函数，通过双重冗余约束最大化4B模型输出合法JSON的概率：
 
-第一保险`format_instruction`拟以长格式注入system message，包含完整的JSON格式说明、两个schema的示例（schema A为最终回答`{"content":"...","tool_calls":[]}`，schema B为工具调用`{"content":"","tool_calls":[{"id":"call_001","name":"file_reader","args":{...}}]}`）、顶层key约束（`content`为string，`tool_calls`为array）以及多项禁止事项（禁止markdown、禁止代码块、禁止解释文字、禁止嵌套tool_calls到content中）。选择system message作为载体的原因是模型对system message中的指令遵循度通常较高。
+第一保险`format_instruction`以长格式注入system message，包含完整的JSON格式说明、两个schema的示例（schema A为最终回答`{"content":"...","tool_calls":[]}`，schema B为工具调用`{"content":"","tool_calls":[{"id":"call_001","name":"file_reader","args":{...}}]}`）、顶层key约束（`content`为string，`tool_calls`为array）以及多项禁止事项（禁止markdown、禁止代码块、禁止解释文字、禁止嵌套tool_calls到content中）。选择system message作为载体的原因是模型对system message中的指令遵循度通常较高。
 
-第二保险`envelope_reminder`拟以短格式追加到最后一个user message，核心信息高度浓缩——强调首字符必须是`{`、末字符必须是`}`、禁止任何反引号和markdown、使用精确的顶层key、二选一schema。将其放在user message而非system message中的设计考量是：对于Qwen等ChatML格式的模型，user message在`apply_chat_template`后的token序列中位置更靠近生成起点，模型对其注意力权重通常更高。双保险的设计预期即使模型忽略了一层约束，仍有另一层作为后备。
+第二保险`envelope_reminder`以短格式追加到最后一个user message，核心信息高度浓缩——强调首字符必须是`{`、末字符必须是`}`、禁止任何反引号和markdown、使用精确的顶层key、二选一schema。将其放在user message而非system message中的设计考量是：对于Qwen等ChatML格式的模型，user message在`apply_chat_template`后的token序列中位置更靠近生成起点，模型对其注意力权重通常更高。双保险的设计确保即使模型忽略了一层约束，仍有另一层作为后备。
 
-第三层考虑加入ToolMessage特殊处理——当对话最后一条是tool message（即刚完成一轮工具执行）时，B4追加一条引导性user message，明确指示"ToolMessage已包含工具结果，如果信息充足请用schema A回答，且不要重复已完成的工具调用"。这预期能缓解模型在工具执行后仍重复发起相同工具调用的常见错误模式，是提升多轮调用成功率的关键优化。
+第三层加入了ToolMessage特殊处理——当对话最后一条是tool message（即刚完成一轮工具执行）时，B4追加一条引导性user message，明确指示"ToolMessage已包含工具结果，如果信息充足请用schema A回答，且不要重复已完成的工具调用"。这有效缓解了模型在工具执行后仍重复发起相同工具调用的常见错误模式，是提升多轮调用成功率的关键优化。
 
-同时，配置中计划设置`enable_thinking=False`关闭Qwen3.5的CoT思考模式，避免`<\|thinking\|>`标签污染JSON输出。`trust_remote_code=True`确保能正确加载Qwen模型的自定义架构和chat template。
+同时，配置中设置了`enable_thinking=False`关闭Qwen3.5的CoT思考模式，避免`<\|thinking\|>`标签污染JSON输出。`trust_remote_code=True`确保能正确加载Qwen模型的自定义架构和chat template。
 
-**模型加载与缓存优化（设想）**
+**模型加载与缓存优化**
 
-模型加载是B4性能的关键环节。计划通过`_load_model_bundle()`使用`_MODEL_CACHE`全局缓存字典避免在Agent Loop的多轮调用中重复加载模型。缓存键的构造拟包含所有可能影响模型行为的配置参数（模型路径、tokenizer路径、local_files_only、trust_remote_code、torch_dtype、device_map、max_memory），这意味着切换任何配置（如从bfloat16改为float16，或更换模型路径）预期自动触发cache miss，加载新模型，而无需手动清空缓存。在典型Agent任务中（3-5轮工具回路），缓存预期可将总推理时间从数十秒缩短到数秒。此外，计划通过向`sys.stderr`打印`model_cache=hit`或`model_cache=miss`提供可观测性，便于开发阶段的性能调优。
+模型加载是B4性能的关键环节。通过`_load_model_bundle()`使用`_MODEL_CACHE`全局缓存字典避免在Agent Loop的多轮调用中重复加载模型。缓存键的构造包含所有可能影响模型行为的配置参数（模型路径、tokenizer路径、local_files_only、trust_remote_code、torch_dtype、device_map、max_memory），这意味着切换任何配置（如从bfloat16改为float16，或更换模型路径）会自动触发cache miss，加载新模型，而无需手动清空缓存。在典型Agent任务中（3-5轮工具回路），缓存可将总推理时间从数十秒缩短到数秒。此外，通过向`sys.stderr`打印`model_cache=hit`或`model_cache=miss`提供可观测性，便于开发阶段的性能调优。
 
 选用模块级全局变量而非类实例属性的设计考量在于：B4的目标是函数式接口——`generate_ai_message()`不依赖任何外部对象的状态。如果使用类来管理缓存，则B1需要维护类的实例并在每次调用时传入，增加了B1的复杂度。模块级缓存将状态管理完全封装在B4内部，B1无需关心模型是否已加载、是否需要释放，只需调用函数即可。这种设计在Agent Loop的上下文中尤为重要，因为B1的核心逻辑已经足够复杂（状态机转换、工具执行分发、记忆管理），不应再承担资源管理的职责。
 
-**模型推理流程（设想）**
+**模型推理流程**
 
-模型推理计划在`_prompt_json_generate()`中完成，预期流程如下伪代码所示：
+模型推理在`_prompt_json_generate()`中完成，流程如下：
 
-```python title="模型推理流程设计（伪代码）"
+```python title="模型推理流程"
 inputs = tokenizer.apply_chat_template(
     prompt_messages,
     tokenize=True,
@@ -243,11 +242,11 @@ return tokenizer.decode(new_tokens, skip_special_tokens=True)
 
 设计要点包括：（1）`apply_chat_template`自动处理ChatML格式转换，确保对话消息符合Qwen3.5的模板要求；（2）`add_generation_prompt=True`在输入末尾添加assistant角色的起始标记，引导模型以助手身份回复；（3）`torch.no_grad()`消除梯度计算，节省显存并加速推理；（4）只解码`input_length`之后的token，避免将输入prompt重复解码，确保返回纯生成内容；（5）`skip_special_tokens=True`移除`<|endoftext|>`、`<|im_end|>`等特殊token，使下游JSON解析器能直接处理纯文本。
 
-`do_sample: false`与`temperature: 0`的组合预期实现贪心解码——模型在每一步选择概率最高的token。这在工具调用场景至关重要：非确定性采样可能导致相同输入产生不同的工具选择或参数值，使得Agent行为不可复现、难以调试。
+`do_sample: false`与`temperature: 0`的组合实现贪心解码——模型在每一步选择概率最高的token。这在工具调用场景至关重要：非确定性采样可能导致相同输入产生不同的工具选择或参数值，使得Agent行为不可复现、难以调试。
 
-**三层输出解析策略（设想）**
+**三层输出解析策略**
 
-计划设计三层递进的输出解析策略，由严到宽逐步降级：
+设计了三层递进的输出解析策略，由严到宽逐步降级：
 
 ```mermaid
 flowchart TD
@@ -267,11 +266,11 @@ _parse_tool_calls_fragment()
 返回PARSE_ERROR_CONTENT"]
 ```
 
-策略一处理直接合法JSON，时间复杂度O(n)，预期是最快的路径。策略二拟使用`json.JSONDecoder().raw_decode()`精确找到JSON对象的结束位置，处理模型输出markdown代码块闭合标记的情况，预期能正确处理JSON内部嵌套大括号。策略三计划搜索`"tool_calls":[`或转义的`"tool_calls":[`标记，提取方括号内数组，包装为`{"content":"","tool_calls":[...]}`，针对模型输出混合文本的情况。三层形成由严到宽的容错梯度，任何一步失败则向上抛出异常。
+策略一处理直接合法JSON，时间复杂度O(n)，是最快的路径。策略二使用`json.JSONDecoder().raw_decode()`精确找到JSON对象的结束位置，处理模型输出markdown代码块闭合标记的情况，能正确处理JSON内部嵌套大括号。策略三搜索`"tool_calls":[`或转义的`"tool_calls":[`标记，提取方括号内数组，包装为`{"content":"","tool_calls":[...]}`，针对模型输出混合文本的情况。三层形成由严到宽的容错梯度，任何一步失败则向上抛出异常。
 
-**AIMessage互斥约束（设想）**
+**AIMessage互斥约束**
 
-```python title="AIMessage互斥校验设计（伪代码）"
+```python title="AIMessage互斥校验"
 def _candidate_to_message(candidate: dict) -> tuple[dict, dict]:
     if not isinstance(candidate, dict):
         raise ValueError("model output JSON must be an object")
@@ -292,17 +291,17 @@ def _candidate_to_message(candidate: dict) -> tuple[dict, dict]:
     return {"content": message["content"], "tool_calls": message["tool_calls"]}, message
 ```
 
-预期设计四层校验层层递进：类型检查确保顶层结构合法；unknown_key检查防止模型输出多余字段；`validate_ai_message()`调用schemas.py对每个tool_call进行`normalize_tool_call()`标准化，兼容OpenAI风格`{"function":{"name":...,"arguments":...}}`和简写风格`{"name":...,"args":...}`两种格式；互斥约束确保模型必须做出明确决策——要么有内容直接回答，要么有工具调用需要外部数据。函数预期返回两个对象——简化字典用于后续处理，完整message用于持久化。
+实现了四层校验层层递进：类型检查确保顶层结构合法；unknown_key检查防止模型输出多余字段；`validate_ai_message()`调用schemas.py对每个tool_call进行`normalize_tool_call()`标准化，兼容OpenAI风格`{"function":{"name":...,"arguments":...}}`和简写风格`{"name":...,"args":...}`两种格式；互斥约束确保模型必须做出明确决策——要么有内容直接回答，要么有工具调用需要外部数据。函数返回两个对象——简化字典用于后续处理，完整message用于持久化。
 
-**Mock模式（设想）**
+**Mock模式**
 
-Mock模式计划通过`_mock_generate()`在无模型环境下提供确定性输出。首次调用时预期返回file_reader工具调用且参数固定（模拟"先读取文件再总结"的决策模式），获得工具结果后根据状态分支——工具执行成功则调用`_three_points()`函数将内容总结为三条中文要点，工具执行失败则返回包含错误详情的错误消息。这种确定性输出预期使得B1的状态机转换可以被精确测试，无需等待模型推理，也无需GPU资源，可极大加速集成调试的迭代速度。同时，Mock模式也计划作为CI/CD流水线中自动化测试的基础，确保代码修改不会破坏B1与B4的接口契约。
+Mock模式通过`_mock_generate()`在无模型环境下提供确定性输出。首次调用时返回file_reader工具调用且参数固定（模拟"先读取文件再总结"的决策模式），获得工具结果后根据状态分支——工具执行成功则调用`_three_points()`函数将内容总结为三条中文要点，工具执行失败则返回包含错误详情的错误消息。这种确定性输出使得B1的状态机转换可以被精确测试，无需等待模型推理，也无需GPU资源，可极大加速集成调试的迭代速度。同时，Mock模式也作为CI/CD流水线中自动化测试的基础，确保代码修改不会破坏B1与B4的接口契约。
 
-**错误处理（设想）**
+**错误处理**
 
-B4的错误处理计划遵循快速失败加隔离墙原则。所有内部异常（模型加载失败、JSON解析失败、校验不通过）拟被`generate_ai_message()`的try-except块捕获，统一返回`ai_message`（内容为PARSE_ERROR_CONTENT）、`status="error"`、`error={type, message}`。B1在调用B4后检查`llm_status`，若为"error"则设置`status="llm_parse_error"`并终止Agent Loop。这种设计预期能确保一个解析错误不会导致整个系统崩溃或进入无限循环，用户至少能获得"模型输出解析失败"的明确反馈而非无响应或异常堆栈。
+B4的错误处理遵循快速失败加隔离墙原则。所有内部异常（模型加载失败、JSON解析失败、校验不通过）被`generate_ai_message()`的try-except块捕获，统一返回`ai_message`（内容为PARSE_ERROR_CONTENT）、`status="error"`、`error={type, message}`。B1在调用B4后检查`llm_status`，若为"error"则设置`status="llm_parse_error"`并终止Agent Loop。这种设计确保一个解析错误不会导致整个系统崩溃或进入无限循环，用户至少能获得"模型输出解析失败"的明确反馈而非无响应或异常堆栈。
 
-`PARSE_ERROR_CONTENT`计划使用中文直接面向终端用户（"模型输出解析失败，无法生成有效工具调用或最终回答。"），是B4为数不多的面向用户的字符串，体现模块在错误场景下保持用户友好的设计哲学。从系统架构角度看，B4作为B1与LLM之间的隔离墙，其错误处理机制预期能保护整个Agent系统的稳定性——即使模型输出完全失控（如生成无限长文本、输出非法字符等），B4也能将其限制为一次失败的LLM调用，而不会导致B1状态机混乱或系统资源耗尽。
+`PARSE_ERROR_CONTENT`使用中文直接面向终端用户（"模型输出解析失败，无法生成有效工具调用或最终回答。"），是B4为数不多的面向用户的字符串，体现模块在错误场景下保持用户友好的设计哲学。从系统架构角度看，B4作为B1与LLM之间的隔离墙，其错误处理机制保护了整个Agent系统的稳定性——即使模型输出完全失控（如生成无限长文本、输出非法字符等），B4也能将其限制为一次失败的LLM调用，而不会导致B1状态机混乱或系统资源耗尽。
 
 ---
 
@@ -358,15 +357,13 @@ def generate_ai_message(*args, **kwargs):
     return b4_generate_ai_message(*args, **kwargs)
 ```
 
-B1对返回结果的检查逻辑如下：若`status != "success"`则设置`status="llm_parse_error"`并终止Agent Loop；若`tool_calls`为空则提取`content`作为最终回答并终止循环；否则调用B3执行工具并将ToolMessage追加到messages，继续下一轮循环。`artifact_stem`采用`llm_call_{序号:03d}`的命名规范，确保多轮调用时文件名按字典序排列，方便事后分析完整的决策链条。三个调试文件（`_raw_output.txt`、`_ai_message.json`、`_prompt_text.txt`）共同构成了每次LLM调用的完整快照，是排查模型行为问题的关键证据。
-
-B4与B2之间虽然没有直接交互，但通过tools_schema形成了紧密的协作关系。B2中的每个Skill函数（file_reader、calculator等）都通过B3注册为可用工具，B3将函数签名、描述、参数类型信息编码为OpenAI function calling格式的JSON schema传递给B4。B4根据这些描述理解每个工具的功能和参数要求，在决策时选择合适的工具并构造正确的参数。这种间接关系使得B4可以专注于决策逻辑，无需关心工具的具体实现细节，符合关注点分离的设计原则。当B2新增或修改Skill时，B4通过重新加载tools_schema自动适应变化，无需修改B4的代码，体现了模块间良好的松耦合设计。
+B1对返回结果的检查逻辑如下：若`status != "success"`则设置`status="llm_parse_error"`并终止Agent Loop；若`tool_calls`为空则提取`content`作为最终回答并终止循环；否则调用B3执行工具并将ToolMessage追加到messages，继续下一轮循环。`artifact_stem`采用`llm_call_{序号:03d}`的命名规范，确保多轮调用时文件名按字典序排列，方便事后分析完整的决策链条。两个调试文件（`raw_model_output.json`、`_ai_message.json`）共同构成了每次LLM调用的完整快照，是排查模型行为问题的关键证据。当`artifact_stem=None`时（例如独立运行而非被B1调用时），输出文件以当前时间戳命名，保证每次运行不覆盖之前的输出。
 
 ---
 
 ## 6. 实验计划
 
-### 6.1 计划运行环境
+### 6.1 运行环境
 
 | 配置项          | 值                                                                           |
 | --------------- | ---------------------------------------------------------------------------- |
@@ -384,7 +381,7 @@ B4与B2之间虽然没有直接交互，但通过tools_schema形成了紧密的�
 | 工具调用模式    | prompt_json                                                                  |
 | 可用工具        | calculator, file_reader, local_file_search, table_analyzer, format_converter |
 | 运行模式        | local_files_only=true, trust_remote_code=true                                |
-| 调试输出        | save_raw_output=true, save_ai_message=true, save_prompt_text=true            |
+| 调试输出        | save_raw_output=true, save_ai_message=true                                   |
 
 ### 6.2 测试数据或输入样例
 
@@ -397,7 +394,7 @@ python b4_local_agent_llm.py --model_config ../configs/model.yaml \
   --mode prompt_json --outdir ../outputs/B4_llm/no_tool_real
 ```
 
-输入messages包含SystemMessage和HumanMessage（用户请求"帮我阅读docs/agent_intro.txt，总结三条中文要点"）。验证要点：模型能否正确判断需要调用file_reader工具，生成含正确参数的tool_calls（path指向docs/agent_intro.txt，max_chars为2000），content为空字符串。同时检查raw_output.txt首字符为`{`、末字符为`}`，\_prompt_text.txt中可见双保险格式说明。
+输入messages包含SystemMessage和HumanMessage（用户请求"帮我阅读docs/agent_intro.txt，总结三条中文要点"）。验证要点：模型能否正确判断需要调用file_reader工具，生成含正确参数的tool_calls（path指向docs/agent_intro.txt，max_chars为2000），content为空字符串。同时检查raw_model_output.json首字符为`{`、末字符为`}`，其中可见双保险格式说明。
 
 **场景二：基于ToolMessage生成最终回答**
 
@@ -408,7 +405,7 @@ python b4_local_agent_llm.py --model_config ../configs/model.yaml \
   --mode prompt_json --outdir ../outputs/B4_llm/with_tool_real
 ```
 
-输入messages追加了上一轮AIMessage（含file_reader的tool_call）和ToolMessage（含文件读取结果）。验证要点：模型能否利用ToolMessage中的文件内容生成高质量中文摘要，tool_calls为空列表，不再重复调用工具。检查第二轮\_prompt_text.txt中可见ToolMessage特殊处理追加的引导消息。
+输入messages追加了上一轮AIMessage（含file_reader的tool_call）和ToolMessage（含文件读取结果）。验证要点：模型能否利用ToolMessage中的文件内容生成高质量中文摘要，tool_calls为空列表，不再重复调用工具。检查第二轮raw_model_output.json中可见ToolMessage特殊处理追加的引导消息。
 
 **场景三：工具调用失败处理**
 
