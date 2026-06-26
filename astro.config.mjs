@@ -1,12 +1,13 @@
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import { katex } from "@nullpinter/satteri-katex";
-import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
 import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
+
+import { featureFlagsHast, featureFlagsMdast, mermaidHast } from "./src/plugins/feature-flags.ts";
 
 const site = "https://xingwangzhe.fun";
 // https://astro.build/config
@@ -86,11 +87,10 @@ export default defineConfig({
                 math: true,
                 smartPunctuation: false,
                 gfm: true,
+                frontmatter: true,
             },
-            // MDAST plugins run on the Markdown AST
-            mdastPlugins: [katex(), mermaidMdast()],
-            // HAST plugins run on the HTML AST
-            hastPlugins: [photoswipe(), mermaidHast()],
+            mdastPlugins: [katex(), featureFlagsMdast],
+            hastPlugins: [photoswipe(), featureFlagsHast, mermaidHast],
         }),
     },
 });

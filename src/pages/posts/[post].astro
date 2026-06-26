@@ -2,23 +2,28 @@
 import Stalux from "@layouts/Stalux.astro";
 import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry, render } from "astro:content";
-import { computePostStats, type PostStats } from "@utils/compute-post-stats";
 import { toTimestamp } from "@utils/dayjs";
 import Navs from "@components/stalux/layout/navs.astro";
-
 interface Props {
     post: CollectionEntry<"posts">;
     prev?: { url: string; title: string };
     next?: { url: string; title: string };
-    stats?: PostStats;
 }
 const stalux = (await getCollection("config"))[0].data;
 const props = Astro.props as Props;
-const { Content, headings } = await render(props.post);
-const s = props.stats!;
-const minutesRead = s.minutesRead || "";
-const wordCount = s.wordCount || 0;
-const autoDesc = props.post.data.desc;
+const { Content, headings, remarkPluginFrontmatter } = await render(props.post);
+
+// 从 remarkPluginFrontmatter 读取 feature flags 和字数统计（由 satteri 插件在构建时写入）
+const flags = {
+    hasKatex: remarkPluginFrontmatter?.hasKatex ?? false,
+    hasMermaid: remarkPluginFrontmatter?.hasMermaid ?? false,
+    hasImage: remarkPluginFrontmatter?.hasImage ?? false,
+};
+
+// 字数统计直接从 frontmatter 读取
+const minutesRead = (remarkPluginFrontmatter?.minutesRead as string) || "";
+const wordCount = (remarkPluginFrontmatter?.wordCount as number) || 0;
+const autoDesc = props.post.data.desc || "";
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
@@ -26,10 +31,9 @@ export async function getStaticPaths() {
     return sorted.map((post, i) => {
         const n = i>0?sorted[i-1]:undefined;
         const p = i<sorted.length-1?sorted[i+1]:undefined;
-        const stats = computePostStats(post.body||"");
         return {
             params:{post:post.data.abbrlink},
-            props:{post,stats,
+            props:{post,
                 prev: p?{url:'/posts/'+p.data.abbrlink,title:p.data.title}:undefined,
                 next: n?{url:'/posts/'+n.data.abbrlink,title:n.data.title}:undefined
             }
@@ -40,7 +44,7 @@ export async function getStaticPaths() {
 <Stalux title={props.post.data.title + " | " + stalux.title} description={autoDesc}>
     <div style="height:3em"></div>
     <Navs /><div style="height:3em"></div>
-    <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={stalux.author.name} authorAvatar={stalux.author.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasMermaid={s.hasMermaid} hasKatex={s.hasKatex} hasImage={s.hasImage}>
+    <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={stalux.author.name} authorAvatar={stalux.author.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasMermaid={flags.hasMermaid} hasKatex={flags.hasKatex} hasImage={flags.hasImage}>
         <Content/>
     </PostLayout>
 </Stalux>

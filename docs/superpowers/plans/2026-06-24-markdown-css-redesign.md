@@ -14,13 +14,13 @@
 
 ### 问题一：双重样式冲突
 
-| 元素 | `markdown.css` 的规则 | `postContent.module.css` 的规则 | 冲突表现 |
-|------|----------------------|-------------------------------|----------|
-| h1 | 2.5rem/700, margin-top 2rem | 2rem, border-bottom accent | 打字尺不一致，底部边框丢失 |
-| h2 | 2rem/600, margin-top 2.5rem | 1.6rem, border-bottom accent | 同理 |
-| p | line-height 1.7, mb 1.5rem | margin 1rem 0, line-height 1.8, color white-80p | 行高和边距互相覆盖 |
-| img | max-width 100%, margin 1rem auto | border-radius 8px, shadow-lg, hover scale | 效果叠加但定义零散 |
-| blockquote | border-left accent-60p, bg white-05p | border-left accent-60p, bg black-10p, font-style italic, border-radius 0 8px | 样式差异大 |
+| 元素       | `markdown.css` 的规则                | `postContent.module.css` 的规则                                              | 冲突表现                   |
+| ---------- | ------------------------------------ | ---------------------------------------------------------------------------- | -------------------------- |
+| h1         | 2.5rem/700, margin-top 2rem          | 2rem, border-bottom accent                                                   | 打字尺不一致，底部边框丢失 |
+| h2         | 2rem/600, margin-top 2.5rem          | 1.6rem, border-bottom accent                                                 | 同理                       |
+| p          | line-height 1.7, mb 1.5rem           | margin 1rem 0, line-height 1.8, color white-80p                              | 行高和边距互相覆盖         |
+| img        | max-width 100%, margin 1rem auto     | border-radius 8px, shadow-lg, hover scale                                    | 效果叠加但定义零散         |
+| blockquote | border-left accent-60p, bg white-05p | border-left accent-60p, bg black-10p, font-style italic, border-radius 0 8px | 样式差异大                 |
 
 ### 问题二：缺少字体系统
 
@@ -57,15 +57,15 @@
 
 ### 2. 排版层级
 
-| 层级 | 字号 | 字重 | 行高 | 底部边框 | 顶部外边距 |
-|------|------|------|------|----------|-----------|
-| h1 | 2.4rem | 700 | 1.25 | 3px solid accent-50p | 2.5rem |
-| h2 | 1.8rem | 650 | 1.3 | 2px solid accent-30p | 2.5rem |
-| h3 | 1.4rem | 600 | 1.4 | - | 2rem |
-| h4 | 1.15rem | 600 | 1.45 | - | 1.5rem |
-| h5 | 1rem | 600 | 1.5 | - | 1.5rem |
-| h6 | 0.9rem | 600 | 1.5 | - | 1.5rem |
-| 正文 | 1rem | 400 | 1.75 | - | - |
+| 层级 | 字号    | 字重 | 行高 | 底部边框             | 顶部外边距 |
+| ---- | ------- | ---- | ---- | -------------------- | ---------- |
+| h1   | 2.4rem  | 700  | 1.25 | 3px solid accent-50p | 2.5rem     |
+| h2   | 1.8rem  | 650  | 1.3  | 2px solid accent-30p | 2.5rem     |
+| h3   | 1.4rem  | 600  | 1.4  | -                    | 2rem       |
+| h4   | 1.15rem | 600  | 1.45 | -                    | 1.5rem     |
+| h5   | 1rem    | 600  | 1.5  | -                    | 1.5rem     |
+| h6   | 0.9rem  | 600  | 1.5  | -                    | 1.5rem     |
+| 正文 | 1rem    | 400  | 1.75 | -                    | -          |
 
 ### 3. 颜色系统
 
@@ -103,6 +103,7 @@
 ### Task 1: 添加字体变量到设计系统
 
 **Files:**
+
 - Modify: `src/styles/base/init.css` (在 `:root` 中添加字体变量)
 
 - [ ] **Step 1: 在 `:root` 中添加字体变量**
@@ -111,7 +112,9 @@
 
 ```css
 /* 字体族栈 */
---font-body: "LXGW WenKai", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+--font-body:
+    "LXGW WenKai", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system,
+    sans-serif;
 --font-body-serif: "Noto Serif SC", "Source Han Serif SC", "STSong", Georgia, serif;
 --font-mono: "JetBrains Mono", "Fira Code", "Consolas", "Courier New", monospace;
 ```
@@ -144,6 +147,7 @@ git commit -m "feat: 添加字体系统变量到设计系统"
 ### Task 2: 重写 `markdown.css`——统一正文排版
 
 **Files:**
+
 - Rewrite: `src/styles/components/markdown.css` (完全重写)
 
 - [ ] **Step 1: 完整重写 `markdown.css`**
@@ -168,11 +172,13 @@ git commit -m "feat: 重写 markdown.css，统一正文排版样式"
 ### Task 3: 清理 `postContent.module.css` 中的重复样式
 
 **Files:**
+
 - Modify: `src/styles/components/posts/postContent.module.css` (删除与 markdown.css 重叠的内容样式)
 
 - [ ] **Step 1: 删除 `:global(.articleContent :where(h1, h2, h3, h4, h5, h6))` 块**（第 131~166 行）
 
 保留 `.articleContent` 布局样式（flex、padding、background、border-radius），但删除所有 `:global(.articleContent ...)` 中属于**正文内容排版**的规则，包括：
+
 - 所有 heading 的 `:global()` 规则
 - `:global(.articleContent p)` 规则
 - `:global(.articleContent a)` 规则（链接动画由全局 `a::after` 处理）
@@ -186,6 +192,7 @@ git commit -m "feat: 重写 markdown.css，统一正文排版样式"
 - `:global(.articleContent em)` 规则
 
 **保留**的内容模块专属样式：
+
 - `.articleContent` 布局类（flex 列、背景、内边距、圆角、阴影）
 - `.body` 类（宽度约束 `min(900px, 100%)`、居中）
 - `.articleHeader` 及其子元素（标题、元数据）
@@ -212,19 +219,19 @@ git commit -m "refactor: 清理 postContent.module.css 中与 markdown.css 重�
 ### Task 4: 微调与验证
 
 - [ ] **Step 1: 检查各种 Markdown 元素**
-  - 标题层级 (h1-h6)
-  - 段落与换行
-  - 内联代码和代码块
-  - 表格
-  - 引用块（含多段落）
-  - 列表（含嵌套）
-  - 图片
-  - 链接
-  - 分割线
-  - 脚注
-  - strong/em/del/kbd/mark
-  - details/summary
-  - figure/figcaption
+    - 标题层级 (h1-h6)
+    - 段落与换行
+    - 内联代码和代码块
+    - 表格
+    - 引用块（含多段落）
+    - 列表（含嵌套）
+    - 图片
+    - 链接
+    - 分割线
+    - 脚注
+    - strong/em/del/kbd/mark
+    - details/summary
+    - figure/figcaption
 
 - [ ] **Step 2: 检查响应式行为**（1024px, 768px 断点）
 
@@ -783,6 +790,7 @@ git commit -m "style: 完善 Markdown 正文排版细节"
 ## 自我审查
 
 **1. 需求覆盖度：**
+
 - ✅ 美观的正文排版 —— 完整的字体系统、层级比例、间距系统
 - ✅ 字体适中 —— 中英文字体栈、响应式字号调整
 - ✅ 暗色主题 —— 使用已有 accent 和 white/black 变量

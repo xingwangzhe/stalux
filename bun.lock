@@ -32,6 +32,7 @@
         "mermaid": "^11.16.0",
         "photoswipe": "^5.4.4",
         "simple-icons": "^16.24.0",
+        "word-count": "^0.3.1",
       },
       "devDependencies": {
         "license-checker-rseidelsohn": "5.0.1",
@@ -1468,6 +1469,8 @@
     "which": ["which@6.0.1", "https://registry.npmmirror.com/which/-/which-6.0.1.tgz", { "dependencies": { "isexe": "^4.0.0" }, "bin": { "node-which": "bin/which.js" } }, "sha512-oGLe46MIrCRqX7ytPUf66EAYvdeMIZYn3WaocqqKZAxrBpkqHfL/qvTyJ/bTk5+AqHCjXmrv3CEWgy368zhRUg=="],
 
     "which-pm-runs": ["which-pm-runs@1.1.0", "https://registry.npmmirror.com/which-pm-runs/-/which-pm-runs-1.1.0.tgz", {}, "sha512-n1brCuqClxfFfq/Rb0ICg9giSZqCS+pLtccdag6C2HyufBrh3fBOiy9nb6ggRMvWOVH5GrdJskj5iGTZNxd7SA=="],
+
+    "word-count": ["word-count@0.3.1", "", {}, "sha512-tTDKyKX1yy8FZWUw64TOgnMeLeXPZBA+ZunaCCpFRrGFeLSwSdEgSsFI/5DIJkiUfM7CkCREFPkZd9U4eLXgqA=="],
 
     "wrap-ansi": ["wrap-ansi@7.0.0", "https://registry.npmmirror.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz", { "dependencies": { "ansi-styles": "^4.0.0", "string-width": "^4.1.0", "strip-ansi": "^6.0.0" } }, "sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q=="],
 
