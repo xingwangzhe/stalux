@@ -1,11 +1,10 @@
 ---
 import { Icon } from "@lucide/astro";
 import { icons } from "lucide";
-import PagefindConfig from "astro-pagefind/components/PagefindConfig.astro";
 import "@styles/components/search.css";
 ---
 
-<div id="search-container" class="search-container" data-pf-theme="dark" inert>
+<div id="search-container" class="search-container" inert>
     <div class="search-backdrop"></div>
     <div class="search-box">
         <div class="search-header">
@@ -18,46 +17,215 @@ import "@styles/components/search.css";
                 <Icon iconNode={icons.X} size={24} />
             </button>
         </div>
-        <PagefindConfig instance="search" lang="zh-cn" />
         <div class="search-input-area">
-            <pagefind-input
-                instance="search"
+            <input
+                id="search-input"
+                class="search-input"
+                type="text"
                 placeholder="输入关键词搜索..."
-            ></pagefind-input>
+                autocomplete="off"
+                aria-label="搜索输入"
+            />
         </div>
-        <div class="search-results">
-            <pagefind-results
-                instance="search"
-                show-sub-results
-                max-sub-results="3"
-            ></pagefind-results>
+        <div id="search-results" class="search-results">
+            <div id="search-results-list" class="search-results-list"></div>
+            <div id="search-empty" class="search-empty" style="display:none">
+                未找到相关结果
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+    import { create, load, search } from "@orama/orama";
+    import { createTokenizer } from "@orama/tokenizers/mandarin";
+    import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
+    import { Highlight, highlightStrategy } from "@orama/highlight";
+
+    const SCHEMA = {
+        id: "string",
+        type: "string",
+        title: "string",
+        description: "string",
+        content: "string",
+        url: "string",
+        date: "string",
+        tags: "string[]",
+    } as const;
+
+    type SearchDoc = {
+        id: string;
+        type: string;
+        title: string;
+        description: string;
+        content: string;
+        url: string;
+        date: string;
+        tags: string[];
+    };
+
+    let db: Awaited<ReturnType<typeof create<typeof SCHEMA>>> | null = null;
+    let indexLoading = false;
+
+    async function initOrama() {
+        if (db) return db;
+        if (indexLoading) {
+            while (!db) await new Promise((r) => setTimeout(r, 50));
+            return db;
+        }
+        indexLoading = true;
+        try {
+            const response = await fetch("/search-index.json");
+            if (!response.ok) throw new Error("Failed to load search index");
+            const data = await response.json();
+            const instance = await create({
+                schema: SCHEMA,
+                components: {
+                    tokenizer: createTokenizer({
+                        stopWords: mandarinStopwords,
+                    }),
+                },
+            });
+            await load(instance, data);
+            db = instance;
+            return db;
+        } finally {
+            indexLoading = false;
+        }
+    }
+
+    function formatResultMeta(type: string, date: string) {
+        if (type === "post" && date) return `文章 · ${date}`;
+        if (type === "post") return "文章";
+        if (type === "about") return "关于";
+        if (type === "word") return "一言";
+        return "";
+    }
+
+    function renderResults(
+        hits: Array<{ document: SearchDoc; score: number }>,
+        query: string,
+    ) {
+        const list = document.getElementById("search-results-list");
+        const empty = document.getElementById("search-empty");
+        if (!list || !empty) return;
+
+        list.innerHTML = "";
+
+        if (hits.length === 0) {
+            empty.style.display = "block";
+            return;
+        }
+        empty.style.display = "none";
+
+        const highlighter = new Highlight({
+            HTMLTag: "mark",
+            strategy: highlightStrategy.PARTIAL_MATCH,
+        });
+
+        for (const hit of hits) {
+            const doc = hit.document;
+
+            const tHL = new Highlight({
+                HTMLTag: "mark",
+                strategy: highlightStrategy.PARTIAL_MATCH,
+            });
+            const titleHTML = tHL.highlight(doc.title, query).HTML;
+
+            const text = [doc.description, doc.content]
+                .filter(Boolean)
+                .join(" ")
+                .replace(/\n/g, " ");
+            const dHL = new Highlight({
+                HTMLTag: "mark",
+                strategy: highlightStrategy.PARTIAL_MATCH,
+            });
+            dHL.highlight(text, query);
+            const snippetHTML = dHL.positions.length > 0
+                ? dHL.trim(200)
+                : dHL.HTML.substring(0, 200);
+
+            const item = document.createElement("a");
+            item.className = "search-result-item";
+            item.href = doc.url;
+            item.setAttribute("data-result-link", "true");
+
+            const title = document.createElement("div");
+            title.className = "search-result-title";
+            title.innerHTML = titleHTML;
+
+            const meta = document.createElement("div");
+            meta.className = "search-result-meta";
+            meta.textContent = formatResultMeta(doc.type, doc.date);
+
+            const desc = document.createElement("div");
+            desc.className = "search-result-desc";
+            desc.innerHTML = snippetHTML;
+
+            item.appendChild(title);
+            item.appendChild(meta);
+            item.appendChild(desc);
+            list.appendChild(item);
+        }
+    }
+
+    function clearResults() {
+        const list = document.getElementById("search-results-list");
+        const empty = document.getElementById("search-empty");
+        if (list) list.innerHTML = "";
+        if (empty) empty.style.display = "none";
+    }
+
+    let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    async function performSearch(query: string) {
+        const term = query.trim();
+        if (!term) {
+            clearResults();
+            return;
+        }
+
+        const instance = await initOrama();
+        const results = await search(instance, {
+            term,
+            limit: 20,
+            threshold: 0,
+            properties: ["title", "description", "content", "tags"],
+            boost: {
+                title: 2,
+                tags: 1.5,
+                description: 1.2,
+                content: 1,
+            },
+        });
+
+        renderResults(
+            results.hits as Array<{ document: SearchDoc; score: number }>,
+            term,
+        );
+    }
+
     document.addEventListener("astro:page-load", () => {
         const container = document.getElementById("search-container");
         const closeBtn = document.getElementById("search-close");
         const backdrop = document.querySelector(".search-backdrop");
+        const input = document.getElementById("search-input") as HTMLInputElement | null;
 
         const closeSearch = () => {
             container?.classList.remove("active");
             container?.setAttribute("inert", "");
+            if (input) input.value = "";
+            clearResults();
         };
 
         document.addEventListener("openSearch", () => {
             container?.removeAttribute("inert");
             container?.classList.add("active");
-            // 延迟聚焦，避免移动端侧边栏点击时立即弹出键盘
-            // 只在桌面端主动聚焦；移动端用户手动点击输入框时再聚焦
             const isMobile = window.matchMedia("(max-width: 768px)").matches;
-            if (!isMobile) {
-                const input = container?.querySelector(
-                    "pagefind-input",
-                ) as HTMLElement & { focus?: () => void };
-                setTimeout(() => input?.focus?.(), 150);
+            if (!isMobile && input) {
+                setTimeout(() => input.focus(), 150);
             }
+            initOrama().catch(() => {});
         });
 
         closeBtn?.addEventListener("click", closeSearch);
@@ -74,9 +242,23 @@ import "@styles/components/search.css";
 
         container?.addEventListener("click", (e) => {
             const target = e.target as HTMLElement;
-            if (target.closest("pagefind-results a[href]")) {
+            if (target.closest('[data-result-link="true"]')) {
                 setTimeout(() => closeSearch(), 100);
             }
+        });
+
+        input?.addEventListener("input", (e) => {
+            const value = (e.target as HTMLInputElement).value;
+            if (searchTimeout) clearTimeout(searchTimeout);
+            if (!value.trim()) {
+                clearResults();
+                return;
+            }
+            searchTimeout = setTimeout(() => {
+                performSearch(value).catch((err) => {
+                    console.error("Search error:", err);
+                });
+            }, 150);
         });
     });
 </script>

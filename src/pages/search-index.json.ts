@@ -1,0 +1,92 @@
+import { create, insertMultiple, save } from "@orama/orama";
+import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
+import { createTokenizer } from "@orama/tokenizers/mandarin";
+import { getCollection } from "astro:content";
+import removeMarkdown from "remove-markdown";
+
+const schema = {
+    id: "string",
+    type: "string",
+    title: "string",
+    description: "string",
+    content: "string",
+    url: "string",
+    date: "string",
+    tags: "string[]",
+} as const;
+
+export async function GET() {
+    const [posts, aboutPages, wordEntries] = await Promise.all([
+        getCollection("posts", ({ data }) => !data.draft),
+        getCollection("about"),
+        getCollection("words", ({ data }) => !data.draft),
+    ]);
+
+    const documents: Array<{
+        id: string;
+        type: string;
+        title: string;
+        description: string;
+        content: string;
+        url: string;
+        date: string;
+        tags: string[];
+    }> = [];
+
+    for (const post of posts) {
+        const body = typeof post.body === "string" ? post.body : "";
+        documents.push({
+            id: `post-${post.data.abbrlink}`,
+            type: "post",
+            title: post.data.title,
+            description: post.data.desc,
+            content: removeMarkdown(body),
+            url: `/posts/${post.data.abbrlink}/`,
+            date: post.data.date ?? "",
+            tags: post.data.tags ?? [],
+        });
+    }
+
+    for (const about of aboutPages) {
+        documents.push({
+            id: `about-${about.id}`,
+            type: "about",
+            title: about.data.title,
+            description: about.data.description,
+            content: about.data.description,
+            url: "/about/",
+            date: "",
+            tags: [],
+        });
+    }
+
+    for (const word of wordEntries) {
+        documents.push({
+            id: `word-${word.id}`,
+            type: "word",
+            title: word.data.source ?? "一言",
+            description: "",
+            content: "",
+            url: word.data.link ?? "/words/",
+            date: word.data.date ?? "",
+            tags: [],
+        });
+    }
+
+    const db = await create({
+        schema,
+        components: {
+            tokenizer: createTokenizer({
+                stopWords: mandarinStopwords,
+            }),
+        },
+    });
+    await insertMultiple(db, documents);
+    const index = await save(db);
+
+    return new Response(JSON.stringify(index), {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+}
