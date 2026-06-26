@@ -219,13 +219,13 @@ ul {
     --font-body-serif: "Noto Serif CJK SC", "Source Han Serif SC", "STSong", Georgia, serif;
 
     /* 字体大小系统 */
-    --font-size-title: 2.5rem;
-    --font-size-h2: 1.8rem;
-    --font-size-subtitle: 1.2rem;
-    --font-size-base: 1rem;
-    --font-size-small: 0.9rem;
-    --font-size-smaller: 0.85rem;
-    --font-size-tiny: 0.8rem;
+    --font-size-title: 2.8rem;
+    --font-size-h2: 2.0rem;
+    --font-size-subtitle: 1.35rem;
+    --font-size-base: 1.1rem;
+    --font-size-small: 0.95rem;
+    --font-size-smaller: 0.9rem;
+    --font-size-tiny: 0.85rem;
 
     /* 边框宽度 */
     --border-thin: 1px;
