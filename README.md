@@ -261,7 +261,7 @@ stalux:
             pageSize: 10
 ```
 
-功能生态方面，主题内置 Waline 评论适配、Feather 与 Simple Icons 图标、PhotoSwipe 图片灯箱、Pagefind 全文搜索和徽章生成器等实用能力。开发者体验上，Stalux 使用 TypeScript + CSS Modules，推荐使用 Bun 来获得更快的安装与构建速度，但同样兼容 npm / pnpm / yarn。
+功能生态方面，主题内置 Waline 评论适配、Feather 与 Simple Icons 图标、PhotoSwipe 图片灯箱、Orama 全文搜索和徽章生成器等实用能力。开发者体验上，Stalux 使用 TypeScript + CSS Modules，推荐使用 Bun 来获得更快的安装与构建速度，但同样兼容 npm / pnpm / yarn。
 
 快速开始示例：
 
