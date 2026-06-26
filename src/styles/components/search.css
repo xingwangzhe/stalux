@@ -61,6 +61,7 @@ mark,
     position: relative;
     width: 90%;
     max-width: 600px;
+    box-sizing: border-box;
     max-height: calc(100dvh - min(15vh, 120px) - 40px);
     background-color: var(--black-20p, rgba(0, 0, 0, 0.2));
     border: 1px solid var(--white-10p);
@@ -121,6 +122,7 @@ mark,
     width: 100%;
     height: 44px;
     padding: 0 var(--space-md);
+    box-sizing: border-box;
     background: transparent;
     border: 1px solid var(--white-10p);
     border-radius: var(--radius-md);
