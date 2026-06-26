@@ -3,7 +3,6 @@ import sitemap from "@astrojs/sitemap";
 import { katex } from "@nullpinter/satteri-katex";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
-import pagefind from "astro-pagefind";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 
@@ -32,7 +31,6 @@ export default defineConfig({
         },
     ],
     integrations: [
-        pagefind(),
         sitemap({
             filter: (page) => {
                 return (
