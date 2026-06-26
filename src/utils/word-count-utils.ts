@@ -1,23 +1,29 @@
 /**
  * 站点字数统计工具
+ * 现在字数统计由 Sätteri 插件在构建时完成，不再需要预解析
  */
 import { getCollection } from "astro:content";
-
-import { computePostStats } from "./compute-post-stats";
 
 // 模块级缓存：整个构建周期只计算一次
 let _cachedTotal: number | null = null;
 
 /**
  * 获取所有文章的总字数
- * 通过 computePostStats 从原始 body 计算（替代旧 remark 插件注入）
+ * 从 remarkPluginFrontmatter.wordCount 读取（由 satteri 插件注入）
  */
 export async function getTotalWordCount(): Promise<number> {
     if (_cachedTotal !== null) return _cachedTotal;
     try {
         const posts = await getCollection("posts", ({ data }) => !data.draft);
         const results = await Promise.all(
-            posts.map(async (post) => computePostStats(post.body || "").wordCount),
+            posts.map(async (post) => {
+                // 尝试从已渲染的 metadata 读取字数
+                const rendered = (post as any).rendered;
+                if (rendered?.metadata?.frontmatter?.wordCount != null) {
+                    return rendered.metadata.frontmatter.wordCount;
+                }
+                return 0;
+            }),
         );
         _cachedTotal = results.reduce((sum, w) => sum + w, 0);
         return _cachedTotal;
@@ -39,11 +45,12 @@ export async function getPostDescriptions(): Promise<
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const results = await Promise.all(
         posts.map(async (post) => {
-            const stats = computePostStats(post.body || "");
+            const rendered = (post as any).rendered;
+            const fm = rendered?.metadata?.frontmatter;
             return {
                 id: String(post.data.abbrlink ?? post.id),
-                desc: stats.desc || post.data.desc || "",
-                wordCount: stats.wordCount,
+                desc: fm?.desc || post.data.desc || "",
+                wordCount: fm?.wordCount ?? 0,
             };
         }),
     );

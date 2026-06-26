@@ -1,6 +1,5 @@
 ---
 import style from "@styles/components/posts/postCard.module.css";
-import { computePostStats } from "@utils/compute-post-stats";
 import { toMachineDateTime } from "@utils/semantic-time";
 import { getCollection } from "astro:content";
 
@@ -14,9 +13,8 @@ const post = Astro.props.post;
 const stalux = (await getCollection("config"))[0]?.data;
 const timezone = stalux?.timezone;
 
-const stats = computePostStats(post.body || "");
-// 描述：优先使用 remark 插件生成的描述（前125字符），如果没有则使用文章自身的 desc
-const description = stats.desc || post.data.desc || "";
+// 描述：优先使用文章自身的 desc，如果没有则使用 frontmatter 中的描述
+const description = post.data.desc || "";
 ---
 
 <a href={`/posts/${post.data.abbrlink}`} class={style.post + " a-none"}>
