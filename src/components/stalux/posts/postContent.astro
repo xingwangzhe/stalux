@@ -12,7 +12,6 @@ interface Props {
     readingTime?: string;
     wordCount?: number;
     hasImage?: boolean;
-    cover?: string;
 }
 
 const props = Astro.props as Props;
@@ -26,13 +25,6 @@ const timezone = stalux?.timezone;
     transition:animate={fade({ duration: "1.2s" })}>
     <!-- Article Header -->
     <header class={style.articleHeader}>
-        {
-            props.cover && (
-                <div class={style.articleCover}>
-                    <img src={props.cover} alt={props.title} loading="eager" />
-                </div>
-            )
-        }
         <h1 class={style.title}>{props.title}</h1>
         <div class={style.metadata}>
             {
