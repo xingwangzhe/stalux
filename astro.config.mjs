@@ -29,6 +29,25 @@ export default defineConfig({
                 ],
             },
         },
+        {
+            provider: fontProviders.local(),
+            name: "Google Sans Code",
+            cssVariable: "--font-code",
+            options: {
+                variants: [
+                    {
+                        weight: "100 900",
+                        style: "normal",
+                        src: ["./src/assets/fonts/GoogleSansCode.woff2"],
+                    },
+                    {
+                        weight: "100 900",
+                        style: "italic",
+                        src: ["./src/assets/fonts/GoogleSansCode-Italic.woff2"],
+                    },
+                ],
+            },
+        },
     ],
     integrations: [
         sitemap({
@@ -50,6 +69,8 @@ export default defineConfig({
             themes: ["dark-plus", "github-light"],
             styleOverrides: {
                 borderRadius: "0.5rem",
+                codeFontFamily:
+                    'var(--font-code), "JetBrains Mono", "Fira Code", "Consolas", "Courier New", monospace',
                 frames: {
                     shadowColor: "#124",
                 },

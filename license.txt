@@ -1,21 +1,25 @@
+=== THIRD-PARTY RESOURCES (NOT NPM DEPENDENCIES) ===
+OFL-1.1 Google Sans Code Font — https://fonts.google.com/specimen/Google+Sans+Code
+  Copyright: Google LLC. Licensed under SIL Open Font License 1.1
+OFL-1.1 LXGW WenKai Font — https://github.com/lxgw/LxgwWenKai
+  Copyright: LXGW & contributors. Licensed under SIL Open Font License 1.1
+
 === POSSIBLY NOT COMPATIBLE WITH MIT (REVIEW REQUIRED) ===
 BLUEOAK-1.0.0 common-ancestor-path
 BLUEOAK-1.0.0 lru-cache
 BLUEOAK-1.0.0 sax
-LGPL-3.0-OR-LATER @img/sharp-libvips-linux-x64
-LGPL-3.0-OR-LATER @img/sharp-libvips-linuxmusl-x64
-MIT* color-convert
-MIT* khroma
-MIT* satteri
-MIT* stalux
-UNKNOWN @bruits/satteri-linux-x64-gnu
-UNLICENSE robust-predicates
 
 === LIKELY MIT-COMPATIBLE (PERMISSIVE) ===
+(MIT OR APACHE-2.0) badge-maker
 (MPL-2.0 OR APACHE-2.0) dompurify
+0BSD tslib
 APACHE-2.0 @chevrotain/types
 APACHE-2.0 @img/sharp-linux-x64
 APACHE-2.0 @img/sharp-linuxmusl-x64
+APACHE-2.0 @orama/highlight
+APACHE-2.0 @orama/orama
+APACHE-2.0 @orama/stopwords
+APACHE-2.0 @orama/tokenizers
 APACHE-2.0 aria-query
 APACHE-2.0 axobject-query
 APACHE-2.0 detect-libc
@@ -40,7 +44,6 @@ BSD-3-CLAUSE fast-uri
 BSD-3-CLAUSE rw
 BSD-3-CLAUSE smol-toml
 BSD-3-CLAUSE source-map-js
-CC0-1.0 badge-maker
 CC0-1.0 binary-search
 CC0-1.0 mdn-data
 CC0-1.0 simple-icons
@@ -112,6 +115,8 @@ MIT @babel/helper-validator-identifier
 MIT @babel/parser
 MIT @babel/types
 MIT @braintree/sanitize-url
+MIT @bruits/satteri-linux-x64-gnu
+MIT @bruits/satteri-linux-x64-musl
 MIT @capsizecss/unpack
 MIT @clack/core
 MIT @clack/prompts
@@ -122,6 +127,9 @@ MIT @emmetio/css-parser
 MIT @emmetio/scanner
 MIT @emmetio/stream-reader
 MIT @emmetio/stream-reader-utils
+MIT @emnapi/core
+MIT @emnapi/runtime
+MIT @emnapi/wasi-threads
 MIT @esbuild/linux-x64
 MIT @expressive-code/core
 MIT @expressive-code/plugin-frames
@@ -131,19 +139,18 @@ MIT @expressive-code/plugin-text-markers
 MIT @iconify/types
 MIT @iconify/utils
 MIT @img/colour
+MIT @img/sharp-libvips-linux-x64
+MIT @img/sharp-libvips-linuxmusl-x64
 MIT @jridgewell/sourcemap-codec
 MIT @mermaid-js/parser
+MIT @napi-rs/wasm-runtime
+MIT @nodable/entities
 MIT @oslojs/encoding
 MIT @oxc-project/types
-MIT @pagefind/component-ui
-MIT @pagefind/linux-x64
-MIT @polka/url
 MIT @rolldown/binding-linux-x64-gnu
 MIT @rolldown/binding-linux-x64-musl
 MIT @rolldown/pluginutils
 MIT @rollup/pluginutils
-MIT @rollup/rollup-linux-x64-gnu
-MIT @rollup/rollup-linux-x64-musl
 MIT @shikijs/core
 MIT @shikijs/engine-javascript
 MIT @shikijs/engine-oniguruma
@@ -152,6 +159,7 @@ MIT @shikijs/primitive
 MIT @shikijs/themes
 MIT @shikijs/types
 MIT @shikijs/vscode-textmate
+MIT @tybys/wasm-util
 MIT @types/d3
 MIT @types/d3-array
 MIT @types/d3-axis
@@ -219,9 +227,9 @@ MIT @vueuse/metadata
 MIT @vueuse/shared
 MIT @waline/api
 MIT @waline/client
+MIT @xingwangzhe/satteri-mermaid
+MIT @xingwangzhe/satteri-photoswipe
 MIT @xingwangzhe/tags-cloud
-MIT acorn
-MIT adequate-little-templates
 MIT ajv
 MIT ajv-draft-04
 MIT am-i-vibing
@@ -229,16 +237,15 @@ MIT anafanafo
 MIT animejs
 MIT ansi-regex
 MIT ansi-styles
+MIT anynum
 MIT arg
 MIT array-iterate
 MIT astro
 MIT astro-expressive-code
-MIT astro-pagefind
 MIT astro-seo
 MIT astro-typewriter
 MIT autosize
 MIT bail
-MIT bcp-47
 MIT bcp-47-match
 MIT ccount
 MIT char-width-table-consumer
@@ -252,7 +259,6 @@ MIT color-convert
 MIT color-name
 MIT comma-separated-tokens
 MIT commander
-MIT confbox
 MIT cookie
 MIT cookie-es
 MIT cose-base
@@ -293,6 +299,9 @@ MIT eventemitter3
 MIT expressive-code
 MIT extend
 MIT fast-deep-equal
+MIT fast-string-truncated-width
+MIT fast-string-width
+MIT fast-wrap-ansi
 MIT fast-xml-builder
 MIT fast-xml-parser
 MIT fdir
@@ -318,22 +327,21 @@ MIT hastscript
 MIT html-escaper
 MIT html-void-elements
 MIT iconv-lite
+MIT import-meta-resolve
 MIT iron-webcrypto
-MIT is-alphabetical
-MIT is-alphanumerical
-MIT is-decimal
 MIT is-docker
 MIT is-fullwidth-code-point
 MIT is-inside-container
 MIT is-plain-obj
+MIT is-unsafe
 MIT is-wsl
 MIT js-yaml
 MIT json-schema-traverse
 MIT jsonc-parser
 MIT katex
+MIT khroma
 MIT kleur
 MIT layout-base
-MIT lodash
 MIT lodash-es
 MIT longest-streak
 MIT magic-string
@@ -383,7 +391,6 @@ MIT micromark-util-sanitize-uri
 MIT micromark-util-subtokenize
 MIT micromark-util-symbol
 MIT micromark-util-types
-MIT mlly
 MIT mrmime
 MIT ms
 MIT muggle-string
@@ -402,16 +409,13 @@ MIT p-limit
 MIT p-queue
 MIT p-timeout
 MIT package-manager-detector
-MIT pagefind
 MIT parse-latin
 MIT parse5
 MIT path-browserify
 MIT path-data-parser
 MIT path-expression-matcher
-MIT pathe
 MIT photoswipe
 MIT picomatch
-MIT pkg-types
 MIT points-on-curve
 MIT points-on-path
 MIT postcss
@@ -436,6 +440,7 @@ MIT remark-parse
 MIT remark-rehype
 MIT remark-smartypants
 MIT remark-stringify
+MIT remove-markdown
 MIT request-light
 MIT require-directory
 MIT require-from-string
@@ -444,15 +449,16 @@ MIT retext
 MIT retext-latin
 MIT retext-smartypants
 MIT retext-stringify
+MIT robust-predicates
 MIT rolldown
-MIT rollup
 MIT roughjs
 MIT safer-buffer
+MIT satteri
 MIT shiki
-MIT sirv
 MIT sisteransi
 MIT sitemap
 MIT space-separated-tokens
+MIT stalux
 MIT stream-replace-string
 MIT string-width
 MIT stringify-entities
@@ -464,7 +470,6 @@ MIT tiny-inflate
 MIT tinyclip
 MIT tinyexec
 MIT tinyglobby
-MIT totalist
 MIT trim-lines
 MIT trough
 MIT ts-dedent
@@ -486,6 +491,7 @@ MIT unist-util-visit
 MIT unist-util-visit-children
 MIT unist-util-visit-parents
 MIT unstorage
+MIT url-extras
 MIT util-deprecate
 MIT uuid
 MIT vfile
@@ -513,7 +519,9 @@ MIT vscode-uri
 MIT vue
 MIT web-namespaces
 MIT which-pm-runs
+MIT word-count
 MIT wrap-ansi
+MIT xml-naming
 MIT xxhash-wasm
 MIT yaml-language-server
 MIT yargs
