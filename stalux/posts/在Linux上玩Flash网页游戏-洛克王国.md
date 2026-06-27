@@ -8,6 +8,7 @@ tags:
     - linux
     - flash
     - 游戏
+cover: /qq/洛克王国回忆.webp
 ---
 
 ## 前言

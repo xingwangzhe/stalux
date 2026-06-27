@@ -10,6 +10,7 @@ tags:
     - Tauri
     - ts
     - 问题
+cover: https://i.ibb.co/VYQpyK44/2025-09-03-11-21-51.png
 ---
 
 ## 前言

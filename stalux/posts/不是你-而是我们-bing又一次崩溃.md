@@ -9,6 +9,7 @@ categories:
 tags:
     - 记录
     - 胡思乱想
+cover: https://i.ibb.co/3YV0QFdC/Image-To-Stl-com-2025-03-13-102616.webp
 ---
 
 ![不是你而是我们bing又一次崩溃](https://i.ibb.co/3YV0QFdC/Image-To-Stl-com-2025-03-13-102616.webp)

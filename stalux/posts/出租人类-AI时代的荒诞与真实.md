@@ -9,6 +9,7 @@ tags:
     - AI
     - 思考
     - 社会
+cover: /airenthuman/截图-2026-02-04-16-09-02.webp
 ---
 
 > "robots need your body" —— 这不是科幻小说的开头，而是 [rentahuman.ai](https://rentahuman.ai/) 的首页标语。

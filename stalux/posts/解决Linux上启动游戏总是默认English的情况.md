@@ -12,6 +12,7 @@ tags:
     - 英文
     - 问题解决
     - 技术分享
+cover: https://i.ibb.co/fY4yfpRw/2025-09-27-20-31-16.webp
 ---
 
 ## 前言

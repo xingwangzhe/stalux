@@ -10,6 +10,7 @@ tags:
     - hexo
     - 教程
     - 记录
+cover: https://tool.lu/ip/
 ---
 
 显示如下

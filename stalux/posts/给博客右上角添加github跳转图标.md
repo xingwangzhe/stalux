@@ -11,6 +11,7 @@ tags:
     - 教程
     - 记录
     - github
+cover: https://i.ibb.co/vCd5pVsY/xingwangzhe.png
 ---
 
 ## 效果图

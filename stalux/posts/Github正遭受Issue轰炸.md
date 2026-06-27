@@ -5,6 +5,7 @@ desc: "本文记录时间：2026年03月29日 19:29:00（北京时间）"
 tags: [GitHub, 安全, 资讯]
 categories: 资讯
 abbrlink: github-issue-spam-bombing-20260329
+cover: /github/github-spam-comment.webp
 ---
 
 **本文记录时间：`2026年03月29日 19:29:00`（北京时间）**

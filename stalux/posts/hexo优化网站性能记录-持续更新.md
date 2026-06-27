@@ -12,6 +12,7 @@ tags:
     - CSS
     - js
     - "404"
+cover: https://i.ibb.co/sQqSRzh/2024-10-15-135544.png
 ---
 
 ![2024-10-15-135544](https://i.ibb.co/sQqSRzh/2024-10-15-135544.png)

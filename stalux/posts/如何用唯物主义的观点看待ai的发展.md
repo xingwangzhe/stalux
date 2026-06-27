@@ -9,6 +9,7 @@ categories:
 tags:
     - 记录
     - 胡思乱想
+cover: https://i.ibb.co/ZpL8vgw4/1a1f4432806f8b2b8daac1a982788ec9.webp
 ---
 
 :::ai

@@ -10,6 +10,7 @@ tags:
     - 记录
     - 教程
     - hexo
+cover: https://i.ibb.co/01tCX97/1.png
 ---
 
 [Hexo-all-minifier](https://github.com/chenzhutian/hexo-all-minifier)压缩资源，优化访问

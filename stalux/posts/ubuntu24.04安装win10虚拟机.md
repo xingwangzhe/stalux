@@ -5,6 +5,7 @@ desc: 我看网上太多教程都是win安装ubuntu虚拟机的了，所以这�
 tags: ["Ubuntu", "Win10", "QEMU", "KVM"]
 categories: ["虚拟机"]
 abbrlink: "ubuntu-24.04-install-win10-vm"
+cover: /vm/vmwin10.webp
 ---
 
 我看网上太多教程都是win安装ubuntu虚拟机的了，所以这次来写一下如何在ubuntu上安装win10虚拟机。

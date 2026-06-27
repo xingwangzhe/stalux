@@ -8,6 +8,7 @@ tags:
     - 指南
     - 新人
 abbrlink: zero-se-newcomer-guide
+cover: https://metrics.lecoq.io/xingwangzhe
 ---
 
 > 本文核心观点、结构与内容由本人撰写，AI 仅参与排版修饰与润色。目的就是强调人的主观能动性与 AI 指挥协作。

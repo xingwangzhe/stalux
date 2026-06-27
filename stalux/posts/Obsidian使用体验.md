@@ -11,6 +11,7 @@ tags:
     - CSS
     - 通知
     - obsidian
+cover: https://i.ibb.co/4Rp9FvWn/2025-10-02-18-40-46.webp
 ---
 
 [Obsidan](https://obsidian.md/)官网

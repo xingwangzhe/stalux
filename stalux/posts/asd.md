@@ -12,6 +12,7 @@ tags:
     - java
     - 记录
     - 教程
+cover: https://leetcode.cn/favicon.ico
 ---
 
 _两数相加_

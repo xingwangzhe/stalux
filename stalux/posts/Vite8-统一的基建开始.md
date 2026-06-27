@@ -5,6 +5,7 @@ desc: 在 Astro 6 发布不久后，Vite 8 正式推出，标志着 Vite 终于�
 tags: ["vite", "voidzero", "serverless"]
 categories: vite
 abbrlink: vite-voidzero-features
+cover: https://vite.dev/og-image-announcing-vite8.webp
 ---
 
 **前言**

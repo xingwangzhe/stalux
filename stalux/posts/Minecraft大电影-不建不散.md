@@ -10,6 +10,7 @@ tags:
     - 记录
     - 游戏
     - 胡思乱想
+cover: https://i.ibb.co/DgT8dhg4/2c98-97f5c74948c38f73bf2f580ae7ada10b.webp
 ---
 
 ## 宣传

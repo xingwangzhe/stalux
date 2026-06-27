@@ -11,6 +11,7 @@ tags:
     - Windows
     - 磁盘问题
     - 教程
+cover: https://i.ibb.co/3YTnJ9Kj/2025-06-14-19-46-27.webp
 ---
 
 ## 问题描述

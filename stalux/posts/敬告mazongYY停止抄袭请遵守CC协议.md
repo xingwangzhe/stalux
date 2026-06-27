@@ -8,6 +8,7 @@ tags:
     - CC协议
     - 抄袭
 categories: 记录
+cover: /warning-mazongyy/github-issue-3770.webp
 ---
 
 > 像素级搬运不可怕，可怕的是搬完了还当成自己的原创去申请加入博客聚合——你是觉得中文独立博客圈子里没人看得出来吗？

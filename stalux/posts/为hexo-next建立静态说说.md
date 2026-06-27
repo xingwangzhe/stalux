@@ -10,6 +10,7 @@ tags:
     - 记录
     - 教程
     - hexo
+cover: https://i.ibb.co/1tsjzQCK/123.png
 ---
 
 曾经考虑使用Artitalk,但由于网络原因以及github无法备案等原因，暂时放弃，转而使用静态方法写说说

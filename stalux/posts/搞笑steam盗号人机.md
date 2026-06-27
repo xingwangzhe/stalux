@@ -12,6 +12,7 @@ tags:
     - 神人
     - 网站
     - 问题
+cover: https://i.ibb.co/4wfbXXY8/2025-03-01-205448.png
 ---
 
 ##

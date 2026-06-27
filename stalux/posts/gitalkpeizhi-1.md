@@ -11,6 +11,7 @@ tags:
     - hexo
     - gitalk
     - 教程
+cover: https://i.ibb.co/NDpYcPs/gitalk.png
 ---
 
 ## <div style="text-align: center;">如何在hexo-next配置gitalk评论</div>

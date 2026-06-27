@@ -11,6 +11,7 @@ tags:
     - 记录
     - 教程
     - github
+cover: https://git-scm.com/images/logos/downloads/Git-Logo-1788C.svg
 ---
 
 ![Git Logo](https://git-scm.com/images/logos/downloads/Git-Logo-1788C.svg)

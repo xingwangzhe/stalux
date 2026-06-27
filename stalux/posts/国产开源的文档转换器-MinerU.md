@@ -9,6 +9,7 @@ categories:
 tags:
     - 记录
     - github
+cover: https://i.ibb.co/5WGYFBS3/2025-03-27-192249.png
 ---
 
 ## 简介

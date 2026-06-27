@@ -10,6 +10,7 @@ tags:
     - 自荐
 categories:
     - astro
+cover: /stalux主题展示.webp
 ---
 
 历经多次打磨和稍微的优化,终于完成了[Stalux](https://github.com/xingwangzhe/stalux)这一个astro主题,也就是当前[xingwangzhe.fun](https://xingwangzhe.fun)所使用的主题.

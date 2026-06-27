@@ -10,6 +10,7 @@ tags:
     - 记录
     - 教程
     - 胡思乱想
+cover: https://i.ibb.co/tpLhmm9p/2025-06-10-14-06-04.webp
 ---
 
 :::tip

@@ -9,6 +9,7 @@ tags:
     - 前端
     - 部署
     - 记录
+cover: /cf-pages-custom-deps/1查看默认构建系统镜像有什么环境.webp
 ---
 
 折腾 **Cloudflare Pages** 的时候，我一度以为它只能跑默认的 `npm install`，但事实并非如此——Cloudflare Pages 的构建系统其实**相当灵活**。

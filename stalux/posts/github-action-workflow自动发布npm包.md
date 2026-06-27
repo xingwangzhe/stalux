@@ -10,6 +10,7 @@ tags:
     - 学习
     - 记录
     - 教程
+cover: https://i.ibb.co/zf5kWKG/2025-01-06-195821.png
 ---
 
 本文介绍

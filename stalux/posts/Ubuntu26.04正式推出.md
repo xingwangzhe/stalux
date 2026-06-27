@@ -8,6 +8,7 @@ tags:
     - Ubuntu
 categories:
     - Linux
+cover: https://res.cloudinary.com/canonical/image/fetch/f_auto,q_auto,fl_sanitize,c_fill,w_1920/https%3A%2F%2Fubuntu.com%2Fwp-content%2Fuploads%2F1c6c%2FUbuntu-26.04-LTS-Apps.png
 ---
 
 ![ubuntu26.04](https://res.cloudinary.com/canonical/image/fetch/f_auto,q_auto,fl_sanitize,c_fill,w_1920/https%3A%2F%2Fubuntu.com%2Fwp-content%2Fuploads%2F1c6c%2FUbuntu-26.04-LTS-Apps.png)

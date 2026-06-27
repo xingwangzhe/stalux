@@ -5,6 +5,7 @@ categories: "自由软件"
 abbrlink: gpl-2-3-thing
 date: "2026-03-22 10:10:34"
 desc: 最近为了解决一些问题，我去查阅 GitHub 文档，发现了GitHub GPL 合作承诺这个页面
+cover: /github/GitHub-GPL-合作承诺.webp
 ---
 
 ## 前言

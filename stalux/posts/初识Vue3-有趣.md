@@ -14,6 +14,7 @@ tags:
     - Typescript
     - 记录
     - 教程
+cover: https://cn.vuejs.org/logo.svg
 ---
 
 _初识前端工程_

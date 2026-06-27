@@ -12,6 +12,7 @@ tags:
     - 记录
     - 前端
     - 解决
+cover: https://i.ibb.co/dJhV1Fk/2024-12-28-201604.webp
 ---
 
 ![2024-12-28-201604](https://i.ibb.co/dJhV1Fk/2024-12-28-201604.webp)

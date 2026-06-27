@@ -11,6 +11,7 @@ tags:
     - 教程
     - 胡思乱想
     - 短文
+cover: https://i.ibb.co/gbDg8VKN/Screenshot-2025-04-13-14-08-42-67-afe91c8b597521825b1b16311f13a9c1.webp
 ---
 
 ## 诚如标题所言,不要再用了

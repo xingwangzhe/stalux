@@ -12,6 +12,7 @@ tags:
     - 前端
     - github
     - hexo
+cover: https://i.ibb.co/b2fK6Py/2024-10-29-092927.png
 ---
 
 <center>

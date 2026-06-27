@@ -10,6 +10,7 @@ tags:
     - 技术
     - 网络
     - cloudlfare
+cover: https://cf-assets.www.cloudflare.com/zkvhlag99gkb/XNNFOLNzIbB8VaUzfUscl/9fb95db75eb9930497d278c6b8962f73/BLOG-2859_1.png
 ---
 
 今天凌晨收到了Cloudflare的blog订阅，内容是关于俄罗斯互联网用户无法访问Cloudflare的服务。

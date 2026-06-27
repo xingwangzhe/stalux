@@ -10,6 +10,7 @@ tags:
     - 胡思乱想
     - 安全
     - 物理密钥
+cover: https://i.ibb.co/R4VKdgr5/d10c1e3348949ff02429a1ff49be0214.webp
 ---
 
 > 此处隐去敏感信息😎

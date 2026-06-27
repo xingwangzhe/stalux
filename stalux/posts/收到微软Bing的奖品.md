@@ -8,6 +8,7 @@ tags:
     - 微软
     - bing
     - 记录
+cover: /ms/bingfans获奖名单.webp
 ---
 
 前文：[Bing收录没了？亲测有效的快速恢复指南](https://xingwangzhe.fun/posts/bing-re-index/) 我加入了Bing中国的官方群，顺利侧面地解决了网站收录问题。虽然我没看到微软中国有在大陆继续扩张的打算，但至少中国Bing团队还是在继续本土化发展，最近的活动，我也是非常幸运地获奖。

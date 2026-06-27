@@ -10,6 +10,7 @@ tags:
     - Linux
     - Grub
     - 美化
+cover: https://i.ibb.co/pvGd7gPv/preview.webp
 ---
 
 :::tip

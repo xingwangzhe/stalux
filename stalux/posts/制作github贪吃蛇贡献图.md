@@ -13,6 +13,7 @@ tags:
     - 前端
     - HTML
     - github
+cover: https://raw.githubusercontent.com/xingwangzhe/xingwangzhe/29ce52882c33be28a727b27630e8a4e9227e273f/github-snake.svg
 ---
 
 ![蛇图](https://raw.githubusercontent.com/xingwangzhe/xingwangzhe/29ce52882c33be28a727b27630e8a4e9227e273f/github-snake.svg)

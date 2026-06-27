@@ -5,6 +5,7 @@ desc: 'bash title="升级你的Astro版本到 6!"'
 category: [astro]
 tags: [astro, vite]
 abbrlink: astro6-release
+cover: /discord/discord-astro-vite8.webp
 ---
 
 ## Astro 6 终于推出！

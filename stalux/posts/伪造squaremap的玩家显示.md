@@ -10,6 +10,7 @@ tags:
     - squaremap
     - minecraft
     - js
+cover: https://i.ibb.co/RGnPmym3/2025-08-11-23-41-55.webp
 ---
 
 ![fakeplayer位置显示](https://i.ibb.co/RGnPmym3/2025-08-11-23-41-55.webp)

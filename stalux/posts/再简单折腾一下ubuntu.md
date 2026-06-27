@@ -9,6 +9,7 @@ categories:
 tags:
     - 折腾
     - 胡思乱想
+cover: https://i.ibb.co/1GkYSTk8/2025-06-08-21-36-33.webp
 ---
 
 ## 接上一回

@@ -11,6 +11,7 @@ tags:
     - 游戏
     - 胡思乱想
     - 短文
+cover: https://i.ibb.co/93T5DsDC/2025-04-02-173454.webp
 ---
 
 ## Greenscreen

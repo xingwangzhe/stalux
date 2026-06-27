@@ -9,6 +9,7 @@ tags:
     - pages
 categories:
     - 迁移
+cover: /pages/edgeone.webp
 ---
 
 ## 引言

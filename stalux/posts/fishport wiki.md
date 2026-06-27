@@ -9,6 +9,7 @@ categories:
 tags:
     - 游戏
     - 记录
+cover: https://i.ibb.co/XpnwWk3/202406222147179.webp
 ---
 
 <center>

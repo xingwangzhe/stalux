@@ -10,6 +10,7 @@ tags:
     - 记录
     - 进步
     - 学习
+cover: https://i.ibb.co/vv14NMh2/1.png
 ---
 
 有趣

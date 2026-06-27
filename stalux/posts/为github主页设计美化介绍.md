@@ -10,6 +10,7 @@ tags:
     - github
     - 记录
     - 教程
+cover: https://github.com/xingwangzhe/
 ---
 
 [![readme](https://i.ibb.co/23KtNMg7/githubreadme.png)](https://github.com/xingwangzhe/)

@@ -9,6 +9,7 @@ categories:
 tags:
     - hexo
     - 记录
+cover: https://i.ibb.co/vLC0cft/202406212107148.jpg
 ---
 
 <center>

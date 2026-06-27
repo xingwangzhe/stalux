@@ -10,6 +10,7 @@ tags:
     - node.js
     - 后端
     - js
+cover: https://i.ibb.co/FnY4CrB/2024-12-11-175244.png
 ---
 
 有意思，实现文件访问了

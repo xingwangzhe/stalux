@@ -10,6 +10,7 @@ tags:
     - 记录
     - 教程
     - hexo
+cover: https://i.ibb.co/5xjg4m5b/blog.png
 ---
 
 ## <div style="text-align: center;"> 你是否对这些命令感到枯燥乏味？</div>

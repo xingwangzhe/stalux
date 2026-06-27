@@ -12,6 +12,7 @@ tags:
     - hexo
     - 数据结构
     - 算法
+cover: https://i.ibb.co/8KJr64m/2025-01-02-140650.webp
 ---
 
 应该算是技术债：（

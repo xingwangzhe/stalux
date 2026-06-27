@@ -9,6 +9,7 @@ categories:
 tags:
     - leancloud
     - walines
+cover: /leancloud/image.webp
 ---
 
 这两天收到了📧,leancloud要结束服务了...

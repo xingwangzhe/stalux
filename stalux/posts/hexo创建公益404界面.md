@@ -11,6 +11,7 @@ tags:
     - "404"
     - 记录
     - 教程
+cover: https://i.ibb.co/cKGNZfd/4044.png
 ---
 
 ![4044](https://i.ibb.co/cKGNZfd/4044.png)

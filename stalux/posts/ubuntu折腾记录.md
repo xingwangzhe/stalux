@@ -9,6 +9,7 @@ categories:
 tags:
     - 折腾
     - 胡思乱想
+cover: https://i.ibb.co/35pxs039/2025-06-06-13-56-39.webp
 ---
 
 本机使用的版本信息

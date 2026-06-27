@@ -9,6 +9,7 @@ categories:
 tags:
     - 胡思乱想
     - 技术
+cover: https://i.ibb.co/LzyK1kkk/2025-06-27-12-35-14.webp
 ---
 
 ## 没想到有老外用我的模组

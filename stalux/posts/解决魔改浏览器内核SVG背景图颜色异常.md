@@ -5,6 +5,7 @@ date: "2026-06-06 18:30:00"
 desc: '大概几个月前，我在 QQ 上把自己的博客链接分享给朋友。朋友点开后说"你这个网站背景怎么全是白的？"我当时还以为他在开玩笑——我精心挑的 42 张 SVG 图案当背景，怎么可能是白的？'
 tags: [SVG, CSS, 浏览器兼容, QQ浏览器, 夸克浏览器, 魔改内核, 强制暗色模式, AI辅助开发]
 categories: 技术
+cover: /images/svg-darkmode-fix/cover.webp
 ---
 
 ![SVG背景变白修复指南](/images/svg-darkmode-fix/cover.webp)

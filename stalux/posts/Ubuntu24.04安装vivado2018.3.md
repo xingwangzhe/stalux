@@ -10,6 +10,7 @@ tags:
     - vivado
     - ubuntu
     - 折腾
+cover: https://i.ibb.co/Q7D83jYT/2025-07-08-14-32-52.webp
 ---
 
 ## 折腾永不止步

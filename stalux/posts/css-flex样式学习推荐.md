@@ -12,6 +12,7 @@ tags:
     - 进步
     - 教程
     - CSS
+cover: https://codingfantasy.com/games/flexboxadventure
 ---
 
 _有趣的学习网站_

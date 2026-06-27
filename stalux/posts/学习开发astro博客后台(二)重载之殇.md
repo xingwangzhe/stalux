@@ -10,6 +10,7 @@ tags:
     - Astro
     - 博客
     - 后端
+cover: https://i.ibb.co/N6R3HGxV/2025-05-30-201219.webp
 ---
 
 ## 添加md编辑

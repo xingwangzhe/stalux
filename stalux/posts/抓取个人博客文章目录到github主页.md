@@ -10,6 +10,7 @@ tags:
     - 学习
     - 记录
     - 教程
+cover: https://i.ibb.co/9tk9ZCR/2024-11-11-194849.png
 ---
 
 ![2024-11-11-194849](https://i.ibb.co/9tk9ZCR/2024-11-11-194849.png)

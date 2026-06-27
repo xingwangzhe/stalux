@@ -10,6 +10,7 @@ categories:
 abbrlink: copilot-train
 date: "2026-03-26 11:30:00"
 desc: "最近，GitHub 官方博客发了新公告: Updates to GitHub Copilot interaction data usage policy，微软/GitHub 终于选择开始使用用户交互数据来训练 AI 模型了。尽管目前只包含与 Copilot 的交互数据，但我认为，未来范围可能会进一步扩大。"
+cover: /github/资历评比.webp
 ---
 
 ## Copilot还是改变了使用协议

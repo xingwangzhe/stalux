@@ -9,6 +9,7 @@ categories:
 tags:
     - npm
     - ER
+cover: /chenER/chenER.webp
 ---
 
 ![chenER图演示](/chenER/chenER.webp)

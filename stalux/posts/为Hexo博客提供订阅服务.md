@@ -11,6 +11,7 @@ tags:
     - 记录
     - 教程
     - hexo
+cover: https://i.ibb.co/5gZ8LHsH/12.png
 ---
 
 Web-push的优势

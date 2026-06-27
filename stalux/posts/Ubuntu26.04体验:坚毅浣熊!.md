@@ -9,6 +9,7 @@ categories:
 tags:
     - ubuntu
     - 体验
+cover: /ubuntu26/桌面图片.webp
 ---
 
 ## beta版发布

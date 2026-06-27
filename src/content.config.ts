@@ -40,6 +40,7 @@ const posts = defineCollection({
         minutesRead: z.string().optional(),
         wordCount: z.number().optional(),
         cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
+        cover: z.string().optional(),
     }),
 });
 const config = defineCollection({

@@ -10,6 +10,7 @@ tags:
     - awards
     - pages
     - 博客
+cover: /esa/esa.webp
 ---
 
 **ESA**上线之后,为了扩大影响力,所以举办了[ **ESA Pages 边缘开发大赛**](https://rank.event.alibabacloud-esa.com/)

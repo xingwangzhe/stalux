@@ -5,6 +5,7 @@ desc: 前文 ESA Pages 边缘开发大赛获奖 提到我获奖了。如今春�
 abbrlink: esa-to-aliyun
 category: ESA
 tags: [阿里云, ESA]
+cover: /esa/型号.webp
 ---
 
 ## ESA的奖品

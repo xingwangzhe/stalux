@@ -11,6 +11,7 @@ tags:
     - 抽象
     - discord
     - 兑换码
+cover: https://i.ibb.co/rGbVHBc3/2025-07-04-19-02-06.webp
 ---
 
 [腾讯云EdgeOne免费计划兑换码 - 立即体验](https://edgeone.ai/zh/redemption)

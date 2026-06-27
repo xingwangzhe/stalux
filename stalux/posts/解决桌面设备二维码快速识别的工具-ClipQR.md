@@ -11,6 +11,7 @@ tags:
     - Vue
     - 开源项目
     - 工具
+cover: https://clipqr.needhelp.icu/%E5%BA%94%E7%94%A8%E6%88%AA%E5%9B%BE.png
 ---
 
 ## 前言

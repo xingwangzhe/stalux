@@ -13,6 +13,7 @@ tags:
     - CSS
     - HTML
     - hexo
+cover: https://i.ibb.co/YjV3ym8/2024-12-09-190959.png
 ---
 
 ![2024-12-09-190959](https://i.ibb.co/YjV3ym8/2024-12-09-190959.png)

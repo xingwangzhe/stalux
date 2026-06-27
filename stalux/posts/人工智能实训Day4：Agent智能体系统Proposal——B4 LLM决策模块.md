@@ -13,6 +13,7 @@ tags:
     - 学习
     - proposal
     - llm
+cover: /AI/封面-day4.webp
 ---
 
 前置声明：**本图文存在AI辅助整理**

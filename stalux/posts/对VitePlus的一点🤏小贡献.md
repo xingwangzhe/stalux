@@ -7,6 +7,7 @@ tags:
 date: "2026-03-21 17:09:55"
 desc: 前文提到我提交了一些代码，我今天看，原来几天前就已经有Release了！
 abbrlink: contribute-vite-plus
+cover: /vite/contribute.webp
 ---
 
 ## 前情提要

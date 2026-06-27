@@ -12,6 +12,7 @@ tags:
     - 问题
     - 记录
     - 教程
+cover: https://i.ibb.co/h1gkGHQn/dnswrong.png
 ---
 
 _有许多人在使用代理之后，发现连不上网络了，这是其中一种解决方法_

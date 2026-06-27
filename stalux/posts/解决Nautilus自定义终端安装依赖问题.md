@@ -10,6 +10,7 @@ tags:
     - Nautilus
     - 终端
     - Linux
+cover: /shell/ghostyy-any.webp
 ---
 
 > 事实上，本文为了追求最新，采用了源码安装。对于一般用户，直接去Release里下载deb包安装，快速解决冲突，配置才是理想选择

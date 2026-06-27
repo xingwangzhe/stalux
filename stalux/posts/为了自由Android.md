@@ -8,6 +8,7 @@ categories: android
 abbrlink: for-free-android
 date: "2026-03-22 13:50:32"
 desc: 虽然我已经很多年不搞Android机了，想起小时候root就是为了开挂，下载MT管理器喜欢拆包改支付逻辑玩
+cover: /mt-info.webp
 ---
 
 ## Android的开放性正备受挑战

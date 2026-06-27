@@ -19,6 +19,13 @@ const description = post.data.desc || "";
 
 <a href={`/posts/${post.data.abbrlink}`} class={style.post + " a-none"}>
     <div class={style.postContainer}>
+        {
+            post.data.cover && (
+                <div class={style.postCover}>
+                    <img src={post.data.cover} alt={post.data.title} loading="lazy" />
+                </div>
+            )
+        }
         <h2 class={style.postTitle}>{post.data.title}</h2>
         <div class={style.time}>
             {

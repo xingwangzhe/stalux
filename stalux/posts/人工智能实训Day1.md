@@ -11,6 +11,7 @@ tags:
     - Conda
     - 实训
     - 学习
+cover: /AI/封面.webp
 ---
 
 ## 前言

@@ -10,6 +10,7 @@ tags:
     - 文学
     - 记录
     - 前端
+cover: https://i.ibb.co/Myzz4y0/2025-01-10-184443.png
 ---
 
 啊，好麻烦

@@ -9,6 +9,7 @@ tags:
     - 安全
     - 自由软件
 categories: 技术
+cover: /debian-reproducible/xz_backdoor_timeline.webp
 ---
 
 > **⚠ 本文存在大量 AI 生成内容**：本文中的**数据搜集、统计分析、事件梳理和部分观点**由 AI 工具自动完成。博主仅进行了审核、修改和风格调整。读者在引用本文中的数据和结论时请注意辨别其可靠性。

@@ -10,6 +10,7 @@ tags:
     - hexo
     - 记录
     - 教程
+cover: https://i.ibb.co/tPDwBMwJ/cp1.png
 ---
 
 ![cp1](https://i.ibb.co/tPDwBMwJ/cp1.png)
