@@ -8,6 +8,7 @@ abbrlink: 2cb4f19c
 date: "2025-05-11 20:00:00"
 updated: "2026-01-26 12:00:00"
 desc: '行内代码 var example = "hello";'
+cover: http://example.com/favicon.ico
 ---
 
 # Markdown 语法全面指南

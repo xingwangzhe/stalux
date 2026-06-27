@@ -9,6 +9,7 @@ date: "2025-12-16 11:00:00"
 updated: "2026-01-26 12:00:00"
 desc: "以下为大量测试图片链接（使用 https://picsum.photos 占位图服务），可用于验证灯箱（PhotoSwipe）加载与懒加载表现："
 abbrlink: asdasdasd
+cover: https://picsum.photos/seed/1/1200/800
 ---
 
 以下为大量测试图片链接（使用 https://picsum.photos 占位图服务），可用于验证灯箱（PhotoSwipe）加载与懒加载表现：

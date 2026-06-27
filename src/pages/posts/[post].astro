@@ -41,10 +41,10 @@ export async function getStaticPaths() {
     });
 }
 ---
-<Stalux title={props.post.data.title + " | " + stalux.title} description={autoDesc}>
+<Stalux title={props.post.data.title + " | " + stalux.title} description={autoDesc} cover={props.post.data.cover}>
     <div style="height:3em"></div>
     <Navs /><div style="height:3em"></div>
-    <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={stalux.author.name} authorAvatar={stalux.author.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasMermaid={flags.hasMermaid} hasKatex={flags.hasKatex} hasImage={flags.hasImage}>
+        <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={stalux.author.name} authorAvatar={stalux.author.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasMermaid={flags.hasMermaid} hasKatex={flags.hasKatex} hasImage={flags.hasImage} cover={props.post.data.cover}>
         <Content/>
     </PostLayout>
 </Stalux>

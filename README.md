@@ -275,6 +275,6 @@ bun run dev
 # npm install && npm run dev
 ```
 
-写文章只需在 `stalux/posts/` 下新建 Markdown 文件，Frontmatter 最少包含 `title`、`abbrlink`、`date` 三项（可选字段如 `tags`、`categories`、`cc` 等将增强文章元数据的展示）；想写「一言」则放到 `stalux/words/` 下。有关更详细的配置与使用示例，请参阅仓库中的 `BACK.yml`、`license.txt`（依赖许可清单）与 `LICENSE`。
+写文章只需在 `stalux/posts/` 下新建 Markdown 文件，Frontmatter 最少包含 `title`、`abbrlink`、`date` 三项（可选字段如 `tags`、`categories`、`cc`、`cover` 等将增强文章元数据的展示）；想写「一言」则放到 `stalux/words/` 下。有关更详细的配置与使用示例，请参阅仓库中的 `BACK.yml`、`license.txt`（依赖许可清单）与 `LICENSE`。
 
 如果你喜欢这个主题，也欢迎点个 ⭐️ 支持。
