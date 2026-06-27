@@ -27,7 +27,6 @@ interface Props {
     hasMermaid?: boolean;
     hasKatex?: boolean;
     hasImage?: boolean;
-    cover?: string;
 }
 
 const props = Astro.props as Props;
@@ -57,7 +56,6 @@ const walineConfig = stalux?.comment?.waline;
             readingTime={props.readingTime}
             wordCount={props.wordCount}
             hasImage={props.hasImage}
-            cover={props.cover}
         >
             <slot />
             <PostCC
