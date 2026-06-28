@@ -204,6 +204,10 @@ stalux:
               description: "关注公众号发送消息即可自动开博，让写作回归纯粹。"
               link: "https://www.ally.ren/"
               icon: "/ally-ren-icon.webp"
+            - name: "友链圈 - 站长聚集地"
+              description: "一个站长聚集地，让我们一起发现有趣的网站。"
+              link: "https://www.frdlink.link"
+              icon: "https://www.frdlink.link/favicon.ico"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
