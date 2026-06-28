@@ -14,7 +14,7 @@ cover: https://i.ibb.co/LzyK1kkk/2025-06-27-12-35-14.webp
 
 ## 没想到有老外用我的模组
 
-距离上一次提及我的模组已经是很久以前的事情了，[Webmapview 一个我的世界内置网页地图浏览 Fabric 模组](/posts/4628/)
+距离上一次提及我的模组已经是很久以前的事情了，[Webmapview 一个我的世界内置网页地图浏览 Fabric 模组](https://xingwangzhe.fun/posts/4628/)
 
 [webmapview](https://github.com/xingwangzhe/webmapview)
 

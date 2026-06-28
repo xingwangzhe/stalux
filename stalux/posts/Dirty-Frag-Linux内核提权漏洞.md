@@ -20,7 +20,7 @@ cover: /cve/dirty-frag.webp
 
 说实话，我是真没想到这么快又要写一篇内核提权漏洞的文章。
 
-距离上一篇 [Copy Fail](/posts/cve-2026-31431-copy-fail) 的博文过去才**八天**。八天啊朋友们！Copy Fail 的 `algif_aead` 黑名单才刚敲进终端没几天，补丁都没焐热，又砸过来一个——**Dirty Frag**。
+距离上一篇 [Copy Fail](https://xingwangzhe.fun/posts/cve-2026-31431-copy-fail) 的博文过去才**八天**。八天啊朋友们！Copy Fail 的 `algif_aead` 黑名单才刚敲进终端没几天，补丁都没焐热，又砸过来一个——**Dirty Frag**。
 
 而且更离谱的是，Copy Fail 的缓解措施对 Dirty Frag **完全无效**。因为这次打的是完全不同的内核子系统——人家走的是 xfrm-ESP 和 RxRPC 的加密路径，跟你禁不禁 `algif_aead` 没有半毛钱关系。
 
