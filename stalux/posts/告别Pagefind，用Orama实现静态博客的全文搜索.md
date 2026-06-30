@@ -436,7 +436,7 @@ export async function GET() {
 
 `astro.config.mjs` 中移除 Pagefind 集成；`package.json` 中：
 
-```diff title="package.json"
+```diff lang="json" title="package.json"
 - "astro-pagefind": "^2.0.0"
 + "@orama/orama": "^3.1.18"
 + "@orama/tokenizers": "^3.1.18"

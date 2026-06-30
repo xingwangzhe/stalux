@@ -19,7 +19,7 @@
         "@astrojs/rss": "^4.0.18",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.44.0",
-        "@lucide/astro": "^1.21.0",
+        "@lucide/astro": "^1.22.0",
         "@napi-rs/wasm-runtime": "^1.1.6",
         "@nullpinter/satteri-katex": "^0.1.2",
         "@orama/highlight": "^0.1.9",
@@ -40,16 +40,16 @@
         "date-fns-tz": "^3.2.0",
         "katex": "^0.17.0",
         "lightningcss": "^1.32.0",
-        "lucide": "^1.21.0",
+        "lucide": "^1.22.0",
         "mermaid": "^11.16.0",
         "photoswipe": "^5.4.4",
         "remove-markdown": "^0.6.4",
-        "simple-icons": "^16.24.0",
+        "simple-icons": "^16.24.1",
         "word-count": "^0.3.1"
     },
     "devDependencies": {
         "license-checker-rseidelsohn": "5.0.1",
-        "oxfmt": "^0.56.0",
-        "oxlint": "^1.71.0"
+        "oxfmt": "^0.57.0",
+        "oxlint": "^1.72.0"
     }
 }
