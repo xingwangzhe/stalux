@@ -14,13 +14,13 @@
         "licenses-checker": "bun licenses-checker.ts"
     },
     "dependencies": {
-        "@astrojs/compiler-rs": "^0.2.3",
+        "@astrojs/compiler-rs": "^0.3.0",
         "@astrojs/markdown-remark": "^7.2.0",
         "@astrojs/markdown-satteri": "^0.3.2",
-        "@astrojs/rss": "^4.0.18",
+        "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.44.0",
-        "@lucide/astro": "^1.21.0",
+        "@lucide/astro": "^1.22.0",
         "@napi-rs/wasm-runtime": "^1.1.6",
         "@nullpinter/satteri-katex": "0.1.2",
         "@orama/highlight": "^0.1.9",
@@ -32,7 +32,7 @@
         "@xingwangzhe/satteri-photoswipe": "^0.1.4",
         "@xingwangzhe/tags-cloud": "^1.2.2",
         "animejs": "^4.5.0",
-        "astro": "^7.0.3",
+        "astro": "^7.0.4",
         "astro-expressive-code": "0.44.0",
         "astro-seo": "^1.1.0",
         "astro-typewriter": "^1.2.0",
@@ -41,16 +41,16 @@
         "date-fns-tz": "^3.2.0",
         "katex": "^0.17.0",
         "lightningcss": "^1.32.0",
-        "lucide": "^1.21.0",
+        "lucide": "^1.22.0",
         "mermaid": "^11.16.0",
         "photoswipe": "^5.4.4",
         "remove-markdown": "^0.6.4",
-        "simple-icons": "^16.24.0",
+        "simple-icons": "^16.24.1",
         "word-count": "^0.3.1"
     },
     "devDependencies": {
         "license-checker-rseidelsohn": "5.0.1",
-        "oxfmt": "^0.56.0",
-        "oxlint": "^1.71.0"
+        "oxfmt": "^0.57.0",
+        "oxlint": "^1.72.0"
     }
 }
