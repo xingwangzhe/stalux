@@ -1,0 +1,145 @@
+{
+    "nav": {
+        "menu": "Open navigation menu",
+        "scrollLeft": "Scroll navigation left",
+        "scrollRight": "Scroll navigation right",
+        "search": "Search"
+    },
+    "search": {
+        "title": "Search",
+        "close": "Close search",
+        "placeholder": "Type keywords to search...",
+        "inputLabel": "Search input",
+        "noResults": "No results found",
+        "typePost": "Post",
+        "typeAbout": "About",
+        "typeWord": "Word"
+    },
+    "page404": {
+        "title": "404 - Page Not Found",
+        "description": "Sorry, the page you are looking for does not exist.",
+        "pageNotFound": "Page Not Found",
+        "countdown": "Redirecting to home in {n} seconds...",
+        "backHome": "Back to Home"
+    },
+    "post": {
+        "publishTime": "Published: ",
+        "updateTime": "Updated: ",
+        "readingTime": "🕒 Reading time: ",
+        "wordCount": "📝 Words: ",
+        "viewCount": "👀 Views: ",
+        "prevPost": "Previous",
+        "nextPost": "Next",
+        "noPrev": "No older posts",
+        "noNext": "No newer posts",
+        "author": "Author: ",
+        "articleLink": "Article link: ",
+        "licensedUnder": "This article is licensed under ",
+        "licenseSuffix": "."
+    },
+    "taxonomy": {
+        "tag": "Tag",
+        "category": "Category",
+        "toc": "Table of Contents",
+        "noTags": "No tags",
+        "noCategories": "No categories",
+        "noToc": "No table of contents",
+        "backToList": "Back to {type} list",
+        "foundPosts": "Found {count} related posts",
+        "browseTag": "Browse {count} posts under tag \"{tag}\"...",
+        "browseCategory": "Browse {count} posts under category \"{category}\"..."
+    },
+    "archives": {
+        "title": "Archives",
+        "description": "Post archives page",
+        "heading": "Archives",
+        "desc": "All posts on the timeline ({n} total)",
+        "postCount": "{n} posts",
+        "month": "{n}",
+        "noPosts": "No posts",
+        "loadMore": "Load more",
+        "allLoaded": "All content loaded",
+        "viewAll": "View all posts"
+    },
+    "footer": {
+        "visitors": "Visitors: ",
+        "visits": "visitors",
+        "totalVisits": "Total visits: ",
+        "times": "times",
+        "totalWords": "Total words: ",
+        "chars": "chars",
+        "runningTime": "Site running for",
+        "runtimeFormat": "{days}d {hours}h {minutes}m {seconds}s",
+        "rightsReserved": "All rights reserved.",
+        "securityIcon": "Public security filing icon"
+    },
+    "comment": {
+        "title": "Comments",
+        "disclaimer": "Comments are user-generated and do not reflect the views of this site."
+    },
+    "randomPost": {
+        "title": "Random Post",
+        "refresh": "Refresh random post",
+        "loading": "Loading random post...",
+        "noPosts": "No posts available",
+        "loadFailed": "Failed to load, please try again",
+        "loadError": "Load failed"
+    },
+    "categories": {
+        "title": "Categories",
+        "description": "{title}'s categories",
+        "heading": "Categories",
+        "browseByTopic": "Browse by topic",
+        "postCount": "{n} posts"
+    },
+    "tags": {
+        "title": "Tags",
+        "description": "{title}'s tags",
+        "heading": "Tag Cloud",
+        "explore": "Explore article tags across different topics",
+        "noTags": "No tags"
+    },
+    "words": {
+        "title": "Words",
+        "description": "Collected quotes and snippets",
+        "heading": "Words",
+        "desc": "Fragments of words, voices of the heart ({n} entries)"
+    },
+    "links": {
+        "defaultTitle": "Links",
+        "iconAlt": "{name} icon"
+    },
+    "rss": {
+        "copyright": "Unless otherwise noted, each article is licensed under its own Creative Commons license."
+    },
+    "common": {
+        "uncategorized": "Uncategorized",
+        "minute": "{n} min",
+        "lessThanOneMinute": "Less than 1 min",
+        "tenThousand": "{n}0k",
+        "k": "{n}k",
+        "dateFormat": "MMM dd, yyyy"
+    },
+    "console": {
+        "name": "Stalux - Modern Astro Blog Theme",
+        "author": "xingwangzhe",
+        "copyright": "© xingwangzhe. All rights reserved.",
+        "certNumber": "Software Copyright No. 16914672",
+        "certUrl": "https://stalux.needhelp.icu/软著证明.pdf",
+        "regDate": "2025-11-24",
+        "labelVersion": "📦 Version: ",
+        "labelAuthor": "👤 Author: ",
+        "labelRepo": "🔗 Repository: ",
+        "labelWebsite": "🌐 Website: ",
+        "labelCert": "📜 Certificate: ",
+        "labelCertNumber": "🎫 Registration No.: ",
+        "labelRegDate": "📅 Registration Date: ",
+        "labelLicense": "⚖️  License: ",
+        "labelAuthNote": "✅ Authorization: ",
+        "labelTip": "💡 Tip: ",
+        "labelFeedback": "🐛 Feedback: ",
+        "authNote": "This software is licensed under the MIT open source license. You are free to use, modify, and distribute this software, but please retain the original copyright notice.",
+        "tip": "If you like this theme, please give us a ⭐️ on GitHub!",
+        "feedback": "https://github.com/xingwangzhe/stalux/issues"
+    }
+}

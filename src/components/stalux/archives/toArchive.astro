@@ -1,7 +1,12 @@
 ---
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import styles from "@styles/components/archives/toArchive.module.css";
+
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
 <div id={styles.archs}>
-    <a href="/archives">查看所有文章</a>
+    <a href="/archives">{t("archives.viewAll")}</a>
 </div>

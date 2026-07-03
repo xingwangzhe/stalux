@@ -1,19 +1,21 @@
 ---
 import Stalux from "@layouts/Stalux.astro";
 import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import Navs from "@components/stalux/layout/navs.astro";
 import CategoriesList from "@components/stalux/categories/categoriesList.astro";
 import styles from "@styles/pages/categories.module.css";
 const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
 <Stalux
-    title={"文章分类 | " + stalux.title}
-    description={stalux.title + "的文章分类"}
+    title={t("categories.title") + " | " + stalux.title}
+    description={t("categories.description", { title: stalux.title })}
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <h1 class={styles.title}>文章分类</h1>
-    <div class={styles.description}>按主题分类浏览</div>
+    <h1 class={styles.title}>{t("categories.heading")}</h1>
+    <div class={styles.description}>{t("categories.browseByTopic")}</div>
     <CategoriesList />
 </Stalux>

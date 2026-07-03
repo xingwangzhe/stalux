@@ -46,6 +46,7 @@ const posts = defineCollection({
 const config = defineCollection({
     loader: file("config.yml"),
     schema: z.object({
+        lang: z.string().optional().default("zh-CN"),
         title: z.string().min(1, "config.title 不能为空"),
         url: z.string().url("config.url 必须是合法 URL，例如 https://example.com"),
         timezone: z.string().optional().default("Asia/Shanghai"),

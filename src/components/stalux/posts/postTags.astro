@@ -1,13 +1,17 @@
 ---
 import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postTaxonomy.module.css";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 
 interface Props {
     tags?: string[];
     title?: string;
 }
 
-const { tags = [], title = "标签" } = Astro.props;
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
+const { tags = [], title = t("taxonomy.tag") } = Astro.props;
 
 // 定义标签内容的过渡动画 - 平滑褶皱效果
 const tagContentAnimation = {
@@ -40,7 +44,7 @@ const tagContentAnimation = {
                 ))}
             </div>
         ) : (
-            <div class={style.empty}>暂无标签</div>
+            <div class={style.empty}>{t("taxonomy.noTags")}</div>
         )
     }
 </div>

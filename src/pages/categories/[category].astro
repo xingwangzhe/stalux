@@ -4,8 +4,10 @@ import TagHeader from "@components/stalux/tags/tagHeader.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import Stalux from "@layouts/Stalux.astro";
 import { toTimestamp } from "@utils/dayjs";
+import { createTranslator } from "@utils/i18n";
 import Navs from "@components/stalux/layout/navs.astro";
 const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const categoryMap = new Map<
@@ -50,11 +52,11 @@ const props = Astro.props as Props;
 ---
 
 <Stalux
-    title={"分类: " + props.category + " | " + stalux.title}
-    description={`浏览分类 ${props.category} 下的 ${props.count} 篇文章，涵盖相关领域的深度思考与见解。最后更新于 ${props.lastUpdateDate}`}
+    title={t("taxonomy.category") + ": " + props.category + " | " + stalux.title}
+    description={t("taxonomy.browseCategory", { category: props.category, count: props.count })}
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <TagHeader type={"分类"} name={props.category} count={props.count} />
+    <TagHeader type={t("taxonomy.category")} name={props.category} count={props.count} />
     <PostList posts={props.posts} />
 </Stalux>

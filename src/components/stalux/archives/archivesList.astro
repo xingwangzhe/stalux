@@ -1,5 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import styles from "@styles/components/archives/archivesList.module.css";
 import { toTimestamp, parseDate, format } from "@utils/dayjs";
 
@@ -9,6 +10,9 @@ interface Props {
 
 const props = Astro.props as Props;
 const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
+
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 const archivesByYearMonth: Record<
     number,
     Record<number, CollectionEntry<"posts">[]>
@@ -62,7 +66,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
                             <div class={styles.yearHeader} data-year-header style="opacity:0">
                                 <h2 class={styles.yearTitle}>{year}</h2>
                                 <div class={styles.yearCount}>
-                                    {yearCounts[year] ?? 0} 篇文章
+                                    {t("archives.postCount", { n: yearCounts[year] ?? 0 })}
                                 </div>
                             </div>
                             {Object.keys(archivesByYearMonth[year])
@@ -71,7 +75,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
                                 .map((month) => (
                                     <div class={styles.monthSection} data-month-section style="opacity:0">
                                         <h3 class={styles.monthTitle}>
-                                            {month}月
+                                            {t("archives.month", { n: month })}
                                         </h3>
                                         <ul class={styles.postList}>
                                             {archivesByYearMonth[year][
@@ -98,7 +102,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
                         </div>
                     ))
                 ) : (
-                    <div class={styles.noPosts}>暂无文章</div>
+                    <div class={styles.noPosts}>{t("archives.noPosts")}</div>
                 )
             }
         </div>
@@ -114,12 +118,12 @@ const sortedYears = Object.keys(archivesByYearMonth)
                 <span class="dot"></span>
                 <span class="dot"></span>
             </div>
-            <div class={styles.loadingText} data-loading-text>加载更多内容</div>
+            <div class={styles.loadingText} data-loading-text>{t("archives.loadMore")}</div>
         </div>
         <slot name="main" />
     </div>
 
-    <script>
+    <script define:vars={{ allLoadedText: t("archives.allLoaded") }}>
         document.addEventListener("astro:page-load", () => {
             const archivesRoot = document.querySelector<HTMLElement>("[data-year]")?.parentElement;
             if (archivesRoot && (archivesRoot as HTMLElement).dataset.archivesInited === "1") return;
@@ -139,7 +143,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
                 const lt = lazyloadObserver.querySelector("[data-loading-text]") as HTMLElement;
                 const ls = lazyloadObserver.querySelector("[data-loading-spinner]") as HTMLElement;
                 if (isComplete) {
-                    if (lt) lt.textContent = "已加载全部内容";
+                    if (lt) lt.textContent = allLoadedText;
                     if (ls) ls.style.display = "none";
                     setTimeout(() => {
                         lazyloadObserver!.style.opacity = "0";

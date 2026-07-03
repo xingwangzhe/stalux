@@ -1,7 +1,11 @@
 ---
 import { getTagCountList } from "@utils/collections-stats";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import styles from "@styles/components/tags/tagsCloud.module.css";
 
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 const tagList = await getTagCountList();
 const tagLinks = tagList.map((t) => ({ type: "link" as const, text: t.name, url: `/tags/${t.name}/` }));
 ---
@@ -21,7 +25,7 @@ const tagLinks = tagList.map((t) => ({ type: "link" as const, text: t.name, url:
                 </a>
             ))
         ) : (
-            <div class={styles.noTags}>暂无标签</div>
+            <div class={styles.noTags}>{t("tags.noTags")}</div>
         )
     }
 </div>

@@ -1,13 +1,17 @@
 ---
 import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postTaxonomy.module.css";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 
 interface Props {
     categories?: string[];
     title?: string;
 }
 
-const { categories = [], title = "分类" } = Astro.props;
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
+const { categories = [], title = t("taxonomy.category") } = Astro.props;
 
 // 定义分类内容的过渡动画 - 平滑褶皱效果
 const categoryContentAnimation = {
@@ -43,7 +47,7 @@ const categoryContentAnimation = {
                 ))}
             </div>
         ) : (
-            <div class={style.empty}>暂无分类</div>
+            <div class={style.empty}>{t("taxonomy.noCategories")}</div>
         )
     }
 </div>

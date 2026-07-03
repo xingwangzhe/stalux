@@ -1,150 +1,150 @@
 ---
-title: 站点基本信息
+title: Site Basic Information
 tags:
-    - 配置
-    - 基本配置
+    - Configuration
+    - Basic Config
 categories:
-    - 主题配置
+    - Theme Config
 date: "2025-05-10 11:00:00"
 updated: "2026-01-26 12:00:00"
-desc: 站点基本信息配置指南，包括文件结构、内容合集位置、frontmatter 必填与可选字段及书写注意。
+desc: Site basic information configuration guide, including file structure, content collection locations, required and optional frontmatter fields, and writing notes.
 abbrlink: ad81245d
 ---
 
-## 主要文件结构
+## Main File Structure
 
 ```bash
 stalux/
-├── public/  # 公共资源文件夹
+├── public/  # Public resources folder
 ├── src/
-│   ├── assets/  #静态资源,一般不动
-│   ├── components/ # 组件
-│   │   └── stalux/ # 主题组件
-│   │       ├── archives/ # 归档
-│   │       ├── categories/ # 分类
-│   │       ├── common/ # 通用组件
-│   │       ├── footer/ # 底部
-│   │       ├── layout/ # 布局
-│   │       ├── links/  # 友链
-│   │       ├── posts/  # 文章
-│   │       ├── tags/   # 标签
-│   │       └── words/  # 一言卡片
-│   ├── layouts/ # 布局文件
-│   ├── pages/ # 页面文件
-│   │   ├── api/ # API 文件夹
-│   │   ├── categories/ # 分类页面
-│   │   ├── posts/ # 文章页面
-│   │   ├── tags/ # 标签页面
-│   │   └── words.astro # 一言页面
-│   ├── scripts/ # 脚本文件
+│   ├── assets/  # Static assets, generally don't modify
+│   ├── components/ # Components
+│   │   └── stalux/ # Theme components
+│   │       ├── archives/ # Archives
+│   │       ├── categories/ # Categories
+│   │       ├── common/ # Common components
+│   │       ├── footer/ # Footer
+│   │       ├── layout/ # Layout
+│   │       ├── links/  # Friend links
+│   │       ├── posts/  # Posts
+│   │       ├── tags/   # Tags
+│   │       └── words/  # Words cards
+│   ├── layouts/ # Layout files
+│   ├── pages/ # Page files
+│   │   ├── api/ # API folder
+│   │   ├── categories/ # Categories page
+│   │   ├── posts/ # Posts page
+│   │   ├── tags/ # Tags page
+│   │   └── words.astro # Words page
+│   ├── scripts/ # Script files
 │   ├── styles/
-│   │   ├── base/ # 基础样式
-│   │   ├── components/ # 组件样式
-│   │   │   ├── archives/ # 归档
-│   │   │   ├── categories/ # 分类
-│   │   │   ├── common/ # 通用组件
-│   │   │   ├── footer/ # 底部
-│   │   │   ├── layout/ # 布局
-│   │   │   ├── links/  # 友链
-│   │   │   ├── markdown.css # markdown 样式
-│   │   │   ├── posts/  # 文章
-│   │   │   ├── search.css # 搜索样式
-│   │   │   ├── tags/   # 标签
-│   │   │   └── words/  # 一言
-│   │   └── pages/ # 页面样式
-│   ├── utils/ # 工具文件
-│   └── content.config.ts # 内容配置文件
+│   │   ├── base/ # Base styles
+│   │   ├── components/ # Component styles
+│   │   │   ├── archives/ # Archives
+│   │   │   ├── categories/ # Categories
+│   │   │   ├── common/ # Common components
+│   │   │   ├── footer/ # Footer
+│   │   │   ├── layout/ # Layout
+│   │   │   ├── links/  # Friend links
+│   │   │   ├── markdown.css # Markdown styles
+│   │   │   ├── posts/  # Posts
+│   │   │   ├── search.css # Search styles
+│   │   │   ├── tags/   # Tags
+│   │   │   └── words/  # Words
+│   │   └── pages/ # Page styles
+│   ├── utils/ # Utility files
+│   └── content.config.ts # Content configuration file
 ├── stalux
-│   ├── about/ # 关于 .md
-│   ├── posts/ # 文章 .md
-│   └── words/ # 一言 .md
+│   ├── about/ # About .md
+│   ├── posts/ # Posts .md
+│   └── words/ # Words .md
 ├── astro.config.mjs
 ├── tsconfig.json
 ├── package.json
 ├── README.md
-└── (其他文件)
+└── (other files)
 ```
 
-## 内容合集位置
+## Content Collection Locations
 
-内容集合使用 `astro:content`，默认存放在根目录 `stalux/` 下：
+Content collections use `astro:content` and are stored by default under the root `stalux/` directory:
 
-- `stalux/posts/`：文章 Markdown/MDX，受 posts 集合 schema 约束。
-- `stalux/about/`：关于页面 Markdown/MDX，受 about 集合 schema 约束。
-- `stalux/words/`：一言/语录 Markdown，受 words 集合 schema 约束。
+- `stalux/posts/`: Post Markdown/MDX files, constrained by the posts collection schema.
+- `stalux/about/`: About page Markdown/MDX files, constrained by the about collection schema.
+- `stalux/words/`: Words/quotes Markdown files, constrained by the words collection schema.
 
 ## posts/\*.md frontmatter
 
-必填：
+Required:
 
-- `title`: 文章标题。
-- `abbrlink`: 永久链接标识，字符串或数字（数字会自动转为字符串）；用于生成 `/posts/{abbrlink}` 路由。
-- `date`: 发布时间，支持 ISO 8601 格式（如 `2025-05-10T09:30:00+08:00`）或 `YYYY-MM-DD HH:mm:ss` 格式。
-- `desc`: 文章描述，用于 SEO meta description 和 Open Graph。**必须手写**，不能为空，建议 50–160 字符。
+- `title`: Post title.
+- `abbrlink`: Permanent link identifier, string or number (numbers are automatically converted to strings); used to generate the `/posts/{abbrlink}` route.
+- `date`: Publish time, supports ISO 8601 format (e.g., `2025-05-10T09:30:00+08:00`) or `YYYY-MM-DD HH:mm:ss` format.
+- `desc`: Post description, used for SEO meta description and Open Graph. **Must be manually written**, cannot be empty, recommended 50–160 characters.
 
-可选：
+Optional:
 
-- `updated`: 更新日期，支持 ISO 8601 格式或 `YYYY-MM-DD HH:mm:ss` 格式。
-- `draft`: 草稿状态，默认 `false`；为 `true` 时文章不会出现在发布列表中。
-- `tags`: 标签数组；单字符串也会被转换为数组。
-- `categories`: 分类数组；单字符串也会被转换为数组。
-- `cc`: 版权标识，默认 `CC-BY-NC-SA-4.0`。
+- `updated`: Update date, supports ISO 8601 format or `YYYY-MM-DD HH:mm:ss` format.
+- `draft`: Draft status, default `false`; when `true` the post will not appear in the published list.
+- `tags`: Tag array; a single string will also be converted to an array.
+- `categories`: Category array; a single string will also be converted to an array.
+- `cc`: Copyright license, default `CC-BY-NC-SA-4.0`.
 
-示例：
+Example:
 
 ```markdown
 ---
-title: 示例文章
+title: Sample Post
 abbrlink: sample-post
 date: 2025-05-10T12:00:00+08:00
-desc: 这是一篇示例文章，演示 Stalux 主题的 frontmatter 写法。
+desc: This is a sample post demonstrating Stalux theme frontmatter writing.
 updated: 2025-05-12T09:00:00+08:00
 tags:
-    - 技术
-    - 随笔
+    - Tech
+    - Essay
 categories:
-    - 前端
+    - Frontend
 cc: CC-BY-NC-SA-4.0
 draft: false
 ---
 
-正文...
+Body content...
 ```
 
 ## about/\*.md frontmatter
 
-必填：
+Required:
 
-- `title`: 页面标题。
-- `description`: 页面描述（用于页面简介/SEO）。
+- `title`: Page title.
+- `description`: Page description (used for page intro/SEO).
 
-示例：
+Example:
 
 ```markdown
 ---
-title: 关于本站
-description: 个人简介与站点信息
+title: About This Site
+description: Personal introduction and site information
 ---
 
-内容...
+Content...
 ```
 
 ## words/\*.md frontmatter
 
-用于 `/words` 一言页面，适合收集短句、代码片段或语录。
+Used for the `/words` quotes page, suitable for collecting short phrases, code snippets, or sayings.
 
-必填：无。
+Required: None.
 
-可选：
+Optional:
 
-- `source`: 来源或作者名。
-- `link`: 来源链接；存在时 `source` 会渲染为可点击外链。
-- `sourceDate`: 来源对应的时间，会斜体显示在卡片右下角。
-- `date`: 写这条一言的时间，显示在卡片左下角；也用于排序。
-- `updated`: 更新日期，字符串，格式同 `date`。
-- `draft`: 布尔，默认 `false`；为 `true` 时不显示。
+- `source`: Source or author name.
+- `link`: Source link; when present, `source` will render as a clickable external link.
+- `sourceDate`: The date associated with the source, displayed in italics at the bottom-right of the card.
+- `date`: The date this quote was written, displayed at the bottom-left of the card; also used for sorting.
+- `updated`: Update date, string, same format as `date`.
+- `draft`: Boolean, default `false`; when `true`, not displayed.
 
-示例：
+Example:
 
 ```markdown
 ---
@@ -159,8 +159,8 @@ draft: false
 Talk is cheap. Show me the `code`.
 ```
 
-## 书写注意
+## Writing Notes
 
-- frontmatter 顶部使用 `---` 包裹；冒号后留空格，数组/对象保持缩进。
-- 建议日期使用 ISO 8601（含时区偏移），便于排序和显示。
-- abbrlink 建议自定义字符串以保证链接稳定，不依赖标题。
+- Wrap frontmatter with `---` at the top; leave a space after colons, maintain indentation for arrays/objects.
+- It is recommended to use ISO 8601 format (with timezone offset) for dates, for easier sorting and display.
+- It is recommended to use custom strings for `abbrlink` to ensure stable links independent of the title.

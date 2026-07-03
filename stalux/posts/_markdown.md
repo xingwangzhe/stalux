@@ -1,88 +1,88 @@
 ---
-title: markdown渲染示例
+title: Markdown Rendering Examples
 tags:
-    - markdown
+    - Markdown
 categories:
-    - markdown
+    - Markdown
 abbrlink: 2cb4f19c
 date: "2025-05-11 20:00:00"
 updated: "2026-01-26 12:00:00"
-desc: '行内代码 var example = "hello";'
+desc: 'Inline code var example = "hello";'
 cover: http://example.com/favicon.ico
 ---
 
-# Markdown 语法全面指南
+# Comprehensive Markdown Syntax Guide
 
-## 基本语法
+## Basic Syntax
 
-### 标题
+### Headings
 
-# 一级标题
+# Heading 1
 
-## 二级标题
+## Heading 2
 
-### 三级标题
+### Heading 3
 
-#### 四级标题
+#### Heading 4
 
-##### 五级标题
+##### Heading 5
 
-###### 六级标题
+###### Heading 6
 
-### 强调
+### Emphasis
 
-_斜体_ 或 _斜体_
-**粗体** 或 **粗体**
-**_粗斜体_** 或 **_粗斜体_**
-~~删除线~~
-<u>下划线</u>
+_Italic_ or _Italic_
+**Bold** or **Bold**
+**_Bold Italic_** or **_Bold Italic_**
+~~Strikethrough~~
+<u>Underline</u>
 
-### 列表
+### Lists
 
-#### 无序列表
+#### Unordered Lists
 
-- 项目1
+- Item 1
 
-* 项目2
+* Item 2
 
-- 项目3
+- Item 3
 
-#### 有序列表
+#### Ordered Lists
 
-1. 项目1
-2. 项目2
-3. 项目3
+1. Item 1
+2. Item 2
+3. Item 3
 
-#### 任务列表
+#### Task Lists
 
-- [x] 已完成任务
-- [ ] 未完成任务
+- [x] Completed task
+- [ ] Incomplete task
 
-### 链接和图片
+### Links and Images
 
-[链接文本](http://example.com)
-![图片描述](http://example.com/favicon.ico)
+[Link text](http://example.com)
+![Image description](http://example.com/favicon.ico)
 
-### 引用
+### Blockquotes
 
-> 这是一个引用
+> This is a blockquote
 >
-> > 这是嵌套引用
+> > This is a nested blockquote
 > >
-> > > 三级嵌套引用
+> > > Triple nested blockquote
 
-### 代码
+### Code
 
-行内代码 `var example = "hello";`
+Inline code `var example = "hello";`
 
-```javascript title="这是代码的示例"
-// 代码块
+```javascript title="This is a code example"
+// Code block
 function example() {
     return "Hello, world!";
 }
 ```
 
-### 分隔线
+### Horizontal Rules
 
 ---
 
@@ -90,82 +90,82 @@ function example() {
 
 ---
 
-### 表格
+### Tables
 
-| 表头1  | 表头2  |  表头3 |
-| :----- | :----: | -----: |
-| 左对齐 |  居中  | 右对齐 |
-| 单元格 | 单元格 | 单元格 |
+| Header 1 | Header 2 | Header 3 |
+| :------- | :------: | -------: |
+| Left     |  Center  |    Right |
+| Cell     |   Cell   |     Cell |
 
-## 高级嵌套示例
+## Advanced Nesting Examples
 
-### 嵌套列表
+### Nested Lists
 
-1. 第一层
-    - 第二层
-        - 第三层
-            - 第四层
-    - 返回第二层
-2. 返回第一层
+1. First level
+    - Second level
+        - Third level
+            - Fourth level
+    - Back to second level
+2. Back to first level
 
-### 嵌套引用和格式化
+### Nested Blockquotes and Formatting
 
-> 第一层引用
+> First level blockquote
 >
-> > 第二层引用
+> > Second level blockquote
 > >
-> > **粗体文本**内的*斜体*
+> > **Bold text** with _italics_ inside
 > >
-> > 1. 引用中的列表
-> > 2. 第二项
+> > 1. List within blockquote
+> > 2. Second item
 > >
-> > `引用中的代码`
+> > `Code within blockquote`
 >
-> 回到第一层
+> Back to first level
 
-### 表格中的格式化
+### Formatting in Tables
 
-| 功能 | 语法          | 效果        |
-| ---- | ------------- | ----------- |
-| 粗体 | `**文本**`    | **文本**    |
-| 斜体 | `*文本*`      | _文本_      |
-| 代码 | `` `代码` ``  | `代码`      |
-| 链接 | `[链接](url)` | [链接](url) |
+| Feature | Syntax        | Result      |
+| ------- | ------------- | ----------- |
+| Bold    | `**text**`    | **text**    |
+| Italic  | `*text*`      | _text_      |
+| Code    | `` `code` ``  | `code`      |
+| Link    | `[link](url)` | [link](url) |
 
-### HTML混合
+### HTML Mixing
 
 <div>
-    <h4>HTML块</h4>
-    <p>这是一个<em>HTML段落</em>与<strong>Markdown混合</strong></p>
+    <h4>HTML Block</h4>
+    <p>This is an <em>HTML paragraph</em> mixed with <strong>Markdown</strong></p>
     
-- Markdown列表在HTML中
-- 第二项
+- Markdown list within HTML
+- Second item
     
-> HTML中的Markdown引用
+> Markdown blockquote within HTML
 
 </div>
 
-### 脚注
+### Footnotes
 
-这里有一个脚注[^1]，还有另一个[^2]。
+Here is a footnote[^1], and another one[^2].
 
-[^1]: 这是第一个脚注的内容。
+[^1]: This is the content of the first footnote.
 
 [^2]:
-    这是第二个脚注，可以有多行
-    缩进的内容属于脚注的一部分。
+    This is the second footnote, which can span multiple lines.
+    Indented content belongs to the footnote.
 
-### LaTeX数学公式
+### LaTeX Math Formulas
 
-行内公式: $E=mc^2$
+Inline formula: $E=mc^2$
 
-块级公式:
+Block formula:
 
 $$
 \frac{d}{dx}(e^x) = e^x
 $$
 
-### mermaid
+### Mermaid
 
 ```mermaid
 graph TD;
@@ -175,17 +175,17 @@ graph TD;
     C-->D;
 ```
 
-## 特殊字符转义
+## Special Character Escaping
 
-\* 星号转义
-\\ 反斜杠
-\` 反引号
-\_ 下划线
-\{ \} 花括号
-\[ \] 方括号
-\( \) 小括号
-\# 井号
-\+ 加号
-\- 减号
-\. 英文句点
-\! 感叹号
+\* Escaped asterisk
+\\ Escaped backslash
+\` Escaped backtick
+\_ Escaped underscore
+\{ \} Escaped curly braces
+\[ \] Escaped square brackets
+\( \) Escaped parentheses
+\# Escaped hash
+\+ Escaped plus
+\- Escaped minus
+\. Escaped period
+\! Escaped exclamation mark

@@ -1,101 +1,101 @@
 ---
-title: Markdown文件配置参考
+title: Markdown File Configuration Reference
 tags:
-    - 配置
+    - Configuration
     - Markdown
-    - 内容创作
+    - Content Creation
 categories:
-    - 主题配置
+    - Theme Config
 date: "2025-05-10 16:00:00"
 updated: "2026-01-26 00:00:00"
-desc: 本篇按照当前 schema（见 src/content.config.ts）重写，列出 posts、about 与 words 的 frontmatter 要求及示例。避免使用项目内相对链接，确保发布到站点时不会出现无效链接。
+desc: This article is rewritten according to the current schema (see src/content.config.ts), listing the frontmatter requirements and examples for posts, about, and words. Avoid using project-internal relative links to ensure no broken links when published to the site.
 abbrlink: f31dae4f
 ---
 
-## 概要
+## Overview
 
-本篇按照当前 schema（见 src/content.config.ts）重写，列出 posts、about 与 words 的 frontmatter 要求及示例。避免使用项目内相对链接，确保发布到站点时不会出现无效链接。
+This article is rewritten according to the current schema (see src/content.config.ts), listing the frontmatter requirements and examples for posts, about, and words. Avoid using project-internal relative links to ensure no broken links when published to the site.
 
 ## posts/\*.md frontmatter
 
-loader: base 为 `stalux/posts/`，pattern `*.md`/`*.mdx`。
+Loader: base is `stalux/posts/`, pattern `*.md`/`*.mdx`.
 
-必填字段：
+Required fields:
 
-- `title`: 文章标题。
-- `abbrlink`: 永久链接，支持字符串或数字（数字会自动转为字符串）。建议手动设置保持 URL 稳定。
-- `date`: 发布时间，**字符串类型**，推荐使用 `YYYY-MM-DD HH:mm:ss` 格式，必须用双引号包裹，防止 YAML 自动转换为 Date 对象。
+- `title`: Post title.
+- `abbrlink`: Permanent link, supports strings or numbers (numbers are automatically converted to strings). It is recommended to manually set this to keep URLs stable.
+- `date`: Publish time, **string type**, recommended format `YYYY-MM-DD HH:mm:ss`, must be wrapped in double quotes to prevent YAML from automatically converting it to a Date object.
 
-可选字段：
+Optional fields:
 
-- `updated`: 更新日期，**字符串类型**，未填则不显示更新时间，格式同 `date`，同样需要双引号。
-- `draft`: 布尔，默认 false；为 true 时可用于本地草稿控制。
-- `tags`: 标签数组，字符串或单个字符串会被预处理为数组。
-- `categories`: 分类数组，字符串或单个字符串会被预处理为数组。
-- `cc`: 版权标识，默认 `CC-BY-NC-SA-4.0`。
+- `updated`: Update date, **string type**, same format as `date`, also needs double quotes. If not provided, the update time will not be displayed.
+- `draft`: Boolean, default false; when true, can be used for local draft control.
+- `tags`: Tag array; a string or single string will be preprocessed into an array.
+- `categories`: Category array; a string or single string will be preprocessed into an array.
+- `cc`: Copyright license, default `CC-BY-NC-SA-4.0`.
 
-示例：
+Example:
 
 ```markdown
 ---
-title: Astro 入门指南
+title: Astro Getting Started Guide
 abbrlink: astro-guide
 date: "2025-05-10 09:30:00"
 updated: "2025-05-12 18:00:00"
 tags:
     - Astro
-    - 前端
+    - Frontend
 categories:
-    - 技术教程
+    - Tech Tutorial
 cc: CC-BY-NC-SA-4.0
 draft: false
 ---
 
-正文内容...
+Body content...
 ```
 
-书写提示：
+Writing tips:
 
-- **日期格式推荐**：`YYYY-MM-DD HH:mm:ss`（例如 `"2025-05-10 09:30:00"`）。
-- 必须使用**双引号**包裹，否则 YAML 会自动转换为 Date 对象，导致 schema 验证失败。
-- `abbrlink` 可以是字符串（如 `"astro-guide"`）或数字（如 `123456`），数字会自动转为字符串。
-- `tags`/`categories` 支持单个字符串或数组，内部会自动转成数组。
-- 未提供 `cc` 时采用默认值 `CC-BY-NC-SA-4.0`；若不需要版权声明，可设为空字符串。
+- **Recommended date format**: `YYYY-MM-DD HH:mm:ss` (e.g., `"2025-05-10 09:30:00"`).
+- Must be wrapped in **double quotes**, otherwise YAML will automatically convert it to a Date object, causing schema validation to fail.
+- `abbrlink` can be a string (e.g., `"astro-guide"`) or a number (e.g., `123456`); numbers are automatically converted to strings.
+- `tags`/`categories` support a single string or an array; they are automatically converted to arrays internally.
+- If `cc` is not provided, the default value `CC-BY-NC-SA-4.0` is used; if no copyright notice is needed, it can be set to an empty string.
 
 ## about/\*.md frontmatter
 
-loader: base 为 `stalux/about/`，pattern `**/*.{md,mdx}`。
+Loader: base is `stalux/about/`, pattern `**/*.{md,mdx}`.
 
-字段：
+Fields:
 
-- `title` 必填。
-- `description` 必填（用于页面描述/SEO）。
+- `title` is required.
+- `description` is required (used for page description/SEO).
 
-示例：
+Example:
 
 ```markdown
 ---
-title: 关于博主
-description: 个人简介、技能与联系方式
+title: About the Author
+description: Personal introduction, skills, and contact information
 ---
 
-这里是关于页面正文...
+Here is the about page body...
 ```
 
 ## words/\*.md frontmatter
 
-loader: base 为 `stalux/words/`，pattern `*.md`/`*.mdx`。
+Loader: base is `stalux/words/`, pattern `*.md`/`*.mdx`.
 
-所有字段均为可选：
+All fields are optional:
 
-- `source`: 来源或作者名。
-- `link`: 来源链接；存在时 `source` 会渲染为可点击外链。
-- `sourceDate`: 来源对应的时间，斜体显示在卡片右下角。
-- `date`: 写这条一言的时间，显示在卡片左下角并用于排序；格式同 posts 的 `date`。
-- `updated`: 更新日期，字符串，格式同 `date`。
-- `draft`: 布尔，默认 `false`；为 `true` 时不显示。
+- `source`: Source or author name.
+- `link`: Source link; when present, `source` will render as a clickable external link.
+- `sourceDate`: The date associated with the source, displayed in italics at the bottom-right of the card.
+- `date`: The date this quote was written, displayed at the bottom-left of the card and used for sorting; same format as posts' `date`.
+- `updated`: Update date, string, same format as `date`.
+- `draft`: Boolean, default `false`; when `true`, not displayed.
 
-示例：
+Example:
 
 ```markdown
 ---
@@ -110,8 +110,8 @@ draft: false
 Talk is cheap. Show me the `code`.
 ```
 
-## 写作与校验
+## Writing and Validation
 
-- frontmatter 放在文件顶部，使用三根短横线包裹。
-- 冒号后留空格，数组/对象保持正确缩进。
-- 保存后运行 `bun run dev`，如有必填缺失或类型不符，构建日志会提示具体字段。
+- Place frontmatter at the top of the file, wrapped in three dashes.
+- Leave a space after colons, maintain correct indentation for arrays/objects.
+- After saving, run `bun run dev`; if any required fields are missing or types don't match, the build log will indicate the specific fields.

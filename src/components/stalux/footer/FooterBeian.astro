@@ -1,4 +1,7 @@
 ---
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
+
 interface Props {
     icp?: string;
     pubsec?: string;
@@ -6,6 +9,9 @@ interface Props {
 }
 
 const { icp, pubsec, pubsecNumber } = Astro.props;
+
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 
 const showBeian = !!(icp || pubsec);
 ---
@@ -31,7 +37,7 @@ const showBeian = !!(icp || pubsec);
                 >
                     <img
                         src="https://beian.mps.gov.cn/img/logo01.dd7ff50e.png"
-                        alt="公安备案图标"
+                        alt={t("footer.securityIcon")}
                     />
                     {pubsec}
                 </a>

@@ -1,19 +1,21 @@
 ---
 import Stalux from "@layouts/Stalux.astro";
 import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import Navs from "@components/stalux/layout/navs.astro";
 import styles from "@styles/pages/tags.module.css";
 import TagsCloud from "@components/stalux/tags/tagsCloud.astro";
 const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
 <Stalux
-    title={"标签云 | " + stalux.title}
-    description={stalux.title + "的标签云"}
+    title={t("tags.title") + " | " + stalux.title}
+    description={t("tags.description", { title: stalux.title })}
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <h1 class={styles.title}>标签云</h1>
-    <div class={styles.description}>探索不同主题的文章标签</div>
+    <h1 class={styles.title}>{t("tags.heading")}</h1>
+    <div class={styles.description}>{t("tags.explore")}</div>
     <TagsCloud />
 </Stalux>

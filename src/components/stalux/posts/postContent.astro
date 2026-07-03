@@ -3,6 +3,7 @@ import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postContent.module.css";
 import "@styles/components/markdown.css";
 import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
@@ -10,12 +11,14 @@ interface Props {
     date?: string;
     updated?: string;
     readingTime?: string;
+    readingMinutes?: number;
     wordCount?: number;
     hasImage?: boolean;
 }
 
 const props = Astro.props as Props;
 const stalux = (await getCollection("config"))[0]?.data;
+const { t } = createTranslator(stalux?.lang || "zh-CN");
 const timezone = stalux?.timezone;
 ---
 
@@ -30,7 +33,7 @@ const timezone = stalux?.timezone;
             {
                 props.date && (
                     <time class={style.metaItem} datetime={timezone ? toMachineDateTime(props.date, timezone) : props.date}>
-                        发布时间：
+                        {t("post.publishTime")}
                         {props.date}
                     </time>
                 )
@@ -39,7 +42,7 @@ const timezone = stalux?.timezone;
             {
                 props.updated && (
                     <time class={style.metaItem} datetime={timezone ? toMachineDateTime(props.updated, timezone) : props.updated}>
-                        更新时间：
+                        {t("post.updateTime")}
                         {props.updated}
                     </time>
                 )
@@ -48,18 +51,22 @@ const timezone = stalux?.timezone;
         {
             (props.readingTime || true) && (
                 <div class={style.pageStats}>
-                    {props.readingTime && (
+                    {(props.readingTime || props.readingMinutes) && (
                         <span class={style.readingTime}>
-                            🕒 阅读时间：{props.readingTime}
+                            {t("post.readingTime")}{props.readingMinutes && props.readingMinutes > 0
+                                ? (props.readingMinutes < 1
+                                    ? t("common.lessThanOneMinute")
+                                    : t("common.minute", { n: props.readingMinutes }))
+                                : props.readingTime}
                         </span>
                     )}
                     {props.wordCount && props.wordCount > 0 && (
                         <span class={style.wordCount}>
-                            📝 字数：{props.wordCount}
+                            {t("post.wordCount")}{props.wordCount}
                         </span>
                     )}
                     <span id="vercount_container_page_pv">
-                        👀 阅读量：
+                        {t("post.viewCount")}
                         <span id="vercount_value_page_pv">Loading...</span>
                     </span>
                 </div>

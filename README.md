@@ -1,111 +1,115 @@
-**本项目由阿里云ESA提供加速、计算和保护**
+**This project is accelerated, computed and protected by Alibaba Cloud ESA**
 
-![阿里云加速](aliyun.png)
+![Alibaba Cloud Acceleration](aliyun.png)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xingwangzhe/stalux)
 [![Deploy with EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https://github.com/xingwangzhe/stalux)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/xingwangzhe/stalux)
 
-**#阿里云ESA Pages** **#阿里云云工开物话题**
+**#Alibaba Cloud ESA Pages** **#Alibaba Cloud Yungong Kaichuang**
 
-# Stalux - 现代 Astro 博客主题
+# Stalux - Modern Astro Blog Theme
 
-![多端预览](image.png)
+![Multi-device Preview](image.png)
 
 ## **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/xingwangzhe/stalux)
 
-**本博客主题已有[软著](./软著证明.pdf)，受中国版权相关法律保护，请务必遵守 [LICENSE 许可证](./LICENSE)（MIT 协议）**
+**This blog theme has [Software Copyright Registration](./软著证明.pdf) and is protected by Chinese copyright law. Please comply with the [LICENSE](./LICENSE) (MIT License).**
 
 <p align="center">
-  优雅、高性能、易配置的 Astro 静态博客主题
+  Elegant, high-performance, easily configurable Astro static blog theme
 </p>
 
-设计上，Stalux 借鉴了极简主义（Minimalism）与适度装饰的理念：整体保持暗色基调与毛玻璃的细腻质感，背景图使用平铺的装饰性图案以强化视觉层次但不喧宾夺主（背景图来源见仓库声明）。主题的目标是让读者把注意力放在内容上，同时保留适度的装饰性细节以提升整体识别度。
+In terms of design, Stalux draws on minimalism and moderate decoration: it maintains an overall dark tone with subtle glassmorphism textures, and the background uses tiled decorative patterns to enhance visual depth without being distracting (see the repository notice for background sources). The theme's goal is to focus the reader's attention on the content while retaining moderate decorative details to enhance overall recognition.
 
-在体验上，Stalux 兼顾 SSG 的高性能与无刷新页面切换的流畅感。通过对视图过渡（view transitions）以及对 `astro:page-load` 事件的处理，主题在导航或主内容切换时尽量保持头部、脚部等公用组件的状态，减少白屏闪烁并保证评论、搜索等脚本在跳转后继续正常工作。
+In terms of experience, Stalux balances SSG's high performance with the smooth feel of page transitions without full reloads. Through view transitions and handling of `astro:page-load` events, the theme keeps the header, footer, and other common components stable during navigation or main content switching, reducing white flashes and ensuring that comments, search, and other scripts continue to work properly after transitions.
 
-内容优先是主题的核心理念之一：写作和呈现被视为第一位。主题开箱即支持 CommonMark、代码高亮、Mermaid 流程图与 KaTeX 数学公式，文章支持自动生成目录与阅读时长，并且内容集合默认放在 `stalux/posts`、`stalux/about` 与 `stalux/words` 下，便于作者以文件夹级别管理个人内容。
+Content-first is one of the theme's core principles: writing and presentation are considered top priority. The theme supports CommonMark, code highlighting, Mermaid flowcharts, and KaTeX math formulas out of the box. Articles support automatic table of contents generation and reading time estimation, and content collections are placed under `stalux/posts`, `stalux/about`, and `stalux/words` by default for easy folder-level content management.
 
-### 新增页面：一言（/words）
+### New Page: Words (/words)
 
-主题内置了「一言」语录页面，用于收集短句、代码片段或任何想记录的只言片语。在 `stalux/words/` 下新建 Markdown 文件即可：
+The theme includes a "Words" quotes page for collecting short phrases, code snippets, or anything you want to record. Simply create a Markdown file under `stalux/words/`:
 
 ```yaml
 ---
-source: "来源或作者"
-link: "https://来源链接" # 可选；存在时来源会显示为可点击外链
-sourceDate: "1999" # 可选；来源对应的时间，会斜体显示在右下角
-date: "2026-06-18 20:45:00" # 可选；写这条一言的时间，显示在左下角
-updated: "2026-06-18 21:00:00" # 可选
-draft: false # 可选；默认 false，true 时不显示
+source: "Source or author"
+link: "https://source-link" # Optional; when present, source becomes a clickable external link
+sourceDate: "1999" # Optional; source date, displayed in italics at the bottom right
+date: "2026-06-18 20:45:00" # Optional; when this word was recorded, displayed at the bottom left
+updated: "2026-06-18 21:00:00" # Optional
+draft: false # Optional; defaults to false, true hides the entry
 ---
-这里写语录正文，支持 **Markdown**、`行内代码` 和代码块。
+Write the quote body here, supports **Markdown**, `inline code`, and code blocks.
 ```
 
-同时在 `config.yml` 的 `navs` 里添加 `- title: 一言 / icon: quote / link: /words` 即可进入导航。
+Add `- title: Words / icon: quote / link: /words` to the `navs` section in `config.yml` to include it in navigation.
 
-配置方面，Stalux 使用 YAML 作为主配置载体（`config.yml`），并通过 `content.config.ts` 做类型校验与加载，既保持了配置的可读性，也能在构建时捕捉常见错误。仓库还提供 `BACK.yml`作为示例与备份。
+For configuration, Stalux uses YAML as the primary configuration format (`config.yml`), with type checking and loading handled by `content.config.ts`, which keeps configuration readable while catching common errors at build time. The repository also provides `BACK.yml` as an example and backup.
 
 ```yaml
 stalux:
-    title: Stalux博客主题
+    lang: zh-CN # Site language, options: zh-CN, en
+    title: Stalux Blog Theme
     url: https://stalux.needhelp.icu
-    description: "博客主题Stalux - 为内容创作者提供的专业展示平台，支持多种自定义功能，包含评论系统集成、友情链接管理、社交媒体分享和丰富的SEO优化选项，让您的内容更具吸引力和可发现性。"
-    # canonical: # 源指向 默认为 stalux.url
-    # twitterSite: # Twitter 站点
-    # noindex: # 是否禁止搜索引擎索引 默认 false
-    # nofollow: # 是否禁止搜索引擎跟踪链接 默认 false
-    # 分析工具和自定义头部配置
+    description: "Blog theme Stalux - A professional display platform for content creators..."
+    timezone: "Asia/Shanghai"
+    # canonical: # Canonical URL, defaults to stalux.url
+    # twitterSite: # Twitter site handle
+    # noindex: # Whether to block search engine indexing, default false
+    # nofollow: # Whether to block search engine link following, default false
+    # Analytics and custom head configuration
     head:
-        # Google Analytics 4 跟踪 ID (格式: G-XXXXXXXXXX)
+        # Google Analytics 4 tracking ID (format: G-XXXXXXXXXX)
         # googleAnalyticsId: ""
-        # Microsoft Bing Clarity 项目 ID
+        # Microsoft Bing Clarity project ID
         # bingClarityId: ""
-        # Umami 分析配置
+        # Umami analytics configuration
         # umami:
-        #   id: ""      # 网站 ID
-        #   url: ""     # Umami 脚本 URL
-        # 额外自定义头部内容（HTML字符串）
+        #   id: ""      # Website ID
+        #   url: ""     # Umami script URL
+        # Extra custom head content (HTML string)
         anyhead: ""
-    favicon: "/stalux.ico" # 网站图标路径，默认为根路径下
+    favicon: "/stalux.ico" # Favicon path, defaults to root
 
     author:
         name: xingwangzhe
         avatar: /avatar.png
-        bio: 博客主题Stalux
+        bio: Blog Theme Stalux
 
     navs:
-        - title: 首页
+        # icon: use standard Lucide icon names
+        # Icon list: https://lucide.dev/icons/
+        - title: Home
           icon: home
           link: /
-        - title: 文章
+        - title: Archives
           icon: archive
           link: /archives
-        - title: 分类
+        - title: Categories
           icon: folder
           link: /categories
-        - title: 标签
+        - title: Tags
           icon: tag
           link: /tags
-        - title: 一言
+        - title: Words
           icon: quote
           link: /words
-        - title: 友链
+        - title: Links
           icon: link
           link: /links
-        - title: 关于
+        - title: About
           icon: user
           link: /about
-        - title: 开往
+        - title: Travellings
           icon: train-front
           link: https://www.travellings.cn/go
 
     typetexts:
         - "Free for free, not free for charge!"
-        - "任意键在哪?"
-        - "F12看看?"
+        - "Where's the any key?"
+        - "Press F12?"
         - "Hello World!"
 
     mediaLinks:
@@ -125,58 +129,58 @@ stalux:
           link: https://t.me/
 
     links:
-        title: 帮助链接
-        description: 这些网站很棒，对本主题有很大帮助!
+        title: Helpful Links
+        description: These sites are great and have been very helpful to this theme!
         sites:
             - name: Astro
-              description: 构建内容丰富的网站的现代静态网站生成器。
+              description: A modern static site generator for building content-rich websites.
               link: https://astro.build/
               icon: https://astro.build/favicon.svg
             - name: MDN
-              description: 提供关于Web标准的开放性、详尽且易于理解的信息。
+              description: Provides open, detailed, and easy-to-understand information about web standards.
               link: https://developer.mozilla.org/
               icon: https://developer.mozilla.org/favicon.ico
-            - name: animtejs
-              description: 一个强大的JavaScript动画库，帮助你轻松创建复杂的动画效果。
+            - name: animejs
+              description: A powerful JavaScript animation library that helps you easily create complex animations.
               link: https://animejs.com/
               icon: https://animejs.com/assets/images/favicon.png
             - name: feather-icons
-              description: 简洁且美观的开源图标库，适用于各种设计项目。
+              description: A clean and beautiful open-source icon library suitable for various design projects.
               link: https://feathericons.com/
               icon: https://feathericons.com/favicon.ico
             - name: simple-icons
-              description: 提供数千个品牌图标的开源图标库，适用于网页和应用设计。
+              description: An open-source icon library providing thousands of brand icons for web and app design.
               link: https://simpleicons.org/
               icon: https://simpleicons.org/icons/simpleicons.svg
 
     footer:
-        # 站点构建时间，用于计算运行时长
+        # Site build time, used to calculate uptime
         buildtime: "2025-05-01T10:00:00"
 
-        # 版权信息
+        # Copyright information
         copyright:
             enabled: true
             startYear: 2024
             customText: ""
 
-        # 主题信息
+        # Theme information
         theme:
             showPoweredBy: true
             showThemeInfo: true
 
-        # 备案信息
+        # Filing/ICP information
         beian:
-            # ICP备案
+            # ICP filing
             icp:
                 enabled: false
                 number: "辽ICP备XXXXXXXX号"
-            # 公安备案
+            # Public security filing
             security:
                 enabled: false
                 text: "辽公网安备 XXXXXXXXXXXX号"
                 number: "XXXXXXXXXXXX"
 
-        # 徽章配置
+        # Badge configuration
         badges:
             - label: "Powered by"
               message: "Astro"
@@ -200,15 +204,15 @@ stalux:
               color: "blue"
               alt: "License: MIT"
               href: "https://github.com/xingwangzhe/stalux/blob/main/LICENSE"
-            - label: "软著"
-              message: "登记号 2025SR2258474"
+            - label: "Copyright"
+              message: "Reg# 2025SR2258474"
               color: "yellowgreen"
-              alt: "软件著作权登记号 2025SR2258474"
+              alt: "Software Copyright Registration No. 2025SR2258474"
               href: "/软著证明.pdf"
-            - label: "阿里云ESA"
-              message: "支持"
+            - label: "Aliyun ESA"
+              message: "Powered"
               color: "brightgreen"
-              alt: "阿里云ESA"
+              alt: "Alibaba Cloud ESA"
               href: "https://www.aliyun.com/product/esa"
             - label: "Sitemap"
               message: "XML"
@@ -232,20 +236,21 @@ stalux:
               href: "/llms.txt"
 
         custom: |
-            <!-- footer自定义插槽示例，可放统计、挂件等 -->
+            <!-- footer custom slot example, can place stats, widgets, etc. -->
             <div id="custom-footer-hook"></div>
-            <script>console.log('自定义footer已加载');</script>
+            <script>console.log('Custom footer loaded');</script>
 
     comment:
-        enabled: false # 添加一个开关来启用或禁用评论区，默认关闭
+        enabled: false # Toggle to enable/disable comments, disabled by default
         waline:
             serverURL: https://walines.xingwangzhe.fun
             lang: zh-CN
-            # locale: # 可选，自定义语言配置
-            login: "force" # 'enable' | 'disable' | 'force'（开启强制登录可防止伪造）
-            recaptchaV3Key: "" # 可选，配置 reCAPTCHA v3 网站 key 以启用验证码
-            turnstileKey: "" # 可选，配置 Cloudflare Turnstile key 以启用验证码
+            # locale: # Optional, custom language configuration
+            login: "force" # 'enable' | 'disable' | 'force' (force login prevents impersonation)
+            recaptchaV3Key: "" # Optional, configure reCAPTCHA v3 site key to enable CAPTCHA
+            turnstileKey: "" # Optional, configure Cloudflare Turnstile key to enable CAPTCHA
             dark: true
+            # Emoji preset list: https://waline.js.org/next/guide/features/emoji.html#presets
             reaction: false
             meta:
                 - nick
@@ -253,28 +258,28 @@ stalux:
                 - link
             requiredMeta: []
             commentSorting: "latest"
-            # imageUploader: # 可选，自定义图片上传函数
-            # highlighter: # 可选，自定义代码高亮函数
-            # texRenderer: # 可选，自定义 TeX 渲染函数
-            # search: # 可选，自定义搜索功能
+            # imageUploader: # Optional, custom image upload function
+            # highlighter: # Optional, custom code highlighter function
+            # texRenderer: # Optional, custom TeX renderer function
+            # search: # Optional, custom search function
             wordLimit: 200
             pageSize: 10
 ```
 
-功能生态方面，主题内置 Waline 评论适配、Feather 与 Simple Icons 图标、PhotoSwipe 图片灯箱、Orama 全文搜索和徽章生成器等实用能力。开发者体验上，Stalux 使用 TypeScript + CSS Modules，推荐使用 Bun 来获得更快的安装与构建速度，但同样兼容 npm / pnpm / yarn。
+In terms of functionality ecosystem, the theme includes Waline comment integration, Feather and Simple Icons icon sets, PhotoSwipe image lightbox, Orama full-text search, and a badge generator. For developer experience, Stalux uses TypeScript + CSS Modules, and recommends using Bun for faster install and build speeds, though npm/pnpm/yarn are also fully compatible.
 
-快速开始示例：
+Quick start:
 
 ```bash
 git clone https://github.com/xingwangzhe/stalux.git my-blog
 cd my-blog
-# 推荐使用 Bun：
+# Recommended: Bun
 bun install
 bun run dev
-# 或使用 npm：
+# Or npm:
 # npm install && npm run dev
 ```
 
-写文章只需在 `stalux/posts/` 下新建 Markdown 文件，Frontmatter 最少包含 `title`、`abbrlink`、`date` 三项（可选字段如 `tags`、`categories`、`cc`、`cover` 等将增强文章元数据的展示）；想写「一言」则放到 `stalux/words/` 下。有关更详细的配置与使用示例，请参阅仓库中的 `BACK.yml`、`license.txt`（依赖许可清单）与 `LICENSE`。
+To write a post, simply create a Markdown file under `stalux/posts/`. The minimum frontmatter requires `title`, `abbrlink`, and `date` (optional fields like `tags`, `categories`, `cc`, `cover` enhance article metadata display). To write a "Word", place it under `stalux/words/`. For more detailed configuration and usage examples, see `BACK.yml`, `license.txt` (dependency license listing), and `LICENSE` in the repository.
 
-如果你喜欢这个主题，也欢迎点个 ⭐️ 支持。
+If you like this theme, please consider giving it a ⭐️ to show your support!

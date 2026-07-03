@@ -32,7 +32,7 @@ export async function getCategoryCountList() {
     const categoryMap = new Map<string, number>();
 
     posts.forEach((post) => {
-        const categories = post.data.categories || ["未分类"];
+        const categories = post.data.categories || ["uncategorized"];
         categories.forEach((cat) => {
             if (categoryMap.has(cat)) {
                 categoryMap.set(cat, categoryMap.get(cat)! + 1);

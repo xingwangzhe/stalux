@@ -1,6 +1,8 @@
 ---
 import style from "@styles/components/posts/postCC.module.css";
 import ccIcon from "@assets/cc-icon.svg?raw";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 
 interface Props {
     title: string;
@@ -9,6 +11,8 @@ interface Props {
     cc?: string;
 }
 
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 const { title, author, url, cc = "CC-BY-NC-SA-4.0" } = Astro.props;
 
 // CC 许可证信息映射
@@ -37,11 +41,11 @@ const licenseInfo = ccLicenses[cc] || ccLicenses["CC-BY-NC-SA-4.0"];
 <div class={style.ccBox}>
     <div class={style.ccContent}>
         <h2 class={style.ccTitle}>{title}</h2>
-        <p class={style.ccAuthor}>作者：{author}</p>
+        <p class={style.ccAuthor}>{t("post.author")}{author}</p>
         {
             url && (
                 <p class={style.ccUrl}>
-                    本文链接：
+                    {t("post.articleLink")}
                     <a href={url} target="_blank" rel="noopener noreferrer">
                         {url}
                     </a>
@@ -49,13 +53,13 @@ const licenseInfo = ccLicenses[cc] || ccLicenses["CC-BY-NC-SA-4.0"];
             )
         }
         <p class={style.ccLicense}>
-            本文采用 <a
+            {t("post.licensedUnder")} <a
                 href={licenseInfo.link}
                 target="_blank"
                 rel="noopener noreferrer"
             >
                 {licenseInfo.name}
-            </a> 进行许可。
+            </a>{t("post.licenseSuffix")}
         </p>
     </div>
 

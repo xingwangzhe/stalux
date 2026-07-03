@@ -1,8 +1,44 @@
 ---
 // Console Banner - 控制台横幅组件
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
+
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
-<script is:inline defer>
+<script define:vars={{
+    info: {
+        theme: t("console.name"),
+        version: "V1.1.0",
+        author: t("console.author"),
+        repository: "https://github.com/xingwangzhe/stalux",
+        copyright: t("console.copyright"),
+        copyrightRegNumber: "2025SR2258474",
+        license: t("console.certNumber"),
+        licensePdf: t("console.certUrl"),
+        openSourceLicense: "MIT License",
+        licenseUrl: "https://github.com/xingwangzhe/stalux/blob/master/LICENSE",
+        registrationDate: t("console.regDate"),
+        website: "https://stalux.needhelp.icu",
+    },
+    labels: {
+        version: t("console.labelVersion"),
+        author: t("console.labelAuthor"),
+        repo: t("console.labelRepo"),
+        website: t("console.labelWebsite"),
+        cert: t("console.labelCert"),
+        certNumber: t("console.labelCertNumber"),
+        regDate: t("console.labelRegDate"),
+        license: t("console.labelLicense"),
+        authNote: t("console.labelAuthNote"),
+        tip: t("console.labelTip"),
+        feedback: t("console.labelFeedback"),
+    },
+    authNoteText: t("console.authNote"),
+    tipText: t("console.tip"),
+    feedbackUrl: t("console.feedback"),
+}} defer>
     (function () {
         // ASCII Art Banner
         const banner = `
@@ -13,22 +49,6 @@
   ███████║   ██║   ██║  ██║███████╗╚██████╔╝██╔╝ ██╗
   ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝
     `;
-
-        const info = {
-            theme: "Stalux - 现代 Astro 博客主题 [简称:星博客]",
-            version: "V1.1.0",
-            author: "王兴家 (xingwangzhe)",
-            repository: "https://github.com/xingwangzhe/stalux",
-            copyright: "© 王兴家. All rights reserved.",
-            copyrightRegNumber: "2025SR2258474",
-            license: "软著登字第16914672号",
-            licensePdf: "https://stalux.needhelp.icu/软著证明.pdf",
-            openSourceLicense: "MIT License",
-            licenseUrl:
-                "https://github.com/xingwangzhe/stalux/blob/master/LICENSE",
-            registrationDate: "2025年11月24日",
-            website: "https://stalux.needhelp.icu",
-        };
 
         // 样式定义
         const styles = {
@@ -53,49 +73,36 @@
                 `%c${banner}` +
                     `%c\n✨ ${info.theme} ✨\n` +
                     `%c${separator}\n` +
-                    `%c📦 版本：%c${info.version}\n` +
-                    `%c👤 著作权人：%c${info.author}\n` +
-                    `%c🔗 仓库：%c${info.repository}\n` +
-                    `%c🌐 官网：%c${info.website}\n` +
-                    `%c📜 软著证书：%c${info.license} %c→ ${info.licensePdf}\n` +
-                    `%c🎫 登记号：%c${info.copyrightRegNumber}\n` +
-                    `%c📅 登记日期：%c${info.registrationDate}\n` +
+                    `%c${labels.version}%c${info.version}\n` +
+                    `%c${labels.author}%c${info.author}\n` +
+                    `%c${labels.repo}%c${info.repository}\n` +
+                    `%c${labels.website}%c${info.website}\n` +
+                    `%c${labels.cert}%c${info.license} %c→ ${info.licensePdf}\n` +
+                    `%c${labels.certNumber}%c${info.copyrightRegNumber}\n` +
+                    `%c${labels.regDate}%c${info.registrationDate}\n` +
                     `%c${separator}\n` +
-                    `%c⚖️  开源协议：%c${info.openSourceLicense} %c→ ${info.licenseUrl}\n` +
-                    `%c✅ 授权说明：%c遵守 MIT 协议即获得授权使用\n` +
+                    `%c${labels.license}%c${info.openSourceLicense} %c→ ${info.licenseUrl}\n` +
+                    `%c${labels.authNote}%c${authNoteText}\n` +
                     `%c${separator}\n` +
-                    `%c💡 提示：%c如果你喜欢这个主题，欢迎 Star ⭐\n` +
-                    `%c🐛 问题反馈：%c${info.repository}/issues`,
+                    `%c${labels.tip}%c${tipText}\n` +
+                    `%c${labels.feedback}%c${feedbackUrl}`,
                 // 所有样式参数
-                styles.banner, // banner
-                styles.title, // 标题
-                styles.separator, // 分隔线1
-                styles.key,
-                styles.value, // 版本
-                styles.key,
-                styles.value, // 著作权人
-                styles.key,
-                styles.link, // 仓库
-                styles.key,
-                styles.link, // 官网
-                styles.key,
-                styles.value,
-                styles.link, // 软著证书
-                styles.key,
-                styles.value, // 登记号
-                styles.key,
-                styles.value, // 登记日期
-                styles.separator, // 分隔线2
-                styles.key,
-                mitLicenseStyle,
-                styles.link, // 开源协议
-                styles.key,
-                authStyle, // 授权说明
-                styles.separator, // 分隔线3
-                styles.key,
-                tipStyle, // 提示
-                styles.key,
-                styles.link, // 问题反馈
+                styles.banner,
+                styles.title,
+                styles.separator,
+                styles.key, styles.value,
+                styles.key, styles.value,
+                styles.key, styles.link,
+                styles.key, styles.link,
+                styles.key, styles.value, styles.link,
+                styles.key, styles.value,
+                styles.key, styles.value,
+                styles.separator,
+                styles.key, mitLicenseStyle, styles.link,
+                styles.key, authStyle,
+                styles.separator,
+                styles.key, tipStyle,
+                styles.key, styles.link,
             );
         }
 
@@ -107,8 +114,5 @@
         } else {
             printBanner();
         }
-
-        // 视图过渡后也打印（可选，避免过于频繁可以注释掉）
-        // document.addEventListener("astro:page-load", printBanner);
     })();
 </script>

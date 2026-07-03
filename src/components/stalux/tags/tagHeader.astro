@@ -1,15 +1,23 @@
 ---
 interface Props {
     type: string;
+    typeKey?: string;
     name: string;
     count: number;
 }
 const props = Astro.props as Props;
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import styles from "@styles/components/tags/tagHeader.module.css";
+
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
+
+const typeKey = props.typeKey || props.type;
 let typeUrl = "";
-if (props.type === "分类") {
+if (typeKey === "category" || typeKey === "categories" || typeKey === "分类") {
     typeUrl = "/categories/";
-} else if (props.type === "标签") {
+} else if (typeKey === "tag" || typeKey === "tags" || typeKey === "标签") {
     typeUrl = "/tags/";
 }
 ---
@@ -35,6 +43,6 @@ if (props.type === "分类") {
         </span>
         {props.type}: {props.name}
     </h1>
-    <p class={styles.pageDescription}>共找到 {props.count} 篇相关文章</p>
-    <a href={typeUrl} class={styles.backLink}>返回{props.type}列表</a>
+    <p class={styles.pageDescription}>{t("taxonomy.foundPosts", { count: props.count })}</p>
+    <a href={typeUrl} class={styles.backLink}>{t("taxonomy.backToList", { type: props.type })}</a>
 </div>

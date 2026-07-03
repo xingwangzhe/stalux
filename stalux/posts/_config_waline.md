@@ -1,33 +1,33 @@
 ---
-title: Waline 评论系统配置
+title: Waline Comment System Configuration
 tags:
-    - 配置
-    - 评论
+    - Configuration
+    - Comments
     - Waline
 categories:
-    - 主题配置
+    - Theme Config
 date: "2025-05-10 14:00:00"
 updated: "2026-01-26 00:00:00"
-desc: Waline 是默认集成的评论系统，本篇按当前 config.yml 的值重写，说明每个字段、常见修改和部署要点。
+desc: Waline is the default integrated comment system. This article is rewritten according to the current config.yml values, explaining each field, common modifications, and deployment points.
 abbrlink: f4442947
 ---
 
-## 概要
+## Overview
 
-[Waline](https://waline.js.org/) 是默认集成的评论系统，本篇按当前 config.yml 的值重写，说明每个字段、常见修改和部署要点。
+[Waline](https://waline.js.org/) is the default integrated comment system. This article is rewritten according to the current config.yml values, explaining each field, common modifications, and deployment points.
 
-## 当前默认配置
+## Current Default Configuration
 
 ```yaml title="config.yml"
 comment:
     enabled: false
     waline:
         serverURL: "https://walines.xingwangzhe.fun"
-        lang: zh-CN
-        # locale: # 可选，自定义语言配置
-        login: "enable" # 'enable' | 'disable' | 'force'（开启强制登录可防止伪造）
-        recaptchaV3Key: "" # 可选，配置 reCAPTCHA v3 网站 key 以启用验证码
-        turnstileKey: "" # 可选，配置 Cloudflare Turnstile key 以启用验证码
+        lang: en-US
+        # locale: # Optional, custom language configuration
+        login: "enable" # 'enable' | 'disable' | 'force' (enabling force login prevents impersonation)
+        recaptchaV3Key: "" # Optional, configure reCAPTCHA v3 site key to enable captcha
+        turnstileKey: "" # Optional, configure Cloudflare Turnstile key to enable captcha
         dark: true
         reaction: false
         meta:
@@ -36,46 +36,46 @@ comment:
             - link
         requiredMeta: []
         commentSorting: "latest"
-        # imageUploader: # 可选，自定义图片上传函数
-        # highlighter: # 可选，自定义代码高亮函数
-        # texRenderer: # 可选，自定义 TeX 渲染函数
-        # search: # 可选，自定义搜索功能
+        # imageUploader: # Optional, custom image upload function
+        # highlighter: # Optional, custom code highlighting function
+        # texRenderer: # Optional, custom TeX rendering function
+        # search: # Optional, custom search functionality
         wordLimit: 200
         pageSize: 10
 ```
 
-## 字段说明
+## Field Descriptions
 
-- `serverURL` (必填): Waline 服务端地址，需与部署环境协议一致（HTTPS 站点请使用 https）。
-- `comment.enabled`：全站评论开关，设置为 `true` 才会根据 `comment.waline` 渲染评论区；默认 `false`。
-- `lang`: 界面语言，默认 `zh-CN`，可改为 `en-US` 等。
-- `locale`: 可选，自定义语言配置对象，用于覆盖默认语言包。
-- `login`: 登录模式，可选值 `'enable'`（默认，启用登录）、`'disable'`（禁用登录，用户只能填写信息评论）、`'force'`（强制登录，用户必须注册并登录才可发布评论，可防止伪造）。
-- `recaptchaV3Key`: 可选，配置 Google reCAPTCHA v3 网站密钥以启用验证码功能。
-- `turnstileKey`: 可选，配置 Cloudflare Turnstile 网站密钥以启用验证码功能。
-- `dark`: 暗色模式适配，可设置为布尔值或 CSS 选择器（如 `'html[data-theme="dark"]'`）。
-- `noCopyright`: 是否隐藏页脚版权信息，默认为 `false`。
-- `emoji`: 表情包数组，支持多个源；默认使用微博表情包。
-- `reaction`: 是否开启文章反应/点赞；默认关闭。
-- `meta`: 需要收集的用户字段，默认 `nick`、`mail`、`link`。
-- `requiredMeta`: 必填字段数组，可设置为 `['nick']` 或 `['nick', 'mail']` 等。
-- `commentSorting`: 评论排序方式，可选 `'latest'`（最新）、`'oldest'`（最早）、`'hottest'`（最热）。
-- `imageUploader`: 可选，自定义图片上传函数，用于处理图片上传逻辑。
-- `highlighter`: 可选，自定义代码高亮函数，用于渲染代码块。
-- `texRenderer`: 可选，自定义 TeX 渲染函数，用于渲染数学公式。
-- `search`: 可选，自定义搜索功能配置，用于表情包搜索等。
-- `wordLimit`: 单条评论字数上限，默认 200。
-- `pageSize`: 每页评论数量，默认 10。
+- `serverURL` (required): Waline server address, must match the deployment environment protocol (use https for HTTPS sites).
+- `comment.enabled`: Site-wide comment toggle; set to `true` to render the comment section based on `comment.waline`; default `false`.
+- `lang`: Interface language, default `zh-CN`, can be changed to `en-US`, etc.
+- `locale`: Optional, custom language configuration object for overriding the default language pack.
+- `login`: Login mode, optional values: `'enable'` (default, login enabled), `'disable'` (login disabled, users can only fill in info to comment), `'force'` (force login, users must register and log in to post comments, prevents impersonation).
+- `recaptchaV3Key`: Optional, configure Google reCAPTCHA v3 site key to enable captcha functionality.
+- `turnstileKey`: Optional, configure Cloudflare Turnstile site key to enable captcha functionality.
+- `dark`: Dark mode adaptation, can be set to a boolean or a CSS selector (e.g., `'html[data-theme="dark"]'`).
+- `noCopyright`: Whether to hide the footer copyright info, default `false`.
+- `emoji`: Emoji pack array, supports multiple sources; uses Weibo emoji pack by default.
+- `reaction`: Whether to enable post reactions/likes; disabled by default.
+- `meta`: User fields to collect, default `nick`, `mail`, `link`.
+- `requiredMeta`: Array of required fields, can be set to `['nick']` or `['nick', 'mail']`, etc.
+- `commentSorting`: Comment sorting method, options: `'latest'`, `'oldest'`, `'hottest'`.
+- `imageUploader`: Optional, custom image upload function for handling image upload logic.
+- `highlighter`: Optional, custom code highlighting function for rendering code blocks.
+- `texRenderer`: Optional, custom TeX rendering function for rendering math formulas.
+- `search`: Optional, custom search function configuration for emoji pack search, etc.
+- `wordLimit`: Maximum characters per comment, default 200.
+- `pageSize`: Number of comments per page, default 10.
 
-## 常见修改场景
+## Common Modification Scenarios
 
-- 更换域名或部署环境：仅更新 `serverURL`。
-- 启用点赞/表情反应：将 `reaction` 设为 `true`。
-- 增加表情包：在 `emoji` 数组追加新的远程地址。
-- 启用强制登录防止伪造：将 `login` 设为 `"force"`。
-- 添加验证码保护：配置 `recaptchaV3Key` 或 `turnstileKey`。
-- 适配暗色主题：设置 `dark` 为 `'html[data-theme="dark"]'` 或类似选择器。
-- 设置必填字段：将 `requiredMeta` 设为 `['nick']` 或 `['nick', 'mail']`。
-- 自定义评论排序：将 `commentSorting` 设为 `'hottest'` 以按热度排序。
-- 隐藏版权信息：将 `noCopyright` 设为 `true`。
-- 自定义图片上传：提供 `imageUploader` 函数以实现自定义上传逻辑。
+- Change domain or deployment environment: Only update `serverURL`.
+- Enable likes/emoji reactions: Set `reaction` to `true`.
+- Add more emoji packs: Append new remote addresses to the `emoji` array.
+- Enable force login to prevent impersonation: Set `login` to `"force"`.
+- Add captcha protection: Configure `recaptchaV3Key` or `turnstileKey`.
+- Adapt to dark theme: Set `dark` to `'html[data-theme="dark"]'` or a similar selector.
+- Set required fields: Set `requiredMeta` to `['nick']` or `['nick', 'mail']`.
+- Customize comment sorting: Set `commentSorting` to `'hottest'` to sort by popularity.
+- Hide copyright info: Set `noCopyright` to `true`.
+- Custom image upload: Provide an `imageUploader` function to implement custom upload logic.

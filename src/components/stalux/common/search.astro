@@ -1,18 +1,23 @@
 ---
 import { Icon } from "@lucide/astro";
 import { icons } from "lucide";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import "@styles/components/search.css";
+
+const stalux = (await getCollection("config"))[0].data;
+const { t, lang } = createTranslator(stalux.lang || "zh-CN");
 ---
 
 <div id="search-container" class="search-container" inert>
     <div class="search-backdrop"></div>
     <div class="search-box">
         <div class="search-header">
-            <h2>搜索</h2>
+            <h2>{t("search.title")}</h2>
             <button
                 id="search-close"
                 class="search-close"
-                aria-label="关闭搜索"
+                aria-label={t("search.close")}
             >
                 <Icon iconNode={icons.X} size={24} />
             </button>
@@ -22,21 +27,21 @@ import "@styles/components/search.css";
                 id="search-input"
                 class="search-input"
                 type="text"
-                placeholder="输入关键词搜索..."
+                placeholder={t("search.placeholder")}
                 autocomplete="off"
-                aria-label="搜索输入"
+                aria-label={t("search.inputLabel")}
             />
         </div>
         <div id="search-results" class="search-results">
             <div id="search-results-list" class="search-results-list"></div>
             <div id="search-empty" class="search-empty" style="display:none">
-                未找到相关结果
+                {t("search.noResults")}
             </div>
         </div>
     </div>
 </div>
 
-<script>
+<script define:vars={{ searchLabels: { typePost: t("search.typePost"), typeAbout: t("search.typeAbout"), typeWord: t("search.typeWord") } }}>
     import { create, load, search } from "@orama/orama";
     import { createTokenizer } from "@orama/tokenizers/mandarin";
     import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
@@ -95,10 +100,10 @@ import "@styles/components/search.css";
     }
 
     function formatResultMeta(type: string, date: string) {
-        if (type === "post" && date) return `文章 · ${date}`;
-        if (type === "post") return "文章";
-        if (type === "about") return "关于";
-        if (type === "word") return "一言";
+        if (type === "post" && date) return `${searchLabels.typePost} · ${date}`;
+        if (type === "post") return searchLabels.typePost;
+        if (type === "about") return searchLabels.typeAbout;
+        if (type === "word") return searchLabels.typeWord;
         return "";
     }
 

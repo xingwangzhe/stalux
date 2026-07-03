@@ -1,67 +1,67 @@
 ---
-title: Stalux 主题配置总览
+title: Stalux Theme Configuration Overview
 tags:
-    - 配置
-    - 入门
+    - Configuration
+    - Getting Started
 categories:
-    - 主题配置
+    - Theme Config
 date: "2025-05-10 10:00:00"
 updated: "2026-02-03 00:00:00"
-desc: Stalux 主题的完整配置文件结构、所有配置项说明及快速开始指南。
+desc: Complete configuration file structure of the Stalux theme, descriptions of all configuration options, and a quick start guide.
 abbrlink: 0b563d42
 ---
 
-## 配置文件位置
+## Configuration File Locations
 
-- 主配置: config.yml
-- 配置结构定义: src/content.config.ts
-- 其他专题说明: 位于 stalux/posts 下的 `_config_*.md`
+- Main config: config.yml
+- Configuration schema definition: src/content.config.ts
+- Other topic-specific docs: `_config_*.md` files located under stalux/posts
 
-## 当前默认配置（摘录）
+## Current Default Configuration (Excerpt)
 
 ```yaml
 stalux:
-    title: "Stalux博客主题"
+    title: "Stalux Blog Theme"
     url: "https://stalux.needhelp.icu"
-    description: "博客主题Stalux - 为内容创作者提供的专业展示平台，支持多种自定义功能，包含评论系统集成、友情链接管理、社交媒体分享和丰富的SEO优化选项，让您的内容更具吸引力和可发现性。"
+    description: "Blog theme Stalux - A professional display platform for content creators, supporting various customization features including comment system integration, friend link management, social media sharing, and rich SEO optimization options to make your content more attractive and discoverable."
     # canonical:
     # twitterSite:
     # noindex:
     # nofollow:
-    # 分析工具和自定义头部配置
+    # Analytics tools and custom head configuration
     head:
-        # Google Analytics 4 跟踪 ID (格式: G-XXXXXXXXXX)
+        # Google Analytics 4 tracking ID (format: G-XXXXXXXXXX)
         # googleAnalyticsId: ""
-        # Microsoft Bing Clarity 项目 ID
+        # Microsoft Bing Clarity project ID
         # bingClarityId: ""
-        # Umami 分析配置
+        # Umami analytics configuration
         # umami:
-        #   id: ""      # 网站 ID
-        #   url: ""     # Umami 脚本 URL
-        # 额外自定义头部内容（HTML字符串）
+        #   id: ""      # Website ID
+        #   url: ""     # Umami script URL
+        # Additional custom head content (HTML string)
         anyhead: ""
     favicon: "/favicon.svg"
-    timezone: "Asia/Shanghai" # IANA 时区，用于生成正确的机器可读时间格式
+    timezone: "Asia/Shanghai" # IANA timezone, used to generate correct machine-readable time formats
 
     author:
         name: "xingwangzhe"
         avatar: "/avatar.png"
-        bio: "博客主题Stalux"
+        bio: "Blog Theme Stalux"
 
     navs:
-        - { title: "首页", icon: home, link: "/" }
-        - { title: "文章", icon: archive, link: "/archives" }
-        - { title: "分类", icon: folder, link: "/categories" }
-        - { title: "标签", icon: tag, link: "/tags" }
-        - { title: "一言", icon: quote, link: "/words" }
-        - { title: "友链", icon: link, link: "/links" }
-        - { title: "关于", icon: user, link: "/about" }
-        - { title: "开往", icon: train-front, link: "https://www.travellings.cn/go" }
+        - { title: "Home", icon: home, link: "/" }
+        - { title: "Posts", icon: archive, link: "/archives" }
+        - { title: "Categories", icon: folder, link: "/categories" }
+        - { title: "Tags", icon: tag, link: "/tags" }
+        - { title: "Words", icon: quote, link: "/words" }
+        - { title: "Links", icon: link, link: "/links" }
+        - { title: "About", icon: user, link: "/about" }
+        - { title: "Travellings", icon: train-front, link: "https://www.travellings.cn/go" }
 
     typetexts:
         - "Free for free, not free for charge!"
-        - "任意键在哪?"
-        - "F12看看?"
+        - "Where's the any key?"
+        - "Press F12?"
         - "Hello World!"
 
     mediaLinks:
@@ -74,36 +74,36 @@ stalux:
         - { icon: telegram, link: "https://t.me/" }
 
     links:
-        title: "帮助链接"
-        description: "这些网站很棒，对本主题有很大帮助!"
+        title: "Helpful Links"
+        description: "These sites are great and have been very helpful to this theme!"
         sites:
             - {
                   name: "Astro",
-                  description: "构建内容丰富的网站的现代静态网站生成器。",
+                  description: "A modern static site generator for building content-rich websites.",
                   link: "https://astro.build/",
                   icon: "https://astro.build/favicon.svg",
               }
             - {
                   name: "MDN",
-                  description: "提供关于Web标准的开放性、详尽且易于理解的信息。",
+                  description: "Provides open, detailed, and easy-to-understand information about web standards.",
                   link: "https://developer.mozilla.org/",
                   icon: "https://developer.mozilla.org/favicon.ico",
               }
             - {
-                  name: "animtejs",
-                  description: "一个强大的JavaScript动画库，帮助你轻松创建复杂的动画效果。",
+                  name: "animejs",
+                  description: "A powerful JavaScript animation library for creating complex animation effects.",
                   link: "https://animejs.com/",
                   icon: "https://animejs.com/assets/images/favicon.png",
               }
             - {
                   name: "lucide",
-                  description: "美观一致的开源图标库，基于 Lucide 图标系统。",
+                  description: "A clean and beautiful open-source icon library based on the Lucide icon system.",
                   link: "https://lucide.dev/",
                   icon: "https://lucide.dev/favicon.ico",
               }
             - {
                   name: "simple-icons",
-                  description: "提供数千个品牌图标的开源图标库，适用于网页和应用设计。",
+                  description: "An open-source icon library with thousands of brand icons for web and app design.",
                   link: "https://simpleicons.org/",
                   icon: "https://simpleicons.org/icons/simpleicons.svg",
               }
@@ -118,8 +118,13 @@ stalux:
             showPoweredBy: true
             showThemeInfo: true
         beian:
-            icp: { enabled: false, number: "辽ICP备XXXXXXXX号" }
-            security: { enabled: false, text: "辽公网安备 XXXXXXXXXXXX号", number: "XXXXXXXXXXXX" }
+            icp: { enabled: false, number: "ICP备XXXXXXXX号" }
+            security:
+                {
+                    enabled: false,
+                    text: "Public Security Filing XXXXXXXXXXXX",
+                    number: "XXXXXXXXXXXX",
+                }
         badges:
             - {
                   label: "Powered by",
@@ -152,17 +157,17 @@ stalux:
                   href: "https://github.com/xingwangzhe/stalux/blob/main/LICENSE",
               }
             - {
-                  label: "软著",
-                  message: "登记号 2025SR2258474",
+                  label: "Software Copyright",
+                  message: "Reg# 2025SR2258474",
                   color: "yellowgreen",
-                  alt: "软件著作权登记号 2025SR2258474",
+                  alt: "Software Copyright Registration No. 2025SR2258474",
                   href: "/软著证明.pdf",
               }
             - {
-                  label: "阿里云ESA",
-                  message: "支持",
+                  label: "Alibaba ESA",
+                  message: "Powered",
                   color: "brightgreen",
-                  alt: "阿里云ESA",
+                  alt: "Alibaba Cloud ESA",
                   href: "https://www.aliyun.com/product/esa",
               }
             - {
@@ -188,15 +193,15 @@ stalux:
                   href: "/llms.txt",
               }
         custom: |
-            <!-- footer自定义插槽示例，可放统计、挂件等 -->
+            <!-- Example custom footer slot, can hold analytics, widgets, etc. -->
             <div id="custom-footer-hook"></div>
-            <script>console.log('自定义footer已加载');</script>
+            <script>console.log('Custom footer loaded');</script>
 
     comment:
         enabled: false
         waline:
             serverURL: "https://walines.xingwangzhe.fun"
-            lang: zh-CN
+            lang: en-US
             emoji: ["https://unpkg.com/@waline/emojis@1.1.0/weibo"]
             reaction: false
             meta: [nick, mail, link]
@@ -204,36 +209,36 @@ stalux:
             pageSize: 10
 ```
 
-## 字段说明
+## Field Descriptions
 
-- 基础信息: `title`、`url`、`description` 是站点必填；`canonical`/`twitterSite`/`noindex`/`nofollow` 按需开启；`favicon` 支持相对路径。
-- 头部扩展: `head` 用于配置分析工具（Google Analytics、Bing Clarity、Umami）和自定义 `<head>` 片段。
-    - `head.googleAnalyticsId`: GA4 跟踪 ID
-    - `head.bingClarityId`: Microsoft Clarity 项目 ID
-    - `head.umami`: Umami 分析配置（包含 `id` 和 `url`）
-    - `head.anyhead`: 额外的自定义头部 HTML
-- 作者信息: `author.name`、`author.avatar`、`author.bio` 显示在文章和侧边栏等位置。
-- 导航与动效: `navs` 为顶部导航，可配置首页、文章、分类、标签、一言、友链、关于等；`icon` 使用 Lucide Icons 标准 PascalCase 名称（参见 https://lucide.dev/icons/）；`typetexts` 是首页打字机动效的随机文案。
-- 内容集合: 文章放在 `stalux/posts/`，关于页面放在 `stalux/about/`，一言语录放在 `stalux/words/`。
-- 社交与友链: `mediaLinks` 渲染社交图标；`links` 定义友链分组标题、描述和站点列表。
-- 页脚: `footer.buildtime` 用于站点运行时长；`copyright` 控制版权显示；`theme` 控制主题信息展示；`beian` 提供 ICP/公安备案开关；`badges` 为页脚徽章列表；`custom` 支持自定义插槽 HTML。
-- 评论开关: `comment.enabled` 控制是否在全站渲染评论区（默认 `false`）。
-- 评论: `comment.waline` 配置 Waline.
+- Basic Info: `title`, `url`, `description` are required for the site; `canonical`/`twitterSite`/`noindex`/`nofollow` can be enabled as needed; `favicon` supports relative paths.
+- Head Extensions: `head` is used to configure analytics tools (Google Analytics, Bing Clarity, Umami) and custom `<head>` snippets.
+    - `head.googleAnalyticsId`: GA4 tracking ID
+    - `head.bingClarityId`: Microsoft Clarity project ID
+    - `head.umami`: Umami analytics configuration (includes `id` and `url`)
+    - `head.anyhead`: Additional custom head HTML
+- Author Info: `author.name`, `author.avatar`, `author.bio` are displayed in posts, sidebar, and other locations.
+- Navigation and Animation: `navs` is the top navigation, configurable with Home, Posts, Categories, Tags, Words, Friend Links, About, etc.; `icon` uses Lucide Icons standard PascalCase names (see https://lucide.dev/icons/); `typetexts` is the random text for the homepage typing animation.
+- Content Collections: Posts are placed in `stalux/posts/`, about pages in `stalux/about/`, quotes in `stalux/words/`.
+- Social and Friend Links: `mediaLinks` renders social icons; `links` defines friend link group titles, descriptions, and site lists.
+- Footer: `footer.buildtime` is used for site uptime display; `copyright` controls copyright display; `theme` controls theme info display; `beian` provides ICP/security filing toggles; `badges` is the footer badge list; `custom` supports custom slot HTML.
+- Comment Toggle: `comment.enabled` controls whether the comment section is rendered site-wide (default `false`).
+- Comments: `comment.waline` configures Waline.
 
-## 一言语录（words）
+## Words (Quotes)
 
-`/words` 页面用于收集短句、代码片段或语录，内容放在 `stalux/words/*.md`。
+The `/words` page is used to collect short phrases, code snippets, or quotes, with content placed in `stalux/words/*.md`.
 
-frontmatter 可选字段：
+Optional frontmatter fields:
 
-- `source`: 来源或作者。
-- `link`: 来源链接；存在时 `source` 显示为可点击外链。
-- `sourceDate`: 来源对应的时间，斜体显示在卡片右下角。
-- `date`: 写这条一言的时间，显示在卡片左下角并用于排序。
-- `updated`: 更新日期。
-- `draft`: 默认 `false`；`true` 时不显示。
+- `source`: Source or author.
+- `link`: Source link; when present, `source` is displayed as a clickable external link.
+- `sourceDate`: The date associated with the source, displayed in italics at the bottom-right of the card.
+- `date`: The date this quote was written, displayed at the bottom-left of the card and used for sorting.
+- `updated`: Update date.
+- `draft`: Default `false`; when `true`, not displayed.
 
-示例：
+Example:
 
 ```markdown
 ---
@@ -248,23 +253,23 @@ draft: false
 Talk is cheap. Show me the `code`.
 ```
 
-要在导航中显示，在 `navs` 里添加：
+To display it in navigation, add the following to `navs`:
 
 ```yaml
-- title: 一言
+- title: Words
   icon: quote
   link: /words
 ```
 
-## 常见修改
+## Common Modifications
 
-- 部署到新域名时，更新 `url` 与可选的 `canonical`，并检查导航外链。
-- 新增导航项时，仿照 `navs` 结构添加，并从 [Lucide Icons](https://lucide.dev/icons/) 选择 PascalCase 图标名称。
-- 需要更多社交或友链时，分别补充到 `mediaLinks` 或 `links.sites`。
-- 页脚徽章可按 `{ label, message, color, style?, alt?, href }` 追加；备案信息只在对应开关开启后显示。
-- Waline 服务地址或表情包源变更时，同步修改 `comment.waline`，并参考专篇确认客户端是否需要额外参数。
+- When deploying to a new domain, update `url` and optionally `canonical`, and check navigation external links.
+- When adding new navigation items, follow the `navs` structure and choose PascalCase icon names from [Lucide Icons](https://lucide.dev/icons/).
+- When you need more social or friend links, add them to `mediaLinks` or `links.sites` respectively.
+- Footer badges can be added in the format `{ label, message, color, style?, alt?, href }`; filing info is only displayed when the corresponding toggle is enabled.
+- When the Waline server address or emoji pack source changes, update `comment.waline` accordingly and refer to the dedicated article to confirm whether the client needs additional parameters.
 
-## 校验与预览
+## Validation and Preview
 
-- 保存配置后运行 `bun run dev` 预览，控制台会提示缺失字段或格式错误。
-- 修改 head 片段或统计脚本后，建议在浏览器控制台确认无报错再部署。
+- After saving the configuration, run `bun run dev` to preview; the console will indicate missing fields or format errors.
+- After modifying head snippets or analytics scripts, it is recommended to confirm in the browser console that there are no errors before deploying.

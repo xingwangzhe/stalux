@@ -10,13 +10,23 @@ import styles from "@styles/components/common/date.module.css";
 <script>
     import { format } from "date-fns";
     import { zhCN } from "date-fns/locale/zh-CN";
+    import { enUS } from "date-fns/locale/en-US";
+
+    const localeMap: Record<string, Locale> = {
+        "zh-CN": zhCN,
+        en: enUS,
+        "en-US": enUS,
+    };
 
     function updateDateTime() {
         const now = new Date();
         const dateEl = document.querySelector('[data-ref="date"]');
         const timeEl = document.querySelector('[data-ref="time"]');
+        const lang = document.documentElement.lang || "zh-CN";
+        const locale = localeMap[lang] || zhCN;
+        const dateFormat = lang.startsWith("zh") ? "yyyy年MM月dd日" : "MMM dd, yyyy";
         if (dateEl) {
-            dateEl.textContent = format(now, "yyyy年MM月dd日", { locale: zhCN });
+            dateEl.textContent = format(now, dateFormat, { locale });
             dateEl.setAttribute("datetime", format(now, "yyyy-MM-dd"));
         }
         if (timeEl) {

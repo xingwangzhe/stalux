@@ -1,40 +1,40 @@
 ---
-title: 关于
-description: 博客的关于页面,介绍这个博客
+title: About
+description: Blog about page, introducing this blog
 ---
 
-## 👋 欢迎使用 Stalux 主题
+## 👋 Welcome to the Stalux Theme
 
-**Stalux** 是一款面向内容创作者的 Astro 静态博客主题，由 **xingwangzhe** 开发。名称融合了 “Static” 与 “Luxury”，目标是提供高性能、好看且易定制的写作体验。
+**Stalux** is an Astro static blog theme for content creators, developed by **xingwangzhe**. The name blends "Static" and "Luxury," with the goal of providing a high-performance, beautiful, and easily customizable writing experience.
 
-## ⚙️ 你能配置什么
+## ⚙️ What You Can Configure
 
-- 站点信息：标题、描述、作者、favicon、社交头部信息
-- 导航菜单：名称、图标（Lucide Icons）、内外链
-- 评论系统：Waline 服务器地址、语言、表情、分页等
-- 社交链接：多平台入口，基于 simple-icons 渲染 SVG
-- 友情链接：站点名称、描述、图标、链接
-- 页脚：版权、备案、徽章、自定义脚本与插槽
+- Site Info: Title, description, author, favicon, social head information
+- Navigation Menu: Name, icon (Lucide Icons), internal and external links
+- Comment System: Waline server address, language, emoji, pagination, etc.
+- Social Links: Multi-platform entries, rendering SVGs based on simple-icons
+- Friend Links: Site name, description, icon, link
+- Footer: Copyright, filing, badges, custom scripts and slots
 
-所有配置集中在根目录 `config.yml`，无需改动组件代码即可生效。
+All configuration is centralized in the root `config.yml`, taking effect without modifying component code.
 
-## 🌟 致谢的文档
+## 🌟 Documentation Acknowledgements
 
-- [Astro](https://astro.build/) — 内容驱动的现代静态框架
-- [MDN Web Docs](https://developer.mozilla.org/) — Web 技术权威参考
-- [Simple Icons](https://simpleicons.org/) — 品牌 SVG 图标库
-- [Lucide Icons](https://lucide.dev/) — 美观一致的开源图标库
+- [Astro](https://astro.build/) — Content-driven modern static framework
+- [MDN Web Docs](https://developer.mozilla.org/) — Authoritative reference for Web technologies
+- [Simple Icons](https://simpleicons.org/) — Brand SVG icon library
+- [Lucide Icons](https://lucide.dev/) — Beautiful and consistent open-source icon library
 
-## 💡 使用建议
+## 💡 Usage Suggestions
 
-1. 先完成 `config.yml` 基础项，再补充导航、社交与页脚。
-2. 写作时使用 Markdown，保持 `title`、`abbrlink`、`date` 这些必填字段完整。
-3. 如果启用统计或验证，将代码放进 `anyhead`，发布前在浏览器控制台确认无报错。
-4. 部署后访问全站，检查灯箱、搜索、评论等交互是否正常。
+1. First complete the basic items in `config.yml`, then supplement navigation, social, and footer.
+2. When writing, use Markdown and ensure required fields like `title`, `abbrlink`, and `date` are complete.
+3. If enabling analytics or verification, place the code into `anyhead`, and confirm in the browser console that there are no errors before publishing.
+4. After deployment, visit the entire site and check that interactions like lightbox, search, and comments work properly.
 
-## 🙏 反馈与支持
+## 🙏 Feedback and Support
 
-- 在 [GitHub](https://github.com/xingwangzhe/stalux) 提交 Issue 或 PR。
-- 评论区留言你的使用体验和需求。
+- Submit Issues or PRs on [GitHub](https://github.com/xingwangzhe/stalux).
+- Leave your usage experience and needs in the comment section.
 
-Stalux 基于 MIT 许可证开放，欢迎自由使用与改进。希望它能成为你的高效写作伙伴！
+Stalux is released under the MIT license, and you are welcome to freely use and improve it. May it become your efficient writing companion!

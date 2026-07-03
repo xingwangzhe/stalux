@@ -6,7 +6,7 @@ date: "2026-06-18 20:45:00"
 draft: false
 ---
 
-游戏界最著名的一段位运算黑科技——快速反平方根，专门用来加速向量归一化里的 `1 / sqrt(x)`：
+The most famous bitwise hack in gaming history — the fast inverse square root, specifically designed to accelerate `1 / sqrt(x)` in vector normalization:
 
 ```c
 float Q_rsqrt(float number)
@@ -28,4 +28,4 @@ float Q_rsqrt(float number)
 }
 ```
 
-配合向量长度就能直接算归一化法线，当年可比标准库快得多。
+Combined with vector length, you can directly compute normalized normals, and back in the day it was much faster than the standard library.

@@ -1,5 +1,8 @@
 ---
 import styles from "@styles/components/categories/categoriesCard.module.css";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
+
 interface Props {
     category: {
         name: string;
@@ -8,6 +11,8 @@ interface Props {
 }
 
 const props = Astro.props as Props;
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
 <div class={styles.categoryCard}>
@@ -35,7 +40,7 @@ const props = Astro.props as Props;
         <div class={styles.categoryContent}>
             <h2 class={styles.categoryName}>{props.category.name}</h2>
             <div class={styles.categoryCount}>
-                {props.category.count} 篇文章
+                {t("categories.postCount", { n: props.category.count })}
             </div>
         </div>
     </a>

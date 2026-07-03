@@ -17,6 +17,10 @@ function formatReadingTime(words: number, wordsPerMinute: number): string {
     return `${minutes} 分钟`;
 }
 
+function getReadingMinutes(words: number, wordsPerMinute: number): number {
+    return Math.max(1, Math.ceil(words / wordsPerMinute));
+}
+
 /**
  * MDAST 插件：检测 math/mermaid，收集纯文本并计算字数统计
  * 使用 ctx.data 存储文本片段，在 heading/paragraph 处触发计算
@@ -71,6 +75,7 @@ export const featureFlagsMdast = defineMdastPlugin({
         const fm = ctx.data.astro.frontmatter;
         fm.wordCount = wc;
         fm.minutesRead = formatReadingTime(wc, 400);
+        fm.readingMinutes = getReadingMinutes(wc, 400);
     },
 
     paragraph(_node, ctx) {
@@ -82,6 +87,7 @@ export const featureFlagsMdast = defineMdastPlugin({
         const fm = ctx.data.astro.frontmatter;
         fm.wordCount = wc;
         fm.minutesRead = formatReadingTime(wc, 400);
+        fm.readingMinutes = getReadingMinutes(wc, 400);
     },
 });
 

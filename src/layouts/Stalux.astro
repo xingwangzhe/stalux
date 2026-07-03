@@ -1,6 +1,7 @@
 ---
 import Head from "@components/stalux/layout/head.astro";
 import Footer from "@components/stalux/layout/footer.astro";
+import { getCollection } from "astro:content";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
 const props = Astro.props as Props;
@@ -10,6 +11,9 @@ export interface Props {
   description: string;
   cover?: string;
 }
+
+const stalux = (await getCollection("config"))[0].data;
+const htmlLang = stalux.lang || "zh-CN";
 
 const bgModules = import.meta.glob<{ default: { src: string } }>(
     "../assets/background/pattern-*.min.svg",
@@ -27,7 +31,7 @@ const initialBg = bgUrls[randomIndex];
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={htmlLang}>
   <Head title={props.title} description={props.description} cover={props.cover} />
   <script define:vars={{ bgUrls, randomIndex }}>
     window.__STALUX_BG_URLS__ = bgUrls;

@@ -1,12 +1,16 @@
 ---
 import style from "@styles/components/posts/randomPost.module.css";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 
 interface Props {
     count?: number;
     title?: string;
 }
 
-const { count = 5, title = "随机文章" } = Astro.props;
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
+const { count = 5, title = t("randomPost.title") } = Astro.props;
 ---
 
 <div class={style.container} transition:persist-props>
@@ -15,8 +19,8 @@ const { count = 5, title = "随机文章" } = Astro.props;
         <button
             id="refresh-random-posts"
             class={style.refreshButton}
-            title="刷新随机文章"
-            aria-label="刷新随机文章"
+            title={t("randomPost.refresh")}
+            aria-label={t("randomPost.refresh")}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -36,11 +40,11 @@ const { count = 5, title = "随机文章" } = Astro.props;
         </button>
     </div>
     <ul class={style.list} id="random-posts-list">
-        <li class={style.loading}>正在加载随机文章...</li>
+        <li class={style.loading}>{t("randomPost.loading")}</li>
     </ul>
 </div>
 
-<script define:vars={{ count }}>
+<script define:vars={{ count, labels: { noPosts: t("randomPost.noPosts"), loadFailed: t("randomPost.loadFailed"), loadError: t("randomPost.loadError") } }}>
     // 费雪-耶茨洗牌算法
     function shuffleArray(array) {
         const shuffled = [...array];
@@ -69,7 +73,7 @@ const { count = 5, title = "随机文章" } = Astro.props;
     // 生成随机文章 HTML
     function generatePostsHTML(posts) {
         if (posts.length === 0) {
-            return '<li class="no-posts">暂无文章</li>';
+            return `<li class="no-posts">${labels.noPosts}</li>`;
         }
 
         return posts
@@ -99,7 +103,7 @@ const { count = 5, title = "随机文章" } = Astro.props;
 
                 if (allPosts.length === 0) {
                     randomPostsList.innerHTML =
-                        '<li class="no-posts">暂无文章</li>';
+                        '<li class="no-posts">' + labels.noPosts + '</li>';
                     return;
                 }
 
@@ -112,7 +116,7 @@ const { count = 5, title = "随机文章" } = Astro.props;
             } catch (error) {
                 console.error("Error refreshing random posts:", error);
                 randomPostsList.innerHTML =
-                    '<li class="error">加载失败，请重试</li>';
+                    '<li class="error">' + labels.loadFailed + '</li>';
             }
 
             // 恢复显示
@@ -130,7 +134,7 @@ const { count = 5, title = "随机文章" } = Astro.props;
 
             if (allPosts.length === 0) {
                 randomPostsList.innerHTML =
-                    '<li class="no-posts">暂无文章</li>';
+                    '<li class="no-posts">' + labels.noPosts + '</li>';
                 return;
             }
 
@@ -142,7 +146,7 @@ const { count = 5, title = "随机文章" } = Astro.props;
             randomPostsList.innerHTML = generatePostsHTML(initialRandomPosts);
         } catch (error) {
             console.error("Error initializing random posts:", error);
-            randomPostsList.innerHTML = '<li class="error">加载失败</li>';
+            randomPostsList.innerHTML = '<li class="error">' + labels.loadError + '</li>';
         }
     }
 

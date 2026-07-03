@@ -60,8 +60,9 @@ export async function getPostDescriptions(): Promise<
     return _cachedDescriptions;
 }
 
-export function formatWordCount(count: number): string {
-    if (count >= 10000) return `${(count / 10000).toFixed(1)}万`;
+export function formatWordCount(count: number, lang?: string): string {
+    const isZh = lang?.startsWith("zh");
+    if (count >= 10000) return `${(count / 10000).toFixed(1)}${isZh ? "万" : "0k"}`;
     if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
     return count.toString();
 }

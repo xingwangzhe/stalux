@@ -10,6 +10,8 @@ import BingClarity from "@components/stalux/analytics/clarity.astro";
 import "@styles/base/init.css";
 import Umami from "@components/stalux/analytics/umami.astro";
 
+import { langToOpenGraphLocale } from "@utils/i18n";
+
 const staluxCollection = await getCollection("config");
 const stalux = staluxCollection[0];
 
@@ -48,7 +50,7 @@ const openGraphConfig = {
   },
   optional: {
     description: effectiveDescription,
-    locale: "zh_CN",
+    locale: langToOpenGraphLocale(stalux.data.lang || "zh-CN"),
   },
   image: {
     url: ogImagePath,
