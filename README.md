@@ -1,5 +1,7 @@
 **This project is accelerated, computed and protected by Alibaba Cloud ESA**
 
+[中文文档](./README_CN.md) | English
+
 ![Alibaba Cloud Acceleration](aliyun.png)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xingwangzhe/stalux)

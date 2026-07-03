@@ -1,5 +1,7 @@
 **本项目由阿里云ESA提供加速、计算和保护**
 
+[English](./README.md) | 中文文档
+
 ![阿里云加速](aliyun.png)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xingwangzhe/stalux)
