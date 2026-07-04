@@ -31,7 +31,7 @@ const badges: BadgeOptions[] | undefined = footerConfig?.badges?.map(
 );
 
 const totalWordCount = await getTotalWordCount();
-const formattedWordCount = formatWordCount(totalWordCount);
+const formattedWordCount = formatWordCount(totalWordCount, stalux.lang);
 ---
 
 <footer class={footerStyle.siteFooter} transition:persist-props>

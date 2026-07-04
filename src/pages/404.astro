@@ -2,28 +2,28 @@
 import Stalux from "@layouts/Stalux.astro";
 import Navs from "@components/stalux/layout/navs.astro";
 import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 
 const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
 <Stalux
-  title={"404 - 页面未找到 | " + stalux.title}
-  description={"抱歉，您访问的页面不存在。3秒后将自动返回首页。"}
+  title={t("page404.title") + " | " + stalux.title}
+  description={t("page404.description")}
 >
   <div style="height: 3em;"></div>
   <Navs />
   <div class="error-container" data-pagefind-ignore>
     <div class="error-content">
       <h1>404</h1>
-      <p>页面未找到</p>
-      <p id="countdown" class="countdown-text">5 秒后自动返回首页</p>
-      <a href="/" class="home-btn">返回首页</a>
-
-
-      </div>
+      <p>{t("page404.pageNotFound")}</p>
+      <p id="countdown" class="countdown-text">{t("page404.countdown", { n: 5 })}</p>
+      <a href="/" class="home-btn">{t("page404.backHome")}</a>
+    </div>
   </div>
 
-  <script>
+  <script define:vars={{ countdownText: t("page404.countdown", { n: "{n}" }) }}>
     let seconds = 5;
     const el = document.getElementById("countdown");
     const timer = setInterval(() => {
@@ -32,7 +32,7 @@ const stalux = (await getCollection("config"))[0].data;
         clearInterval(timer);
         window.location.href = "/";
       } else {
-        el.textContent = seconds + " 秒后自动返回首页";
+        el.textContent = countdownText.replace("{n}", String(seconds));
       }
     }, 1000);
   </script>

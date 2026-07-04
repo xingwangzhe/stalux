@@ -1,5 +1,6 @@
 import rss from "@astrojs/rss";
 import { toTimestamp, parseDate, isValid, formatInTimeZone } from "@utils/dayjs";
+import { createTranslator, langToFeedLanguage } from "@utils/i18n";
 import { toMachineDateTime } from "@utils/semantic-time";
 import { getPostDescriptions } from "@utils/word-count-utils";
 import type { APIRoute } from "astro";
@@ -54,12 +55,15 @@ export const GET: APIRoute = async (context) => {
         }),
     );
 
+    const lang = stalux?.lang || "zh-CN";
+    const { t } = createTranslator(lang);
+
     return rss({
         title: stalux?.title || "Stalux Blog",
         description: stalux?.description || "A blog powered by Stalux theme",
         site: context.site?.toString() || stalux?.url || "https://stalux.needhelp.icu",
         items,
-        customData: `<language>zh-cn</language>\n<copyright>除非另有说明，各文章采用其自身标注的 Creative Commons 许可证</copyright>`,
+        customData: `<language>${langToFeedLanguage(lang)}</language>\n<copyright>${t("rss.copyright")}</copyright>`,
         xmlns: {
             atom: "http://www.w3.org/2005/Atom",
         },

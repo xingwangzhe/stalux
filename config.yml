@@ -1,4 +1,5 @@
 stalux:
+    lang: zh-CN # 网站语言，可选值: zh-CN, en
     title: "姓王者的博客"
     url: "https://xingwangzhe.fun"
     timezone: "Asia/Shanghai"

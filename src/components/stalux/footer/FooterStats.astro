@@ -1,10 +1,15 @@
 ---
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
+
 interface Props {
     showStats?: boolean;
     wordCount?: string;
     buildtime?: string;
 }
 
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 const { showStats = true, wordCount, buildtime } = Astro.props;
 ---
 
@@ -12,21 +17,21 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
     showStats && (
         <div class="site-stats">
             <span id="vercount_container_site_uv">
-                本站访客数：<span id="vercount_value_site_uv">Loading...</span>{" "}
-                人次
+                {t("footer.visitors")}<span id="vercount_value_site_uv">Loading...</span>{" "}
+                {t("footer.visits")}
             </span>
             <span class="stats-separator">|</span>
             <span id="vercount_container_site_pv">
-                本站总访问量：
-                <span id="vercount_value_site_pv">Loading...</span> 次
+                {t("footer.totalVisits")}
+                <span id="vercount_value_site_pv">Loading...</span> {t("footer.times")}
             </span>
             <span class="stats-separator">|</span>
             <span id="word-count-container">
-                本站总字数：
+                {t("footer.totalWords")}
                 <span id="word-count-value">
                     {wordCount ?? "Loading..."}
                 </span>{" "}
-                字
+                {t("footer.chars")}
             </span>
         </div>
     )
@@ -36,14 +41,14 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
     buildtime && (
         <div class="site-build-time">
             <span>
-                本站已正常运行
+                {t("footer.runningTime")}
                 <span id="runtime-counter" />
             </span>
         </div>
     )
 }
 
-<script define:vars={{ buildtime }}>
+<script define:vars={{ buildtime, runtimeFormat: t("footer.runtimeFormat") }}>
     document.addEventListener("astro:page-load", () => {
         if (buildtime) {
             const runtimeCounter = document.getElementById("runtime-counter");
@@ -61,7 +66,11 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
                 const minutes = Math.floor((totalSeconds % 3600) / 60);
                 const seconds = totalSeconds % 60;
 
-                runtimeCounter.textContent = `${days}天${hours}时${minutes}分${seconds}秒`;
+                runtimeCounter.textContent = runtimeFormat
+                    .replace("{days}", String(days))
+                    .replace("{hours}", String(hours))
+                    .replace("{minutes}", String(minutes))
+                    .replace("{seconds}", String(seconds));
             };
 
             updateRuntime();

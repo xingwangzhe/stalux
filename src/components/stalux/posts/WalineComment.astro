@@ -1,5 +1,7 @@
 ---
 import "@waline/client/style";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 
 export interface Props {
     path?: string;
@@ -25,11 +27,14 @@ export interface Props {
     search?: any;
 }
 
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
+
 const {
     path = typeof window !== "undefined" ? window.location.pathname : "",
     title = "",
     serverURL = "",
-    lang = "zh-CN",
+    lang = stalux.lang || "zh-CN",
     locale = undefined,
     emoji = false,
     requiredMeta = [],
@@ -87,10 +92,10 @@ const walineConfig = {
                 ).toString("base64")
             }
         >
-            <h2 class="waline-comment-title">留言评论</h2>
+            <h2 class="waline-comment-title">{t("comment.title")}</h2>
             <div id="waline-comment" class="waline-comment" data-nosnippet />
             <div class="comments-seo-notice" style="display:none">
-                评论区内容由用户生成，不代表网站观点
+                {t("comment.disclaimer")}
             </div>
         </div>
     )

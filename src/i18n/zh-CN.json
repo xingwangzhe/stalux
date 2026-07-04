@@ -1,0 +1,145 @@
+{
+    "nav": {
+        "menu": "打开导航菜单",
+        "scrollLeft": "向左滚动导航",
+        "scrollRight": "向右滚动导航",
+        "search": "搜索"
+    },
+    "search": {
+        "title": "搜索",
+        "close": "关闭搜索",
+        "placeholder": "输入关键词搜索...",
+        "inputLabel": "搜索输入",
+        "noResults": "未找到相关结果",
+        "typePost": "文章",
+        "typeAbout": "关于",
+        "typeWord": "一言"
+    },
+    "page404": {
+        "title": "404 - 页面未找到",
+        "description": "抱歉，您访问的页面不存在。",
+        "pageNotFound": "页面未找到",
+        "countdown": "{n} 秒后自动返回首页",
+        "backHome": "返回首页"
+    },
+    "post": {
+        "publishTime": "发布时间：",
+        "updateTime": "更新时间：",
+        "readingTime": "🕒 阅读时间：",
+        "wordCount": "📝 字数：",
+        "viewCount": "👀 阅读量：",
+        "prevPost": "上一篇",
+        "nextPost": "下一篇",
+        "noPrev": "没有更早的文章",
+        "noNext": "没有更新的文章",
+        "author": "作者：",
+        "articleLink": "本文链接：",
+        "licensedUnder": "本文采用",
+        "licenseSuffix": "进行许可。"
+    },
+    "taxonomy": {
+        "tag": "标签",
+        "category": "分类",
+        "toc": "目录",
+        "noTags": "暂无标签",
+        "noCategories": "暂无分类",
+        "noToc": "暂无目录",
+        "backToList": "返回{type}列表",
+        "foundPosts": "共找到 {count} 篇相关文章",
+        "browseTag": "浏览标签 {tag} 下的 {count} 篇文章...",
+        "browseCategory": "浏览分类 {category} 下的 {count} 篇文章..."
+    },
+    "archives": {
+        "title": "文章归档",
+        "description": "本站文章归档页面",
+        "heading": "文章归档",
+        "desc": "时间轴上的所有文章（共 {n} 篇）",
+        "postCount": "{n} 篇文章",
+        "month": "{n}月",
+        "noPosts": "暂无文章",
+        "loadMore": "加载更多内容",
+        "allLoaded": "已加载全部内容",
+        "viewAll": "查看所有文章"
+    },
+    "footer": {
+        "visitors": "本站访客数：",
+        "visits": "人次",
+        "totalVisits": "本站总访问量：",
+        "times": "次",
+        "totalWords": "本站总字数：",
+        "chars": "字",
+        "runningTime": "本站已正常运行",
+        "runtimeFormat": "{days}天{hours}时{minutes}分{seconds}秒",
+        "rightsReserved": "保留权利.",
+        "securityIcon": "公安备案图标"
+    },
+    "comment": {
+        "title": "留言评论",
+        "disclaimer": "评论区内容由用户生成，不代表网站观点"
+    },
+    "randomPost": {
+        "title": "随机文章",
+        "refresh": "刷新随机文章",
+        "loading": "正在加载随机文章...",
+        "noPosts": "暂无文章",
+        "loadFailed": "加载失败，请重试",
+        "loadError": "加载失败"
+    },
+    "categories": {
+        "title": "文章分类",
+        "description": "{title}的文章分类",
+        "heading": "文章分类",
+        "browseByTopic": "按主题分类浏览",
+        "postCount": "{n} 篇文章"
+    },
+    "tags": {
+        "title": "标签云",
+        "description": "{title}的标签云",
+        "heading": "标签云",
+        "explore": "探索不同主题的文章标签",
+        "noTags": "暂无标签"
+    },
+    "words": {
+        "title": "一言",
+        "description": "收集的语录与短句",
+        "heading": "一言",
+        "desc": "只言片语，皆为心声（共 {n} 条）"
+    },
+    "links": {
+        "defaultTitle": "友链",
+        "iconAlt": "{name} 图标"
+    },
+    "rss": {
+        "copyright": "除非另有说明，各文章采用其自身标注的 Creative Commons 许可证"
+    },
+    "common": {
+        "uncategorized": "未分类",
+        "minute": "{n} 分钟",
+        "lessThanOneMinute": "小于 1 分钟",
+        "tenThousand": "{n}万",
+        "k": "{n}k",
+        "dateFormat": "yyyy年MM月dd日"
+    },
+    "console": {
+        "name": "Stalux - 现代 Astro 博客主题 [简称:星博客]",
+        "author": "王兴家 (xingwangzhe)",
+        "copyright": "© 王兴家. All rights reserved.",
+        "certNumber": "软著登字第16914672号",
+        "certUrl": "https://stalux.needhelp.icu/软著证明.pdf",
+        "regDate": "2025年11月24日",
+        "labelVersion": "📦 版本：",
+        "labelAuthor": "👤 著作权人：",
+        "labelRepo": "🔗 仓库：",
+        "labelWebsite": "🌐 官网：",
+        "labelCert": "📜 软著证书：",
+        "labelCertNumber": "🎫 登记号：",
+        "labelRegDate": "📅 登记日期：",
+        "labelLicense": "⚖️  开源协议：",
+        "labelAuthNote": "✅ 授权说明：",
+        "labelTip": "💡 提示：",
+        "labelFeedback": "🐛 问题反馈：",
+        "authNote": "本软件遵循 MIT 开源协议。您可以自由地使用、修改和分发本软件，但请保留原始版权声明。",
+        "tip": "如果你喜欢这个主题，欢迎在 GitHub 上点个 ⭐️ 支持我们！",
+        "feedback": "https://github.com/xingwangzhe/stalux/issues"
+    }
+}

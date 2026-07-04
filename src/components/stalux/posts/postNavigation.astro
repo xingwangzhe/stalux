@@ -1,5 +1,7 @@
 ---
 import style from "@styles/components/posts/postNavigation.module.css";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 
 interface Props {
     prev?: { url: string; title: string };
@@ -7,6 +9,8 @@ interface Props {
 }
 
 const props = Astro.props as Props;
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
 {
@@ -35,7 +39,7 @@ const props = Astro.props as Props;
                             </svg>
                         </span>
                         <div class={style.postNavContent}>
-                            <span class={style.postNavLabel}>上一篇</span>
+                            <span class={style.postNavLabel}>{t("post.prevPost")}</span>
                             <span class={style.postNavTitle}>
                                 {props.prev.title}
                             </span>
@@ -61,9 +65,9 @@ const props = Astro.props as Props;
                             </svg>
                         </span>
                         <div class={style.postNavContent}>
-                            <span class={style.postNavLabel}>上一篇</span>
+                            <span class={style.postNavLabel}>{t("post.prevPost")}</span>
                             <span class={style.postNavTitle}>
-                                没有更早的文章
+                                {t("post.noPrev")}
                             </span>
                         </div>
                     </span>
@@ -76,7 +80,7 @@ const props = Astro.props as Props;
                         rel="next"
                     >
                         <div class={style.postNavContent}>
-                            <span class={style.postNavLabel}>下一篇</span>
+                            <span class={style.postNavLabel}>{t("post.nextPost")}</span>
                             <span class={style.postNavTitle}>
                                 {props.next.title}
                             </span>
@@ -102,9 +106,9 @@ const props = Astro.props as Props;
                         class={`${style.postNavLink} ${style.nextPost} ${style.disabled}`}
                     >
                         <div class={style.postNavContent}>
-                            <span class={style.postNavLabel}>下一篇</span>
+                            <span class={style.postNavLabel}>{t("post.nextPost")}</span>
                             <span class={style.postNavTitle}>
-                                没有更新的文章
+                                {t("post.noNext")}
                             </span>
                         </div>
                         <span class={style.postNavArrow}>

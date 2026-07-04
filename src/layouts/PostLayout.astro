@@ -15,6 +15,7 @@ interface Props {
     date?: string;
     updated?: string;
     readingTime?: string;
+    readingMinutes?: number;
     wordCount?: number;
     tags?: string[];
     categories?: string[];
@@ -54,6 +55,7 @@ const walineConfig = stalux?.comment?.waline;
             date={props.date}
             updated={props.updated}
             readingTime={props.readingTime}
+            readingMinutes={props.readingMinutes}
             wordCount={props.wordCount}
             hasImage={props.hasImage}
         >

@@ -1,16 +1,21 @@
 ---
-import ListPage from "@components/stalux/layout/listPage.astro";
+import Navs from "@components/stalux/layout/navs.astro";
+import Stalux from "@layouts/Stalux.astro";
 import ArchivesList from "@components/stalux/archives/archivesList.astro";
 import { getCollection } from "astro:content";
-
+import { createTranslator } from "@utils/i18n";
+import styles from "@styles/pages/archives.module.css";
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 ---
 
-<ListPage
-    title="文章归档"
-    description="本站文章归档页面"
-    heading="文章归档"
-    subheading={`时间轴上的所有文章（共 ${posts.length} 篇）`}
->
+<Stalux title={t("archives.title") + " | " + stalux.title} description={t("archives.description")}>
+    <div style="height: 3em;"></div>
+    <Navs />
+    <h1 class={styles.h1}>{t("archives.heading")}</h1>
+    <div class={styles.description}>
+        {t("archives.desc", { n: posts.length })}
+    </div>
     <ArchivesList posts={posts} />
-</ListPage>
+</Stalux>

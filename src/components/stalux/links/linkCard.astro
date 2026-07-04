@@ -1,5 +1,7 @@
 ---
 import styles from "@styles/components/links/linkCard.module.css";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 
 interface LinkItem {
     title?: string;
@@ -15,9 +17,11 @@ interface Props {
     link: LinkItem;
 }
 
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 const link = Astro.props.link;
 const href = link.url ?? link.link ?? "#";
-const title = link.title ?? link.name ?? "友链";
+const title = link.title ?? link.name ?? t("links.defaultTitle");
 const desc = link.description ?? "";
 const icon = link.icon ?? link.avatar ?? "/favicon.ico";
 ---
@@ -31,7 +35,7 @@ const icon = link.icon ?? link.avatar ?? "/favicon.ico";
     <div class={styles.avatar}>
         <img
             src={icon}
-            alt={`${title} 图标`}
+            alt={t("links.iconAlt", { name: title })}
             loading="lazy"
             width="80"
             height="80"

@@ -1,16 +1,22 @@
 ---
-import ListPage from "@components/stalux/layout/listPage.astro";
+import Navs from "@components/stalux/layout/navs.astro";
+import Stalux from "@layouts/Stalux.astro";
 import WordList from "@components/stalux/words/wordList.astro";
 import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
+import styles from "@styles/pages/words.module.css";
 
+const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 const entries = await getCollection("words", ({ data }) => !data.draft);
 ---
 
-<ListPage
-    title="一言"
-    description="收集的语录与短句"
-    heading="一言"
-    subheading={`只言片语，皆为心声（共 ${entries.length} 条）`}
->
-    <WordList entries={entries} />
-</ListPage>
+<Stalux title={t("words.title") + " | " + stalux.title} description={t("words.description")}>
+    <div style="height: 3em;"></div>
+    <Navs />
+    <h1 class={styles.title}>{t("words.heading")}</h1>
+    <div class={styles.description}>
+        {t("words.desc", { n: entries.length })}
+    </div>
+    <WordList entries={entries} timezone={stalux.timezone} />
+</Stalux>

@@ -2,6 +2,7 @@
 import { Icon } from "@lucide/astro";
 import { icons } from "lucide";
 import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 import styles from "@styles/components/layout/navs.module.css";
 import Search from "@components/stalux/common/search.astro";
 /** 将 lucide 官网的 kebab-case 名称转为 icons 对象的 PascalCase key */
@@ -16,6 +17,7 @@ function getIconNode(iconName: string) {
     return node;
 }
 const stalux = (await getCollection("config"))[0].data;
+const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
 <nav aria-label="Main navigation" transition:persist-props>
@@ -23,7 +25,7 @@ const stalux = (await getCollection("config"))[0].data;
     <button
         data-ref="stalux-nav-toggle"
         class={styles.navToggle}
-        aria-label="打开导航菜单"
+        aria-label={t("nav.menu")}
     >
         <Icon iconNode={getIconNode("menu")} size={20} stroke-width={2} class="nav-icon" />
     </button>
@@ -37,7 +39,7 @@ const stalux = (await getCollection("config"))[0].data;
             data-ref="stalux-nav-scroll-left"
             class={styles.scrollBtn}
             data-side="left"
-            aria-label="向左滚动导航"
+            aria-label={t("nav.scrollLeft")}
         >
             <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
@@ -64,10 +66,10 @@ const stalux = (await getCollection("config"))[0].data;
                     href="javascript:void(0)"
                     class={styles.navLink}
                     data-ref="stalux-search-btn"
-                    aria-label="打开搜索"
+                    aria-label={t("search.title")}
                 >
                     <Icon iconNode={getIconNode("search")} size={20} stroke-width={2} class="nav-icon" />
-                    <span class={styles.navText}>搜索</span>
+                    <span class={styles.navText}>{t("nav.search")}</span>
                 </a>
             </li>
         </ul>
@@ -76,7 +78,7 @@ const stalux = (await getCollection("config"))[0].data;
             data-ref="stalux-nav-scroll-right"
             class={styles.scrollBtn}
             data-side="right"
-            aria-label="向右滚动导航"
+            aria-label={t("nav.scrollRight")}
         >
             <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
