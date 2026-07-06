@@ -209,6 +209,11 @@ stalux:
               description: "一个站长聚集地，让我们一起发现有趣的网站。"
               link: "https://www.frdlink.link"
               icon: "https://www.frdlink.link/favicon.ico"
+            - name: "vv's Blog"
+              description: "𝙄𝙏 𝙄𝙎 𝘿𝙄𝙁𝙁𝙄𝘾𝙐𝙇𝙏 𝙏𝙊 𝙁𝙍𝙀𝙀 𝙁𝙊𝙊𝙇𝙎 𝙁𝙍𝙊𝙈 𝙏𝙃𝙀 𝘾𝙃𝘼𝙄𝙉𝙎 𝙏𝙃𝙀𝙔 𝙍𝙀𝙑𝙀𝙍𝙀"
+              link: "https://vull.top/"
+              icon: "https://blog.vull.top/assets/favicon.ico"
+              rss: "https://blog.vull.top/sitemap.xml"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
