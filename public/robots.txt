@@ -1,12 +1,60 @@
-# robots.txt 
-# 允许所有搜索引擎爬取网站
+# robots.txt - Fully open to AI agents
+# 允许所有爬虫（包括AI）访问全部内容
+
 User-agent: *
-# 黑名单制度：默认允许所有页面，明确禁止特定页面
-Disallow: /404/
-# 允许标签和分类页面被索引（优化SEO）
-Allow: /archives/
-Allow: /categories/
-Allow: /tags/
+Allow: /
+
+# AI bot specific rules - full access
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: OpenAI
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: ImagesiftBot
+Allow: /
+
+User-agent: Omgilibot
+Allow: /
+
+User-agent: omgili
+Allow: /
+
+# Content Signals - opt in for AI training and search
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 
 # Sitemap
 Sitemap: https://stalux.needhelp.icu/sitemap-index.xml
