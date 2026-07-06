@@ -3,7 +3,7 @@ title: Ubuntu26.04-beta体验:坚毅浣熊!
 abbrlink: ubuntu-26-04-beta
 date: "2026-03-28 14:17:00"
 updated: "2026-03-28 15:30:00"
-desc: Ubuntu 26.04 LTS (Resolute Raccoon) Beta released
+desc: Ubuntu 26.04 LTS "Resolute Raccoon" Beta 版抢先体验分享。本文介绍新版本特性亮点、界面变化、性能改进与升级注意事项，带你提前了解 Ubuntu 最新 LTS 版本
 categories:
     - ubuntu
 tags:

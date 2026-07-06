@@ -2,7 +2,7 @@
 title: Dirty Frag——又一个Linux内核提权漏洞，Ubuntu又双叒叕中招了
 abbrlink: dirty-frag-linux-lpe
 date: "2026-05-08 10:00:00"
-desc: 本文存在AI生成内容（漏洞技术流程分析与 PoC 解读）
+desc: 'Dirty Frag 是 Linux 内核零拷贝路径上的页缓存写入漏洞链，串联 xfrm-ESP 与 RxRPC 两个独立漏洞。本文分析漏洞原理、影响范围与缓解措施'
 categories: 技术
 tags: [linux, cve, 安全, 漏洞, 内核, ubuntu]
 cover: /cve/dirty-frag.webp

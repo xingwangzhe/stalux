@@ -46,12 +46,12 @@
         "noToc": "暂无目录",
         "backToList": "返回{type}列表",
         "foundPosts": "共找到 {count} 篇相关文章",
-        "browseTag": "浏览标签 {tag} 下的 {count} 篇文章...",
-        "browseCategory": "浏览分类 {category} 下的 {count} 篇文章..."
+        "browseTag": "欢迎访问{title}中"{tag}"标签页面，共有{count}篇相关文章，涵盖该标签下的技术教程与编程实践内容，帮助你深入了解相关主题与技术领域",
+        "browseCategory": "欢迎访问{title}中"{category}"分类页面，这里汇集了{count}篇相关文章，涵盖该主题下的技术教程、编程笔记与开发实践等原创内容，帮助你深入了解这一领域"
     },
     "archives": {
         "title": "文章归档",
-        "description": "本站文章归档页面",
+        "description": "欢迎访问{title}文章归档页面，按发布时间顺序整理了博客所有原创文章，涵盖技术教程、编程开发、Linux运维、开源项目等各个类别的历史内容，方便按时间线回顾与查阅",
         "heading": "文章归档",
         "desc": "时间轴上的所有文章（共 {n} 篇）",
         "postCount": "{n} 篇文章",
@@ -87,14 +87,14 @@
     },
     "categories": {
         "title": "文章分类",
-        "description": "{title}的文章分类",
+        "description": "浏览{title}所有文章分类，涵盖日常开发中积累的技术教程、编程笔记、开源项目与Linux运维等内容，按主题分类整理帮你快速定位感兴趣的技术文章与学习笔记",
         "heading": "文章分类",
         "browseByTopic": "按主题分类浏览",
         "postCount": "{n} 篇文章"
     },
     "tags": {
         "title": "标签云",
-        "description": "{title}的标签云",
+        "description": "探索{title}全部标签云，通过关键词索引快速找到技术教程、编程开发、Linux运维、开源项目、AI人工智能等各个领域的精彩文章与实用教程资源，发现更多你感兴趣的内容",
         "heading": "标签云",
         "explore": "探索不同主题的文章标签",
         "noTags": "暂无标签"

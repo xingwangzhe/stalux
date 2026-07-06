@@ -3,7 +3,7 @@ title: hexo-next在文章下添加版权信息
 abbrlink: 50aa0545
 date: "2024-09-04 16:03:03"
 updated: "2024-09-04 16:03:05"
-desc: themes/next/_config.yml
+desc: 在 Hexo Next 主题文章底部添加版权声明，配置 CC 协议署名与转载声明的完整教程。本文教你修改主题配置文件，实现文章自动显示版权信息
 categories:
     - hexo
 tags:

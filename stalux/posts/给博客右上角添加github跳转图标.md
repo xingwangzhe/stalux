@@ -3,7 +3,7 @@ title: 给博客右上角添加github跳转图标
 abbrlink: c42bc0f8
 date: "2024-09-11 17:28:10"
 updated: "2024-09-11 17:28:13"
-desc: "themes/next/layout/\\_layout.swig文件中<div class=\"headband\"></div>下面一行"
+desc: 想在 Hexo Next 主题博客右上角添加 GitHub 跳转图标？本文详细教程教你选择图标样式、定位修改位置并成功集成 GitHub Corners 到你的博客中
 categories:
     - hexo
 tags:

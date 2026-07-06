@@ -1,7 +1,7 @@
 ---
 title: Astro 6 推出啦
 date: "2026-03-12 09:27:03"
-desc: 'bash title="升级你的Astro版本到 6!"'
+desc: Astro 6.0 正式发布，带来 Vite 7 默认集成、实验性新特性与破坏性变更。本文解读 Astro 6 的主要亮点、升级指南与个人使用体验
 category: [astro]
 tags: [astro, vite]
 abbrlink: astro6-release

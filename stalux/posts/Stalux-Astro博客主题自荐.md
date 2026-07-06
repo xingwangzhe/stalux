@@ -1,7 +1,7 @@
 ---
 title: Stalux Astro博客主题自荐
 date: "2026-01-30 19:53:49"
-desc: 历经多次打磨和稍微的优化,终于完成了Stalux这一个astro主题,也就是当前xingwangzhe.fun所使用的主题.
+desc: Stalux 是一款现代 Astro 博客主题，支持多重搜索、文章归档、标签云与评论系统。本文介绍主题特性、设计理念与使用指南，推荐给使用 Astro 的博客用户
 abbrlink: stalux-astro
 tags:
     - stalux

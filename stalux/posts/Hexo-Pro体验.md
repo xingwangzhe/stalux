@@ -3,7 +3,7 @@ title: Hexo Pro体验
 abbrlink: 32951
 date: "2024-10-29 09:21:27"
 updated: "2025-07-04 18:44:32"
-desc: "项目地址:https://github.com/wuzheng228/hexo-pro"
+desc: Hexo Pro 是一款功能强大的 Hexo 可视化编辑器，提供所见即所得的博客文章编辑体验。本文分享 Hexo Pro 的使用感受、功能评测与优缺点分析
 categories:
     - hexo
 tags:

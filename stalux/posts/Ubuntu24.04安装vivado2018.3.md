@@ -3,7 +3,7 @@ title: Ubuntu 24.04 安装 Vivado 2018.3
 abbrlink: 1a282b79
 date: "2025-07-08 14:35:39"
 updated: "2025-07-08 15:18:52"
-desc: 如果你想省流直接找安装报错、仿真报错解决方法
+desc: 在 Ubuntu 24.04 上安装 Vivado 2018.3 的完整实战教程，解决安装报错与仿真报错问题。涵盖库依赖冲突修复、兼容性配置等排坑经验
 categories:
     - ubuntu
 tags:

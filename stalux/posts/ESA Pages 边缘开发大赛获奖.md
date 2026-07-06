@@ -2,7 +2,7 @@
 title: ESA Pages 边缘开发大赛获奖
 abbrlink: esa-pages-awards
 date: "2026-02-06 19:50:32"
-desc: ESA上线之后,为了扩大影响力,所以举办了 ESA Pages 边缘开发大赛
+desc: ESA Pages 边缘开发大赛参赛与获奖全记录。本文分享参赛历程、作品设计思路与评审过程，以及对阿里云 ESA 边缘计算平台应用前景的展望
 categories:
     - pages
 tags:

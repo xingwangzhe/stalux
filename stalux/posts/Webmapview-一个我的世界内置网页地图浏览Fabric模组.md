@@ -3,7 +3,7 @@ title: Webmapview:一个我的世界内置网页地图浏览Fabric模组
 abbrlink: 4628
 date: "2025-01-12 19:02:28"
 updated: "2025-09-16 19:54:26"
-desc: xingwangzhe/webmapview
+desc: Webmapview 是一个 Minecraft Fabric 模组，可在游戏内通过嵌入式网页浏览器查看实时地图。本文介绍模组功能特性、安装配置与使用方法说明
 categories:
     - 开发
 tags:

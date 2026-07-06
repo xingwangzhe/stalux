@@ -1,7 +1,7 @@
 ---
 title: 从edgeone迁移到esa
 date: "2026-02-05 17:55:30"
-desc: 之前我一直用edgeone托管我的博客,后来阿里云推出esa后,所以我决定把博客从edgeone迁移到esa.
+desc: 将博客从腾讯云 EdgeOne 迁移到阿里云 ESA 边缘平台的完整过程记录。本文对比两者差异，分享迁移步骤与配置要点，为有类似需求的读者提供参考
 abbrlink: mv-edgeone-to-esa
 tags:
     - esa

@@ -10,7 +10,7 @@ tags:
     - 前端开发
 categories:
     - 前端开发
-desc: 从零构建一个纯数学驱动的 3D 标签云引擎，支持文本、图片、SVG、HTML、视频和 Web Components 六种模态，仅 3KB gzipped。
+desc: 从零构建纯数学驱动的 3D 标签云引擎，支持文本、图片、SVG、HTML、视频和 Web Components 六种内容模态，体积仅 3KB gzipped。分享实现思路与核心技术细节
 ---
 
 > 本文由DeepSeek润色

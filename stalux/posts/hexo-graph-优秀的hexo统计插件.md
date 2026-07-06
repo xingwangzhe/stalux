@@ -3,7 +3,7 @@ title: hexo-graph:优秀的hexo统计插件
 abbrlink: 55581
 date: "2024-12-14 10:11:05"
 updated: "2025-07-04 18:44:32"
-desc: hexo-graph，一个基于echarts，集成博客热力图，博客月份统计图，分类统计图，标签统计图的多元化插件。
+desc: hexo-graph 是基于 ECharts 的 Hexo 多元化统计插件，集成博客热力图、月份统计图、分类统计图与标签统计图。本文介绍插件安装配置与数据可视化效果
 categories:
     - hexo
 tags:
