@@ -26,8 +26,8 @@ const bgUrls = Object.values(bgModules)
         const nb = parseInt(b.match(/pattern-(\d+)/)?.[1] || "0", 10);
         return na - nb;
     });
-const randomIndex = Math.floor(Math.random() * bgUrls.length);
-const initialBg = bgUrls[randomIndex];
+const randomIndex = bgUrls.length > 0 ? Math.floor(Math.random() * bgUrls.length) : 0;
+const initialBg = bgUrls[randomIndex] || "";
 ---
 
 <!doctype html>

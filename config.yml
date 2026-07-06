@@ -229,7 +229,7 @@ stalux:
             # ICP备案
             icp:
                 enabled: true
-                number: " 辽ICP备2024042064号-1"
+                number: "辽ICP备2024042064号-1"
             # 公安备案
             security:
                 enabled: false

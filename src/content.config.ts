@@ -104,10 +104,6 @@ const config = defineCollection({
         }),
         footer: z
             .object({
-                startYear: z.number().optional(),
-                icp: z.string().optional(),
-                pubsec: z.string().optional(),
-                pubsecNumber: z.string().optional(),
                 buildtime: z.string().optional(),
                 copyright: z
                     .object({
