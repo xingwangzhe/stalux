@@ -46,8 +46,8 @@
         "noToc": "No table of contents",
         "backToList": "Back to {type} list",
         "foundPosts": "Found {count} related posts",
-        "browseTag": "Browse {count} articles tagged with \"{tag}\" on {title}. Explore tutorials, programming notes, and practical content related to this topic of interest.",
-        "browseCategory": "Browse {count} articles under category \"{category}\" on {title}. Find tutorials, development notes, and practical guides related to this topic area."
+        "browseTag": "Browse {count} articles tagged with \u201C{tag}\u201D on {title}. Explore tutorials, programming notes, and practical content related to this topic of interest.",
+        "browseCategory": "Browse {count} articles under category \u201C{category}\u201D on {title}. Find tutorials, development notes, and practical guides related to this topic area."
     },
     "archives": {
         "title": "Archives",

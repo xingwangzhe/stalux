@@ -46,8 +46,8 @@
         "noToc": "暂无目录",
         "backToList": "返回{type}列表",
         "foundPosts": "共找到 {count} 篇相关文章",
-        "browseTag": "欢迎访问{title}中"{tag}"标签页面，共有{count}篇相关文章，涵盖该标签下的技术教程与编程实践内容，帮助你深入了解相关主题与技术领域",
-        "browseCategory": "欢迎访问{title}中"{category}"分类页面，这里汇集了{count}篇相关文章，涵盖该主题下的技术教程、编程笔记与开发实践等原创内容，帮助你深入了解这一领域"
+        "browseTag": "欢迎访问{title}中\u201C{tag}\u201D标签页面，共有{count}篇相关文章，涵盖该标签下的技术教程与编程实践内容，帮助你深入了解相关主题与技术领域",
+        "browseCategory": "欢迎访问{title}中\u201C{category}\u201D分类页面，这里汇集了{count}篇相关文章，涵盖该主题下的技术教程、编程笔记与开发实践等原创内容，帮助你深入了解这一领域"
     },
     "archives": {
         "title": "文章归档",
