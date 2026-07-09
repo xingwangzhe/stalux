@@ -66,8 +66,9 @@ English | [中文](./README_CN.md)
 
 </td>
 <td valign="top" width="32%">
-  
-#### Plan  
+
+#### Plan
+
 <div align="center">  
   [![Python](https://profilinator.rishav.dev/skills-assets/python-original.svg)](https://www.python.org/)
 
@@ -118,8 +119,9 @@ English | [中文](./README_CN.md)
 
 </td>
 <td valign="top" width="32%">
-  
+
 #### 计划学习
+
 <div align="center">  
   [![Python](https://profilinator.rishav.dev/skills-assets/python-original.svg)](https://www.python.org/)
 
@@ -130,8 +132,8 @@ English | [中文](./README_CN.md)
 
 ![使用语言排名](https://github-readme-stats.vercel.app/api/top-langs/?username=xingwangzhe&layout=compact)
 
-</td></tr></table>   
- 
+</td></tr></table>
+
 ### 成就记录
 
 [![Ashutosh的GitHub活动图表](https://github-readme-activity-graph.vercel.app/graph?username=xingwangzhe&bg_color=FFFFFF&line=008000&height=375&title_color=000000&hide_border=true&color=000000)](https://github.com/ashutosh00710/github-readme-activity-graph)
