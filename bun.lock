@@ -640,9 +640,9 @@
 
     "@waline/client": ["@waline/client@3.15.2", "https://registry.npmmirror.com/@waline/client/-/client-3.15.2.tgz", { "dependencies": { "@vueuse/core": "^14.3.0", "@waline/api": "1.1.2", "autosize": "^6.0.1", "marked": "^18.0.4", "marked-highlight": "^2.2.4", "recaptcha-v3": "^1.11.3", "vue": "^3.5.35" } }, "sha512-QBAVbruefDR+IKyQdM/Ao9fd07Xxpx1WEJ7xI8lBVNDjMQBr1PpdwrTpLC8RrYbgUR9ymNBvtLDJi0xK3pbORQ=="],
 
-    "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.2.7", "", { "peerDependencies": { "mermaid": ">=11.0.0", "satteri": ">=0.8.0" } }, "sha512-BYDIzlvtKcO38i4XN3PR8+qjNQ0pYJICybY9VvOiB9o/S+SuFVNU8NWRoY/WptkEhxWbYjy1WdGy/mhemZTV5A=="],
+    "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.2.8", "", { "peerDependencies": { "mermaid": ">=11.0.0", "satteri": ">=0.8.0" } }, "sha512-auuGr2x9+m0B0yh9+xD+UccPagxgQUBYR0nuEJPMlUEUKKRxEmkhGB8khHS32skT79R8oh8SEgYZi9yoLcAWTQ=="],
 
-    "@xingwangzhe/satteri-photoswipe": ["@xingwangzhe/satteri-photoswipe@0.1.5", "", { "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-/5i0R44AVLwF+xqkLWn5mSLW96RpSN74NL0urepDdSWqj3xknMrk9b/J+9Fs2X491ZZ0AqX5+W2jRqFtoKqhPQ=="],
+    "@xingwangzhe/satteri-photoswipe": ["@xingwangzhe/satteri-photoswipe@0.1.6", "", { "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-KtwtXixsyT9ABaIVx5u/7cnvCZQuMwjC6GdoBL8OsPFjIz6Lmtt8f4QsS5KT5QXo6q4C4yTpD0C5zHhnNmY1HA=="],
 
     "@xingwangzhe/tags-cloud": ["@xingwangzhe/tags-cloud@1.2.2", "", {}, "sha512-xJDZhlhulBZ+8Hd3obKgFDg2JHMb1VOSk4DpX43FG/mt4ETKtz3Z0b2UKr6edqBgMyr/O/k0mBuTzO0SXgfszQ=="],
 
