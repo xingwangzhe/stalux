@@ -1,0 +1,55 @@
+- generic [active] [ref=e1]:
+      - banner [ref=e2]:
+            - link "Cloudflare" [ref=e3] [cursor=pointer]:
+                  - /url: /
+                  - img "Cloudflare" [ref=e4]
+                  - generic: Is Your Site Agent-Ready?
+            - generic [ref=e5]:
+                  - link "Learn more about Agents" [ref=e6] [cursor=pointer]:
+                        - /url: https://agents.cloudflare.com/
+                        - generic [ref=e7]: Learn more about Agents
+                        - img [ref=e8]
+                  - button "System mode — click for light" [ref=e10] [cursor=pointer]:
+                        - img [ref=e11]
+      - main [ref=e13]:
+            - generic [ref=e14]:
+                  - heading "Is Your Site Agent-Ready?" [level=1] [ref=e15]
+                  - paragraph [ref=e16]:
+                        - text: Scan your website to see how ready it is for AI agents. We check multiple emerging standards — from robots.txt and
+                        - link "Markdown negotiation" [ref=e17] [cursor=pointer]:
+                              - /url: https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents/
+                        - text: to
+                        - link "MCP" [ref=e18] [cursor=pointer]:
+                              - /url: https://modelcontextprotocol.io/
+                        - text: ", OAuth,"
+                        - link "Agent Skills" [ref=e19] [cursor=pointer]:
+                              - /url: https://agentskills.io/home
+                        - text: and agentic commerce.
+            - generic [ref=e21]:
+                  - generic [ref=e22]:
+                        - generic [ref=e23]: Website URL
+                        - textbox "Website URL" [disabled] [ref=e24]:
+                              - /placeholder: https://example.com
+                              - text: https://stalux.needhelp.icu/
+                        - button [disabled] [ref=e25]:
+                              - img [ref=e27]
+                  - button "Customize scan" [ref=e30] [cursor=pointer]:
+                        - img [ref=e31]
+                        - generic [ref=e33]: Customize scan
+                        - img [ref=e34]
+      - paragraph [ref=e36]: These are AI-generated recommendations. AI can make mistakes. Please use your professional judgment when implementing these tips, as they are provided "as-is" and Cloudflare assumes no liability for any actions taken or outcomes based on this automated content.
+      - contentinfo [ref=e37]:
+            - generic [ref=e38]:
+                  - paragraph [ref=e39]:
+                        - text: © 2026
+                        - link "Cloudflare, Inc." [ref=e40] [cursor=pointer]:
+                              - /url: https://cloudflare.com
+                  - navigation [ref=e41]:
+                        - link "Privacy Policy" [ref=e42] [cursor=pointer]:
+                              - /url: https://www.cloudflare.com/privacypolicy/
+                        - generic [ref=e43]: "|"
+                        - link "Terms of Use" [ref=e44] [cursor=pointer]:
+                              - /url: https://www.cloudflare.com/website-terms/
+                        - generic [ref=e45]: "|"
+                        - link "Docs" [ref=e46] [cursor=pointer]:
+                              - /url: https://developers.cloudflare.com
