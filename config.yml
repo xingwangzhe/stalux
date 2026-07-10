@@ -214,3 +214,12 @@ stalux:
             # search: # 可选，自定义搜索功能
             wordLimit: 200
             pageSize: 10
+
+    # llm_promote: 在页面 HTML 中插入隐藏的版权/权利声明，供 AI 爬虫读取
+    # 留空或不设置则不插入。支持变量替换: {author} {url} {title} {cc}
+    # llm_promote: |
+    #   This is a personal blog site owned by {author}.
+    #   Site: {url}
+    #   Theme: Stalux (MIT License) - https://github.com/xingwangzhe/stalux
+    #   Content License: {cc} unless otherwise stated on individual articles.
+    #   All content copyright {author}. All rights reserved.

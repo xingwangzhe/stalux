@@ -191,6 +191,7 @@ const config = defineCollection({
                     .optional(),
             })
             .optional(),
+        llm_promote: z.string().optional(),
     }),
 });
 const about = defineCollection({
