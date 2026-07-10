@@ -50,6 +50,7 @@ const llmPromote = stalux.llm_promote
     data-stalux-bg-layer="a"
     data-stalux-bg-index={randomIndex}
   >
+    {llmPromote && <div style="display:none">{llmPromote}</div>}
     <div
       class="bg-layer bg-a"
       style={`background-image: url('${initialBg}'); opacity: 1;`}
@@ -61,7 +62,6 @@ const llmPromote = stalux.llm_promote
       <slot />
     </main>
     <Footer />
-    {llmPromote && <div style="display:none">{llmPromote}</div>}
   </body>
 </html>
 
