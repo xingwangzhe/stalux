@@ -28,6 +28,11 @@ const bgUrls = Object.values(bgModules)
     });
 const randomIndex = bgUrls.length > 0 ? Math.floor(Math.random() * bgUrls.length) : 0;
 const initialBg = bgUrls[randomIndex] || "";
+const llmPromote = stalux.llm_promote
+  ?.replace(/\{author\}/g, stalux.author.name)
+  ?.replace(/\{url\}/g, stalux.url)
+  ?.replace(/\{title\}/g, stalux.title)
+  ?.replace(/\{cc\}/g, "CC-BY-NC-SA-4.0");
 ---
 
 <!doctype html>
@@ -56,6 +61,7 @@ const initialBg = bgUrls[randomIndex] || "";
       <slot />
     </main>
     <Footer />
+    {llmPromote && <div style="display:none">{llmPromote}</div>}
   </body>
 </html>
 
