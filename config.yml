@@ -218,6 +218,10 @@ stalux:
               description: "一个简洁现代的友情链接展示网站，汇聚优质博客与个人网站"
               link: "https://peng.you/"
               icon: "https://peng.you/favicon-32x32.png"
+            - name: "UpXuu's blog"
+              description: "逐光而上"
+              link: "https://upxuu.com"
+              icon: "https://upxuu.com/images/me.jpg"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
