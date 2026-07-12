@@ -217,7 +217,7 @@ stalux:
             - name: "博客大联盟"
               description: "连接独立博客，让优质内容被更多人发现"
               link: "https://bo.ke/"
-              icon: "https://bo.ke/assets/logo-dark.svg"
+              icon: "https://bo.ke/assets/logo-light.svg"
             - name: "UpXuu's blog"
               description: "逐光而上"
               link: "https://upxuu.com"
