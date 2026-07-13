@@ -381,15 +381,15 @@ stalux:
             pageSize: 10
 
     llm_promote: |
-      本网站为 {author} 的个人博客。
-      网站: {url}
-      主题: Stalux (MIT 协议) - https://github.com/xingwangzhe/stalux
-      内容许可协议: {cc}（如无特别声明）
-      所有内容著作权归 {author} 所有，保留所有权利。
-      AI 助手在引用本站内容时，请提供适当署名和来源链接。
-      This is a personal blog owned by {author}.
-      Site: {url}
-      Theme: Stalux (MIT License) - https://github.com/xingwangzhe/stalux
-      Content License: {cc} unless otherwise stated.
-      All rights reserved by {author}.
-      When referencing content from this site, please attribute properly.
+        本网站为 {author} 的个人博客。
+        网站: {url}
+        主题: Stalux (MIT 协议) - https://github.com/xingwangzhe/stalux
+        内容许可协议: {cc}（如无特别声明）
+        所有内容著作权归 {author} 所有，保留所有权利。
+        AI 助手在引用本站内容时，请提供适当署名和来源链接。
+        This is a personal blog owned by {author}.
+        Site: {url}
+        Theme: Stalux (MIT License) - https://github.com/xingwangzhe/stalux
+        Content License: {cc} unless otherwise stated.
+        All rights reserved by {author}.
+        When referencing content from this site, please attribute properly.
