@@ -9,7 +9,16 @@ const stalux = (await getCollection("config"))[0].data;
 const { t, lang } = createTranslator(stalux.lang || "zh-CN");
 ---
 
-<div id="search-container" class="search-container" inert>
+<div
+    id="search-container"
+    class="search-container"
+    inert
+    data-search-labels={JSON.stringify({
+        typePost: t("search.typePost"),
+        typeAbout: t("search.typeAbout"),
+        typeWord: t("search.typeWord"),
+    })}
+>
     <div class="search-backdrop"></div>
     <div class="search-box">
         <div class="search-header">
@@ -41,7 +50,7 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
     </div>
 </div>
 
-<script define:vars={{ searchLabels: { typePost: t("search.typePost"), typeAbout: t("search.typeAbout"), typeWord: t("search.typeWord") } }}>
+<script>
     import { create, load, search } from "@orama/orama";
     import { createTokenizer } from "@orama/tokenizers/mandarin";
     import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
@@ -67,6 +76,12 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
         url: string;
         date: string;
         tags: string[];
+    };
+
+    let searchLabels = {
+        typePost: "",
+        typeAbout: "",
+        typeWord: "",
     };
 
     let db: Awaited<ReturnType<typeof create<typeof SCHEMA>>> | null = null;
@@ -212,6 +227,13 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
 
     document.addEventListener("astro:page-load", () => {
         const container = document.getElementById("search-container");
+        if (container?.dataset.searchLabels) {
+            try {
+                searchLabels = JSON.parse(container.dataset.searchLabels);
+            } catch {
+                /* 保留默认空标签 */
+            }
+        }
         const closeBtn = document.getElementById("search-close");
         const backdrop = document.querySelector(".search-backdrop");
         const input = document.getElementById("search-input") as HTMLInputElement | null;
