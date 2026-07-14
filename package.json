@@ -11,7 +11,8 @@
         "fmt:check": "oxfmt --check",
         "lint": "oxlint",
         "lint:fix": "oxlint --fix",
-        "licenses-checker": "bun licenses-checker.ts"
+        "licenses-checker": "bun licenses-checker.ts",
+        "prepare": "git config core.hooksPath scripts/git-hooks"
     },
     "dependencies": {
         "@astrojs/compiler-rs": "^0.3.1",
