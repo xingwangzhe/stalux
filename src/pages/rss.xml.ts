@@ -1,6 +1,6 @@
 import rss from "@astrojs/rss";
-import { createTranslator, langToFeedLanguage } from "@utils/i18n";
 import { buildFeedItems } from "@utils/feed";
+import { createTranslator, langToFeedLanguage } from "@utils/i18n";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 
