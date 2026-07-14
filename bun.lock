@@ -27,7 +27,6 @@
         "lucide": "^1.24.0",
         "mermaid": "^11.16.0",
         "photoswipe": "^5.4.4",
-        "remove-markdown": "^0.6.4",
       },
       "devDependencies": {
         "@nullpinter/satteri-katex": "^0.1.2",
@@ -36,6 +35,7 @@
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",
+        "remove-markdown": "^0.6.4",
         "simple-icons": "^16.26.0",
         "word-count": "^0.3.1",
       },
@@ -1228,7 +1228,7 @@
 
     "rehype-expressive-code": ["rehype-expressive-code@0.44.0", "https://registry.npmmirror.com/rehype-expressive-code/-/rehype-expressive-code-0.44.0.tgz", { "dependencies": { "expressive-code": "^0.44.0" } }, "sha512-5r74C5F2sMR3X+QJH8OKWgZBO/cqRw5W1fLT6GVlSfLqepk+4j8tGFkyPqZYWjwntsBHzKPDH2zI68sZ7ScLfA=="],
 
-    "remove-markdown": ["remove-markdown@0.6.4", "https://registry.npmmirror.com/remove-markdown/-/remove-markdown-0.6.4.tgz", {}, "sha512-BompiLClzjfh46irZmzv+1Q61jZYlKN3iq/hzae9EOUwf7ctr/5wpD4qwgn/FWDAYE18RORO7z/yr+HXZJCY8Q=="],
+    "remove-markdown": ["remove-markdown@0.6.4", "", {}, "sha512-BompiLClzjfh46irZmzv+1Q61jZYlKN3iq/hzae9EOUwf7ctr/5wpD4qwgn/FWDAYE18RORO7z/yr+HXZJCY8Q=="],
 
     "request-light": ["request-light@0.7.0", "https://registry.npmmirror.com/request-light/-/request-light-0.7.0.tgz", {}, "sha512-lMbBMrDoxgsyO+yB3sDcrDuX85yYt7sS8BfQd11jtbW/z5ZWgLZRcEGLsLoYw7I0WSUGQBs8CC8ScIxkTX1+6Q=="],
 
