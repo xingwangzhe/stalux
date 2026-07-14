@@ -5,6 +5,7 @@ import PostRight from "@components/stalux/posts/postRight.astro";
 import PostNavigation from "@components/stalux/posts/postNavigation.astro";
 import PostCC from "@components/stalux/posts/postCC.astro";
 import WalineComment from "@components/stalux/posts/WalineComment.astro";
+import { buildWalineProps } from "@utils/waline";
 import KatexStyle from "@components/stalux/posts/KatexStyle.astro";
 import PhotoSwipeStyle from "@components/stalux/posts/PhotoSwipeStyle.astro";
 import { getCollection } from "astro:content";
@@ -36,7 +37,7 @@ const categories = props.categories ?? [];
 const headings = props.headings ?? [];
 const author = props.author ?? "Author";
 // 获取 Waline 配置
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const commentEnabled = stalux?.comment?.enabled ?? false;
 const walineConfig = stalux?.comment?.waline;
 ---
@@ -70,26 +71,9 @@ const walineConfig = stalux?.comment?.waline;
             {
                 commentEnabled && walineConfig?.serverURL && (
                     <WalineComment
-                        serverURL={walineConfig.serverURL}
+                        {...buildWalineProps(walineConfig)}
                         path={Astro.url.pathname}
                         title={props.title}
-                        lang={walineConfig.lang}
-                        locale={(walineConfig as any).locale}
-                        emoji={walineConfig.emoji}
-                        reaction={walineConfig.reaction}
-                        meta={walineConfig.meta as any}
-                        wordLimit={walineConfig.wordLimit}
-                        pageSize={walineConfig.pageSize}
-                        login={(walineConfig as any).login}
-                        recaptchaV3Key={(walineConfig as any).recaptchaV3Key}
-                        turnstileKey={(walineConfig as any).turnstileKey}
-                        dark={(walineConfig as any).dark}
-                        noCopyright={(walineConfig as any).noCopyright}
-                        commentSorting={(walineConfig as any).commentSorting}
-                        imageUploader={(walineConfig as any).imageUploader}
-                        highlighter={(walineConfig as any).highlighter}
-                        texRenderer={(walineConfig as any).texRenderer}
-                        search={(walineConfig as any).search}
                     />
                 )
             }

@@ -12,7 +12,7 @@ export interface Props {
   cover?: string;
 }
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const htmlLang = stalux.lang || "zh-CN";
 
 const bgModules = import.meta.glob<{ default: { src: string } }>(

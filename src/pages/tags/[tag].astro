@@ -3,43 +3,14 @@ import PostList from "@components/stalux/posts/postList.astro";
 import TagHeader from "@components/stalux/tags/tagHeader.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import Stalux from "@layouts/Stalux.astro";
-import { toTimestamp } from "@utils/dayjs";
 import { createTranslator } from "@utils/i18n";
+import { buildTaxonomyStaticPaths } from "@utils/taxonomy";
 import Navs from "@components/stalux/layout/navs.astro";
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 
 export async function getStaticPaths() {
-    const posts = await getCollection("posts", ({ data }) => !data.draft);
-    const tagMap = new Map<
-        string,
-        { posts: CollectionEntry<"posts">[]; latestTime: string }
-    >();
-
-    for (const post of posts) {
-        const tags = post.data.tags ?? [];
-        const postTime = post.data.updated ?? post.data.date;
-        for (const t of tags) {
-            if (!tagMap.has(t)) {
-                tagMap.set(t, { posts: [], latestTime: postTime });
-            }
-            const entry = tagMap.get(t)!;
-            entry.posts.push(post);
-            if (toTimestamp(postTime) > toTimestamp(entry.latestTime)) {
-                entry.latestTime = postTime;
-            }
-        }
-    }
-
-    return Array.from(tagMap.entries()).map(([tag, entry]) => ({
-        params: { tag },
-        props: {
-            tag,
-            count: entry.posts.length,
-            posts: entry.posts,
-            lastUpdateDate: entry.latestTime,
-        },
-    }));
+    return buildTaxonomyStaticPaths("tags");
 }
 
 interface Props {

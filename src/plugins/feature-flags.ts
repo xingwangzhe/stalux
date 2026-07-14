@@ -1,30 +1,46 @@
 /**
- * Sätteri 插件：通过 ctx.data.astro.frontmatter 传递 feature flags 和字数统计
- * 在构建时完成所有计算，只传递最终结果到 frontmatter
+ * Sätteri 插件：在构建时完成所有计算（字数、阅读时间、特性标记），
+ * 通过 ctx.data.astro.frontmatter 把最终结果传递到 frontmatter，运行时无需再算。
+ *
+ * 状态传递说明：
+ * - MDAST 阶段的 text / inlineCode / code / math 会把纯文本片段累积到
+ *   ctx.data.__textParts 数组里；
+ * - heading / paragraph 节点结束时调用 flushWordCount 把累积片段合并、
+ *   统计字数并写入 frontmatter（原逻辑不在 flush 后清空 __textParts，
+ *   处理顺序与上游保持一致，这里保持不变）；
+ * - mermaid 代码块先被抽成 rawHtml 占位（携带随机 id），在 HAST 阶段
+ *   再依据 ctx.data[MERMAID_CODES_KEY] 还原为真实代码。
  */
 import { defineMdastPlugin, defineHastPlugin } from "satteri";
 import wordCount from "word-count";
 
 const MERMAID_CODES_KEY = "__satteri_mermaid_codes";
+const WORDS_PER_MINUTE = 400;
 
-function countWords(text: string): number {
-    return wordCount(text);
+/** 向上取整得到阅读分钟数（至少 1 分钟）。 */
+function ceilMinutes(words: number, wordsPerMinute: number): number {
+    return Math.max(1, Math.ceil(words / wordsPerMinute));
 }
 
 function formatReadingTime(words: number, wordsPerMinute: number): string {
-    const minutes = Math.ceil(words / wordsPerMinute);
+    const minutes = ceilMinutes(words, wordsPerMinute);
     if (minutes < 1) return "小于 1 分钟";
     return `${minutes} 分钟`;
 }
 
-function getReadingMinutes(words: number, wordsPerMinute: number): number {
-    return Math.max(1, Math.ceil(words / wordsPerMinute));
+// heading 与 paragraph 的收尾逻辑完全一致，统一到此处避免重复。
+function flushWordCount(ctx: any) {
+    const parts = ctx.data.__textParts as string[] | undefined;
+    if (!parts || parts.length === 0) return;
+
+    const plainText = parts.join(" ");
+    const wc = wordCount(plainText);
+    const fm = ctx.data.astro.frontmatter;
+    fm.wordCount = wc;
+    fm.minutesRead = formatReadingTime(wc, WORDS_PER_MINUTE);
+    fm.readingMinutes = ceilMinutes(wc, WORDS_PER_MINUTE);
 }
 
-/**
- * MDAST 插件：检测 math/mermaid，收集纯文本并计算字数统计
- * 使用 ctx.data 存储文本片段，在 heading/paragraph 处触发计算
- */
 export const featureFlagsMdast = defineMdastPlugin({
     name: "feature-flags-mdast",
 
@@ -67,27 +83,11 @@ export const featureFlagsMdast = defineMdastPlugin({
     },
 
     heading(_node, ctx) {
-        const parts = ctx.data.__textParts as string[] | undefined;
-        if (!parts || parts.length === 0) return;
-
-        const plainText = parts.join(" ");
-        const wc = countWords(plainText);
-        const fm = ctx.data.astro.frontmatter;
-        fm.wordCount = wc;
-        fm.minutesRead = formatReadingTime(wc, 400);
-        fm.readingMinutes = getReadingMinutes(wc, 400);
+        flushWordCount(ctx);
     },
 
     paragraph(_node, ctx) {
-        const parts = ctx.data.__textParts as string[] | undefined;
-        if (!parts || parts.length === 0) return;
-
-        const plainText = parts.join(" ");
-        const wc = countWords(plainText);
-        const fm = ctx.data.astro.frontmatter;
-        fm.wordCount = wc;
-        fm.minutesRead = formatReadingTime(wc, 400);
-        fm.readingMinutes = getReadingMinutes(wc, 400);
+        flushWordCount(ctx);
     },
 });
 

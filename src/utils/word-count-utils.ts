@@ -17,7 +17,8 @@ export async function getTotalWordCount(): Promise<number> {
         const posts = await getCollection("posts", ({ data }) => !data.draft);
         const results = await Promise.all(
             posts.map(async (post) => {
-                // 尝试从已渲染的 metadata 读取字数
+                // Sätteri 在渲染阶段把字数写入 post.rendered.metadata.frontmatter.wordCount，
+                // 这里直接读该路径，避免重新解析正文。
                 const rendered = (post as any).rendered;
                 if (rendered?.metadata?.frontmatter?.wordCount != null) {
                     return rendered.metadata.frontmatter.wordCount;
@@ -62,7 +63,8 @@ export async function getPostDescriptions(): Promise<
 
 export function formatWordCount(count: number, lang?: string): string {
     const isZh = lang?.startsWith("zh");
-    if (count >= 10000) return `${(count / 10000).toFixed(1)}${isZh ? "万" : "0k"}`;
+    // 中文用“万”做万级单位；其他语言统一用“k”（千）。
+    if (isZh && count >= 10000) return `${(count / 10000).toFixed(1)}万`;
     if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
     return count.toString();
 }

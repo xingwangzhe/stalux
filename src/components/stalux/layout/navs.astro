@@ -16,7 +16,7 @@ function getIconNode(iconName: string) {
     if (!node) console.error(`lucide 图标 '${iconName}' 未找到`);
     return node;
 }
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 

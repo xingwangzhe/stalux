@@ -3,17 +3,7 @@ import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
 import { createTokenizer } from "@orama/tokenizers/mandarin";
 import { getCollection } from "astro:content";
 import removeMarkdown from "remove-markdown";
-
-const schema = {
-    id: "string",
-    type: "string",
-    title: "string",
-    description: "string",
-    content: "string",
-    url: "string",
-    date: "string",
-    tags: "string[]",
-} as const;
+import { searchSchema, type SearchDoc } from "@utils/search-schema";
 
 export async function GET() {
     const [posts, aboutPages, wordEntries] = await Promise.all([
@@ -22,16 +12,7 @@ export async function GET() {
         getCollection("words", ({ data }) => !data.draft),
     ]);
 
-    const documents: Array<{
-        id: string;
-        type: string;
-        title: string;
-        description: string;
-        content: string;
-        url: string;
-        date: string;
-        tags: string[];
-    }> = [];
+    const documents: SearchDoc[] = [];
 
     for (const post of posts) {
         const body = typeof post.body === "string" ? post.body : "";
@@ -74,7 +55,7 @@ export async function GET() {
     }
 
     const db = await create({
-        schema,
+        schema: searchSchema,
         components: {
             tokenizer: createTokenizer({
                 stopWords: mandarinStopwords,

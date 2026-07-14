@@ -8,7 +8,7 @@ interface Props {
     buildtime?: string;
 }
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 const { showStats = true, wordCount, buildtime } = Astro.props;
 ---
@@ -50,32 +50,37 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
 
 <script define:vars={{ buildtime, runtimeFormat: t("footer.runtimeFormat") }}>
     document.addEventListener("astro:page-load", () => {
-        if (buildtime) {
-            const runtimeCounter = document.getElementById("runtime-counter");
+        if (!buildtime) return;
+        const runtimeCounter = document.getElementById("runtime-counter");
+        if (!runtimeCounter) return;
 
-            const updateRuntime = () => {
-                if (!runtimeCounter) return;
-                const now = new Date();
-                const start = new Date(buildtime);
-                const diffMs = now.getTime() - start.getTime();
-                if (Number.isNaN(diffMs) || diffMs < 0) return;
+        const updateRuntime = () => {
+            const now = new Date();
+            const start = new Date(buildtime);
+            const diffMs = now.getTime() - start.getTime();
+            if (Number.isNaN(diffMs) || diffMs < 0) return;
 
-                const totalSeconds = Math.floor(diffMs / 1000);
-                const days = Math.floor(totalSeconds / 86400);
-                const hours = Math.floor((totalSeconds % 86400) / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const seconds = totalSeconds % 60;
+            const totalSeconds = Math.floor(diffMs / 1000);
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
 
-                runtimeCounter.textContent = runtimeFormat
-                    .replace("{days}", String(days))
-                    .replace("{hours}", String(hours))
-                    .replace("{minutes}", String(minutes))
-                    .replace("{seconds}", String(seconds));
-            };
+            runtimeCounter.textContent = runtimeFormat
+                .replace("{days}", String(days))
+                .replace("{hours}", String(hours))
+                .replace("{minutes}", String(minutes))
+                .replace("{seconds}", String(seconds));
+        };
 
-            updateRuntime();
-            setInterval(updateRuntime, 1000);
+        updateRuntime();
+        // define:vars 内联脚本会在每次视图切换时重新执行，
+        // 因此用 window 句柄记录定时器，创建新定时器前先清掉旧的，避免累加 1Hz 定时器。
+        const w = window as unknown as { __staluxRuntimeTimer?: ReturnType<typeof setInterval> };
+        if (w.__staluxRuntimeTimer != null) {
+            clearInterval(w.__staluxRuntimeTimer);
         }
+        w.__staluxRuntimeTimer = setInterval(updateRuntime, 1000);
     });
 </script>
 

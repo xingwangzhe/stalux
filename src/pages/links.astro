@@ -3,7 +3,7 @@ import ListPage from "@components/stalux/layout/listPage.astro";
 import LinkList from "@components/stalux/links/linkList.astro";
 import { getCollection } from "astro:content";
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 ---
 
 <ListPage

@@ -9,7 +9,7 @@ interface Props {
     prev?: { url: string; title: string };
     next?: { url: string; title: string };
 }
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const props = Astro.props as Props;
 const { Content, headings, remarkPluginFrontmatter } = await render(props.post);
 
@@ -21,23 +21,30 @@ const flags = {
 };
 
 // 字数统计直接从 frontmatter 读取
-const minutesRead = (remarkPluginFrontmatter?.minutesRead as string) || "";
-const readingMinutes = (remarkPluginFrontmatter?.readingMinutes as number) || 0;
-const wordCount = (remarkPluginFrontmatter?.wordCount as number) || 0;
+const minutesRead = (remarkPluginFrontmatter?.minutesRead as string) ?? "";
+const readingMinutes = (remarkPluginFrontmatter?.readingMinutes as number) ?? 0;
+const wordCount = (remarkPluginFrontmatter?.wordCount as number) ?? 0;
+// desc 可能为空字符串，需用 || 做“空串回退”，不能用 ??（?? 会把 "" 当作有效值）
 const autoDesc = props.post.data.desc || (remarkPluginFrontmatter?.desc as string) || "";
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const sorted = posts.sort((a,b) => toTimestamp(b.data.date) - toTimestamp(a.data.date));
     return sorted.map((post, i) => {
-        const n = i>0?sorted[i-1]:undefined;
-        const p = i<sorted.length-1?sorted[i+1]:undefined;
+        // sorted 按日期降序：sorted[i-1] 比当前新（next），sorted[i+1] 比当前旧（prev）
+        const nextPost = i > 0 ? sorted[i - 1] : undefined;
+        const prevPost = i < sorted.length - 1 ? sorted[i + 1] : undefined;
         return {
-            params:{post:post.data.abbrlink},
-            props:{post,
-                prev: p?{url:'/posts/'+p.data.abbrlink,title:p.data.title}:undefined,
-                next: n?{url:'/posts/'+n.data.abbrlink,title:n.data.title}:undefined
-            }
+            params: { post: post.data.abbrlink },
+            props: {
+                post,
+                prev: prevPost
+                    ? { url: "/posts/" + prevPost.data.abbrlink, title: prevPost.data.title }
+                    : undefined,
+                next: nextPost
+                    ? { url: "/posts/" + nextPost.data.abbrlink, title: nextPost.data.title }
+                    : undefined,
+            },
         };
     });
 }

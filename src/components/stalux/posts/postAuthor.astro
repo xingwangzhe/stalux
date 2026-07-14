@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Author from "@components/stalux/common/author.astro";
 import style from "@styles/components/posts/postAuthor.module.css";
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 
 // 判断是否为文章页面
 const isPostPage = Astro.url.pathname.includes("/posts/");

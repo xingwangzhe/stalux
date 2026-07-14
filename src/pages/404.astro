@@ -4,7 +4,7 @@ import Navs from "@components/stalux/layout/navs.astro";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 

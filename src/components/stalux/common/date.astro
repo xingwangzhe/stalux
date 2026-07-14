@@ -34,8 +34,13 @@ import styles from "@styles/components/common/date.module.css";
             timeEl.setAttribute("datetime", format(now, "HH:mm:ss"));
         }
     }
+    // 全局只保留一个 1Hz 定时器：用单例守卫避免视图切换时累加定时器。
+    let timerId: ReturnType<typeof setInterval> | null = null;
+
     document.addEventListener("astro:page-load", () => {
         updateDateTime();
-        setInterval(updateDateTime, 1000); // 1s更新
+        if (timerId === null) {
+            timerId = setInterval(updateDateTime, 1000);
+        }
     });
 </script>

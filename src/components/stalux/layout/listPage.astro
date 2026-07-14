@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { title, description, heading, subheading } = Astro.props;
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 ---
 
 <Stalux title={title + " | " + stalux.title} description={description}>
