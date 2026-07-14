@@ -20,13 +20,12 @@
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.44.0",
         "@lucide/astro": "^1.24.0",
-        "@nullpinter/satteri-katex": "0.1.2",
         "@orama/highlight": "^0.1.9",
         "@orama/orama": "^3.1.18",
         "@orama/stopwords": "^3.1.18",
         "@orama/tokenizers": "^3.1.18",
         "@waline/client": "3.15.2",
-        "@xingwangzhe/tags-cloud": "^1.2.3",
+        "@xingwangzhe/tags-cloud": "^1.2.4",
         "animejs": "^4.5.0",
         "astro": "^7.0.9",
         "astro-expressive-code": "0.44.0",
@@ -44,6 +43,7 @@
         "word-count": "^0.3.1"
     },
     "devDependencies": {
+        "@nullpinter/satteri-katex": "^0.1.2",
         "@xingwangzhe/satteri-mermaid": "^0.2.10",
         "@xingwangzhe/satteri-photoswipe": "^0.1.8",
         "license-checker-rseidelsohn": "5.0.1",
