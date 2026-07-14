@@ -506,13 +506,13 @@ flowchart TB
 
 配套新增 5 个 Plan-and-Execute 专用函数：
 
-| 函数 | 用途 |
-| --- | --- |
-| `_build_plan_prompt_messages()` | 构建计划生成 prompt，引导输出 `{"reasoning":"...","plan":[...]}` |
-| `_build_plan_step_prompt_messages()` | 步骤执行阶段 prompt，提示"继续下一步 or 最终回答" |
-| `_parse_plan_output()` | 解析计划 JSON，支持 3 种格式 |
-| `_mock_plan_execute()` | Mock 模式生成 3 步计划 |
-| `_has_torch()` | 检测 torch 是否可用，自动回退 mock |
+| 函数                                 | 用途                                                             |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `_build_plan_prompt_messages()`      | 构建计划生成 prompt，引导输出 `{"reasoning":"...","plan":[...]}` |
+| `_build_plan_step_prompt_messages()` | 步骤执行阶段 prompt，提示"继续下一步 or 最终回答"                |
+| `_parse_plan_output()`               | 解析计划 JSON，支持 3 种格式                                     |
+| `_mock_plan_execute()`               | Mock 模式生成 3 步计划                                           |
+| `_has_torch()`                       | 检测 torch 是否可用，自动回退 mock                               |
 
 #### 验证结果
 
@@ -533,13 +533,13 @@ python b4_local_agent_llm.py   --model_config ../configs/model.yaml   --messages
 
 ```json
 {
-  "role": "assistant",
-  "content": "",
-  "tool_calls": [
-    {"name": "file_reader", "args": {"path": "docs/agent_intro.txt"}},
-    {"name": "local_file_search", "args": {"query": "Agent", "root_dir": "docs"}},
-    {"name": "calculator", "args": {"expression": "2 + 2"}}
-  ]
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+        { "name": "file_reader", "args": { "path": "docs/agent_intro.txt" } },
+        { "name": "local_file_search", "args": { "query": "Agent", "root_dir": "docs" } },
+        { "name": "calculator", "args": { "expression": "2 + 2" } }
+    ]
 }
 ```
 
@@ -714,12 +714,12 @@ python b4_local_agent_llm.py \
 +        )
 ```
 
-| 对比维度 | prompt 注入 | 内置传参（builtin） |
-| --- | --- | --- |
-| 模型输出格式 | JSON `{"content":"","tool_calls":[...]}` | XML `<tool_call>` |
-| 解析结果 | ✅ 成功率 83.3% | ❌ 0%（JSON 解析器不兼容） |
-| Token 开销 | ~500 token 用于 schema | 0 token |
-| 当前适用 | ✅ 默认方案 | 需适配 XML 解析后可用 |
+| 对比维度     | prompt 注入                              | 内置传参（builtin）        |
+| ------------ | ---------------------------------------- | -------------------------- |
+| 模型输出格式 | JSON `{"content":"","tool_calls":[...]}` | XML `<tool_call>`          |
+| 解析结果     | ✅ 成功率 83.3%                          | ❌ 0%（JSON 解析器不兼容） |
+| Token 开销   | ~500 token 用于 schema                   | 0 token                    |
+| 当前适用     | ✅ 默认方案                              | 需适配 XML 解析后可用      |
 
 #### 命令示例
 
@@ -878,7 +878,7 @@ xychart-beta
      ...
 +    content = candidate.get("content", "")
 +    tool_calls = candidate.get("tool_calls", [])
-+    
++
 +    # 规范化：如果两者都非空，优先使用 content，清空 tool_calls
 +    if content and tool_calls:
 +        print(
@@ -886,7 +886,7 @@ xychart-beta
 +            file=sys.stderr, flush=True
 +        )
 +        tool_calls = []   # 清空，使最终回答优先
-+    
++
      message = {
          "role": "assistant",
 -        "content": candidate.get("content", ""),
