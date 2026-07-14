@@ -1,0 +1,27 @@
+#!/bin/sh
+# pre-commit 钩子：要求 lint 与 fmt 均通过才允许提交。
+# - lint:  oxlint，存在错误或警告即失败
+# - fmt:   oxfmt --check（dry-run），若仓库中存在需要格式化的文件即失败
+# 任一检查不通过则中止提交，并提示对应的修复命令。
+
+# 始终在仓库根目录执行，避免从子目录调用时找不到 package.json
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT" || exit 1
+
+echo "▶ 运行 lint (oxlint)..."
+if ! bun run lint; then
+    echo ""
+    echo "✗ lint 未通过，提交已中止。"
+    echo "  请先运行 'bun run lint:fix' 修复问题后再提交。"
+    exit 1
+fi
+
+echo "▶ 运行 fmt 检查 (oxfmt --check)..."
+if ! bun run fmt:check; then
+    echo ""
+    echo "✗ 代码格式未满足要求（dry-run 仍有需要变动的文件），提交已中止。"
+    echo "  请先运行 'bun run fmt' 格式化整个仓库后再提交。"
+    exit 1
+fi
+
+echo "✓ lint 与 fmt 检查均通过，允许提交。"
