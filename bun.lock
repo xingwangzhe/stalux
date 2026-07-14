@@ -5,7 +5,6 @@
     "": {
       "name": "stalux",
       "dependencies": {
-        "@astrojs/compiler-rs": "^0.3.1",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.44.0",
@@ -26,7 +25,6 @@
         "katex": "^0.17.0",
         "mermaid": "^11.16.0",
         "photoswipe": "^5.4.4",
-        "word-count": "^0.3.1",
       },
       "devDependencies": {
         "@lucide/astro": "^1.24.0",
@@ -39,6 +37,7 @@
         "oxlint": "^1.74.0",
         "remove-markdown": "^0.6.4",
         "simple-icons": "^16.26.0",
+        "word-count": "^0.3.1",
       },
     },
   },
@@ -1511,7 +1510,7 @@
 
     "which": ["which@6.0.1", "https://registry.npmmirror.com/which/-/which-6.0.1.tgz", { "dependencies": { "isexe": "^4.0.0" }, "bin": { "node-which": "bin/which.js" } }, "sha512-oGLe46MIrCRqX7ytPUf66EAYvdeMIZYn3WaocqqKZAxrBpkqHfL/qvTyJ/bTk5+AqHCjXmrv3CEWgy368zhRUg=="],
 
-    "word-count": ["word-count@0.3.1", "https://registry.npmmirror.com/word-count/-/word-count-0.3.1.tgz", {}, "sha512-tTDKyKX1yy8FZWUw64TOgnMeLeXPZBA+ZunaCCpFRrGFeLSwSdEgSsFI/5DIJkiUfM7CkCREFPkZd9U4eLXgqA=="],
+    "word-count": ["word-count@0.3.1", "", {}, "sha512-tTDKyKX1yy8FZWUw64TOgnMeLeXPZBA+ZunaCCpFRrGFeLSwSdEgSsFI/5DIJkiUfM7CkCREFPkZd9U4eLXgqA=="],
 
     "wrap-ansi": ["wrap-ansi@7.0.0", "https://registry.npmmirror.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz", { "dependencies": { "ansi-styles": "^4.0.0", "string-width": "^4.1.0", "strip-ansi": "^6.0.0" } }, "sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q=="],
 
