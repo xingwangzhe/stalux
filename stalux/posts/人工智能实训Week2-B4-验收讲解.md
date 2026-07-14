@@ -272,6 +272,71 @@ def generate_ai_message(
 | 示例展示    | 1 个 tool_call                | 示例含 2 个 tool_call                                 |
 | 尾部处理    | 只读最后 1 条 ToolMessage     | 遍历所有 ToolMessage                                  |
 
+##### 关键源码改动 1：Prompt 模板（`_build_prompt_messages()`）
+
+```diff lang="python"
+-       "Valid schema B:\n"
++       "Valid schema B (call one or more tools, content must be empty):\n"
+        '{"content":"","tool_calls":[{"id":"call_001","name":"file_reader",'
+-       '"args":{"path":"docs/agent_intro.txt","max_chars":2000}}]}\n\n'
++       '"args":{"path":"docs/agent_intro.txt","max_chars":2000}},{"id":"call_002",'
++       '"name":"calculator","args":{"expression":"2+2"}}]}\n\n'
+        ...
+-       "Choose exactly one schema: final content with an empty tool_calls array, or empty content with tool calls. "
++       "You may include zero, one, or multiple tool_calls in the array. "
+```
+
+##### 关键源码改动 2：Mock 生成器（`_mock_generate()`）— 遍历所有 ToolMessage
+
+```diff lang="python"
+ def _mock_generate(messages: list[dict]) -> dict:
+     tool_messages = [m for m in messages if m.get("role") == "tool"]
+     if not tool_messages:
++        # 多个 tool_calls 演示
+         return make_ai_message("", [
+             {"id": "call_001", "name": "file_reader",
+              "args": {"path": "docs/agent_intro.txt", "max_chars": 2000}},
++            {"id": "call_002", "name": "local_file_search",
++             "args": {"query": "Agent"}},
+         ])
+-    latest = tool_messages[-1]
+-    result = _extract_tool_result(latest)
+-    if latest.get("status") != "success" ...
+-        return make_ai_message(f"工具调用失败，无法完成请求：{detail}", [])
+-    output = result.get("output") or {}
+-    content = output.get("content") if isinstance(output, dict) else None
+-    ...
+-    answer = "三条中文要点如下：\n" + ...
+-    return make_ai_message(answer, [])
++    # 遍历所有 ToolMessage，逐个检查状态
++    for tm in tool_messages:
++        if tm.get("status") != "success":
++            try:
++                result = _extract_tool_result(tm)
++                if result.get("status") != "success":
++                    ...
++                    return make_ai_message(f"工具调用失败，无法完成请求：{detail}", [])
++            except ValueError:
++                return make_ai_message(f"工具调用失败：无法解析工具返回内容", [])
++    # 全部成功则汇总所有 ToolMessage 的结果
++    summaries = []
++    for tm in tool_messages:
++        try:
++            result = _extract_tool_result(tm)
++            output = result.get("output") or {}
++            content = output.get("content") if isinstance(output, dict) else None
++            if isinstance(content, str) and content.strip():
++                summaries.append(content)
++        except ValueError:
++            pass
++    combined = "\n".join(summaries) if summaries else "工具结果未提供可提取内容"
++    points = _three_points(combined)
++    answer = "三条中文要点如下：\n" + points
++    return make_ai_message(answer, [])
+```
+
+改动前只取 `tool_messages[-1]` 最后一条工具结果，改动后 `for tm in tool_messages` 遍历所有。
+
 #### 验证结果
 
 ```mermaid
@@ -391,6 +456,64 @@ flowchart TB
 
 **阶段 2 — Execute**：逐一执行计划步骤，全部完成后汇总结果
 
+##### 关键源码改动：`generate_ai_message()` 新增 `plan_execute` 分支
+
+```diff lang="python"
+     elif mode == "plan_execute":
+         tool_messages = [m for m in messages if m.get("role") == "tool"]
++        backend_plan = config.get("model", {}).get("backend", "transformers")
++        if backend_plan == "mock" or not _has_torch():
++            if not tool_messages:
++                # 阶段 1: 生成计划（Mock 返回 3 步固定计划）
++                ai_message = _mock_plan_execute(messages)
++                ...
++                parsed_candidate = {
++                    "content": "",
++                    "tool_calls": ai_message["tool_calls"],
++                    "plan_step_mode": "plan",
++                    "reasoning": "Mock plan.",
++                    "total_steps": len(ai_message["tool_calls"]),
++                }
++                status = "success"
+             else:
++                # 阶段 2: 步骤执行（Mock 合并工具结果）
++                ai_message = _mock_generate(messages)
++                ...
++                parsed_candidate = {
++                    "content": ai_message["content"],
++                    "tool_calls": [],
++                    "plan_step_mode": "final",
++                }
++                status = "success"
+         else:
+-        raise ValueError("mode must be mock or prompt_json")
++            # 真实模型：plan → step 双阶段
++            if not tool_messages:
++                plan_messages = _build_plan_prompt_messages(messages, tools_schema)
++                raw_text = _prompt_json_generate(
++                    config_path, config, plan_messages, tools_schema
++                )
++                parsed_candidate, ai_message = _parse_plan_output(raw_text)
++                status = "success"
++            else:
++                step_messages = _build_plan_step_prompt_messages(messages, tools_schema)
++                raw_text = _prompt_json_generate(
++                    config_path, config, step_messages, tools_schema
++                )
++                parsed_candidate, ai_message = _parse_model_output(raw_text)
++                status = "success"
+```
+
+配套新增 5 个 Plan-and-Execute 专用函数：
+
+| 函数 | 用途 |
+| --- | --- |
+| `_build_plan_prompt_messages()` | 构建计划生成 prompt，引导输出 `{"reasoning":"...","plan":[...]}` |
+| `_build_plan_step_prompt_messages()` | 步骤执行阶段 prompt，提示"继续下一步 or 最终回答" |
+| `_parse_plan_output()` | 解析计划 JSON，支持 3 种格式 |
+| `_mock_plan_execute()` | Mock 模式生成 3 步计划 |
+| `_has_torch()` | 检测 torch 是否可用，自动回退 mock |
+
 #### 验证结果
 
 | 场景     | Mock     | 真实模型                         | 状态 |
@@ -459,7 +582,58 @@ models:
         max_new_tokens: 512
 ```
 
-核心改动仅约 10 行代码：`_load_model_config()` 中按 `model_name` 选取 profile。
+##### 关键源码改动：`_load_model_config()` 新增 `model_name` 参数
+
+```diff lang="python"
+-def _load_model_config(model_config: str | Path) -> tuple[Path, dict]:
++def _load_model_config(
++    model_config: str | Path, model_name: str | None = None
++) -> tuple[Path, dict]:
+     path = Path(model_config).resolve()
+     config = read_yaml(path)
+     if not isinstance(config, dict):
+         raise ValueError("model.yaml must contain an object")
++    if model_name:
++        models_section = config.get("models", {})
++        if not isinstance(models_section, dict):
++            raise ValueError("model.yaml 'models' section must be an object")
++        if model_name not in models_section:
++            available = ", ".join(models_section.keys())
++            raise ValueError(
++                f"unknown model_name '{model_name}'. Available: {available}"
++            )
++        selected = deepcopy(models_section[model_name])
++        config["model"] = selected
++        config["model"]["_selected_model_name"] = model_name
++        print(
++            f"model: {selected.get('display_name', model_name)}",
++            file=sys.stderr, flush=True,
++        )
+     return path, config
+```
+
+同时 `generate_ai_message()` 和 CLI parser 新增 `model_name` 参数透传：
+
+```diff lang="python"
+ def generate_ai_message(
+     model_config: str,
+     messages: list[dict],
+     tools_schema: list[dict],
+     mode: str = "prompt_json",
++    model_name: str | None = None,
+ ) -> dict:
+-    config_path, config = _load_model_config(model_config)
++    config_path, config = _load_model_config(model_config, model_name)
+
+ def build_parser() -> argparse.ArgumentParser:
+     ...
++    parser.add_argument(
++        "--model_name", default=None,
++        help="Select named model profile from model.yaml (models section)",
++    )
+```
+
+共计约 20 行代码，无侵入式设计——不指定 `--model_name` 时行为完全不变。
 
 #### 验证结果
 
@@ -499,6 +673,54 @@ python b4_local_agent_llm.py \
 
 支持两种传参方式：**prompt 注入**（默认，JSON 格式输出）和 **内置传参**（通过 `apply_chat_template` 传入）。实测 prompt 注入方式在当前架构下更可靠，作为默认方案。
 
+##### 关键源码改动：`_prompt_json_generate()` 新增 `tool_calling_mode` 参数
+
+```diff lang="python"
+ def _prompt_json_generate(
+     config_path: Path,
+     config: dict,
+     messages: list[dict],
+     tools_schema: list[dict],
++    tool_calling_mode: str = "prompt_json",
+ ) -> str:
+     ...
+     # 加载模型...
+-    prompt_messages = _build_prompt_messages(messages, tools_schema)
+-    inputs = tokenizer.apply_chat_template(
+-        prompt_messages,
+-        tokenize=True,
+-        add_generation_prompt=True,
+-        return_tensors="pt", return_dict=True,
+-    )
++    tool_calling_mode = config.get("tool_calling", {}).get("mode", "prompt_json")
++    if tool_calling_mode == "builtin":
++        # 内置传参：不注入 prompt，通过 chat template 的 tools= 参数传入
++        prompt_messages = deepcopy(messages)
++        inputs = tokenizer.apply_chat_template(
++            prompt_messages,
++            tools=tools_schema,  # ← 关键区别
++            tokenize=True,
++            add_generation_prompt=True,
++            return_tensors="pt", return_dict=True,
++        )
++    else:
++        # prompt 注入：tools_schema 拼接到 system message 文本中
++        prompt_messages = _build_prompt_messages(messages, tools_schema)
++        inputs = tokenizer.apply_chat_template(
++            prompt_messages,
++            tokenize=True,
++            add_generation_prompt=True,
++            return_tensors="pt", return_dict=True,
++        )
+```
+
+| 对比维度 | prompt 注入 | 内置传参（builtin） |
+| --- | --- | --- |
+| 模型输出格式 | JSON `{"content":"","tool_calls":[...]}` | XML `<tool_call>` |
+| 解析结果 | ✅ 成功率 83.3% | ❌ 0%（JSON 解析器不兼容） |
+| Token 开销 | ~500 token 用于 schema | 0 token |
+| 当前适用 | ✅ 默认方案 | 需适配 XML 解析后可用 |
+
 #### 命令示例
 
 ```bash
@@ -527,6 +749,58 @@ python b4_local_agent_llm.py \
 #### 测试框架
 
 `b4_batch_benchmark.py` 自动遍历 `bench_cases/` 目录，逐一调用 `generate_ai_message()` 并统计结果。
+
+##### 核心源码：`run_benchmark()` 框架
+
+```diff lang="python"
+from b4_local_agent_llm import generate_ai_message
+
+def run_benchmark(model_config, cases_dir, tools_schema, mode, ...) -> dict:
+    cases_path = Path(cases_dir).resolve()
+    case_files = sorted(cases_path.glob("*.json"))
+    tools = read_json(resolve_cli_path(tools_schema))
+    results = []
+    total_success = 0
+    total_error = 0
+
+    for idx, case_file in enumerate(case_files):
+        messages = read_json(case_file)
+        case_name = case_file.stem
+        start = time.perf_counter()
+        result = generate_ai_message(
+            model_config, messages, tools, mode,
+            artifact_dir=outdir,
+            artifact_stem=f"bench_{case_name}" if outdir else None,
+            model_name=model_name,
+            tool_calling=tool_calling,
+        )
+        elapsed_ms = (time.perf_counter() - start) * 1000
+
+        record = {
+            "case": case_name,
+            "status": result["status"],
+            "latency_ms": round(elapsed_ms, 1),
+            "tool_calls_count": len(
+                result["ai_message"].get("tool_calls", [])
+            ),
+            "content_len": len(result["ai_message"].get("content", "")),
+        }
+        if result["status"] == "success":
+            total_success += 1
+        else:
+            total_error += 1
+            record["error"] = result.get("error", {})
+        results.append(record)
+
+    return {
+        "total_cases": len(case_files),
+        "success": total_success,
+        "error": total_error,
+        "success_rate": f"{total_success}/{total} ({...}%)",
+        "avg_latency_ms": round(avg_latency, 1),
+        "cases": results,
+    }
+```
 
 #### 命令示例
 
@@ -597,14 +871,76 @@ xychart-beta
 
 唯一失败的原因是模型同时输出了 `content` 和 `tool_calls`，违反互斥约束。
 
-**最新代码已修复**：
+##### 修复 1：`_candidate_to_message()` — content 优先于 tool_calls
 
-```python
-# 当两者同时非空时，content 优先，清空 tool_calls
-if content and tool_calls:
-    tool_calls = []
-    # 以 content 为最终回答
+```diff lang="python"
+ def _candidate_to_message(candidate: dict) -> tuple[dict, dict]:
+     ...
++    content = candidate.get("content", "")
++    tool_calls = candidate.get("tool_calls", [])
++    
++    # 规范化：如果两者都非空，优先使用 content，清空 tool_calls
++    if content and tool_calls:
++        print(
++            "⚠️ 警告：模型同时提供了 content 和 tool_calls，已忽略 tool_calls",
++            file=sys.stderr, flush=True
++        )
++        tool_calls = []   # 清空，使最终回答优先
++    
+     message = {
+         "role": "assistant",
+-        "content": candidate.get("content", ""),
+-        "tool_calls": candidate.get("tool_calls", []),
++        "content": content,
++        "tool_calls": tool_calls,
+     }
+     validate_ai_message(message)
+-    has_content = bool(message["content"].strip())
+-    has_tool_calls = bool(message["tool_calls"])
+-    if has_content == has_tool_calls:
+-        raise ValueError(
+-            "model output must contain either final content or tool calls, but not both"
+-        )
++    # 移除互斥检查（因为已经规范化）
 ```
+
+改动要点：**移除互斥 `raise`** → 改为静默修复，记录一条 stderr 警告。模型偶尔"说人话的同时还想调工具"时，优先输出内容。
+
+##### 修复 2：新增 `_extract_json_object()` 容错解析
+
+```diff lang="python"
++def _extract_json_object(text: str) -> dict | None:
++    """从文本中依次尝试每个 '{' 位置，直到成功解析出一个 JSON 对象。"""
++    decoder = json.JSONDecoder()
++    pos = 0
++    while True:
++        start = text.find('{', pos)
++        if start == -1:
++            return None
++        try:
++            obj, end = decoder.raw_decode(text[start:])
++            return obj
++        except json.JSONDecodeError:
++            pos = start + 1
++            continue
+
+ def _parse_model_output(raw_text: str) -> tuple[dict, dict]:
+     try:
+         candidate = json.loads(raw_text.strip())
+     except json.JSONDecodeError as exc:
++        # 尝试提取 JSON 对象
++        extracted = _extract_json_object(raw_text)
++        if extracted is not None:
++            try:
++                return _candidate_to_message(extracted)
++            except Exception:
++                pass  # 不符合要求则继续其他容错
+         # 原有容错逻辑
+         try:
+             candidate = _parse_json_with_backtick_tail(raw_text, exc)
+```
+
+改动要点：在现有两层容错（backtick + fragment）之前，**增加 `_extract_json_object` 层**——逐位置尝试解析 `{`，应对模型输出中夹杂前缀文本的情形。
 
 ---
 
