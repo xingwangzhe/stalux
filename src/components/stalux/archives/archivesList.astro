@@ -57,11 +57,10 @@ const sortedYears = Object.keys(archivesByYearMonth)
         <div class={styles.timelineContainer}>
             {
                 sortedYears.length > 0 ? (
-                    sortedYears.map((year, yi) => (
+                    sortedYears.map((year) => (
                         <div
                             class={styles.yearSection}
                             data-year={String(year)}
-                            style={yi >= 2 ? "display:none" : ""}
                         >
                             <div class={styles.yearHeader} data-year-header style="opacity:0">
                                 <h2 class={styles.yearTitle}>{year}</h2>
@@ -107,76 +106,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
             }
         </div>
 
-        <!-- 懒加载指示器 -->
-        <div
-            id="lazyload-observer"
-            class={styles.lazyloadObserver}
-            style="display:none"
-        >
-            <div class={styles.loadingSpinner} data-loading-spinner>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-            </div>
-            <div class={styles.loadingText} data-loading-text>{t("archives.loadMore")}</div>
-        </div>
         <slot name="main" />
     </div>
 
-    <script define:vars={{ allLoadedText: t("archives.allLoaded") }}>
-        document.addEventListener("astro:page-load", () => {
-            const archivesRoot = document.querySelector<HTMLElement>("[data-year]")?.parentElement;
-            if (archivesRoot && (archivesRoot as HTMLElement).dataset.archivesInited === "1") return;
-            if (archivesRoot) (archivesRoot as HTMLElement).dataset.archivesInited = "1";
-
-            let visibleYears = 2;
-            const yearSections = document.querySelectorAll<HTMLElement>("[data-year]");
-            const totalYears = yearSections.length;
-            const lazyloadObserver = document.getElementById("lazyload-observer");
-
-            if (lazyloadObserver) {
-                lazyloadObserver.style.display = totalYears > visibleYears ? "flex" : "none";
-            }
-
-            const updateLoadingIndicator = (isComplete: boolean) => {
-                if (!lazyloadObserver) return;
-                const lt = lazyloadObserver.querySelector("[data-loading-text]") as HTMLElement;
-                const ls = lazyloadObserver.querySelector("[data-loading-spinner]") as HTMLElement;
-                if (isComplete) {
-                    if (lt) lt.textContent = allLoadedText;
-                    if (ls) ls.style.display = "none";
-                    setTimeout(() => {
-                        lazyloadObserver!.style.opacity = "0";
-                        setTimeout(() => { lazyloadObserver!.style.display = "none"; }, 500);
-                    }, 3000);
-                }
-            };
-
-            // 初始显示前 2 年，其余隐藏（CSS 动画自动处理入场）
-            for (let i = 0; i < totalYears; i++) {
-                if (i < visibleYears) {
-                    yearSections[i].style.display = "block";
-                } else {
-                    yearSections[i].style.display = "none";
-                }
-            }
-            if (totalYears <= visibleYears) updateLoadingIndicator(true);
-
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach(e => {
-                        if (e.isIntersecting && visibleYears < totalYears) {
-                            setTimeout(() => {
-                                yearSections[visibleYears].style.display = "block";
-                                visibleYears++;
-                                if (visibleYears >= totalYears) updateLoadingIndicator(true);
-                            }, 450);
-                        }
-                    });
-                },
-                { rootMargin: "300px", threshold: 0.1 },
-            );
-            if (lazyloadObserver) observer.observe(lazyloadObserver);
-        });
-    </script>
 </div>
