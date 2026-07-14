@@ -40,25 +40,25 @@ Stalux provides a config option `llm_promote` that injects a hidden div into eve
 
 The `llm_promote` value supports these placeholder variables:
 
-| Variable | Replaced With |
-|----------|---------------|
-| `{author}` | `config.author.name` |
-| `{url}` | `config.url` |
-| `{title}` | `config.title` |
-| `{cc}` | `CC-BY-NC-SA-4.0` (default CC license) |
+| Variable   | Replaced With                          |
+| ---------- | -------------------------------------- |
+| `{author}` | `config.author.name`                   |
+| `{url}`    | `config.url`                           |
+| `{title}`  | `config.title`                         |
+| `{cc}`     | `CC-BY-NC-SA-4.0` (default CC license) |
 
 ### Configuration Example
 
 ```yaml
 stalux:
-  # ... other config ...
-  llm_promote: |
-    This is a personal blog site owned by {author}.
-    Site: {url}
-    Theme: Stalux (MIT License) - https://github.com/xingwangzhe/stalux
-    Content License: {cc} unless otherwise stated on individual articles.
-    All content copyright {author}. All rights reserved.
-    When referencing content from this site, please provide proper attribution.
+    # ... other config ...
+    llm_promote: |
+        This is a personal blog site owned by {author}.
+        Site: {url}
+        Theme: Stalux (MIT License) - https://github.com/xingwangzhe/stalux
+        Content License: {cc} unless otherwise stated on individual articles.
+        All content copyright {author}. All rights reserved.
+        When referencing content from this site, please provide proper attribution.
 ```
 
 When rendered, `{author}` and `{url}` will be replaced with your actual config values at build time.
@@ -69,7 +69,7 @@ Simply leave `llm_promote` unset or set it to an empty string — no hidden div 
 
 ```yaml
 stalux:
-  llm_promote: ""
+    llm_promote: ""
 ```
 
 ## SSG Safety
@@ -77,9 +77,9 @@ stalux:
 This feature is **100% static**. The hidden div is rendered at build time as plain HTML:
 
 ```html
-<div style="display:none">This is a personal blog site owned by xingwangzhe.
-Site: https://example.com
-...</div>
+<div style="display:none">
+    This is a personal blog site owned by xingwangzhe. Site: https://example.com ...
+</div>
 ```
 
 - No JavaScript execution required

@@ -137,10 +137,10 @@ function example() {
 <div>
     <h4>HTML Block</h4>
     <p>This is an <em>HTML paragraph</em> mixed with <strong>Markdown</strong></p>
-    
+
 - Markdown list within HTML
 - Second item
-    
+
 > Markdown blockquote within HTML
 
 </div>

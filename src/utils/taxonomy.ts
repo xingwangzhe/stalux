@@ -1,5 +1,5 @@
-import { getCollection, type CollectionEntry, type GetStaticPathsResult } from "astro:content";
 import { toTimestamp } from "@utils/dayjs";
+import { getCollection, type CollectionEntry, type GetStaticPathsResult } from "astro:content";
 
 type TaxonomyKey = "tags" | "categories";
 
@@ -10,9 +10,7 @@ type TaxonomyKey = "tags" | "categories";
  * 用数字时间戳比较“最近更新”，避免原实现在内层循环里反复
  * `new Date()` 解析同一个时间字符串（最坏 O(n × 平均标签数) 次 Date 构造）。
  */
-export async function buildTaxonomyStaticPaths(
-    key: TaxonomyKey,
-): Promise<GetStaticPathsResult> {
+export async function buildTaxonomyStaticPaths(key: TaxonomyKey): Promise<GetStaticPathsResult> {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const paramName = key === "tags" ? "tag" : "category";
     const map = new Map<
@@ -24,8 +22,7 @@ export async function buildTaxonomyStaticPaths(
         const postTime = post.data.updated ?? post.data.date;
         const postTs = toTimestamp(postTime);
         for (const name of post.data[key] ?? []) {
-            const entry =
-                map.get(name) ?? { posts: [], latestTs: postTs, latestTime: postTime };
+            const entry = map.get(name) ?? { posts: [], latestTs: postTs, latestTime: postTime };
             entry.posts.push(post);
             if (postTs > entry.latestTs) {
                 entry.latestTs = postTs;
