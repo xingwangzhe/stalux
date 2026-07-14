@@ -1,0 +1,27 @@
+#!/bin/sh
+# pre-push hook: require both lint and fmt to pass before allowing a push.
+# - lint: oxlint, fails on any error or warning
+# - fmt:  oxfmt --check (dry-run), fails if any file needs formatting
+# If either check fails, the push is aborted with the corresponding fix hint.
+
+# Always run from the repository root so package.json is found regardless of cwd
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT" || exit 1
+
+echo "▶ Running lint (oxlint)..."
+if ! bun run lint; then
+    echo ""
+    echo "✗ lint failed, push aborted."
+    echo "  Run 'bun run lint:fix' to fix the issues before pushing."
+    exit 1
+fi
+
+echo "▶ Running fmt check (oxfmt --check)..."
+if ! bun run fmt:check; then
+    echo ""
+    echo "✗ Code is not properly formatted (dry-run reports changes needed), push aborted."
+    echo "  Run 'bun run fmt' to format the whole repository before pushing."
+    exit 1
+fi
+
+echo "✓ lint and fmt checks passed, push allowed."

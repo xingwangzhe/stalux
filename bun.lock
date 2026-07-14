@@ -9,13 +9,12 @@
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.44.0",
         "@lucide/astro": "^1.24.0",
-        "@nullpinter/satteri-katex": "^0.1.2",
         "@orama/highlight": "^0.1.9",
         "@orama/orama": "^3.1.18",
         "@orama/stopwords": "^3.1.18",
         "@orama/tokenizers": "^3.1.18",
         "@waline/client": "3.15.2",
-        "@xingwangzhe/tags-cloud": "^1.2.3",
+        "@xingwangzhe/tags-cloud": "^1.2.4",
         "animejs": "^4.5.0",
         "astro": "^7.0.9",
         "astro-expressive-code": "0.44.0",
@@ -30,14 +29,15 @@
         "photoswipe": "^5.4.4",
         "remove-markdown": "^0.6.4",
         "simple-icons": "^16.26.0",
-        "word-count": "^0.3.1",
       },
       "devDependencies": {
+        "@nullpinter/satteri-katex": "^0.1.2",
         "@xingwangzhe/satteri-mermaid": "^0.2.10",
         "@xingwangzhe/satteri-photoswipe": "^0.1.8",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",
+        "word-count": "^0.3.1",
       },
     },
   },
@@ -294,7 +294,7 @@
 
     "@npmcli/run-script": ["@npmcli/run-script@10.0.4", "https://registry.npmmirror.com/@npmcli/run-script/-/run-script-10.0.4.tgz", { "dependencies": { "@npmcli/node-gyp": "^5.0.0", "@npmcli/package-json": "^7.0.0", "@npmcli/promise-spawn": "^9.0.0", "node-gyp": "^12.1.0", "proc-log": "^6.0.0" } }, "sha512-mGUWr1uMnf0le2TwfOZY4SFxZGXGfm4Jtay/nwAa2FLNAKXUoUwaGwBMNH36UHPtinWfTSJ3nqFQr0091CxVGg=="],
 
-    "@nullpinter/satteri-katex": ["@nullpinter/satteri-katex@0.1.2", "https://registry.npmmirror.com/@nullpinter/satteri-katex/-/satteri-katex-0.1.2.tgz", { "dependencies": { "katex": "^0.17.0" }, "peerDependencies": { "satteri": "^0.8.1" } }, "sha512-EGFGDysz/UrjyWyPD/CrrBUJQ9iruK4nP4YfcmAA5KHeyiupY15aLxMgydcSriN7fLbsE+dMrMkdpZ7rtQRGfw=="],
+    "@nullpinter/satteri-katex": ["@nullpinter/satteri-katex@0.1.2", "", { "dependencies": { "katex": "^0.17.0" }, "peerDependencies": { "satteri": "^0.8.1" } }, "sha512-EGFGDysz/UrjyWyPD/CrrBUJQ9iruK4nP4YfcmAA5KHeyiupY15aLxMgydcSriN7fLbsE+dMrMkdpZ7rtQRGfw=="],
 
     "@orama/highlight": ["@orama/highlight@0.1.9", "https://registry.npmmirror.com/@orama/highlight/-/highlight-0.1.9.tgz", {}, "sha512-eH4uZMea4R9x9vBFJyS/87oR4Y8oIKxF7e1SItJ9DhPlexZWMVZRlFYvHS1BM/563/dU240ct4ZaGHoYKiCkyQ=="],
 
@@ -640,7 +640,7 @@
 
     "@xingwangzhe/satteri-photoswipe": ["@xingwangzhe/satteri-photoswipe@0.1.8", "", { "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-FZM0iE8vcE0hhGa1KWp/Gt93YUG7Ju4/fJZ03WOuYM8mu/yXE8X5LFVLpeKDI5dK+9r15R93MO70djVJitzOfA=="],
 
-    "@xingwangzhe/tags-cloud": ["@xingwangzhe/tags-cloud@1.2.3", "", {}, "sha512-Ee3PARsp3iD1jnW4pDEJIE2Da5r0sE6xHi71WPXLD9G8V0ncFXdIx0IamJbjOJbXiTIjFBInGJad3NvPQZmvNQ=="],
+    "@xingwangzhe/tags-cloud": ["@xingwangzhe/tags-cloud@1.2.4", "", {}, "sha512-nEw7r/+di7ZFKrHtjpEvccCWvznoAvwsnO/urj700yAWgXu2bUgVsnmeg8r0x656a3geaTS0z3XDGhg6XRgKZg=="],
 
     "abbrev": ["abbrev@2.0.0", "https://registry.npmmirror.com/abbrev/-/abbrev-2.0.0.tgz", {}, "sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ=="],
 
@@ -1444,7 +1444,7 @@
 
     "which": ["which@6.0.1", "https://registry.npmmirror.com/which/-/which-6.0.1.tgz", { "dependencies": { "isexe": "^4.0.0" }, "bin": { "node-which": "bin/which.js" } }, "sha512-oGLe46MIrCRqX7ytPUf66EAYvdeMIZYn3WaocqqKZAxrBpkqHfL/qvTyJ/bTk5+AqHCjXmrv3CEWgy368zhRUg=="],
 
-    "word-count": ["word-count@0.3.1", "https://registry.npmmirror.com/word-count/-/word-count-0.3.1.tgz", {}, "sha512-tTDKyKX1yy8FZWUw64TOgnMeLeXPZBA+ZunaCCpFRrGFeLSwSdEgSsFI/5DIJkiUfM7CkCREFPkZd9U4eLXgqA=="],
+    "word-count": ["word-count@0.3.1", "", {}, "sha512-tTDKyKX1yy8FZWUw64TOgnMeLeXPZBA+ZunaCCpFRrGFeLSwSdEgSsFI/5DIJkiUfM7CkCREFPkZd9U4eLXgqA=="],
 
     "wrap-ansi": ["wrap-ansi@7.0.0", "https://registry.npmmirror.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz", { "dependencies": { "ansi-styles": "^4.0.0", "string-width": "^4.1.0", "strip-ansi": "^6.0.0" } }, "sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q=="],
 
@@ -1483,8 +1483,6 @@
     "@isaacs/fs-minipass/minipass": ["minipass@7.1.3", "https://registry.npmmirror.com/minipass/-/minipass-7.1.3.tgz", {}, "sha512-tEBHqDnIoM/1rXME1zgka9g6Q2lcoCkxHLuc7ODJ5BxbP5d4c2Z5cGgtXAku59200Cx7diuHTOYfSBD8n6mm8A=="],
 
     "@npmcli/arborist/nopt": ["nopt@9.0.0", "https://registry.npmmirror.com/nopt/-/nopt-9.0.0.tgz", { "dependencies": { "abbrev": "^4.0.0" }, "bin": { "nopt": "bin/nopt.js" } }, "sha512-Zhq3a+yFKrYwSBluL4H9XP3m3y5uvQkB/09CwDruCiRmR/UJYnn9W4R48ry0uGC70aeTPKLynBtscP9efFFcPw=="],
-
-    "@nullpinter/satteri-katex/satteri": ["satteri@0.8.1", "https://registry.npmmirror.com/satteri/-/satteri-0.8.1.tgz", { "dependencies": { "@types/estree-jsx": "^1.0.5", "@types/hast": "^3.0.4", "@types/mdast": "^4.0.4", "@types/unist": "^3.0.3" }, "optionalDependencies": { "@bruits/satteri-darwin-arm64": "0.8.1", "@bruits/satteri-darwin-x64": "0.8.1", "@bruits/satteri-linux-x64-gnu": "0.8.1", "@bruits/satteri-wasm32-wasi": "0.8.1", "@bruits/satteri-win32-x64-msvc": "0.8.1" } }, "sha512-B3dPc3RsWN+CIrwJHk6KnPQjdN7cg9mnSgfs7AUEXITlIYRnSMleOZQPgpmm759pGZ/vpnsXciNfJKXKME2rrg=="],
 
     "@rolldown/binding-wasm32-wasi/@emnapi/core": ["@emnapi/core@1.10.0", "https://registry.npmmirror.com/@emnapi/core/-/core-1.10.0.tgz", { "dependencies": { "@emnapi/wasi-threads": "1.2.1", "tslib": "^2.4.0" } }, "sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw=="],
 
@@ -1577,16 +1575,6 @@
     "@astrojs/language-server/tinyglobby/picomatch": ["picomatch@4.0.3", "https://registry.npmmirror.com/picomatch/-/picomatch-4.0.3.tgz", {}, "sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q=="],
 
     "@npmcli/arborist/nopt/abbrev": ["abbrev@4.0.0", "https://registry.npmmirror.com/abbrev/-/abbrev-4.0.0.tgz", {}, "sha512-a1wflyaL0tHtJSmLSOVybYhy22vRih4eduhhrkcjgrWGnRfrZtovJ2FRjxuTtkkj47O/baf0R86QU5OuYpz8fA=="],
-
-    "@nullpinter/satteri-katex/satteri/@bruits/satteri-darwin-arm64": ["@bruits/satteri-darwin-arm64@0.8.1", "https://registry.npmmirror.com/@bruits/satteri-darwin-arm64/-/satteri-darwin-arm64-0.8.1.tgz", { "os": "darwin", "cpu": "arm64" }, "sha512-9R8icJLGP8e3LOh8qLTZP1wdSGti6+OzGu3RCuSinMHUdPhTEDU3kbPV35vTGxUHghDGKYXPZBP+jDsbvKdf6A=="],
-
-    "@nullpinter/satteri-katex/satteri/@bruits/satteri-darwin-x64": ["@bruits/satteri-darwin-x64@0.8.1", "https://registry.npmmirror.com/@bruits/satteri-darwin-x64/-/satteri-darwin-x64-0.8.1.tgz", { "os": "darwin", "cpu": "x64" }, "sha512-UY5qDOoPXFsSnmfU6Qwi7h0hrtwlU8brwDrgZ4C1GSjcBVV01kQ96iXX+JIDoyO1Lnps0Wola0ar+iwkL2sAtg=="],
-
-    "@nullpinter/satteri-katex/satteri/@bruits/satteri-linux-x64-gnu": ["@bruits/satteri-linux-x64-gnu@0.8.1", "https://registry.npmmirror.com/@bruits/satteri-linux-x64-gnu/-/satteri-linux-x64-gnu-0.8.1.tgz", { "os": "linux", "cpu": "x64" }, "sha512-OnOyNWEgUVFiDlaVuzd56GSucKY2F+1GMUT9lBqHb4TI0OQgZRP4fCfwxfz+2Rb1hQXuEGSTRJjyhPGQ5ft6kQ=="],
-
-    "@nullpinter/satteri-katex/satteri/@bruits/satteri-wasm32-wasi": ["@bruits/satteri-wasm32-wasi@0.8.1", "https://registry.npmmirror.com/@bruits/satteri-wasm32-wasi/-/satteri-wasm32-wasi-0.8.1.tgz", { "dependencies": { "@emnapi/core": "1.9.1", "@emnapi/runtime": "1.9.1", "@napi-rs/wasm-runtime": "^1.1.4" }, "cpu": "none" }, "sha512-FKgKMIplotnCobQwfVd81YSakgiUBSn+truqElYFX9O+sinePlJXmLuDECNS1Utj8/59t0ryOZ2Sv1ThfAfaNA=="],
-
-    "@nullpinter/satteri-katex/satteri/@bruits/satteri-win32-x64-msvc": ["@bruits/satteri-win32-x64-msvc@0.8.1", "https://registry.npmmirror.com/@bruits/satteri-win32-x64-msvc/-/satteri-win32-x64-msvc-0.8.1.tgz", { "os": "win32", "cpu": "x64" }, "sha512-YgNvyaW5MLsrcnlwLdjk7/wSdER15+8cGdCHVkJY3KuaBdEW6XnfA35Svf88Ar+gBG+QsHEb8JE42DEJUiw22g=="],
 
     "@rolldown/binding-wasm32-wasi/@emnapi/core/@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.2.1", "https://registry.npmmirror.com/@emnapi/wasi-threads/-/wasi-threads-1.2.1.tgz", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w=="],
 
