@@ -6,7 +6,9 @@
 
 .timelineContainer {
     position: relative;
-    padding-left: var(--space-xl);
+    --tl-line: var(--radius-sm);
+    --tl-pad: var(--space-xl);
+    padding-left: var(--tl-pad);
 }
 
 .timelineContainer::before {
@@ -14,7 +16,7 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: var(--radius-sm);
+    width: var(--tl-line);
     height: 100%;
     background: linear-gradient(to bottom, var(--white-20p), var(--accent-40p), var(--white-20p));
     border-radius: var(--border-medium);
@@ -25,19 +27,6 @@
     position: relative;
 }
 
-.yearSection::before {
-    content: "";
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: var(--accent-80p);
-    border: 3px solid var(--white-30p);
-    left: -2.5rem;
-    top: 0.5rem;
-    z-index: 2;
-}
-
 .yearHeader {
     display: flex;
     align-items: center;
@@ -45,9 +34,26 @@
 }
 
 .yearTitle {
+    position: relative;
+    --dot: 16px;
     font-size: 1.8rem;
     margin: 0;
     color: var(--accent-90p);
+}
+
+.yearTitle::before {
+    content: "";
+    position: absolute;
+    box-sizing: border-box;
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: 50%;
+    background-color: var(--accent-80p);
+    border: 3px solid var(--white-30p);
+    left: calc(var(--tl-line) / 2 - var(--tl-pad) - var(--dot) / 2);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
 }
 
 .yearCount {
@@ -62,18 +68,6 @@
 .monthSection {
     margin-bottom: 2rem;
     position: relative;
-}
-
-.monthSection::before {
-    content: "";
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.6);
-    left: -2.25rem;
-    top: 0.5rem;
-    z-index: 1;
 }
 
 .noPosts {
@@ -264,6 +258,7 @@
 }
 
 .postItem {
+    --dot: 6px;
     margin-bottom: 1rem;
     position: relative;
     padding: 0.35rem 0;
@@ -276,12 +271,14 @@
 .postItem::before {
     content: "";
     position: absolute;
-    width: 6px;
-    height: 6px;
+    box-sizing: border-box;
+    width: var(--dot);
+    height: var(--dot);
     border-radius: 50%;
     background-color: var(--white-60p);
-    left: -2rem;
-    top: 0.6rem;
+    left: calc(var(--tl-line) / 2 - var(--tl-pad) - var(--dot) / 2);
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 1;
 }
 
@@ -296,9 +293,25 @@
 }
 
 .monthTitle {
+    position: relative;
+    --dot: 10px;
     font-size: 1rem;
     margin: 0 0 0.25rem 0;
     color: var(--stalux-muted);
+}
+
+.monthTitle::before {
+    content: "";
+    position: absolute;
+    box-sizing: border-box;
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.6);
+    left: calc(var(--tl-line) / 2 - var(--tl-pad) - var(--dot) / 2);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
 }
 
 .monthBlock {
@@ -323,27 +336,16 @@
     }
 
     .timelineContainer {
-        padding-left: 1.5rem;
+        --tl-pad: 1.5rem;
     }
 
     .yearSection {
         margin-bottom: 2rem;
     }
 
-    .yearSection::before {
-        left: -2rem;
-        width: 14px;
-        height: 14px;
-    }
-
     .yearTitle {
+        --dot: 14px;
         font-size: 1.6rem;
-    }
-
-    .monthSection::before {
-        left: -1.75rem;
-        width: 8px;
-        height: 8px;
     }
 
     .monthTitle {
@@ -361,20 +363,12 @@
     }
 
     .timelineContainer {
-        padding-left: 1.2rem;
-    }
-
-    .timelineContainer::before {
-        width: 3px;
-    }
-
-    .yearSection::before {
-        left: -1.6rem;
-        width: 12px;
-        height: 12px;
+        --tl-pad: 1.2rem;
+        --tl-line: 3px;
     }
 
     .yearTitle {
+        --dot: 12px;
         font-size: 1.4rem;
     }
 
