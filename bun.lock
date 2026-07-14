@@ -28,7 +28,6 @@
         "lucide": "^1.24.0",
         "mermaid": "^11.16.0",
         "photoswipe": "^5.4.4",
-        "remove-markdown": "^0.6.4",
         "word-count": "^0.3.1",
       },
       "devDependencies": {
@@ -38,6 +37,7 @@
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",
+        "remove-markdown": "^0.6.4",
         "simple-icons": "^16.26.0",
       },
     },
@@ -1293,7 +1293,7 @@
 
     "remark-stringify": ["remark-stringify@11.0.0", "https://registry.npmmirror.com/remark-stringify/-/remark-stringify-11.0.0.tgz", { "dependencies": { "@types/mdast": "^4.0.0", "mdast-util-to-markdown": "^2.0.0", "unified": "^11.0.0" } }, "sha512-1OSmLd3awB/t8qdoEOMazZkNsfVTeY4fTsgzcQFdXNq8ToTN4ZGwrMnlda4K6smTFKD+GRV6O48i6Z4iKgPPpw=="],
 
-    "remove-markdown": ["remove-markdown@0.6.4", "https://registry.npmmirror.com/remove-markdown/-/remove-markdown-0.6.4.tgz", {}, "sha512-BompiLClzjfh46irZmzv+1Q61jZYlKN3iq/hzae9EOUwf7ctr/5wpD4qwgn/FWDAYE18RORO7z/yr+HXZJCY8Q=="],
+    "remove-markdown": ["remove-markdown@0.6.4", "", {}, "sha512-BompiLClzjfh46irZmzv+1Q61jZYlKN3iq/hzae9EOUwf7ctr/5wpD4qwgn/FWDAYE18RORO7z/yr+HXZJCY8Q=="],
 
     "request-light": ["request-light@0.7.0", "https://registry.npmmirror.com/request-light/-/request-light-0.7.0.tgz", {}, "sha512-lMbBMrDoxgsyO+yB3sDcrDuX85yYt7sS8BfQd11jtbW/z5ZWgLZRcEGLsLoYw7I0WSUGQBs8CC8ScIxkTX1+6Q=="],
 
