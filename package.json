@@ -15,21 +15,16 @@
         "prepare": "git config core.hooksPath scripts/git-hooks"
     },
     "dependencies": {
-        "@astrojs/compiler-rs": "^0.3.1",
-        "@astrojs/markdown-satteri": "^0.3.4",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "0.44.0",
         "@lucide/astro": "^1.24.0",
-        "@napi-rs/wasm-runtime": "^1.1.6",
         "@nullpinter/satteri-katex": "^0.1.2",
         "@orama/highlight": "^0.1.9",
         "@orama/orama": "^3.1.18",
         "@orama/stopwords": "^3.1.18",
         "@orama/tokenizers": "^3.1.18",
         "@waline/client": "3.15.2",
-        "@xingwangzhe/satteri-mermaid": "^0.2.9",
-        "@xingwangzhe/satteri-photoswipe": "^0.1.7",
         "@xingwangzhe/tags-cloud": "^1.2.3",
         "animejs": "^4.5.0",
         "astro": "^7.0.9",
@@ -48,8 +43,9 @@
         "word-count": "^0.3.1"
     },
     "devDependencies": {
+        "@xingwangzhe/satteri-mermaid": "^0.2.10",
+        "@xingwangzhe/satteri-photoswipe": "^0.1.8",
         "license-checker-rseidelsohn": "5.0.1",
-        "lightningcss": "^1.32.0",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0"
     }
