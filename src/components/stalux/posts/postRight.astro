@@ -2,8 +2,7 @@
 import style from "@styles/components/posts/postSidebar.module.css";
 import Date from "@components/stalux/common/date.astro";
 import PostToc from "@components/stalux/posts/postToc.astro";
-import PostTags from "@components/stalux/posts/postTags.astro";
-import PostCategories from "@components/stalux/posts/postCategories.astro";
+import PostTaxonomy from "@components/stalux/posts/PostTaxonomy.astro";
 import { fade } from "astro:transitions";
 interface Props {
     headings?: Array<{ depth: number; slug: string; text: string }>;
@@ -26,9 +25,9 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
         <PostToc headings={headings} />
     </div>
     <div class={style.sidebarContainer}>
-        <PostTags tags={tags} />
+        <PostTaxonomy kind="tag" items={tags} />
     </div>
     <div class={style.sidebarContainer}>
-        <PostCategories categories={categories} />
+        <PostTaxonomy kind="category" items={categories} />
     </div>
 </aside>

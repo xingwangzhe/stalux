@@ -12,7 +12,7 @@ export interface Props {
   cover?: string;
 }
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const htmlLang = stalux.lang || "zh-CN";
 
 const bgModules = import.meta.glob<{ default: { src: string } }>(
@@ -26,8 +26,8 @@ const bgUrls = Object.values(bgModules)
         const nb = parseInt(b.match(/pattern-(\d+)/)?.[1] || "0", 10);
         return na - nb;
     });
-const randomIndex = Math.floor(Math.random() * bgUrls.length);
-const initialBg = bgUrls[randomIndex];
+const randomIndex = bgUrls.length > 0 ? Math.floor(Math.random() * bgUrls.length) : 0;
+const initialBg = bgUrls[randomIndex] || "";
 const llmPromote = stalux.llm_promote
   ?.replace(/\{author\}/g, stalux.author.name)
   ?.replace(/\{url\}/g, stalux.url)

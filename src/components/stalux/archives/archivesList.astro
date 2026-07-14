@@ -11,7 +11,7 @@ interface Props {
 const props = Astro.props as Props;
 const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 const archivesByYearMonth: Record<
     number,
@@ -35,16 +35,17 @@ posts.forEach((post) => {
     yearCounts[year] += 1;
 });
 
-// 对每个月内的文章按 date 字段降序排序
-Object.keys(archivesByYearMonth).forEach((year) => {
-    Object.keys(archivesByYearMonth[Number(year)]).forEach((month) => {
-        archivesByYearMonth[Number(year)][Number(month)].sort((a, b) => {
-            const da = toTimestamp(a.data.date || 0);
-            const db = toTimestamp(b.data.date || 0);
-            return db - da;
-        });
-    });
-});
+// 每个 post 只解析一次时间，供排序比较器复用，避免比较器里反复 new Date()
+const tsCache = new Map<CollectionEntry<"posts">, number>(
+    posts.map((p) => [p, toTimestamp(p.data.date || 0)]),
+);
+
+// 对每个月内的文章按 date 字段降序排序（用缓存时间戳做纯数字比较）
+for (const [, months] of Object.entries(archivesByYearMonth)) {
+    for (const month of Object.keys(months).map(Number)) {
+        months[month].sort((a, b) => (tsCache.get(b) ?? 0) - (tsCache.get(a) ?? 0));
+    }
+}
 
 // 按年份降序排序 -
 const sortedYears = Object.keys(archivesByYearMonth)

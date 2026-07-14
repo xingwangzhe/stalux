@@ -27,66 +27,44 @@ export interface Props {
     search?: any;
 }
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 
-const {
-    path = typeof window !== "undefined" ? window.location.pathname : "",
-    title = "",
-    serverURL = "",
-    lang = stalux.lang || "zh-CN",
-    locale = undefined,
-    emoji = false,
-    requiredMeta = [],
-    reaction = true,
-    meta = ["nick", "mail", "link"],
-    wordLimit = 200,
-    pageSize = 10,
-    login = "enable",
-    recaptchaV3Key = "",
-    turnstileKey = "",
-    dark = true,
-    noCopyright = false,
-    commentSorting = "latest",
-    imageUploader = undefined,
-    highlighter = undefined,
-    texRenderer = undefined,
-    search = undefined,
-} = Astro.props;
-
-// 为客户端脚本准备配置对象
+// 为客户端脚本准备配置对象：先给默认配置，再用实际传入的 props 覆盖。
+// 这样避免把同一组字段在 Props 接口、解构默认值、init 调用里各写一遍。
 const walineConfig = {
-    path,
-    title,
-    serverURL,
-    lang,
-    locale,
-    emoji,
-    requiredMeta,
-    reaction,
-    meta,
-    wordLimit,
-    pageSize,
-    login,
-    recaptchaV3Key,
-    turnstileKey,
-    dark,
-    noCopyright,
-    commentSorting,
-    imageUploader,
-    highlighter,
-    texRenderer,
-    search,
+    path: typeof window !== "undefined" ? window.location.pathname : "",
+    title: "",
+    serverURL: "",
+    lang: stalux.lang || "zh-CN",
+    locale: undefined,
+    emoji: false,
+    requiredMeta: [] as string[],
+    reaction: true,
+    meta: ["nick", "mail", "link"] as string[],
+    wordLimit: 200,
+    pageSize: 10,
+    login: "enable",
+    recaptchaV3Key: "",
+    turnstileKey: "",
+    dark: true,
+    noCopyright: false,
+    commentSorting: "latest",
+    imageUploader: undefined,
+    highlighter: undefined,
+    texRenderer: undefined,
+    search: undefined,
+    ...Astro.props,
 };
 ---
 
 {
-    serverURL && (
+    walineConfig.serverURL && (
         <div
             id="waline-container"
             class="waline-comment-container"
             data-waline-config={
-                // base64 可逆混淆（无 unescape，兼容 Node/浏览器）
+                // base64 可逆混淆（非加密，仅避免 SSR 注入/转义问题），兼容 Node 与浏览器
                 Buffer.from(
                     new TextEncoder().encode(JSON.stringify(walineConfig)),
                 ).toString("base64")
@@ -153,28 +131,11 @@ const walineConfig = {
         }
 
         try {
+            // 直接将配置对象展开传给 init，无需逐字段罗列
             walineInstance = init({
                 el: commentEl,
-                serverURL: walineConfig.serverURL,
+                ...walineConfig,
                 path: walineConfig.path || window.location.pathname,
-                lang: walineConfig.lang,
-                locale: walineConfig.locale,
-                emoji: walineConfig.emoji,
-                requiredMeta: walineConfig.requiredMeta,
-                reaction: walineConfig.reaction,
-                meta: walineConfig.meta,
-                wordLimit: walineConfig.wordLimit,
-                pageSize: walineConfig.pageSize,
-                login: walineConfig.login,
-                recaptchaV3Key: walineConfig.recaptchaV3Key,
-                turnstileKey: walineConfig.turnstileKey,
-                dark: walineConfig.dark,
-                noCopyright: walineConfig.noCopyright,
-                commentSorting: walineConfig.commentSorting,
-                imageUploader: walineConfig.imageUploader,
-                highlighter: walineConfig.highlighter,
-                texRenderer: walineConfig.texRenderer,
-                search: walineConfig.search,
             });
         } catch (error) {
             console.error("Failed to initialize Waline:", error);

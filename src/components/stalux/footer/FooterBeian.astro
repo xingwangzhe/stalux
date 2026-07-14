@@ -10,7 +10,7 @@ interface Props {
 
 const { icp, pubsec, pubsecNumber } = Astro.props;
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 
 const showBeian = !!(icp || pubsec);

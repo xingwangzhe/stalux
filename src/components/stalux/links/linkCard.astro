@@ -17,7 +17,7 @@ interface Props {
     link: LinkItem;
 }
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 const link = Astro.props.link;
 const href = link.url ?? link.link ?? "#";

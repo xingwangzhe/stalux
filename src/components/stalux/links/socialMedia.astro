@@ -11,7 +11,7 @@ import {
 } from "simple-icons";
 import { getCollection } from "astro:content";
 import styles from "@styles/components/links/socialLinks.module.css";
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const mediaLinks = stalux.mediaLinks || [];
 
 const isPostPage = Astro.url.pathname.startsWith("/posts/");

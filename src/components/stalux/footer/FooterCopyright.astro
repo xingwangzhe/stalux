@@ -9,7 +9,7 @@ interface Props {
 
 const props = Astro.props as Props;
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 
 const currentYear = new Date().getFullYear();

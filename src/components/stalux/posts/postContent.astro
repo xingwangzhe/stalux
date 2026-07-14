@@ -49,8 +49,7 @@ const timezone = stalux?.timezone;
             }
         </div>
         {
-            (props.readingTime || true) && (
-                <div class={style.pageStats}>
+            <div class={style.pageStats}>
                     {(props.readingTime || props.readingMinutes) && (
                         <span class={style.readingTime}>
                             {t("post.readingTime")}{props.readingMinutes && props.readingMinutes > 0
@@ -70,7 +69,6 @@ const timezone = stalux?.timezone;
                         <span id="vercount_value_page_pv">Loading...</span>
                     </span>
                 </div>
-            )
         }
     </header>
 

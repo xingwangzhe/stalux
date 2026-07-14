@@ -1,9 +1,9 @@
 ---
-//@ts-ignore
+// @ts-expect-error
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-const stalux = (await getCollection("config"))[0].data;
 import styles from "@styles/components/common/author.module.css";
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 export interface Props {
     showBio?: boolean | false;
     iscolum?: boolean | false;
@@ -28,6 +28,6 @@ const navigationHref = isHomePage ? "/about" : "/";
             />
         </a>
         <figcaption>{stalux.author.name}</figcaption>
+        {props.showBio && <p>{stalux.author.bio}</p>}
     </figure>
-    {props.showBio && <p>{stalux.author.bio}</p>}
 </article>

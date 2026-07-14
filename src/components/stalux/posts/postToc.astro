@@ -16,7 +16,7 @@ interface Props {
     title?: string;
 }
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 const { headings = [], title = t("taxonomy.toc") } = Astro.props;
 

@@ -5,7 +5,7 @@ import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 import "@styles/components/search.css";
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t, lang } = createTranslator(stalux.lang || "zh-CN");
 ---
 
@@ -55,28 +55,7 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
     import { createTokenizer } from "@orama/tokenizers/mandarin";
     import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
     import { Highlight, highlightStrategy } from "@orama/highlight";
-
-    const SCHEMA = {
-        id: "string",
-        type: "string",
-        title: "string",
-        description: "string",
-        content: "string",
-        url: "string",
-        date: "string",
-        tags: "string[]",
-    } as const;
-
-    type SearchDoc = {
-        id: string;
-        type: string;
-        title: string;
-        description: string;
-        content: string;
-        url: string;
-        date: string;
-        tags: string[];
-    };
+    import { searchSchema, type SearchDoc, type SearchSchema } from "@utils/search-schema";
 
     let searchLabels = {
         typePost: "",
@@ -84,8 +63,15 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
         typeWord: "",
     };
 
-    let db: Awaited<ReturnType<typeof create<typeof SCHEMA>>> | null = null;
+    let db: Awaited<ReturnType<typeof create<SearchSchema>>> | null = null;
     let indexLoading = false;
+
+    // 复用的高亮器实例：highlight() 每次调用会重置 positions，
+    // 单个实例即可服务所有结果，无需每条结果都 new 一个。
+    const highlighter = new Highlight({
+        HTMLTag: "mark",
+        strategy: highlightStrategy.PARTIAL_MATCH,
+    });
 
     async function initOrama() {
         if (db) return db;
@@ -99,7 +85,7 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
             if (!response.ok) throw new Error("Failed to load search index");
             const data = await response.json();
             const instance = await create({
-                schema: SCHEMA,
+                schema: searchSchema,
                 components: {
                     tokenizer: createTokenizer({
                         stopWords: mandarinStopwords,
@@ -138,32 +124,20 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
         }
         empty.style.display = "none";
 
-        const highlighter = new Highlight({
-            HTMLTag: "mark",
-            strategy: highlightStrategy.PARTIAL_MATCH,
-        });
-
         for (const hit of hits) {
             const doc = hit.document;
 
-            const tHL = new Highlight({
-                HTMLTag: "mark",
-                strategy: highlightStrategy.PARTIAL_MATCH,
-            });
-            const titleHTML = tHL.highlight(doc.title, query).HTML;
+            // 先取标题高亮 HTML（下一步会复用同一实例高亮正文，覆盖 .HTML）
+            const titleHTML = highlighter.highlight(doc.title, query).HTML;
 
             const text = [doc.description, doc.content]
                 .filter(Boolean)
                 .join(" ")
                 .replace(/\n/g, " ");
-            const dHL = new Highlight({
-                HTMLTag: "mark",
-                strategy: highlightStrategy.PARTIAL_MATCH,
-            });
-            dHL.highlight(text, query);
-            const snippetHTML = dHL.positions.length > 0
-                ? dHL.trim(200)
-                : dHL.HTML.substring(0, 200);
+            highlighter.highlight(text, query);
+            const snippetHTML = highlighter.positions.length > 0
+                ? highlighter.trim(200)
+                : highlighter.HTML.substring(0, 200);
 
             const item = document.createElement("a");
             item.className = "search-result-item";
@@ -225,56 +199,61 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
         );
     }
 
+    // —— 视图切换时的引用刷新 ——
+    // search 容器在每次视图切换时会被重建，因此 container/input 等 DOM 引用
+    // 需在 astro:page-load 里重新获取；document 级监听只需注册一次。
+    let searchContainer: HTMLElement | null = null;
+    let searchInput: HTMLInputElement | null = null;
+
+    function closeSearch() {
+        searchContainer?.classList.remove("active");
+        searchContainer?.setAttribute("inert", "");
+        if (searchInput) searchInput.value = "";
+        clearResults();
+    }
+
+    // 文档级监听只注册一次，避免视图切换时累加，
+    // 否则每次按键会执行 O(导航次数) 个处理器。
+    document.addEventListener("openSearch", () => {
+        searchContainer?.removeAttribute("inert");
+        searchContainer?.classList.add("active");
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        if (!isMobile && searchInput) {
+            setTimeout(() => searchInput?.focus(), 150);
+        }
+        initOrama().catch(() => {});
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && searchContainer?.classList.contains("active")) {
+            closeSearch();
+        }
+    });
+
     document.addEventListener("astro:page-load", () => {
-        const container = document.getElementById("search-container");
-        if (container?.dataset.searchLabels) {
+        searchContainer = document.getElementById("search-container");
+        if (searchContainer?.dataset.searchLabels) {
             try {
-                searchLabels = JSON.parse(container.dataset.searchLabels);
+                searchLabels = JSON.parse(searchContainer.dataset.searchLabels);
             } catch {
                 /* 保留默认空标签 */
             }
         }
         const closeBtn = document.getElementById("search-close");
         const backdrop = document.querySelector(".search-backdrop");
-        const input = document.getElementById("search-input") as HTMLInputElement | null;
-
-        const closeSearch = () => {
-            container?.classList.remove("active");
-            container?.setAttribute("inert", "");
-            if (input) input.value = "";
-            clearResults();
-        };
-
-        document.addEventListener("openSearch", () => {
-            container?.removeAttribute("inert");
-            container?.classList.add("active");
-            const isMobile = window.matchMedia("(max-width: 768px)").matches;
-            if (!isMobile && input) {
-                setTimeout(() => input.focus(), 150);
-            }
-            initOrama().catch(() => {});
-        });
+        searchInput = document.getElementById("search-input") as HTMLInputElement | null;
 
         closeBtn?.addEventListener("click", closeSearch);
         backdrop?.addEventListener("click", closeSearch);
 
-        document.addEventListener("keydown", (e) => {
-            if (
-                e.key === "Escape" &&
-                container?.classList.contains("active")
-            ) {
-                closeSearch();
-            }
-        });
-
-        container?.addEventListener("click", (e) => {
+        searchContainer?.addEventListener("click", (e) => {
             const target = e.target as HTMLElement;
             if (target.closest('[data-result-link="true"]')) {
-                setTimeout(() => closeSearch(), 100);
+                setTimeout(closeSearch, 100);
             }
         });
 
-        input?.addEventListener("input", (e) => {
+        searchInput?.addEventListener("input", (e) => {
             const value = (e.target as HTMLInputElement).value;
             if (searchTimeout) clearTimeout(searchTimeout);
             if (!value.trim()) {

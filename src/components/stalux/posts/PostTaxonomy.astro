@@ -1,0 +1,63 @@
+---
+import { fade } from "astro:transitions";
+import style from "@styles/components/posts/postTaxonomy.module.css";
+import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
+
+type Kind = "tag" | "category";
+
+interface Props {
+    kind: Kind;
+    items?: string[];
+    title?: string;
+}
+
+const stalux = (await getCollection("config"))[0]?.data ?? {};
+const { t } = createTranslator(stalux.lang || "zh-CN");
+
+const { kind, items = [], title } = Astro.props;
+
+// 根据 kind 选择文案、路由前缀与样式类名，
+// 避免 tag / category 两套几乎相同的组件互相复制。
+const cfg = {
+    tag: {
+        prefix: "/tags/",
+        heading: t("taxonomy.tag"),
+        empty: t("taxonomy.noTags"),
+        containerName: "tags-container",
+        contentName: "tags-content",
+        listClass: style.listWrap,
+        itemClass: style.itemPill,
+    },
+    category: {
+        prefix: "/categories/",
+        heading: t("taxonomy.category"),
+        empty: t("taxonomy.noCategories"),
+        containerName: "categories-container",
+        contentName: "categories-content",
+        listClass: style.listColumn,
+        itemClass: style.itemColumn,
+    },
+}[kind];
+---
+
+<div class={style.container} transition:name={cfg.containerName}>
+    {items.length > 0 && <h3 class={style.title}>{title ?? cfg.heading}</h3>}
+    {
+        items.length > 0 ? (
+            <div
+                class={cfg.listClass}
+                transition:name={cfg.contentName}
+                transition:animate={fade({ duration: "0.3s" })}
+            >
+                {items.map((item) => (
+                    <a href={`${cfg.prefix}${item}/`} class={`${cfg.itemClass} a-none`}>
+                        {item}
+                    </a>
+                ))}
+            </div>
+        ) : (
+            <div class={style.empty}>{cfg.empty}</div>
+        )
+    }
+</div>

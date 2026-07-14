@@ -6,7 +6,7 @@ import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 import styles from "@styles/pages/words.module.css";
 
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 const entries = await getCollection("words", ({ data }) => !data.draft);
 ---

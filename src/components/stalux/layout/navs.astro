@@ -16,7 +16,7 @@ function getIconNode(iconName: string) {
     if (!node) console.error(`lucide 图标 '${iconName}' 未找到`);
     return node;
 }
-const stalux = (await getCollection("config"))[0].data;
+const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
@@ -161,11 +161,14 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
             navList.scrollBy({ left: 300, behavior: "smooth" });
         });
 
+        // 监听滚动事件更新按钮状态
         navList.addEventListener("scroll", updateButtons);
 
+        // 用 ResizeObserver 监听容器尺寸变化（窗口缩窄/变宽时重新判断）
         const ro = new ResizeObserver(updateButtons);
         ro.observe(navList);
 
+        // 初始检测
         updateButtons();
     }
 </script>
