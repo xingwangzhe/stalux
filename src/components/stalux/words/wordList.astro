@@ -25,7 +25,7 @@ const sorted = [...entries].sort((a, b) => {
             return (
                 <li class={styles.item}>
                     {hash ? (
-                        <a href={hash} class="a-none" data-word-hash={hash}>
+                        <a href="javascript:void(0)" class="a-none" data-word-hash={hash}>
                             <WordCard entry={entry} timezone={timezone} />
                         </a>
                     ) : (
