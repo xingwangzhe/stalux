@@ -222,6 +222,10 @@ stalux:
               description: "逐光而上"
               link: "https://upxuu.com"
               icon: "https://upxuu.com/images/me.jpg"
+            - name: "Ytrox"
+              description: "随缘分享点小东西"
+              link: "https://ysone.top"
+              icon: "https://ysone.top/assets/images/Ytrox.png"
     footer:
         # 站点构建时间，用于计算运行时长
         buildtime: "2024-06-20T10:00:00"
