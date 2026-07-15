@@ -49,7 +49,7 @@ export async function GET() {
             title: word.data.title || word.data.source || "一言",
             description: word.data.source || "",
             content: removeMarkdown(body),
-            url: word.data.abbrlink ? `/words/${word.data.abbrlink}/` : "/words/",
+            url: word.data.abbrlink ? `/words/#${word.data.abbrlink}` : "/words/",
             date: word.data.date ?? "",
             tags: word.data.tags ?? [],
         });

@@ -12,14 +12,14 @@ interface Props {
 
 const { entry, timezone } = Astro.props;
 const { Content } = await render(entry);
-const { source, link, sourceDate, date } = entry.data;
+const { source, link, sourceDate, date, abbrlink } = entry.data;
 
 const machineDate = date && timezone
     ? toMachineDateTime(date, timezone)
     : date;
 ---
 
-<article class={styles.card}>
+<article class={styles.card} id={abbrlink || undefined}>
     <div class={styles.body} data-pagefind-body>
         <Content />
     </div>
