@@ -19,7 +19,7 @@ const machineDate = date && timezone
     : date;
 ---
 
-<article class={styles.card} id={abbrlink || undefined}>
+<article class={styles.card} id={abbrlink ? `word-${abbrlink}` : undefined}>
     <div class={styles.body} data-pagefind-body>
         <Content />
     </div>
