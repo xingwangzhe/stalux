@@ -4,6 +4,11 @@ link: "https://baike.baidu.com/item/%E5%B9%B3%E6%96%B9%E6%A0%B9%E5%80%92%E6%95%B
 sourceDate: "1999"
 date: "2026-06-18 20:45:00"
 draft: false
+title: "平方根倒数速算法"
+abbrlink: fast-inverse-sqrt
+tags:
+    - 技术
+    - 数学
 ---
 
 游戏界最著名的一段位运算黑科技——快速反平方根，专门用来加速向量归一化里的 `1 / sqrt(x)`：
