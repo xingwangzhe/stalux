@@ -18,7 +18,8 @@
 }
 
 /* 被 hash 定位的卡片 — 主题光晕 */
-.card:target {
+.card:target,
+.card[data-glow] {
     animation: word-glow 2s ease-out;
     box-shadow:
         0 0 20px var(--accent-40p),

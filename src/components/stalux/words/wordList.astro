@@ -40,15 +40,19 @@ const sorted = [...entries].sort((a, b) => {
 <script>
     function scrollToWord(hash) {
         const el = document.getElementById(hash.slice(1));
-        if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "center" });
-            history.replaceState(null, "", hash);
-        }
+        if (!el) return;
+
+        // 清除之前的高亮
+        document.querySelectorAll("[data-glow]").forEach((c) => c.removeAttribute("data-glow"));
+        // 高亮当前卡片
+        el.setAttribute("data-glow", "");
+
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        history.replaceState(null, "", hash);
     }
 
     // 页面加载时：覆盖浏览器默认的瞬间跳转
     if (location.hash.startsWith("#word-")) {
-        // 先让浏览器稳住位置，再执行居中滚动
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 scrollToWord(location.hash);
