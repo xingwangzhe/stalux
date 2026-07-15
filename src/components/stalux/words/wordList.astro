@@ -25,7 +25,7 @@ const sorted = [...entries].sort((a, b) => {
             return (
                 <li class={styles.item}>
                     {hash ? (
-                        <a href={hash} class="a-none">
+                        <a href={hash} class="a-none" data-word-hash={hash}>
                             <WordCard entry={entry} timezone={timezone} />
                         </a>
                     ) : (
@@ -36,3 +36,24 @@ const sorted = [...entries].sort((a, b) => {
         })
     }
 </ul>
+
+<script>
+    // 页面加载时检测 hash，居中滚动
+    if (location.hash.startsWith("#word-")) {
+        const el = document.getElementById(location.hash.slice(1));
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    // 点击卡片时居中滚动并更新 URL
+    document.addEventListener("click", (e) => {
+        const link = e.target.closest("a[data-word-hash]");
+        if (!link) return;
+        e.preventDefault();
+        const hash = link.getAttribute("data-word-hash");
+        const el = document.getElementById(hash.slice(1));
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            history.pushState(null, "", hash);
+        }
+    });
+</script>
