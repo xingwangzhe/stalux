@@ -38,22 +38,29 @@ const sorted = [...entries].sort((a, b) => {
 </ul>
 
 <script>
-    // 页面加载时检测 hash，居中滚动
-    if (location.hash.startsWith("#word-")) {
-        const el = document.getElementById(location.hash.slice(1));
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    function scrollToWord(hash) {
+        const el = document.getElementById(hash.slice(1));
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            history.replaceState(null, "", hash);
+        }
     }
 
-    // 点击卡片时居中滚动并更新 URL
+    // 页面加载时：覆盖浏览器默认的瞬间跳转
+    if (location.hash.startsWith("#word-")) {
+        // 先让浏览器稳住位置，再执行居中滚动
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                scrollToWord(location.hash);
+            });
+        });
+    }
+
+    // 点击卡片时：阻止默认跳转，改为居中平滑滚动
     document.addEventListener("click", (e) => {
         const link = e.target.closest("a[data-word-hash]");
         if (!link) return;
         e.preventDefault();
-        const hash = link.getAttribute("data-word-hash");
-        const el = document.getElementById(hash.slice(1));
-        if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "center" });
-            history.pushState(null, "", hash);
-        }
+        scrollToWord(link.getAttribute("data-word-hash"));
     });
 </script>
