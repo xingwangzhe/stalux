@@ -1,9 +1,15 @@
 ---
-source: "Quake III Arena"
-link: "https://en.wikipedia.org/wiki/Fast_inverse_square_root"
-sourceDate: "1999"
-date: "2026-06-18 20:45:00"
+source: Quake III Arena
+link: https://en.wikipedia.org/wiki/Fast_inverse_square_root
+sourceDate: '1999'
+date: '2026-06-18 20:45:00'
 draft: false
+title: Fast inverse square root
+abbrlink: quake3-fast-inv-sqrt
+tags:
+- 技术
+- 编程
+- 数学
 ---
 
 The most famous bitwise hack in gaming history — the fast inverse square root, specifically designed to accelerate `1 / sqrt(x)` in vector normalization:
