@@ -17,6 +17,33 @@
     box-shadow: var(--shadow-xl);
 }
 
+/* 被 hash 定位的卡片 — 主题光晕 */
+.card:target,
+.card[data-glow] {
+    animation: word-glow 2s ease-out;
+    box-shadow:
+        0 0 20px var(--accent-40p),
+        0 0 60px var(--accent-20p),
+        var(--shadow-lg);
+}
+
+@keyframes word-glow {
+    0% {
+        box-shadow:
+            0 0 30px var(--accent-50p),
+            0 0 80px var(--accent-30p),
+            var(--shadow-lg);
+        transform: scale(1.02);
+    }
+    100% {
+        box-shadow:
+            0 0 20px var(--accent-40p),
+            0 0 60px var(--accent-20p),
+            var(--shadow-lg);
+        transform: scale(1);
+    }
+}
+
 .body {
     color: var(--white-80p);
     line-height: 1.7;

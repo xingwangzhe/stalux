@@ -20,10 +20,51 @@ const sorted = [...entries].sort((a, b) => {
 
 <ul class={`${styles.list} stagger-children`}>
     {
-        sorted.map((entry) => (
-            <li class={styles.item}>
-                <WordCard entry={entry} timezone={timezone} />
-            </li>
-        ))
+        sorted.map((entry) => {
+            const hash = entry.data.abbrlink ? `#word-${entry.data.abbrlink}` : undefined;
+            return (
+                <li class={styles.item}>
+                    {hash ? (
+                        <a href="javascript:void(0)" class="a-none" data-word-hash={hash}>
+                            <WordCard entry={entry} timezone={timezone} />
+                        </a>
+                    ) : (
+                        <WordCard entry={entry} timezone={timezone} />
+                    )}
+                </li>
+            );
+        })
     }
 </ul>
+
+<script>
+    function scrollToWord(hash) {
+        const el = document.getElementById(hash.slice(1));
+        if (!el) return;
+
+        // 清除之前的高亮
+        document.querySelectorAll("[data-glow]").forEach((c) => c.removeAttribute("data-glow"));
+        // 高亮当前卡片
+        el.setAttribute("data-glow", "");
+
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        history.replaceState(null, "", hash);
+    }
+
+    // 页面加载时：覆盖浏览器默认的瞬间跳转
+    if (location.hash.startsWith("#word-")) {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                scrollToWord(location.hash);
+            });
+        });
+    }
+
+    // 点击卡片时：阻止默认跳转，改为居中平滑滚动
+    document.addEventListener("click", (e) => {
+        const link = e.target.closest("a[data-word-hash]");
+        if (!link) return;
+        e.preventDefault();
+        scrollToWord(link.getAttribute("data-word-hash"));
+    });
+</script>

@@ -104,10 +104,6 @@ const config = defineCollection({
         }),
         footer: z
             .object({
-                startYear: z.number().optional(),
-                icp: z.string().optional(),
-                pubsec: z.string().optional(),
-                pubsecNumber: z.string().optional(),
                 buildtime: z.string().optional(),
                 copyright: z
                     .object({
@@ -206,7 +202,7 @@ const words = defineCollection({
     loader: glob({
         pattern: ["*.md"],
         base: "stalux/words/",
-        retainBody: false,
+        retainBody: true,
     }),
     schema: z.object({
         source: z.string().optional(),
@@ -215,6 +211,9 @@ const words = defineCollection({
         date: z.string().optional(),
         updated: z.string().optional(),
         draft: z.boolean().optional().default(false),
+        title: z.string().optional(),
+        abbrlink: z.string().optional(),
+        tags: z.array(z.string()).optional(),
     }),
 });
 

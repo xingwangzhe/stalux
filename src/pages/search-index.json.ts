@@ -42,15 +42,16 @@ export async function GET() {
     }
 
     for (const word of wordEntries) {
+        const body = typeof word.body === "string" ? word.body : "";
         documents.push({
             id: `word-${word.id}`,
             type: "word",
-            title: word.data.source ?? "一言",
-            description: "",
-            content: "",
-            url: word.data.link ?? "/words/",
+            title: word.data.title || word.data.source || "一言",
+            description: word.data.source || "",
+            content: removeMarkdown(body),
+            url: word.data.abbrlink ? `/words/#word-${word.data.abbrlink}` : "/words/",
             date: word.data.date ?? "",
-            tags: [],
+            tags: word.data.tags ?? [],
         });
     }
 
