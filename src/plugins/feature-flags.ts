@@ -12,7 +12,8 @@
  *   再依据 ctx.data[MERMAID_CODES_KEY] 还原为真实代码。
  */
 import { defineMdastPlugin, defineHastPlugin } from "satteri";
-import wordCount from "word-count";
+
+import { countWords } from "../utils/count-words";
 
 const MERMAID_CODES_KEY = "__satteri_mermaid_codes";
 const WORDS_PER_MINUTE = 400;
@@ -34,7 +35,7 @@ function flushWordCount(ctx: any) {
     if (!parts || parts.length === 0) return;
 
     const plainText = parts.join(" ");
-    const wc = wordCount(plainText);
+    const wc = countWords(plainText);
     const fm = ctx.data.astro.frontmatter;
     fm.wordCount = wc;
     fm.minutesRead = formatReadingTime(wc, WORDS_PER_MINUTE);

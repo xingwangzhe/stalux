@@ -5,39 +5,37 @@
     "": {
       "name": "stalux",
       "dependencies": {
-        "@expressive-code/plugin-line-numbers": "latest",
-        "@orama/highlight": "latest",
-        "@orama/orama": "latest",
-        "@orama/stopwords": "latest",
-        "@orama/tokenizers": "latest",
-        "@waline/client": "latest",
-        "@xingwangzhe/tags-cloud": "latest",
-        "animejs": "latest",
-        "astro": "latest",
-        "katex": "latest",
-        "mermaid": "latest",
-        "photoswipe": "latest",
+        "@date-fns/tz": "^1.5.0",
+        "@expressive-code/plugin-line-numbers": "^0.44.0",
+        "@orama/highlight": "^0.1.9",
+        "@orama/orama": "^3.1.18",
+        "@orama/stopwords": "^3.1.18",
+        "@orama/tokenizers": "^3.1.18",
+        "@waline/client": "3.15.2",
+        "@xingwangzhe/tags-cloud": "^1.2.4",
+        "animejs": "^4.5.0",
+        "astro": "^7.0.9",
+        "katex": "^0.17.0",
+        "mermaid": "^11.16.0",
+        "photoswipe": "^5.4.4",
       },
       "devDependencies": {
-        "@astrojs/rss": "latest",
-        "@astrojs/sitemap": "latest",
-        "@lucide/astro": "latest",
-        "@nullpinter/satteri-katex": "latest",
-        "@xingwangzhe/satteri-mermaid": "latest",
-        "@xingwangzhe/satteri-photoswipe": "latest",
-        "astro-expressive-code": "latest",
-        "astro-seo": "latest",
-        "astro-typewriter": "latest",
-        "badge-maker": "latest",
-        "date-fns": "latest",
-        "date-fns-tz": "latest",
-        "license-checker-rseidelsohn": "latest",
-        "lucide": "latest",
-        "oxfmt": "latest",
-        "oxlint": "latest",
-        "remove-markdown": "latest",
-        "simple-icons": "latest",
-        "word-count": "latest",
+        "@astrojs/rss": "^4.0.19",
+        "@astrojs/sitemap": "^3.7.3",
+        "@lucide/astro": "^1.24.0",
+        "@nullpinter/satteri-katex": "^0.1.2",
+        "@xingwangzhe/satteri-mermaid": "^0.2.10",
+        "@xingwangzhe/satteri-photoswipe": "^0.1.8",
+        "astro-expressive-code": "^0.44.0",
+        "astro-seo": "^1.1.0",
+        "astro-typewriter": "^1.2.0",
+        "badge-maker": "^6.0.0",
+        "date-fns": "^4.4.0",
+        "license-checker-rseidelsohn": "5.0.1",
+        "oxfmt": "^0.59.0",
+        "oxlint": "^1.74.0",
+        "remove-markdown": "^0.6.4",
+        "simple-icons": "^16.26.0",
       },
     },
   },
@@ -125,6 +123,8 @@
     "@clack/prompts": ["@clack/prompts@1.6.0", "https://registry.npmmirror.com/@clack/prompts/-/prompts-1.6.0.tgz", { "dependencies": { "@clack/core": "1.4.2", "fast-string-width": "^3.0.2", "fast-wrap-ansi": "^0.2.0", "sisteransi": "^1.0.5" } }, "sha512-EYlRokl8szrP9Z25qT5aepMdBjzBvHF9ZEhzIiUBc9guz/T31EqRgvD0QSgZcpE93xiwrr+OkB4nz0BZyF6fSA=="],
 
     "@ctrl/tinycolor": ["@ctrl/tinycolor@4.2.0", "", {}, "sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A=="],
+
+    "@date-fns/tz": ["@date-fns/tz@1.5.0", "", {}, "sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg=="],
 
     "@emmetio/abbreviation": ["@emmetio/abbreviation@2.3.3", "", { "dependencies": { "@emmetio/scanner": "^1.0.4" } }, "sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA=="],
 
@@ -804,8 +804,6 @@
 
     "date-fns": ["date-fns@4.4.0", "", {}, "sha512-+1UMbeh68lH1SegH83CGWwpb6OHHbpSgr3+s5Eww5M4CAgswBpoWS0AjTOfEJ33HiYKz1hdj/KTFprzXHmq/6w=="],
 
-    "date-fns-tz": ["date-fns-tz@3.2.0", "", { "peerDependencies": { "date-fns": "^3.0.0 || ^4.0.0" } }, "sha512-sg8HqoTEulcbbbVXeg84u5UnlsQa8GS5QXMqjjYIhS4abEVVKIUwe0/l/UhrZdKaL/W5eWZNlbTeEIiOXTcsBQ=="],
-
     "dayjs": ["dayjs@1.11.21", "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.21.tgz", {}, "sha512-98IT+HOahAisibz/yjKbzuOBwYcjJ7BCLPzARyHiyEBmRz4fatF+KPJszEHXsGYjUG234aH/cOjW1wwTbKUZlA=="],
 
     "debug": ["debug@4.4.3", "https://registry.npmmirror.com/debug/-/debug-4.4.3.tgz", { "dependencies": { "ms": "^2.1.3" }, "peerDependencies": { "supports-color": "*" }, "optionalPeers": ["supports-color"] }, "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA=="],
@@ -1031,8 +1029,6 @@
     "longest-streak": ["longest-streak@3.1.0", "https://registry.npmmirror.com/longest-streak/-/longest-streak-3.1.0.tgz", {}, "sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g=="],
 
     "lru-cache": ["lru-cache@11.5.1", "https://registry.npmmirror.com/lru-cache/-/lru-cache-11.5.1.tgz", {}, "sha512-RPimw/7aMdv2oqRrxKwvZXcPfwBrn/JZ2xYcY9Hus/6LaS3VOAKVWKWgNLCFSiOm1ESXinjsDlidVU7JlnCN2A=="],
-
-    "lucide": ["lucide@1.24.0", "", {}, "sha512-oMAaeuNDc5VCnBb3IjwKYGRT56tqanUm1fyDFT5Tl8hWSZND59gztgjvXje08jKLPVAq0gHJcwZUE8GCQxzBeg=="],
 
     "magic-string": ["magic-string@0.30.21", "https://registry.npmmirror.com/magic-string/-/magic-string-0.30.21.tgz", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.5" } }, "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ=="],
 
@@ -1511,8 +1507,6 @@
     "web-namespaces": ["web-namespaces@2.0.1", "https://registry.npmmirror.com/web-namespaces/-/web-namespaces-2.0.1.tgz", {}, "sha512-bKr1DkiNa2krS7qxNtdrtHAmzuYGFQLiQ13TsorsdT6ULTkPLKuu5+GsFpDlg6JFjUTwX2DyhMPG2be8uPrqsQ=="],
 
     "which": ["which@6.0.1", "https://registry.npmmirror.com/which/-/which-6.0.1.tgz", { "dependencies": { "isexe": "^4.0.0" }, "bin": { "node-which": "bin/which.js" } }, "sha512-oGLe46MIrCRqX7ytPUf66EAYvdeMIZYn3WaocqqKZAxrBpkqHfL/qvTyJ/bTk5+AqHCjXmrv3CEWgy368zhRUg=="],
-
-    "word-count": ["word-count@0.3.1", "", {}, "sha512-tTDKyKX1yy8FZWUw64TOgnMeLeXPZBA+ZunaCCpFRrGFeLSwSdEgSsFI/5DIJkiUfM7CkCREFPkZd9U4eLXgqA=="],
 
     "wrap-ansi": ["wrap-ansi@7.0.0", "", { "dependencies": { "ansi-styles": "^4.0.0", "string-width": "^4.1.0", "strip-ansi": "^6.0.0" } }, "sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q=="],
 

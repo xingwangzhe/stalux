@@ -1,21 +1,12 @@
 ---
-import { Icon } from "@lucide/astro";
-import { icons } from "lucide";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
+import { getLucideIcon } from "@utils/lucide-icons";
 import styles from "@styles/components/layout/navs.module.css";
 import Search from "@components/stalux/common/search.astro";
-/** 将 lucide 官网的 kebab-case 名称转为 icons 对象的 PascalCase key */
-function getIconNode(iconName: string) {
-    if (!iconName) return null;
-    const pascal = iconName
-        .split("-")
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join("");
-    const node = icons[pascal];
-    if (!node) console.error(`lucide 图标 '${iconName}' 未找到`);
-    return node;
-}
+
+const MenuIcon = getLucideIcon("menu");
+const SearchIcon = getLucideIcon("search");
 const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
@@ -27,7 +18,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
         class={styles.navToggle}
         aria-label={t("nav.menu")}
     >
-        <Icon iconNode={getIconNode("menu")} size={20} stroke-width={2} class="nav-icon" />
+        {MenuIcon && <MenuIcon size={20} stroke-width={2} class="nav-icon" />}
     </button>
 
     <!-- 侧边栏遮罩 -->
@@ -46,20 +37,23 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
 
         <ul data-ref="stalux-nav-list" class={styles.navList}>
             {
-                stalux.navs.map((item) => (
-                    <li class={styles.navItem}>
-                        <a
-                            href={item.link}
-                            class={styles.navLink}
-                            data-ref="stalux-nav-link"
-                        >
-                            {item.icon && (
-                                <Icon iconNode={getIconNode(item.icon)} size={20} stroke-width={2} class="nav-icon" />
-                            )}
-                            <span class={styles.navText}>{item.title}</span>
-                        </a>
-                    </li>
-                ))
+                stalux.navs.map((item) => {
+                    const NavIcon = item.icon ? getLucideIcon(item.icon) : null;
+                    return (
+                        <li class={styles.navItem}>
+                            <a
+                                href={item.link}
+                                class={styles.navLink}
+                                data-ref="stalux-nav-link"
+                            >
+                                {NavIcon && (
+                                    <NavIcon size={20} stroke-width={2} class="nav-icon" />
+                                )}
+                                <span class={styles.navText}>{item.title}</span>
+                            </a>
+                        </li>
+                    );
+                })
             }
             <li class={styles.navItem}>
                 <a
@@ -68,7 +62,9 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
                     data-ref="stalux-search-btn"
                     aria-label={t("search.title")}
                 >
-                    <Icon iconNode={getIconNode("search")} size={20} stroke-width={2} class="nav-icon" />
+                    {SearchIcon && (
+                        <SearchIcon size={20} stroke-width={2} class="nav-icon" />
+                    )}
                     <span class={styles.navText}>{t("nav.search")}</span>
                 </a>
             </li>

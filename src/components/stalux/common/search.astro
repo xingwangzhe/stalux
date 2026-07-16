@@ -1,10 +1,10 @@
 ---
-import { Icon } from "@lucide/astro";
-import { icons } from "lucide";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
+import { getLucideIcon } from "@utils/lucide-icons";
 import "@styles/components/search.css";
 
+const CloseIcon = getLucideIcon("x");
 const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t, lang } = createTranslator(stalux.lang || "zh-CN");
 ---
@@ -28,7 +28,7 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
                 class="search-close"
                 aria-label={t("search.close")}
             >
-                <Icon iconNode={icons.X} size={24} />
+                {CloseIcon && <CloseIcon size={24} />}
             </button>
         </div>
         <div class="search-input-area">
