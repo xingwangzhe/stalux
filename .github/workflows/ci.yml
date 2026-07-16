@@ -1,0 +1,48 @@
+name: CI
+
+on:
+    push:
+        branches: [newMain, main]
+    pull_request:
+        branches: [newMain, main]
+
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        name: Lint & Build
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.3.14
+
+            - name: Install dependencies
+              # prepare only sets local git hooks; skip in CI
+              run: bun install --frozen-lockfile --ignore-scripts
+
+            - name: Lint (oxlint)
+              run: bun run lint
+
+            - name: Format check (oxfmt)
+              run: bun run fmt:check
+
+            - name: Build (astro)
+              run: bun run build
+
+            - name: Verify build output
+              run: |
+                  test -f dist/index.html
+                  test -f dist/search-index.json
+                  test -f dist/rss.xml
+                  test -d dist/posts
+                  echo "Build artifacts OK"
+                  ls -la dist | head -30

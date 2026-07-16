@@ -12,6 +12,8 @@
 
 # Stalux - Modern Astro Blog Theme
 
+[![CI](https://github.com/xingwangzhe/stalux/actions/workflows/ci.yml/badge.svg?branch=newMain)](https://github.com/xingwangzhe/stalux/actions/workflows/ci.yml)
+
 ![Multi-device Preview](image.png)
 
 ## **[stalux.needhelp.icu](https://stalux.needhelp.icu)**

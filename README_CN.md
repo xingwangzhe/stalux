@@ -12,6 +12,8 @@
 
 # Stalux - 现代 Astro 博客主题
 
+[![CI](https://github.com/xingwangzhe/stalux/actions/workflows/ci.yml/badge.svg?branch=newMain)](https://github.com/xingwangzhe/stalux/actions/workflows/ci.yml)
+
 ![多端预览](image.png)
 
 ## **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
