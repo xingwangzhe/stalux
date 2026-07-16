@@ -188,6 +188,8 @@ const config = defineCollection({
             })
             .optional(),
         llm_promote: z.string().optional(),
+        // 启用后构建 /posts/{abbrlink}.md，可直接查看文章 Markdown 源码
+        export_md: z.boolean().optional().default(false),
     }),
 });
 const about = defineCollection({

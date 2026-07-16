@@ -20,6 +20,12 @@ const props = Astro.props as Props;
 const stalux = (await getCollection("config"))[0]?.data;
 const { t } = createTranslator(stalux?.lang || "zh-CN");
 const timezone = stalux?.timezone;
+
+// 仅当开启 export_md 时，才展示“查看 Markdown 原文”按钮，并推导对应 .md 路径
+const exportMd = Boolean(stalux?.export_md);
+const mdSourceUrl = exportMd
+    ? Astro.url.pathname.replace(/\/$/, "") + ".md"
+    : "";
 ---
 
 <article
@@ -69,6 +75,20 @@ const timezone = stalux?.timezone;
                         <span id="vercount_value_page_pv">Loading...</span>
                     </span>
                 </div>
+        }
+        {
+            exportMd && (
+                <div class={style.sourceLinkRow}>
+                    <a
+                        class={style.sourceLink}
+                        href={mdSourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {t("post.viewSource")}
+                    </a>
+                </div>
+            )
         }
     </header>
 

@@ -35,7 +35,8 @@
         "author": "作者：",
         "articleLink": "本文链接：",
         "licensedUnder": "本文采用",
-        "licenseSuffix": "进行许可。"
+        "licenseSuffix": "进行许可。",
+        "viewSource": "查看 Markdown 原文"
     },
     "taxonomy": {
         "tag": "标签",
@@ -119,6 +120,14 @@
         "tenThousand": "{n}万",
         "k": "{n}k",
         "dateFormat": "yyyy年MM月dd日"
+    },
+    "cc": {
+        "format": "知识共享{elements} {version} 国际许可协议",
+        "zero": "CC0 1.0 通用",
+        "BY": "署名",
+        "NC": "非商业性使用",
+        "SA": "相同方式共享",
+        "ND": "禁止演绎"
     },
     "console": {
         "name": "Stalux - 现代 Astro 博客主题 [简称:星博客]",

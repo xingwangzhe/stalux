@@ -35,7 +35,8 @@
         "author": "Author: ",
         "articleLink": "Article link: ",
         "licensedUnder": "This article is licensed under ",
-        "licenseSuffix": "."
+        "licenseSuffix": ".",
+        "viewSource": "View Markdown source"
     },
     "taxonomy": {
         "tag": "Tag",
@@ -119,6 +120,14 @@
         "tenThousand": "{n}0k",
         "k": "{n}k",
         "dateFormat": "MMM dd, yyyy"
+    },
+    "cc": {
+        "format": "Creative Commons {elements} {version} International License",
+        "zero": "CC0 1.0 Universal",
+        "BY": "Attribution",
+        "NC": "NonCommercial",
+        "SA": "ShareAlike",
+        "ND": "NoDerivatives"
     },
     "console": {
         "name": "Stalux - Modern Astro Blog Theme",

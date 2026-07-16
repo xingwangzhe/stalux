@@ -106,6 +106,49 @@
     padding: 0 1rem 2rem;
 }
 
+/* “查看 Markdown 原文”按钮 */
+.sourceLinkRow {
+    margin-top: 1.2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.sourceLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--white-full);
+    text-decoration: none;
+    background: var(--white-10p);
+    border-top: 1px solid var(--white-20p);
+    border-right: 1px solid var(--white-20p);
+    border-left: 1px solid var(--white-20p);
+    border-bottom: 0;
+    border-radius: var(--radius-full, 999px);
+    transition:
+        background var(--transition-fast) ease,
+        transform var(--transition-fast) ease;
+}
+
+.sourceLink:hover,
+.sourceLink:focus,
+.sourceLink:active {
+    background: var(--accent, #ffffff22);
+    border-top-color: var(--accent, #ffffff44);
+    border-right-color: var(--accent, #ffffff44);
+    border-left-color: var(--accent, #ffffff44);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+/* 覆盖全局 a::after 伪元素下划线动画 */
+.sourceLink::after {
+    display: none !important;
+}
+
 /* 文章页脚 */
 .articleFooter {
     margin-top: 3rem;

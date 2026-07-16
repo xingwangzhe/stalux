@@ -52,6 +52,8 @@ export default defineConfig({
     integrations: [
         sitemap({
             filter: (page) => {
+                // 不把 Markdown 源码端点（/posts/*.md）写入 sitemap
+                if (page.endsWith(".md")) return false;
                 return (
                     page.includes("/posts/") ||
                     page.includes("/about/") ||

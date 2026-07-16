@@ -223,3 +223,8 @@ stalux:
     #   Theme: Stalux (MIT License) - https://github.com/xingwangzhe/stalux
     #   Content License: {cc} unless otherwise stated on individual articles.
     #   All content copyright {author}. All rights reserved.
+
+    # export_md: 是否导出文章 Markdown 源码
+    # 启用后可通过 /posts/{abbrlink}.md 直接查看对应文章的 Markdown 源文件
+    # 例如 /posts/123/ 的源码地址为 /posts/123.md
+    export_md: true
