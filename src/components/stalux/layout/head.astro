@@ -22,11 +22,18 @@ export interface Props {
   title: string;
   description: string;
   cover?: string;
+  isArticle?: boolean;
+  date?: string;
+  updated?: string;
+  tags?: string[];
+  categories?: string[];
+  author?: string;
 }
 
 const props = Astro.props as Props;
 const effectiveTitle = props.title;
 const effectiveDescription = props.description;
+const isArticle = props.isArticle ?? false;
 
 const canonicalBase = stalux.data.canonical || stalux.data.url;
 const canonicalUrl = canonicalBase
@@ -40,10 +47,10 @@ const isNotFoundPage =
 const resolvedNoindex = Boolean(stalux.data.noindex) || isNotFoundPage;
 const resolvedNofollow = Boolean(stalux.data.nofollow) || isNotFoundPage;
 
-const openGraphConfig = {
+const openGraphConfig: Record<string, unknown> = {
   basic: {
     title: effectiveTitle,
-    type: "website",
+    type: isArticle ? "article" : "website",
     image: ogImagePath,
     url: canonicalUrl,
   },
@@ -56,6 +63,17 @@ const openGraphConfig = {
     alt: effectiveTitle,
   },
 };
+
+// 文章页：添加 article Open Graph 标签
+if (isArticle) {
+  const article: Record<string, unknown> = {};
+  if (props.date) article.publishedTime = props.date;
+  if (props.updated) article.modifiedTime = props.updated;
+  if (props.author) article.authors = [props.author];
+  if (props.categories?.length) article.section = props.categories[0];
+  if (props.tags?.length) article.tags = props.tags;
+  openGraphConfig.article = article;
+}
 
 const twitterConfig = {
   card: "summary_large_image" as TwitterCardType,
@@ -93,14 +111,39 @@ const extendedMeta = [
   { name: "color-scheme", content: "dark" },
 ];
 
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  url: canonicalUrl,
-  name: effectiveTitle,
-  description: effectiveDescription,
-};
-const ldJson = JSON.stringify(schema);
+let schema: Record<string, unknown>;
+if (isArticle) {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: effectiveTitle,
+    description: effectiveDescription,
+    url: canonicalUrl,
+    image: ogImagePath,
+    datePublished: props.date,
+    dateModified: props.updated || props.date,
+    keywords: props.tags?.join(", "),
+    author: props.author
+      ? {
+          "@type": "Person",
+          name: props.author,
+        }
+      : undefined,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+  };
+} else {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    url: canonicalUrl,
+    name: effectiveTitle,
+    description: effectiveDescription,
+  };
+}
+const ldJson = JSON.stringify(schema, null, 2);
 ---
 
 <head transition:persist-props>

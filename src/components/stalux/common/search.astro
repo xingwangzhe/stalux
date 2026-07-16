@@ -12,6 +12,9 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
 <div
     id="search-container"
     class="search-container"
+    role="dialog"
+    aria-modal="true"
+    aria-label={t("search.title")}
     inert
     data-search-labels={JSON.stringify({
         typePost: t("search.typePost"),

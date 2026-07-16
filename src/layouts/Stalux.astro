@@ -10,6 +10,12 @@ export interface Props {
   title: string;
   description: string;
   cover?: string;
+  isArticle?: boolean;
+  date?: string;
+  updated?: string;
+  tags?: string[];
+  categories?: string[];
+  author?: string;
 }
 
 const stalux = (await getCollection("config"))[0]?.data ?? {};
@@ -37,7 +43,17 @@ const llmPromote = stalux.llm_promote
 
 <!doctype html>
 <html lang={htmlLang}>
-  <Head title={props.title} description={props.description} cover={props.cover} />
+  <Head
+    title={props.title}
+    description={props.description}
+    cover={props.cover}
+    isArticle={props.isArticle}
+    date={props.date}
+    updated={props.updated}
+    tags={props.tags}
+    categories={props.categories}
+    author={props.author}
+  />
   <script define:vars={{ bgUrls, randomIndex }}>
     window.__STALUX_BG_URLS__ = bgUrls;
     window.__STALUX_BG_INDEX__ = randomIndex;

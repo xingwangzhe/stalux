@@ -13,7 +13,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
 const { count = 5, title = t("randomPost.title") } = Astro.props;
 ---
 
-<div class={style.container} transition:persist-props>
+<aside class={style.container} transition:persist-props aria-label={t("randomPost.title")}>
     <div class={style.header}>
         <h3 class={style.title}>{title}</h3>
         <button
@@ -41,8 +41,8 @@ const { count = 5, title = t("randomPost.title") } = Astro.props;
     </div>
     <ul class={style.list} id="random-posts-list">
         <li class={style.loading}>{t("randomPost.loading")}</li>
-    </ul>
-</div>
+	    </ul>
+	</aside>
 
 <script define:vars={{ count, labels: { noPosts: t("randomPost.noPosts"), loadFailed: t("randomPost.loadFailed"), loadError: t("randomPost.loadError") } }}>
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

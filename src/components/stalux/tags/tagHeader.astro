@@ -22,7 +22,7 @@ if (typeKey === "category" || typeKey === "categories" || typeKey === "分类") 
 }
 ---
 
-<div class={styles.pageHeader}>
+<header class={styles.pageHeader}>
     <h1 class={styles.pageTitle}>
         <span class={styles.categoryIcon}>
             <svg
@@ -45,4 +45,4 @@ if (typeKey === "category" || typeKey === "categories" || typeKey === "分类") 
     </h1>
     <p class={styles.pageDescription}>{t("taxonomy.foundPosts", { count: props.count })}</p>
     <a href={typeUrl} class={styles.backLink}>{t("taxonomy.backToList", { type: props.type })}</a>
-</div>
+</header>

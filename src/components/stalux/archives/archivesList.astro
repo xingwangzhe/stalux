@@ -53,7 +53,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
     .sort((a: number, b: number) => b - a);
 ---
 
-<div class={styles.archivesContainer}>
+<section class={styles.archivesContainer}>
     <div class={styles.pageHeader}>
         <div class={styles.timelineContainer}>
             {
@@ -110,4 +110,4 @@ const sortedYears = Object.keys(archivesByYearMonth)
         <slot name="main" />
     </div>
 
-</div>
+</section>

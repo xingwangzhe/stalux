@@ -15,7 +15,7 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
 
 {
     showStats && (
-        <div class="site-stats">
+        <p class="site-stats">
             <span id="vercount_container_site_uv">
                 {t("footer.visitors")}<span id="vercount_value_site_uv">Loading...</span>{" "}
                 {t("footer.visits")}
@@ -33,7 +33,7 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
                 </span>{" "}
                 {t("footer.chars")}
             </span>
-        </div>
+        </p>
     )
 }
 

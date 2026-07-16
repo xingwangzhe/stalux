@@ -42,7 +42,7 @@ const tocContentAnimation = {
 };
 ---
 
-<div transition:name="toc-container" data-toc-active-class={style.active}>
+<nav transition:name="toc-container" data-toc-active-class={style.active} aria-label={t("taxonomy.toc")}>
     <h3 class={style.title}>{title}</h3>
     {
         tocItems.length > 0 ? (
@@ -67,7 +67,7 @@ const tocContentAnimation = {
             <div class={style.empty}>{t("taxonomy.noToc")}</div>
         )
     }
-</div>
+</nav>
 
 <script>
     import { initTocScrollSpy } from "@utils/toc-scrollspy";

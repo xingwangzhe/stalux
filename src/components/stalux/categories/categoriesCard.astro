@@ -15,7 +15,7 @@ const stalux = (await getCollection("config"))[0]?.data ?? {};
 const { t } = createTranslator(stalux.lang || "zh-CN");
 ---
 
-<div class={styles.categoryCard}>
+<article class={styles.categoryCard}>
     <a
         href={`/categories/${props.category.name}/`}
         class={styles.categoryheader + " a-none"}
@@ -44,4 +44,4 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
             </div>
         </div>
     </a>
-</div>
+</article>

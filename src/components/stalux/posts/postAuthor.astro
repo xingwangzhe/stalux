@@ -8,7 +8,7 @@ const stalux = (await getCollection("config"))[0]?.data ?? {};
 const isPostPage = Astro.url.pathname.includes("/posts/");
 ---
 
-<div
+<aside
     class={style.sidebarContainer}
     style={isPostPage ? "margin-top: -3em;" : ""}
 >
@@ -18,4 +18,4 @@ const isPostPage = Astro.url.pathname.includes("/posts/");
             <p class={style.authorBio}>{stalux.author.bio}</p>
         </div>
     </div>
-</div>
+</aside>

@@ -41,7 +41,7 @@ const cfg = {
 }[kind];
 ---
 
-<div class={style.container} transition:name={cfg.containerName}>
+<nav class={style.container} transition:name={cfg.containerName} aria-label={title ?? cfg.heading}>
     {items.length > 0 && <h3 class={style.title}>{title ?? cfg.heading}</h3>}
     {
         items.length > 0 ? (
@@ -60,4 +60,4 @@ const cfg = {
             <div class={style.empty}>{cfg.empty}</div>
         )
     }
-</div>
+</nav>

@@ -60,9 +60,10 @@ const walineConfig = {
 
 {
     walineConfig.serverURL && (
-        <div
+        <section
             id="waline-container"
             class="waline-comment-container"
+            aria-label={t("comment.title")}
             data-waline-config={
                 // base64 可逆混淆（非加密，仅避免 SSR 注入/转义问题），兼容 Node 与浏览器
                 Buffer.from(
@@ -75,7 +76,7 @@ const walineConfig = {
             <div class="comments-seo-notice" style="display:none">
                 {t("comment.disclaimer")}
             </div>
-        </div>
+        </section>
     )
 }
 
