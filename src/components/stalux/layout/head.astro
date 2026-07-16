@@ -75,6 +75,19 @@ const extendedLink = [
     href: "/rss.xml",
   },
 ];
+
+// 文章页：向爬虫暴露 Markdown 原文链接
+const exportMd = Boolean(stalux?.data?.export_md);
+const isPostPage = Astro.url.pathname.startsWith("/posts/") && Astro.url.pathname !== "/posts/";
+if (exportMd && isPostPage) {
+  const mdHref = Astro.url.pathname.replace(/\/$/, "") + ".md";
+  extendedLink.push({
+    rel: "alternate",
+    type: "text/markdown",
+    title: "Markdown source",
+    href: mdHref,
+  });
+}
 const extendedMeta = [
   { name: "viewport", content: "width=device-width, initial-scale=1" },
   { name: "color-scheme", content: "dark" },
