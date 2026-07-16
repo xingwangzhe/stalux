@@ -26,7 +26,7 @@ function countBy(
             counts.set(name, (counts.get(name) ?? 0) + 1);
         }
     }
-    return Array.from(counts, ([name, count]) => ({ name, count }));
+    return [...counts].map(([name, count]) => ({ name, count }));
 }
 
 /**

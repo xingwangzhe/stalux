@@ -39,7 +39,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
     tipText: t("console.tip"),
     feedbackUrl: t("console.feedback"),
 }} defer>
-    (function () {
+    {
         // ASCII Art Banner
         const banner = `
   ███████╗████████╗ █████╗ ██╗     ██╗   ██╗██╗  ██╗
@@ -50,7 +50,6 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
   ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝
     `;
 
-        // 样式定义
         const styles = {
             banner: "color: #a855f7; font-weight: bold; font-size: 14px; line-height: 1.2;",
             title: "color: #fbbf24; font-size: 18px; font-weight: bold; text-shadow: 2px 2px 4px rgba(251, 191, 36, 0.3);",
@@ -61,32 +60,14 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
             separator: "color: #6366f1; font-weight: bold;",
         };
 
-        // 打印函数
-        function printBanner() {
+        const printBanner = () => {
             const separator = "═".repeat(60);
             const mitLicenseStyle = "color: #34d399; font-weight: bold;";
             const authStyle = "color: #60a5fa;";
             const tipStyle = "color: #fbbf24;";
 
-            // 使用一个 console.log 打印所有内容
             console.log(
-                `%c${banner}` +
-                    `%c\n✨ ${info.theme} ✨\n` +
-                    `%c${separator}\n` +
-                    `%c${labels.version}%c${info.version}\n` +
-                    `%c${labels.author}%c${info.author}\n` +
-                    `%c${labels.repo}%c${info.repository}\n` +
-                    `%c${labels.website}%c${info.website}\n` +
-                    `%c${labels.cert}%c${info.license} %c→ ${info.licensePdf}\n` +
-                    `%c${labels.certNumber}%c${info.copyrightRegNumber}\n` +
-                    `%c${labels.regDate}%c${info.registrationDate}\n` +
-                    `%c${separator}\n` +
-                    `%c${labels.license}%c${info.openSourceLicense} %c→ ${info.licenseUrl}\n` +
-                    `%c${labels.authNote}%c${authNoteText}\n` +
-                    `%c${separator}\n` +
-                    `%c${labels.tip}%c${tipText}\n` +
-                    `%c${labels.feedback}%c${feedbackUrl}`,
-                // 所有样式参数
+                `%c${banner}%c\n✨ ${info.theme} ✨\n%c${separator}\n%c${labels.version}%c${info.version}\n%c${labels.author}%c${info.author}\n%c${labels.repo}%c${info.repository}\n%c${labels.website}%c${info.website}\n%c${labels.cert}%c${info.license} %c→ ${info.licensePdf}\n%c${labels.certNumber}%c${info.copyrightRegNumber}\n%c${labels.regDate}%c${info.registrationDate}\n%c${separator}\n%c${labels.license}%c${info.openSourceLicense} %c→ ${info.licenseUrl}\n%c${labels.authNote}%c${authNoteText}\n%c${separator}\n%c${labels.tip}%c${tipText}\n%c${labels.feedback}%c${feedbackUrl}`,
                 styles.banner,
                 styles.title,
                 styles.separator,
@@ -104,15 +85,12 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
                 styles.key, tipStyle,
                 styles.key, styles.link,
             );
-        }
+        };
 
-        // 在页面加载完成后打印
         if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", printBanner, {
-                once: true,
-            });
+            document.addEventListener("DOMContentLoaded", printBanner, { once: true });
         } else {
             printBanner();
         }
-    })();
+    }
 </script>

@@ -8,32 +8,45 @@ import styles from "@styles/components/common/date.module.css";
 </div>
 
 <script>
-    import { format } from "date-fns";
-    import { zhCN } from "date-fns/locale/zh-CN";
-    import { enUS } from "date-fns/locale/en-US";
+    const pad2 = (n: number) => String(n).padStart(2, "0");
 
-    const localeMap: Record<string, Locale> = {
-        "zh-CN": zhCN,
-        en: enUS,
-        "en-US": enUS,
-    };
+    /** 机器可读：yyyy-MM-dd / HH:mm:ss（本地时区） */
+    function toMachineDate(d: Date): string {
+        return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    }
+    function toMachineTime(d: Date): string {
+        return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    }
+
+    /** 展示用日期：中文 2026年07月16日 / 英文 Jul 16, 2026 */
+    function toDisplayDate(d: Date, lang: string): string {
+        if (lang.startsWith("zh")) {
+            return `${d.getFullYear()}年${pad2(d.getMonth() + 1)}月${pad2(d.getDate())}日`;
+        }
+        return new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+        }).format(d);
+    }
 
     function updateDateTime() {
         const now = new Date();
         const dateEl = document.querySelector('[data-ref="date"]');
         const timeEl = document.querySelector('[data-ref="time"]');
         const lang = document.documentElement.lang || "zh-CN";
-        const locale = localeMap[lang] || zhCN;
-        const dateFormat = lang.startsWith("zh") ? "yyyy年MM月dd日" : "MMM dd, yyyy";
+
         if (dateEl) {
-            dateEl.textContent = format(now, dateFormat, { locale });
-            dateEl.setAttribute("datetime", format(now, "yyyy-MM-dd"));
+            dateEl.textContent = toDisplayDate(now, lang);
+            dateEl.setAttribute("datetime", toMachineDate(now));
         }
         if (timeEl) {
-            timeEl.textContent = format(now, "HH:mm:ss");
-            timeEl.setAttribute("datetime", format(now, "HH:mm:ss"));
+            const t = toMachineTime(now);
+            timeEl.textContent = t;
+            timeEl.setAttribute("datetime", t);
         }
     }
+
     // 全局只保留一个 1Hz 定时器：用单例守卫避免视图切换时累加定时器。
     let timerId: ReturnType<typeof setInterval> | null = null;
 

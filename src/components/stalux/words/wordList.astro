@@ -38,25 +38,25 @@ const sorted = [...entries].sort((a, b) => {
 </ul>
 
 <script>
-    function scrollToWord(hash) {
+    const scrollToWord = (hash) => {
         const el = document.getElementById(hash.slice(1));
         if (!el) return;
 
         // 清除之前的高亮
-        document.querySelectorAll("[data-glow]").forEach((c) => c.removeAttribute("data-glow"));
+        for (const c of document.querySelectorAll("[data-glow]")) {
+            c.removeAttribute("data-glow");
+        }
         // 高亮当前卡片
-        el.setAttribute("data-glow", "");
+        el.dataset.glow = "";
 
         el.scrollIntoView({ behavior: "smooth", block: "center" });
         history.replaceState(null, "", hash);
-    }
+    };
 
-    // 页面加载时：覆盖浏览器默认的瞬间跳转
+    // 页面加载时：覆盖浏览器默认的瞬间跳转（双 rAF 等到布局稳定）
     if (location.hash.startsWith("#word-")) {
         requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                scrollToWord(location.hash);
-            });
+            requestAnimationFrame(() => scrollToWord(location.hash));
         });
     }
 

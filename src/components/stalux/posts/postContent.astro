@@ -87,40 +87,44 @@ const timezone = stalux?.timezone;
             // 选择器必须与 @xingwangzhe/satteri-photoswipe HAST 插件生成的 class 一致
             const GALLERY_SELECTOR = "a.pswp-gallery-item";
 
-            function enrichPhotoSwipeData() {
+            async function enrichPhotoSwipeData() {
                 const container = document.querySelector("[data-pagefind-body]");
                 if (!container) return;
 
                 const links = container.querySelectorAll(GALLERY_SELECTOR);
-                links.forEach((link) => {
-                    const img = link.querySelector("img");
-                    if (!img) return;
+                await Promise.all(
+                    [...links].map(async (link) => {
+                        const img = link.querySelector("img");
+                        if (!img) return;
 
-                    const tempImg = new Image();
-                    tempImg.onload = () => {
-                        link.setAttribute(
-                            "data-pswp-width",
-                            String(tempImg.naturalWidth),
-                        );
-                        link.setAttribute(
-                            "data-pswp-height",
-                            String(tempImg.naturalHeight),
-                        );
-                    };
-                    tempImg.src = img.src;
-                });
+                        const tempImg = new Image();
+                        tempImg.src = img.currentSrc || img.src;
+                        try {
+                            await tempImg.decode();
+                        } catch {
+                            /* 解码失败时跳过尺寸写入 */
+                            return;
+                        }
+                        link.dataset.pswpWidth = String(tempImg.naturalWidth);
+                        link.dataset.pswpHeight = String(tempImg.naturalHeight);
+                    }),
+                );
             }
 
             let lightbox = null;
 
-            function initLightbox() {
+            async function initLightbox() {
                 // 销毁旧实例（View Transition 导航后，旧 DOM 已移除，需安全销毁）
                 if (lightbox) {
-                    try { lightbox.destroy(); } catch (_) {}
+                    try {
+                        lightbox.destroy();
+                    } catch {
+                        /* ignore */
+                    }
                     lightbox = null;
                 }
 
-                enrichPhotoSwipeData();
+                await enrichPhotoSwipeData();
 
                 lightbox = new PhotoSwipeLightbox({
                     gallery: "[data-pagefind-body]",

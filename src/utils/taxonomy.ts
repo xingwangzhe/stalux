@@ -32,7 +32,7 @@ export async function buildTaxonomyStaticPaths(key: TaxonomyKey): Promise<GetSta
         }
     }
 
-    return Array.from(map.entries()).map(([name, entry]) => ({
+    return [...map].map(([name, entry]) => ({
         params: { [paramName]: name },
         props: {
             [paramName]: name,

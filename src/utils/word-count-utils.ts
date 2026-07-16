@@ -66,5 +66,5 @@ export function formatWordCount(count: number, lang?: string): string {
     // 中文用“万”做万级单位；其他语言统一用“k”（千）。
     if (isZh && count >= 10000) return `${(count / 10000).toFixed(1)}万`;
     if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
-    return count.toString();
+    return String(count);
 }

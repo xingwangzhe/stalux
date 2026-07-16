@@ -104,7 +104,6 @@ MIT @capsizecss/unpack
 MIT @clack/core
 MIT @clack/prompts
 MIT @ctrl/tinycolor
-MIT @date-fns/tz
 MIT @esbuild/linux-x64
 MIT @expressive-code/core
 MIT @expressive-code/plugin-line-numbers

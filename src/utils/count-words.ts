@@ -15,16 +15,10 @@ const CJK_START = 0x4e00;
  * 统计文本字数（尊重中日韩字符）。
  */
 export function countWords(text: string): number {
-    const matches = text.match(WORD_PATTERN);
-    if (!matches) return 0;
-
     let count = 0;
-    for (const token of matches) {
-        if (token.charCodeAt(0) >= CJK_START) {
-            count += token.length;
-        } else {
-            count += 1;
-        }
+    for (const match of text.matchAll(WORD_PATTERN)) {
+        const token = match[0];
+        count += token.codePointAt(0)! >= CJK_START ? token.length : 1;
     }
     return count;
 }

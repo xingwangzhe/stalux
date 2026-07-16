@@ -15,7 +15,6 @@
         "prepare": "git config core.hooksPath scripts/git-hooks"
     },
     "dependencies": {
-        "@date-fns/tz": "^1.5.0",
         "@expressive-code/plugin-line-numbers": "^0.44.0",
         "@orama/highlight": "^0.1.9",
         "@orama/orama": "^3.1.18",
@@ -40,7 +39,6 @@
         "astro-seo": "^1.1.0",
         "astro-typewriter": "^1.2.0",
         "badge-maker": "^6.0.0",
-        "date-fns": "^4.4.0",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",

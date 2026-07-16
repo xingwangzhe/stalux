@@ -23,23 +23,17 @@ export interface BadgeOptions {
  */
 export function generateBadge(options: BadgeOptions): string {
     try {
-        const format = {
-            label: options.label,
-            message: options.message,
-            color: options.color || "blue",
-            style: options.style || "flat",
-            labelColor: options.labelColor,
-            logo: options.logo,
-            logoWidth: options.logoWidth,
-        };
-
-        // 过滤掉未定义的属性
-        Object.keys(format).forEach((key) => {
-            const typedKey = key as keyof typeof format;
-            if (format[typedKey] === undefined) {
-                delete format[typedKey];
-            }
-        });
+        const format = Object.fromEntries(
+            Object.entries({
+                label: options.label,
+                message: options.message,
+                color: options.color ?? "blue",
+                style: options.style ?? "flat",
+                labelColor: options.labelColor,
+                logo: options.logo,
+                logoWidth: options.logoWidth,
+            }).filter(([, v]) => v !== undefined),
+        ) as Parameters<typeof makeBadge>[0];
 
         return makeBadge(format);
     } catch (error) {
@@ -55,7 +49,6 @@ export function generateBadge(options: BadgeOptions): string {
  */
 export function svgToDataUrl(svg: string): string {
     if (!svg) return "";
-    const encoded = encodeURIComponent(svg).replace(/'/g, "%27").replace(/"/g, "%22");
-
+    const encoded = encodeURIComponent(svg).replaceAll("'", "%27").replaceAll('"', "%22");
     return `data:image/svg+xml,${encoded}`;
 }

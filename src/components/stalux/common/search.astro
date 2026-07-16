@@ -137,29 +137,28 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
             highlighter.highlight(text, query);
             const snippetHTML = highlighter.positions.length > 0
                 ? highlighter.trim(200)
-                : highlighter.HTML.substring(0, 200);
+                : highlighter.HTML.slice(0, 200);
 
             const item = document.createElement("a");
             item.className = "search-result-item";
             item.href = doc.url;
-            item.setAttribute("data-result-link", "true");
+            item.dataset.resultLink = "true";
 
-            const title = document.createElement("div");
-            title.className = "search-result-title";
-            title.innerHTML = titleHTML;
-
-            const meta = document.createElement("div");
-            meta.className = "search-result-meta";
-            meta.textContent = formatResultMeta(doc.type, doc.date);
-
-            const desc = document.createElement("div");
-            desc.className = "search-result-desc";
-            desc.innerHTML = snippetHTML;
-
-            item.appendChild(title);
-            item.appendChild(meta);
-            item.appendChild(desc);
-            list.appendChild(item);
+            item.replaceChildren(
+                Object.assign(document.createElement("div"), {
+                    className: "search-result-title",
+                    innerHTML: titleHTML,
+                }),
+                Object.assign(document.createElement("div"), {
+                    className: "search-result-meta",
+                    textContent: formatResultMeta(doc.type, doc.date),
+                }),
+                Object.assign(document.createElement("div"), {
+                    className: "search-result-desc",
+                    innerHTML: snippetHTML,
+                }),
+            );
+            list.append(item);
         }
     }
 

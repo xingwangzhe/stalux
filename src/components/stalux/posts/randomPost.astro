@@ -45,37 +45,41 @@ const { count = 5, title = t("randomPost.title") } = Astro.props;
 </div>
 
 <script define:vars={{ count, labels: { noPosts: t("randomPost.noPosts"), loadFailed: t("randomPost.loadFailed"), loadError: t("randomPost.loadError") } }}>
-    // 费雪-耶茨洗牌算法
-    function shuffleArray(array) {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    // 费雪-耶茨洗牌（crypto 优先，回退 Math.random）
+    const shuffleArray = (array) => {
         const shuffled = [...array];
+        const randomIndex = (max) => {
+            if (globalThis.crypto?.getRandomValues) {
+                const buf = new Uint32Array(1);
+                crypto.getRandomValues(buf);
+                return buf[0] % max;
+            }
+            return Math.floor(Math.random() * max);
+        };
         for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+            const j = randomIndex(i + 1);
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
         return shuffled;
-    }
+    };
 
-    // 获取随机文章
-    async function fetchRandomPosts() {
+    const fetchRandomPosts = async () => {
         try {
             const response = await fetch("/api/post.abbrlink.json");
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const posts = await response.json();
-            return posts || [];
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return (await response.json()) ?? [];
         } catch (error) {
             console.error("Failed to fetch posts:", error);
             return [];
         }
-    }
+    };
 
-    // 生成随机文章 HTML
-    function generatePostsHTML(posts) {
+    const generatePostsHTML = (posts) => {
         if (posts.length === 0) {
             return `<li class="no-posts">${labels.noPosts}</li>`;
         }
-
         return posts
             .map(
                 (post) => `
@@ -87,84 +91,43 @@ const { count = 5, title = t("randomPost.title") } = Astro.props;
         `,
             )
             .join("");
-    }
+    };
 
-    // 刷新随机文章列表
-    async function refreshRandomPosts() {
-        const randomPostsList = document.getElementById("random-posts-list");
-        if (!randomPostsList) return;
-
-        // 添加淡出效果
-        randomPostsList.style.opacity = "0.5";
-
-        setTimeout(async () => {
-            try {
-                const allPosts = await fetchRandomPosts();
-
-                if (allPosts.length === 0) {
-                    randomPostsList.innerHTML =
-                        '<li class="no-posts">' + labels.noPosts + '</li>';
-                    return;
-                }
-
-                // 获取新的随机文章
-                const shuffledPosts = shuffleArray(allPosts);
-                const newRandomPosts = shuffledPosts.slice(0, count);
-
-                // 更新 DOM
-                randomPostsList.innerHTML = generatePostsHTML(newRandomPosts);
-            } catch (error) {
-                console.error("Error refreshing random posts:", error);
-                randomPostsList.innerHTML =
-                    '<li class="error">' + labels.loadFailed + '</li>';
-            }
-
-            // 恢复显示
-            randomPostsList.style.opacity = "1";
-        }, 300);
-    }
-
-    // 初始化随机文章列表
-    async function initRandomPosts() {
-        const randomPostsList = document.getElementById("random-posts-list");
-        if (!randomPostsList) return;
-
+    const renderRandomPosts = async (listEl, emptyMsg, errorMsg) => {
         try {
             const allPosts = await fetchRandomPosts();
-
             if (allPosts.length === 0) {
-                randomPostsList.innerHTML =
-                    '<li class="no-posts">' + labels.noPosts + '</li>';
+                listEl.innerHTML = `<li class="no-posts">${emptyMsg}</li>`;
                 return;
             }
-
-            // 获取初始随机文章
-            const shuffledPosts = shuffleArray(allPosts);
-            const initialRandomPosts = shuffledPosts.slice(0, count);
-
-            // 更新 DOM
-            randomPostsList.innerHTML = generatePostsHTML(initialRandomPosts);
+            listEl.innerHTML = generatePostsHTML(shuffleArray(allPosts).slice(0, count));
         } catch (error) {
-            console.error("Error initializing random posts:", error);
-            randomPostsList.innerHTML = '<li class="error">' + labels.loadError + '</li>';
+            console.error("Error rendering random posts:", error);
+            listEl.innerHTML = `<li class="error">${errorMsg}</li>`;
         }
-    }
+    };
 
-    // 初始化事件监听
+    const refreshRandomPosts = async () => {
+        const randomPostsList = document.getElementById("random-posts-list");
+        if (!randomPostsList) return;
+
+        randomPostsList.style.opacity = "0.5";
+        await sleep(300);
+        await renderRandomPosts(randomPostsList, labels.noPosts, labels.loadFailed);
+        randomPostsList.style.opacity = "1";
+    };
+
     document.addEventListener("astro:page-load", () => {
         const refreshButton = document.getElementById("refresh-random-posts");
-        if (refreshButton) {
-            refreshButton.addEventListener("click", (e) => {
-                e.preventDefault();
-                refreshButton.classList.add("rotating");
-                refreshRandomPosts();
-                setTimeout(() => {
-                    refreshButton.classList.remove("rotating");
-                }, 600);
-            });
-        }
+        refreshButton?.addEventListener("click", async (e) => {
+            e.preventDefault();
+            refreshButton.classList.add("rotating");
+            await refreshRandomPosts();
+            await sleep(600);
+            refreshButton.classList.remove("rotating");
+        });
 
-        // 初始化随机文章列表
-        initRandomPosts();
+        const list = document.getElementById("random-posts-list");
+        if (list) void renderRandomPosts(list, labels.noPosts, labels.loadError);
     });
 </script>

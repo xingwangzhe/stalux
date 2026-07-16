@@ -9,10 +9,10 @@ export function initTocScrollSpy(activeClass: string) {
 
     // 建立标题 ID → 目录链接元素的映射
     const linkMap = new Map<string, HTMLAnchorElement>();
-    tocLinks.forEach((link) => {
+    for (const link of tocLinks) {
         const id = link.getAttribute("href")?.replace("#", "");
         if (id) linkMap.set(id, link);
-    });
+    }
 
     // 按 DOM 顺序解析出文章中的标题元素
     const headings = [...linkMap.keys()]
@@ -59,25 +59,18 @@ export function initTocScrollSpy(activeClass: string) {
                 pending = false;
 
                 // 找到视口上方 35% 区域内最靠上的标题
-                let current: HTMLElement | null = null;
-                for (const h of headings) {
-                    const rect = h.getBoundingClientRect();
-                    if (rect.top < window.innerHeight * 0.35 && rect.bottom > 0) {
-                        current = h;
-                        break;
-                    }
-                }
+                let current =
+                    headings.find((h) => {
+                        const rect = h.getBoundingClientRect();
+                        return rect.top < window.innerHeight * 0.35 && rect.bottom > 0;
+                    }) ?? null;
 
                 // 兜底：滚动到文章底部时，取最后一个仍在视口上方或已经越过顶部的标题
-                if (!current) {
-                    for (let i = headings.length - 1; i >= 0; i--) {
-                        const rect = headings[i].getBoundingClientRect();
-                        if (rect.bottom <= window.innerHeight * 0.35 || rect.top < 0) {
-                            current = headings[i];
-                            break;
-                        }
-                    }
-                }
+                current ??=
+                    headings.findLast((h) => {
+                        const rect = h.getBoundingClientRect();
+                        return rect.bottom <= window.innerHeight * 0.35 || rect.top < 0;
+                    }) ?? null;
 
                 setActive(current ? (linkMap.get(current.id) ?? null) : null);
             });
@@ -88,15 +81,15 @@ export function initTocScrollSpy(activeClass: string) {
         },
     );
 
-    headings.forEach((h) => observer.observe(h));
+    for (const h of headings) observer.observe(h);
 
     // 拦截 TOC 锚点点击，替换为平滑滚动
-    tocLinks.forEach((link) => {
+    for (const link of tocLinks) {
         link.addEventListener("click", (e) => {
             e.preventDefault();
             const id = link.getAttribute("href")?.replace("#", "");
             const target = id ? document.getElementById(id) : null;
             target?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
-    });
+    }
 }

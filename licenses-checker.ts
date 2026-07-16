@@ -1,9 +1,9 @@
-import { exec } from "child_process";
-import { writeFile, readFile } from "fs/promises";
-import { dirname, join } from "path";
-import { promisify } from "util";
+import { execFile } from "node:child_process";
+import { readFile, writeFile } from "node:fs/promises";
+import { basename, dirname, join } from "node:path";
+import { promisify } from "node:util";
 
-const execP = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 // LICENSE file content patterns that indicate MIT-compatible licenses
 // These are used to verify flagged packages by reading their actual LICENSE files
@@ -45,9 +45,9 @@ async function detectLicenseFromParentPackage(pkgPath: string): Promise<string |
         // For scoped packages like @bruits/satteri-linux-x64-gnu, the parent package
         // (satteri) is typically a sibling in the same node_modules directory
         const scopeDir = dirname(pkgPath);
-        const scopeBase = scopeDir.split("/").pop();
+        const scopeBase = basename(scopeDir);
 
-        if (scopeBase?.startsWith("@")) {
+        if (scopeBase.startsWith("@")) {
             // Check sibling packages in the same node_modules
             const siblingLicense = join(nodeModulesPath, "satteri", "LICENSE");
             const detected = await detectLicenseFromFile(siblingLicense);
@@ -60,8 +60,8 @@ async function detectLicenseFromParentPackage(pkgPath: string): Promise<string |
             const parent = dirname(current);
             if (!parent.includes("node_modules")) break;
 
-            const parentBase = parent.split("/").pop();
-            if (parentBase?.startsWith("@")) {
+            const parentBase = basename(parent);
+            if (parentBase.startsWith("@")) {
                 current = parent;
                 continue;
             }
@@ -90,84 +90,74 @@ const FLAGGED_PATTERNS = [
     /CUSTOM/i,
     /UNLICENSE/i,
 ];
-function isFlagged(license: string) {
-    return FLAGGED_PATTERNS.some((rx) => rx.test(license));
-}
 
-async function runChecker(args = "--json --production") {
-    const { stdout } = await execP(`bun license-checker-rseidelsohn ${args}`);
+const isFlagged = (license: string) => FLAGGED_PATTERNS.some((rx) => rx.test(license));
+
+type LicenseInfo = {
+    licenses?: string;
+    license?: string;
+    licenseFile?: string;
+    path?: string;
+};
+
+async function runChecker(args: string[] = ["--json", "--production"]) {
+    const { stdout } = await execFileAsync("bun", ["license-checker-rseidelsohn", ...args], {
+        encoding: "utf8",
+        maxBuffer: 20 * 1024 * 1024,
+    });
     try {
-        return JSON.parse(stdout) as Record<string, any>;
-        // oxlint-disable-next-line no-unused-vars
-    } catch (e) {
+        return JSON.parse(stdout) as Record<string, LicenseInfo>;
+    } catch {
         // If parsing fails, throw with original stdout for debugging
-        const err = new Error("Failed to parse JSON output from license-checker");
-        (err as any).raw = stdout;
-        throw err;
+        throw Object.assign(new Error("Failed to parse JSON output from license-checker"), {
+            raw: stdout,
+        });
     }
 }
 
-async function main() {
-    const data = await runChecker();
+/** package name without the version suffix (`@scope/pkg@1.0.0` → `@scope/pkg`) */
+const packageNameOf = (fullName: string) => {
+    const at = fullName.lastIndexOf("@");
+    return at > 0 ? fullName.slice(0, at) : fullName;
+};
 
-    const flagged = new Set<string>();
-    const permissive = new Set<string>();
+const data = await runChecker();
 
-    for (const fullName of Object.keys(data)) {
-        const info = data[fullName];
-        const licensesRaw = (info.licenses ?? info.license ?? "UNKNOWN") as string;
-        let license = String(licensesRaw).trim();
+const flagged = new Set<string>();
+const permissive = new Set<string>();
 
-        // package name without the version
-        const at = fullName.lastIndexOf("@");
-        const pkgName = at > 0 ? fullName.slice(0, at) : fullName;
+for (const [fullName, info] of Object.entries(data)) {
+    const licensesRaw = info.licenses ?? info.license ?? "UNKNOWN";
+    let license = String(licensesRaw).trim();
+    const pkgName = packageNameOf(fullName);
 
-        // If flagged, try to read the actual LICENSE file to verify
-        if (isFlagged(license) && info.licenseFile) {
-            const detected = await detectLicenseFromFile(info.licenseFile);
-            if (detected) {
-                license = detected;
-            } else {
-                // For binary packages, try parent package's LICENSE
-                const parentDetected = await detectLicenseFromParentPackage(info.path);
-                if (parentDetected) {
-                    license = parentDetected;
-                }
-            }
-        }
-
-        const line = `${license.toUpperCase()} ${pkgName}`;
-
-        if (isFlagged(license)) flagged.add(line);
-        else permissive.add(line);
+    // If flagged, try to read the actual LICENSE file to verify
+    if (isFlagged(license) && info.licenseFile) {
+        const detected =
+            (await detectLicenseFromFile(info.licenseFile)) ??
+            (info.path ? await detectLicenseFromParentPackage(info.path) : null);
+        if (detected) license = detected;
     }
 
-    const headerFlagged = "=== POSSIBLY NOT COMPATIBLE WITH MIT (REVIEW REQUIRED) ===";
-    const headerPermissive = "=== LIKELY MIT-COMPATIBLE (PERMISSIVE) ===";
-
-    const outParts: string[] = [];
-    outParts.push("=== THIRD-PARTY RESOURCES (NOT NPM DEPENDENCIES) ===");
-    outParts.push(
-        "OFL-1.1 Google Sans Code Font — https://fonts.google.com/specimen/Google+Sans+Code",
-    );
-    outParts.push("  Copyright: Google LLC. Licensed under SIL Open Font License 1.1");
-    outParts.push("OFL-1.1 LXGW WenKai Font — https://github.com/lxgw/LxgwWenKai");
-    outParts.push("  Copyright: LXGW & contributors. Licensed under SIL Open Font License 1.1");
-    outParts.push("");
-    outParts.push(headerFlagged);
-    outParts.push(...Array.from(flagged).sort((a, b) => a.localeCompare(b)));
-    outParts.push("");
-    outParts.push(headerPermissive);
-    outParts.push(...Array.from(permissive).sort((a, b) => a.localeCompare(b)));
-    outParts.push("");
-
-    const out = outParts.join("\n");
-
-    await writeFile("license.txt", out, "utf8");
-    console.log("Wrote license.txt — flagged:", flagged.size, "permissive:", permissive.size);
+    const line = `${license.toUpperCase()} ${pkgName}`;
+    if (isFlagged(license)) flagged.add(line);
+    else permissive.add(line);
 }
 
-main().catch((err) => {
-    console.error(err);
-    process.exit(1);
-});
+const out = [
+    "=== THIRD-PARTY RESOURCES (NOT NPM DEPENDENCIES) ===",
+    "OFL-1.1 Google Sans Code Font — https://fonts.google.com/specimen/Google+Sans+Code",
+    "  Copyright: Google LLC. Licensed under SIL Open Font License 1.1",
+    "OFL-1.1 LXGW WenKai Font — https://github.com/lxgw/LxgwWenKai",
+    "  Copyright: LXGW & contributors. Licensed under SIL Open Font License 1.1",
+    "",
+    "=== POSSIBLY NOT COMPATIBLE WITH MIT (REVIEW REQUIRED) ===",
+    ...[...flagged].toSorted((a, b) => a.localeCompare(b)),
+    "",
+    "=== LIKELY MIT-COMPATIBLE (PERMISSIVE) ===",
+    ...[...permissive].toSorted((a, b) => a.localeCompare(b)),
+    "",
+].join("\n");
+
+await writeFile("license.txt", out, "utf8");
+console.log("Wrote license.txt — flagged:", flagged.size, "permissive:", permissive.size);
