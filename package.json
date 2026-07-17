@@ -23,7 +23,7 @@
         "@waline/client": "3.15.2",
         "@xingwangzhe/tags-cloud": "^1.2.4",
         "animejs": "^4.5.0",
-        "astro": "^7.0.9",
+        "astro": "^7.1.0",
         "katex": "^0.17.0",
         "mermaid": "^11.16.0",
         "photoswipe": "^5.4.4"
@@ -43,6 +43,7 @@
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",
         "remove-markdown": "^0.6.4",
-        "simple-icons": "^16.26.0"
+        "simple-icons": "^16.26.0",
+        "vite-plugin-font": "^5.1.2"
     }
 }
