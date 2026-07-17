@@ -22,7 +22,9 @@ const { t } = createTranslator(stalux?.lang || "zh-CN");
 const timezone = stalux?.timezone;
 
 // 仅当开启 export_md 时，才展示“查看 Markdown 原文”按钮，并推导对应 .md 路径
-const exportMd = Boolean(stalux?.export_md);
+// /about 等非文章页面固定不显示 Markdown 原文按钮
+const isAboutPage = Astro.url.pathname.startsWith("/about");
+const exportMd = Boolean(stalux?.export_md) && !isAboutPage;
 const mdSourceUrl = exportMd
     ? Astro.url.pathname.replace(/\/$/, "") + ".md"
     : "";

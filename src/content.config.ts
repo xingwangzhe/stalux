@@ -152,8 +152,12 @@ const config = defineCollection({
                                 collapsed: z.boolean().optional().default(true),
                                 items: z.array(
                                     z.object({
-                                        label: z.string().min(1, "badge group items[].label 不能为空"),
-                                        message: z.string().min(1, "badge group items[].message 不能为空"),
+                                        label: z
+                                            .string()
+                                            .min(1, "badge group items[].label 不能为空"),
+                                        message: z
+                                            .string()
+                                            .min(1, "badge group items[].message 不能为空"),
                                         color: z.string().optional(),
                                         style: z.string().optional(),
                                         alt: z.string().optional(),

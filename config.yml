@@ -188,16 +188,16 @@ stalux:
             - title: "博客社区"
               collapsed: true
               items:
-                - label: "示例社区A"
-                  message: "社区"
-                  color: "green"
-                  alt: "示例社区 A"
-                  href: "https://example.com"
-                - label: "示例社区B"
-                  message: "导航"
-                  color: "yellow"
-                  alt: "示例社区 B"
-                  href: "https://example.org"
+                  - label: "示例社区A"
+                    message: "社区"
+                    color: "green"
+                    alt: "示例社区 A"
+                    href: "https://example.com"
+                  - label: "示例社区B"
+                    message: "导航"
+                    color: "yellow"
+                    alt: "示例社区 B"
+                    href: "https://example.org"
 
         custom: |
             <!-- footer custom slot example, can place stats, widgets, etc. -->
