@@ -4,6 +4,7 @@
     "type": "module",
     "scripts": {
         "dev": "astro dev ",
+        "prebuild": "node node_modules/cn-font-split/dist/cli.js i default 2>/dev/null; true",
         "build": "astro build ",
         "preview": "astro preview ",
         "astro": "astro",
