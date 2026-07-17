@@ -1,47 +1,131 @@
 ---
-import type { BadgeOptions } from "@utils/badge-generator";
-import { generateBadge, svgToDataUrl } from "@utils/badge-generator";
+import type { BadgeItem } from "@utils/badge-generator";
+import { generateBadge, svgToDataUrl, isBadgeGroup } from "@utils/badge-generator";
 
 interface Props {
-    badges?: BadgeOptions[];
+    badges?: BadgeItem[];
 }
 
 const { badges } = Astro.props;
 
-// 生成所有徽章
-const allBadges = (badges ?? []).map((options: BadgeOptions) => ({
-    src: svgToDataUrl(generateBadge(options)),
-    alt: options.alt || `${options.label}: ${options.message}`,
-    href: options.href,
-}));
+function badgeImg(opts: Record<string, any>) {
+    const src = svgToDataUrl(generateBadge(opts));
+    const alt = opts.alt || `${opts.label}: ${opts.message}`;
+    if (opts.href) {
+        return `<a href="${opts.href}" target="_blank" rel="noopener noreferrer"><img src="${src}" alt="${alt}" class="badge" /></a>`;
+    }
+    return `<img src="${src}" alt="${alt}" class="badge" />`;
+}
 ---
 
 {
-    allBadges.length > 0 && (
-        <div class="badges">
-            {allBadges.map(
-                (badge: { href?: string; src: string; alt: string }) =>
-                    badge.href ? (
-                        <a
-                            href={badge.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <img
-                                src={badge.src}
-                                alt={badge.alt}
-                                class="badge"
-                            />
-                        </a>
-                    ) : (
-                        <img src={badge.src} alt={badge.alt} class="badge" />
-                    ),
-            )}
+    badges && badges.length > 0 && (
+        <div class="badges-wrapper">
+            {badges.map((item: BadgeItem, idx: number) => {
+                if (isBadgeGroup(item)) {
+                    const groupId = `badge-group-${idx}`;
+                    return (
+                        <details class="badge-group" id={groupId}>
+                            <summary class="badge-group-summary">
+                                <span class="badge-group-arrow">&#9654;</span>
+                                <span class="badge-group-title">{item.title}</span>
+                                <span class="badge-group-hint" data-hint="expanded">收起</span>
+                                <span class="badge-group-hint" data-hint="collapsed">展开</span>
+                            </summary>
+                            <div class="badge-group-items badges">
+                                {item.items.map((b: any) => (
+                                    <Fragment set:html={badgeImg(b)} />
+                                ))}
+                            </div>
+                        </details>
+                    );
+                }
+                return <Fragment set:html={badgeImg(item)} />;
+            })}
         </div>
     )
 }
 
+<script>
+    function initBadgeGroups() {
+        document.querySelectorAll<HTMLDetailsElement>(".badge-group").forEach((el) => {
+            const key = `badge-${el.id}`;
+            const saved = localStorage.getItem(key);
+            if (saved !== null) {
+                el.open = saved === "open";
+            } else {
+                // 首次访问使用默认折叠状态
+                el.open = el.getAttribute("data-default-open") === "true";
+            }
+            el.addEventListener("toggle", () => {
+                localStorage.setItem(key, el.open ? "open" : "closed");
+            });
+        });
+    }
+    document.addEventListener("astro:page-load", initBadgeGroups);
+    initBadgeGroups();
+</script>
+
 <style>
+    .badges-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .badge-group {
+        width: 100%;
+        border: none;
+    }
+
+    .badge-group-summary {
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.2rem 0;
+        color: var(--white-40p);
+        font-size: 0.85rem;
+        user-select: none;
+        list-style: none;
+        transition: color 0.2s;
+    }
+    .badge-group-summary:hover {
+        color: var(--white-70p);
+    }
+    .badge-group-summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .badge-group-arrow {
+        font-size: 0.65rem;
+        transition: transform 0.2s;
+        display: inline-block;
+    }
+    .badge-group[open] .badge-group-arrow {
+        transform: rotate(90deg);
+    }
+
+    .badge-group-title {
+        color: var(--white-60p);
+    }
+
+    .badge-group-hint {
+        font-size: 0.7rem;
+        color: var(--white-25p);
+    }
+    .badge-group[open] .badge-group-hint[data-hint="collapsed"],
+    .badge-group:not([open]) .badge-group-hint[data-hint="expanded"] {
+        display: none;
+    }
+
+    .badge-group-items {
+        padding-top: 0.35rem;
+    }
+
     .badges {
         display: flex;
         justify-content: center;
@@ -59,7 +143,6 @@ const allBadges = (badges ?? []).map((options: BadgeOptions) => ({
         .badges {
             gap: 0.3rem;
         }
-
         .badge {
             height: 18px;
         }

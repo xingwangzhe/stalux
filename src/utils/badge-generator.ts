@@ -16,6 +16,20 @@ export interface BadgeOptions {
     href?: string;
 }
 
+export interface BadgeGroup {
+    title: string;
+    collapsed?: boolean;
+    items: BadgeOptions[];
+}
+
+/** 单个 badge 或 badge 分组 */
+export type BadgeItem = BadgeOptions | BadgeGroup;
+
+/** 判断是否为 badge 分组 */
+export function isBadgeGroup(item: BadgeItem): item is BadgeGroup {
+    return "title" in item && "items" in item;
+}
+
 /**
  * 生成徽章SVG
  * @param options 徽章选项
