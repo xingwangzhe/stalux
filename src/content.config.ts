@@ -12,6 +12,7 @@ const posts = defineCollection({
         base: "stalux/posts/",
         generateId: ({ data }) => String(data["abbrlink"]),
         retainBody: true,
+        deferRender: true,
     }),
     schema: z.object({
         title: z.string().min(1, "title 不能为空"),
@@ -204,7 +205,8 @@ const words = defineCollection({
     loader: glob({
         pattern: ["*.md"],
         base: "stalux/words/",
-        retainBody: true,
+        retainBody: false,
+        deferRender: true,
     }),
     schema: z.object({
         source: z.string().optional(),

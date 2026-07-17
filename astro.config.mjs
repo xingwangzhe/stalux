@@ -5,6 +5,7 @@ import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
+import Font from "vite-plugin-font";
 
 import { featureFlagsHast, featureFlagsMdast, mermaidHast } from "./src/plugins/feature-flags.ts";
 
@@ -13,22 +14,10 @@ const site = "https://stalux.needhelp.icu";
 export default defineConfig({
     output: "static",
     site: site,
-    experimental: {},
+    experimental: {
+        collectionStorage: "chunked",
+    },
     fonts: [
-        {
-            provider: fontProviders.local(),
-            name: "LXGW WenKai",
-            cssVariable: "--font-body",
-            options: {
-                variants: [
-                    {
-                        weight: 400,
-                        style: "normal",
-                        src: ["./src/assets/fonts/LXGWWenKai-Regular.woff2"],
-                    },
-                ],
-            },
-        },
         {
             provider: fontProviders.local(),
             name: "Google Sans Code",
@@ -89,6 +78,11 @@ export default defineConfig({
         }),
     ],
     vite: {
+        plugins: [
+            Font.vite({
+                scanFiles: ["src/**/*.{astro,ts,js,md,mdx}"],
+            }),
+        ],
         define: {
             // Vue feature flags for Waline
             __VUE_OPTIONS_API__: true,

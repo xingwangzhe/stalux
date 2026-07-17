@@ -6,8 +6,12 @@ import { Font } from "astro:assets";
 import VerCount from "@components/stalux/common/verCount.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
-import "@styles/base/init.css";
-import Umami from "@components/stalux/analytics/umami.astro";
+	import "@styles/base/init.css";
+	import Umami from "@components/stalux/analytics/umami.astro";
+	// vite-plugin-font: 子集化中文字体，按 unicode-range 分包 + 按需加载
+	// ?subsets 导入会生成 @font-face CSS 并自动注入页面
+	import "@assets/fonts/LXGWWenKai-Regular.ttf?subsets";
+	import { css as bodyFontCss, fontFamilyFallback } from "@assets/fonts/LXGWWenKai-Regular.ttf?subsets";
 
 import { langToOpenGraphLocale } from "@utils/i18n";
 
@@ -162,7 +166,7 @@ const ldJson = JSON.stringify(schema, null, 2);
       meta: extendedMeta,
     }}
   />
-  <Font cssVariable="--font-body" />
+  <style set:html={`:root{--font-body:${[bodyFontCss.family, fontFamilyFallback].filter(Boolean).join(",")},sans-serif}`} />
   <Font cssVariable="--font-code" />
   {
     stalux.data.head?.anyhead && (
