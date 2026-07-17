@@ -98,10 +98,12 @@ const extendedLink = [
   },
 ];
 
-// 文章页：向爬虫暴露 Markdown 原文链接
-const exportMd = Boolean(stalux?.data?.export_md);
-const isPostPage = Astro.url.pathname.startsWith("/posts/") && Astro.url.pathname !== "/posts/";
-if (exportMd && isPostPage) {
+	// 文章页：向爬虫暴露 Markdown 原文链接
+	// 仅 /posts/xxx 文章页导出，/about 等页面固定不导出
+	const exportMd = Boolean(stalux?.data?.export_md);
+	const isPostPage = Astro.url.pathname.startsWith("/posts/") && Astro.url.pathname !== "/posts/";
+	const isAboutPage = Astro.url.pathname.startsWith("/about");
+	if (exportMd && isPostPage && !isAboutPage) {
   const mdHref = Astro.url.pathname.replace(/\/$/, "") + ".md";
   extendedLink.push({
     rel: "alternate",
