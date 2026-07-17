@@ -94,6 +94,20 @@ footer:
               alt: "LLM Dataset",
               href: "/llms.txt",
           }
+        # ── 可折叠分组（v1.1+）──
+        - title: "博客社区"
+          collapsed: true
+          items:
+              - label: "示例社区A"
+                message: "社区"
+                color: "green"
+                alt: "示例社区 A"
+                href: "https://example.com"
+              - label: "示例社区B"
+                message: "导航"
+                color: "yellow"
+                alt: "示例社区 B"
+                href: "https://example.org"
     custom: |
         <!-- Example custom footer slot, can hold analytics, widgets, etc. -->
         <div id="custom-footer-hook"></div>
@@ -106,7 +120,7 @@ footer:
 - `copyright`: Copyright section toggle, start year, and custom text; when `enabled` is off, copyright info is not displayed.
 - `theme`: Whether to show Powered by / Theme info.
 - `beian`: Toggle and numbers for ICP and public security filing; only displayed when `enabled` is true.
-- `badges`: Badge array, properties include `label`, `message`, `color`, `style` (e.g., flat-square/for-the-badge), `alt`, `href`.
+- `badges`: Badge array. Each item can be either a **flat badge** (with `label`, `message`, `color`, `style`, `alt`, `href`) or a **badge group** (with `title`, `collapsed`, and `items` — where `items` is an array of flat badges). Groups render as a collapsible `<details>` section with localStorage-based state persistence — users' collapsed/expanded preference is remembered across visits.
 - `custom`: Custom HTML snippet inserted into the footer, can be used for analytics or widgets.
 
 ## Common Operations
@@ -115,3 +129,4 @@ footer:
 - Simplify badges: Remove unnecessary items, keeping only those relevant to your site.
 - Customize copyright text: Fill in `customText` or adjust `startYear` to match the current year.
 - Add scripts: Place analytics/verification code in `custom`; note that only trusted scripts should be inserted to avoid cross-origin security risks.
+- Create badge groups: Replace a set of related flat badges with a group object (`title` + `collapsed: true` + `items: […]`). The group renders as a clickable row that expands to reveal its badges; the collapsed state is saved to `localStorage` so it persists across page refreshes and navigations.
