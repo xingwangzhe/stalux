@@ -113,6 +113,11 @@ export default defineConfig({
                     responsive: true,
                     theme: "one-dark",
                     themeOverrides: {
+                        border: "var(--border, #30363d)",
+                        line: "var(--accent, #58a6ff)",
+                        text: "var(--muted-text, #8b949e)",
+                    },
+                    themeOverrides: {
                         canvas: "var(--card-bg, #161b22)",
                         text: "var(--muted-text, #8b949e)",
                         line: "var(--accent, #58a6ff)",
