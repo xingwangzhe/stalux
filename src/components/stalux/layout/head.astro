@@ -44,8 +44,10 @@ const canonicalUrl = canonicalBase
   ? new URL(Astro.url.pathname, canonicalBase).href
   : Astro.url.href;
 const faviconPath = stalux.data.favicon || "/favicon.ico";
-// 社交分享图片优先级：传入的 cover > 作者头像 > favicon
-const ogImagePath = props.cover || stalux.data.author.avatar || faviconPath;
+// 社交分享图片 / JSON-LD image 必须用绝对 URL
+const baseImgUrl = canonicalBase.replace(/\/$/, "");
+const toAbsolute = (p: string) => !p || p.startsWith("http") ? p : baseImgUrl + (p.startsWith("/") ? p : "/" + p);
+const ogImagePath = toAbsolute(props.cover || stalux.data.author.avatar || faviconPath);
 const isNotFoundPage =
   Astro.url.pathname === "/404" || Astro.url.pathname === "/404/";
 const resolvedNoindex = Boolean(stalux.data.noindex) || isNotFoundPage;

@@ -17,7 +17,7 @@ const timezone = stalux?.timezone;
 const description = post.data.desc || "";
 ---
 
-<a href={`/posts/${post.data.abbrlink}`} class={style.post + " a-none"}>
+<a href={`/posts/${post.data.abbrlink}/`} class={style.post + " a-none"}>
     <div class={style.postContainer}>
         {
             post.data.cover && (
