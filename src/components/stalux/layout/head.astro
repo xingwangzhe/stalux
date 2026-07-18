@@ -151,7 +151,7 @@ if (isArticle) {
     description: effectiveDescription,
   };
 }
-const ldJson = JSON.stringify(schema, null, 2);
+const ldJson = JSON.stringify(schema, null, 2).replace(/<\//g, "<\\/");
 ---
 
 <head transition:persist-props>
