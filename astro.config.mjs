@@ -110,7 +110,6 @@ export default defineConfig({
             hastPlugins: [
                 photoswipe(),
                 mermaidHast({
-                    
                     responsive: true,
                     theme: "one-dark",
                     themeOverrides: {
