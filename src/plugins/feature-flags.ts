@@ -26,8 +26,9 @@ function flushWordCount(ctx: any, text: string) {
     const wc = prev + countWords(text);
     const fm = ctx.data.astro.frontmatter;
     fm.wordCount = wc;
-    // readingMinutes 不含硬编码中文——UI 侧通过 i18n（common.minute / common.lessThanOneMinute）展示
     fm.readingMinutes = Math.ceil(wc / WORDS_PER_MINUTE);
+    // 搜索全文：拼接所有 heading + paragraph 的纯文本，供搜索索引用
+    fm.searchText = ((fm.searchText as string) || "") + " " + text;
 }
 
 export const featureFlagsMdast = defineMdastPlugin({

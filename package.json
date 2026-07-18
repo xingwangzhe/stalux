@@ -43,7 +43,6 @@
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",
-        "remove-markdown": "^0.6.4",
         "simple-icons": "^16.26.0",
         "vite-plugin-font": "^5.1.2"
     }
