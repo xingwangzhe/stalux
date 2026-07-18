@@ -24,7 +24,7 @@
         "@astrojs/sitemap": "^3.7.3",
         "@lucide/astro": "^1.24.0",
         "@nullpinter/satteri-katex": "^0.1.2",
-        "@xingwangzhe/satteri-mermaid": "0.5.1",
+        "@xingwangzhe/satteri-mermaid": "0.5.2",
         "@xingwangzhe/satteri-photoswipe": "^0.1.8",
         "astro-expressive-code": "^0.44.0",
         "astro-seo": "^1.1.0",
@@ -629,7 +629,7 @@
 
     "@waline/client": ["@waline/client@3.15.2", "", { "dependencies": { "@vueuse/core": "^14.3.0", "@waline/api": "1.1.2", "autosize": "^6.0.1", "marked": "^18.0.4", "marked-highlight": "^2.2.4", "recaptcha-v3": "^1.11.3", "vue": "^3.5.35" } }, "sha512-QBAVbruefDR+IKyQdM/Ao9fd07Xxpx1WEJ7xI8lBVNDjMQBr1PpdwrTpLC8RrYbgUR9ymNBvtLDJi0xK3pbORQ=="],
 
-    "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.5.1", "", { "dependencies": { "@mermanjs/web": "^0.7.0" }, "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-Wol3auAyZifH1WCl0OoWEFZg7GKdbJhstYr5DR80EJIi3rtNTC7R8EJkPgfrQ9sNiC5B+k/pe3hKlnphHSA49w=="],
+    "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.5.2", "", { "dependencies": { "@mermanjs/web": "^0.7.0" }, "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-+74OFnQh2bWDQ4+Zwgb/3hrrlJ/o3+WZdGakWi2e6DMTyFoJG9/cyeLYeEBkOLyN1YeHObDZh2WZFO5C9DiPiA=="],
 
     "@xingwangzhe/satteri-photoswipe": ["@xingwangzhe/satteri-photoswipe@0.1.8", "", { "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-FZM0iE8vcE0hhGa1KWp/Gt93YUG7Ju4/fJZ03WOuYM8mu/yXE8X5LFVLpeKDI5dK+9r15R93MO70djVJitzOfA=="],
 

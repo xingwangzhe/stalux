@@ -35,7 +35,7 @@
         "@astrojs/sitemap": "^3.7.3",
         "@lucide/astro": "^1.24.0",
         "@nullpinter/satteri-katex": "^0.1.2",
-        "@xingwangzhe/satteri-mermaid": "0.5.1",
+        "@xingwangzhe/satteri-mermaid": "0.5.2",
         "@xingwangzhe/satteri-photoswipe": "^0.1.8",
         "astro-expressive-code": "^0.44.0",
         "astro-seo": "^1.1.0",
