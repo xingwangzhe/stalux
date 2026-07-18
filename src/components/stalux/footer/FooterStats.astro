@@ -76,7 +76,7 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
         updateRuntime();
         // define:vars 内联脚本会在每次视图切换时重新执行，
         // 因此用 window 句柄记录定时器，创建新定时器前先清掉旧的，避免累加 1Hz 定时器。
-        const w = window as unknown as { __staluxRuntimeTimer?: ReturnType<typeof setInterval> };
+        const w = window;
         if (w.__staluxRuntimeTimer != null) {
             clearInterval(w.__staluxRuntimeTimer);
         }
