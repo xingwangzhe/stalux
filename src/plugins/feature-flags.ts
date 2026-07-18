@@ -16,6 +16,7 @@
 import { defineMdastPlugin, defineHastPlugin } from "satteri";
 
 import { countWords } from "../utils/count-words";
+import { setSearchText } from "../utils/search-data";
 
 const MERMAID_CODES_KEY = "__satteri_mermaid_codes";
 const WORDS_PER_MINUTE = 400;
@@ -29,6 +30,8 @@ function flushWordCount(ctx: any, text: string) {
     fm.readingMinutes = Math.ceil(wc / WORDS_PER_MINUTE);
     // 搜索全文：拼接所有 heading + paragraph 的纯文本，供搜索索引用
     fm.searchText = ((fm.searchText as string) || "") + " " + text;
+    // 写入共享 store，search-index 构建时直接读取，无需 render()
+    if (fm.abbrlink) setSearchText(String(fm.abbrlink), fm.searchText as string);
 }
 
 export const featureFlagsMdast = defineMdastPlugin({

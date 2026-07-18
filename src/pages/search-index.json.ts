@@ -2,7 +2,8 @@ import { create, insertMultiple, save } from "@orama/orama";
 import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
 import { createTokenizer } from "@orama/tokenizers/mandarin";
 import { searchSchema, type SearchDoc } from "@utils/search-schema";
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
+import { getSearchText } from "@utils/search-data";
 
 export async function GET() {
     const [posts, aboutPages, wordEntries] = await Promise.all([
@@ -13,15 +14,15 @@ export async function GET() {
 
     const documents: SearchDoc[] = [];
 
-    // 用 render() 拿到 Sätteri 插件写入的 frontmatter（searchText 为 heading+paragraph 纯文本）
     for (const post of posts) {
-        const { remarkPluginFrontmatter } = await render(post);
         documents.push({
             id: `post-${post.data.abbrlink}`,
             type: "post",
             title: post.data.title,
             description: post.data.desc,
-            content: (remarkPluginFrontmatter?.searchText as string) || post.data.desc || "",
+            // searchText 由 Sätteri MDAST 插件在构建 post 页时写入 search-data store，
+            // 无需 render()，零额外开销。
+            content: getSearchText(String(post.data.abbrlink)) || post.data.desc || "",
             url: `/posts/${post.data.abbrlink}/`,
             date: post.data.date ?? "",
             tags: post.data.tags ?? [],
@@ -42,13 +43,12 @@ export async function GET() {
     }
 
     for (const word of wordEntries) {
-        const { remarkPluginFrontmatter } = await render(word);
         documents.push({
             id: `word-${word.id}`,
             type: "word",
             title: word.data.title || word.data.source || "一言",
             description: word.data.source || "",
-            content: (remarkPluginFrontmatter?.searchText as string) || word.data.source || "",
+            content: getSearchText(String(word.id)) || word.data.title || word.data.source || "",
             url: word.data.abbrlink ? `/words/#word-${word.data.abbrlink}` : "/words/",
             date: word.data.date ?? "",
             tags: word.data.tags ?? [],
