@@ -214,6 +214,7 @@ ul {
     --muted-text: #bbb;
     --border-color-light: #e5e5e5;
 
+    /* 字体族栈 */
     /* --font-body 由 Astro Fonts API 生成（见 astro.config.mjs fonts 配置） */
     --font-body-serif: "Noto Serif CJK SC", "Source Han Serif SC", "STSong", Georgia, serif;
 

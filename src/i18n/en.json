@@ -47,12 +47,12 @@
         "noToc": "No table of contents",
         "backToList": "Back to {type} list",
         "foundPosts": "Found {count} related posts",
-        "browseTag": "Browse {count} posts under tag \"{tag}\"...",
-        "browseCategory": "Browse {count} posts under category \"{category}\"..."
+        "browseTag": "Browse {count} articles tagged with \u201C{tag}\u201D on {title}. Explore tutorials, programming notes, and practical content related to this topic of interest.",
+        "browseCategory": "Browse {count} articles under category \u201C{category}\u201D on {title}. Find tutorials, development notes, and practical guides related to this topic area."
     },
     "archives": {
         "title": "Archives",
-        "description": "Post archives page",
+        "description": "Browse the complete timeline of all articles on {title}, organized by publication date. Access programming tutorials, dev notes, open source projects, and tech insights in chronological order.",
         "heading": "Archives",
         "desc": "All posts on the timeline ({n} total)",
         "postCount": "{n} posts",
@@ -88,14 +88,14 @@
     },
     "categories": {
         "title": "Categories",
-        "description": "{title}'s categories",
+        "description": "Browse all article categories on {title}, covering web development, Linux operations, open source projects, algorithms, AI, and programming tutorials. Find topics of interest organized by category.",
         "heading": "Categories",
         "browseByTopic": "Browse by topic",
         "postCount": "{n} posts"
     },
     "tags": {
         "title": "Tags",
-        "description": "{title}'s tags",
+        "description": "Explore all tags on {title} — a keyword index covering web development, Linux, open source, AI, algorithms, and programming content. Discover articles by topic tags.",
         "heading": "Tag Cloud",
         "explore": "Explore article tags across different topics",
         "noTags": "No tags"

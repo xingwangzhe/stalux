@@ -1,9 +1,9 @@
 import { create, insertMultiple, save } from "@orama/orama";
 import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
 import { createTokenizer } from "@orama/tokenizers/mandarin";
+import { getSearchText } from "@utils/search-data";
 import { searchSchema, type SearchDoc } from "@utils/search-schema";
 import { getCollection } from "astro:content";
-import { getSearchText } from "@utils/search-data";
 
 export async function GET() {
     const [posts, aboutPages, wordEntries] = await Promise.all([

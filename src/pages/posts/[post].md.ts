@@ -8,10 +8,6 @@ import { getCollection, type CollectionEntry } from "astro:content";
 
 export const prerender = true;
 
-/**
- * 将文章 data + body 还原为 Markdown 文本（filePath 不可用时的回退）。
- * 尽量保留常见 frontmatter 字段，顺序接近作者手写习惯。
- */
 function reconstructMarkdown(post: CollectionEntry<"posts">): string {
     const d = post.data;
     const lines: string[] = ["---"];
@@ -34,7 +30,6 @@ function reconstructMarkdown(post: CollectionEntry<"posts">): string {
     return lines.join("\n") + body + (body.endsWith("\n") ? "" : "\n");
 }
 
-/** 简单 YAML 标量序列化：含特殊字符时加双引号 */
 function yamlScalar(value: string): string {
     if (
         value === "" ||

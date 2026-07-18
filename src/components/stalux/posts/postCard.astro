@@ -13,7 +13,7 @@ const post = Astro.props.post;
 const stalux = (await getCollection("config"))[0]?.data;
 const timezone = stalux?.timezone;
 
-// 描述：优先使用文章自身的 desc，如果没有则使用 frontmatter 中的描述
+// 描述：使用文章自身的 desc
 const description = post.data.desc || "";
 ---
 
