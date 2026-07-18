@@ -167,12 +167,65 @@ $$
 
 ### Mermaid
 
+**Flowchart**
+
 ```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+graph LR
+    A[Start] --> B{Is it?}
+    B -->|Yes| C[OK]
+    B -->|No| D[Fail]
+    C --> E[End]
+    D --> E
+```
+
+**Sequence Diagram**
+
+```mermaid
+sequenceDiagram
+    Alice->>John: Hello John
+    John-->>Alice: Hi Alice
+    Alice->>John: How are you?
+    John-->>Alice: Great!
+```
+
+**Class Diagram**
+
+```mermaid
+classDiagram
+    Animal <|-- Duck
+    Animal <|-- Fish
+    Animal : +int age
+    Animal : +String gender
+    Animal: +isMammal()
+    Duck: +String beakColor
+    Duck: +swim()
+    Fish: -int sizeInFeet
+    Fish: -canEat()
+```
+
+**State Diagram**
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Processing : start
+    Processing --> Success : done
+    Processing --> Failed : error
+    Success --> [*]
+    Failed --> Idle : retry
+```
+
+**Flowchart**
+
+```mermaid
+flowchart LR
+    A[Login] --> B{Dashboard}
+    B --> C[Settings]
+    B --> D[Profile]
+    C --> E[Security]
+    C --> F[Notifications]
+    D --> G[Edit]
+    D --> H[Avatar]
 ```
 
 ## Special Character Escaping

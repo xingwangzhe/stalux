@@ -16,7 +16,6 @@ const { Content, headings, remarkPluginFrontmatter } = await render(props.post);
 // 从 remarkPluginFrontmatter 读取 feature flags 和字数统计（由 satteri 插件在构建时写入）
 const flags = {
     hasKatex: remarkPluginFrontmatter?.hasKatex ?? false,
-    hasMermaid: remarkPluginFrontmatter?.hasMermaid ?? false,
     hasImage: remarkPluginFrontmatter?.hasImage ?? false,
 };
 
@@ -62,7 +61,7 @@ export async function getStaticPaths() {
 >
     <div style="height:3em"></div>
     <Navs /><div style="height:3em"></div>
-        <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} readingMinutes={readingMinutes} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={stalux.author.name} authorAvatar={stalux.author.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasMermaid={flags.hasMermaid} hasKatex={flags.hasKatex} hasImage={flags.hasImage}>
+        <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} readingMinutes={readingMinutes} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={stalux.author.name} authorAvatar={stalux.author.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasKatex={flags.hasKatex} hasImage={flags.hasImage}>
         <Content/>
     </PostLayout>
 </Stalux>

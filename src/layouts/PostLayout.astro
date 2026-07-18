@@ -26,7 +26,6 @@ interface Props {
     prev?: { url: string; title: string };
     next?: { url: string; title: string };
     cc?: string;
-    hasMermaid?: boolean;
     hasKatex?: boolean;
     hasImage?: boolean;
 }
@@ -83,27 +82,3 @@ const walineConfig = stalux?.comment?.waline;
         <PostRight headings={headings} tags={tags} categories={categories} />
     </div>
 </div>
-
-{
-    props.hasMermaid && (
-        <script>
-            import mermaid from "mermaid";
-
-            mermaid.initialize({
-                startOnLoad: false,
-                theme: "dark",
-            });
-
-            const renderMermaid = async () => {
-                const nodes = document.querySelectorAll(
-                    '.mermaid:not([data-processed="true"])',
-                );
-                if (nodes.length === 0) return;
-                await mermaid.run({ nodes });
-            };
-
-            document.addEventListener("astro:page-load", renderMermaid);
-            renderMermaid();
-        </script>
-    )
-}

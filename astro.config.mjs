@@ -7,7 +7,8 @@ import expressiveCode from "astro-expressive-code";
 import { defineConfig, fontProviders } from "astro/config";
 import Font from "vite-plugin-font";
 
-import { featureFlagsHast, featureFlagsMdast, mermaidHast } from "./src/plugins/feature-flags.ts";
+import { featureFlagsHast, featureFlagsMdast } from "./src/plugins/feature-flags.ts";
+import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 
 const site = "https://stalux.needhelp.icu";
 // https://astro.build/config
@@ -105,8 +106,8 @@ export default defineConfig({
                 gfm: true,
                 frontmatter: true,
             },
-            mdastPlugins: [katex(), featureFlagsMdast],
-            hastPlugins: [photoswipe(), featureFlagsHast, mermaidHast],
+            mdastPlugins: [katex(), mermaidMdast(), featureFlagsMdast],
+            hastPlugins: [photoswipe(), mermaidHast({ ssg: true, responsive: true, theme: "one-dark", themeOverrides: { canvas: "var(--card-bg, #161b22)", text: "var(--muted-text, #8b949e)", line: "var(--accent, #58a6ff)", surface: "var(--card-bg, #0d1117)", border: "var(--border, #30363d)" } }), featureFlagsHast],
         }),
     },
 });
