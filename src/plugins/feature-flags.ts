@@ -9,14 +9,14 @@
  * - 行内 code 和行内 math 会被 textContent(paragraph) 自然包含。
  *
  * 特性标记：
- * - math / inlineMath        → hasKatex
  * - HAST 阶段 <img> 检测      → hasImage
  * - mermaid 处理交由 @xingwangzhe/satteri-mermaid 的 mdast + hast 插件
+ * - 数学公式由 satteri-temml 插件直接输出 MathML，无需额外标记
  */
 import { defineMdastPlugin, defineHastPlugin } from "satteri";
 
-import { countWords } from "../utils/count-words";
-import { setSearchText } from "../utils/search-data";
+import { countWords } from "../utils/count-words.ts";
+import { setSearchText } from "../utils/search-data.ts";
 
 const WORDS_PER_MINUTE = 400;
 
@@ -35,14 +35,6 @@ function flushWordCount(ctx: any, text: string) {
 
 export const featureFlagsMdast = defineMdastPlugin({
     name: "feature-flags-mdast",
-
-    math(_node, ctx) {
-        ctx.data.astro.frontmatter.hasKatex = true;
-    },
-
-    inlineMath(_node, ctx) {
-        ctx.data.astro.frontmatter.hasKatex = true;
-    },
 
     code(_node, _ctx) {
         // 独立的 code 块不参与字数统计

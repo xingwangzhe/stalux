@@ -1,6 +1,6 @@
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
-import { katex } from "@nullpinter/satteri-katex";
+import { temml } from "./src/plugins/satteri-temml.ts";
 import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
@@ -106,7 +106,7 @@ export default defineConfig({
                 gfm: true,
                 frontmatter: true,
             },
-            mdastPlugins: [katex({ strict: "ignore" }), mermaidMdast(), featureFlagsMdast],
+            mdastPlugins: [temml(), mermaidMdast(), featureFlagsMdast],
             hastPlugins: [
                 photoswipe(),
                 mermaidHast({
