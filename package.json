@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "dev": "astro dev ",
-        "prebuild": "node node_modules/cn-font-split/dist/cli.js i default 2>/dev/null; true",
+        "prebuild": "bun run scripts/font-split.ts 2>/dev/null; true",
         "build": "astro build ",
         "preview": "astro preview ",
         "astro": "astro",
@@ -33,9 +33,10 @@
     "devDependencies": {
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
+        "@konghayao/cn-font-split": "^4.15.0",
         "@lucide/astro": "^1.24.0",
         "@nullpinter/satteri-katex": "^0.1.2",
-        "@xingwangzhe/satteri-mermaid": "0.5.2",
+        "@xingwangzhe/satteri-mermaid": "0.7.0",
         "@xingwangzhe/satteri-photoswipe": "^0.1.8",
         "astro-expressive-code": "^0.44.0",
         "astro-seo": "^1.1.0",
