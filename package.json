@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "dev": "astro dev ",
-        "prebuild": "bun run scripts/font-split.ts 2>/dev/null; true",
+        "prebuild": "bun run scripts/font-subset.ts",
         "build": "astro build ",
         "preview": "astro preview ",
         "astro": "astro",
@@ -39,12 +39,11 @@
         "astro-seo": "^1.1.0",
         "astro-typewriter": "^1.2.0",
         "badge-maker": "^6.0.0",
-        "cn-font-split": "7.4.3",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",
         "simple-icons": "^16.26.0",
-        "temml": "^0.13.3",
-        "vite-plugin-font": "^5.1.2"
+        "subset-font": "^2.5.0",
+        "temml": "^0.13.3"
     }
 }

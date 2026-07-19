@@ -5,7 +5,6 @@ import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
-import Font from "vite-plugin-font";
 
 import { featureFlagsHast, featureFlagsMdast } from "./src/plugins/feature-flags.ts";
 import { temml } from "./src/plugins/satteri-temml.ts";
@@ -79,11 +78,6 @@ export default defineConfig({
         }),
     ],
     vite: {
-        plugins: [
-            Font.vite({
-                scanFiles: ["src/**/*.{astro,ts,js,md,mdx}"],
-            }),
-        ],
         define: {
             // Vue feature flags for Waline
             __VUE_OPTIONS_API__: true,
