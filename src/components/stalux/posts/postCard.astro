@@ -17,7 +17,7 @@ const timezone = stalux?.timezone;
 const description = post.data.desc || "";
 ---
 
-<a href={`/posts/${post.data.abbrlink}/`} class={style.post + " a-none"}>
+<a href={`/posts/${post.data.abbrlink}/`} class={style.post + " a-none"} data-astro-prefetch="viewport">
     <div class={style.postContainer}>
         {
             post.data.cover && (
@@ -54,7 +54,7 @@ const description = post.data.desc || "";
             <div class={style.postTags}>
                 {
                     post.data.tags?.map((tag) => (
-                        <a class="a-none" href={`/tags/${tag}`}>
+                        <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
                             <div class={style.postTag}>{tag}</div>
                         </a>
                     ))
@@ -63,7 +63,7 @@ const description = post.data.desc || "";
             <div class={style.postCategories}>
                 {
                     post.data.categories?.map((category) => (
-                        <a class="a-none" href={`/categories/${category}`}>
+                        <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
                             <div class={style.postCategory}>{category}</div>
                         </a>
                     ))
@@ -73,6 +73,7 @@ const description = post.data.desc || "";
         <a
             href={`/posts/${post.data.abbrlink}`}
             class={style.readMore + " a-none"}
+            data-astro-prefetch
         >
             Read More
         </a>

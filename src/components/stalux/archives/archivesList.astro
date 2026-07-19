@@ -91,6 +91,7 @@ const sortedYears = Object.keys(archivesByYearMonth)
                                                     <a
                                                         href={`/posts/${post.data.abbrlink}/`}
                                                         class={styles.postLink}
+                                                        data-astro-prefetch="viewport"
                                                     >
                                                         {post.data.title}
                                                     </a>

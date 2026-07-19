@@ -19,6 +19,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
     <a
         href={`/categories/${props.category.name}/`}
         class={styles.categoryheader + " a-none"}
+        data-astro-prefetch
     >
         <div class={styles.categoryIcon}>
             <svg

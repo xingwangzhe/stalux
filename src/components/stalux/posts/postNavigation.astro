@@ -22,6 +22,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
                         href={props.prev.url}
                         class={`${style.postNavLink} ${style.prevPost}`}
                         rel="prev"
+                        data-astro-prefetch
                     >
                         <span class={style.postNavArrow}>
                             <svg
@@ -78,6 +79,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
                         href={props.next.url}
                         class={`${style.postNavLink} ${style.nextPost}`}
                         rel="next"
+                        data-astro-prefetch
                     >
                         <div class={style.postNavContent}>
                             <span class={style.postNavLabel}>{t("post.nextPost")}</span>

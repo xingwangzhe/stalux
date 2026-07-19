@@ -19,7 +19,7 @@ const navigationHref = isHomePage ? "/about" : "/";
     <figure
         class={`${styles.authorFigure} ${props.iscolum ? styles.figureColumn : ""}`}
     >
-        <a href={navigationHref} class="a-none">
+        <a href={navigationHref} class="a-none" data-astro-prefetch>
             <Image
                 src={stalux.author.avatar}
                 alt={stalux.author.name}

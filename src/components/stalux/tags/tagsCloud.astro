@@ -19,6 +19,7 @@ const tagLinks = tagList.map((t) => ({ type: "link" as const, text: t.name, url:
                     href={`/tags/${name}/`}
                     class={styles.tagCard}
                     data-count={count}
+                    data-astro-prefetch
                 >
                     <span class={styles.tagName}>{name}</span>
                     <span class={styles.tagCount}>{count}</span>

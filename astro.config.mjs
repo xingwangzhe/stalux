@@ -17,6 +17,10 @@ export default defineConfig({
     experimental: {
         collectionStorage: "chunked",
     },
+    prefetch: {
+        prefetchAll: false,
+        defaultStrategy: "hover",
+    },
     fonts: [
         {
             provider: fontProviders.local(),

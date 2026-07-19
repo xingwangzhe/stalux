@@ -44,5 +44,5 @@ if (typeKey === "category" || typeKey === "categories" || typeKey === "分类") 
         {props.type}: {props.name}
     </h1>
     <p class={styles.pageDescription}>{t("taxonomy.foundPosts", { count: props.count })}</p>
-    <a href={typeUrl} class={styles.backLink}>{t("taxonomy.backToList", { type: props.type })}</a>
+    <a href={typeUrl} class={styles.backLink} data-astro-prefetch>{t("taxonomy.backToList", { type: props.type })}</a>
 </header>

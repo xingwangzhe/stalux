@@ -51,7 +51,7 @@ const cfg = {
                 transition:animate={fade({ duration: "0.3s" })}
             >
                 {items.map((item) => (
-                    <a href={`${cfg.prefix}${item}/`} class={`${cfg.itemClass} a-none`}>
+                    <a href={`${cfg.prefix}${item}/`} class={`${cfg.itemClass} a-none`} data-astro-prefetch>
                         {item}
                     </a>
                 ))}

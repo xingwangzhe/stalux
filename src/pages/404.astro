@@ -19,7 +19,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
       <h1>404</h1>
       <p>{t("page404.pageNotFound")}</p>
       <p id="countdown" class="countdown-text">{t("page404.countdown", { n: 5 })}</p>
-      <a href="/" class="home-btn">{t("page404.backHome")}</a>
+      <a href="/" class="home-btn" data-astro-prefetch>{t("page404.backHome")}</a>
     </div>
   </div>
 
