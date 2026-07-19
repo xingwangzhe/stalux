@@ -111,13 +111,9 @@ export default defineConfig({
                 photoswipe(),
                 mermaidHast({
                     responsive: true,
-                    theme: "one-dark",
+                    theme: "dark",
                     themeOverrides: {
-                        border: "#484f58",
-                        line: "var(--accent, #58a6ff)",
-                        text: "var(--muted-text, #8b949e)",
-                        canvas: "var(--card-bg, #161b22)",
-                        surface: "var(--card-bg, #0d1117)",
+                        clusterBorder: "#cccccc",
                     },
                 }),
                 featureFlagsHast,
