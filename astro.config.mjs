@@ -1,6 +1,5 @@
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
-import { temml } from "./src/plugins/satteri-temml.ts";
 import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
@@ -9,6 +8,7 @@ import { defineConfig, fontProviders } from "astro/config";
 import Font from "vite-plugin-font";
 
 import { featureFlagsHast, featureFlagsMdast } from "./src/plugins/feature-flags.ts";
+import { temml } from "./src/plugins/satteri-temml.ts";
 
 const site = "https://stalux.needhelp.icu";
 // https://astro.build/config
