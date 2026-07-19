@@ -106,7 +106,7 @@ export default defineConfig({
                 gfm: true,
                 frontmatter: true,
             },
-            mdastPlugins: [katex(), mermaidMdast(), featureFlagsMdast],
+            mdastPlugins: [katex({ strict: "ignore" }), mermaidMdast(), featureFlagsMdast],
             hastPlugins: [
                 photoswipe(),
                 mermaidHast({
