@@ -33,7 +33,6 @@
     "devDependencies": {
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
-        "@konghayao/cn-font-split": "^4.15.0",
         "@lucide/astro": "^1.24.0",
         "@nullpinter/satteri-katex": "^0.1.2",
         "@xingwangzhe/satteri-mermaid": "0.7.0",
@@ -42,6 +41,7 @@
         "astro-seo": "^1.1.0",
         "astro-typewriter": "^1.2.0",
         "badge-maker": "^6.0.0",
+        "cn-font-split": "7.4.3",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",
