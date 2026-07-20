@@ -185,7 +185,7 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
         const results = await search(instance, {
             term,
             limit: 20,
-            threshold: 0,
+            tolerance: 1,
             properties: ["title", "description", "content", "tags"],
             boost: {
                 title: 2,
@@ -193,6 +193,18 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
                 description: 1.2,
                 content: 1,
             },
+            relevance: {
+                k: 1.5,
+                b: 0.75,
+                d: 0.5,
+            },
+            facets: {
+                type: {
+                    limit: 10,
+                    sort: "ASC" as const,
+                },
+            },
+            threshold: 0.3,
         });
 
         renderResults(
