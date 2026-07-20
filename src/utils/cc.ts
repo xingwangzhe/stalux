@@ -1,4 +1,4 @@
-import type { Translator } from "./i18n";
+import type { Translator } from "@utils/i18n";
 
 /**
  * 从许可证代码（如 "CC-BY-NC-SA-4.0"）推导 CC 官网链接。

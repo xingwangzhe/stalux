@@ -1,3 +1,6 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
@@ -5,6 +8,8 @@ import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 import { featureFlagsHast, featureFlagsMdast } from "./src/plugins/feature-flags.ts";
 import { temml } from "./src/plugins/satteri-temml.ts";
@@ -82,6 +87,18 @@ export default defineConfig({
         }),
     ],
     vite: {
+        resolve: {
+            alias: {
+                "@components": path.resolve(__dirname, "src/components"),
+                "@assets": path.resolve(__dirname, "src/assets"),
+                "@layouts": path.resolve(__dirname, "src/layouts"),
+                "@scripts": path.resolve(__dirname, "src/scripts"),
+                "@styles": path.resolve(__dirname, "src/styles"),
+                "@utils": path.resolve(__dirname, "src/utils"),
+                "@i18n": path.resolve(__dirname, "src/i18n"),
+                "@plugins": path.resolve(__dirname, "src/plugins"),
+            },
+        },
         define: {
             // Vue feature flags for Waline
             __VUE_OPTIONS_API__: true,

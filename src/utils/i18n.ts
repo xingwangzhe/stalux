@@ -1,5 +1,5 @@
-import en from "../i18n/en.json";
-import zhCN from "../i18n/zh-CN.json";
+import en from "@i18n/en.json";
+import zhCN from "@i18n/zh-CN.json";
 
 const dicts: Record<string, Record<string, unknown>> = {
     "zh-CN": zhCN as Record<string, unknown>,

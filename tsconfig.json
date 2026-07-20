@@ -11,7 +11,9 @@
             "@layouts/*": ["./src/layouts/*"],
             "@scripts/*": ["./src/scripts/*"],
             "@styles/*": ["./src/styles/*"],
-            "@utils/*": ["./src/utils/*"]
+            "@utils/*": ["./src/utils/*"],
+            "@i18n/*": ["./src/i18n/*"],
+            "@plugins/*": ["./src/plugins/*"]
         }
     }
 }
