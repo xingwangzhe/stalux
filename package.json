@@ -17,7 +17,6 @@
     },
     "dependencies": {
         "@expressive-code/plugin-line-numbers": "^0.44.0",
-        "@mermanjs/web": "^0.7.0",
         "@orama/highlight": "^0.1.9",
         "@orama/orama": "^3.1.18",
         "@orama/stopwords": "^3.1.18",
