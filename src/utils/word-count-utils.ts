@@ -7,30 +7,25 @@
 import { getCollection } from "astro:content";
 
 // ---------------------------------------------------------------------------
-// 字数统计算法（body-based，不依赖 pre-rendered HTML）
+// 字数统计算法（基于 W3C Intl.Segmenter，body-based）
 // ---------------------------------------------------------------------------
 
-/** 匹配单个 CJK 表意文字（中日韩统一表意文字 + 扩展区） */
-const CJK_RE = /[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]/g;
-
-/** 匹配拉丁字母组成的单词（含连字符、撇号） */
-const LATIN_WORD_RE = /[a-zA-Z]+(?:[''-][a-zA-Z]+)*/g;
+const bodySegmenter = new Intl.Segmenter("zh", { granularity: "word" });
 
 /**
  * 从原始 markdown 正文估算字数。
- * - 中文：按单个汉字计算（每个 CJK 字符计 1 字）
- * - 英文：按空格分隔的单词数计算
- * - 数字/标点不计入
+ * - 中文：`Intl.Segmenter` 逐字分割，每个汉字计 1
+ * - 英文：按词计 1
+ * - 纯数字序列：不计入（与旧正则行为一致）
+ * - 标点/空白不计
  */
 function countWordsFromBody(body: string | undefined | null): number {
     if (!body) return 0;
     let count = 0;
-    // CJK 字符数
-    const cjk = body.match(CJK_RE);
-    if (cjk) count += cjk.length;
-    // 拉丁单词数
-    const latin = body.match(LATIN_WORD_RE);
-    if (latin) count += latin.length;
+    for (const { segment, isWordLike } of bodySegmenter.segment(body)) {
+        // 排除纯数字序列（如年份、代码行号等），与旧正则行为保持一致
+        if (isWordLike && !/^\d+$/.test(segment)) count++;
+    }
     return count;
 }
 
