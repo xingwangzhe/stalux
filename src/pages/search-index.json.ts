@@ -3,6 +3,7 @@ import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
 import { createTokenizer } from "@orama/tokenizers/mandarin";
 import { getSearchText } from "@utils/search-data";
 import { searchSchema, type SearchDoc } from "@utils/search-schema";
+import { buildSynonyms } from "@utils/search-synonyms";
 import { getCollection } from "astro:content";
 
 export async function GET() {
@@ -20,8 +21,6 @@ export async function GET() {
             type: "post",
             title: post.data.title,
             description: post.data.desc,
-            // searchText 由 Sätteri MDAST 插件在构建 post 页时写入 search-data store，
-            // 无需 render()，零额外开销。
             content: getSearchText(String(post.data.abbrlink)) || post.data.desc || "",
             url: `/posts/${post.data.abbrlink}/`,
             date: post.data.date ?? "",
@@ -66,7 +65,10 @@ export async function GET() {
     await insertMultiple(db, documents);
     const index = await save(db);
 
-    return new Response(JSON.stringify(index), {
+    // 从文章标签共现关系自动生成同义词表
+    const synonyms = buildSynonyms(documents);
+
+    return new Response(JSON.stringify({ index, synonyms }), {
         headers: {
             "Content-Type": "application/json",
         },
