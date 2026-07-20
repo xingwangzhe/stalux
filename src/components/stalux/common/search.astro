@@ -59,7 +59,6 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
     import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
     import { Highlight, highlightStrategy } from "@orama/highlight";
     import { searchSchema, type SearchDoc, type SearchSchema } from "@utils/search-schema";
-    import { expandQuery } from "@utils/search-synonyms";
 
     let searchLabels = {
         typePost: "",
@@ -69,7 +68,6 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
 
     let db: Awaited<ReturnType<typeof create<SearchSchema>>> | null = null;
     let indexLoading = false;
-    let synonymsMap: Record<string, string[]> = {};
 
     // 复用的高亮器实例：highlight() 每次调用会重置 positions，
     // 单个实例即可服务所有结果，无需每条结果都 new 一个。
@@ -89,8 +87,6 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
             const response = await fetch("/search-index.json");
             if (!response.ok) throw new Error("Failed to load search index");
             const data = await response.json();
-            const { index, synonyms } = data;
-            if (synonyms) synonymsMap = synonyms;
             const instance = await create({
                 schema: searchSchema,
                 components: {
@@ -99,7 +95,7 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
                     }),
                 },
             });
-            await load(instance, index);
+            await load(instance, data);
             db = instance;
             return db;
         } finally {
@@ -179,18 +175,15 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
     let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
     async function performSearch(query: string) {
-        const originalTerm = query.trim();
-        if (!originalTerm) {
+        const term = query.trim();
+        if (!term) {
             clearResults();
             return;
         }
 
-        // 同义词扩展：搜索 "AI" → "AI 人工智能 机器学习"
-        const expandedTerm = expandQuery(originalTerm, synonymsMap);
-
         const instance = await initOrama();
         const results = await search(instance, {
-            term: expandedTerm,
+            term,
             limit: 20,
             tolerance: 1,
             properties: ["title", "description", "content", "tags"],
@@ -214,10 +207,9 @@ const { t, lang } = createTranslator(stalux.lang || "zh-CN");
             threshold: 0.3,
         });
 
-        // 高亮用展开后的词，使得同义词也能被高亮
         renderResults(
             results.hits as Array<{ document: SearchDoc; score: number }>,
-            expandedTerm,
+            term,
         );
     }
 

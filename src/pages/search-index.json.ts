@@ -3,7 +3,6 @@ import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
 import { createTokenizer } from "@orama/tokenizers/mandarin";
 import { getSearchText } from "@utils/search-data";
 import { searchSchema, type SearchDoc } from "@utils/search-schema";
-import { buildSynonyms } from "@utils/search-synonyms";
 import { getCollection } from "astro:content";
 
 export async function GET() {
@@ -65,10 +64,7 @@ export async function GET() {
     await insertMultiple(db, documents);
     const index = await save(db);
 
-    // 从文章标签共现关系自动生成同义词表
-    const synonyms = buildSynonyms(documents);
-
-    return new Response(JSON.stringify({ index, synonyms }), {
+    return new Response(JSON.stringify(index), {
         headers: {
             "Content-Type": "application/json",
         },
