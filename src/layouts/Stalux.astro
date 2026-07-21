@@ -16,6 +16,7 @@ export interface Props {
   tags?: string[];
   categories?: string[];
   author?: string;
+  noindex?: boolean;
 }
 
 const stalux = (await getCollection("config"))[0]?.data ?? {};
@@ -53,6 +54,7 @@ const llmPromote = stalux.llm_promote
     tags={props.tags}
     categories={props.categories}
     author={props.author}
+    noindex={props.noindex}
   />
   <script define:vars={{ bgUrls, randomIndex }}>
     window.__STALUX_BG_URLS__ = bgUrls;

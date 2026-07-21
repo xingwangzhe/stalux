@@ -50,15 +50,22 @@ export const featureFlagsMdast = defineMdastPlugin({
 });
 
 /**
- * HAST 插件：检测图片，写入 frontmatter
+ * HAST 插件：检测图片，写入 frontmatter，并添加懒加载属性
  */
 export const featureFlagsHast = defineHastPlugin({
     name: "feature-flags-hast",
 
     element: {
         filter: ["img"],
-        visit(_node, ctx) {
+        visit(node, ctx) {
             ctx.data.astro.frontmatter.hasImage = true;
+            // 添加懒加载和异步解码（封面图不在此处理，由 postCard.astro 控制）
+            if (!node.properties?.loading) {
+                ctx.setProperty(node, "loading", "lazy");
+            }
+            if (!node.properties?.decoding) {
+                ctx.setProperty(node, "decoding", "async");
+            }
         },
     },
 });

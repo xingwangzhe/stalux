@@ -31,6 +31,7 @@ export interface Props {
   tags?: string[];
   categories?: string[];
   author?: string;
+  noindex?: boolean;
 }
 
 const props = Astro.props as Props;
@@ -49,7 +50,7 @@ const toAbsolute = (p: string) => !p || p.startsWith("http") ? p : baseImgUrl + 
 const ogImagePath = toAbsolute(props.cover || stalux.data.author.avatar || faviconPath);
 const isNotFoundPage =
   Astro.url.pathname === "/404" || Astro.url.pathname === "/404/";
-const resolvedNoindex = Boolean(stalux.data.noindex) || isNotFoundPage;
+const resolvedNoindex = Boolean(stalux.data.noindex) || isNotFoundPage || Boolean(props.noindex);
 const resolvedNofollow = Boolean(stalux.data.nofollow) || isNotFoundPage;
 
 const openGraphConfig: Record<string, unknown> = {

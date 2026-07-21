@@ -10,7 +10,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 ---
 
-<Stalux title={t("archives.title") + " | " + stalux.title} description={t("archives.description")}>
+<Stalux title={t("archives.title") + " | " + stalux.title} description={t("archives.description", { title: stalux.title })}>
     <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.h1}>{t("archives.heading")}</h1>
