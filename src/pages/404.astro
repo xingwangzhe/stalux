@@ -3,13 +3,15 @@ import Stalux from "@layouts/Stalux.astro";
 import Navs from "@components/stalux/layout/navs.astro";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 ---
 
 <Stalux
-  title={t("page404.title") + " | " + stalux.title}
+  title={t("page404.title") + " | " + siteConfig.title}
   description={t("page404.description")}
 >
   <div style="height: 3em;"></div>

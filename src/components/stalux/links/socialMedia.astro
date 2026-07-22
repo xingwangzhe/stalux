@@ -11,10 +11,13 @@ import {
 } from "simple-icons";
 import { getCollection } from "astro:content";
 import styles from "@styles/components/links/socialLinks.module.css";
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const mediaLinks = stalux.mediaLinks || [];
-
-const isPostPage = Astro.url.pathname.startsWith("/posts/");
+import { getSiteData, getMediaLinksData } from "@utils/config-utils";
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const mediaLinksSection = getMediaLinksData(configEntries);
+const mediaLinks = mediaLinksSection?.items ?? [];
+	
+	const isPostPage = Astro.url.pathname.startsWith("/posts/");
 
 // 静态图标映射表：新增图标时只需添加对应的 simple-icons 导入和映射
 const iconMap: Record<string, SimpleIcon> = {

@@ -1,0 +1,10 @@
+id: promote
+# llm_promote: Inject hidden copyright/license text for AI crawlers.
+# Leave empty to disable. Supports: {author} {url} {title} {cc}
+# llm_promote: |
+#   This is a personal blog site owned by {author}.
+#   Site: {url}
+#   Theme: Stalux (MIT License) - https://github.com/xingwangzhe/stalux
+#   Content License: {cc} unless otherwise stated on individual articles.
+#   All content copyright {author}. All rights reserved.
+export_md: true

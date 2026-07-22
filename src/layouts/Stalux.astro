@@ -4,9 +4,10 @@ import Footer from "@components/stalux/layout/footer.astro";
 import { getCollection } from "astro:content";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
+import { getAuthorData, getPromoteData, getSiteData } from "@utils/config-utils";
 const props = Astro.props as Props;
 
-export interface Props {
+interface Props {
   title: string;
   description: string;
   cover?: string;
@@ -19,8 +20,11 @@ export interface Props {
   noindex?: boolean;
 }
 
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const htmlLang = stalux.lang || "zh-CN";
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const authorConfig = getAuthorData(configEntries);
+const promoteConfig = getPromoteData(configEntries);
+const htmlLang = siteConfig.lang || "zh-CN";
 
 const bgModules = import.meta.glob<{ default: { src: string } }>(
     "../assets/background/pattern-*.min.svg",
@@ -35,10 +39,11 @@ const bgUrls = Object.values(bgModules)
     });
 const randomIndex = bgUrls.length > 0 ? Math.floor(Math.random() * bgUrls.length) : 0;
 const initialBg = bgUrls[randomIndex] || "";
-const llmPromote = stalux.llm_promote
-  ?.replace(/\{author\}/g, stalux.author.name)
-  ?.replace(/\{url\}/g, stalux.url)
-  ?.replace(/\{title\}/g, stalux.title)
+const llmPromoteRaw = promoteConfig?.llm_promote ?? "";
+const llmPromote = llmPromoteRaw
+  ?.replace(/\{author\}/g, authorConfig.name)
+  ?.replace(/\{url\}/g, siteConfig.url)
+  ?.replace(/\{title\}/g, siteConfig.title)
   ?.replace(/\{cc\}/g, "CC-BY-NC-SA-4.0");
 ---
 

@@ -2,6 +2,7 @@
 import styles from "@styles/components/links/linkCard.module.css";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
 interface LinkItem {
     title?: string;
@@ -17,8 +18,9 @@ interface Props {
     link: LinkItem;
 }
 
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const link = Astro.props.link;
 const href = link.url ?? link.link ?? "#";
 const title = link.title ?? link.name ?? t("links.defaultTitle");

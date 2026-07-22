@@ -4,12 +4,15 @@ import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry, render } from "astro:content";
 import { toTimestamp } from "@utils/dayjs";
 import Navs from "@components/stalux/layout/navs.astro";
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 interface Props {
     post: CollectionEntry<"posts">;
     prev?: { url: string; title: string };
     next?: { url: string; title: string };
 }
-const stalux = (await getCollection("config"))[0]?.data ?? {};
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const authorConfig = getAuthorData(configEntries);
 const props = Astro.props as Props;
 const { Content, headings, remarkPluginFrontmatter } = await render(props.post);
 
@@ -48,7 +51,7 @@ export async function getStaticPaths() {
 }
 ---
 <Stalux
-    title={props.post.data.title + " | " + stalux.title}
+    title={props.post.data.title + " | " + siteConfig.title}
     description={autoDesc}
     cover={props.post.data.cover}
     isArticle={true}
@@ -56,11 +59,11 @@ export async function getStaticPaths() {
     updated={props.post.data.updated}
     tags={props.post.data.tags}
     categories={props.post.data.categories}
-    author={stalux.author.name}
+    author={authorConfig.name}
 >
     <div style="height:3em"></div>
     <Navs /><div style="height:3em"></div>
-        <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} readingMinutes={readingMinutes} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={stalux.author.name} authorAvatar={stalux.author.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasImage={flags.hasImage}>
+        <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} readingMinutes={readingMinutes} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={authorConfig.name} authorAvatar={authorConfig.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasImage={flags.hasImage}>
         <Content/>
     </PostLayout>
 </Stalux>

@@ -5,6 +5,7 @@ import "@styles/components/markdown.css";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 import { toMachineDateTime } from "@utils/semantic-time";
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
 interface Props {
     title: string;
@@ -17,14 +18,16 @@ interface Props {
 }
 
 const props = Astro.props as Props;
-const stalux = (await getCollection("config"))[0]?.data;
-const { t } = createTranslator(stalux?.lang || "zh-CN");
-const timezone = stalux?.timezone;
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const promoteConfig = getPromoteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
+const timezone = siteConfig.timezone;
 
 // 仅当开启 export_md 时，才展示“查看 Markdown 原文”按钮，并推导对应 .md 路径
 // /about 等非文章页面固定不显示 Markdown 原文按钮
 const isAboutPage = Astro.url.pathname.startsWith("/about");
-const exportMd = Boolean(stalux?.export_md) && !isAboutPage;
+const exportMd = Boolean(promoteConfig?.export_md) && !isAboutPage;
 const mdSourceUrl = exportMd
     ? Astro.url.pathname.replace(/\/$/, "") + ".md"
     : "";

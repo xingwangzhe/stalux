@@ -1,12 +1,14 @@
 ---
 import { getCollection } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 import { getLucideIcon } from "@utils/lucide-icons";
 import "@styles/components/search.css";
 
 const CloseIcon = getLucideIcon("x");
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t, lang } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const { t, lang } = createTranslator(siteConfig.lang || "zh-CN");
 ---
 
 <div

@@ -13,7 +13,8 @@
         "lint": "oxlint",
         "lint:fix": "oxlint --fix",
         "licenses-checker": "bun licenses-checker.ts",
-        "prepare": "git config core.hooksPath scripts/git-hooks"
+        "prepare": "git config core.hooksPath scripts/git-hooks",
+        "knip": "knip"
     },
     "dependencies": {
         "@expressive-code/plugin-line-numbers": "^0.44.0",
@@ -31,17 +32,20 @@
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
         "@lucide/astro": "^1.24.0",
+        "@types/node": "^26.1.1",
         "@xingwangzhe/satteri-mermaid": "0.7.0",
         "@xingwangzhe/satteri-photoswipe": "^0.1.8",
         "astro-expressive-code": "^0.44.0",
         "astro-seo": "^1.1.0",
         "astro-typewriter": "^1.2.0",
         "badge-maker": "^6.0.0",
+        "knip": "^6.29.0",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.59.0",
         "oxlint": "^1.74.0",
         "simple-icons": "^16.26.0",
         "subset-font": "^2.5.0",
-        "temml": "^0.13.3"
+        "temml": "^0.13.3",
+        "typescript": "^7.0.2"
     }
 }

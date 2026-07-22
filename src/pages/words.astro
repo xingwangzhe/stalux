@@ -5,18 +5,20 @@ import WordList from "@components/stalux/words/wordList.astro";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 import styles from "@styles/pages/words.module.css";
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const entries = await getCollection("words", ({ data }) => !data.draft);
 ---
 
-<Stalux title={t("words.title") + " | " + stalux.title} description={t("words.description")}>
+<Stalux title={t("words.title") + " | " + siteConfig.title} description={t("words.description")}>
     <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.title}>{t("words.heading")}</h1>
     <div class={styles.description}>
         {t("words.desc", { n: entries.length })}
     </div>
-    <WordList entries={entries} timezone={stalux.timezone} />
+    <WordList entries={entries} timezone={siteConfig.timezone} />
 </Stalux>

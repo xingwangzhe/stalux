@@ -3,11 +3,14 @@
 import Typewriter from "astro-typewriter";
 import { getCollection } from "astro:content";
 import styles from "@styles/components/common/textType.module.css";
-const stalux = (await getCollection("config"))[0]?.data ?? {};
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const typetextsConfig = getTypetextsData(configEntries);
 ---
 
 {
-    stalux.typetexts && (
-        <Typewriter class={styles.typeWriter} messages={stalux.typetexts} />
+    typetextsConfig?.items && (
+        <Typewriter class={styles.typeWriter} messages={typetextsConfig?.items} />
     )
 }

@@ -35,9 +35,17 @@ const categories = props.categories ?? [];
 const headings = props.headings ?? [];
 const author = props.author ?? "Author";
 // 获取 Waline 配置
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const commentEnabled = stalux?.comment?.enabled ?? false;
-const walineConfig = stalux?.comment?.waline;
+const configEntries = await getCollection("config");
+const commentConfig = (configEntries.find(e => e.id === "comment")?.data ?? {}) as Record<string, unknown>;
+const walineSection = commentConfig.waline as Record<string, unknown> | undefined;
+const commentEnabled = (commentConfig.enabled as boolean) ?? false;
+const walineConfig = walineSection && walineSection.serverURL ? {
+    ...walineSection,
+    emoji: walineSection.emoji ?? [
+        "https://unpkg.com/@waline/emojis@1.1.0/bilibili",
+        "https://unpkg.com/@waline/emojis@1.1.0/bmoji",
+    ],
+} : undefined;
 ---
 
 {props.hasImage && <PhotoSwipeStyle />}

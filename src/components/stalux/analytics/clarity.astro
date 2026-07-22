@@ -1,7 +1,9 @@
 ---
 import { getCollection } from "astro:content";
-const config = (await getCollection("config"))[0];
-const id = config.data.head?.bingClarityId;
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+const configEntries = await getCollection("config");
+const headConfig = getHeadData(configEntries);
+const id = headConfig?.bingClarityId | undefined;
 ---
 
 <script is:inline data-astro-rerun define:vars={{ id }}>

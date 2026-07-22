@@ -6,6 +6,7 @@ import WalineComment from "@components/stalux/posts/WalineComment.astro";
 import { buildWalineProps } from "@utils/waline";
 import { getCollection, render } from "astro:content";
 import Navs from "@components/stalux/layout/navs.astro";
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
 // 获取关于页面内容
 const aboutPages = await getCollection("about");
@@ -13,14 +14,18 @@ const aboutPage = aboutPages[0];
 const { Content } = await render(aboutPage);
 
 // 获取配置
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const commentEnabled = stalux?.comment?.enabled ?? false;
-const walineConfig = stalux?.comment?.waline;
-const author = stalux?.author?.name;
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const commentConfig = getCommentData(configEntries);
+const walineSection = commentConfig?.waline;
+const commentEnabled = commentConfig?.enabled ?? false;
+const walineConfig = walineSection && walineSection.serverURL ? walineSection : undefined;
+const authorConfig = getAuthorData(configEntries);
+const author = authorConfig.name;
 ---
 
 <Stalux
-    title={aboutPage.data.title + " | " + stalux.title}
+    title={aboutPage.data.title + " | " + siteConfig.title}
     description={aboutPage.data.description}
 >
     <div style="height: 3em;"></div>

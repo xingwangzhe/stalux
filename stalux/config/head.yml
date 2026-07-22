@@ -1,0 +1,11 @@
+id: head
+# Google Analytics 4 tracking ID (format: G-XXXXXXXXXX)
+# googleAnalyticsId: ""
+# Microsoft Bing Clarity project ID
+# bingClarityId: ""
+# Umami analytics configuration
+# umami:
+#   id: ""
+#   url: ""
+# Custom head HTML content
+anyhead: ""

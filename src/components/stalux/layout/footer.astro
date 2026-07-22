@@ -4,40 +4,41 @@ import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
 import FooterThemeInfo from "@components/stalux/footer/FooterThemeInfo.astro";
 import FooterStats from "@components/stalux/footer/FooterStats.astro";
 import FooterBadges from "@components/stalux/footer/FooterBadges.astro";
-	import type { BadgeItem, BadgeOptions, isBadgeGroup } from "@utils/badge-generator";
-	import { getCollection } from "astro:content";
-	import { getTotalWordCount, formatWordCount } from "@utils/word-count-utils";
-	import footerStyle from "@styles/components/footer/footer.module.css";
+import { getSiteData, getAuthorData, getFooterData } from "@utils/config-utils";
+			import type { BadgeItem, BadgeOptions, isBadgeGroup } from "@utils/badge-generator";
+			import { getCollection } from "astro:content";
+			import { getTotalWordCount, formatWordCount } from "@utils/word-count-utils";
+			import footerStyle from "@styles/components/footer/footer.module.css";
+			
+			// 获取配置
+			const configEntries = await getCollection("config");
+			const siteConfig = getSiteData(configEntries);
+			const footerConfig = getFooterData(configEntries);
+			const authorConfig = getAuthorData(configEntries);
+			const author = authorConfig.name;
+			
+			// 标准化 badges（扁平 badge 或 分组），确保 style 字段合法
+			const badges: BadgeItem[] | undefined = footerConfig?.badges?.map(
+			    (item: any) => {
+		        if (item.title && item.items) {
+		            return {
+		                title: item.title,
+		                collapsed: item.collapsed ?? true,
+		                items: item.items.map((b: any) => ({
+		                    ...b,
+		                    style: (["flat","plastic","flat-square","for-the-badge","social"].includes(b.style) ? b.style : "flat") as BadgeOptions["style"],
+		                })),
+		            };
+		        }
+		        return {
+		            ...item,
+		            style: (["flat","plastic","flat-square","for-the-badge","social"].includes(item.style) ? item.style : "flat") as BadgeOptions["style"],
+		        };
+		    },
+		);
 	
-	// 获取配置
-	const stalux = (await getCollection("config"))[0]?.data || {};
-	const footerConfig = stalux.footer;
-	const author = stalux?.author?.name;
-	
-	// 标准化 badges（扁平 badge 或 分组），确保 style 字段合法
-	const badges: BadgeItem[] | undefined = footerConfig?.badges?.map(
-	    (item: any) => {
-	        if (item.title && item.items) {
-	            // 分组：递归标准化内部的 badges
-	            return {
-	                title: item.title,
-	                collapsed: item.collapsed ?? true,
-	                items: item.items.map((b: any) => ({
-	                    ...b,
-	                    style: (["flat","plastic","flat-square","for-the-badge","social"].includes(b.style) ? b.style : "flat") as BadgeOptions["style"],
-	                })),
-	            };
-	        }
-	        // 扁平 badge
-	        return {
-	            ...item,
-	            style: (["flat","plastic","flat-square","for-the-badge","social"].includes(item.style) ? item.style : "flat") as BadgeOptions["style"],
-	        };
-	    },
-	);
-
-const totalWordCount = await getTotalWordCount();
-const formattedWordCount = formatWordCount(totalWordCount, stalux.lang);
+	const totalWordCount = await getTotalWordCount();
+	const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "zh-CN");
 ---
 
 <footer class={footerStyle.siteFooter} transition:persist-props>

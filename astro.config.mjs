@@ -144,6 +144,7 @@ export default defineConfig({
                 "@utils": path.resolve(__dirname, "src/utils"),
                 "@i18n": path.resolve(__dirname, "src/i18n"),
                 "@plugins": path.resolve(__dirname, "src/plugins"),
+        "@schemas": path.resolve(__dirname, "src/schemas"),
             },
         },
         define: {

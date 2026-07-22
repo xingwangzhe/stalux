@@ -7,11 +7,13 @@ interface Props {
 }
 const props = Astro.props as Props;
 import { getCollection } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 import styles from "@styles/components/tags/tagHeader.module.css";
 
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
 const typeKey = props.typeKey || props.type;
 let typeUrl = "";

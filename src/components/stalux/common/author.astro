@@ -3,8 +3,10 @@
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import styles from "@styles/components/common/author.module.css";
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-export interface Props {
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+const configEntries = await getCollection("config");
+const authorConfig = getAuthorData(configEntries);
+interface Props {
     showBio?: boolean | false;
     iscolum?: boolean | false;
 }
@@ -21,13 +23,13 @@ const navigationHref = isHomePage ? "/about" : "/";
     >
         <a href={navigationHref} class="a-none" data-astro-prefetch>
             <Image
-                src={stalux.author.avatar}
-                alt={stalux.author.name}
+                src={authorConfig.avatar}
+                alt={authorConfig.name}
                 width={100}
                 height={100}
             />
         </a>
-        <figcaption>{stalux.author.name}</figcaption>
-        {props.showBio && <p>{stalux.author.bio}</p>}
+        <figcaption>{authorConfig.name}</figcaption>
+        {props.showBio && <p>{authorConfig.bio}</p>}
     </figure>
 </article>

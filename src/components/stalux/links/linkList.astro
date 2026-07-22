@@ -2,8 +2,11 @@
 import LinkCard from "@components/stalux/links/linkCard.astro";
 import styles from "@styles/components/links/linkList.module.css";
 import { getCollection } from "astro:content";
+import { getLinksData } from "@utils/config-utils";
 
-const links = (await getCollection("config"))[0]?.data?.links?.sites ?? [];
+const configEntries = await getCollection("config");
+const linksConfig = getLinksData(configEntries);
+const links = linksConfig?.sites ?? [];
 ---
 
 <ul class={`${styles.list} stagger-children`}>

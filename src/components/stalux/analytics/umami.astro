@@ -1,8 +1,11 @@
 ---
 import { getCollection } from "astro:content";
-const config = (await getCollection("config"))[0];
-const umamiID = config.data.head?.umami?.id;
-const umamiURL = config.data.head?.umami?.url;
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+const configEntries = await getCollection("config");
+const headConfig = getHeadData(configEntries);
+const umamiConfig = headConfig?.umami;
+const umamiID = umamiConfig?.id;
+const umamiURL = umamiConfig?.url;
 ---
 
 <script

@@ -1,0 +1,90 @@
+badges:
+- alt: Powered by Astro
+  color: orange
+  href: https://astro.build/
+  label: Powered by
+  message: Astro
+  style: flat-square
+- alt: 'Theme: Stalux'
+  color: blueviolet
+  href: https://github.com/xingwangzhe/stalux
+  label: Theme
+  message: Stalux
+- alt: Built with Love
+  color: red
+  href: https://github.com/xingwangzhe
+  label: Built with
+  message: ❤
+  style: for-the-badge
+- alt: 'License: MIT'
+  color: blue
+  href: https://github.com/xingwangzhe/stalux/blob/main/LICENSE
+  label: license
+  message: MIT
+- alt: Software Copyright Registration No. 2025SR2258474
+  color: yellowgreen
+  href: /软著证明.pdf
+  label: Software Copyright
+  message: Reg# 2025SR2258474
+- alt: Alibaba Cloud ESA
+  color: brightgreen
+  href: https://www.aliyun.com/product/esa
+  label: Alibaba ESA
+  message: Powered
+- alt: Sitemap XML
+  color: orange
+  href: /sitemap-index.xml
+  label: Sitemap
+  message: XML
+- alt: RSS Feed
+  color: orange
+  href: /rss.xml
+  label: RSS
+  message: Feed
+- alt: Atom Feed
+  color: orange
+  href: /atom.xml
+  label: Atom
+  message: Feed
+- alt: LLM Dataset
+  color: blue
+  href: /llms.txt
+  label: LLMs
+  message: Dataset
+- collapsed: true
+  items:
+  - alt: 示例社区 A
+    color: green
+    href: https://example.com
+    label: 示例社区A
+    message: 社区
+  - alt: 示例社区 B
+    color: yellow
+    href: https://example.org
+    label: 示例社区B
+    message: 导航
+  title: 博客社区
+beian:
+  icp:
+    enabled: false
+    number: 辽ICP备XXXXXXXX号
+  security:
+    enabled: false
+    number: XXXXXXXXXXXX
+    text: 辽公网安备 XXXXXXXXXXXX号
+buildtime: '2025-05-01T10:00:00'
+copyright:
+  customText: ''
+  enabled: true
+  startYear: 2024
+custom: '<!-- footer custom slot example, can place stats, widgets, etc. -->
+
+  <div id="custom-footer-hook"></div>
+
+  <script>console.log(''Custom footer loaded'');</script>
+
+  '
+id: footer
+theme:
+  showPoweredBy: true
+  showThemeInfo: true

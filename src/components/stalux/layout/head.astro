@@ -6,22 +6,26 @@ import { Font } from "astro:assets";
 import VerCount from "@components/stalux/common/verCount.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
-	import "@styles/base/init.css";
-	import Umami from "@components/stalux/analytics/umami.astro";
-	// 预子集化的中文字体（由 scripts/font-subset.ts 在 prebuild 阶段生成）
-	// subset-font (harfbuzz WASM)，纯 JS，无 native 依赖，CI 友好
-	import "@assets/../../public/fonts/subset.css";
-
+		import "@styles/base/init.css";
+		import Umami from "@components/stalux/analytics/umami.astro";
+		// 预子集化的中文字体（由 scripts/font-subset.ts 在 prebuild 阶段生成）
+		// subset-font (harfbuzz WASM)，纯 JS，无 native 依赖，CI 友好
+		import "@assets/../../public/fonts/subset.css";
+	
 import { langToOpenGraphLocale } from "@utils/i18n";
+import { getAuthorData, getHeadData, getPromoteData, getSiteData } from "@utils/config-utils";
 
-const staluxCollection = await getCollection("config");
-const stalux = staluxCollection[0];
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const authorConfig = getAuthorData(configEntries);
+const headConfig = getHeadData(configEntries);
+const promoteConfig = getPromoteData(configEntries);
 
 // Twitter 卡片类型定义
-export type TwitterCardType = "summary" | "summary_large_image";
+type TwitterCardType = "summary" | "summary_large_image";
 
 // 最小必要 SEO 配置
-export interface Props {
+interface Props {
   title: string;
   description: string;
   cover?: string;
@@ -39,19 +43,19 @@ const effectiveTitle = props.title;
 const effectiveDescription = props.description;
 const isArticle = props.isArticle ?? false;
 
-const canonicalBase = stalux.data.canonical || stalux.data.url;
+const canonicalBase = siteConfig.canonical || siteConfig.url;
 const canonicalUrl = canonicalBase
   ? new URL(Astro.url.pathname, canonicalBase).href
   : Astro.url.href;
-const faviconPath = stalux.data.favicon || "/favicon.ico";
+const faviconPath = siteConfig.favicon || "/favicon.ico";
 // 社交分享图片 / JSON-LD image 必须用绝对 URL
 const baseImgUrl = canonicalBase.replace(/\/$/, "");
 const toAbsolute = (p: string) => !p || p.startsWith("http") ? p : baseImgUrl + (p.startsWith("/") ? p : "/" + p);
-const ogImagePath = toAbsolute(props.cover || stalux.data.author.avatar || faviconPath);
+const ogImagePath = toAbsolute(props.cover || authorConfig.avatar || faviconPath);
 const isNotFoundPage =
   Astro.url.pathname === "/404" || Astro.url.pathname === "/404/";
-const resolvedNoindex = Boolean(stalux.data.noindex) || isNotFoundPage || Boolean(props.noindex);
-const resolvedNofollow = Boolean(stalux.data.nofollow) || isNotFoundPage;
+const resolvedNoindex = Boolean(siteConfig.noindex) || isNotFoundPage || Boolean(props.noindex);
+const resolvedNofollow = Boolean(siteConfig.nofollow) || isNotFoundPage;
 
 const openGraphConfig: Record<string, unknown> = {
   basic: {
@@ -62,7 +66,7 @@ const openGraphConfig: Record<string, unknown> = {
   },
   optional: {
     description: effectiveDescription,
-    locale: langToOpenGraphLocale(stalux.data.lang || "zh-CN"),
+    locale: langToOpenGraphLocale(siteConfig.lang || "zh-CN"),
   },
   image: {
     url: ogImagePath,
@@ -87,7 +91,7 @@ const twitterConfig = {
   description: effectiveDescription,
   image: ogImagePath,
   imageAlt: effectiveTitle,
-  ...(stalux.data.twitterSite ? { site: stalux.data.twitterSite } : {}),
+  ...(siteConfig.twitterSite ? { site: siteConfig.twitterSite } : {}),
 };
 
 const extendedLink = [
@@ -95,17 +99,17 @@ const extendedLink = [
   {
     rel: "alternate",
     type: "application/rss+xml",
-    title: stalux.data.title || "RSS Feed",
+    title: siteConfig.title || "RSS Feed",
     href: "/rss.xml",
   },
 ];
 
-	// 文章页：向爬虫暴露 Markdown 原文链接
-	// 仅 /posts/xxx 文章页导出，/about 等页面固定不导出
-	const exportMd = Boolean(stalux?.data?.export_md);
-	const isPostPage = Astro.url.pathname.startsWith("/posts/") && Astro.url.pathname !== "/posts/";
-	const isAboutPage = Astro.url.pathname.startsWith("/about");
-	if (exportMd && isPostPage && !isAboutPage) {
+		// 文章页：向爬虫暴露 Markdown 原文链接
+		// 仅 /posts/xxx 文章页导出，/about 等页面固定不导出
+		const exportMd = Boolean(promoteConfig?.export_md);
+		const isPostPage = Astro.url.pathname.startsWith("/posts/") && Astro.url.pathname !== "/posts/";
+		const isAboutPage = Astro.url.pathname.startsWith("/about");
+		if (exportMd && isPostPage && !isAboutPage) {
   const mdHref = Astro.url.pathname.replace(/\/$/, "") + ".md";
   extendedLink.push({
     rel: "alternate",
@@ -173,13 +177,14 @@ const ldJson = JSON.stringify(schema, null, 2).replace(/<\//g, "<\\/");
   <style set:html={`:root{--font-body:"LXGW WenKai Subset","Noto Sans SC","Noto Sans CJK SC",system-ui,-apple-system,sans-serif}`} />
   <Font cssVariable="--font-code" />
   {
-    stalux.data.head?.anyhead && (
-      <Fragment set:html={stalux.data.head.anyhead} />
+    (headConfig?.anyhead) && (
+      <Fragment set:html={headConfig.anyhead} />
     )
   }
-  {stalux.data.head?.googleAnalyticsId && <GoogleAnalytics />}
-  {stalux.data.head?.bingClarityId && <BingClarity />}
-  {stalux.data.head?.umami?.id && stalux.data.head?.umami?.url && <Umami />}
+  {headConfig?.googleAnalyticsId && <GoogleAnalytics />}
+  {headConfig?.bingClarityId && <BingClarity />}
+  {headConfig?.umami?.id && headConfig?.umami?.url && <Umami />}
   <script type="application/ld+json" set:html={ldJson} />
   <VerCount />
 </head>
+

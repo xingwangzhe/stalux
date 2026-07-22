@@ -2,7 +2,9 @@
 import { getCollection } from "astro:content";
 import Author from "@components/stalux/common/author.astro";
 import style from "@styles/components/posts/postAuthor.module.css";
-const stalux = (await getCollection("config"))[0]?.data ?? {};
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+const configEntries = await getCollection("config");
+const authorConfig = getAuthorData(configEntries);
 
 // 判断是否为文章页面
 const isPostPage = Astro.url.pathname.includes("/posts/");
@@ -15,7 +17,7 @@ const isPostPage = Astro.url.pathname.includes("/posts/");
     <div class={style.authorSection}>
         <div class={style.authorCard}>
             <Author iscolum />
-            <p class={style.authorBio}>{stalux.author.bio}</p>
+            <p class={style.authorBio}>{authorConfig.bio}</p>
         </div>
     </div>
 </aside>

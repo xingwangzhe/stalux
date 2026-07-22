@@ -8,8 +8,9 @@ interface Props {
     title?: string;
 }
 
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = (configEntries.find(e => e.id === "site")?.data ?? {}) as Record<string, unknown>;
+const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 const { count = 5, title = t("randomPost.title") } = Astro.props;
 ---
 

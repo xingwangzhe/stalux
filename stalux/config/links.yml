@@ -1,0 +1,27 @@
+description: 左邻右舍，互通有无
+id: links
+sites:
+- description: A powerful JavaScript animation library for creating complex animation
+    effects.
+  icon: https://animejs.com/assets/images/favicon.png
+  link: https://animejs.com/
+  name: animejs
+- description: A modern static site generator for building content-rich websites.
+  icon: https://astro.build/favicon.svg
+  link: https://astro.build/
+  name: Astro
+- description: A clean and beautiful open-source icon library for various design projects.
+  icon: https://feathericons.com/favicon.ico
+  link: https://feathericons.com/
+  name: feather-icons
+- description: Provides open, detailed, and easy-to-understand information about web
+    standards.
+  icon: https://developer.mozilla.org/favicon.ico
+  link: https://developer.mozilla.org/
+  name: MDN
+- description: An open-source icon library with thousands of brand icons for web and
+    app design.
+  icon: https://simpleicons.org/icons/simpleicons.svg
+  link: https://simpleicons.org/
+  name: simple-icons
+title: "Helpful Links"

@@ -5,12 +5,14 @@ import ArchivesList from "@components/stalux/archives/archivesList.astro";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 import styles from "@styles/pages/archives.module.css";
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 ---
 
-<Stalux title={t("archives.title") + " | " + stalux.title} description={t("archives.description", { title: stalux.title })}>
+<Stalux title={t("archives.title") + " | " + siteConfig.title} description={t("archives.description", { title: siteConfig.title })}>
     <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.h1}>{t("archives.heading")}</h1>

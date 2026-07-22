@@ -19,4 +19,3 @@ export function countWords(text: string): number {
     return count;
 }
 
-export default countWords;

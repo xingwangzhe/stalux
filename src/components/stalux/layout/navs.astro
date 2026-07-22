@@ -4,11 +4,15 @@ import { createTranslator } from "@utils/i18n";
 import { getLucideIcon } from "@utils/lucide-icons";
 import styles from "@styles/components/layout/navs.module.css";
 import Search from "@components/stalux/common/search.astro";
+import { getSiteData, getNavsData } from "@utils/config-utils";
 
 const MenuIcon = getLucideIcon("menu");
 const SearchIcon = getLucideIcon("search");
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const navsConfig = getNavsData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
+const navs = navsConfig?.items ?? [];
 ---
 
 <nav aria-label="Main navigation" transition:persist-props>
@@ -37,7 +41,7 @@ const { t } = createTranslator(stalux.lang || "zh-CN");
 
         <ul data-ref="stalux-nav-list" class={styles.navList}>
             {
-                stalux.navs.map((item) => {
+                navs.map((item) => {
                     const NavIcon = item.icon ? getLucideIcon(item.icon) : null;
                     return (
                         <li class={styles.navItem}>

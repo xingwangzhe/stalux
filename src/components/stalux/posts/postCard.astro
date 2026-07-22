@@ -4,14 +4,16 @@ import { toMachineDateTime } from "@utils/semantic-time";
 import { getCollection } from "astro:content";
 
 import type { CollectionEntry } from "astro:content";
+import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
-export interface Props {
+interface Props {
     post: CollectionEntry<"posts">;
 }
 
 const post = Astro.props.post;
-const stalux = (await getCollection("config"))[0]?.data;
-const timezone = stalux?.timezone;
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const timezone = siteConfig.timezone;
 
 // 描述：使用文章自身的 desc
 const description = post.data.desc || "";

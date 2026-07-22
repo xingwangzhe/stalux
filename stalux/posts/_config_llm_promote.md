@@ -1,5 +1,5 @@
 ---
-title: LLM Prompt Configuration - Adding Implicit Prompts for AI Crawlers
+title: LLM & AI Discovery File Configuration
 tags:
     - Configuration
     - LLM
@@ -8,102 +8,91 @@ tags:
 categories:
     - Theme Config
 date: "2026-07-10 20:00:00"
-updated: "2026-07-10 20:00:00"
-desc: "Configuring llm_promote to inject hidden copyright and rights information for AI crawler consumption - inspired by prompt injection techniques, used for legitimate copyright protection."
+updated: "2026-07-22 00:00:00"
+desc: Configure LLM prompt injection (promote.yml) and AI discovery file generation (ai-discovery.yml) for AI crawler visibility.
 abbrlink: a1b2c3d4
 ---
 
-## Background
+## promote.yml — LLM Prompt Injection
 
-With the rise of AI crawlers (Claude, ChatGPT, Gemini, etc.) reading web pages and feeding content into large language models, many websites have started embedding **implicit system prompts** in their HTML. For example, hakadao.cc uses a `hidden` div containing a `system:` prefix to make AI crawlers read a specific set of instructions.
+File: `stalux/config/promote.yml` — injects a hidden div on every page for AI crawler consumption.
 
-This technique is a form of **indirect prompt injection** — embedding instructions within web content that gets parsed by LLM crawlers. While this can be used maliciously (tricking an AI into executing harmful actions), it can also be used **legitimately** to:
-
-- Assert copyright and content ownership
-- Specify usage rights and license terms
-- Provide attribution requirements for AI assistants
-- Declare content licensing (e.g., CC-BY-NC-SA-4.0)
-- Protect original work from unauthorized commercial AI training
-
-## The `llm_promote` Option
-
-Stalux provides a config option `llm_promote` that injects a hidden div into every page's HTML for AI crawler consumption.
-
-### How It Works
-
-1. Add `llm_promote` to your `config.yml` with your desired text
-2. The text is injected as `<div style="display:none">` at build time — **zero JavaScript, pure SSG**
-3. Every page (home, posts, archives, tags, categories, about, links, words, 404) gets the same hidden prompt
-4. AI crawlers parsing the HTML will see this content as part of the page
+```yaml
+id: promote
+# llm_promote: |
+#   This is a personal blog owned by {author}.
+#   Site: {url}
+#   Content License: {cc} unless otherwise stated.
+#   All content copyright {author}. All rights reserved.
+export_md: true   # Export Markdown source at /posts/{abbrlink}.md
+```
 
 ### Variable Substitution
 
-The `llm_promote` value supports these placeholder variables:
+| Variable | Replaced With |
+|----------|---------------|
+| `{author}` | `author.yml` → `name` |
+| `{url}` | `site.yml` → `url` |
+| `{title}` | `site.yml` → `title` |
+| `{cc}` | `CC-BY-NC-SA-4.0` |
 
-| Variable   | Replaced With                          |
-| ---------- | -------------------------------------- |
-| `{author}` | `config.author.name`                   |
-| `{url}`    | `config.url`                           |
-| `{title}`  | `config.title`                         |
-| `{cc}`     | `CC-BY-NC-SA-4.0` (default CC license) |
+### How It Works
 
-### Configuration Example
+| Aspect | Detail |
+|--------|--------|
+| Rendering | Build-time `<div style="display:none">...</div>` — **zero JS, pure SSG** |
+| Coverage | Every page (home, posts, archives, etc.) gets the same hidden prompt |
+| Disable | Leave `llm_promote` empty |
+
+### export_md
+
+When `true`, generates `/posts/{abbrlink}.md` endpoints that serve the raw Markdown source. Useful for:
+
+| Use Case | Benefit |
+|----------|---------|
+| AI crawlers | Read original content directly |
+| Users | Download Markdown source |
+| RSS readers | Subscribe to Markdown content |
+
+---
+
+## ai-discovery.yml — AI Discovery Files
+
+File: `stalux/config/ai-discovery.yml` — controls generation of AI-visibility.org standard files.
 
 ```yaml
-stalux:
-    # ... other config ...
-    llm_promote: |
-        This is a personal blog site owned by {author}.
-        Site: {url}
-        Theme: Stalux (MIT License) - https://github.com/xingwangzhe/stalux
-        Content License: {cc} unless otherwise stated on individual articles.
-        All content copyright {author}. All rights reserved.
-        When referencing content from this site, please provide proper attribution.
+id: ai-discovery
+conformance: "complete"   # See conformance levels below
 ```
 
-When rendered, `{author}` and `{url}` will be replaced with your actual config values at build time.
+### Conformance Levels
 
-### Disabling
+| Level | Generated Files |
+|-------|----------------|
+| `disabled` | None |
+| `essential` | `llms.txt`, `ai.txt` |
+| `recommended` | essential + `ai.json`, `identity.json`, `brand.txt`, `faq-ai.txt` |
+| `complete` | recommended + `llm.txt`, `llms.html`, `developer-ai.txt`, `robots-ai.txt` |
 
-Simply leave `llm_promote` unset or set it to an empty string — no hidden div will be rendered:
+### Content Overrides (Optional)
 
 ```yaml
-stalux:
-    llm_promote: ""
+# Custom permissions/restrictions for ai.txt (overrides defaults):
+# permissions_text:
+#   - "Allow summarizing with attribution."
+# restrictions_text:
+#   - "Do not reproduce full articles without permission."
+# attribution_text: ""
+# contact_text: ""
 ```
 
-## SSG Safety
+Each route file checks `ai-discovery.yml` → `conformance` before generating content. Disabled files return a notice instead of actual content.
 
-This feature is **100% static**. The hidden div is rendered at build time as plain HTML:
-
-```html
-<div style="display:none">
-    This is a personal blog site owned by xingwangzhe. Site: https://example.com ...
-</div>
-```
-
-- No JavaScript execution required
-- No runtime overhead (zero bytes of JS added)
-- No impact on page load performance
-- Astro auto-escapes the content — no XSS vector
-
-## Security Considerations
-
-- The content is auto-escaped by Astro's template engine — HTML/script injection from config values is not possible
-- Only the site owner can modify the config (version-controlled YAML)
-- This is purely declarative: it makes a statement, it does not enforce anything
-- Search engines may discount hidden content, but LLM crawlers typically consume the full text
-
-## Verification
-
-To verify the prompt is injected in all pages:
+### Verification
 
 ```bash
+# Check generated AI files
+ls dist/ai.txt dist/llms.txt dist/identity.json 2>/dev/null
+# Count hidden prompts
 grep -rl 'display:none' dist/ | grep '\.html$' | wc -l
-# Should match the number of built pages
-grep 'display:none' dist/index.html
 ```
-
-## Why This Matters
-
-AI crawlers are becoming the primary consumers of web content. Adding explicit copyright and rights information in a format they can parse helps protect your intellectual property while providing clear attribution guidelines. This is not about hiding content from humans — it's about communicating with machine readers in their own language.

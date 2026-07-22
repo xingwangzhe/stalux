@@ -20,7 +20,7 @@ import User from "@lucide/astro/icons/user";
 import X from "@lucide/astro/icons/x";
 
 /** config.yml 中 icon 字段（kebab-case）→ Astro 图标组件 */
-export const iconMap: Record<string, AstroComponent> = {
+const iconMap: Record<string, AstroComponent> = {
     home: House,
     house: House,
     archive: Archive,

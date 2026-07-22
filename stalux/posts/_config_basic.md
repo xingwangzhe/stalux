@@ -1,94 +1,80 @@
 ---
-title: Site Basic Information
+title: Site Basic Information & Content Collections
 tags:
     - Configuration
     - Basic Config
 categories:
     - Theme Config
 date: "2025-05-10 11:00:00"
-updated: "2026-01-26 12:00:00"
-desc: Site basic information configuration guide, including file structure, content collection locations, required and optional frontmatter fields, and writing notes.
+updated: "2026-07-22 00:00:00"
+desc: Site identity configuration (site.yml, author.yml), content collection structure, frontmatter field references, and writing notes.
 abbrlink: ad81245d
 ---
 
-## Main File Structure
+## site.yml — Site Identity
+
+File: `stalux/config/site.yml`
+
+```yaml
+id: site
+lang: en                              # Language: "en" | "zh-CN"
+title: Stalux Blog Theme              # Site title
+url: https://stalux.needhelp.icu      # Site URL (used for canonical, RSS, OpenGraph)
+description: "Blog theme Stalux ..."  # Site description (SEO, OpenGraph)
+timezone: "Asia/Shanghai"             # IANA timezone for date formatting
+favicon: "/stalux.ico"                # Favicon path
+canonical: "https://stalux.needhelp.icu"  # Canonical URL (optional, falls back to url)
+# twitterSite:                        # Twitter/X site handle (optional)
+# noindex: false                      # Global noindex (optional, default false)
+# nofollow: false                     # Global nofollow (optional, default false)
+```
+
+## author.yml — Author Information
+
+File: `stalux/config/author.yml`
+
+```yaml
+id: author
+name: xingwangzhe        # Display name
+avatar: /avatar.png      # Avatar path
+bio: Blog Theme Stalux   # Short bio
+```
+
+Rendered on: post sidebars, homepage author card, SEO JSON-LD.
+
+## Content Collections
+
+Content is managed through Astro's `astro:content` system under the `stalux/` directory:
 
 ```bash
 stalux/
-├── public/  # Public resources folder
-├── src/
-│   ├── assets/  # Static assets, generally don't modify
-│   ├── components/ # Components
-│   │   └── stalux/ # Theme components
-│   │       ├── archives/ # Archives
-│   │       ├── categories/ # Categories
-│   │       ├── common/ # Common components
-│   │       ├── footer/ # Footer
-│   │       ├── layout/ # Layout
-│   │       ├── links/  # Friend links
-│   │       ├── posts/  # Posts
-│   │       ├── tags/   # Tags
-│   │       └── words/  # Words cards
-│   ├── layouts/ # Layout files
-│   ├── pages/ # Page files
-│   │   ├── api/ # API folder
-│   │   ├── categories/ # Categories page
-│   │   ├── posts/ # Posts page
-│   │   ├── tags/ # Tags page
-│   │   └── words.astro # Words page
-│   ├── scripts/ # Script files
-│   ├── styles/
-│   │   ├── base/ # Base styles
-│   │   ├── components/ # Component styles
-│   │   │   ├── archives/ # Archives
-│   │   │   ├── categories/ # Categories
-│   │   │   ├── common/ # Common components
-│   │   │   ├── footer/ # Footer
-│   │   │   ├── layout/ # Layout
-│   │   │   ├── links/  # Friend links
-│   │   │   ├── markdown.css # Markdown styles
-│   │   │   ├── posts/  # Posts
-│   │   │   ├── search.css # Search styles
-│   │   │   ├── tags/   # Tags
-│   │   │   └── words/  # Words
-│   │   └── pages/ # Page styles
-│   ├── utils/ # Utility files
-│   └── content.config.ts # Content configuration file
-├── stalux
-│   ├── about/ # About .md
-│   ├── posts/ # Posts .md
-│   └── words/ # Words .md
-├── astro.config.mjs
-├── tsconfig.json
-├── package.json
-├── README.md
-└── (other files)
+├── posts/     # Blog posts (.md / .mdx)
+├── about/     # About pages (.md / .mdx)
+├── words/     # Quotes & snippets (.md)
+└── config/    # Theme configuration (.yml)
 ```
 
-## Content Collection Locations
+### Posts (`stalux/posts/*.md`)
 
-Content collections use `astro:content` and are stored by default under the root `stalux/` directory:
+Required frontmatter:
 
-- `stalux/posts/`: Post Markdown/MDX files, constrained by the posts collection schema.
-- `stalux/about/`: About page Markdown/MDX files, constrained by the about collection schema.
-- `stalux/words/`: Words/quotes Markdown files, constrained by the words collection schema.
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | string | Post title |
+| `abbrlink` | string\|number | Permanent link ID, generates `/posts/{abbrlink}` route |
+| `date` | string | Publish time, ISO 8601 or `YYYY-MM-DD HH:mm:ss` |
+| `desc` | string | Post description for SEO/OG. **Must be manually written**, 50–160 chars recommended |
 
-## posts/\*.md frontmatter
+Optional frontmatter:
 
-Required:
-
-- `title`: Post title.
-- `abbrlink`: Permanent link identifier, string or number (numbers are automatically converted to strings); used to generate the `/posts/{abbrlink}` route.
-- `date`: Publish time, supports ISO 8601 format (e.g., `2025-05-10T09:30:00+08:00`) or `YYYY-MM-DD HH:mm:ss` format.
-- `desc`: Post description, used for SEO meta description and Open Graph. **Must be manually written**, cannot be empty, recommended 50–160 characters.
-
-Optional:
-
-- `updated`: Update date, supports ISO 8601 format or `YYYY-MM-DD HH:mm:ss` format.
-- `draft`: Draft status, default `false`; when `true` the post will not appear in the published list.
-- `tags`: Tag array; a single string will also be converted to an array.
-- `categories`: Category array; a single string will also be converted to an array.
-- `cc`: Copyright license, default `CC-BY-NC-SA-4.0`.
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `updated` | string | — | Update time |
+| `draft` | boolean | `false` | Hide from published lists |
+| `tags` | string[] | — | Tag array (single string auto-converted) |
+| `categories` | string[] | — | Category array |
+| `cc` | string | `CC-BY-NC-SA-4.0` | License |
+| `cover` | string | — | Post cover image URL/path |
 
 Example:
 
@@ -97,70 +83,31 @@ Example:
 title: Sample Post
 abbrlink: sample-post
 date: 2025-05-10T12:00:00+08:00
-desc: This is a sample post demonstrating Stalux theme frontmatter writing.
+desc: A short description for SEO and preview cards.
 updated: 2025-05-12T09:00:00+08:00
-tags:
-    - Tech
-    - Essay
-categories:
-    - Frontend
+tags: [Tech, Essay]
+categories: [Frontend]
 cc: CC-BY-NC-SA-4.0
 draft: false
+cover: /images/cover.jpg
 ---
 
-Body content...
+Post body...
 ```
 
-## about/\*.md frontmatter
+### About (`stalux/about/*.md`)
 
-Required:
+Required: `title` (page title), `description` (page description).
 
-- `title`: Page title.
-- `description`: Page description (used for page intro/SEO).
+### Words (`stalux/words/*.md`)
 
-Example:
-
-```markdown
----
-title: About This Site
-description: Personal introduction and site information
----
-
-Content...
-```
-
-## words/\*.md frontmatter
-
-Used for the `/words` quotes page, suitable for collecting short phrases, code snippets, or sayings.
-
-Required: None.
-
-Optional:
-
-- `source`: Source or author name.
-- `link`: Source link; when present, `source` will render as a clickable external link.
-- `sourceDate`: The date associated with the source, displayed in italics at the bottom-right of the card.
-- `date`: The date this quote was written, displayed at the bottom-left of the card; also used for sorting.
-- `updated`: Update date, string, same format as `date`.
-- `draft`: Boolean, default `false`; when `true`, not displayed.
-
-Example:
-
-```markdown
----
-source: "Quake III Arena"
-link: "https://en.wikipedia.org/wiki/Fast_inverse_square_root"
-sourceDate: "1999"
-date: "2026-06-18 20:45:00"
-updated: "2026-06-18 21:00:00"
-draft: false
----
-
-Talk is cheap. Show me the `code`.
-```
+Optional frontmatter: `source`, `link`, `sourceDate`, `date`, `updated`, `draft`.
 
 ## Writing Notes
 
-- Wrap frontmatter with `---` at the top; leave a space after colons, maintain indentation for arrays/objects.
-- It is recommended to use ISO 8601 format (with timezone offset) for dates, for easier sorting and display.
-- It is recommended to use custom strings for `abbrlink` to ensure stable links independent of the title.
+| Guideline | Detail |
+|-----------|--------|
+| Delimiter | Wrap frontmatter between `---` |
+| Date format | ISO 8601 with timezone offset recommended |
+| Permalinks | Choose stable custom `abbrlink` values (independent of title changes) |
+| Descriptions | Must be meaningful for SEO and social share cards |

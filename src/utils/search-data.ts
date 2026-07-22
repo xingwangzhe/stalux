@@ -12,7 +12,3 @@ export function setSearchText(abbrlink: string, text: string): void {
 export function getSearchText(abbrlink: string): string | undefined {
     return store.get(abbrlink);
 }
-
-export function getAllSearchTexts(): Map<string, string> {
-    return store;
-}

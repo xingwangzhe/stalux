@@ -6,7 +6,9 @@ import { getCollection } from "astro:content";
 
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");
-    const stalux = configCollection[0]?.data;
+    const siteEntry = configCollection.find(e => e.id === "site");
+    if (!siteEntry) throw new Error("Missing site config");
+    const stalux = siteEntry.data;
 
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const items = await buildFeedItems(stalux, posts, "atom:updated");

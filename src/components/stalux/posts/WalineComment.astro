@@ -3,7 +3,7 @@ import "@waline/client/style";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 
-export interface Props {
+interface Props {
     path?: string;
     title?: string;
     serverURL?: string;
@@ -27,8 +27,9 @@ export interface Props {
     search?: any;
 }
 
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = (configEntries.find(e => e.id === "site")?.data ?? {}) as Record<string, unknown>;
+const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 
 // 为客户端脚本准备配置对象：先给默认配置，再用实际传入的 props 覆盖。
 // 这样避免把同一组字段在 Props 接口、解构默认值、init 调用里各写一遍。
@@ -36,7 +37,7 @@ const walineConfig = {
     path: typeof window !== "undefined" ? window.location.pathname : "",
     title: "",
     serverURL: "",
-    lang: stalux.lang || "zh-CN",
+    lang: (siteConfig.lang as string) || "zh-CN",
     locale: undefined,
     emoji: false,
     requiredMeta: [] as string[],

@@ -1,5 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 import styles from "@styles/components/archives/archivesList.module.css";
 import { toTimestamp, parseDate, format } from "@utils/dayjs";
@@ -11,8 +12,9 @@ interface Props {
 const props = Astro.props as Props;
 const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
 
-const stalux = (await getCollection("config"))[0]?.data ?? {};
-const { t } = createTranslator(stalux.lang || "zh-CN");
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const archivesByYearMonth: Record<
     number,
     Record<number, CollectionEntry<"posts">[]>
