@@ -17,13 +17,13 @@ File: `stalux/config/site.yml`
 
 ```yaml
 id: site
-lang: en                              # Language: "en" | "zh-CN"
-title: Stalux Blog Theme              # Site title
-url: https://stalux.needhelp.icu      # Site URL (used for canonical, RSS, OpenGraph)
-description: "Blog theme Stalux ..."  # Site description (SEO, OpenGraph)
-timezone: "Asia/Shanghai"             # IANA timezone for date formatting
-favicon: "/stalux.ico"                # Favicon path
-canonical: "https://stalux.needhelp.icu"  # Canonical URL (optional, falls back to url)
+lang: en # Language: "en" | "zh-CN"
+title: Stalux Blog Theme # Site title
+url: https://stalux.needhelp.icu # Site URL (used for canonical, RSS, OpenGraph)
+description: "Blog theme Stalux ..." # Site description (SEO, OpenGraph)
+timezone: "Asia/Shanghai" # IANA timezone for date formatting
+favicon: "/stalux.ico" # Favicon path
+canonical: "https://stalux.needhelp.icu" # Canonical URL (optional, falls back to url)
 # twitterSite:                        # Twitter/X site handle (optional)
 # noindex: false                      # Global noindex (optional, default false)
 # nofollow: false                     # Global nofollow (optional, default false)
@@ -35,9 +35,9 @@ File: `stalux/config/author.yml`
 
 ```yaml
 id: author
-name: xingwangzhe        # Display name
-avatar: /avatar.png      # Avatar path
-bio: Blog Theme Stalux   # Short bio
+name: xingwangzhe # Display name
+avatar: /avatar.png # Avatar path
+bio: Blog Theme Stalux # Short bio
 ```
 
 Rendered on: post sidebars, homepage author card, SEO JSON-LD.
@@ -58,23 +58,23 @@ stalux/
 
 Required frontmatter:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `title` | string | Post title |
-| `abbrlink` | string\|number | Permanent link ID, generates `/posts/{abbrlink}` route |
-| `date` | string | Publish time, ISO 8601 or `YYYY-MM-DD HH:mm:ss` |
-| `desc` | string | Post description for SEO/OG. **Must be manually written**, 50–160 chars recommended |
+| Field      | Type           | Description                                                                         |
+| ---------- | -------------- | ----------------------------------------------------------------------------------- |
+| `title`    | string         | Post title                                                                          |
+| `abbrlink` | string\|number | Permanent link ID, generates `/posts/{abbrlink}` route                              |
+| `date`     | string         | Publish time, ISO 8601 or `YYYY-MM-DD HH:mm:ss`                                     |
+| `desc`     | string         | Post description for SEO/OG. **Must be manually written**, 50–160 chars recommended |
 
 Optional frontmatter:
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `updated` | string | — | Update time |
-| `draft` | boolean | `false` | Hide from published lists |
-| `tags` | string[] | — | Tag array (single string auto-converted) |
-| `categories` | string[] | — | Category array |
-| `cc` | string | `CC-BY-NC-SA-4.0` | License |
-| `cover` | string | — | Post cover image URL/path |
+| Field        | Type     | Default           | Description                              |
+| ------------ | -------- | ----------------- | ---------------------------------------- |
+| `updated`    | string   | —                 | Update time                              |
+| `draft`      | boolean  | `false`           | Hide from published lists                |
+| `tags`       | string[] | —                 | Tag array (single string auto-converted) |
+| `categories` | string[] | —                 | Category array                           |
+| `cc`         | string   | `CC-BY-NC-SA-4.0` | License                                  |
+| `cover`      | string   | —                 | Post cover image URL/path                |
 
 Example:
 
@@ -105,9 +105,9 @@ Optional frontmatter: `source`, `link`, `sourceDate`, `date`, `updated`, `draft`
 
 ## Writing Notes
 
-| Guideline | Detail |
-|-----------|--------|
-| Delimiter | Wrap frontmatter between `---` |
-| Date format | ISO 8601 with timezone offset recommended |
-| Permalinks | Choose stable custom `abbrlink` values (independent of title changes) |
-| Descriptions | Must be meaningful for SEO and social share cards |
+| Guideline    | Detail                                                                |
+| ------------ | --------------------------------------------------------------------- |
+| Delimiter    | Wrap frontmatter between `---`                                        |
+| Date format  | ISO 8601 with timezone offset recommended                             |
+| Permalinks   | Choose stable custom `abbrlink` values (independent of title changes) |
+| Descriptions | Must be meaningful for SEO and social share cards                     |

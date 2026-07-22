@@ -1,12 +1,11 @@
+// 从独立 schema 文件导入 config 联合 schema
+import { configSchema } from "@schemas/config";
 // 2. 导入加载器
 import { glob } from "astro/loaders";
 // 3. 导入 Zod
 import { z } from "astro/zod";
 // 1. 从 `astro:content` 导入工具函数
 import { defineCollection } from "astro:content";
-
-// 从独立 schema 文件导入 config 联合 schema
-import { configSchema } from "@schemas/config";
 
 // ---------------------------------------------------------------------------
 // 4. 定义你的集合
@@ -26,7 +25,10 @@ const posts = defineCollection({
             .string({ invalid_type_error: "abbrlink must be a string or number" })
             .or(z.number().transform((num) => num.toString())),
         date: z
-            .string({ required_error: "date is required", invalid_type_error: "date must be a string" })
+            .string({
+                required_error: "date is required",
+                invalid_type_error: "date must be a string",
+            })
             .min(1, "date is required, format: YYYY-MM-DD HH:mm:ss"),
         updated: z.string().optional(),
         draft: z.boolean().optional().default(false),
@@ -39,7 +41,10 @@ const posts = defineCollection({
             z.array(z.string()).optional(),
         ),
         desc: z
-            .string({ required_error: "desc is required", invalid_type_error: "desc must be a string" })
+            .string({
+                required_error: "desc is required",
+                invalid_type_error: "desc must be a string",
+            })
             .min(1, "desc is required"),
         minutesRead: z.string().optional(),
         wordCount: z.number().optional(),
@@ -90,5 +95,8 @@ const words = defineCollection({
 // ---------------------------------------------------------------------------
 
 export const collections = {
-    posts, about, config, words,
+    posts,
+    about,
+    config,
+    words,
 };

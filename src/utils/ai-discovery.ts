@@ -19,17 +19,32 @@ type About = CollectionEntry<"about">;
 // ---------------------------------------------------------------------------
 
 export type AiFileName =
-    | "llms.txt" | "ai.txt" | "llm.txt" | "llms.html"
-    | "ai.json" | "identity.json" | "brand.txt" | "faq-ai.txt"
-    | "developer-ai.txt" | "robots-ai.txt";
+    | "llms.txt"
+    | "ai.txt"
+    | "llm.txt"
+    | "llms.html"
+    | "ai.json"
+    | "identity.json"
+    | "brand.txt"
+    | "faq-ai.txt"
+    | "developer-ai.txt"
+    | "robots-ai.txt";
 
 const conformanceFiles: Record<string, AiFileName[]> = {
     disabled: [],
     essential: ["llms.txt", "ai.txt"],
     recommended: ["llms.txt", "ai.txt", "ai.json", "identity.json", "brand.txt", "faq-ai.txt"],
     complete: [
-        "llms.txt", "ai.txt", "ai.json", "identity.json", "brand.txt", "faq-ai.txt",
-        "llm.txt", "llms.html", "developer-ai.txt", "robots-ai.txt",
+        "llms.txt",
+        "ai.txt",
+        "ai.json",
+        "identity.json",
+        "brand.txt",
+        "faq-ai.txt",
+        "llm.txt",
+        "llms.html",
+        "developer-ai.txt",
+        "robots-ai.txt",
     ],
 };
 
@@ -63,19 +78,6 @@ export async function loadConfig(): Promise<ConfigMap> {
     return new Map(configCollection.map((entry) => [entry.id, entry.data]));
 }
 
-/** 从 ConfigMap 中安全获取字段 */
-function getConfigField<T = unknown>(
-    config: ConfigMap,
-    id: string,
-    field: string,
-    defaultValue?: T,
-): T | undefined {
-    const section = config.get(id);
-    if (!section) return defaultValue;
-    const val = (section as Record<string, unknown>)[field];
-    return (val as T | undefined) ?? defaultValue;
-}
-
 /** 快捷获取 site 对象 */
 function getSiteConfig(config: ConfigMap): Record<string, unknown> {
     return config.get("site") ?? {};
@@ -94,12 +96,12 @@ function inlineText(text: string | undefined): string {
 
 /** 转义 markdown 文本中的特殊字符（用于描述） */
 function escapeMd(text: string | undefined): string {
-    return inlineText(text).replace(/([\\\[\]*_`#])/g, "\\$1");
+    return inlineText(text).replace(/([\\[*_`#])/g, "\\$1");
 }
 
 /** 转义 markdown 链接标题中的特殊字符 */
 function escapeMdLinkTitle(text: string | undefined): string {
-    return inlineText(text).replace(/([\\\[\]])/g, "\\$1");
+    return inlineText(text).replace(/([\\[\]])/g, "\\$1");
 }
 
 /** 构建 markdown 列表项 */
@@ -138,9 +140,8 @@ function getMediaLinks(config: ConfigMap): Array<{ name: string; url: string }> 
             const url = link.link || "";
             let name = "Link";
             try {
-                const hostname = new URL(
-                    url.startsWith("http") ? url : `https://example.com${url}`,
-                ).hostname;
+                const hostname = new URL(url.startsWith("http") ? url : `https://example.com${url}`)
+                    .hostname;
                 const domain = hostname.replace(/^www\./, "").split(".")[0];
                 name = domain ? domain.charAt(0).toUpperCase() + domain.slice(1) : "Link";
             } catch {
@@ -170,11 +171,8 @@ function formatIsoDate(date?: Date | string | number): string {
 
 /** 生成文章链接，可切换 .md 源码版本 */
 function postUrl(site: string, abbrlink: string | number, exportMd: boolean): string {
-    return exportMd && abbrlink
-        ? `${site}/posts/${abbrlink}.md`
-        : `${site}/posts/${abbrlink}/`;
+    return exportMd && abbrlink ? `${site}/posts/${abbrlink}.md` : `${site}/posts/${abbrlink}/`;
 }
-
 
 /** 生成 llms.txt 核心 markdown 内容 */
 export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<string> {
@@ -189,7 +187,6 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
     const lang = (siteData.lang as string) || "zh-CN";
     const { t } = createTranslator(lang);
     const exportMd = (promoteSection?.export_md as boolean) ?? false;
-    const aiDiscoverySection = config.get("ai-discovery") as Record<string, unknown> | undefined;
 
     const mainPosts = posts;
 
@@ -258,30 +255,10 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
             ),
         );
     }
-    lines.push(
-        buildMdLink(
-            t("ai.archives"),
-            `${site}/archives/`,
-            t("ai.archivesDesc"),
-        ),
-    );
-    lines.push(
-        buildMdLink(t("ai.tags"), `${site}/tags/`, t("ai.tagsDesc")),
-    );
-    lines.push(
-        buildMdLink(
-            t("ai.categories"),
-            `${site}/categories/`,
-            t("ai.categoriesDesc"),
-        ),
-    );
-    lines.push(
-        buildMdLink(
-            t("ai.words"),
-            `${site}/words/`,
-            t("ai.wordsDesc"),
-        ),
-    );
+    lines.push(buildMdLink(t("ai.archives"), `${site}/archives/`, t("ai.archivesDesc")));
+    lines.push(buildMdLink(t("ai.tags"), `${site}/tags/`, t("ai.tagsDesc")));
+    lines.push(buildMdLink(t("ai.categories"), `${site}/categories/`, t("ai.categoriesDesc")));
+    lines.push(buildMdLink(t("ai.words"), `${site}/words/`, t("ai.wordsDesc")));
     lines.push("");
 
     // Links（友情链接）
@@ -292,9 +269,7 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
             description: string;
         }>;
         if (sites.length > 0) {
-            lines.push(
-                `## ${(linksSection.title as string) || t("ai.links")}`,
-            );
+            lines.push(`## ${(linksSection.title as string) || t("ai.links")}`);
             for (const siteLink of sites) {
                 lines.push(buildMdLink(siteLink.name, siteLink.link, siteLink.description));
             }
@@ -304,62 +279,16 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
 
     // AI Discovery Files
     lines.push(`## ${t("ai.aiDiscoveryFiles")}`);
+    lines.push(buildMdLink("ai.txt", `${site}/ai.txt`, t("ai.aiTxtDesc")));
+    lines.push(buildMdLink("identity.json", `${site}/identity.json`, t("ai.identityJsonDesc")));
+    lines.push(buildMdLink("ai.json", `${site}/ai.json`, t("ai.aiJsonDesc")));
+    lines.push(buildMdLink("brand.txt", `${site}/brand.txt`, t("ai.brandTxtDesc")));
+    lines.push(buildMdLink("faq-ai.txt", `${site}/faq-ai.txt`, t("ai.faqAiTxtDesc")));
     lines.push(
-        buildMdLink(
-            "ai.txt",
-            `${site}/ai.txt`,
-            t("ai.aiTxtDesc"),
-        ),
+        buildMdLink("developer-ai.txt", `${site}/developer-ai.txt`, t("ai.developerAiTxtDesc")),
     );
-    lines.push(
-        buildMdLink(
-            "identity.json",
-            `${site}/identity.json`,
-            t("ai.identityJsonDesc"),
-        ),
-    );
-    lines.push(
-        buildMdLink(
-            "ai.json",
-            `${site}/ai.json`,
-            t("ai.aiJsonDesc"),
-        ),
-    );
-    lines.push(
-        buildMdLink(
-            "brand.txt",
-            `${site}/brand.txt`,
-            t("ai.brandTxtDesc"),
-        ),
-    );
-    lines.push(
-        buildMdLink(
-            "faq-ai.txt",
-            `${site}/faq-ai.txt`,
-            t("ai.faqAiTxtDesc"),
-        ),
-    );
-    lines.push(
-        buildMdLink(
-            "developer-ai.txt",
-            `${site}/developer-ai.txt`,
-            t("ai.developerAiTxtDesc"),
-        ),
-    );
-    lines.push(
-        buildMdLink(
-            "robots-ai.txt",
-            `${site}/robots-ai.txt`,
-            t("ai.robotsAiTxtDesc"),
-        ),
-    );
-    lines.push(
-        buildMdLink(
-            "llms.html",
-            `${site}/llms.html`,
-            t("ai.llmsHtmlDesc"),
-        ),
-    );
+    lines.push(buildMdLink("robots-ai.txt", `${site}/robots-ai.txt`, t("ai.robotsAiTxtDesc")));
+    lines.push(buildMdLink("llms.html", `${site}/llms.html`, t("ai.llmsHtmlDesc")));
     lines.push("");
 
     // Optional
@@ -367,9 +296,7 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
     lines.push(buildMdLink(t("ai.rss"), `${site}/rss.xml`));
     lines.push(buildMdLink(t("ai.atom"), `${site}/atom.xml`));
     if (exportMd) {
-        lines.push(
-            `- ${t("ai.mdAvailable")}`,
-        );
+        lines.push(`- ${t("ai.mdAvailable")}`);
     }
     lines.push("");
 
@@ -379,7 +306,6 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
 /** 生成 robots-ai.txt 内容 */
 export function renderRobotsAiTxt(config: ConfigMap, site: string): string {
     const siteData = getSiteConfig(config);
-    const lang = (siteData.lang as string) || "zh-CN";
     const title = (siteData.title as string) || t("ai.thisSite");
     const lines: string[] = [];
     lines.push(`# AI crawler directives for ${title}`);
@@ -402,7 +328,6 @@ export function renderRobotsAiTxt(config: ConfigMap, site: string): string {
 /** 生成 ai.txt 内容 */
 export function renderAiTxt(config: ConfigMap, site: string): string {
     const siteData = getSiteConfig(config);
-    const authorSection = config.get("author") as Record<string, unknown> | undefined;
     const mediaLinks = getMediaLinks(config);
     const email = getEmail(config);
     const lang = (siteData.lang as string) || "zh-CN";
@@ -412,13 +337,13 @@ export function renderAiTxt(config: ConfigMap, site: string): string {
     const exportMd = (promoteSection?.export_md as boolean) ?? false;
     const title = (siteData.title as string) || t("ai.blog");
     const authorName = authorSection?.name as string | undefined;
-    
+
     // Custom overrides from ai-discovery config
     const customPermissions = aiSection?.permissions_text as string[] | undefined;
     const customRestrictions = aiSection?.restrictions_text as string[] | undefined;
     const customAttribution = aiSection?.attribution_text as string | undefined;
     const customContact = aiSection?.contact_text as string | undefined;
-    
+
     const lines: string[] = [];
 
     lines.push(`Lang: ${lang}`);
@@ -479,9 +404,7 @@ export function renderAiTxt(config: ConfigMap, site: string): string {
     if (exportMd) {
         lines.push(`- ${t("ai.mdSource")}: /posts/{abbrlink}.md`);
     }
-    lines.push(
-        `- ${t("ai.staticPages")}: /about/, /archives/, /tags/, /categories/, /words/`,
-    );
+    lines.push(`- ${t("ai.staticPages")}: /about/, /archives/, /tags/, /categories/, /words/`);
     lines.push("");
 
     return lines.join("\n").trimEnd() + "\n";
@@ -498,9 +421,7 @@ export function renderBrandTxt(config: ConfigMap): string {
     const lines: string[] = [];
 
     lines.push(`Lang: ${lang}`);
-    lines.push(
-        `# ${t("ai.brandTitle")}`,
-    );
+    lines.push(`# ${t("ai.brandTitle")}`);
     lines.push("");
     lines.push("[official-names]");
     lines.push(`- ${title}`);
@@ -524,31 +445,19 @@ export function renderBrandTxt(config: ConfigMap): string {
             lines.push(`- ${w}`);
         }
     } else {
-        lines.push(
-            `- ${t("ai.anyVariant")}`,
-        );
+        lines.push(`- ${t("ai.anyVariant")}`);
     }
     lines.push("");
     lines.push("[naming-rules]");
-    lines.push(
-        `- ${t("ai.ruleFullName", { name: title })}`,
-    );
+    lines.push(`- ${t("ai.ruleFullName", { name: title })}`);
     if (authorName) {
-        lines.push(
-            `- ${t("ai.ruleAuthorName", { name: authorName })}`,
-        );
+        lines.push(`- ${t("ai.ruleAuthorName", { name: authorName })}`);
     }
-    lines.push(
-        `- ${t("ai.ruleNoAbbrev")}`,
-    );
-    lines.push(
-        `- ${t("ai.rulePreserveCase")}`,
-    );
+    lines.push(`- ${t("ai.ruleNoAbbrev")}`);
+    lines.push(`- ${t("ai.rulePreserveCase")}`);
     lines.push("");
     lines.push("[boilerplate]");
-    lines.push(
-        `- ${t("ai.boilerplate", { name: title })}`,
-    );
+    lines.push(`- ${t("ai.boilerplate", { name: title })}`);
     lines.push("");
 
     return lines.join("\n").trimEnd() + "\n";
@@ -570,21 +479,15 @@ export function renderFaqAiTxt(config: ConfigMap): string {
     lines.push(`A: ${description}`);
     lines.push("");
     lines.push(`Q: ${t("ai.faqWhat2")}`);
-    lines.push(
-        `A: ${t("ai.faqWhatAnswer")}`,
-    );
+    lines.push(`A: ${t("ai.faqWhatAnswer")}`);
     lines.push("");
     lines.push(`[${t("ai.faqContact")}]`);
     lines.push(`Q: ${t("ai.faqHowContact")}`);
-    lines.push(
-        `A: ${t("ai.faqContactAnswer")}`,
-    );
+    lines.push(`A: ${t("ai.faqContactAnswer")}`);
     lines.push("");
     lines.push(`[${t("ai.faqScope")}]`);
     lines.push(`Q: ${t("ai.faqWhatNot")}`);
-    lines.push(
-        `A: ${t("ai.faqWhatNotAnswer")}`,
-    );
+    lines.push(`A: ${t("ai.faqWhatNotAnswer")}`);
     lines.push("");
 
     return lines.join("\n").trimEnd() + "\n";
@@ -606,9 +509,7 @@ export function renderDeveloperAiTxt(config: ConfigMap, site: string): string {
     lines.push(`# ${t("ai.devTitle")}`);
     lines.push("");
     lines.push("[overview]");
-    lines.push(
-        t("ai.devOverview"),
-    );
+    lines.push(t("ai.devOverview"));
     lines.push("");
     lines.push("[public-api]");
     lines.push("status: not-available");
@@ -650,7 +551,6 @@ export function renderDeveloperAiTxt(config: ConfigMap, site: string): string {
 /** 生成 identity.json 对象 */
 export function buildIdentityJson(config: ConfigMap, site: string): Record<string, unknown> {
     const siteData = getSiteConfig(config);
-    const authorSection = config.get("author") as Record<string, unknown> | undefined;
     const mediaLinks = getMediaLinks(config);
     const email = getEmail(config);
     const lang = (siteData.lang as string) || "zh-CN";
@@ -697,8 +597,7 @@ export function buildAiJson(config: ConfigMap, site: string): Record<string, unk
     const mediaLinks = getMediaLinks(config);
 
     return {
-        $schema:
-            "https://www.ai-visibility.org.uk/specifications/ai-json/v1/ai-json.schema.json",
+        $schema: "https://www.ai-visibility.org.uk/specifications/ai-json/v1/ai-json.schema.json",
         language: lang,
         name: title,
         url: site,

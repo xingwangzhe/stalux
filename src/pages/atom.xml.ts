@@ -6,7 +6,7 @@ import { getCollection } from "astro:content";
 
 export const GET: APIRoute = async (context) => {
     const configCollection = await getCollection("config");
-    const siteEntry = configCollection.find(e => e.id === "site");
+    const siteEntry = configCollection.find((e) => e.id === "site");
     if (!siteEntry) throw new Error("Missing site config");
     const stalux = siteEntry.data;
 

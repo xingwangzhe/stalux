@@ -24,35 +24,35 @@ id: promote
 #   Site: {url}
 #   Content License: {cc} unless otherwise stated.
 #   All content copyright {author}. All rights reserved.
-export_md: true   # Export Markdown source at /posts/{abbrlink}.md
+export_md: true # Export Markdown source at /posts/{abbrlink}.md
 ```
 
 ### Variable Substitution
 
-| Variable | Replaced With |
-|----------|---------------|
+| Variable   | Replaced With         |
+| ---------- | --------------------- |
 | `{author}` | `author.yml` → `name` |
-| `{url}` | `site.yml` → `url` |
-| `{title}` | `site.yml` → `title` |
-| `{cc}` | `CC-BY-NC-SA-4.0` |
+| `{url}`    | `site.yml` → `url`    |
+| `{title}`  | `site.yml` → `title`  |
+| `{cc}`     | `CC-BY-NC-SA-4.0`     |
 
 ### How It Works
 
-| Aspect | Detail |
-|--------|--------|
+| Aspect    | Detail                                                                   |
+| --------- | ------------------------------------------------------------------------ |
 | Rendering | Build-time `<div style="display:none">...</div>` — **zero JS, pure SSG** |
-| Coverage | Every page (home, posts, archives, etc.) gets the same hidden prompt |
-| Disable | Leave `llm_promote` empty |
+| Coverage  | Every page (home, posts, archives, etc.) gets the same hidden prompt     |
+| Disable   | Leave `llm_promote` empty                                                |
 
 ### export_md
 
 When `true`, generates `/posts/{abbrlink}.md` endpoints that serve the raw Markdown source. Useful for:
 
-| Use Case | Benefit |
-|----------|---------|
+| Use Case    | Benefit                        |
+| ----------- | ------------------------------ |
 | AI crawlers | Read original content directly |
-| Users | Download Markdown source |
-| RSS readers | Subscribe to Markdown content |
+| Users       | Download Markdown source       |
+| RSS readers | Subscribe to Markdown content  |
 
 ---
 
@@ -62,17 +62,17 @@ File: `stalux/config/ai-discovery.yml` — controls generation of AI-visibility.
 
 ```yaml
 id: ai-discovery
-conformance: "complete"   # See conformance levels below
+conformance: "complete" # See conformance levels below
 ```
 
 ### Conformance Levels
 
-| Level | Generated Files |
-|-------|----------------|
-| `disabled` | None |
-| `essential` | `llms.txt`, `ai.txt` |
-| `recommended` | essential + `ai.json`, `identity.json`, `brand.txt`, `faq-ai.txt` |
-| `complete` | recommended + `llm.txt`, `llms.html`, `developer-ai.txt`, `robots-ai.txt` |
+| Level         | Generated Files                                                           |
+| ------------- | ------------------------------------------------------------------------- |
+| `disabled`    | None                                                                      |
+| `essential`   | `llms.txt`, `ai.txt`                                                      |
+| `recommended` | essential + `ai.json`, `identity.json`, `brand.txt`, `faq-ai.txt`         |
+| `complete`    | recommended + `llm.txt`, `llms.html`, `developer-ai.txt`, `robots-ai.txt` |
 
 ### Content Overrides (Optional)
 

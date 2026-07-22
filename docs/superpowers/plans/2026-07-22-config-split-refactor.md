@@ -31,19 +31,19 @@ config.yml (项目根)
 
 ### 消费端分布（所有使用 config 的文件）
 
-| 组件/页面 | 访问的字段 |
-|-----------|-----------|
-| `src/components/stalux/layout/head.astro` | canonical/url, favicon, author.avatar, lang, noindex, nofollow, head.* |
-| `src/layouts/Stalux.astro` | lang, llm_promote, author.name, url, title |
-| `src/components/stalux/layout/PostLayout.astro` | comment.*, author |
-| `src/components/stalux/footer/Footer*.astro` | lang |
-| `src/components/stalux/layout/listPage.astro` | title |
-| `src/components/stalux/analytics/google.astro` | head.googleAnalyticsId |
-| `src/components/stalux/analytics/clarity.astro` | head.bingClarityId |
-| `src/components/stalux/analytics/umami.astro` | head.umami |
-| `src/utils/ai-discovery.ts` | url, title, description, author.*, mediaLinks, export_md, links.*, lang |
-| `src/pages/*.ts/astro` | 通过 loadConfig() 访问 |
-| 各个 pages (about, archives, words, etc.) | lang, title, description |
+| 组件/页面                                       | 访问的字段                                                              |
+| ----------------------------------------------- | ----------------------------------------------------------------------- |
+| `src/components/stalux/layout/head.astro`       | canonical/url, favicon, author.avatar, lang, noindex, nofollow, head.*  |
+| `src/layouts/Stalux.astro`                      | lang, llm_promote, author.name, url, title                              |
+| `src/components/stalux/layout/PostLayout.astro` | comment.*, author                                                       |
+| `src/components/stalux/footer/Footer*.astro`    | lang                                                                    |
+| `src/components/stalux/layout/listPage.astro`   | title                                                                   |
+| `src/components/stalux/analytics/google.astro`  | head.googleAnalyticsId                                                  |
+| `src/components/stalux/analytics/clarity.astro` | head.bingClarityId                                                      |
+| `src/components/stalux/analytics/umami.astro`   | head.umami                                                              |
+| `src/utils/ai-discovery.ts`                     | url, title, description, author._, mediaLinks, export_md, links._, lang |
+| `src/pages/*.ts/astro`                          | 通过 loadConfig() 访问                                                  |
+| 各个 pages (about, archives, words, etc.)       | lang, title, description                                                |
 
 ---
 
@@ -54,6 +54,7 @@ config.yml (项目根)
 **目标：** 将 config.yml 按职责拆分为 config/ 下的独立 .yml 文件，每个文件有唯一 id 字段。
 
 **Files:**
+
 - Create: `stalux/config/site.yml`
 - Create: `stalux/config/author.yml`
 - Create: `stalux/config/head.yml`
@@ -94,8 +95,8 @@ id: head
 googleAnalyticsId: ""
 bingClarityId: ""
 umami:
-  id: ""
-  url: ""
+    id: ""
+    url: ""
 anyhead: ""
 ```
 
@@ -104,30 +105,30 @@ anyhead: ""
 ```yaml
 id: navs
 items:
-  - title: Home
-    icon: home
-    link: /
-  - title: Posts
-    icon: archive
-    link: /archives
-  - title: Categories
-    icon: folder
-    link: /categories
-  - title: Tags
-    icon: tag
-    link: /tags
-  - title: Words
-    icon: quote
-    link: /words
-  - title: Links
-    icon: link
-    link: /links
-  - title: About
-    icon: user
-    link: /about
-  - title: Travellings
-    icon: train-front
-    link: https://www.travellings.cn/go
+    - title: Home
+      icon: home
+      link: /
+    - title: Posts
+      icon: archive
+      link: /archives
+    - title: Categories
+      icon: folder
+      link: /categories
+    - title: Tags
+      icon: tag
+      link: /tags
+    - title: Words
+      icon: quote
+      link: /words
+    - title: Links
+      icon: link
+      link: /links
+    - title: About
+      icon: user
+      link: /about
+    - title: Travellings
+      icon: train-front
+      link: https://www.travellings.cn/go
 ```
 
 - [ ] **Step 5: Create config/typetexts.yml**
@@ -135,10 +136,10 @@ items:
 ```yaml
 id: typetexts
 items:
-  - "Free for free, not free for charge!"
-  - "Where's the any key?"
-  - "Press F12?"
-  - "Hello World!"
+    - "Free for free, not free for charge!"
+    - "Where's the any key?"
+    - "Press F12?"
+    - "Hello World!"
 ```
 
 - [ ] **Step 6: Create config/media-links.yml**
@@ -146,20 +147,20 @@ items:
 ```yaml
 id: media-links
 items:
-  - icon: github
-    link: https://github.com/xingwangzhe/stalux
-  - icon: bilibili
-    link: https://bilibili.com/
-  - icon: X
-    link: https://x.com
-  - icon: juejin
-    link: https://juejin.cn/
-  - icon: zhihu
-    link: https://www.zhihu.com/
-  - icon: maildotru
-    link: mailto:xingwangzhe@outlook.com
-  - icon: telegram
-    link: https://t.me/
+    - icon: github
+      link: https://github.com/xingwangzhe/stalux
+    - icon: bilibili
+      link: https://bilibili.com/
+    - icon: X
+      link: https://x.com
+    - icon: juejin
+      link: https://juejin.cn/
+    - icon: zhihu
+      link: https://www.zhihu.com/
+    - icon: maildotru
+      link: mailto:xingwangzhe@outlook.com
+    - icon: telegram
+      link: https://t.me/
 ```
 
 - [ ] **Step 7: Create config/links.yml**
@@ -169,26 +170,26 @@ id: links
 title: Helpful Links
 description: These sites are great and have been very helpful to this theme!
 sites:
-  - name: Astro
-    description: A modern static site generator...
-    link: https://astro.build/
-    icon: https://astro.build/favicon.svg
-  - name: MDN
-    description: Provides open, detailed information...
-    link: https://developer.mozilla.org/
-    icon: https://developer.mozilla.org/favicon.ico
-  - name: animejs
-    description: A powerful JavaScript animation library...
-    link: https://animejs.com/
-    icon: https://animejs.com/assets/images/favicon.png
-  - name: feather-icons
-    description: A clean icon library...
-    link: https://feathericons.com/
-    icon: https://feathericons.com/favicon.ico
-  - name: simple-icons
-    description: Thousands of brand icons...
-    link: https://simpleicons.org/
-    icon: https://simpleicons.org/icons/simpleicons.svg
+    - name: Astro
+      description: A modern static site generator...
+      link: https://astro.build/
+      icon: https://astro.build/favicon.svg
+    - name: MDN
+      description: Provides open, detailed information...
+      link: https://developer.mozilla.org/
+      icon: https://developer.mozilla.org/favicon.ico
+    - name: animejs
+      description: A powerful JavaScript animation library...
+      link: https://animejs.com/
+      icon: https://animejs.com/assets/images/favicon.png
+    - name: feather-icons
+      description: A clean icon library...
+      link: https://feathericons.com/
+      icon: https://feathericons.com/favicon.ico
+    - name: simple-icons
+      description: Thousands of brand icons...
+      link: https://simpleicons.org/
+      icon: https://simpleicons.org/icons/simpleicons.svg
 ```
 
 - [ ] **Step 8: Create config/footer.yml**
@@ -197,30 +198,30 @@ sites:
 id: footer
 buildtime: "2025-05-01T10:00:00"
 copyright:
-  enabled: true
-  startYear: 2024
-  customText: ""
+    enabled: true
+    startYear: 2024
+    customText: ""
 theme:
-  showPoweredBy: true
-  showThemeInfo: true
+    showPoweredBy: true
+    showThemeInfo: true
 beian:
-  icp:
-    enabled: false
-    number: "辽ICP备XXXXXXXX号"
-  security:
-    enabled: false
-    text: "辽公网安备 XXXXXXXXXXXX号"
-    number: "XXXXXXXXXXXX"
+    icp:
+        enabled: false
+        number: "辽ICP备XXXXXXXX号"
+    security:
+        enabled: false
+        text: "辽公网安备 XXXXXXXXXXXX号"
+        number: "XXXXXXXXXXXX"
 badges:
-  - label: "Powered by"
-    message: "Astro"
-    color: "orange"
-    style: "flat-square"
-    alt: "Powered by Astro"
-    href: "https://astro.build/"
-  # ... remaining badges same as original
+    - label: "Powered by"
+      message: "Astro"
+      color: "orange"
+      style: "flat-square"
+      alt: "Powered by Astro"
+      href: "https://astro.build/"
+    # ... remaining badges same as original
 custom: |
-  <!-- footer custom hook -->
+    <!-- footer custom hook -->
 ```
 
 - [ ] **Step 9: Create config/comment.yml**
@@ -229,19 +230,19 @@ custom: |
 id: comment
 enabled: false
 waline:
-  serverURL: https://walines.xingwangzhe.fun
-  lang: zh-CN
-  login: "force"
-  dark: true
-  reaction: false
-  meta:
-    - nick
-    - mail
-    - link
-  requiredMeta: []
-  commentSorting: "latest"
-  wordLimit: 200
-  pageSize: 10
+    serverURL: https://walines.xingwangzhe.fun
+    lang: zh-CN
+    login: "force"
+    dark: true
+    reaction: false
+    meta:
+        - nick
+        - mail
+        - link
+    requiredMeta: []
+    commentSorting: "latest"
+    wordLimit: 200
+    pageSize: 10
 ```
 
 - [ ] **Step 10: Create config/promote.yml**
@@ -267,6 +268,7 @@ Expected: `site.yml author.yml head.yml navs.yml typetexts.yml media-links.yml l
 **目标：** 将 `config` 集合加载器从 `file("config.yml")` 改为 `glob()`，并为每个子文件定义独立的 Zod schema。
 
 **Files:**
+
 - Modify: `src/content.config.ts`
 
 - [ ] **Step 1: 重写 config 集合定义**
@@ -306,10 +308,12 @@ const config = defineCollection({
             id: z.literal("head"),
             googleAnalyticsId: z.string().optional(),
             bingClarityId: z.string().optional(),
-            umami: z.object({
-                id: z.string().optional(),
-                url: z.string().optional(),
-            }).optional(),
+            umami: z
+                .object({
+                    id: z.string().optional(),
+                    url: z.string().optional(),
+                })
+                .optional(),
             anyhead: z.string().optional(),
         }),
         // navs
@@ -356,77 +360,93 @@ const config = defineCollection({
         z.object({
             id: z.literal("footer"),
             buildtime: z.string().optional(),
-            copyright: z.object({
-                enabled: z.boolean().optional().default(true),
-                startYear: z.number().optional(),
-                customText: z.string().optional(),
-            }).optional(),
-            theme: z.object({
-                showPoweredBy: z.boolean().optional().default(true),
-                showThemeInfo: z.boolean().optional().default(true),
-            }).optional(),
-            beian: z.object({
-                icp: z.object({
-                    enabled: z.boolean().optional().default(false),
-                    number: z.string().optional(),
-                }).optional(),
-                security: z.object({
-                    enabled: z.boolean().optional().default(false),
-                    text: z.string().optional(),
-                    number: z.string().optional(),
-                }).optional(),
-            }).optional(),
-            badges: z.array(
-                z.union([
-                    z.object({
-                        label: z.string(),
-                        message: z.string(),
-                        color: z.string().optional(),
-                        style: z.string().optional(),
-                        alt: z.string().optional(),
-                        href: z.string().optional(),
-                    }),
-                    z.object({
-                        title: z.string(),
-                        collapsed: z.boolean().optional().default(true),
-                        items: z.array(z.object({
+            copyright: z
+                .object({
+                    enabled: z.boolean().optional().default(true),
+                    startYear: z.number().optional(),
+                    customText: z.string().optional(),
+                })
+                .optional(),
+            theme: z
+                .object({
+                    showPoweredBy: z.boolean().optional().default(true),
+                    showThemeInfo: z.boolean().optional().default(true),
+                })
+                .optional(),
+            beian: z
+                .object({
+                    icp: z
+                        .object({
+                            enabled: z.boolean().optional().default(false),
+                            number: z.string().optional(),
+                        })
+                        .optional(),
+                    security: z
+                        .object({
+                            enabled: z.boolean().optional().default(false),
+                            text: z.string().optional(),
+                            number: z.string().optional(),
+                        })
+                        .optional(),
+                })
+                .optional(),
+            badges: z
+                .array(
+                    z.union([
+                        z.object({
                             label: z.string(),
                             message: z.string(),
                             color: z.string().optional(),
                             style: z.string().optional(),
                             alt: z.string().optional(),
                             href: z.string().optional(),
-                        })),
-                    }),
-                ]),
-            ).optional(),
+                        }),
+                        z.object({
+                            title: z.string(),
+                            collapsed: z.boolean().optional().default(true),
+                            items: z.array(
+                                z.object({
+                                    label: z.string(),
+                                    message: z.string(),
+                                    color: z.string().optional(),
+                                    style: z.string().optional(),
+                                    alt: z.string().optional(),
+                                    href: z.string().optional(),
+                                }),
+                            ),
+                        }),
+                    ]),
+                )
+                .optional(),
             custom: z.string().optional(),
         }),
         // comment
         z.object({
             id: z.literal("comment"),
             enabled: z.boolean().optional().default(false),
-            waline: z.object({
-                serverURL: z.string().url().optional(),
-                lang: z.string().optional().default("zh-CN"),
-                locale: z.any().optional(),
-                emoji: z.array(z.string()).optional(),
-                reaction: z.boolean().optional().default(false),
-                meta: z.array(z.string()).optional().default(["nick", "mail", "link"]),
-                requiredMeta: z.array(z.string()).optional().default([]),
-                login: z.string().optional().default("enable"),
-                recaptchaV3Key: z.string().optional(),
-                turnstileKey: z.string().optional(),
-                dark: z.union([z.string(), z.boolean()]).optional().default(true),
-                noCopyright: z.boolean().optional().default(false),
-                commentSorting: z.string().optional().default("latest"),
-                imageUploader: z.any().optional(),
-                highlighter: z.any().optional(),
-                texRenderer: z.any().optional(),
-                search: z.any().optional(),
-                wordLimit: z.number().optional().default(200),
-                pageSize: z.number().optional().default(10),
-            }).optional(),
+            waline: z
+                .object({
+                    serverURL: z.string().url().optional(),
+                    lang: z.string().optional().default("zh-CN"),
+                    locale: z.any().optional(),
+                    emoji: z.array(z.string()).optional(),
+                    reaction: z.boolean().optional().default(false),
+                    meta: z.array(z.string()).optional().default(["nick", "mail", "link"]),
+                    requiredMeta: z.array(z.string()).optional().default([]),
+                    login: z.string().optional().default("enable"),
+                    recaptchaV3Key: z.string().optional(),
+                    turnstileKey: z.string().optional(),
+                    dark: z.union([z.string(), z.boolean()]).optional().default(true),
+                    noCopyright: z.boolean().optional().default(false),
+                    commentSorting: z.string().optional().default("latest"),
+                    imageUploader: z.any().optional(),
+                    highlighter: z.any().optional(),
+                    texRenderer: z.any().optional(),
+                    search: z.any().optional(),
+                    wordLimit: z.number().optional().default(200),
+                    pageSize: z.number().optional().default(10),
+                })
+                .optional(),
         }),
         // promote
         z.object({
@@ -459,6 +479,7 @@ Expected: 类型错误应该仅来自消费端（因为类型变了），不来�
 **目标：** Config 类型从单个 data 对象变为 `Map<string, Record<string, unknown>>`，更新 loadConfig 函数返回 `ConfigMap` 并更新所有辅助函数。
 
 **Files:**
+
 - Modify: `src/utils/ai-discovery.ts`
 
 - [ ] **Step 1: 更新类型定义和 loadConfig**
@@ -473,10 +494,15 @@ export async function loadConfig(): Promise<ConfigMap> {
 }
 
 /** 安全的从 ConfigMap 中获取字段 */
-export function getConfigField<T>(config: ConfigMap, id: string, field: string, defaultValue?: T): T | undefined {
+export function getConfigField<T>(
+    config: ConfigMap,
+    id: string,
+    field: string,
+    defaultValue?: T,
+): T | undefined {
     const section = config.get(id);
     if (!section) return defaultValue;
-    return (section as Record<string, unknown>)[field] as T | undefined ?? defaultValue;
+    return ((section as Record<string, unknown>)[field] as T | undefined) ?? defaultValue;
 }
 
 /** 快捷获取站点 URL */
@@ -523,7 +549,13 @@ export function getEmail(config: ConfigMap): string | undefined {
 /** 从 ConfigMap 获取 site 相关字段 */
 function siteConfig(config: ConfigMap) {
     const s = config.get("site") || {};
-    return s as { title?: string; description?: string; url?: string; lang?: string; export_md?: boolean };
+    return s as {
+        title?: string;
+        description?: string;
+        url?: string;
+        lang?: string;
+        export_md?: boolean;
+    };
 }
 
 /** 生成 llms.txt 核心 markdown 内容 */
@@ -537,7 +569,8 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
     const email = getEmail(config);
     const lang = (s?.lang as string) || "zh-CN";
     const zh = lang.startsWith("zh");
-    const exportMd = (config.get("promote") as Record<string, unknown>)?.export_md as boolean ?? false;
+    const exportMd =
+        ((config.get("promote") as Record<string, unknown>)?.export_md as boolean) ?? false;
 
     const lines: string[] = [];
     lines.push(`Lang: ${lang}`);
@@ -558,6 +591,7 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
 **目标：** 修改这两个 Layout 组件中的 config 访问模式。
 
 **Files:**
+
 - Modify: `src/layouts/Stalux.astro`
 - Modify: `src/components/stalux/layout/head.astro`
 
@@ -613,6 +647,7 @@ const faviconPath = (site as any).favicon || "/favicon.ico";
 **目标：** 修改所有 `(await getCollection("config"))[0]?.data` 的消费端。
 
 **Files to modify (查找所有出现模式):**
+
 - `src/pages/*.astro` × 约 8 个文件
 - `src/components/stalux/**/*.astro` × 约 6 个文件
 - `src/components/stalux/footer/*.astro` × 约 3 个文件
@@ -658,6 +693,7 @@ const lang = (siteConfig as any).lang || "zh-CN";
 **目标：** ai-discovery.ts 的 loadConfig 已经返回 `ConfigMap`，所有调用它的路由文件需要适配。
 
 **Files:**
+
 - Modify: `src/pages/llms.txt.ts`
 - Modify: `src/pages/llm.txt.ts`
 - Modify: `src/pages/ai.txt.ts`
@@ -787,19 +823,19 @@ codegraph index /home/xingwangzhe/桌面/博客/staluxmyblog
 
 ## 影响范围总结
 
-| 文件 | 改动类型 | 影响程度 |
-|------|---------|---------|
-| `stalux/config.yml` | 删除（被替换） | — |
-| `stalux/config/*.yml` × 10 | 新建 | — |
-| `src/content.config.ts` | 重写 config 集合定义 | 核心变更 |
-| `src/utils/ai-discovery.ts` | 重写类型和函数 | 大改 |
-| `src/pages/llms.html.astro` | 小改 config 访问 | 中 |
-| `src/layouts/Stalux.astro` | 改 config 访问模式 | 中 |
-| `src/components/stalux/layout/head.astro` | 改 config 访问模式 | 中 |
-| `src/components/stalux/layout/PostLayout.astro` | 改 config 访问模式 | 小 |
-| `src/components/stalux/analytics/*.astro` × 3 | 改 config 访问模式 | 小 |
-| `src/components/stalux/footer/*.astro` × 2 | 改 config 访问模式 | 小 |
-| `src/components/stalux/layout/listPage.astro` | 改 config 访问模式 | 小 |
-| `src/pages/*.astro` × 8 | 改 config 访问模式 | 小 |
-| `src/pages/*.txt.ts` × 9 | 大多无需改（委托 ai-discovery） | 无~小 |
-| `staluxmyblog` 对应文件 | 复制 stalux 变更 | 大（批量） |
+| 文件                                            | 改动类型                        | 影响程度   |
+| ----------------------------------------------- | ------------------------------- | ---------- |
+| `stalux/config.yml`                             | 删除（被替换）                  | —          |
+| `stalux/config/*.yml` × 10                      | 新建                            | —          |
+| `src/content.config.ts`                         | 重写 config 集合定义            | 核心变更   |
+| `src/utils/ai-discovery.ts`                     | 重写类型和函数                  | 大改       |
+| `src/pages/llms.html.astro`                     | 小改 config 访问                | 中         |
+| `src/layouts/Stalux.astro`                      | 改 config 访问模式              | 中         |
+| `src/components/stalux/layout/head.astro`       | 改 config 访问模式              | 中         |
+| `src/components/stalux/layout/PostLayout.astro` | 改 config 访问模式              | 小         |
+| `src/components/stalux/analytics/*.astro` × 3   | 改 config 访问模式              | 小         |
+| `src/components/stalux/footer/*.astro` × 2      | 改 config 访问模式              | 小         |
+| `src/components/stalux/layout/listPage.astro`   | 改 config 访问模式              | 小         |
+| `src/pages/*.astro` × 8                         | 改 config 访问模式              | 小         |
+| `src/pages/*.txt.ts` × 9                        | 大多无需改（委托 ai-discovery） | 无~小      |
+| `staluxmyblog` 对应文件                         | 复制 stalux 变更                | 大（批量） |

@@ -1,16 +1,16 @@
 id: media-links
 items:
-- icon: bilibili
-  link: https://bilibili.com/
-- icon: github
-  link: https://github.com/xingwangzhe/stalux
-- icon: juejin
-  link: https://juejin.cn/
-- icon: maildotru
-  link: mailto:xingwangzhe@outlook.com
-- icon: telegram
-  link: https://t.me/
-- icon: X
-  link: https://x.com
-- icon: zhihu
-  link: https://www.zhihu.com/
+    - icon: bilibili
+      link: https://bilibili.com/
+    - icon: github
+      link: https://github.com/xingwangzhe/stalux
+    - icon: juejin
+      link: https://juejin.cn/
+    - icon: maildotru
+      link: mailto:xingwangzhe@outlook.com
+    - icon: telegram
+      link: https://t.me/
+    - icon: X
+      link: https://x.com
+    - icon: zhihu
+      link: https://www.zhihu.com/

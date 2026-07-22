@@ -1,9 +1,8 @@
+import { buildIdentityJson, getSite, loadConfig } from "@utils/ai-discovery";
+import { isAiFileEnabled } from "@utils/ai-discovery";
+import { getAiDiscoveryData } from "@utils/config-utils";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-
-import { buildIdentityJson, getSite, loadConfig } from "@utils/ai-discovery";
-import { getAiDiscoveryData } from "@utils/config-utils";
-import { isAiFileEnabled } from "@utils/ai-discovery";
 
 export const prerender = true;
 

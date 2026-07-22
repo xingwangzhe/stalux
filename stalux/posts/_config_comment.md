@@ -18,31 +18,31 @@ File: `stalux/config/comment.yml`
 
 ```yaml
 id: comment
-enabled: false                              # Master switch: enable comments site-wide
+enabled: false # Master switch: enable comments site-wide
 waline:
-    serverURL: https://walines.xingwangzhe.fun  # Waline server address
-    lang: zh-CN                                 # Waline UI language
-    login: "force"                              # "enable" | "disable" | "force"
-    dark: true                                  # Dark mode support
-    reaction: false                             # Reaction feature
-    meta: [nick, mail, link]                    # Required user fields
-    requiredMeta: []                            # Mandatory fields
-    commentSorting: "latest"                    # "latest" | "oldest" | "hottest"
-    wordLimit: 200                              # Max comment length
-    pageSize: 10                                # Comments per page
-    recaptchaV3Key: ""                          # reCAPTCHA v3 site key
-    turnstileKey: ""                            # Cloudflare Turnstile key
+    serverURL: https://walines.xingwangzhe.fun # Waline server address
+    lang: zh-CN # Waline UI language
+    login: "force" # "enable" | "disable" | "force"
+    dark: true # Dark mode support
+    reaction: false # Reaction feature
+    meta: [nick, mail, link] # Required user fields
+    requiredMeta: [] # Mandatory fields
+    commentSorting: "latest" # "latest" | "oldest" | "hottest"
+    wordLimit: 200 # Max comment length
+    pageSize: 10 # Comments per page
+    recaptchaV3Key: "" # reCAPTCHA v3 site key
+    turnstileKey: "" # Cloudflare Turnstile key
 ```
 
 ### Key Fields
 
-| Field | Description |
-|-------|-------------|
-| `enabled` | Global toggle. Set to `true` to enable comments on all pages |
-| `waline.serverURL` | **Required** for Waline to work. Points to your Waline server |
-| `waline.login` | `"enable"` — allow anyone; `"force"` — require login; `"disable"` — no login needed |
-| `waline.meta` | User info fields collected from commenters |
-| `waline.requiredMeta` | Fields that must be filled in (subset of `meta`) |
+| Field                 | Description                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| `enabled`             | Global toggle. Set to `true` to enable comments on all pages                        |
+| `waline.serverURL`    | **Required** for Waline to work. Points to your Waline server                       |
+| `waline.login`        | `"enable"` — allow anyone; `"force"` — require login; `"disable"` — no login needed |
+| `waline.meta`         | User info fields collected from commenters                                          |
+| `waline.requiredMeta` | Fields that must be filled in (subset of `meta`)                                    |
 
 ### Getting Started
 
@@ -53,9 +53,9 @@ waline:
 
 ### Common Modifications
 
-| Operation | How |
-|-----------|-----|
-| Toggle comments on/off | Change `enabled` |
-| Switch Waline server | Update `serverURL` |
-| Enable anti-spam | Set `recaptchaV3Key` or `turnstileKey` |
-| Change sort order | Set `commentSorting` to `"latest"`, `"oldest"`, or `"hottest"` |
+| Operation              | How                                                            |
+| ---------------------- | -------------------------------------------------------------- |
+| Toggle comments on/off | Change `enabled`                                               |
+| Switch Waline server   | Update `serverURL`                                             |
+| Enable anti-spam       | Set `recaptchaV3Key` or `turnstileKey`                         |
+| Change sort order      | Set `commentSorting` to `"latest"`, `"oldest"`, or `"hottest"` |

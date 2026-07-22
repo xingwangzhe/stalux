@@ -1,8 +1,13 @@
+import {
+    getSite,
+    isAiFileEnabled,
+    llmsTxtToHtml,
+    loadConfig,
+    renderLlmsTxt,
+} from "@utils/ai-discovery";
+import { getAiDiscoveryData, getSiteData } from "@utils/config-utils";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-
-import { getAiDiscoveryData, getSiteData } from "@utils/config-utils";
-import { getSite, isAiFileEnabled, llmsTxtToHtml, loadConfig, renderLlmsTxt } from "@utils/ai-discovery";
 
 export const prerender = true;
 

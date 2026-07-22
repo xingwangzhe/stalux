@@ -35,7 +35,7 @@ The schema definitions are in `src/schemas/config.ts`, using `z.discriminatedUni
 ## Quick Start
 
 1. Set your site identity in `site.yml`
-2. Add your name/bio in `author.yml`  
+2. Add your name/bio in `author.yml`
 3. Configure navigation in `navs.yml`
 4. Add social links in `media-links.yml`
 5. Build: `bun run build`
@@ -48,13 +48,13 @@ All config files are validated at build time against their Zod schemas. Missing 
 
 See the `_config_*.md` article series under `stalux/posts/` for each config section:
 
-| Article | Covers |
-|---------|--------|
-| `_config_basic.md` | site.yml, author.yml, content collections |
-| `_config_header_and_head.md` | head.yml, navs.yml |
-| `_config_text_media.md` | typetexts.yml, media-links.yml, links.yml |
-| `_config_footer.md` | footer.yml |
-| `_config_comment.md` | comment.yml |
-| `_config_llm_promote.md` | promote.yml, ai-discovery.yml |
-| `_config_code.md` | Expressive Code syntax highlighting |
-| `_markdown.md` | Markdown rendering & Sätteri processor |
+| Article                      | Covers                                    |
+| ---------------------------- | ----------------------------------------- |
+| `_config_basic.md`           | site.yml, author.yml, content collections |
+| `_config_header_and_head.md` | head.yml, navs.yml                        |
+| `_config_text_media.md`      | typetexts.yml, media-links.yml, links.yml |
+| `_config_footer.md`          | footer.yml                                |
+| `_config_comment.md`         | comment.yml                               |
+| `_config_llm_promote.md`     | promote.yml, ai-discovery.yml             |
+| `_config_code.md`            | Expressive Code syntax highlighting       |
+| `_markdown.md`               | Markdown rendering & Sätteri processor    |

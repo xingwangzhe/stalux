@@ -1,19 +1,19 @@
 id: comment
 enabled: false
 waline:
-  serverURL: https://walines.xingwangzhe.fun
-  lang: zh-CN
-  # locale:
-  login: "force"
-  recaptchaV3Key: ""
-  turnstileKey: ""
-  dark: true
-  reaction: false
-  meta:
-    - nick
-    - mail
-    - link
-  requiredMeta: []
-  commentSorting: "latest"
-  wordLimit: 200
-  pageSize: 10
+    serverURL: https://walines.xingwangzhe.fun
+    lang: zh-CN
+    # locale:
+    login: "force"
+    recaptchaV3Key: ""
+    turnstileKey: ""
+    dark: true
+    reaction: false
+    meta:
+        - nick
+        - mail
+        - link
+    requiredMeta: []
+    commentSorting: "latest"
+    wordLimit: 200
+    pageSize: 10
