@@ -118,7 +118,6 @@ async function getPublishedPosts(): Promise<Post[]> {
         const bTime = toTimestamp(b.data.date || 0);
         return bTime - aTime; // newest first
     });
-    });
 }
 
 /** 获取 about 页面 */
