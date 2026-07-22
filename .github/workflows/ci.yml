@@ -40,8 +40,8 @@ jobs:
             - name: Verify build output
               run: |
                   test -f dist/index.html
-                  test -f dist/search-index.json
                   test -f dist/rss.xml
                   test -d dist/posts
+                  test -d dist/pagefind
                   echo "Build artifacts OK"
                   ls -la dist | head -30
