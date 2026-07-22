@@ -19,7 +19,7 @@ export const GET: APIRoute = async (context) => {
     return rss({
         title: stalux?.title || "Stalux Blog",
         description: stalux?.description || "A blog powered by Stalux theme",
-        site: context.site?.toString() || stalux?.url || "https://stalux.needhelp.icu",
+        site: stalux?.url || context.site?.toString(),
         items,
         customData: `<language>${langToFeedLanguage(lang)}</language>\n<copyright>${t("rss.copyright")}</copyright>`,
         xmlns: {
