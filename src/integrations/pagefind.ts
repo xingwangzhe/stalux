@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import type { AstroIntegration } from "astro";
 import { createIndex } from "pagefind";
 
@@ -35,9 +36,7 @@ export function pagefind(): AstroIntegration {
                 logger.info(`Pagefind indexed ${page_count} pages → ${outputPath}`);
 
                 // Copy @pagefind/component-ui assets alongside the index
-                const compEntry = fileURLToPath(
-                    import.meta.resolve("@pagefind/component-ui"),
-                );
+                const compEntry = fileURLToPath(import.meta.resolve("@pagefind/component-ui"));
                 const compPkg = path.resolve(compEntry, "../../..");
                 const uiDir = path.join(outDir, "pagefind");
 
