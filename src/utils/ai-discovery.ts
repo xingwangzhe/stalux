@@ -114,9 +114,10 @@ function buildMdLink(title: string, url: string, desc?: string): string {
 async function getPublishedPosts(): Promise<Post[]> {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     return posts.sort((a, b) => {
-        const dateA = toTimestamp(b.data.date || 0);
-        const dateB = toTimestamp(a.data.date || 0);
-        return dateA - dateB;
+        const aTime = toTimestamp(a.data.date || 0);
+        const bTime = toTimestamp(b.data.date || 0);
+        return bTime - aTime; // newest first
+    });
     });
 }
 

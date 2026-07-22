@@ -30,9 +30,10 @@ export async function buildFeedItems(
     updatedTag: string,
 ): Promise<FeedItem[]> {
     const sortedPosts = [...posts].sort((a, b) => {
-        const dateA = toTimestamp(b.data.updated || b.data.date);
-        const dateB = toTimestamp(a.data.updated || a.data.date);
-        return dateA - dateB;
+        // Newest first: compare post dates, use the greater of updated/date
+        const aTime = toTimestamp(a.data.updated || a.data.date);
+        const bTime = toTimestamp(b.data.updated || b.data.date);
+        return bTime - aTime;
     });
 
     const descriptions = await getPostDescriptions();
