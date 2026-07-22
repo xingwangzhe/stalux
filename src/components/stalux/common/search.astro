@@ -1,6 +1,5 @@
 ---
 // Pagefind component-ui search modal.
-// Docs: https://pagefind.app/docs/ui/
 // CSS/JS loaded from pagefind build output (copied by pagefind integration).
 // Triggered by nav search button or Cmd+K shortcut.
 ---
@@ -16,13 +15,33 @@
 }
 
 <style is:global>
-  [data-pf-theme="dark"] {
-    --pf-background: #1a1a2e;
-    --pf-text: #e4e2de;
-    --pf-text-secondary: #a0a0a0;
-    --pf-border: #2a2a30;
-    --pf-hover: #252528;
-    --pf-modal-backdrop: rgba(0, 0, 0, 0.7);
+  /* Force dark theme — all:initial prevents CSS variable inheritance,
+     so we target pagefind elements directly with high-specificity selectors. */
+  [data-pf-theme="dark"] .pf-modal,
+  [data-pf-theme="dark"] .pf-modal-body,
+  [data-pf-theme="dark"] .pf-modal-footer,
+  [data-pf-theme="dark"] .pf-modal-header,
+  [data-pf-theme="dark"] .pf-input,
+  [data-pf-theme="dark"] .pf-result-card,
+  [data-pf-theme="dark"] .pf-result-title,
+  [data-pf-theme="dark"] .pf-excerpt {
+    background-color: #1a1a2e !important;
+    color: #e4e2de !important;
+  }
+  [data-pf-theme="dark"] .pf-modal {
+    background: #1a1a2e !important;
+    border: 1px solid #2a2a30 !important;
+  }
+  [data-pf-theme="dark"] .pf-input {
+    background: #252528 !important;
+    border-color: #2a2a30 !important;
+    color: #e4e2de !important;
+  }
+  [data-pf-theme="dark"] .pf-result-card:hover {
+    background: #252528 !important;
+  }
+  [data-pf-theme="dark"] ::backdrop {
+    background: rgba(0, 0, 0, 0.7) !important;
   }
 </style>
 
