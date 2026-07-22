@@ -336,6 +336,7 @@ export function renderAiTxt(config: ConfigMap, site: string): string {
     const aiSection = config.get("ai-discovery") as Record<string, unknown> | undefined;
     const exportMd = (promoteSection?.export_md as boolean) ?? false;
     const title = (siteData.title as string) || t("ai.blog");
+    const authorSection = config.get("author") as Record<string, unknown> | undefined;
     const authorName = authorSection?.name as string | undefined;
 
     // Custom overrides from ai-discovery config
