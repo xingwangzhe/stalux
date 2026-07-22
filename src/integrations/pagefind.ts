@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -34,21 +33,6 @@ export function pagefind(): AstroIntegration {
                     outputPath: path.join(outDir, "pagefind"),
                 });
                 logger.info(`Pagefind indexed ${page_count} pages → ${outputPath}`);
-
-                // Copy @pagefind/component-ui assets alongside the index
-                const compEntry = fileURLToPath(import.meta.resolve("@pagefind/component-ui"));
-                const compPkg = path.resolve(compEntry, "../../..");
-                const uiDir = path.join(outDir, "pagefind");
-
-                fs.copyFileSync(
-                    path.join(compPkg, "npm_dist/mjs/component-ui.mjs"),
-                    path.join(uiDir, "pagefind-component-ui.js"),
-                );
-                fs.copyFileSync(
-                    path.join(compPkg, "css/pagefind-component-ui.css"),
-                    path.join(uiDir, "pagefind-component-ui.css"),
-                );
-                logger.info("Pagefind Component UI assets copied to pagefind/");
             },
         },
     };

@@ -1,54 +1,32 @@
 ---
 // Pagefind component-ui search modal.
 // Docs: https://pagefind.app/llms-component-ui.txt
-// CSS/JS loaded head via Astro link/script components.
-// Dark theme applied via JS to avoid Astro CSS processing issues.
+// Import CSS and components directly from npm package.
 // Triggered by nav search button or Cmd+K shortcut.
 ---
 
-{
-  import.meta.env.PROD && (
-    <>
-      <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css" />
-      <script src="/pagefind/pagefind-component-ui.js" type="module"></script>
-      <pagefind-modal id="search"></pagefind-modal>
-    </>
-  )
-}
+<pagefind-modal id="search"></pagefind-modal>
 
-<script is:inline>
-  (() => {
-    const html = document.documentElement;
-    const syncTheme = () => html.toggleAttribute("data-pf-theme", html.classList.contains("dark"));
-    syncTheme();
+<script>
+  import "@pagefind/component-ui";
+  import "@pagefind/component-ui/css";
 
-    // Inject dark theme CSS variables via JS to bypass Astro's CSS bundling pipeline
-    const injectDarkStyles = () => {
-      if (document.getElementById("pf-theme")) return;
-      const style = document.createElement("style");
-      style.id = "pf-theme";
-      style.textContent = `
-        [data-pf-theme="dark"] {
-          --pf-background: #1a1a2e;
-          --pf-text: #e4e2de;
-          --pf-text-secondary: #a0a0a0;
-          --pf-text-muted: #949494;
-          --pf-border: #2a2a30;
-          --pf-hover: #252528;
-          --pf-modal-backdrop: rgba(0, 0, 0, 0.7);
-        }
-      `;
-      document.head.appendChild(style);
-    };
-    injectDarkStyles();
-
-    new MutationObserver(syncTheme).observe(html, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    document.addEventListener("astro:after-swap", () => {
-      syncTheme();
-      injectDarkStyles();
-    });
-  })();
+  // Sync dark mode
+  const html = document.documentElement;
+  const syncTheme = () => html.toggleAttribute("data-pf-theme", html.classList.contains("dark"));
+  syncTheme();
+  new MutationObserver(syncTheme).observe(html, { attributes: true, attributeFilter: ["class"] });
+  document.addEventListener("astro:after-swap", syncTheme);
 </script>
+
+<style is:global>
+  [data-pf-theme="dark"] {
+    --pf-background: #1a1a2e;
+    --pf-text: #e4e2de;
+    --pf-text-secondary: #a0a0a0;
+    --pf-text-muted: #949494;
+    --pf-border: #2a2a30;
+    --pf-hover: #252528;
+    --pf-modal-backdrop: rgba(0, 0, 0, 0.7);
+  }
+</style>
