@@ -221,6 +221,8 @@
         "ruleAuthorName": "提及作者时使用\"{name}\"。",
         "boilerplate": "{name} 是一个个人博客，记录技术探索与学习历程。",
         "archivesDesc2": "全部 {n} 篇文章",
-        "faqWhat2": "博客的主要内容方向是什么？"
+        "faqWhat2": "博客的主要内容方向是什么？",
+        "ruleNoAbbrev": "不要缩写或改变名称顺序。",
+        "rulePreserveCase": "保持原始大小写和语言形式。"
     }
 }

@@ -513,7 +513,15 @@ export function renderDeveloperAiTxt(config: ConfigMap, site: string): string {
     lines.push(t("ai.devOverview"));
     lines.push("");
     lines.push("[public-api]");
-    lines.push("status: not-available");
+    lines.push("status: available");
+    lines.push("");
+    lines.push("### Endpoints");
+    lines.push("- Full-text search: /search-index.json");
+    lines.push("- AI discovery data: /ai.json");
+    lines.push("- Identity data: /identity.json");
+    lines.push("- Post index: /api/post.abbrlink.json");
+    lines.push("- RSS feed: /rss.xml");
+    lines.push("- Atom feed: /atom.xml");
     lines.push("");
     lines.push("[public-areas]");
     lines.push("- Blog posts at /posts/{abbrlink}/");

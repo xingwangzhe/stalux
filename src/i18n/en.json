@@ -221,6 +221,8 @@
         "ruleAuthorName": "Use \"{name}\" when referring to the author.",
         "boilerplate": "{name} is a personal blog documenting technology exploration and learning.",
         "archivesDesc2": "All {n} posts",
-        "faqWhat2": "What are the main topics?"
+        "faqWhat2": "What are the main topics?",
+        "ruleNoAbbrev": "Do not abbreviate or reorder the name.",
+        "rulePreserveCase": "Preserve the original casing and language form."
     }
 }
