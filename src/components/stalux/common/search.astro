@@ -1,32 +1,14 @@
 ---
 // Pagefind component-ui search modal.
 // Docs: https://pagefind.app/llms-component-ui.txt
-// Import CSS and components directly from npm package.
-// Triggered by nav search button or Cmd+K shortcut.
+// data-pf-theme must be on a DIRECT parent wrapper of the component.
 ---
 
-<pagefind-modal id="search"></pagefind-modal>
+<div data-pf-theme="dark">
+  <pagefind-modal id="search"></pagefind-modal>
+</div>
 
 <script>
   import "@pagefind/component-ui";
   import "@pagefind/component-ui/css";
-
-  // Sync dark mode
-  const html = document.documentElement;
-  const syncTheme = () => html.toggleAttribute("data-pf-theme", html.classList.contains("dark"));
-  syncTheme();
-  new MutationObserver(syncTheme).observe(html, { attributes: true, attributeFilter: ["class"] });
-  document.addEventListener("astro:after-swap", syncTheme);
 </script>
-
-<style is:global>
-  [data-pf-theme="dark"] {
-    --pf-background: #1a1a2e;
-    --pf-text: #e4e2de;
-    --pf-text-secondary: #a0a0a0;
-    --pf-text-muted: #949494;
-    --pf-border: #2a2a30;
-    --pf-hover: #252528;
-    --pf-modal-backdrop: rgba(0, 0, 0, 0.7);
-  }
-</style>
