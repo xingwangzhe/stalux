@@ -94,8 +94,7 @@ const navs = navsConfig?.items ?? [];
         searchBtn?.addEventListener("click", (e) => {
             e.preventDefault();
             closeNav();
-            const event = new CustomEvent("openSearch");
-            document.dispatchEvent(event);
+            window.__pagefindSearch?.();
         });
 
         // 汉堡菜单交互

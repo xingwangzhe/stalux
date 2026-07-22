@@ -1,286 +1,107 @@
 ---
-import { getCollection } from "astro:content";
-import { getSiteData } from "@utils/config-utils";
-import { createTranslator } from "@utils/i18n";
-import { getLucideIcon } from "@utils/lucide-icons";
-import "@styles/components/search.css";
-
-const CloseIcon = getLucideIcon("x");
-const configEntries = await getCollection("config");
-const siteConfig = getSiteData(configEntries);
-const { t, lang } = createTranslator(siteConfig.lang || "zh-CN");
+// Pagefind search — uses pagefind JS API directly for a modal search UI.
+// Triggered by the nav search button via window.__pagefindSearch().
 ---
 
-<div
-    id="search-container"
-    class="search-container"
-    role="dialog"
-    aria-modal="true"
-    aria-label={t("search.title")}
-    inert
-    data-search-labels={JSON.stringify({
-        typePost: t("search.typePost"),
-        typeAbout: t("search.typeAbout"),
-        typeWord: t("search.typeWord"),
-    })}
->
-    <div class="search-backdrop"></div>
-    <div class="search-box">
-        <div class="search-header">
-            <h2>{t("search.title")}</h2>
-            <button
-                id="search-close"
-                class="search-close"
-                aria-label={t("search.close")}
-            >
-                {CloseIcon && <CloseIcon size={24} />}
-            </button>
-        </div>
-        <div class="search-input-area">
-            <input
-                id="search-input"
-                class="search-input"
-                type="text"
-                placeholder={t("search.placeholder")}
-                autocomplete="off"
-                aria-label={t("search.inputLabel")}
-            />
-        </div>
-        <div id="search-results" class="search-results">
-            <div id="search-results-list" class="search-results-list"></div>
-            <div id="search-empty" class="search-empty" style="display:none">
-                {t("search.noResults")}
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-    import { create, load, search } from "@orama/orama";
-    import { createTokenizer } from "@orama/tokenizers/mandarin";
-    import { stopwords as mandarinStopwords } from "@orama/stopwords/mandarin";
-    import { Highlight, highlightStrategy } from "@orama/highlight";
-    import { searchSchema, type SearchDoc, type SearchSchema } from "@utils/search-schema";
+    window.__pagefindSearch = () => {
+        const container = document.getElementById("pagefind-search");
+        if (container) {
+            container.hidden = false;
+            const input = container.querySelector("input");
+            if (input) setTimeout(() => input.focus(), 100);
+            return;
+        }
 
-    let searchLabels = {
-        typePost: "",
-        typeAbout: "",
-        typeWord: "",
+        fetch("/pagefind/pagefind.js", { method: "HEAD" })
+            .then((res) => {
+                if (!res.ok) throw new Error("Not found");
+                createOverlay();
+            })
+            .catch(() => {
+                const div = document.createElement("div");
+                div.id = "pagefind-search";
+                div.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center";
+                div.innerHTML =
+                    '<div style="background:#1a1a2e;padding:2rem;border-radius:1rem;text-align:center;color:#888;max-width:400px">' +
+                    "<p style='font-size:1.2rem;margin:0 0 0.5rem;color:#e4e2de'>🔍 Search</p>" +
+                    "<p style='margin:0;font-size:0.9rem'>Search index not available in dev mode.<br>Run <code>astro build</code> first.</p>" +
+                    "</div>";
+                div.onclick = () => div.remove();
+                document.body.appendChild(div);
+            });
     };
 
-    let db: Awaited<ReturnType<typeof create<SearchSchema>>> | null = null;
-    let indexLoading = false;
+    function createOverlay() {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "/pagefind/pagefind-ui.css";
+        document.head.appendChild(link);
 
-    // 复用的高亮器实例：highlight() 每次调用会重置 positions，
-    // 单个实例即可服务所有结果，无需每条结果都 new 一个。
-    const highlighter = new Highlight({
-        HTMLTag: "mark",
-        strategy: highlightStrategy.PARTIAL_MATCH,
-    });
-
-    async function initOrama() {
-        if (db) return db;
-        if (indexLoading) {
-            while (!db) await new Promise((r) => setTimeout(r, 50));
-            return db;
-        }
-        indexLoading = true;
-        try {
-            const response = await fetch("/search-index.json");
-            if (!response.ok) throw new Error("Failed to load search index");
-            const data = await response.json();
-            const instance = await create({
-                schema: searchSchema,
-                components: {
-                    tokenizer: createTokenizer({
-                        stopWords: mandarinStopwords,
-                    }),
-                },
-            });
-            await load(instance, data);
-            db = instance;
-            return db;
-        } finally {
-            indexLoading = false;
-        }
+        const script = document.createElement("script");
+        script.src = "/pagefind/pagefind.js";
+        script.onload = () => buildUI(window.pagefind);
+        document.head.appendChild(script);
     }
 
-    function formatResultMeta(type: string, date: string) {
-        if (type === "post" && date) return `${searchLabels.typePost} · ${date}`;
-        if (type === "post") return searchLabels.typePost;
-        if (type === "about") return searchLabels.typeAbout;
-        if (type === "word") return searchLabels.typeWord;
-        return "";
-    }
+    async function buildUI(pagefind) {
+        const overlay = document.createElement("div");
+        overlay.id = "pagefind-search";
+        overlay.style.cssText =
+            "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:flex;align-items:flex-start;justify-content:center;padding-top:10vh";
+        overlay.onclick = () => { overlay.hidden = true; };
 
-    function renderResults(
-        hits: Array<{ document: SearchDoc; score: number }>,
-        query: string,
-    ) {
-        const list = document.getElementById("search-results-list");
-        const empty = document.getElementById("search-empty");
-        if (!list || !empty) return;
+        overlay.innerHTML =
+            '<div style="width:min(640px,90vw);max-height:70vh;background:#1a1a2e;border-radius:1rem;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column">' +
+            '<div style="padding:1rem 1rem 0">' +
+            '<input id="pf-input" type="search" placeholder="Search..." autofocus style="width:100%;padding:0.75rem 1rem;font-size:1rem;border:1px solid #2a2a30;border-radius:0.5rem;background:#252528;color:#e4e2de;outline:none;box-sizing:border-box">' +
+            "</div>" +
+            '<div id="pf-results" style="flex:1;overflow-y:auto;padding:0.5rem 1rem 1rem;color:#a0a0a0;font-size:0.9rem"></div>' +
+            "</div>";
 
-        list.innerHTML = "";
+        document.body.appendChild(overlay);
 
-        if (hits.length === 0) {
-            empty.style.display = "block";
-            return;
-        }
-        empty.style.display = "none";
+        const input = document.getElementById("pf-input");
+        const results = document.getElementById("pf-results");
+        let currentSearch = null;
 
-        for (const hit of hits) {
-            const doc = hit.document;
+        input.addEventListener("input", () => {
+            const q = input.value.trim();
+            if (!q) { results.innerHTML = ""; return; }
 
-            // 先取标题高亮 HTML（下一步会复用同一实例高亮正文，覆盖 .HTML）
-            const titleHTML = highlighter.highlight(doc.title, query).HTML;
-
-            const text = [doc.description, doc.content]
-                .filter(Boolean)
-                .join(" ")
-                .replace(/\n/g, " ");
-            highlighter.highlight(text, query);
-            const snippetHTML = highlighter.positions.length > 0
-                ? highlighter.trim(200)
-                : highlighter.HTML.slice(0, 200);
-
-            const item = document.createElement("a");
-            item.className = "search-result-item";
-            item.href = doc.url;
-            item.dataset.resultLink = "true";
-
-            item.replaceChildren(
-                Object.assign(document.createElement("div"), {
-                    className: "search-result-title",
-                    innerHTML: titleHTML,
-                }),
-                Object.assign(document.createElement("div"), {
-                    className: "search-result-meta",
-                    textContent: formatResultMeta(doc.type, doc.date),
-                }),
-                Object.assign(document.createElement("div"), {
-                    className: "search-result-desc",
-                    innerHTML: snippetHTML,
-                }),
-            );
-            list.append(item);
-        }
-    }
-
-    function clearResults() {
-        const list = document.getElementById("search-results-list");
-        const empty = document.getElementById("search-empty");
-        if (list) list.innerHTML = "";
-        if (empty) empty.style.display = "none";
-    }
-
-    let searchTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    async function performSearch(query: string) {
-        const term = query.trim();
-        if (!term) {
-            clearResults();
-            return;
-        }
-
-        const instance = await initOrama();
-        const results = await search(instance, {
-            term,
-            limit: 20,
-            tolerance: 1,
-            properties: ["title", "description", "content", "tags"],
-            boost: {
-                title: 2,
-                tags: 1.5,
-                description: 1.2,
-                content: 1,
-            },
-            relevance: {
-                k: 1.5,
-                b: 0.75,
-                d: 0.5,
-            },
-            facets: {
-                type: {
-                    limit: 10,
-                    sort: "ASC" as const,
-                },
-            },
-            threshold: 0.3,
-        });
-
-        renderResults(
-            results.hits as Array<{ document: SearchDoc; score: number }>,
-            term,
-        );
-    }
-
-    // —— 视图切换时的引用刷新 ——
-    // search 容器在每次视图切换时会被重建，因此 container/input 等 DOM 引用
-    // 需在 astro:page-load 里重新获取；document 级监听只需注册一次。
-    let searchContainer: HTMLElement | null = null;
-    let searchInput: HTMLInputElement | null = null;
-
-    function closeSearch() {
-        searchContainer?.classList.remove("active");
-        searchContainer?.setAttribute("inert", "");
-        if (searchInput) searchInput.value = "";
-        clearResults();
-    }
-
-    // 文档级监听只注册一次，避免视图切换时累加，
-    // 否则每次按键会执行 O(导航次数) 个处理器。
-    document.addEventListener("openSearch", () => {
-        searchContainer?.removeAttribute("inert");
-        searchContainer?.classList.add("active");
-        const isMobile = window.matchMedia("(max-width: 768px)").matches;
-        if (!isMobile && searchInput) {
-            setTimeout(() => searchInput?.focus(), 150);
-        }
-        initOrama().catch(() => {});
-    });
-
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && searchContainer?.classList.contains("active")) {
-            closeSearch();
-        }
-    });
-
-    document.addEventListener("astro:page-load", () => {
-        searchContainer = document.getElementById("search-container");
-        if (searchContainer?.dataset.searchLabels) {
-            try {
-                searchLabels = JSON.parse(searchContainer.dataset.searchLabels);
-            } catch {
-                /* 保留默认空标签 */
-            }
-        }
-        const closeBtn = document.getElementById("search-close");
-        const backdrop = document.querySelector(".search-backdrop");
-        searchInput = document.getElementById("search-input") as HTMLInputElement | null;
-
-        closeBtn?.addEventListener("click", closeSearch);
-        backdrop?.addEventListener("click", closeSearch);
-
-        searchContainer?.addEventListener("click", (e) => {
-            const target = e.target as HTMLElement;
-            if (target.closest('[data-result-link="true"]')) {
-                setTimeout(closeSearch, 100);
-            }
-        });
-
-        searchInput?.addEventListener("input", (e) => {
-            const value = (e.target as HTMLInputElement).value;
-            if (searchTimeout) clearTimeout(searchTimeout);
-            if (!value.trim()) {
-                clearResults();
-                return;
-            }
-            searchTimeout = setTimeout(() => {
-                performSearch(value).catch((err) => {
-                    console.error("Search error:", err);
+            currentSearch = q;
+            pagefind.search(q).then((search) => {
+                if (currentSearch !== q) return;
+                if (!search.results.length) {
+                    results.innerHTML = "<p style='padding:1rem;text-align:center;color:#666'>No results</p>";
+                    return;
+                }
+                let items = "";
+                search.results.slice(0, 20).forEach((r) => {
+                    r.data().then((data) => {
+                        items += "<a href='" + data.url + "' style='display:block;padding:0.5rem;text-decoration:none;border-radius:0.5rem;color:#e4e2de' onmouseover='this.style.background=\"#252528\"' onmouseout='this.style.background=\"\"'>" +
+                            "<div style='font-size:0.95rem;font-weight:500'>" + data.meta.title + "</div>" +
+                            (data.meta.description ? "<div style='font-size:0.8rem;color:#888;margin-top:2px'>" + data.meta.description + "</div>" : "") +
+                            "</a>";
+                        results.innerHTML = items;
+                    });
                 });
-            }, 150);
+            });
         });
+
+        input.focus();
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                overlay.hidden = true;
+            }
+        });
+    }
+
+    document.addEventListener("openSearch", () => window.__pagefindSearch?.());
+
+    document.addEventListener("astro:before-swap", () => {
+        const overlay = document.getElementById("pagefind-search");
+        if (overlay) overlay.remove();
     });
 </script>

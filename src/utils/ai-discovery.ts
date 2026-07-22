@@ -516,7 +516,7 @@ export function renderDeveloperAiTxt(config: ConfigMap, site: string): string {
     lines.push("status: available");
     lines.push("");
     lines.push("### Endpoints");
-    lines.push("- Full-text search: /search-index.json");
+    lines.push("- Full-text search: /pagefind/pagefind.js");
     lines.push("- AI discovery data: /ai.json");
     lines.push("- Identity data: /identity.json");
     lines.push("- Post index: /api/post.abbrlink.json");

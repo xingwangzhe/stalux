@@ -9,6 +9,8 @@ import expressiveCode from "astro-expressive-code";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 
+import { pagefind } from "./src/integrations/pagefind.ts";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 import fs from "node:fs";
@@ -132,6 +134,7 @@ export default defineConfig({
                 },
             },
         }),
+        pagefind(),
     ],
     vite: {
         resolve: {
