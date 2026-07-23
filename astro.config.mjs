@@ -18,7 +18,7 @@ import fs from "node:fs";
 import { featureFlagsHast, featureFlagsMdast } from "./src/plugins/feature-flags.ts";
 import { temml } from "./src/plugins/satteri-temml.ts";
 
-const site = undefined;
+const site = "https://stalux.needhelp.icu";
 
 // 预计算薄标签（< 3 篇文章）的 URL 集合，用于 sitemap 过滤
 function computeThinTagUrls() {

@@ -51,6 +51,11 @@ badges:
       href: /llms.txt
       label: LLMs
       message: Dataset
+    - alt: LLM Full Dataset
+      color: blue
+      href: /llms-full.txt
+      label: LLMs-Full
+      message: Full
     - collapsed: true
       items:
           - alt: 示例社区 A

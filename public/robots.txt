@@ -58,3 +58,6 @@ Content-Signal: ai-train=yes, search=yes, ai-input=yes
 
 # Sitemap
 Sitemap: https://stalux.needhelp.icu/sitemap-index.xml
+
+# LLM full-text dataset
+LLM-Full: https://stalux.needhelp.icu/llms-full.txt

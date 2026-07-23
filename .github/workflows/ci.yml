@@ -41,6 +41,8 @@ jobs:
               run: |
                   test -f dist/index.html
                   test -f dist/rss.xml
+                  test -f dist/sitemap-index.xml
+                  test -f dist/llms-full.txt
                   test -d dist/posts
                   test -d dist/pagefind
                   echo "Build artifacts OK"

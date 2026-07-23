@@ -2,21 +2,7 @@ id: ai-discovery
 
 # Conformance level: controls which AI discovery files are generated
 # "disabled"  - no files generated
-# "essential" - llms.txt + ai.txt
-# "recommended" - essential + ai.json + identity.json + brand.txt + faq-ai.txt
-# "complete" (default) - recommended + llm.txt + llms.html + developer-ai.txt + robots-ai.txt
-conformance: "complete"
-
-# Custom permissions text (optional, overrides the default ai.txt permissions list)
-# permissions_text:
-#   - "Allow summarizing and quoting blog content with attribution."
-
-# Custom restrictions text (optional, overrides the default ai.txt restrictions list)
-# restrictions_text:
-#   - "Do not reproduce full articles without permission."
-
-# Custom attribution (optional, overrides the default attribution line)
-# attribution_text: ""
-
-# Custom contact info (optional, overrides auto-extracted email/social)
-# contact_text: ""
+# "essential" - llms.txt + llms-full.txt (default)
+# "recommended" - same as essential
+# "complete"  - same as essential
+conformance: "essential"
