@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { isMarkdownExportEnabled, loadConfig, type ConfigMap } from "@utils/ai-discovery";
 import { buildCCName, buildCCLink } from "@utils/cc";
 import { createTranslator } from "@utils/i18n";
 import type { APIRoute, GetStaticPaths } from "astro";
@@ -47,12 +48,13 @@ function yamlScalar(value: string): string {
 }
 
 /** 生成 Markdown 格式的版权脚注 */
-function generateCCFooter(post: CollectionEntry<"posts">, config: Record<string, unknown>): string {
-    const lang = (config?.lang as string) || "zh-CN";
+function generateCCFooter(post: CollectionEntry<"posts">, config: ConfigMap): string {
+    const siteConfig = config.get("site") ?? {};
+    const lang = (siteConfig.lang as string) || "zh-CN";
     const { t } = createTranslator(lang);
     const cc = (post.data.cc as string) || "CC-BY-NC-SA-4.0";
-    const baseUrl = (config?.url as string) || "";
-    const author = ((config?.author as Record<string, string>)?.name as string) || "";
+    const baseUrl = (siteConfig.url as string) || "";
+    const author = (config.get("author")?.name as string) || "";
     const postUrl = baseUrl
         ? `${baseUrl}/posts/${post.data.abbrlink}/`
         : `/posts/${post.data.abbrlink}/`;
@@ -68,8 +70,8 @@ function generateCCFooter(post: CollectionEntry<"posts">, config: Record<string,
 }
 
 export const getStaticPaths = (async () => {
-    const config = (await getCollection("config"))[0]?.data;
-    if (!config?.export_md) {
+    const config = await loadConfig();
+    if (!isMarkdownExportEnabled(config)) {
         return [];
     }
 
@@ -81,6 +83,9 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 export const GET: APIRoute = async ({ props }) => {
+    const config = await loadConfig();
+    if (!isMarkdownExportEnabled(config)) return new Response(null, { status: 404 });
+
     const { post } = props as { post: CollectionEntry<"posts"> };
 
     let markdown: string;
@@ -92,7 +97,6 @@ export const GET: APIRoute = async ({ props }) => {
     }
 
     // 追加版权脚注（不修改原始 md 文件）
-    const config = (await getCollection("config"))[0]?.data ?? {};
     const footer = generateCCFooter(post, config);
     markdown += "\n\n---\n\n" + footer;
 

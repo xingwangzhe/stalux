@@ -27,7 +27,7 @@ export function buildCCLink(licenseCode: string): string {
  * "CC-BY-NC-SA-4.0" + en     → "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License"
  * "CC0-1.0"         + zh-CN  → "CC0 1.0 通用"
  */
-export function buildCCName(licenseCode: string, t: Translator): string {
+export function buildCCName(licenseCode: string, t: Translator["t"]): string {
     if (licenseCode === "CC0-1.0") {
         return t("cc.zero");
     }

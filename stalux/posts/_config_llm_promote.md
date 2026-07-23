@@ -17,14 +17,14 @@ abbrlink: a1b2c3d4
 
 File: `stalux/config/promote.yml` — injects a hidden div on every page for AI crawler consumption.
 
-```yaml
+```yaml title="stalux/config/promote.yml"
 id: promote
 # llm_promote: |
 #   This is a personal blog owned by {author}.
 #   Site: {url}
 #   Content License: {cc} unless otherwise stated.
 #   All content copyright {author}. All rights reserved.
-export_md: true # Export Markdown source at /posts/{abbrlink}.md
+export_md: true # Enable all Markdown export endpoints
 ```
 
 ### Variable Substitution
@@ -46,7 +46,7 @@ export_md: true # Export Markdown source at /posts/{abbrlink}.md
 
 ### export_md
 
-When `true`, generates `/posts/{abbrlink}.md` endpoints that serve the raw Markdown source. Useful for:
+Markdown export is opt-in and defaults to `false`. Only a strict `export_md: true` enables the Markdown endpoints for the home page, posts, about, words, links, archives, categories, and tags. Published posts are served from `/posts/{abbrlink}.md`; list and taxonomy pages use their corresponding `.md` routes. Useful for:
 
 | Use Case    | Benefit                        |
 | ----------- | ------------------------------ |

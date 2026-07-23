@@ -110,25 +110,26 @@ draft: false
 Talk is cheap. Show me the `code`.
 ```
 
-## config.yml: Markdown Source Export (`export_md`)
+## promote.yml: Markdown Export (`export_md`)
 
-Field in the site-level config (see `config.yml`):
+Field in `stalux/config/promote.yml`:
 
-- `export_md`: Boolean, default `false`. When `true`, Astro generates `/posts/{abbrlink}.md` routes at build time, serving each published article's raw Markdown source with `Content-Type: text/markdown`.
+- `export_md`: Boolean, default `false`. Markdown export is opt-in: only a strict `true` generates `.md` routes for the home page, posts, about, words, links, archives, categories, and tags.
 
-The source is read directly from the original `.md` file when available, falling back to a reconstruction from frontmatter + body data.
+Published article endpoints serve the raw Markdown source with `Content-Type: text/markdown`. The source is read directly from the original `.md` file when available, falling back to a reconstruction from frontmatter + body data. List and taxonomy endpoints render Markdown summaries.
 
 Example:
 
-```yaml
-stalux:
-    export_md: true
+```yaml title="stalux/config/promote.yml"
+id: promote
+export_md: true
 ```
 
 Note:
 
-- `export_md` is a site-level config, not a per-article frontmatter field.
-- Only non-draft articles get `.md` endpoints.
+- `export_md` is a site-level opt-in config, not a per-article frontmatter field.
+- When disabled or omitted, no `.md` export files are generated.
+- Only non-draft articles get post `.md` endpoints.
 - The sitemap filters out `.md` pages to avoid duplicate content issues.
 - Useful for readers who want to view or reuse the raw source.
 

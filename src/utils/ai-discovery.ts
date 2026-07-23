@@ -33,6 +33,11 @@ export function isAiFileEnabled(conformance: string | undefined, file: AiFileNam
     return files.includes(file);
 }
 
+/** Markdown 导出仅在 promote.export_md 严格为 true 时启用 */
+export function isMarkdownExportEnabled(config: ConfigMap): boolean {
+    return config.get("promote")?.export_md === true;
+}
+
 /** 加载 config 集合，返回按 id 索引的 Map */
 export async function loadConfig(): Promise<ConfigMap> {
     const configCollection = await getCollection("config");
@@ -347,12 +352,11 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
     const siteData = getSiteConfig(config);
     const authorSection = config.get("author") as Record<string, unknown> | undefined;
     const linksSection = config.get("links") as Record<string, unknown> | undefined;
-    const promoteSection = config.get("promote") as Record<string, unknown> | undefined;
     const mediaLinks = getMediaLinks(config);
     const email = getEmail(config);
     const lang = (siteData.lang as string) || "zh-CN";
     const { t } = createTranslator(lang);
-    const exportMd = (promoteSection?.export_md as boolean) ?? false;
+    const exportMd = isMarkdownExportEnabled(config);
 
     const lines: string[] = [];
 
@@ -478,6 +482,7 @@ export async function renderLlmsFullTxt(config: ConfigMap, site: string): Promis
     const posts = await getPublishedPosts();
     const categoryMap = buildTaxonomyMap(posts, "categories");
     const tagMap = buildTaxonomyMap(posts, "tags");
+    const exportMd = isMarkdownExportEnabled(config);
 
     const sections: string[] = [];
 
@@ -505,14 +510,14 @@ export async function renderLlmsFullTxt(config: ConfigMap, site: string): Promis
     sections.push(renderLinksMd(config, site, t));
     sections.push("---");
     sections.push("");
-    sections.push(await renderArchivesMd(site, true, t));
+    sections.push(await renderArchivesMd(site, exportMd, t));
     sections.push("---");
     sections.push("");
     sections.push(renderTaxonomyListMd(categoryMap, site, "categories", t("ai.allCategories")));
     sections.push("---");
     sections.push("");
     for (const [name, catPosts] of [...categoryMap].sort((a, b) => b[1].length - a[1].length)) {
-        sections.push(renderTaxonomyPageMd(name, catPosts, site, "categories", true));
+        sections.push(renderTaxonomyPageMd(name, catPosts, site, "categories", exportMd));
         sections.push("---");
         sections.push("");
     }
@@ -520,7 +525,7 @@ export async function renderLlmsFullTxt(config: ConfigMap, site: string): Promis
     sections.push("---");
     sections.push("");
     for (const [name, tagPosts] of [...tagMap].sort((a, b) => b[1].length - a[1].length)) {
-        sections.push(renderTaxonomyPageMd(name, tagPosts, site, "tags", true));
+        sections.push(renderTaxonomyPageMd(name, tagPosts, site, "tags", exportMd));
         sections.push("---");
         sections.push("");
     }
