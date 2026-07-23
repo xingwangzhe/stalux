@@ -29,6 +29,6 @@ export const GET: APIRoute = async (context) => {
     const site = getSite(config, context.site?.toString());
     const text = renderTaxonomyPageMd(tag, posts, site, "tags", exportMd);
     return new Response(text, {
-        headers: { "Content-Type": "text/plain; charset=utf-8" },
+        headers: { "Content-Type": "text/markdown; charset=utf-8" },
     });
 };
