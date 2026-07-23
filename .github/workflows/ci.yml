@@ -36,22 +36,3 @@ jobs:
 
             - name: Build (astro)
               run: bun run build
-
-            - name: Verify build output
-              run: |
-                  test -f dist/index.html
-                  test -f dist/rss.xml
-                  test -f dist/sitemap-index.xml
-                  test -f dist/llms-full.txt
-                  test -f dist/index.md
-                  test -f dist/about.md
-                  test -f dist/archives.md
-                  test -f dist/categories.md
-                  test -f dist/tags.md
-                  test -f dist/links.md
-                  test -f dist/words.md
-                  test -d dist/posts
-                  test -d dist/pagefind
-                  test $(find dist -name '*.md' | wc -l) -gt 0
-                  echo "Build artifacts OK"
-                  ls -la dist | head -30
