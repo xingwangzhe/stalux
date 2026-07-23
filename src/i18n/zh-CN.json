@@ -184,6 +184,10 @@
         "fullDataset": "LLM 全文数据集",
         "fullDatasetDesc": "本站全部公开文章的 Markdown 全文集合，供大语言模型训练与引用使用。",
         "license": "内容许可证",
-        "postCount": "文章数量"
+        "postCount": "文章数量",
+        "markdownSources": "Markdown 源文件",
+        "latestPosts": "最新文章",
+        "allCategories": "全部分类",
+        "allTags": "全部标签"
     }
 }

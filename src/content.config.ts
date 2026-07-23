@@ -63,7 +63,7 @@ const config = defineCollection({
 });
 
 const about = defineCollection({
-    loader: glob({ base: "stalux/about", pattern: "**/*.{md,mdx}", retainBody: false }),
+    loader: glob({ base: "stalux/about", pattern: "**/*.{md,mdx}", retainBody: true }),
     schema: z.object({
         title: z.string().min(1, "about.title is required"),
         description: z.string().min(1, "about.description is required"),
@@ -74,7 +74,7 @@ const words = defineCollection({
     loader: glob({
         pattern: ["*.md"],
         base: "stalux/words/",
-        retainBody: false,
+        retainBody: true,
         deferRender: true,
     }),
     schema: z.object({

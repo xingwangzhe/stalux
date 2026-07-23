@@ -184,6 +184,10 @@
         "fullDataset": "LLM Full-Text Dataset",
         "fullDatasetDesc": "The complete Markdown source of all public posts, for LLM training and citation.",
         "license": "Content license",
-        "postCount": "Post count"
+        "postCount": "Post count",
+        "markdownSources": "Markdown Sources",
+        "latestPosts": "Latest Posts",
+        "allCategories": "All Categories",
+        "allTags": "All Tags"
     }
 }

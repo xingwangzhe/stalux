@@ -1,7 +1,7 @@
 /**
  * AI 发现文件（llms.txt / llms-full.txt）生成工具
  *
- * 为 /llms.txt、/llms-full.txt 提供共享数据与格式化函数。
+ * 为 /llms.txt、/llms-full.txt 以及所有页面 .md 导出提供共享数据与格式化函数。
  */
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
@@ -10,7 +10,7 @@ import { toTimestamp } from "./dayjs";
 import { createTranslator } from "./i18n";
 
 export type ConfigMap = Map<string, Record<string, unknown>>;
-type Post = CollectionEntry<"posts">;
+export type Post = CollectionEntry<"posts">;
 type About = CollectionEntry<"about">;
 
 // ---------------------------------------------------------------------------
@@ -71,8 +71,18 @@ function buildMdLink(title: string, url: string, desc?: string): string {
     return desc ? `${line}: ${escapeMd(desc)}` : line;
 }
 
+/** 生成页面链接，支持 HTML 或 .md 版本 */
+function pageUrl(site: string, path: string, exportMd: boolean): string {
+    return exportMd ? `${site}/${path}.md` : `${site}/${path}/`;
+}
+
+/** 生成文章链接，可切换 .md 源码版本 */
+export function postUrl(site: string, abbrlink: string | number, exportMd: boolean): string {
+    return exportMd && abbrlink ? `${site}/posts/${abbrlink}.md` : `${site}/posts/${abbrlink}/`;
+}
+
 /** 获取已发布文章并按日期降序排列 */
-async function getPublishedPosts(): Promise<Post[]> {
+export async function getPublishedPosts(): Promise<Post[]> {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     return posts.sort((a, b) => {
         const aTime = toTimestamp(a.data.date || 0);
@@ -125,10 +135,210 @@ function getEmail(config: ConfigMap): string | undefined {
     return undefined;
 }
 
-/** 生成文章链接，可切换 .md 源码版本 */
-function postUrl(site: string, abbrlink: string | number, exportMd: boolean): string {
-    return exportMd && abbrlink ? `${site}/posts/${abbrlink}.md` : `${site}/posts/${abbrlink}/`;
+// ---------------------------------------------------------------------------
+// 页面 Markdown 渲染函数（用于 .md 端点和 llms-full.txt）
+// ---------------------------------------------------------------------------
+
+/** 构建分类/标签名 → 文章列表的映射 */
+export function buildTaxonomyMap(posts: Post[], key: "tags" | "categories"): Map<string, Post[]> {
+    const map = new Map<string, Post[]>();
+    for (const post of posts) {
+        for (const name of (post.data[key] ?? []) as string[]) {
+            if (!map.has(name)) map.set(name, []);
+            map.get(name)!.push(post);
+        }
+    }
+    return map;
 }
+
+/** 渲染文章列表 Markdown */
+export function renderPostListMd(
+    posts: Post[],
+    site: string,
+    exportMd: boolean,
+    title?: string,
+): string {
+    const lines: string[] = [];
+    if (title) {
+        lines.push(`## ${title}`);
+        lines.push("");
+    }
+    if (posts.length === 0) {
+        lines.push("- No posts");
+    } else {
+        for (const post of posts) {
+            const postTitle = post.data.title || "Untitled";
+            const url = postUrl(site, post.data.abbrlink, exportMd);
+            const desc = post.data.desc || "";
+            lines.push(buildMdLink(postTitle, url, desc));
+        }
+    }
+    lines.push("");
+    return lines.join("\n");
+}
+
+/** 渲染分类/标签索引列表 Markdown */
+export function renderTaxonomyListMd(
+    map: Map<string, Post[]>,
+    site: string,
+    type: "categories" | "tags",
+    title?: string,
+): string {
+    const lines: string[] = [];
+    if (title) {
+        lines.push(`# ${title}`);
+        lines.push("");
+    }
+    lines.push(`URL: ${site}/${type}/`);
+    lines.push("");
+    const sorted = [...map].sort((a, b) => b[1].length - a[1].length);
+    for (const [name, posts] of sorted) {
+        const slug = encodeURIComponent(name);
+        const url = `${site}/${type}/${slug}/`;
+        lines.push(buildMdLink(name, url, `${posts.length} posts`));
+    }
+    lines.push("");
+    return lines.join("\n").trimEnd() + "\n";
+}
+
+/** 渲染单个分类/标签页 Markdown */
+export function renderTaxonomyPageMd(
+    name: string,
+    posts: Post[],
+    site: string,
+    type: "categories" | "tags",
+    exportMd: boolean,
+): string {
+    const label = type === "categories" ? "Category" : "Tag";
+    const slug = encodeURIComponent(name);
+    const pageUrl = `${site}/${type}/${slug}/`;
+    const lines: string[] = [];
+    lines.push(`# ${label}: ${name}`);
+    lines.push("");
+    lines.push(`URL: ${pageUrl}`);
+    lines.push("");
+    lines.push(renderPostListMd(posts, site, exportMd, `${posts.length} posts`));
+    return lines.join("\n").trimEnd() + "\n";
+}
+
+/** 渲染 About 页 Markdown */
+export async function renderAboutMd(site: string): Promise<string> {
+    const aboutPages = await getCollection("about");
+    const about = aboutPages[0];
+    if (!about) return "";
+    const lines: string[] = [];
+    lines.push(`# ${about.data.title || "About"}`);
+    lines.push("");
+    lines.push(`URL: ${site}/about/`);
+    lines.push("");
+    lines.push((about.body as string) || "");
+    lines.push("");
+    return lines.join("\n").trimEnd() + "\n";
+}
+
+/** 渲染 Words 页 Markdown */
+export async function renderWordsMd(): Promise<string> {
+    const words = await getCollection("words", ({ data }) => !data.draft);
+    words.sort((a, b) => toTimestamp(b.data.date || 0) - toTimestamp(a.data.date || 0));
+    const lines: string[] = [];
+    lines.push("# Words");
+    lines.push("");
+    lines.push("URL: /words/");
+    lines.push("");
+    for (const word of words) {
+        const title = word.data.title || "Untitled";
+        lines.push(`## ${title}`);
+        lines.push((word.body as string) || "");
+        lines.push("");
+    }
+    return lines.join("\n").trimEnd() + "\n";
+}
+
+/** 渲染 Links 页 Markdown */
+export function renderLinksMd(
+    config: ConfigMap,
+    site: string,
+    t: (key: string) => string,
+): string {
+    const linksSection = config.get("links") as Record<string, unknown> | undefined;
+    const lines: string[] = [];
+    lines.push(`# ${(linksSection?.title as string) || t("ai.links")}`);
+    lines.push("");
+    lines.push(`URL: ${site}/links/`);
+    lines.push("");
+    if (linksSection?.sites) {
+        const sites = linksSection.sites as Array<{ name: string; link: string; description: string }>;
+        for (const s of sites) {
+            lines.push(buildMdLink(s.name, s.link, s.description));
+        }
+    }
+    lines.push("");
+    return lines.join("\n").trimEnd() + "\n";
+}
+
+/** 渲染 Archives 页 Markdown */
+export async function renderArchivesMd(
+    site: string,
+    exportMd: boolean,
+    t: (key: string) => string,
+): Promise<string> {
+    const posts = await getPublishedPosts();
+    const lines: string[] = [];
+    lines.push(`# ${t("archives.title")}`);
+    lines.push("");
+    lines.push(`URL: ${site}/archives/`);
+    lines.push("");
+    lines.push(renderPostListMd(posts, site, exportMd));
+    return lines.join("\n").trimEnd() + "\n";
+}
+
+/** 渲染首页 Markdown */
+export async function renderIndexMd(
+    config: ConfigMap,
+    site: string,
+    t: (key: string) => string,
+): Promise<string> {
+    const posts = await getPublishedPosts();
+    const siteData = getSiteConfig(config);
+    const lang = (siteData.lang as string) || "zh-CN";
+    const about = await loadAbout();
+    const lines: string[] = [];
+
+    lines.push(`# ${(siteData.title as string) || t("ai.blog")}`);
+    lines.push("");
+    lines.push(`URL: ${site}/`);
+    lines.push("");
+    lines.push(`> ${escapeMd(siteData.description as string)}`);
+    lines.push("");
+    lines.push(`Lang: ${lang}`);
+    lines.push("");
+
+    lines.push(`## ${t("ai.markdownSources")}`);
+    lines.push(buildMdLink("Home", `${site}/index.md`));
+    lines.push(buildMdLink("About", `${site}/about.md`));
+    lines.push(buildMdLink("Words", `${site}/words.md`));
+    lines.push(buildMdLink("Links", `${site}/links.md`));
+    lines.push(buildMdLink("Archives", `${site}/archives.md`));
+    lines.push(buildMdLink("Categories", `${site}/categories.md`));
+    lines.push(buildMdLink("Tags", `${site}/tags.md`));
+    lines.push(buildMdLink("LLMs.txt", `${site}/llms.txt`));
+    lines.push(buildMdLink("LLMs-full.txt", `${site}/llms-full.txt`));
+    lines.push("");
+
+    if (about) {
+        lines.push(`## ${t("ai.about")}`);
+        lines.push((about.body as string) || "");
+        lines.push("");
+    }
+
+    lines.push(`## ${t("ai.latestPosts")}`);
+    lines.push(renderPostListMd(posts.slice(0, 10), site, true));
+    return lines.join("\n").trimEnd() + "\n";
+}
+
+// ---------------------------------------------------------------------------
+// llms.txt / llms-full.txt 渲染
+// ---------------------------------------------------------------------------
 
 /** 生成 llms.txt 核心 markdown 内容 */
 export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<string> {
@@ -206,15 +416,18 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
         lines.push(
             buildMdLink(
                 about.data.title || t("ai.about"),
-                `${site}/about/`,
+                pageUrl(site, "about", exportMd),
                 about.data.description || t("ai.aboutDesc"),
             ),
         );
     }
-    lines.push(buildMdLink(t("ai.archives"), `${site}/archives/`, t("ai.archivesDesc")));
-    lines.push(buildMdLink(t("ai.tags"), `${site}/tags/`, t("ai.tagsDesc")));
-    lines.push(buildMdLink(t("ai.categories"), `${site}/categories/`, t("ai.categoriesDesc")));
-    lines.push(buildMdLink(t("ai.words"), `${site}/words/`, t("ai.wordsDesc")));
+    lines.push(buildMdLink(t("ai.archives"), pageUrl(site, "archives", exportMd), t("ai.archivesDesc")));
+    lines.push(buildMdLink(t("ai.tags"), pageUrl(site, "tags", exportMd), t("ai.tagsDesc")));
+    lines.push(
+        buildMdLink(t("ai.categories"), pageUrl(site, "categories", exportMd), t("ai.categoriesDesc")),
+    );
+    lines.push(buildMdLink(t("ai.words"), pageUrl(site, "words", exportMd), t("ai.wordsDesc")));
+    lines.push(buildMdLink(t("ai.links"), pageUrl(site, "links", exportMd), t("ai.links")));
     lines.push("");
 
     // Links（友情链接）
@@ -251,38 +464,73 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
     return lines.join("\n").trimEnd() + "\n";
 }
 
-/** 生成 llms-full.txt 内容：全部公开文章的 Markdown 全文 */
+/** 生成 llms-full.txt 内容：全站 Markdown 镜像 */
 export async function renderLlmsFullTxt(config: ConfigMap, site: string): Promise<string> {
-    const posts = await getPublishedPosts();
     const siteData = getSiteConfig(config);
     const lang = (siteData.lang as string) || "zh-CN";
     const { t } = createTranslator(lang);
+    const posts = await getPublishedPosts();
+    const categoryMap = buildTaxonomyMap(posts, "categories");
+    const tagMap = buildTaxonomyMap(posts, "tags");
 
-    const lines: string[] = [];
+    const sections: string[] = [];
 
-    lines.push(`Lang: ${lang}`);
-    lines.push("");
-    lines.push(`# ${t("ai.fullDataset")}`);
-    lines.push("");
-    lines.push(`> ${t("ai.fullDatasetDesc")}`);
-    lines.push("");
-    lines.push(`- ${t("ai.license")}: CC-BY-NC-SA-4.0`);
-    lines.push(`- ${t("ai.postCount")}: ${posts.length}`);
-    lines.push("");
+    sections.push(`Lang: ${lang}`);
+    sections.push("");
+    sections.push(`# ${t("ai.fullDataset")}`);
+    sections.push("");
+    sections.push(`> ${t("ai.fullDatasetDesc")}`);
+    sections.push("");
+    sections.push(`- ${t("ai.license")}: CC-BY-NC-SA-4.0`);
+    sections.push(`- ${t("ai.postCount")}: ${posts.length}`);
+    sections.push("");
 
+    sections.push("---");
+    sections.push("");
+    sections.push(await renderIndexMd(config, site, t));
+    sections.push("---");
+    sections.push("");
+    sections.push(await renderAboutMd(site));
+    sections.push("---");
+    sections.push("");
+    sections.push(await renderWordsMd());
+    sections.push("---");
+    sections.push("");
+    sections.push(renderLinksMd(config, site, t));
+    sections.push("---");
+    sections.push("");
+    sections.push(await renderArchivesMd(site, true, t));
+    sections.push("---");
+    sections.push("");
+    sections.push(renderTaxonomyListMd(categoryMap, site, "categories", t("ai.allCategories")));
+    sections.push("---");
+    sections.push("");
+    for (const [name, catPosts] of [...categoryMap].sort((a, b) => b[1].length - a[1].length)) {
+        sections.push(renderTaxonomyPageMd(name, catPosts, site, "categories", true));
+        sections.push("---");
+        sections.push("");
+    }
+    sections.push(renderTaxonomyListMd(tagMap, site, "tags", t("ai.allTags")));
+    sections.push("---");
+    sections.push("");
+    for (const [name, tagPosts] of [...tagMap].sort((a, b) => b[1].length - a[1].length)) {
+        sections.push(renderTaxonomyPageMd(name, tagPosts, site, "tags", true));
+        sections.push("---");
+        sections.push("");
+    }
     for (const post of posts) {
         const title = post.data.title || t("ai.untitled");
         const url = postUrl(site, post.data.abbrlink, false);
         const cc = post.data.cc || "CC-BY-NC-SA-4.0";
-        lines.push(`## ${escapeMd(title)}`);
-        lines.push(`URL: ${url}`);
-        lines.push(`License: ${cc}`);
-        lines.push("");
-        lines.push((post.body as string) || "");
-        lines.push("");
-        lines.push("---");
-        lines.push("");
+        sections.push(`## ${escapeMd(title)}`);
+        sections.push(`URL: ${url}`);
+        sections.push(`License: ${cc}`);
+        sections.push("");
+        sections.push((post.body as string) || "");
+        sections.push("");
+        sections.push("---");
+        sections.push("");
     }
 
-    return lines.join("\n").trimEnd() + "\n";
+    return sections.join("\n").trimEnd() + "\n";
 }
