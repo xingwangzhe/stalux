@@ -255,11 +255,7 @@ export async function renderWordsMd(): Promise<string> {
 }
 
 /** 渲染 Links 页 Markdown */
-export function renderLinksMd(
-    config: ConfigMap,
-    site: string,
-    t: (key: string) => string,
-): string {
+export function renderLinksMd(config: ConfigMap, site: string, t: (key: string) => string): string {
     const linksSection = config.get("links") as Record<string, unknown> | undefined;
     const lines: string[] = [];
     lines.push(`# ${(linksSection?.title as string) || t("ai.links")}`);
@@ -267,7 +263,11 @@ export function renderLinksMd(
     lines.push(`URL: ${site}/links/`);
     lines.push("");
     if (linksSection?.sites) {
-        const sites = linksSection.sites as Array<{ name: string; link: string; description: string }>;
+        const sites = linksSection.sites as Array<{
+            name: string;
+            link: string;
+            description: string;
+        }>;
         for (const s of sites) {
             lines.push(buildMdLink(s.name, s.link, s.description));
         }
@@ -421,10 +421,16 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
             ),
         );
     }
-    lines.push(buildMdLink(t("ai.archives"), pageUrl(site, "archives", exportMd), t("ai.archivesDesc")));
+    lines.push(
+        buildMdLink(t("ai.archives"), pageUrl(site, "archives", exportMd), t("ai.archivesDesc")),
+    );
     lines.push(buildMdLink(t("ai.tags"), pageUrl(site, "tags", exportMd), t("ai.tagsDesc")));
     lines.push(
-        buildMdLink(t("ai.categories"), pageUrl(site, "categories", exportMd), t("ai.categoriesDesc")),
+        buildMdLink(
+            t("ai.categories"),
+            pageUrl(site, "categories", exportMd),
+            t("ai.categoriesDesc"),
+        ),
     );
     lines.push(buildMdLink(t("ai.words"), pageUrl(site, "words", exportMd), t("ai.wordsDesc")));
     lines.push(buildMdLink(t("ai.links"), pageUrl(site, "links", exportMd), t("ai.links")));

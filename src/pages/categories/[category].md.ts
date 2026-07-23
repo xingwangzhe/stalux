@@ -1,7 +1,7 @@
 import { getSite, loadConfig, renderTaxonomyPageMd } from "@utils/ai-discovery";
 import { buildTaxonomyStaticPaths } from "@utils/taxonomy";
-import type { CollectionEntry } from "astro:content";
 import type { APIRoute } from "astro";
+import type { CollectionEntry } from "astro:content";
 
 export const prerender = true;
 

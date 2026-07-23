@@ -1,4 +1,10 @@
-import { buildTaxonomyMap, getPublishedPosts, getSite, loadConfig, renderTaxonomyListMd } from "@utils/ai-discovery";
+import {
+    buildTaxonomyMap,
+    getPublishedPosts,
+    getSite,
+    loadConfig,
+    renderTaxonomyListMd,
+} from "@utils/ai-discovery";
 import { createTranslator } from "@utils/i18n";
 import type { APIRoute } from "astro";
 
