@@ -29,7 +29,7 @@
     "devDependencies": {
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
-        "@lucide/astro": "^1.25.0",
+        "@lucide/astro": "^1.27.0",
         "@types/node": "^26.1.1",
         "@xingwangzhe/satteri-mermaid": "0.7.1",
         "@xingwangzhe/satteri-photoswipe": "^0.2.0",
@@ -41,7 +41,7 @@
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.60.0",
         "oxlint": "^1.75.0",
-        "simple-icons": "^16.27.0",
+        "simple-icons": "^16.27.1",
         "subset-font": "^2.5.0",
         "temml": "^0.13.3",
         "typescript": "^7.0.2"
