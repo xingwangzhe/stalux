@@ -49,10 +49,6 @@ bun add @xingwangzhe/stalux
 
 # 4. Initialize content template (creates stalux/ dir with configs & sample posts)
 bunx stalux init
-
-# 5. Add required peer dependencies (for Markdown, code highlighting, etc.)
-bun add @astrojs/markdown-satteri astro-expressive-code @astrojs/sitemap
-bun add @xingwangzhe/satteri-mermaid @xingwangzhe/satteri-photoswipe
 ```
 
 **5. Configure `astro.config.mjs`:**
