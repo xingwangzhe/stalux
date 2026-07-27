@@ -4,7 +4,7 @@
  * Intercepts /fonts/subset-*.css requests, generates the WOFF2 subset
  * for the requested route on-the-fly, and serves it.
  *
- * Hooked into astro:server:setup.
+ * Handles ALL HTML routes: posts, about, words, home, archives, tags, etc.
  */
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
@@ -17,43 +17,66 @@ const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.ttf";
 const CONTENT_ROOT = "stalux";
 const FONT_OUT_DIR = "public/fonts";
 
-/** Map route-style subset ID → content file path */
-function resolveContentFile(projectRoot: string, subsetId: string): string | null {
-  if (subsetId === "home") return null; // home has no specific content
-  if (subsetId === "about") {
-    const aboutDir = resolve(projectRoot, CONTENT_ROOT, "about");
-    if (!existsSync(aboutDir)) return null;
-    for (const f of readdirSync(aboutDir)) {
-      if (f.endsWith(".md") || f.endsWith(".mdx")) return join(aboutDir, f);
-    }
-    return null;
-  }
-  if (subsetId === "words") {
-    const wordsDir = resolve(projectRoot, CONTENT_ROOT, "words");
-    if (!existsSync(wordsDir)) return null;
-    // Aggregate all words files
-    return wordsDir; // special: aggregate all
-  }
+/**
+ * Get characters for a given route subset.
+ * Returns null if route is unknown.
+ */
+function getRouteChars(projectRoot: string, subsetId: string): string | null {
+  const contentRoot = resolve(projectRoot, CONTENT_ROOT);
+
+  // ── Posts ──────────────────────────────────────────────
   if (subsetId.startsWith("posts-")) {
     const abbrlink = subsetId.slice(6);
-    const postsDir = resolve(projectRoot, CONTENT_ROOT, "posts");
+    const postsDir = join(contentRoot, "posts");
     if (!existsSync(postsDir)) return null;
     for (const f of readdirSync(postsDir)) {
       if ((f.endsWith(".md") || f.endsWith(".mdx")) && !f.startsWith("_")) {
         const content = readFileSync(join(postsDir, f), "utf-8");
-        if (content.includes(`abbrlink: ${abbrlink}`)) return join(postsDir, f);
+        if (content.includes(`abbrlink: ${abbrlink}`)) return content;
       }
     }
     return null;
   }
-  return null;
-}
 
-/** Extract unique characters from file content */
-function extractChars(text: string): string {
-  const set = new Set<string>();
-  for (const ch of text) set.add(ch);
-  return [...set].sort().join("");
+  // ── About ──────────────────────────────────────────────
+  if (subsetId === "about") {
+    const aboutDir = join(contentRoot, "about");
+    if (!existsSync(aboutDir)) return null;
+    for (const f of readdirSync(aboutDir)) {
+      if (f.endsWith(".md") || f.endsWith(".mdx")) return readFileSync(join(aboutDir, f), "utf-8");
+    }
+    return null;
+  }
+
+  // ── Words ──────────────────────────────────────────────
+  if (subsetId === "words") {
+    const wordsDir = join(contentRoot, "words");
+    if (!existsSync(wordsDir)) return null;
+    const all: string[] = [];
+    for (const f of readdirSync(wordsDir)) {
+      if (f.endsWith(".md") && !f.startsWith("_")) {
+        all.push(readFileSync(join(wordsDir, f), "utf-8"));
+      }
+    }
+    return all.join("\n") || null;
+  }
+
+  // ── Other HTML routes (home, archives, tags, categories, links, 404) ──
+  // These pages use i18n text + config YAML text, which are already
+  // covered by the common subset. Return config text for extra safety.
+  if (["home", "archives", "tags", "categories", "links", "common"].includes(subsetId)) {
+    const configDir = join(contentRoot, "config");
+    if (!existsSync(configDir)) return null;
+    const all: string[] = [];
+    for (const f of readdirSync(configDir)) {
+      if (f.endsWith(".yml") || f.endsWith(".yaml")) {
+        all.push(readFileSync(join(configDir, f), "utf-8"));
+      }
+    }
+    return all.join("\n") || null;
+  }
+
+  return null;
 }
 
 /**
@@ -65,42 +88,25 @@ async function generateSubsetOnDemand(
   subsetId: string,
   logger: AstroIntegrationLogger,
 ): Promise<string | null> {
-  // 1. Resolve content file
-  const contentPath = resolveContentFile(projectRoot, subsetId);
-  if (!contentPath) return null;
+  const chars = getRouteChars(projectRoot, subsetId);
+  if (!chars) return null;
 
-  // 2. Read content + extract chars
-  let content: string;
-  if (contentPath.endsWith("words")) {
-    // aggregate all words
-    const allWords: string[] = [];
-    for (const f of readdirSync(contentPath)) {
-      if (f.endsWith(".md") && !f.startsWith("_")) {
-        allWords.push(readFileSync(join(contentPath, f), "utf-8"));
-      }
-    }
-    content = allWords.join("\n");
-  } else {
-    content = readFileSync(contentPath, "utf-8");
-  }
+  // Extract unique characters
+  const charSet = new Set<string>();
+  for (const ch of chars) charSet.add(ch);
+  if (charSet.size === 0) return null;
 
-  const chars = extractChars(content);
-
-  // 3. Load common subset chars to find unique ones
+  // Deduplicate against common subset: read common.css to find its referenced WOFF2
   const outDir = resolve(projectRoot, FONT_OUT_DIR);
-  const commonCSS = join(outDir, "common.css");
-  let commonCharsCached: string[] = [];
+  const commonCssPath = join(outDir, "common.css");
+  const commonCharSet = new Set<string>();
 
-  // Look for existing common subset to extract its covered chars
-  // We re-read the common subset data from the generated file list
-  const commonFile = existsSync(join(outDir, "common.css"))
-    ? readFileSync(join(outDir, "common.css"), "utf-8")
-    : "";
-  // We can't know exactly what chars the common subset covers without reading
-  // the original source. But we can just generate the full subset.
-  // To minimize size, we note that common subset already covers most.
+  // We can't precisely know which chars common covers without re-extracting.
+  // But we can read the i18n + config source for a rough estimate.
+  // For now, generate the full subset - the WOFF2 will be small either way.
+  // (Most chars are already in common, so the delta is tiny.)
 
-  // 4. Locate font file
+  // Locate font file
   const fontPaths = [
     resolve(projectRoot, FONT_INPUT),
     resolve(projectRoot, "node_modules", "@xingwangzhe", "stalux", FONT_INPUT),
@@ -115,18 +121,24 @@ async function generateSubsetOnDemand(
   const fontBuffer = readFileSync(fontPath);
   mkdirSync(outDir, { recursive: true });
 
-  // 5. Generate subset WOFF2
-  const hash = [...chars].slice(0, 12).join("");
+  // Generate subset WOFF2
+  const charsStr = [...charSet].sort().join("");
+  const hash = [...charsStr].slice(0, 12).join("");
   const filename = `subset-${subsetId}-${hash}.woff2`;
   const outPath = join(outDir, filename);
 
   if (!existsSync(outPath)) {
-    const data = await subsetFontFn(fontBuffer, chars, { targetFormat: "woff2" });
-    writeFileSync(outPath, data);
-    logger.info(`  on-demand subset: ${(data.length / 1024).toFixed(1)} KB → ${filename}`);
+    try {
+      const data = await subsetFontFn(fontBuffer, charsStr, { targetFormat: "woff2" });
+      writeFileSync(outPath, data);
+      logger.info(
+        `  on-demand subset: ${(data.length / 1024).toFixed(1)} KB → ${filename}`,
+      );
+    } catch {
+      return null;
+    }
   }
 
-  // 6. Return CSS content
   return `@font-face {
     font-family: "LXGW WenKai Subset";
     src: url("/fonts/${filename}") format("woff2");
@@ -145,7 +157,7 @@ export function createDevFontMiddleware(projectRoot: string, logger: AstroIntegr
 
     const subsetId = match[1];
 
-    // Check if file already exists
+    // Check if file already exists (cached from previous on-demand generation)
     const cssPath = resolve(projectRoot, FONT_OUT_DIR, `subset-${subsetId}.css`);
     if (existsSync(cssPath)) {
       res.statusCode = 200;
@@ -158,8 +170,7 @@ export function createDevFontMiddleware(projectRoot: string, logger: AstroIntegr
     logger.info(`Font subset: on-demand generating for "${subsetId}"...`);
     const css = await generateSubsetOnDemand(projectRoot, subsetId, logger);
     if (css) {
-      // Cache it
-      writeFileSync(cssPath, css);
+      writeFileSync(cssPath, css); // cache it
       res.statusCode = 200;
       res.setHeader("Content-Type", "text/css");
       res.end(css);
