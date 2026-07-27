@@ -191,6 +191,20 @@ function collectCommonChars(projectRoot: string): string {
 
     scanDir(srcDir);
 
+    // Also scan user config YAML files for nav titles, descriptions, etc.
+    const configDir = resolve(projectRoot, CONTENT_ROOT, "config");
+    if (existsSync(configDir)) {
+        for (const f of readdirSync(configDir)) {
+            if (!f.endsWith(".yml") && !f.endsWith(".yaml")) continue;
+            try {
+                const content = readFileSync(join(configDir, f), "utf-8");
+                for (const ch of content) chars.add(ch);
+            } catch {
+                /* skip */
+            }
+        }
+    }
+
     return [...chars].sort().join("");
 }
 
