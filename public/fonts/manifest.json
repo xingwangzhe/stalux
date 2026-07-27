@@ -1,8 +1,0 @@
-{
-    "common": "common-70b974ac660b.woff2",
-    "routes": {
-        "about": "subset-about.css",
-        "words": "subset-words.css"
-    },
-    "posts": {}
-}
