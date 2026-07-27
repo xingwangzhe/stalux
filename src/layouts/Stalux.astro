@@ -28,8 +28,8 @@ const authorConfig = getAuthorData(configEntries);
 const promoteConfig = getPromoteData(configEntries);
 const htmlLang = siteConfig.lang || "zh-CN";
 
-// Resolve font subset CSS URL
-const fontSubsetUrl = props.fontSubsetId
+// Resolve font subset CSS URL (only in build mode, dev mode uses only common subset)
+const fontSubsetUrl = import.meta.env.PROD && props.fontSubsetId
   ? `/fonts/subset-${props.fontSubsetId}.css`
   : undefined;
 
