@@ -30,7 +30,7 @@ import subsetFontFn from "subset-font";
 /** Content root directory (relative to project root) */
 const CONTENT_ROOT = "stalux";
 
-/** Full font input path */
+/** Full font input path (relative to project root or package) */
 const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.ttf";
 
 /** Output directory for generated subsets */
@@ -217,18 +217,32 @@ function deduplicate(routes: RouteCharSet[]): Map<string, string[]> {
  * Called from astro:build:start hook.
  */
 export async function runFontSubsetting(
-    projectRoot: string,
-    logger: AstroIntegrationLogger,
+  projectRoot: string,
+  logger: AstroIntegrationLogger,
 ): Promise<void> {
-    logger.info("Font subsetting: scanning content...");
+  logger.info("Font subsetting: scanning content...");
 
-    // 1. Locate font file
-    const fontPath = resolve(projectRoot, FONT_INPUT);
-    if (!existsSync(fontPath)) {
-        logger.warn(`Font not found at ${fontPath}, skipping subsetting`);
-        return;
+  // 1. Locate font file (check project root first, then stalux package dir)
+  const { fileURLToPath } = await import("node:url");
+  const fontPaths = [
+    resolve(projectRoot, FONT_INPUT),
+    resolve(projectRoot, "node_modules", "@xingwangzhe", "stalux", FONT_INPUT),
+    resolve(fileURLToPath(new URL("..", import.meta.url)), "..", FONT_INPUT),
+  ];
+
+  let fontPath: string | undefined;
+  for (const p of fontPaths) {
+    if (existsSync(p)) {
+      fontPath = p;
+      break;
     }
-    const fontBuffer = readFileSync(fontPath);
+  }
+
+  if (!fontPath) {
+    logger.warn(`Font not found at ${FONT_INPUT}, skipping subsetting`);
+    return;
+  }
+  const fontBuffer = readFileSync(fontPath);
 
     // 2. Scan content files
     const contentFiles = scanContent(projectRoot);

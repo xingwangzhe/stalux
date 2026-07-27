@@ -3,7 +3,7 @@ import sitemap from "@astrojs/sitemap";
 import { mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import stalux from "@xingwangzhe/stalux";
 
 // https://astro.build/config
@@ -14,8 +14,28 @@ export default defineConfig({
         prefetchAll: false,
         defaultStrategy: "hover",
     },
+    fonts: [
+        {
+            provider: fontProviders.local(),
+            name: "Google Sans Code",
+            cssVariable: "--font-code",
+            options: {
+                variants: [
+                    {
+                        weight: "100 900",
+                        style: "normal",
+                        src: ["./node_modules/@xingwangzhe/stalux/src/assets/fonts/GoogleSansCode.woff2"],
+                    },
+                    {
+                        weight: "100 900",
+                        style: "italic",
+                        src: ["./node_modules/@xingwangzhe/stalux/src/assets/fonts/GoogleSansCode-Italic.woff2"],
+                    },
+                ],
+            },
+        },
+    ],
     integrations: [
-        // Stalux 主题集成 — 自动注入所有页面、组件、路由
         stalux({
             contentDir: "stalux",
         }),

@@ -1,7 +1,7 @@
 ---
 title: Hello Stalux!
 abbrlink: hello-stalux
-date: 2026-07-27 10:00:00
+date: "2026-07-27 10:00:00"
 tags: [Stalux, Getting Started]
 categories: [Blog]
 desc: Welcome to Stalux! This is your first blog post.
