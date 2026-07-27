@@ -190,15 +190,25 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                 logger.info(`Stalux initialized (contentDir: ${opt.contentDir})`);
             },
 
-            "astro:build:start": async ({ logger }) => {
-                // 5. 每路由最小化字体裁剪
-                try {
-                    const projectRoot = process.cwd();
-                    await runFontSubsetting(projectRoot, logger);
-                } catch (error) {
-                    logger.warn(`Font subsetting skipped: ${String(error)}`);
-                }
-            },
+      "astro:build:start": async ({ logger }) => {
+        // 5. 每路由最小化字体裁剪（构建时）
+        try {
+          const projectRoot = process.cwd();
+          await runFontSubsetting(projectRoot, logger);
+        } catch (error) {
+          logger.warn(`Font subsetting skipped: ${String(error)}`);
+        }
+      },
+
+      "astro:server:setup": async ({ logger }) => {
+        // 6. 每路由最小化字体裁剪（开发模式）
+        try {
+          const projectRoot = process.cwd();
+          await runFontSubsetting(projectRoot, logger);
+        } catch (error) {
+          logger.warn(`Font subsetting skipped: ${String(error)}`);
+        }
+      },
 
             "astro:build:done": async ({ dir, logger }) => {
                 // 6. 后处理：Pagefind 搜索索引
