@@ -19,15 +19,12 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   node-version: 22
-                  registry-url: https://registry.npmjs.org
 
             - uses: oven-sh/setup-bun@v2
 
             - run: bun install
 
-            - name: Clear npmrc auth and publish with OIDC provenance
+            - name: Publish with OIDC provenance
               run: |
-                  # Remove any auth token from npmrc to let OIDC handle auth
-                  npm config delete //registry.npmjs.org/:_authToken 2>/dev/null || true
-                  npm config delete _authToken 2>/dev/null || true
+                  npm config set registry https://registry.npmjs.org
                   npm publish --provenance --access public
