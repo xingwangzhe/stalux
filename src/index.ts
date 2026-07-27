@@ -208,11 +208,17 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                 }
             },
 
-            "astro:server:setup": async ({ logger }) => {
-                // 7. 字体裁剪（开发模式，仅 common 子集）
+            "astro:server:setup": async ({ server, logger }) => {
+                // 7. 字体裁剪（开发模式，生成 common 子集 + 按需路由切片）
                 try {
                     const projectRoot = process.cwd();
+                    // 先生成 common 子集
                     await runFontSubsetting(projectRoot, logger, true);
+                    // 再添加按需路由切片中间件
+                    const { createDevFontMiddleware } = await import(
+                        new URL("./internal/font-subset-dev.ts", import.meta.url).href
+                    );
+                    server.middlewares.use(createDevFontMiddleware(projectRoot, logger));
                 } catch (error) {
                     logger.debug(`Font subsetting deferred in dev: ${String(error)}`);
                 }
