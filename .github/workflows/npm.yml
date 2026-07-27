@@ -16,17 +16,11 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 22
-
             - uses: oven-sh/setup-bun@v2
 
             - run: bun install
 
-            - name: Publish with OIDC (no token)
+            - name: Publish with OIDC provenance
               run: |
-                  # Only set registry, no auth token — OIDC handles auth via --provenance
-                  echo "@xingwangzhe:registry=https://registry.npmjs.org" >> .npmrc
-                  echo "registry=https://registry.npmjs.org" >> .npmrc
+                  npm config set registry https://registry.npmjs.org
                   npm publish --provenance --access public
