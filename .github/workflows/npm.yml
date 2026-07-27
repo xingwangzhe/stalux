@@ -19,12 +19,12 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   node-version: 22
+                  registry-url: https://registry.npmjs.org
 
             - uses: oven-sh/setup-bun@v2
 
             - run: bun install
 
-            - name: Publish with OIDC provenance
-              run: |
-                  npm config set registry https://registry.npmjs.org
-                  npm publish --provenance --access public
+            - run: npm publish --provenance --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
