@@ -1,0 +1,8 @@
+id: media-links
+items:
+    - icon: github
+      link: https://github.com/
+    - icon: bilibili
+      link: https://bilibili.com/
+    - icon: maildotru
+      link: mailto:hello@example.com

@@ -10,14 +10,15 @@ interface Props {
     description: string;
     heading: string;
     subheading?: string;
+    fontSubsetId?: string;
 }
 
-const { title, description, heading, subheading } = Astro.props;
+const { title, description, heading, subheading, fontSubsetId } = Astro.props;
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 ---
 
-<Stalux title={title + " | " + siteConfig.title} description={description}>
+<Stalux title={title + " | " + siteConfig.title} description={description} fontSubsetId={fontSubsetId}>
     <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.title}>{heading}</h1>

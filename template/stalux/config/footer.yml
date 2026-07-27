@@ -1,0 +1,13 @@
+id: footer
+copyright:
+    enabled: true
+    startYear: 2026
+theme:
+    showPoweredBy: true
+    showThemeInfo: true
+beian:
+    icp:
+        enabled: false
+    security:
+        enabled: false
+badges: []

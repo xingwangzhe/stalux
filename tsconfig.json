@@ -13,7 +13,9 @@
             "@styles/*": ["./src/styles/*"],
             "@utils/*": ["./src/utils/*"],
             "@i18n/*": ["./src/i18n/*"],
-            "@plugins/*": ["./src/plugins/*"]
+            "@plugins/*": ["./src/plugins/*"],
+            "@schemas/*": ["./src/schemas/*"],
+            "@internal/*": ["./src/internal/*"]
         }
     }
 }

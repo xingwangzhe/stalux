@@ -18,6 +18,8 @@ interface Props {
   categories?: string[];
   author?: string;
   noindex?: boolean;
+  /** Font subset ID for per-route font optimization */
+  fontSubsetId?: string;
 }
 
 const configEntries = await getCollection("config");
@@ -25,6 +27,11 @@ const siteConfig = getSiteData(configEntries);
 const authorConfig = getAuthorData(configEntries);
 const promoteConfig = getPromoteData(configEntries);
 const htmlLang = siteConfig.lang || "zh-CN";
+
+// Resolve font subset CSS URL
+const fontSubsetUrl = props.fontSubsetId
+  ? `/fonts/subset-${props.fontSubsetId}.css`
+  : undefined;
 
 const bgModules = import.meta.glob<{ default: { src: string } }>(
     "../assets/background/pattern-*.min.svg",
@@ -61,6 +68,9 @@ const llmPromote = llmPromoteRaw
     author={props.author}
     noindex={props.noindex}
   />
+  <!-- Per-route font subset (generated at build time) -->
+  <link rel="stylesheet" href="/fonts/common.css" />
+  {fontSubsetUrl && <link rel="stylesheet" href={fontSubsetUrl} />}
   <script define:vars={{ bgUrls, randomIndex }}>
     window.__STALUX_BG_URLS__ = bgUrls;
     window.__STALUX_BG_INDEX__ = randomIndex;

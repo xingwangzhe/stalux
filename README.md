@@ -1,289 +1,224 @@
-**This project is accelerated, computed and protected by Alibaba Cloud ESA**
-
 [中文文档](./README_CN.md) | English
-
-![Alibaba Cloud Acceleration](aliyun.png)
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xingwangzhe/stalux)
-[![Deploy with EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https://github.com/xingwangzhe/stalux)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/xingwangzhe/stalux)
-
-**#Alibaba Cloud ESA Pages** **#Alibaba Cloud Yungong Kaichuang**
-
-# Stalux - Modern Astro Blog Theme
 
 [![CI](https://github.com/xingwangzhe/stalux/actions/workflows/ci.yml/badge.svg?branch=newMain)](https://github.com/xingwangzhe/stalux/actions/workflows/ci.yml)
 
-![Multi-device Preview](image.png)
+# Stalux — Modern Astro Blog Theme
 
-## **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
+**Dual-mode: Use as a template 📦 or install as a plugin 🔌**
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/xingwangzhe/stalux)
+**[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
-**This blog theme has [Software Copyright Registration](./软著证明.pdf) and is protected by Chinese copyright law. Please comply with the [LICENSE](./LICENSE) (MIT License).**
+Elegant, high-performance, easily configurable Astro static blog theme.
 
-<p align="center">
-  Elegant, high-performance, easily configurable Astro static blog theme
-</p>
+In terms of design, Stalux draws on minimalism and moderate decoration: it maintains an overall dark tone with subtle glassmorphism textures, and the background uses tiled decorative patterns to enhance visual depth without being distracting.
 
-In terms of design, Stalux draws on minimalism and moderate decoration: it maintains an overall dark tone with subtle glassmorphism textures, and the background uses tiled decorative patterns to enhance visual depth without being distracting (see the repository notice for background sources). The theme's goal is to focus the reader's attention on the content while retaining moderate decorative details to enhance overall recognition.
+In terms of experience, Stalux balances SSG's high performance with the smooth feel of page transitions without full reloads. Through view transitions and handling of `astro:page-load` events, the theme keeps the header, footer, and other common components stable during navigation or main content switching.
 
-In terms of experience, Stalux balances SSG's high performance with the smooth feel of page transitions without full reloads. Through view transitions and handling of `astro:page-load` events, the theme keeps the header, footer, and other common components stable during navigation or main content switching, reducing white flashes and ensuring that comments, search, and other scripts continue to work properly after transitions.
+Content-first is one of the theme's core principles: writing and presentation are considered top priority. The theme supports CommonMark, code highlighting, Mermaid flowcharts, and KaTeX math formulas out of the box.
 
-Content-first is one of the theme's core principles: writing and presentation are considered top priority. The theme supports CommonMark, code highlighting, Mermaid flowcharts, and KaTeX math formulas out of the box. Articles support automatic table of contents generation and reading time estimation, and content collections are placed under `stalux/posts`, `stalux/about`, and `stalux/words` by default for easy folder-level content management.
-
-### New Page: Words (/words)
-
-The theme includes a "Words" quotes page for collecting short phrases, code snippets, or anything you want to record. Simply create a Markdown file under `stalux/words/`:
-
-```yaml
 ---
-source: "Source or author"
-link: "https://source-link" # Optional; when present, source becomes a clickable external link
-sourceDate: "1999" # Optional; source date, displayed in italics at the bottom right
-date: "2026-06-18 20:45:00" # Optional; when this word was recorded, displayed at the bottom left
-updated: "2026-06-18 21:00:00" # Optional
-draft: false # Optional; defaults to false, true hides the entry
----
-Write the quote body here, supports **Markdown**, `inline code`, and code blocks.
-```
 
-Add `- title: Words / icon: quote / link: /words` to the `navs` section in `config.yml` to include it in navigation.
+## 🚀 Two Ways to Use
 
-For configuration, Stalux uses YAML as the primary configuration format (`config.yml`), with type checking and loading handled by `content.config.ts`, which keeps configuration readable while catching common errors at build time. The repository also provides `BACK.yml` as an example and backup.
+### Option A: Clone Source Code (Template Mode)
 
-```yaml
-stalux:
-    lang: zh-CN # Site language, options: zh-CN, en
-    title: Stalux Blog Theme
-    url: https://stalux.needhelp.icu
-    description: "Blog theme Stalux - A professional display platform for content creators..."
-    timezone: "Asia/Shanghai"
-    # canonical: # Canonical URL, defaults to stalux.url
-    # twitterSite: # Twitter site handle
-    # noindex: # Whether to block search engine indexing, default false
-    # nofollow: # Whether to block search engine link following, default false
-    # Analytics and custom head configuration
-    head:
-        # Google Analytics 4 tracking ID (format: G-XXXXXXXXXX)
-        # googleAnalyticsId: ""
-        # Microsoft Bing Clarity project ID
-        # bingClarityId: ""
-        # Umami analytics configuration
-        # umami:
-        #   id: ""      # Website ID
-        #   url: ""     # Umami script URL
-        # Extra custom head content (HTML string)
-        anyhead: ""
-    favicon: "/stalux.ico" # Favicon path, defaults to root
-
-    author:
-        name: xingwangzhe
-        avatar: /avatar.png
-        bio: Blog Theme Stalux
-
-    navs:
-        # icon: use standard Lucide icon names
-        # Icon list: https://lucide.dev/icons/
-        - title: Home
-          icon: home
-          link: /
-        - title: Archives
-          icon: archive
-          link: /archives
-        - title: Categories
-          icon: folder
-          link: /categories
-        - title: Tags
-          icon: tag
-          link: /tags
-        - title: Words
-          icon: quote
-          link: /words
-        - title: Links
-          icon: link
-          link: /links
-        - title: About
-          icon: user
-          link: /about
-        - title: Travellings
-          icon: train-front
-          link: https://www.travellings.cn/go
-
-    typetexts:
-        - "Free for free, not free for charge!"
-        - "Where's the any key?"
-        - "Press F12?"
-        - "Hello World!"
-
-    mediaLinks:
-        - icon: github
-          link: https://github.com/xingwangzhe/stalux
-        - icon: bilibili
-          link: https://bilibili.com/
-        - icon: X
-          link: https://x.com
-        - icon: juejin
-          link: https://juejin.cn/
-        - icon: zhihu
-          link: https://www.zhihu.com/
-        - icon: maildotru
-          link: mailto:xingwangzhe@outlook.com
-        - icon: telegram
-          link: https://t.me/
-
-    links:
-        title: Helpful Links
-        description: These sites are great and have been very helpful to this theme!
-        sites:
-            - name: Astro
-              description: A modern static site generator for building content-rich websites.
-              link: https://astro.build/
-              icon: https://astro.build/favicon.svg
-            - name: MDN
-              description: Provides open, detailed, and easy-to-understand information about web standards.
-              link: https://developer.mozilla.org/
-              icon: https://developer.mozilla.org/favicon.ico
-            - name: animejs
-              description: A powerful JavaScript animation library that helps you easily create complex animations.
-              link: https://animejs.com/
-              icon: https://animejs.com/assets/images/favicon.png
-            - name: feather-icons
-              description: A clean and beautiful open-source icon library suitable for various design projects.
-              link: https://feathericons.com/
-              icon: https://feathericons.com/favicon.ico
-            - name: simple-icons
-              description: An open-source icon library providing thousands of brand icons for web and app design.
-              link: https://simpleicons.org/
-              icon: https://simpleicons.org/icons/simpleicons.svg
-
-    footer:
-        # Site build time, used to calculate uptime
-        buildtime: "2025-05-01T10:00:00"
-
-        # Copyright information
-        copyright:
-            enabled: true
-            startYear: 2024
-            customText: ""
-
-        # Theme information
-        theme:
-            showPoweredBy: true
-            showThemeInfo: true
-
-        # Filing/ICP information
-        beian:
-            # ICP filing
-            icp:
-                enabled: false
-                number: "辽ICP备XXXXXXXX号"
-            # Public security filing
-            security:
-                enabled: false
-                text: "辽公网安备 XXXXXXXXXXXX号"
-                number: "XXXXXXXXXXXX"
-
-        # Badge configuration
-        badges:
-            - label: "Powered by"
-              message: "Astro"
-              color: "orange"
-              style: "flat-square"
-              alt: "Powered by Astro"
-              href: "https://astro.build/"
-            - label: "Theme"
-              message: "Stalux"
-              color: "blueviolet"
-              alt: "Theme: Stalux"
-              href: "https://github.com/xingwangzhe/stalux"
-            - label: "Built with"
-              message: "❤"
-              color: "red"
-              style: "for-the-badge"
-              alt: "Built with Love"
-              href: "https://github.com/xingwangzhe"
-            - label: "license"
-              message: "MIT"
-              color: "blue"
-              alt: "License: MIT"
-              href: "https://github.com/xingwangzhe/stalux/blob/main/LICENSE"
-            - label: "Copyright"
-              message: "Reg# 2025SR2258474"
-              color: "yellowgreen"
-              alt: "Software Copyright Registration No. 2025SR2258474"
-              href: "/软著证明.pdf"
-            - label: "Aliyun ESA"
-              message: "Powered"
-              color: "brightgreen"
-              alt: "Alibaba Cloud ESA"
-              href: "https://www.aliyun.com/product/esa"
-            - label: "Sitemap"
-              message: "XML"
-              color: "orange"
-              alt: "Sitemap XML"
-              href: "/sitemap-index.xml"
-            - label: "RSS"
-              message: "Feed"
-              color: "orange"
-              alt: "RSS Feed"
-              href: "/rss.xml"
-            - label: "Atom"
-              message: "Feed"
-              color: "orange"
-              alt: "Atom Feed"
-              href: "/atom.xml"
-            - label: "LLMs"
-              message: "Dataset"
-              color: "blue"
-              alt: "LLM Dataset"
-              href: "/llms.txt"
-
-        custom: |
-            <!-- footer custom slot example, can place stats, widgets, etc. -->
-            <div id="custom-footer-hook"></div>
-            <script>console.log('Custom footer loaded');</script>
-
-    comment:
-        enabled: false # Toggle to enable/disable comments, disabled by default
-        waline:
-            serverURL: https://walines.xingwangzhe.fun
-            lang: zh-CN
-            # locale: # Optional, custom language configuration
-            login: "force" # 'enable' | 'disable' | 'force' (force login prevents impersonation)
-            recaptchaV3Key: "" # Optional, configure reCAPTCHA v3 site key to enable CAPTCHA
-            turnstileKey: "" # Optional, configure Cloudflare Turnstile key to enable CAPTCHA
-            dark: true
-            # Emoji preset list: https://waline.js.org/next/guide/features/emoji.html#presets
-            reaction: false
-            meta:
-                - nick
-                - mail
-                - link
-            requiredMeta: []
-            commentSorting: "latest"
-            # imageUploader: # Optional, custom image upload function
-            # highlighter: # Optional, custom code highlighter function
-            # texRenderer: # Optional, custom TeX renderer function
-            # search: # Optional, custom search function
-            wordLimit: 200
-            pageSize: 10
-```
-
-In terms of functionality ecosystem, the theme includes Waline comment integration, Feather and Simple Icons icon sets, PhotoSwipe image lightbox, Orama full-text search, and a badge generator. For developer experience, Stalux uses TypeScript + CSS Modules, and recommends using Bun for faster install and build speeds, though npm/pnpm/yarn are also fully compatible.
-
-Quick start:
+Get the full source — modify anything, customize everything:
 
 ```bash
 git clone https://github.com/xingwangzhe/stalux.git my-blog
 cd my-blog
-# Recommended: Bun
-bun install
-bun run dev
-# Or npm:
-# npm install && npm run dev
+bun install           # or npm install
+bun run dev           # or npm run dev
 ```
 
-To write a post, simply create a Markdown file under `stalux/posts/`. The minimum frontmatter requires `title`, `abbrlink`, and `date` (optional fields like `tags`, `categories`, `cc`, `cover` enhance article metadata display). To write a "Word", place it under `stalux/words/`. For more detailed configuration and usage examples, see `BACK.yml`, `license.txt` (dependency license listing), and `LICENSE` in the repository.
+### Option B: Install as Astro Integration (Plugin Mode)
 
-If you like this theme, please consider giving it a ⭐️ to show your support!
+Keep your project clean — install stalux as a dependency in a new or existing Astro project.
+
+**Step-by-step from scratch:**
+
+```bash
+# 1. Create a new Astro project (choose "minimal" template)
+bun create astro
+
+# 2. Enter your project directory
+cd ./myblog
+
+# 3. Install the stalux theme package
+bun add @xingwangzhe/stalux
+
+# 4. Initialize content template (creates stalux/ dir with configs & sample posts)
+bunx stalux init
+
+# 5. Add required peer dependencies (for Markdown, code highlighting, etc.)
+bun add @astrojs/markdown-satteri astro-expressive-code @astrojs/sitemap
+bun add @xingwangzhe/satteri-mermaid @xingwangzhe/satteri-photoswipe
+```
+
+**5. Configure `astro.config.mjs`:**
+
+```ts
+import { defineConfig } from "astro/config";
+import { satteri } from "@astrojs/markdown-satteri";
+import sitemap from "@astrojs/sitemap";
+import expressiveCode from "astro-expressive-code";
+import stalux from "@xingwangzhe/stalux";
+import { mermaidHast } from "@xingwangzhe/satteri-mermaid";
+import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
+
+export default defineConfig({
+    output: "static",
+    site: "https://example.com",
+    integrations: [
+        stalux({ contentDir: "stalux" }),
+        sitemap(),
+        expressiveCode({ themes: ["dark-plus", "github-light"] }),
+    ],
+    markdown: {
+        processor: satteri({
+            features: { math: true, smartPunctuation: true, gfm: true, frontmatter: true },
+            hastPlugins: [photoswipe(), mermaidHast({ responsive: true, theme: "dark" })],
+        }),
+    },
+});
+```
+
+Create `src/content.config.ts`:
+
+```ts
+import { defineCollections } from "@xingwangzhe/stalux/schemas";
+export const collections = defineCollections({ contentDir: "stalux" });
+```
+
+**6. Start writing and developing:**
+
+```bash
+bun run dev
+```
+
+Your blog is now running at `http://localhost:4321/` with all theme pages, search, RSS, and more ready to go.
+
+> 💡 `bunx stalux init` creates the `stalux/` directory structure with example content.
+> Run it any time to see what a valid config looks like — it won't overwrite existing files.
+
+---
+
+## 📝 Quick Start: Writing Content
+
+Create a markdown file under `stalux/posts/`:
+
+```yaml
+---
+title: Hello World
+abbrlink: hello-world
+date: 2026-07-27 10:00:00
+tags: [Stalux, Getting Started]
+categories: [Blog]
+desc: A brief description of your post.
+---
+Your content here...
+```
+
+**Content Directory Structure:**
+
+```
+stalux/
+├── config/              # YAML configuration files
+│   ├── site.yml         # Site metadata
+│   ├── author.yml       # Author info
+│   ├── navs.yml         # Navigation menu
+│   ├── footer.yml       # Footer badges & copyright
+│   ├── links.yml        # Friend links
+│   ├── comment.yml      # Waline comment config
+│   ├── head.yml         # Analytics & custom head
+│   ├── media-links.yml  # Social media links
+│   ├── promote.yml      # LLM promotion & export
+│   ├── ai-discovery.yml # AI discovery file config
+│   └── typetexts.yml    # Typewriter text snippets
+├── posts/               # Blog posts (Markdown)
+├── about/index.md       # About page
+└── words/               # Quotes / short notes (Markdown)
+```
+
+---
+
+## ✨ Features
+
+- 🌙 **Dark mode** as default, with elegant glassmorphism design
+- 🔍 **Full-text search** via Pagefind (auto-indexed on build)
+- 📡 **RSS & Atom feeds**
+- 🖼️ **PhotoSwipe** image lightbox
+- 📊 **Mermaid** diagrams & flowcharts
+- 📐 **KaTeX / MathML** math rendering
+- 🤖 **LLM discovery files** (llms.txt / llms-full.txt)
+- 💬 **Waline** comment system
+- 📱 **Fully responsive**
+- ⚡ **View transitions** for smooth navigation
+- 🏷️ **Tags, categories, archives**
+- 🌐 **i18n** (zh-CN / en)
+
+---
+
+## 🛠️ Development
+
+```bash
+# Install dependencies
+bun install           # recommended
+# npm install
+
+# Start dev server
+bun run dev
+
+# Build
+bun run build
+
+# Preview
+bun run preview
+```
+
+---
+
+## 🎨 Customizing Components
+
+Stalux supports component overrides (like Starlight):
+
+```ts
+import { defineConfig } from "astro/config";
+import stalux from "@xingwangzhe/stalux";
+
+export default defineConfig({
+    integrations: [
+        stalux({
+            components: {
+                Navs: "./src/components/CustomNavs.astro",
+                Footer: "./src/components/CustomFooter.astro",
+                // ... see full list in src/internal/override.ts
+            },
+        }),
+    ],
+});
+```
+
+Use the `@stalux/component/*` import alias in your custom components:
+
+```astro
+---
+import Navs from "@stalux/component/Navs";
+---
+<Navs />
+```
+
+---
+
+## 📖 Documentation
+
+Full documentation and live demo: **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](./LICENSE).
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xingwangzhe/stalux)
+[![Deploy with EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https://github.com/xingwangzhe/stalux)

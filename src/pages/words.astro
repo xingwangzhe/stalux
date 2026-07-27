@@ -13,7 +13,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const entries = await getCollection("words", ({ data }) => !data.draft);
 ---
 
-<Stalux title={t("words.title") + " | " + siteConfig.title} description={t("words.description")}>
+<Stalux title={t("words.title") + " | " + siteConfig.title} description={t("words.description")} fontSubsetId="words">
     <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.title}>{t("words.heading")}</h1>

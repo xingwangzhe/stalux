@@ -1,6 +1,7 @@
 # build output
 dist/
 src/content/*
+
 # generated types
 .astro/
 
@@ -25,3 +26,15 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# editor / tool configs
+.claude/
+.obsidian/
+.trae/
+.vscode/
+.zed/
+.zcode/
+.codegraph/
+.playwright-cli/
+.playwright-mcp/
+docs/

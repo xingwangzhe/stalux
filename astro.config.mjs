@@ -9,16 +9,16 @@ import expressiveCode from "astro-expressive-code";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 
-import { pagefind } from "./src/integrations/pagefind.ts";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-import fs from "node:fs";
-
+// 使用本地 stalux 集成（注入路由、Vite 别名、Pagefind 等）
+import stalux from "./src/index.ts";
 import { featureFlagsHast, featureFlagsMdast } from "./src/plugins/feature-flags.ts";
 import { temml } from "./src/plugins/satteri-temml.ts";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const site = "https://stalux.needhelp.icu";
+
+import fs from "node:fs";
 
 // 预计算薄标签（< 3 篇文章）的 URL 集合，用于 sitemap 过滤
 function computeThinTagUrls() {
@@ -62,6 +62,7 @@ function computeThinTagUrls() {
 }
 
 const thinTagUrls = computeThinTagUrls();
+
 // https://astro.build/config
 export default defineConfig({
     output: "static",
@@ -95,6 +96,13 @@ export default defineConfig({
         },
     ],
     integrations: [
+        // Stalux 主题集成（注入路由、Vite 别名、全局 CSS、Pagefind 等）
+        stalux({
+            contentDir: "stalux",
+            pagefind: true,
+            devToolbar: true,
+        }),
+
         sitemap({
             filter: (page) => {
                 // 不把 Markdown 源码端点（/posts/*.md）写入 sitemap
@@ -134,36 +142,7 @@ export default defineConfig({
                 },
             },
         }),
-        pagefind(),
     ],
-    vite: {
-        resolve: {
-            alias: {
-                "@components": path.resolve(__dirname, "src/components"),
-                "@assets": path.resolve(__dirname, "src/assets"),
-                "@layouts": path.resolve(__dirname, "src/layouts"),
-                "@scripts": path.resolve(__dirname, "src/scripts"),
-                "@styles": path.resolve(__dirname, "src/styles"),
-                "@utils": path.resolve(__dirname, "src/utils"),
-                "@i18n": path.resolve(__dirname, "src/i18n"),
-                "@plugins": path.resolve(__dirname, "src/plugins"),
-                "@schemas": path.resolve(__dirname, "src/schemas"),
-            },
-        },
-        define: {
-            // Vue feature flags for Waline
-            __VUE_OPTIONS_API__: true,
-            __VUE_PROD_DEVTOOLS__: false,
-            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
-        },
-        build: {
-            minify: "oxc",
-            cssMinify: "lightningcss",
-            target: "esnext",
-            sourcemap: false,
-            chunkSizeWarningLimit: 1000,
-        },
-    },
     markdown: {
         processor: satteri({
             features: {

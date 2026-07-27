@@ -1,0 +1,23 @@
+id: navs
+items:
+    - icon: home
+      link: /
+      title: Home
+    - icon: archive
+      link: /archives/
+      title: Archives
+    - icon: folder
+      link: /categories/
+      title: Categories
+    - icon: tag
+      link: /tags/
+      title: Tags
+    - icon: quote
+      link: /words/
+      title: Words
+    - icon: link
+      link: /links/
+      title: Links
+    - icon: user
+      link: /about/
+      title: About
