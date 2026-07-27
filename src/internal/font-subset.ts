@@ -17,7 +17,8 @@
 
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
-import { resolve, basename, extname, join } from "node:path";
+import { resolve, basename, extname, join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import type { AstroIntegrationLogger } from "astro";
 // subset-font 是 WASM 模块，需要静态导入（Vite module runner 在构建钩子中不兼容动态 import）
@@ -223,11 +224,10 @@ export async function runFontSubsetting(
   logger.info("Font subsetting: scanning content...");
 
   // 1. Locate font file (check project root first, then stalux package dir)
-  const { fileURLToPath } = await import("node:url");
   const fontPaths = [
     resolve(projectRoot, FONT_INPUT),
     resolve(projectRoot, "node_modules", "@xingwangzhe", "stalux", FONT_INPUT),
-    resolve(fileURLToPath(new URL("..", import.meta.url)), "..", FONT_INPUT),
+    resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", FONT_INPUT),
   ];
 
   let fontPath: string | undefined;
