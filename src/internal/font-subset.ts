@@ -229,34 +229,39 @@ function deduplicate(routes: RouteCharSet[]): Map<string, string[]> {
 
 /**
  * Run font subsetting during build.
- * Called from astro:build:start hook.
+ * Called from integration hooks.
+ *
+ * @param projectRoot - Project root directory
+ * @param logger - Astro integration logger
+ * @param skipPerRoute - Skip per-route subsets (for dev mode, only generate common)
  */
 export async function runFontSubsetting(
-  projectRoot: string,
-  logger: AstroIntegrationLogger,
+    projectRoot: string,
+    logger: AstroIntegrationLogger,
+    skipPerRoute = false,
 ): Promise<void> {
-  logger.info("Font subsetting: scanning content...");
+    logger.info("Font subsetting: scanning content...");
 
-  // 1. Locate font file (check project root first, then stalux package dir)
-  const fontPaths = [
-    resolve(projectRoot, FONT_INPUT),
-    resolve(projectRoot, "node_modules", "@xingwangzhe", "stalux", FONT_INPUT),
-    resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", FONT_INPUT),
-  ];
+    // 1. Locate font file (check project root first, then stalux package dir)
+    const fontPaths = [
+        resolve(projectRoot, FONT_INPUT),
+        resolve(projectRoot, "node_modules", "@xingwangzhe", "stalux", FONT_INPUT),
+        resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", FONT_INPUT),
+    ];
 
-  let fontPath: string | undefined;
-  for (const p of fontPaths) {
-    if (existsSync(p)) {
-      fontPath = p;
-      break;
+    let fontPath: string | undefined;
+    for (const p of fontPaths) {
+        if (existsSync(p)) {
+            fontPath = p;
+            break;
+        }
     }
-  }
 
-  if (!fontPath) {
-    logger.warn(`Font not found at ${FONT_INPUT}, skipping subsetting`);
-    return;
-  }
-  const fontBuffer = readFileSync(fontPath);
+    if (!fontPath) {
+        logger.warn(`Font not found at ${FONT_INPUT}, skipping subsetting`);
+        return;
+    }
+    const fontBuffer = readFileSync(fontPath);
 
     // 2. Scan content files
     const contentFiles = scanContent(projectRoot);
@@ -309,69 +314,71 @@ export async function runFontSubsetting(
 `;
     writeFileSync(join(outDir, "common.css"), commonCSS);
 
-    // Generate per-route subsets (deduplicated) and their CSS
     const groups = deduplicate(routeSets);
     const routeMap: Record<string, string> = {};
     const postMap: Record<string, string> = {};
 
     let subsetCount = 0;
-    // Track which subsets we've already generated CSS for
     const cssGenerated = new Set<string>();
 
-    for (const [hash, routes] of groups) {
-        const filename = `subset-${hash}.woff2`;
-        const outPath = join(outDir, filename);
-        if (!existsSync(outPath)) {
-            // Find the route chars for this hash
-            const route = routeSets.find((r) => r.hash === hash);
-            const chars = route?.chars ?? "";
-            // Only subset characters NOT in common (already covered by common.css)
-            const uniqueChars = chars
-                .split("")
-                .filter((ch) => !commonChars.includes(ch))
-                .join("");
-            if (uniqueChars.length > 0) {
-                const data = await subsetFont(fontBuffer, uniqueChars, { targetFormat: "woff2" });
-                writeFileSync(outPath, data);
-                subsetCount++;
-                logger.info(
-                    `  subset ${subsetCount}: ${(data.length / 1024).toFixed(1)} KB → ${filename}`,
-                );
+    if (!skipPerRoute) {
+        for (const [hash, routes] of groups) {
+            const filename = `subset-${hash}.woff2`;
+            const outPath = join(outDir, filename);
+            if (!existsSync(outPath)) {
+                // Find the route chars for this hash
+                const route = routeSets.find((r) => r.hash === hash);
+                const chars = route?.chars ?? "";
+                // Only subset characters NOT in common (already covered by common.css)
+                const uniqueChars = chars
+                    .split("")
+                    .filter((ch) => !commonChars.includes(ch))
+                    .join("");
+                if (uniqueChars.length > 0) {
+                    const data = await subsetFont(fontBuffer, uniqueChars, {
+                        targetFormat: "woff2",
+                    });
+                    writeFileSync(outPath, data);
+                    subsetCount++;
+                    logger.info(
+                        `  subset ${subsetCount}: ${(data.length / 1024).toFixed(1)} KB → ${filename}`,
+                    );
+                }
             }
-        }
 
-        // Generate per-route CSS (one per unique hash, references all routes with this hash)
-        if (!cssGenerated.has(hash)) {
-            cssGenerated.add(hash);
-            for (const route of routes) {
-                const cssContent = `/* Auto-generated font subset for route: ${route} */
+            // Generate per-route CSS (one per unique hash, references all routes with this hash)
+            if (!cssGenerated.has(hash)) {
+                cssGenerated.add(hash);
+                for (const route of routes) {
+                    const cssContent = `/* Auto-generated font subset for route: ${route} */
 @font-face {
     font-family: "LXGW WenKai Subset";
     src: url("/fonts/${filename}") format("woff2");
     font-display: swap;
 }
 `;
-                // Use first route's name as the CSS filename (they share the same subset)
-                const cssName = routes.length === 1 ? route.replace("/", "-") : `group-${hash}`;
-                const cssFilename = `subset-${cssName}.css`;
-                writeFileSync(join(outDir, cssFilename), cssContent);
-                routeMap[route] = cssFilename;
+                    // Use first route's name as the CSS filename (they share the same subset)
+                    const cssName = routes.length === 1 ? route.replace("/", "-") : `group-${hash}`;
+                    const cssFilename = `subset-${cssName}.css`;
+                    writeFileSync(join(outDir, cssFilename), cssContent);
+                    routeMap[route] = cssFilename;
 
-                if (route.startsWith("posts/")) {
-                    const abbrlink = route.replace("posts/", "");
-                    postMap[abbrlink] = cssFilename;
+                    if (route.startsWith("posts/")) {
+                        const abbrlink = route.replace("posts/", "");
+                        postMap[abbrlink] = cssFilename;
+                    }
                 }
-            }
-        } else {
-            // CSS already generated, just map
-            for (const route of routes) {
-                const cssFilename =
-                    routes.length === 1
-                        ? `subset-${route.replace("/", "-")}.css`
-                        : `subset-group-${hash}.css`;
-                routeMap[route] = cssFilename;
-                if (route.startsWith("posts/")) {
-                    postMap[route.replace("posts/", "")] = cssFilename;
+            } else {
+                // CSS already generated, just map
+                for (const route of routes) {
+                    const cssFilename =
+                        routes.length === 1
+                            ? `subset-${route.replace("/", "-")}.css`
+                            : `subset-group-${hash}.css`;
+                    routeMap[route] = cssFilename;
+                    if (route.startsWith("posts/")) {
+                        postMap[route.replace("posts/", "")] = cssFilename;
+                    }
                 }
             }
         }

@@ -2,9 +2,9 @@ import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import { mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
+import stalux from "@xingwangzhe/stalux";
 import expressiveCode from "astro-expressive-code";
 import { defineConfig, fontProviders } from "astro/config";
-import stalux from "@xingwangzhe/stalux";
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,12 +24,16 @@ export default defineConfig({
                     {
                         weight: "100 900",
                         style: "normal",
-                        src: ["./node_modules/@xingwangzhe/stalux/src/assets/fonts/GoogleSansCode.woff2"],
+                        src: [
+                            "./node_modules/@xingwangzhe/stalux/src/assets/fonts/GoogleSansCode.woff2",
+                        ],
                     },
                     {
                         weight: "100 900",
                         style: "italic",
-                        src: ["./node_modules/@xingwangzhe/stalux/src/assets/fonts/GoogleSansCode-Italic.woff2"],
+                        src: [
+                            "./node_modules/@xingwangzhe/stalux/src/assets/fonts/GoogleSansCode-Italic.woff2",
+                        ],
                     },
                 ],
             },
