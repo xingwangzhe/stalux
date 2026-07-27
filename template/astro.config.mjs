@@ -4,7 +4,7 @@ import { mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
 import { defineConfig } from "astro/config";
-import stalux from "stalux";
+import stalux from "@xingwangzhe/stalux";
 
 // https://astro.build/config
 export default defineConfig({

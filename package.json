@@ -1,7 +1,7 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.3.5",
-    "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
+    "version": "1.3.6",
+    "description": "A powerful, modern Astro blog theme \u2014 use as template or install as plugin",
     "keywords": [
         "astro",
         "astro-integration",
@@ -47,6 +47,7 @@
         ".": "./src/index.ts",
         "./config": "./src/config.ts",
         "./schemas": "./src/schemas/config.ts",
+        "./schemas/collections": "./src/schemas/collections.ts",
         "./components/*": "./src/components/*",
         "./layouts/*": "./src/layouts/*",
         "./pages/*": "./src/pages/*",
