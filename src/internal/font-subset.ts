@@ -229,11 +229,16 @@ function deduplicate(routes: RouteCharSet[]): Map<string, string[]> {
 
 /**
  * Run font subsetting during build.
- * Called from astro:build:start hook.
+ * Called from integration hooks.
+ *
+ * @param projectRoot - Project root directory
+ * @param logger - Astro integration logger
+ * @param skipPerRoute - Skip per-route subsets (for dev mode, only generate common)
  */
 export async function runFontSubsetting(
   projectRoot: string,
   logger: AstroIntegrationLogger,
+  skipPerRoute = false,
 ): Promise<void> {
   logger.info("Font subsetting: scanning content...");
 
@@ -309,15 +314,14 @@ export async function runFontSubsetting(
 `;
     writeFileSync(join(outDir, "common.css"), commonCSS);
 
-    // Generate per-route subsets (deduplicated) and their CSS
-    const groups = deduplicate(routeSets);
-    const routeMap: Record<string, string> = {};
-    const postMap: Record<string, string> = {};
+  const groups = deduplicate(routeSets);
+  const routeMap: Record<string, string> = {};
+  const postMap: Record<string, string> = {};
 
-    let subsetCount = 0;
-    // Track which subsets we've already generated CSS for
-    const cssGenerated = new Set<string>();
+  let subsetCount = 0;
+  const cssGenerated = new Set<string>();
 
+  if (!skipPerRoute) {
     for (const [hash, routes] of groups) {
         const filename = `subset-${hash}.woff2`;
         const outPath = join(outDir, filename);
@@ -377,7 +381,9 @@ export async function runFontSubsetting(
         }
     }
 
-    // 6. Generate manifest
+  }
+
+  // 6. Generate manifest
     const manifest: FontManifest = {
         common: commonFilename,
         routes: routeMap,

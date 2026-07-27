@@ -192,14 +192,14 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                 // 5. 字体裁剪（在 config:setup 阶段执行，保证 dev/build 都能生成）
                 try {
                     const projectRoot = process.cwd();
-                    await runFontSubsetting(projectRoot, logger);
+                    await runFontSubsetting(projectRoot, logger, true);
                 } catch (error) {
                     logger.debug(`Font subsetting deferred: ${String(error)}`);
                 }
             },
 
             "astro:build:start": async ({ logger }) => {
-                // 6. 字体裁剪（构建时备用）
+                // 6. 字体裁剪（构建时，生成全部路由子集）
                 try {
                     const projectRoot = process.cwd();
                     await runFontSubsetting(projectRoot, logger);
@@ -209,10 +209,10 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
             },
 
             "astro:server:setup": async ({ logger }) => {
-                // 7. 字体裁剪（开发模式备用）
+                // 7. 字体裁剪（开发模式，仅 common 子集）
                 try {
                     const projectRoot = process.cwd();
-                    await runFontSubsetting(projectRoot, logger);
+                    await runFontSubsetting(projectRoot, logger, true);
                 } catch (error) {
                     logger.debug(`Font subsetting deferred in dev: ${String(error)}`);
                 }
