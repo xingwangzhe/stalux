@@ -9,7 +9,7 @@
  *   npm run init              # 或通过 npm script
  */
 
-import { existsSync, mkdirSync, cpSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, cpSync, readdirSync, statSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 

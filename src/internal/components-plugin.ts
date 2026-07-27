@@ -16,7 +16,6 @@
  * 插件自动将别名解析为用户提供的路径或包内默认路径。
  */
 
-import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { Plugin } from "vite";

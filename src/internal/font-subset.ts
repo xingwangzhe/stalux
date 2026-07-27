@@ -163,17 +163,8 @@ const wordCharsCache = new Map<string, string>();
 function collectCommonChars(projectRoot: string): string {
     const chars = new Set(ALWAYS_INCLUDE_CHARS);
 
-    const scanPatterns = [
-        "src/i18n/*.json",
-        "src/components/stalux/**/*.astro",
-        "src/layouts/**/*.astro",
-        "src/pages/**/*.astro",
-        "src/pages/**/*.ts",
-    ];
-
-    // Since we can't use glob here easily, scan specific known files
+    // Scan all source directories for UI text characters
     const srcDir = resolve(projectRoot, "src");
-    const scanDirs = ["i18n", "components/stalux", "layouts", "pages"];
 
     function scanDir(dir: string) {
         if (!existsSync(dir)) return;

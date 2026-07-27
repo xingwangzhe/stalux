@@ -8,7 +8,6 @@
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
-import { resolve } from "node:path";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -142,7 +141,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                 injectScript,
                 updateConfig,
                 addDevToolbarApp,
-                config,
+                _config,
                 logger,
             }) => {
                 const srcDir = fileURLToPath(new URL(".", import.meta.url));
