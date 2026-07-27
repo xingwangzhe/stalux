@@ -6,12 +6,8 @@ import { Font } from "astro:assets";
 import VerCount from "@components/stalux/common/verCount.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
-		import "@styles/base/init.css";
-		import Umami from "@components/stalux/analytics/umami.astro";
-		// 预子集化的中文字体（由 scripts/font-subset.ts 在 prebuild 阶段生成）
-		// subset-font (harfbuzz WASM)，纯 JS，无 native 依赖，CI 友好
-		import "@assets/../../public/fonts/subset.css";
-	
+import "@styles/base/init.css";
+import Umami from "@components/stalux/analytics/umami.astro";
 import { langToOpenGraphLocale } from "@utils/i18n";
 import { getAuthorData, getHeadData, getPromoteData, getSiteData } from "@utils/config-utils";
 
