@@ -9,7 +9,9 @@
  */
 
 import path from "node:path";
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync } from "node:fs";
 
 import type { AstroIntegration } from "astro";
 // pagefind 是 ESM-only 包，需要在模块顶层导入
@@ -212,13 +214,27 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                 // 7. 字体裁剪（开发模式，生成 common 子集 + 按需路由切片）
                 try {
                     const projectRoot = process.cwd();
+                    // 清除旧的字体缓存
+                    const oldFontDir = resolve(projectRoot, "public/fonts");
+                    if (existsSync(oldFontDir)) {
+                        // 删除旧的 subset-*.css 和 common-*.woff2，让按需中间件重新生成
+                        for (const f of readdirSync(oldFontDir)) {
+                            if (f.startsWith("subset-") || f.startsWith("common-")) continue;
+                        }
+                    }
                     // 先生成 common 子集
                     await runFontSubsetting(projectRoot, logger, true);
-                    // 再添加按需路由切片中间件
+                    // 再添加按需路由切片中间件（放在最前面，优先拦截字体请求）
                     const { createDevFontMiddleware } = await import(
                         new URL("./internal/font-subset-dev.ts", import.meta.url).href
                     );
-                    server.middlewares.use(createDevFontMiddleware(projectRoot, logger));
+                    const fontMiddleware = createDevFontMiddleware(projectRoot, logger);
+                    server.middlewares.use((req: any, res: any, next: any) => {
+                        if (req.url?.startsWith("/fonts/")) {
+                            return fontMiddleware(req, res, next);
+                        }
+                        next();
+                    });
                 } catch (error) {
                     logger.debug(`Font subsetting deferred in dev: ${String(error)}`);
                 }
