@@ -16,7 +16,7 @@
  */
 
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync } from "node:fs";
 import { resolve, basename, extname, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -267,8 +267,8 @@ export async function runFontSubsetting(
     const outDir = resolve(projectRoot, FONT_OUT_DIR);
     if (existsSync(outDir)) {
         for (const f of readdirSync(outDir)) {
-            if (f.startsWith("common-") || f === "common.css" || f.startsWith("subset-")) {
-                try { writeFileSync(join(outDir, f), ""); } catch { /* skip */ }
+            if (f.startsWith("common-") || f.startsWith("subset-")) {
+                try { unlinkSync(join(outDir, f)); } catch { /* skip */ }
             }
         }
     }
