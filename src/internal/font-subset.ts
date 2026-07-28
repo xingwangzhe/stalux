@@ -263,6 +263,16 @@ export async function runFontSubsetting(
     }
     const fontBuffer = readFileSync(fontPath);
 
+    // Clean old generated font files to avoid stale cached references
+    const outDir = resolve(projectRoot, FONT_OUT_DIR);
+    if (existsSync(outDir)) {
+        for (const f of readdirSync(outDir)) {
+            if (f.startsWith("common-") || f === "common.css" || f.startsWith("subset-")) {
+                try { writeFileSync(join(outDir, f), ""); } catch { /* skip */ }
+            }
+        }
+    }
+
     // 2. Scan content files
     const contentFiles = scanContent(projectRoot);
     logger.info(`Font subsetting: found ${contentFiles.length} content files`);
@@ -289,7 +299,6 @@ export async function runFontSubsetting(
     }
 
     // 5. Deduplicate and generate subsets
-    const outDir = resolve(projectRoot, FONT_OUT_DIR);
     mkdirSync(outDir, { recursive: true });
 
     // Dynamic import subset-font (ESM only)

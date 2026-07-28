@@ -155,7 +155,8 @@ async function generateSubsetOnDemand(
 export function createDevFontMiddleware(projectRoot: string, logger: AstroIntegrationLogger) {
     return async (req: any, res: any, next: any) => {
         const url = req.url || "";
-        const match = url.match(/^\/fonts\/subset-(.+)\.css$/);
+        const pathname = url.split("?")[0].split("#")[0];
+        const match = pathname.match(/^\/fonts\/subset-(.+)\.css$/);
         if (!match) return next();
 
         const subsetId = match[1];
