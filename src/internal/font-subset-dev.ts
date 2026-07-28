@@ -12,7 +12,8 @@ import { resolve, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegrationLogger } from "astro";
-import subsetFontFn from "subset-font";
+import * as taetype from "taetype";
+import { register_font_raw, get_glyph_ids, subset_font_full } from "taetype";
 
 const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.ttf";
 const CONTENT_ROOT = "stalux";
@@ -126,17 +127,22 @@ async function generateSubsetOnDemand(
     const fontBuffer = readFileSync(fontPath);
     mkdirSync(outDir, { recursive: true });
 
-    // Generate subset WOFF2
+    // Generate subset TTF using taetype
     const charsStr = [...charSet].sort().join("");
+    try { register_font_raw("stalux", fontBuffer); } catch { /* already registered */ }
+    const glyphs = get_glyph_ids(charsStr, "stalux", "normal", 400);
+    if (glyphs.length === 0) return null;
+    const subsetResult = subset_font_full("stalux", "normal", 400, 0, glyphs);
     const hash = [...charsStr].slice(0, 12).join("");
-    const filename = `subset-${subsetId}-${hash}.woff2`;
+    const filename = `subset-${subsetId}-${hash}.ttf`;
     const outPath = join(outDir, filename);
 
     if (!existsSync(outPath)) {
         try {
-            const data = await subsetFontFn(fontBuffer, charsStr, { targetFormat: "woff2" });
-            writeFileSync(outPath, data);
-            logger.info(`  on-demand subset: ${(data.length / 1024).toFixed(1)} KB → ${filename}`);
+            writeFileSync(outPath, subsetResult.fontBytes);
+            logger.info(
+                `  on-demand subset: ${(subsetResult.fontBytes.length / 1024).toFixed(1)} KB → ${filename}`,
+            );
         } catch {
             return null;
         }
@@ -144,7 +150,7 @@ async function generateSubsetOnDemand(
 
     return `@font-face {
     font-family: "LXGW WenKai Subset";
-    src: url("/fonts/${filename}") format("woff2");
+    src: url("/fonts/${filename}") format("truetype");
     font-display: swap;
 }`;
 }

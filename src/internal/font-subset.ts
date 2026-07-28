@@ -7,10 +7,10 @@
  *
  * Output layout (under public/fonts/):
  *   fonts/
- *     common.woff2          — UI text subset (ASCII, nav, i18n)
- *     post-{abbrlink}.woff2 — per-post subset
- *     about.woff2           — about page subset
- *     words.woff2           — combined words subset
+ *     common.ttf             — UI text subset (ASCII, nav, i18n)
+ *     post-{abbrlink}.ttf   — per-post subset
+ *     about.ttf              — about page subset
+ *     words.ttf              — combined words subset
  *     manifest.json         — route → subset file mapping
  *     subset.css            — global @font-face declarations
  */
@@ -21,8 +21,9 @@ import { resolve, basename, extname, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegrationLogger } from "astro";
-// subset-font 是 WASM 模块，需要静态导入（Vite module runner 在构建钩子中不兼容动态 import）
-import subsetFontFn from "subset-font";
+// taetype 是 Rust 原生字体引擎，比 subset-font (WASM) 快 2-3 倍
+import * as taetype from "taetype";
+import { register_font_raw, get_glyph_ids, subset_font_full } from "taetype";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -263,6 +264,14 @@ export async function runFontSubsetting(
     }
     const fontBuffer = readFileSync(fontPath);
 
+    // Register font with taetype for fast Rust subsetting
+    try {
+      register_font_raw("stalux", fontBuffer);
+    } catch (e) {
+      logger.warn(`Font registration failed: ${e}, skipping subsetting`);
+      return;
+    }
+
     // Clean old generated font files to avoid stale cached references
     const outDir = resolve(projectRoot, FONT_OUT_DIR);
     if (existsSync(outDir)) {
@@ -298,26 +307,33 @@ export async function runFontSubsetting(
         });
     }
 
-    // 5. Deduplicate and generate subsets
+    // 5. Deduplicate and generate subsets using taetype (Rust native, fast)
     mkdirSync(outDir, { recursive: true });
 
-    // Dynamic import subset-font (ESM only)
-    let subsetFont = subsetFontFn;
+    // Helper: subset using taetype
+    function doSubset(chars: string): Uint8Array {
+        const glyphs = get_glyph_ids(chars, "stalux", "normal", 400);
+        if (glyphs.length === 0) return new Uint8Array(0);
+        const result = subset_font_full("stalux", "normal", 400, 0, glyphs);
+        return result.fontBytes;
+    }
 
     // Generate common subset
-    const commonFilename = `common-${commonHash}.woff2`;
+    const commonFilename = `common-${commonHash}.ttf`;
     const commonOutPath = join(outDir, commonFilename);
     if (!existsSync(commonOutPath)) {
-        const data = await subsetFont(fontBuffer, commonChars, { targetFormat: "woff2" });
-        writeFileSync(commonOutPath, data);
-        logger.info(`  common subset: ${(data.length / 1024).toFixed(1)} KB → ${commonFilename}`);
+        const data = doSubset(commonChars);
+        if (data.length > 0) {
+            writeFileSync(commonOutPath, data);
+            logger.info(`  common subset: ${(data.length / 1024).toFixed(1)} KB → ${commonFilename}`);
+        }
     }
 
     // Generate common CSS
     const commonCSS = `/* Auto-generated common font subset */
 @font-face {
     font-family: "LXGW WenKai Subset";
-    src: url("/fonts/${commonFilename}") format("woff2");
+    src: url("/fonts/${commonFilename}") format("truetype");
     font-display: swap;
 }
 `;
@@ -330,39 +346,38 @@ export async function runFontSubsetting(
     let subsetCount = 0;
     const cssGenerated = new Set<string>();
 
-    if (!skipPerRoute) {
-        for (const [hash, routes] of groups) {
-            const filename = `subset-${hash}.woff2`;
-            const outPath = join(outDir, filename);
-            if (!existsSync(outPath)) {
-                // Find the route chars for this hash
-                const route = routeSets.find((r) => r.hash === hash);
-                const chars = route?.chars ?? "";
-                // Only subset characters NOT in common (already covered by common.css)
-                const uniqueChars = chars
-                    .split("")
-                    .filter((ch) => !commonChars.includes(ch))
-                    .join("");
-                if (uniqueChars.length > 0) {
-                    const data = await subsetFont(fontBuffer, uniqueChars, {
-                        targetFormat: "woff2",
-                    });
-                    writeFileSync(outPath, data);
+  if (!skipPerRoute) {
+    for (const [hash, routes] of groups) {
+        const filename = `subset-${hash}.ttf`;
+        const outPath = join(outDir, filename);
+        if (!existsSync(outPath)) {
+            const route = routeSets.find((r) => r.hash === hash);
+            const chars = route?.chars ?? "";
+            const uniqueChars = chars
+                .split("")
+                .filter((ch) => !commonChars.includes(ch))
+                .join("");
+            if (uniqueChars.length > 0) {
+                const glyphs = get_glyph_ids(uniqueChars, "stalux", "normal", 400);
+                if (glyphs.length > 0) {
+                    const result = subset_font_full("stalux", "normal", 400, 0, glyphs);
+                    writeFileSync(outPath, result.fontBytes);
                     subsetCount++;
                     logger.info(
-                        `  subset ${subsetCount}: ${(data.length / 1024).toFixed(1)} KB → ${filename}`,
+                        `  subset ${subsetCount}: ${(result.fontBytes.length / 1024).toFixed(1)} KB → ${filename}`,
                     );
                 }
             }
+        }
 
-            // Generate per-route CSS (one per unique hash, references all routes with this hash)
-            if (!cssGenerated.has(hash)) {
-                cssGenerated.add(hash);
-                for (const route of routes) {
-                    const cssContent = `/* Auto-generated font subset for route: ${route} */
+        // Generate per-route CSS (one per unique hash, references all routes with this hash)
+        if (!cssGenerated.has(hash)) {
+            cssGenerated.add(hash);
+            for (const route of routes) {
+                const cssContent = `/* Auto-generated font subset for route: ${route} */
 @font-face {
     font-family: "LXGW WenKai Subset";
-    src: url("/fonts/${filename}") format("woff2");
+    src: url("/fonts/${filename}") format("truetype");
     font-display: swap;
 }
 `;
