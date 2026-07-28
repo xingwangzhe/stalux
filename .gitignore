@@ -41,7 +41,9 @@ docs/
 
 # build-generated font subsets (rebuilt each build by integration)
 public/fonts/common-*.woff2
+public/fonts/common-*.ttf
 public/fonts/common.css
 public/fonts/subset-*.woff2
+public/fonts/subset-*.ttf
 public/fonts/subset-*.css
 public/fonts/manifest.json
