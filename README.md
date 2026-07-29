@@ -141,6 +141,7 @@ stalux/
 ## ✨ Features
 
 - 🌙 **Dark mode** as default, with elegant glassmorphism design
+- 🔤 **Per-route font subsetting** — each page loads only its needed characters (25 MB full font → ~1 KB per route)
 - 🔍 **Full-text search** via Pagefind (auto-indexed on build)
 - 📡 **RSS & Atom feeds**
 - 🖼️ **PhotoSwipe** image lightbox
@@ -152,6 +153,33 @@ stalux/
 - ⚡ **View transitions** for smooth navigation
 - 🏷️ **Tags, categories, archives**
 - 🌐 **i18n** (zh-CN / en)
+
+---
+
+## 🔤 Font Optimization
+
+Stalux ships with a 25 MB Chinese font (LXGW WenKai), but your visitors never download the full file. Instead, the build generates minimal font subsets per route:
+
+- **Common subset** (~350 KB) — UI text, navigation, i18n, shared characters from all posts
+- **Per-route subset** (~0.5–3 KB each) — unique characters for each individual page
+
+Each HTML page loads only `common.css` + `subset-{route}.css`, ensuring every page gets exactly the characters it needs — nothing more.
+
+This covers **all route types**:
+
+| Route                                | Subset source                                             |
+| ------------------------------------ | --------------------------------------------------------- |
+| `/`                                  | Config YAML (site title, author, navs, typetexts, footer) |
+| `/about`                             | About markdown                                            |
+| `/words`                             | All words content                                         |
+| `/posts/{slug}`                      | Single post content                                       |
+| `/archives`                          | All posts content                                         |
+| `/tags` / `/tags/{name}`             | Tag names + matching posts                                |
+| `/categories` / `/categories/{name}` | Category names + matching posts                           |
+| `/links`                             | Links config YAML                                         |
+| `/404`                               | Covered by common subset                                  |
+
+The subsetting engine (`subset-font`, Harfbuzz WASM) runs at build time (`astro:build:start`) and on-demand in dev mode.
 
 ---
 
