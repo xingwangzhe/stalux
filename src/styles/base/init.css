@@ -287,6 +287,4 @@ footer {
     text-align: center;
     color: var(--muted-text);
     background: transparent;
-    position: relative;
-    z-index: 1;
 }
