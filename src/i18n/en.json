@@ -72,7 +72,9 @@
         "runningTime": "Site running for",
         "runtimeFormat": "{days}d {hours}h {minutes}m {seconds}s",
         "rightsReserved": "All rights reserved.",
-        "securityIcon": "Public security filing icon"
+        "securityIcon": "Public security filing icon",
+        "collapse": "Collapse",
+        "expand": "Expand"
     },
     "comment": {
         "title": "Comments",

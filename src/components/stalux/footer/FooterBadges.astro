@@ -1,12 +1,18 @@
 ---
 import type { BadgeItem } from "@utils/badge-generator";
 import { generateBadge, svgToDataUrl, isBadgeGroup } from "@utils/badge-generator";
+import { createTranslator } from "@utils/i18n";
+import { getCollection } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 
 interface Props {
     badges?: BadgeItem[];
 }
 
 const { badges } = Astro.props;
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
 function badgeImg(opts: Record<string, any>) {
     const src = svgToDataUrl(generateBadge(opts));
@@ -29,8 +35,8 @@ function badgeImg(opts: Record<string, any>) {
                             <summary class="badge-group-summary">
                                 <span class="badge-group-arrow">&#9654;</span>
                                 <span class="badge-group-title">{item.title}</span>
-                                <span class="badge-group-hint" data-hint="expanded">收起</span>
-                                <span class="badge-group-hint" data-hint="collapsed">展开</span>
+                                <span class="badge-group-hint" data-hint="expanded">{t("footer.collapse")}</span>
+                                <span class="badge-group-hint" data-hint="collapsed">{t("footer.expand")}</span>
                             </summary>
                             <div class="badge-group-items badges">
                                 {item.items.map((b: any) => (

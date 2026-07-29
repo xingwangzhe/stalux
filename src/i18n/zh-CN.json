@@ -72,7 +72,9 @@
         "runningTime": "本站已正常运行",
         "runtimeFormat": "{days}天{hours}时{minutes}分{seconds}秒",
         "rightsReserved": "保留权利.",
-        "securityIcon": "公安备案图标"
+        "securityIcon": "公网安备图标",
+        "collapse": "收起",
+        "expand": "展开"
     },
     "comment": {
         "title": "留言评论",
