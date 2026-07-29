@@ -2,17 +2,16 @@
  * Per-route font subsetting engine.
  *
  * Scans each content file individually, extracts its unique character set,
- * and generates a minimal WOFF2 subset per route. Also generates a "common"
+ * and generates a minimal TTF subset per route. Also generates a "common"
  * subset for UI text (navs, i18n, layout).
  *
  * Output layout (under public/fonts/):
  *   fonts/
- *     common.ttf             — UI text subset (ASCII, nav, i18n)
- *     post-{abbrlink}.ttf   — per-post subset
- *     about.ttf              — about page subset
- *     words.ttf              — combined words subset
- *     manifest.json         — route → subset file mapping
- *     subset.css            — global @font-face declarations
+ *     common-{hash}.ttf       — UI text subset (ASCII, nav, i18n)
+ *     subset-{hash}.ttf       — per-route subset (shared by routes with same chars)
+ *     common.css              — @font-face for common subset
+ *     subset-{route}.css      — per-route @font-face
+ *     manifest.json           — route → subset file mapping
  */
 
 import { createHash } from "node:crypto";
@@ -28,7 +27,7 @@ import { resolve, basename, extname, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegrationLogger } from "astro";
-import { register_font_raw, get_glyph_ids, subset_font_full } from "taetype";
+import subsetFont from "subset-font";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -284,14 +283,6 @@ export async function runFontSubsetting(
     }
     const fontBuffer = readFileSync(fontPath);
 
-    // Register font with taetype for fast Rust subsetting
-    try {
-        register_font_raw("stalux", fontBuffer);
-    } catch (e) {
-        logger.warn(`Font registration failed: ${e}, skipping subsetting`);
-        return;
-    }
-
     // Clean old generated font files to avoid stale cached references
     const outDir = resolve(projectRoot, FONT_OUT_DIR);
     if (existsSync(outDir)) {
@@ -331,22 +322,27 @@ export async function runFontSubsetting(
         });
     }
 
-    // 5. Deduplicate and generate subsets using taetype (Rust native, fast)
+    // 5. Deduplicate and generate subsets using subset-font (WASM)
     mkdirSync(outDir, { recursive: true });
 
-    // Helper: subset using taetype
-    function doSubset(chars: string): Uint8Array {
-        const glyphs = get_glyph_ids(chars, "stalux", "normal", 400);
-        if (glyphs.length === 0) return new Uint8Array(0);
-        const result = subset_font_full("stalux", "normal", 400, 0, glyphs);
-        return result.fontBytes;
+    // Helper: subset using subset-font (async WASM)
+    async function doSubset(chars: string): Promise<Uint8Array> {
+        if (!chars) return new Uint8Array(0);
+        try {
+            const result = await subsetFont(fontBuffer, chars, {
+                targetFormat: "sfnt", // "sfnt" = TTF output
+            });
+            return result;
+        } catch {
+            return new Uint8Array(0);
+        }
     }
 
     // Generate common subset
     const commonFilename = `common-${commonHash}.ttf`;
     const commonOutPath = join(outDir, commonFilename);
     if (!existsSync(commonOutPath)) {
-        const data = doSubset(commonChars);
+        const data = await doSubset(commonChars);
         if (data.length > 0) {
             writeFileSync(commonOutPath, data);
             logger.info(
@@ -383,13 +379,12 @@ export async function runFontSubsetting(
                     .filter((ch) => !commonChars.includes(ch))
                     .join("");
                 if (uniqueChars.length > 0) {
-                    const glyphs = get_glyph_ids(uniqueChars, "stalux", "normal", 400);
-                    if (glyphs.length > 0) {
-                        const result = subset_font_full("stalux", "normal", 400, 0, glyphs);
-                        writeFileSync(outPath, result.fontBytes);
+                    const data = await doSubset(uniqueChars);
+                    if (data.length > 0) {
+                        writeFileSync(outPath, data);
                         subsetCount++;
                         logger.info(
-                            `  subset ${subsetCount}: ${(result.fontBytes.length / 1024).toFixed(1)} KB → ${filename}`,
+                            `  subset ${subsetCount}: ${(data.length / 1024).toFixed(1)} KB → ${filename}`,
                         );
                     }
                 }

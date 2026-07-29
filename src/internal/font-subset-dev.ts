@@ -1,7 +1,7 @@
 /**
  * Dev mode on-demand font subsetting middleware.
  *
- * Intercepts /fonts/subset-*.css requests, generates the WOFF2 subset
+ * Intercepts /fonts/subset-*.css requests, generates the TTF subset
  * for the requested route on-the-fly, and serves it.
  *
  * Handles ALL HTML routes: posts, about, words, home, archives, tags, etc.
@@ -12,7 +12,7 @@ import { resolve, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegrationLogger } from "astro";
-import { register_font_raw, get_glyph_ids, subset_font_full } from "taetype";
+import subsetFont from "subset-font";
 
 const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.ttf";
 const CONTENT_ROOT = "stalux";
@@ -98,14 +98,6 @@ async function generateSubsetOnDemand(
     for (const ch of chars) charSet.add(ch);
     if (charSet.size === 0) return null;
 
-    // Deduplicate against common subset
-    const outDir = resolve(projectRoot, FONT_OUT_DIR);
-
-    // We can't precisely know which chars common covers without re-extracting.
-    // But we can read the i18n + config source for a rough estimate.
-    // For now, generate the full subset - the WOFF2 will be small either way.
-    // (Most chars are already in common, so the delta is tiny.)
-
     // Locate font file
     const fontPaths = [
         resolve(projectRoot, FONT_INPUT),
@@ -122,27 +114,23 @@ async function generateSubsetOnDemand(
     if (!fontPath) return null;
 
     const fontBuffer = readFileSync(fontPath);
+    const outDir = resolve(projectRoot, FONT_OUT_DIR);
     mkdirSync(outDir, { recursive: true });
 
-    // Generate subset TTF using taetype
+    // Generate subset TTF using subset-font (WASM)
     const charsStr = [...charSet].sort().join("");
-    try {
-        register_font_raw("stalux", fontBuffer);
-    } catch {
-        /* already registered */
-    }
-    const glyphs = get_glyph_ids(charsStr, "stalux", "normal", 400);
-    if (glyphs.length === 0) return null;
-    const subsetResult = subset_font_full("stalux", "normal", 400, 0, glyphs);
-    const hash = [...charsStr].slice(0, 12).join("");
+    const hash = hashStr(charsStr);
     const filename = `subset-${subsetId}-${hash}.ttf`;
     const outPath = join(outDir, filename);
 
     if (!existsSync(outPath)) {
         try {
-            writeFileSync(outPath, subsetResult.fontBytes);
+            const result = await subsetFont(fontBuffer, charsStr, {
+                targetFormat: "sfnt",
+            });
+            writeFileSync(outPath, result);
             logger.info(
-                `  on-demand subset: ${(subsetResult.fontBytes.length / 1024).toFixed(1)} KB → ${filename}`,
+                `  on-demand subset: ${(result.length / 1024).toFixed(1)} KB → ${filename}`,
             );
         } catch {
             return null;
@@ -154,6 +142,17 @@ async function generateSubsetOnDemand(
     src: url("/fonts/${filename}") format("truetype");
     font-display: swap;
 }`;
+}
+
+/** Simple hash function for strings */
+function hashStr(s: string): string {
+    let hash = 0;
+    for (let i = 0; i < s.length && i < 100; i++) {
+        const ch = s.charCodeAt(i);
+        hash = (hash << 5) - hash + ch;
+        hash |= 0;
+    }
+    return Math.abs(hash).toString(36).slice(0, 8);
 }
 
 /**
