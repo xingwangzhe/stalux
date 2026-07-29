@@ -357,79 +357,64 @@ export async function runFontSubsetting(
     const postMap: Record<string, string> = {};
 
     let subsetCount = 0;
-    const cssGenerated = new Set<string>();
 
-  if (!skipPerRoute) {
-    for (const [hash, routes] of groups) {
-        const filename = `subset-${hash}.ttf`;
-        const outPath = join(outDir, filename);
-        if (!existsSync(outPath)) {
-            const route = routeSets.find((r) => r.hash === hash);
-            const chars = route?.chars ?? "";
-            const uniqueChars = chars
-                .split("")
-                .filter((ch) => !commonChars.includes(ch))
-                .join("");
-            if (uniqueChars.length > 0) {
-                const glyphs = get_glyph_ids(uniqueChars, "stalux", "normal", 400);
-                if (glyphs.length > 0) {
-                    const result = subset_font_full("stalux", "normal", 400, 0, glyphs);
-                    writeFileSync(outPath, result.fontBytes);
-                    subsetCount++;
-                    logger.info(
-                        `  subset ${subsetCount}: ${(result.fontBytes.length / 1024).toFixed(1)} KB → ${filename}`,
-                    );
+    if (!skipPerRoute) {
+        for (const [hash, routes] of groups) {
+            const filename = `subset-${hash}.ttf`;
+            const outPath = join(outDir, filename);
+            if (!existsSync(outPath)) {
+                const route = routeSets.find((r) => r.hash === hash);
+                const chars = route?.chars ?? "";
+                const uniqueChars = chars
+                    .split("")
+                    .filter((ch) => !commonChars.includes(ch))
+                    .join("");
+                if (uniqueChars.length > 0) {
+                    const glyphs = get_glyph_ids(uniqueChars, "stalux", "normal", 400);
+                    if (glyphs.length > 0) {
+                        const result = subset_font_full("stalux", "normal", 400, 0, glyphs);
+                        writeFileSync(outPath, result.fontBytes);
+                        subsetCount++;
+                        logger.info(
+                            `  subset ${subsetCount}: ${(result.fontBytes.length / 1024).toFixed(1)} KB → ${filename}`,
+                        );
+                    }
                 }
             }
-        }
 
-        // Generate per-route CSS (one per unique hash, references all routes with this hash)
-        if (!cssGenerated.has(hash)) {
-            cssGenerated.add(hash);
+            // Generate per-route CSS (each route gets its own CSS file)
+            // If no unique chars, reference the common TTF as fallback
+            const refTtf = existsSync(outPath) ? filename : commonFilename;
             for (const route of routes) {
                 const cssContent = `/* Auto-generated font subset for route: ${route} */
 @font-face {
     font-family: "LXGW WenKai Subset";
-    src: url("/fonts/${filename}") format("truetype");
+    src: url("/fonts/${refTtf}") format("truetype");
     font-display: swap;
 }
 `;
-                    // Use first route's name as the CSS filename (they share the same subset)
-                    const cssName = routes.length === 1 ? route.replace("/", "-") : `group-${hash}`;
-                    const cssFilename = `subset-${cssName}.css`;
-                    writeFileSync(join(outDir, cssFilename), cssContent);
-                    routeMap[route] = cssFilename;
+                const cssName = route.replace("/", "-");
+                const cssFilename = `subset-${cssName}.css`;
+                writeFileSync(join(outDir, cssFilename), cssContent);
+                routeMap[route] = cssFilename;
 
-                    if (route.startsWith("posts/")) {
-                        const abbrlink = route.replace("posts/", "");
-                        postMap[abbrlink] = cssFilename;
-                    }
-                }
-            } else {
-                // CSS already generated, just map
-                for (const route of routes) {
-                    const cssFilename =
-                        routes.length === 1
-                            ? `subset-${route.replace("/", "-")}.css`
-                            : `subset-group-${hash}.css`;
-                    routeMap[route] = cssFilename;
-                    if (route.startsWith("posts/")) {
-                        postMap[route.replace("posts/", "")] = cssFilename;
-                    }
+                if (route.startsWith("posts/")) {
+                    const abbrlink = route.replace("posts/", "");
+                    postMap[abbrlink] = cssFilename;
                 }
             }
         }
+
+        // 6. Generate manifest
+        const manifest: FontManifest = {
+            common: commonFilename,
+            routes: routeMap,
+            posts: postMap,
+        };
+        writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 2));
+
+        logger.info(
+            `Font subsetting done: ${subsetCount} route subsets + common (${(fontBuffer.length / 1024 / 1024).toFixed(1)} MB → variable)`,
+        );
     }
-
-    // 6. Generate manifest
-    const manifest: FontManifest = {
-        common: commonFilename,
-        routes: routeMap,
-        posts: postMap,
-    };
-    writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 2));
-
-    logger.info(
-        `Font subsetting done: ${subsetCount} route subsets + common (${(fontBuffer.length / 1024 / 1024).toFixed(1)} MB → variable)`,
-    );
 }
