@@ -14,13 +14,9 @@
  *   - 用交互式问答生成个性化配置
  */
 
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
-import { join, resolve, dirname } from "node:path";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { join, resolve as pathResolve } from "node:path";
 import { createInterface } from "node:readline";
-import { fileURLToPath } from "node:url";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PACKAGE_ROOT = resolve(__dirname, "..");
 
 // ---------------------------------------------------------------------------
 // 默认内容模板数据
@@ -224,7 +220,7 @@ async function main() {
     }
 
     const targetArg = args[1] || ".";
-    const targetPath = resolve(process.cwd(), targetArg);
+    const targetPath = pathResolve(process.cwd(), targetArg);
 
     console.log("");
     console.log("  📦  Stalux — Content Initializer");
@@ -233,7 +229,6 @@ async function main() {
 
     // 交互式问答
     const siteTitle = await ask("What's your site title?", "My Blog");
-    const author = await ask("What's your author name?", "Your Name");
 
     console.log("");
     console.log(`  📂  Target: ${targetPath}`);
