@@ -8,35 +8,26 @@
  *   bunx stalux init my-blog      # 在子目录初始化项目
  *
  * 说明：
- *   - 只在 stalux/ 目录下生成内容配置文件、示例文章等
- *   - 不会覆盖已有的 package.json、astro.config.mjs、tsconfig.json、
- *     src/content.config.ts 等用户项目文件
- *   - 用交互式问答生成个性化配置
+ *   - 只在 stalux/ 目录下生成内容配置文件和示例文章
+ *   - 不会覆盖已有的 package.json、astro.config.mjs、src/content.config.ts
+ *   - 静默运行，无交互式问答
+ *   - 静默运行，无交互式问答
  */
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve as pathResolve } from "node:path";
-import { createInterface } from "node:readline";
 
 // ---------------------------------------------------------------------------
 // 默认内容模板数据
 // ---------------------------------------------------------------------------
 
-function ask(question, defaultVal) {
-    const rl = createInterface({ input: process.stdin, output: process.stdout });
-    return new Promise((resolve) => {
-        rl.question(`  ${question} [${defaultVal}]: `, (answer) => {
-            rl.close();
-            resolve(answer.trim() || defaultVal);
-        });
-    });
-}
-
-function getConfigYamls(siteTitle) {
+function getConfigYamls() {
+    const year = new Date().getFullYear();
+    const now = new Date().toISOString();
     return {
         "site.yml": `id: site
 lang: en
-title: ${siteTitle}
+title: "My Blog"
 description: "A blog built with Stalux theme"
 url: "https://example.com"
 timezone: "Asia/Shanghai"
@@ -75,10 +66,10 @@ items:
 # anyhead: ""
 `,
         "footer.yml": `id: footer
-buildtime: "${new Date().toISOString()}"
+buildtime: "${now}"
 copyright:
     enabled: true
-    startYear: ${new Date().getFullYear()}
+    startYear: ${year}
     customText: ""
 theme:
     showPoweredBy: true
@@ -140,15 +131,15 @@ items:
     };
 }
 
-function getExamplePost(abbrlink, title, tags, categories, desc) {
+function getExamplePost() {
     const date = new Date().toISOString().replace("T", " ").slice(0, 19);
     return `---
-title: ${title}
-abbrlink: ${abbrlink}
+title: Hello Stalux!
+abbrlink: hello-stalux
 date: "${date}"
-tags: [${tags}]
-categories: [${categories}]
-desc: ${desc}
+tags: [Stalux, Getting Started]
+categories: [Blog]
+desc: Welcome to Stalux!
 cc: CC-BY-NC-SA-4.0
 ---
 
@@ -190,14 +181,28 @@ This is my personal space where I share technology, life, and thoughts.
 }
 
 function getWordsTemplate() {
+    const date = new Date().toISOString().replace("T", " ").slice(0, 19);
     return `---
 source: "Author Name"
 link: ""
 sourceDate: ""
-date: "${new Date().toISOString().replace("T", " ").slice(0, 19)}"
+date: "${date}"
 ---
 
 > A quote or short note...
+`;
+}
+
+function getWordsExample() {
+    const date = new Date().toISOString().replace("T", " ").slice(0, 19);
+    return `---
+source: "Albert Einstein"
+link: ""
+sourceDate: ""
+date: "${date}"
+---
+
+> Imagination is more important than knowledge.
 `;
 }
 
@@ -205,7 +210,7 @@ date: "${new Date().toISOString().replace("T", " ").slice(0, 19)}"
 // 主流程
 // ---------------------------------------------------------------------------
 
-async function main() {
+function main() {
     const args = process.argv.slice(2);
 
     if (args[0] === "--help" || args[0] === "-h" || !args[0]) {
@@ -222,16 +227,7 @@ async function main() {
     const targetArg = args[1] || ".";
     const targetPath = pathResolve(process.cwd(), targetArg);
 
-    console.log("");
-    console.log("  📦  Stalux — Content Initializer");
-    console.log("  " + "=".repeat(40));
-    console.log("");
-
-    // 交互式问答
-    const siteTitle = await ask("What's your site title?", "My Blog");
-
-    console.log("");
-    console.log(`  📂  Target: ${targetPath}`);
+    console.log(`📦 Initializing Stalux content in ${targetPath}...`);
     console.log("");
 
     // 创建 stalux/ 目录结构
@@ -242,7 +238,7 @@ async function main() {
     }
 
     // 生成 config YAML 文件（不覆盖已有）
-    const configs = getConfigYamls(siteTitle);
+    const configs = getConfigYamls();
     for (const [file, content] of Object.entries(configs)) {
         const filePath = join(contentRoot, "config", file);
         if (existsSync(filePath)) {
@@ -253,19 +249,10 @@ async function main() {
         console.log(`  ✅  stalux/config/${file}`);
     }
 
-    // 生成示例文章（不覆盖已有）
+    // 生成示例文章
     const postPath = join(contentRoot, "posts", "hello-stalux.md");
     if (!existsSync(postPath)) {
-        writeFileSync(
-            postPath,
-            getExamplePost(
-                "hello-stalux",
-                "Hello Stalux!",
-                "Stalux, Getting Started",
-                "Blog",
-                "Welcome to Stalux!",
-            ),
-        );
+        writeFileSync(postPath, getExamplePost());
         console.log(`  ✅  stalux/posts/hello-stalux.md`);
     } else {
         console.log(`  ⏭  stalux/posts/hello-stalux.md (exists, skipped)`);
@@ -280,7 +267,7 @@ async function main() {
         console.log(`  ⏭  stalux/about/index.md (exists, skipped)`);
     }
 
-    // 生成 words 模板
+    // 生成 words
     const wordsDir = join(contentRoot, "words");
     const wordsTemplatePath = join(wordsDir, "_template.md");
     if (!existsSync(wordsTemplatePath)) {
@@ -290,28 +277,15 @@ async function main() {
         console.log(`  ⏭  stalux/words/_template.md (exists, skipped)`);
     }
 
-    // 可选的原子示例
     const einsteinPath = join(wordsDir, "einstein-imagination.md");
     if (!existsSync(einsteinPath)) {
-        writeFileSync(
-            einsteinPath,
-            `---
-source: "Albert Einstein"
-link: ""
-sourceDate: ""
-date: "${new Date().toISOString().replace("T", " ").slice(0, 19)}"
----
-
-> Imagination is more important than knowledge.
-`,
-        );
+        writeFileSync(einsteinPath, getWordsExample());
         console.log(`  ✅  stalux/words/einstein-imagination.md`);
     } else {
         console.log(`  ⏭  stalux/words/einstein-imagination.md (exists, skipped)`);
     }
 
     console.log("");
-    console.log("  " + "=".repeat(40));
     console.log("  ✅  Done! Stalux content initialized.");
     console.log("");
     printNextSteps();
@@ -330,13 +304,12 @@ function printHelp() {
     - Creates stalux/posts/hello-stalux.md (example post)
     - Creates stalux/about/index.md (about page)
     - Creates stalux/words/ (example quotes)
-    - Does NOT overwrite your existing package.json, astro.config.mjs, etc.
+    - Does NOT overwrite existing files
 
   Prerequisites:
     1. Create an Astro project:  bun create astro
     2. Install stalux:           bun add @xingwangzhe/stalux
     3. Run init:                 bunx stalux init
-    4. Configure astro.config.mjs and src/content.config.ts (see docs)
 `);
 }
 
@@ -347,7 +320,7 @@ function printNextSteps() {
     console.log('       import stalux from "@xingwangzhe/stalux";');
     console.log('       integrations: [stalux({ contentDir: "stalux" })],');
     console.log("");
-    console.log("    2. Add content collections to your src/content.config.ts:");
+    console.log("    2. Add content collections to src/content.config.ts:");
     console.log(
         '       import { defineCollections } from "@xingwangzhe/stalux/schemas/collections";',
     );
@@ -360,7 +333,4 @@ function printNextSteps() {
     console.log("");
 }
 
-main().catch((err) => {
-    console.error("❌ Error:", err.message);
-    process.exit(1);
-});
+main();
