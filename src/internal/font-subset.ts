@@ -181,6 +181,25 @@ function scanContent(projectRoot: string): ContentFile[] {
         }
     }
 
+    // Build virtual routes for config-driven pages (home, links)
+    // These pages render text from config YAML files (nav titles, site title, etc.)
+    const configDir = join(contentRoot, "config");
+    if (existsSync(configDir)) {
+        const allConfigContent: string[] = [];
+        for (const f of readdirSync(configDir)) {
+            if (f.endsWith(".yml") || f.endsWith(".yaml")) {
+                allConfigContent.push(readFileSync(join(configDir, f), "utf-8"));
+            }
+        }
+        if (allConfigContent.length > 0) {
+            const configText = allConfigContent.join("\n");
+            // Home page: site title, author, navs, typetexts, social media, footer
+            virtualRouteCache.set("home", extractChars(configText));
+            // Links page: links config + navs + footer
+            virtualRouteCache.set("links", extractChars(configText));
+        }
+    }
+
     // About
     const aboutDir = join(contentRoot, "about");
     if (existsSync(aboutDir)) {

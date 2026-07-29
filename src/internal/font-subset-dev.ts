@@ -90,22 +90,36 @@ function getRouteChars(projectRoot: string, subsetId: string): string | null {
         return getCategoryContent(contentRoot, catName);
     }
 
-    // ── Other HTML routes (home, links, 404) ──
-    // These pages use i18n text + config YAML text, which are already
-    // covered by the common subset. Return config text for extra safety.
-    if (["home", "links", "common"].includes(subsetId)) {
-        const configDir = join(contentRoot, "config");
-        if (!existsSync(configDir)) return null;
-        const all: string[] = [];
-        for (const f of readdirSync(configDir)) {
-            if (f.endsWith(".yml") || f.endsWith(".yaml")) {
-                all.push(readFileSync(join(configDir, f), "utf-8"));
-            }
-        }
-        return all.join("\n") || null;
+    // ── Home page ───────────────────────────────────────────
+    if (subsetId === "home") {
+        return getAllConfigContent(contentRoot);
+    }
+
+    // ── Links page ──────────────────────────────────────────
+    if (subsetId === "links") {
+        return getAllConfigContent(contentRoot);
+    }
+
+    // ── Other HTML routes (common) ──
+    // The common subset includes UI text from source + config YAML
+    if (subsetId === "common") {
+        return getAllConfigContent(contentRoot);
     }
 
     return null;
+}
+
+/** Get all config YAML content */
+function getAllConfigContent(contentRoot: string): string | null {
+    const configDir = join(contentRoot, "config");
+    if (!existsSync(configDir)) return null;
+    const all: string[] = [];
+    for (const f of readdirSync(configDir)) {
+        if (f.endsWith(".yml") || f.endsWith(".yaml")) {
+            all.push(readFileSync(join(configDir, f), "utf-8"));
+        }
+    }
+    return all.join("\n") || null;
 }
 
 /** Get all post content concatenated (including template/_ files) */

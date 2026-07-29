@@ -15,7 +15,7 @@ import ToArchive from "@components/stalux/archives/toArchive.astro";
 import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 ---
 
-<Stalux title={siteTitle} description={siteDescription}>
+<Stalux title={siteTitle} description={siteDescription} fontSubsetId="home">
   <div class={styles.homeBody}>
     <h1 class={styles.homeTitle}>{siteTitle}</h1>
     <div class={styles.homeNavs}>
