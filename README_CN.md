@@ -4,48 +4,26 @@
 
 # Stalux — 现代化 Astro 博客主题
 
-**双模式使用：既可作为模板 📦，也可作为插件安装 🔌**
+**双模式使用：既可作为源码模板 📦，也可作为 npm 插件安装 🔌**
 
 **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
-优雅、高性能、易配置的 Astro 静态博客主题。
+深色主题、高性能的 Astro 博客主题，采用玻璃拟态设计，支持每路由字体裁剪，专注内容阅读体验。
 
 ---
 
-## 🚀 两种使用方式
+## 🚀 快速开始
 
-### 方式 A：Git Clone 源码（模板模式）
-
-获取完整源码，随意修改：
+### 插件模式（推荐）
 
 ```bash
-git clone https://github.com/xingwangzhe/stalux.git my-blog
-cd my-blog
-bun install           # 或 npm install
-bun run dev           # 或 npm run dev
+bun create astro                    # 选择 minimal 空模板
+cd myblog
+bun add @xingwangzhe/stalux         # 安装主题（所有依赖自动包含）
+bunx stalux init                    # 生成 stalux/ 内容目录
 ```
 
-### 方式 B：安装为 Astro 集成（插件模式）
-
-保持项目干净，在全新或已有 Astro 项目中安装使用。
-
-**从零开始完整步骤：**
-
-```bash
-# 1. 创建新 Astro 项目（选择 minimal 空模板）
-bun create astro
-
-# 2. 进入项目目录
-cd ./myblog
-
-# 3. 安装 stalux 主题包
-bun add @xingwangzhe/stalux
-
-# 4. 初始化内容模板（创建 stalux/ 目录结构和示例内容）
-bunx stalux init
-```
-
-**5. 配置 `astro.config.mjs`：**
+然后配置 `astro.config.mjs`：
 
 ```ts
 import { defineConfig } from "astro/config";
@@ -80,13 +58,67 @@ import { defineCollections } from "@xingwangzhe/stalux/schemas";
 export const collections = defineCollections({ contentDir: "stalux" });
 ```
 
-**6. 启动开发服务器：**
+```bash
+bun run dev  # 开始写作！
+```
+
+### 源码模板模式
 
 ```bash
+git clone https://github.com/xingwangzhe/stalux.git my-blog
+cd my-blog
+bun install
 bun run dev
 ```
 
-> 💡 `bunx stalux init` 创建默认 `stalux/` 目录结构和示例配置，不会覆盖已有文件。
+---
+
+## ✨ 功能特性
+
+- 🌙 **暗色主题** + 玻璃拟态设计
+- 🔤 **每路由字体裁剪** — 25 MB 字体 → 共享 ~350 KB + 每页 ~1 KB
+- 🔍 **全文搜索**（Pagefind 构建时自动索引）
+- 📡 **RSS / Atom 订阅**
+- 🖼️ **PhotoSwipe** 图片灯箱
+- 📊 **Mermaid** 图表和流程图
+- 📐 **数学公式渲染**（KaTeX / MathML）
+- 💬 **Waline** 评论系统
+- 🤖 **LLM 发现文件**（llms.txt / llms-full.txt）
+- ⚡ **视图过渡动画**
+- 🌐 **国际化**（英文 / 中文）
+- 🏷️ **标签、分类、归档**页面
+- 🎨 **组件覆盖系统**（Starlight 风格）
+- 🛠️ **YAML 配置** — 无需修改代码
+
+---
+
+## 🔤 字体优化
+
+Stalux 内置 25 MB 中文字体（LXGW WenKai），但访客永远不需要下载完整文件。构建时自动按路由生成最小子集：
+
+| 子集       | 大小      | 内容                                |
+| ---------- | --------- | ----------------------------------- |
+| 公共子集   | ~350 KB   | UI 文本、导航、国际化、文章共享字符 |
+| 每路由子集 | ~0.5–3 KB | 每个页面独有的字符                  |
+
+每个页面只加载 `common.css` + `subset-{route}.css`。覆盖所有路由类型：`/`、`/about`、`/words`、`/posts/*`、`/archives`、`/tags`、`/categories`、`/links`。
+
+基于 `subset-font`（Harfbuzz WASM），构建时和开发模式按需执行。
+
+---
+
+## 🎨 组件覆盖
+
+```ts
+stalux({
+    components: {
+        Navs: "./src/components/CustomNavs.astro",
+        Footer: "./src/components/CustomFooter.astro",
+    },
+});
+```
+
+30+ 个组件可覆盖，完整列表见 `src/internal/override.ts`。
 
 ---
 
@@ -98,7 +130,7 @@ stalux/
 │   ├── site.yml         # 站点元信息
 │   ├── author.yml       # 作者信息
 │   ├── navs.yml         # 导航菜单
-│   ├── footer.yml       # 页脚
+│   ├── footer.yml       # 页脚配置
 │   ├── links.yml        # 友情链接
 │   ├── comment.yml      # 评论配置
 │   ├── head.yml         # 统计和自定义 head
@@ -108,77 +140,25 @@ stalux/
 │   └── typetexts.yml    # 打字机文本
 ├── posts/               # 博客文章（Markdown）
 ├── about/index.md       # 关于页面
-└── words/               # 随想/语录（Markdown）
+└── words/               # 随想/语录
 ```
 
 ---
 
-## ✨ 功能特性
-
-- 🌙 **暗色主题** + 玻璃拟态设计
-- 🔤 **每路由字体裁剪** — 每个页面只加载自己所需的字形（25 MB 完整字体 → 每页约 1 KB）
-- 🔍 **全文搜索**（Pagefind 构建时自动索引）
-- 📡 **RSS / Atom 订阅**
-- 🖼️ **PhotoSwipe** 图片灯箱
-- 📊 **Mermaid** 图表
-- 📐 **数学公式**渲染
-- 🤖 **LLM 发现文件**
-- 💬 **Waline** 评论系统
-- 📱 **响应式设计**
-- ⚡ **视图过渡动画**
-- 🏷️ **标签、分类、归档**
-- 🌐 **国际化**
-
----
-
-## 🔤 字体优化
-
-Stalux 内置了一个 25 MB 的中文字体（LXGW WenKai），但访客永远不需要下载完整文件。构建时系统会自动按路由生成最小字体子集：
-
-- **公共子集**（~350 KB）— UI 文本、导航、国际化、所有文章共享字符
-- **每路由子集**（每个 ~0.5–3 KB）— 每个页面独有的字符
-
-每个 HTML 页面只加载 `common.css` + `subset-{route}.css`，确保只下载需要的字形。
-
-覆盖**所有路由类型**：
-
-| 路由                                 | 子集来源                                        |
-| ------------------------------------ | ----------------------------------------------- |
-| `/`                                  | 配置 YAML（站点标题、作者、导航、打字机、页脚） |
-| `/about`                             | 关于页面 Markdown                               |
-| `/words`                             | 所有随想内容                                    |
-| `/posts/{slug}`                      | 单篇文章内容                                    |
-| `/archives`                          | 所有文章内容                                    |
-| `/tags` / `/tags/{name}`             | 标签名 + 匹配文章                               |
-| `/categories` / `/categories/{name}` | 分类名 + 匹配文章                               |
-| `/links`                             | 链接配置 YAML                                   |
-| `/404`                               | 由公共子集覆盖                                  |
-
-字体裁剪引擎（`subset-font`，基于 Harfbuzz WASM）在构建时（`astro:build:start`）和开发模式按需执行。
-
----
-
-## 🛠️ 本地开发
+## 🛠️ 开发命令
 
 ```bash
-bun install           # 推荐
-bun run dev           # 开发
-bun run build         # 构建
-bun run preview       # 预览
+bun install     # 安装依赖
+bun run dev     # 启动开发服务器 localhost:4321
+bun run build   # 构建到 dist/
+bun run preview # 预览构建结果
 ```
 
 ---
 
-## 🎨 自定义组件
+## 📖 文档
 
-```ts
-stalux({
-    components: {
-        Navs: "./src/CustomNavs.astro",
-        // 完整列表见 src/internal/override.ts
-    },
-});
-```
+完整文档和在线演示：**[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
 ---
 

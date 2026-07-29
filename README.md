@@ -4,54 +4,26 @@
 
 # Stalux — Modern Astro Blog Theme
 
-**Dual-mode: Use as a template 📦 or install as a plugin 🔌**
+**Dual-mode: Use as a source template 📦 or install as an npm plugin 🔌**
 
 **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
-Elegant, high-performance, easily configurable Astro static blog theme.
-
-In terms of design, Stalux draws on minimalism and moderate decoration: it maintains an overall dark tone with subtle glassmorphism textures, and the background uses tiled decorative patterns to enhance visual depth without being distracting.
-
-In terms of experience, Stalux balances SSG's high performance with the smooth feel of page transitions without full reloads. Through view transitions and handling of `astro:page-load` events, the theme keeps the header, footer, and other common components stable during navigation or main content switching.
-
-Content-first is one of the theme's core principles: writing and presentation are considered top priority. The theme supports CommonMark, code highlighting, Mermaid flowcharts, and KaTeX math formulas out of the box.
+A dark-themed, high-performance Astro blog theme with elegant glassmorphism design, per-route font subsetting, and a focus on content-first reading experience.
 
 ---
 
-## 🚀 Two Ways to Use
+## 🚀 Quick Start
 
-### Option A: Clone Source Code (Template Mode)
-
-Get the full source — modify anything, customize everything:
+### Plugin Mode (recommended)
 
 ```bash
-git clone https://github.com/xingwangzhe/stalux.git my-blog
-cd my-blog
-bun install           # or npm install
-bun run dev           # or npm run dev
+bun create astro                    # Choose "minimal" template
+cd myblog
+bun add @xingwangzhe/stalux         # Install theme (all dependencies included)
+bunx stalux init                    # Generate stalux/ content directory
 ```
 
-### Option B: Install as Astro Integration (Plugin Mode)
-
-Keep your project clean — install stalux as a dependency in a new or existing Astro project.
-
-**Step-by-step from scratch:**
-
-```bash
-# 1. Create a new Astro project (choose "minimal" template)
-bun create astro
-
-# 2. Enter your project directory
-cd ./myblog
-
-# 3. Install the stalux theme package
-bun add @xingwangzhe/stalux
-
-# 4. Initialize content template (creates stalux/ dir with configs & sample posts)
-bunx stalux init
-```
-
-**5. Configure `astro.config.mjs`:**
+Then configure `astro.config.mjs`:
 
 ```ts
 import { defineConfig } from "astro/config";
@@ -86,40 +58,75 @@ import { defineCollections } from "@xingwangzhe/stalux/schemas";
 export const collections = defineCollections({ contentDir: "stalux" });
 ```
 
-**6. Start writing and developing:**
+```bash
+bun run dev  # Start writing!
+```
+
+### Template Mode
 
 ```bash
+git clone https://github.com/xingwangzhe/stalux.git my-blog
+cd my-blog
+bun install
 bun run dev
 ```
 
-Your blog is now running at `http://localhost:4321/` with all theme pages, search, RSS, and more ready to go.
+---
 
-> 💡 `bunx stalux init` creates the `stalux/` directory structure with example content.
-> Run it any time to see what a valid config looks like — it won't overwrite existing files.
+## ✨ Features
+
+- 🌙 **Dark mode** with elegant glassmorphism design
+- 🔤 **Per-route font subsetting** — 25 MB font → ~350 KB shared + ~1 KB per page
+- 🔍 **Full-text search** via Pagefind (auto-indexed on build)
+- 📡 **RSS & Atom feeds**
+- 🖼️ **PhotoSwipe** image lightbox
+- 📊 **Mermaid** diagrams and flowcharts
+- 📐 **Math formula rendering** (KaTeX / MathML)
+- 💬 **Waline** comment system
+- 🤖 **LLM discovery files** (llms.txt / llms-full.txt)
+- ⚡ **View transitions** for smooth navigation
+- 🌐 **i18n** (English / Chinese)
+- 🏷️ **Tags, categories, archives** pages
+- 🎨 **Component override system** (Starlight-style)
+- 🛠️ **Easy YAML configuration** — no coding required
 
 ---
 
-## 📝 Quick Start: Writing Content
+## 🔤 Font Optimization
 
-Create a markdown file under `stalux/posts/`:
+Stalux ships with a 25 MB Chinese font (LXGW WenKai). Instead of loading the full file, the build generates minimal subsets per route:
 
-```yaml
+| Subset    | Size      | Content                                    |
+| --------- | --------- | ------------------------------------------ |
+| Common    | ~350 KB   | UI text, nav, i18n, shared post characters |
+| Per-route | ~0.5–3 KB | Unique characters for each page            |
+
+Every page loads `common.css` + `subset-{route}.css`. All route types are covered: `/`, `/about`, `/words`, `/posts/*`, `/archives`, `/tags`, `/categories`, `/links`.
+
+Powered by `subset-font` (Harfbuzz WASM), running at build time and on-demand in dev mode.
+
 ---
-title: Hello World
-abbrlink: hello-world
-date: 2026-07-27 10:00:00
-tags: [Stalux, Getting Started]
-categories: [Blog]
-desc: A brief description of your post.
----
-Your content here...
+
+## 🎨 Component Override
+
+```ts
+stalux({
+    components: {
+        Navs: "./src/components/CustomNavs.astro",
+        Footer: "./src/components/CustomFooter.astro",
+    },
+});
 ```
 
-**Content Directory Structure:**
+30+ components are overridable. See `src/internal/override.ts` for the full list.
+
+---
+
+## 📝 Content Structure
 
 ```
 stalux/
-├── config/              # YAML configuration files
+├── config/              # YAML configuration
 │   ├── site.yml         # Site metadata
 │   ├── author.yml       # Author info
 │   ├── navs.yml         # Navigation menu
@@ -128,108 +135,23 @@ stalux/
 │   ├── comment.yml      # Waline comment config
 │   ├── head.yml         # Analytics & custom head
 │   ├── media-links.yml  # Social media links
-│   ├── promote.yml      # LLM promotion & export
-│   ├── ai-discovery.yml # AI discovery file config
-│   └── typetexts.yml    # Typewriter text snippets
+│   ├── promote.yml      # LLM promotion
+│   ├── ai-discovery.yml # AI discovery files
+│   └── typetexts.yml    # Typewriter text
 ├── posts/               # Blog posts (Markdown)
 ├── about/index.md       # About page
-└── words/               # Quotes / short notes (Markdown)
+└── words/               # Quotes / short notes
 ```
 
 ---
 
-## ✨ Features
-
-- 🌙 **Dark mode** as default, with elegant glassmorphism design
-- 🔤 **Per-route font subsetting** — each page loads only its needed characters (25 MB full font → ~1 KB per route)
-- 🔍 **Full-text search** via Pagefind (auto-indexed on build)
-- 📡 **RSS & Atom feeds**
-- 🖼️ **PhotoSwipe** image lightbox
-- 📊 **Mermaid** diagrams & flowcharts
-- 📐 **KaTeX / MathML** math rendering
-- 🤖 **LLM discovery files** (llms.txt / llms-full.txt)
-- 💬 **Waline** comment system
-- 📱 **Fully responsive**
-- ⚡ **View transitions** for smooth navigation
-- 🏷️ **Tags, categories, archives**
-- 🌐 **i18n** (zh-CN / en)
-
----
-
-## 🔤 Font Optimization
-
-Stalux ships with a 25 MB Chinese font (LXGW WenKai), but your visitors never download the full file. Instead, the build generates minimal font subsets per route:
-
-- **Common subset** (~350 KB) — UI text, navigation, i18n, shared characters from all posts
-- **Per-route subset** (~0.5–3 KB each) — unique characters for each individual page
-
-Each HTML page loads only `common.css` + `subset-{route}.css`, ensuring every page gets exactly the characters it needs — nothing more.
-
-This covers **all route types**:
-
-| Route                                | Subset source                                             |
-| ------------------------------------ | --------------------------------------------------------- |
-| `/`                                  | Config YAML (site title, author, navs, typetexts, footer) |
-| `/about`                             | About markdown                                            |
-| `/words`                             | All words content                                         |
-| `/posts/{slug}`                      | Single post content                                       |
-| `/archives`                          | All posts content                                         |
-| `/tags` / `/tags/{name}`             | Tag names + matching posts                                |
-| `/categories` / `/categories/{name}` | Category names + matching posts                           |
-| `/links`                             | Links config YAML                                         |
-| `/404`                               | Covered by common subset                                  |
-
-The subsetting engine (`subset-font`, Harfbuzz WASM) runs at build time (`astro:build:start`) and on-demand in dev mode.
-
----
-
-## 🛠️ Development
+## 🛠️ Development Commands
 
 ```bash
-# Install dependencies
-bun install           # recommended
-# npm install
-
-# Start dev server
-bun run dev
-
-# Build
-bun run build
-
-# Preview
-bun run preview
-```
-
----
-
-## 🎨 Customizing Components
-
-Stalux supports component overrides (like Starlight):
-
-```ts
-import { defineConfig } from "astro/config";
-import stalux from "@xingwangzhe/stalux";
-
-export default defineConfig({
-    integrations: [
-        stalux({
-            components: {
-                Navs: "./src/components/CustomNavs.astro",
-                Footer: "./src/components/CustomFooter.astro",
-                // ... see full list in src/internal/override.ts
-            },
-        }),
-    ],
-});
-```
-
-Use the `@stalux/component/*` import alias in your custom components:
-
-```astro
----
-import Navs from "@stalux/component/Navs";
----
-<Navs />
+bun install     # Install dependencies
+bun run dev     # Start dev server at localhost:4321
+bun run build   # Build to dist/
+bun run preview # Preview production build
 ```
 
 ---
