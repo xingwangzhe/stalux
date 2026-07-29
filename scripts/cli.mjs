@@ -184,7 +184,7 @@ function getWordsTemplate() {
     const date = new Date().toISOString().replace("T", " ").slice(0, 19);
     return `---
 source: "Author Name"
-link: ""
+link: "https://example.com"
 sourceDate: ""
 date: "${date}"
 ---
@@ -197,7 +197,7 @@ function getWordsExample() {
     const date = new Date().toISOString().replace("T", " ").slice(0, 19);
     return `---
 source: "Albert Einstein"
-link: ""
+link: "https://example.com"
 sourceDate: ""
 date: "${date}"
 ---

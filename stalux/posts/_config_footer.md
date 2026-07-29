@@ -28,7 +28,7 @@ theme:
 beian:
     icp:
         enabled: false
-        number: "ICP备XXXXXXXX号"
+        number: ""
     security:
         enabled: false
         text: "Public Security Filing"
@@ -41,15 +41,15 @@ badges:
       href: "https://astro.build/"
     # ... more badges ...
     # Collapsible badge group (v1.1+):
-    - title: "博客社区"
+    - title: "Blog Community"
       collapsed: true
       items:
-          - label: "示例社区A"
-            message: "社区"
+          - label: "Community A"
+            message: "Community"
             color: "green"
             href: "https://example.com"
-          - label: "示例社区B"
-            message: "导航"
+          - label: "Community B"
+            message: "Navigation"
             color: "yellow"
             href: "https://example.org"
 custom: |

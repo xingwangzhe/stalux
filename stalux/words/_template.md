@@ -1,14 +1,14 @@
 ---
-title: 在这里写语录标题
-source: "语录作者"
-link: "https://source.url/"
-date: "2026-01-01 12:00:00"
-sourceDate: "1930年演讲"
+title: Write your word title here
+source: "Author Name"
+link: "https://example.com"
+date: ""
+sourceDate: ""
 abbrlink: your-quote-slug
 tags:
-    - 标签1
-    - 标签2
+    - tag1
+    - tag2
 draft: false
 ---
 
-正文写语录内容。
+Write the quote or note content here.
