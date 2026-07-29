@@ -204,6 +204,21 @@ function collectCommonChars(projectRoot: string): string {
         }
     }
 
+    // Also scan post frontmatter for tags, categories so those pages' chars are covered
+    const postsDir = resolve(projectRoot, CONTENT_ROOT, "posts");
+    if (existsSync(postsDir)) {
+        for (const f of readdirSync(postsDir)) {
+            if (!f.endsWith(".md") && !f.endsWith(".mdx")) continue;
+            if (f.startsWith("_")) continue;
+            try {
+                const content = readFileSync(join(postsDir, f), "utf-8");
+                for (const ch of content) chars.add(ch);
+            } catch {
+                /* skip */
+            }
+        }
+    }
+
     return [...chars].sort().join("");
 }
 
