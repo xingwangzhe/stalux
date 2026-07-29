@@ -1,40 +1,52 @@
 ---
 title: About
-description: Blog about page, introducing this blog
+description: About the Stalux blog theme
 ---
 
-## 👋 Welcome to the Stalux Theme
+## 👋 About Stalux
 
-**Stalux** is an Astro static blog theme for content creators, developed by **xingwangzhe**. The name blends "Static" and "Luxury," with the goal of providing a high-performance, beautiful, and easily customizable writing experience.
+**Stalux** — a modern, high-performance [Astro](https://astro.build) blog theme designed for content creators who value both aesthetics and efficiency. Developed by **xingwangzhe**, the name blends "Static" and "Luxury," reflecting the goal of delivering a premium writing and reading experience with static-site speed.
 
-## ⚙️ What You Can Configure
+## ✨ Design Philosophy
 
-- Site Info: Title, description, author, favicon, social head information
-- Navigation Menu: Name, icon (Lucide Icons), internal and external links
-- Comment System: Waline server address, language, emoji, pagination, etc.
-- Social Links: Multi-platform entries, rendering SVGs based on simple-icons
-- Friend Links: Site name, description, icon, link
-- Footer: Copyright, filing, badges, custom scripts and slots
+*"Simple, but not simplistic; beautiful, but not flashy."*
 
-All configuration is centralized in the root `config.yml`, taking effect without modifying component code.
+Stalux features a dark-themed design with elegant glassmorphism aesthetics. Subtle tiled background patterns add visual depth without distracting from the content. Every element is crafted to keep the focus where it belongs — your writing.
 
-## 🌟 Documentation Acknowledgements
+## 🔤 Font Optimization
 
-- [Astro](https://astro.build/) — Content-driven modern static framework
-- [MDN Web Docs](https://developer.mozilla.org/) — Authoritative reference for Web technologies
-- [Simple Icons](https://simpleicons.org/) — Brand SVG icon library
-- [Lucide Icons](https://lucide.dev/) — Beautiful and consistent open-source icon library
+Built with a 25 MB Chinese font (LXGW WenKai), but your visitors never download the full file. The build system automatically generates per-route font subsets:
 
-## 💡 Usage Suggestions
+- **Common subset** (~350 KB) — shared characters loaded on every page
+- **Per-route subset** (~0.5–3 KB each) — unique characters per article
 
-1. First complete the basic items in `config.yml`, then supplement navigation, social, and footer.
-2. When writing, use Markdown and ensure required fields like `title`, `abbrlink`, and `date` are complete.
-3. If enabling analytics or verification, place the code into `anyhead`, and confirm in the browser console that there are no errors before publishing.
-4. After deployment, visit the entire site and check that interactions like lightbox, search, and comments work properly.
+Each page downloads only the characters it needs.
 
-## 🙏 Feedback and Support
+## 🚀 How to Use
 
-- Submit Issues or PRs on [GitHub](https://github.com/xingwangzhe/stalux).
-- Leave your usage experience and needs in the comment section.
+**Dual-mode:** Use as a source template or install as an npm package.
 
-Stalux is released under the MIT license, and you are welcome to freely use and improve it. May it become your efficient writing companion!
+```bash
+# Plugin mode (recommended)
+bun create astro
+bun add @xingwangzhe/stalux
+bunx stalux init
+```
+
+```bash
+# Template mode
+git clone https://github.com/xingwangzhe/stalux.git
+bun install && bun run dev
+```
+
+All configuration is done through YAML files under `stalux/config/` — no coding required.
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/xingwangzhe/stalux)
+- [Live Demo](https://stalux.needhelp.icu)
+- [npm Package](https://www.npmjs.com/package/@xingwangzhe/stalux)
+
+## 📄 License
+
+MIT License — free to use, modify, and distribute.
