@@ -105,6 +105,12 @@ ul {
     color: white; /* 默认文本颜色，适用于深色背景 */
 }
 
+/* 主要内容区域自动撑满剩余高度，页脚自然被推到视口下方 */
+.stalux-main {
+    flex: 1;
+    min-height: 0;
+}
+
 /* 默认 stalux 背景的 CSS 变量（非动态默认值） */
 :root {
     --stalux-bg-color: #202020;
