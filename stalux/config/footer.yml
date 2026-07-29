@@ -58,25 +58,25 @@ badges:
       message: Full
     - collapsed: true
       items:
-          - alt: 示例社区 A
+          - alt: Community Site A
             color: green
             href: https://example.com
-            label: 示例社区A
-            message: 社区
-          - alt: 示例社区 B
+            label: Community A
+            message: Community
+          - alt: Community Site B
             color: yellow
             href: https://example.org
-            label: 示例社区B
-            message: 导航
-      title: 博客社区
+            label: Community B
+            message: Navigation
+      title: Blog Community
 beian:
     icp:
         enabled: false
-        number: 辽ICP备XXXXXXXX号
+        number: ""
     security:
         enabled: false
-        number: XXXXXXXXXXXX
-        text: 辽公网安备 XXXXXXXXXXXX号
+        number: ""
+        text: ""
 buildtime: "2025-05-01T10:00:00"
 copyright:
     customText: ""
