@@ -43,13 +43,9 @@ bun add @xingwangzhe/stalux
 
 # 4. 初始化内容模板（创建 stalux/ 目录结构和示例内容）
 bunx stalux init
-
-# 5. 安装必需的附加依赖
-bun add @astrojs/markdown-satteri astro-expressive-code @astrojs/sitemap
-bun add @xingwangzhe/satteri-mermaid @xingwangzhe/satteri-photoswipe
 ```
 
-**6. 配置 `astro.config.mjs`：**
+**5. 配置 `astro.config.mjs`：**
 
 ```ts
 import { defineConfig } from "astro/config";
@@ -84,7 +80,7 @@ import { defineCollections } from "@xingwangzhe/stalux/schemas";
 export const collections = defineCollections({ contentDir: "stalux" });
 ```
 
-**7. 启动开发服务器：**
+**6. 启动开发服务器：**
 
 ```bash
 bun run dev
