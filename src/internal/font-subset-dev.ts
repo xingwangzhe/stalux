@@ -126,7 +126,11 @@ async function generateSubsetOnDemand(
 
     // Generate subset TTF using taetype
     const charsStr = [...charSet].sort().join("");
-    try { register_font_raw("stalux", fontBuffer); } catch { /* already registered */ }
+    try {
+        register_font_raw("stalux", fontBuffer);
+    } catch {
+        /* already registered */
+    }
     const glyphs = get_glyph_ids(charsStr, "stalux", "normal", 400);
     if (glyphs.length === 0) return null;
     const subsetResult = subset_font_full("stalux", "normal", 400, 0, glyphs);

@@ -8,10 +8,10 @@
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
+import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { existsSync, readdirSync } from "node:fs";
 
 import type { AstroIntegration } from "astro";
 // pagefind 是 ESM-only 包，需要在模块顶层导入

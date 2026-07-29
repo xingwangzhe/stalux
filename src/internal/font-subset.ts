@@ -16,7 +16,14 @@
  */
 
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync } from "node:fs";
+import {
+    existsSync,
+    mkdirSync,
+    readFileSync,
+    writeFileSync,
+    readdirSync,
+    unlinkSync,
+} from "node:fs";
 import { resolve, basename, extname, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -279,10 +286,10 @@ export async function runFontSubsetting(
 
     // Register font with taetype for fast Rust subsetting
     try {
-      register_font_raw("stalux", fontBuffer);
+        register_font_raw("stalux", fontBuffer);
     } catch (e) {
-      logger.warn(`Font registration failed: ${e}, skipping subsetting`);
-      return;
+        logger.warn(`Font registration failed: ${e}, skipping subsetting`);
+        return;
     }
 
     // Clean old generated font files to avoid stale cached references
@@ -290,7 +297,11 @@ export async function runFontSubsetting(
     if (existsSync(outDir)) {
         for (const f of readdirSync(outDir)) {
             if (f.startsWith("common-") || f.startsWith("subset-")) {
-                try { unlinkSync(join(outDir, f)); } catch { /* skip */ }
+                try {
+                    unlinkSync(join(outDir, f));
+                } catch {
+                    /* skip */
+                }
             }
         }
     }
@@ -338,7 +349,9 @@ export async function runFontSubsetting(
         const data = doSubset(commonChars);
         if (data.length > 0) {
             writeFileSync(commonOutPath, data);
-            logger.info(`  common subset: ${(data.length / 1024).toFixed(1)} KB → ${commonFilename}`);
+            logger.info(
+                `  common subset: ${(data.length / 1024).toFixed(1)} KB → ${commonFilename}`,
+            );
         }
     }
 
