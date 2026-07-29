@@ -63,10 +63,37 @@ function getRouteChars(projectRoot: string, subsetId: string): string | null {
         return all.join("\n") || null;
     }
 
-    // ── Other HTML routes (home, archives, tags, categories, links, 404) ──
+    // ── Archives ────────────────────────────────────────────
+    if (subsetId === "archives") {
+        return getAllPostContent(contentRoot);
+    }
+
+    // ── Tags index ──────────────────────────────────────────
+    if (subsetId === "tags") {
+        return getAllTagsAndPostContent(contentRoot);
+    }
+
+    // ── Tags detail ─────────────────────────────────────────
+    if (subsetId.startsWith("tags-")) {
+        const tagName = decodeURIComponent(subsetId.slice(5));
+        return getTagContent(contentRoot, tagName);
+    }
+
+    // ── Categories index ────────────────────────────────────
+    if (subsetId === "categories") {
+        return getAllCategoriesAndPostContent(contentRoot);
+    }
+
+    // ── Categories detail ───────────────────────────────────
+    if (subsetId.startsWith("categories-")) {
+        const catName = decodeURIComponent(subsetId.slice(11));
+        return getCategoryContent(contentRoot, catName);
+    }
+
+    // ── Other HTML routes (home, links, 404) ──
     // These pages use i18n text + config YAML text, which are already
     // covered by the common subset. Return config text for extra safety.
-    if (["home", "archives", "tags", "categories", "links", "common"].includes(subsetId)) {
+    if (["home", "links", "common"].includes(subsetId)) {
         const configDir = join(contentRoot, "config");
         if (!existsSync(configDir)) return null;
         const all: string[] = [];
@@ -79,6 +106,99 @@ function getRouteChars(projectRoot: string, subsetId: string): string | null {
     }
 
     return null;
+}
+
+/** Get all post content concatenated (including template/_ files) */
+function getAllPostContent(contentRoot: string): string | null {
+    const postsDir = join(contentRoot, "posts");
+    if (!existsSync(postsDir)) return null;
+    const all: string[] = [];
+    for (const f of readdirSync(postsDir)) {
+        if (f.endsWith(".md") || f.endsWith(".mdx")) {
+            all.push(readFileSync(join(postsDir, f), "utf-8"));
+        }
+    }
+    return all.join("\n") || null;
+}
+
+/** Get all tags + all post content */
+function getAllTagsAndPostContent(contentRoot: string): string | null {
+    const postContent = getAllPostContent(contentRoot);
+    if (!postContent) return null;
+    const tags = extractAllYamlValues(postContent, "tags");
+    return postContent + " " + tags.join(" ");
+}
+
+/** Get all categories + all post content */
+function getAllCategoriesAndPostContent(contentRoot: string): string | null {
+    const postContent = getAllPostContent(contentRoot);
+    if (!postContent) return null;
+    const categories = extractAllYamlValues(postContent, "categories");
+    return postContent + " " + categories.join(" ");
+}
+
+/** Get content for a specific tag: tag name + posts with that tag */
+function getTagContent(contentRoot: string, tagName: string): string | null {
+    const postsDir = join(contentRoot, "posts");
+    if (!existsSync(postsDir)) return null;
+    const all: string[] = [tagName];
+    for (const f of readdirSync(postsDir)) {
+        if ((f.endsWith(".md") || f.endsWith(".mdx")) && !f.startsWith("_")) {
+            const content = readFileSync(join(postsDir, f), "utf-8");
+            const tags = extractYamlListFromContent(content, "tags");
+            if (tags.includes(tagName)) {
+                all.push(content);
+            }
+        }
+    }
+    return all.join("\n") || null;
+}
+
+/** Get content for a specific category: category name + posts in that category */
+function getCategoryContent(contentRoot: string, catName: string): string | null {
+    const postsDir = join(contentRoot, "posts");
+    if (!existsSync(postsDir)) return null;
+    const all: string[] = [catName];
+    for (const f of readdirSync(postsDir)) {
+        if ((f.endsWith(".md") || f.endsWith(".mdx")) && !f.startsWith("_")) {
+            const content = readFileSync(join(postsDir, f), "utf-8");
+            const categories = extractYamlListFromContent(content, "categories");
+            if (categories.includes(catName)) {
+                all.push(content);
+            }
+        }
+    }
+    return all.join("\n") || null;
+}
+
+/** Extract a YAML list value from frontmatter by key */
+function extractYamlListFromContent(content: string, key: string): string[] {
+    const lines: string[] = [];
+    const regex = new RegExp(`^${key}:$`, "m");
+    const match = content.match(regex);
+    if (!match) return [];
+    const startIdx = match.index! + match[0].length;
+    const afterKey = content.slice(startIdx);
+    const listMatch = afterKey.match(/^\n((?:\s+-\s+.+\n?)*)/);
+    if (!listMatch) return [];
+    for (const line of listMatch[1].split("\n")) {
+        const item = line.match(/^\s+-\s+(.+)/)?.[1];
+        if (item) lines.push(item.trim());
+    }
+    return lines;
+}
+
+/** Extract all YAML list values from all posts by key */
+function extractAllYamlValues(postContent: string, key: string): string[] {
+    const values = new Set<string>();
+    // Split by frontmatter boundaries (---)
+    const parts = postContent.split(/^---$/m);
+    for (let i = 1; i < parts.length; i += 2) {
+        const fm = parts[i];
+        const list = extractYamlListFromContent("---\n" + fm + "\n---\n", key);
+        for (const v of list) values.add(v);
+    }
+    return [...values];
 }
 
 /**

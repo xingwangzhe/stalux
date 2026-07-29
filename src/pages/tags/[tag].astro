@@ -29,7 +29,7 @@ const props = Astro.props as Props;
     title={t("taxonomy.tag") + ": " + props.tag + " | " + siteConfig.title}
     description={t("taxonomy.browseTag", { title: siteConfig.title, tag: props.tag, count: props.count })}
     noindex={props.count < 3}
-   
+    fontSubsetId={props.posts.length > 0 ? `tags-${encodeURIComponent(props.tag)}` : undefined}
 >
     <div style="height: 3em;"></div>
     <Navs />

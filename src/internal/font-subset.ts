@@ -103,19 +103,81 @@ function scanContent(projectRoot: string): ContentFile[] {
 
     // Posts
     const postsDir = join(contentRoot, "posts");
+    const allPostContents: {
+        abbrlink: string;
+        tags: string[];
+        categories: string[];
+        content: string;
+    }[] = [];
     if (existsSync(postsDir)) {
         for (const f of readdirSync(postsDir)) {
             if (!f.endsWith(".md") && !f.endsWith(".mdx")) continue;
-            if (f.startsWith("_")) continue; // skip template files
             const content = readFileSync(join(postsDir, f), "utf-8");
-            // Extract abbrlink from frontmatter
+            const isTemplate = f.startsWith("_");
+
+            // Per-post routes: skip template (_) files
+            if (!isTemplate) {
+                const abbrlinkMatch = content.match(/^abbrlink:\s*(.+)$/m);
+                const abbrlink = abbrlinkMatch?.[1]?.trim() ?? basename(f, extname(f));
+                files.push({
+                    route: `posts/${abbrlink}`,
+                    filePath: join(postsDir, f),
+                    abbrlink,
+                });
+            }
+
+            // Virtual routes (archives/tags/categories): include ALL posts including templates
+            // because content collections load them and they render on those pages
             const abbrlinkMatch = content.match(/^abbrlink:\s*(.+)$/m);
             const abbrlink = abbrlinkMatch?.[1]?.trim() ?? basename(f, extname(f));
-            files.push({
-                route: `posts/${abbrlink}`,
-                filePath: join(postsDir, f),
-                abbrlink,
-            });
+            const tags = extractYamlList(content, "tags");
+            const categories = extractYamlList(content, "categories");
+            allPostContents.push({ abbrlink, tags, categories, content });
+        }
+    }
+
+    // Build virtual routes for archives, tags, categories (aggregated pages)
+    // These pages render content from ALL posts
+    if (allPostContents.length > 0) {
+        const allContent = allPostContents.map((p) => p.content).join("\n");
+
+        // Archives: all posts' content (titles, dates, etc.)
+        virtualRouteCache.set("archives", extractChars(allContent));
+
+        // Tags index: all tags + all posts' content
+        const allTags = [...new Set(allPostContents.flatMap((p) => p.tags))].join(" ");
+        virtualRouteCache.set("tags", extractChars(allContent + allTags));
+
+        // Categories index: all categories + all posts' content
+        const allCategories = [...new Set(allPostContents.flatMap((p) => p.categories))].join(" ");
+        virtualRouteCache.set("categories", extractChars(allContent + allCategories));
+
+        // Per-tag routes: tag name + posts with that tag
+        const tagPosts = new Map<string, string[]>();
+        for (const p of allPostContents) {
+            for (const tag of p.tags) {
+                const list = tagPosts.get(tag) ?? [];
+                list.push(p.content);
+                tagPosts.set(tag, list);
+            }
+        }
+        for (const [tag, contents] of tagPosts) {
+            const tagContent = tag + " " + contents.join("\n");
+            virtualRouteCache.set(`tags-${tag}`, extractChars(tagContent));
+        }
+
+        // Per-category routes: category name + posts in that category
+        const catPosts = new Map<string, string[]>();
+        for (const p of allPostContents) {
+            for (const cat of p.categories) {
+                const list = catPosts.get(cat) ?? [];
+                list.push(p.content);
+                catPosts.set(cat, list);
+            }
+        }
+        for (const [cat, contents] of catPosts) {
+            const catContent = cat + " " + contents.join("\n");
+            virtualRouteCache.set(`categories-${cat}`, extractChars(catContent));
         }
     }
 
@@ -156,11 +218,37 @@ function scanContent(projectRoot: string): ContentFile[] {
         }
     }
 
+    // Add virtual routes (archives, tags, categories) as content files
+    for (const [route, chars] of virtualRouteCache) {
+        files.push({
+            route,
+            filePath: resolve(projectRoot, CONTENT_ROOT, `_virtual/${route}.md`),
+        });
+    }
+
     return files;
+}
+
+/** Extract a YAML list value from frontmatter by key */
+function extractYamlList(content: string, key: string): string[] {
+    const lines: string[] = [];
+    const regex = new RegExp(`^${key}:$`, "m");
+    const match = content.match(regex);
+    if (!match) return [];
+    const startIdx = match.index! + match[0].length;
+    const afterKey = content.slice(startIdx);
+    const listMatch = afterKey.match(/^\n((?:\s+-\s+.+\n?)*)/);
+    if (!listMatch) return [];
+    for (const line of listMatch[1].split("\n")) {
+        const item = line.match(/^\s+-\s+(.+)/)?.[1];
+        if (item) lines.push(item.trim());
+    }
+    return lines;
 }
 
 // Cache for virtual route char sets
 const wordCharsCache = new Map<string, string>();
+const virtualRouteCache = new Map<string, string>();
 
 // ---------------------------------------------------------------------------
 // Common subset: extract chars from UI source files
@@ -311,6 +399,8 @@ export async function runFontSubsetting(
         let content: string;
         if (file.route === "words" && wordCharsCache.has("words")) {
             content = wordCharsCache.get("words")!;
+        } else if (virtualRouteCache.has(file.route)) {
+            content = virtualRouteCache.get(file.route)!;
         } else {
             content = readFileSync(file.filePath, "utf-8");
         }
