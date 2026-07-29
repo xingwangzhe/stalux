@@ -219,7 +219,7 @@ function scanContent(projectRoot: string): ContentFile[] {
     }
 
     // Add virtual routes (archives, tags, categories) as content files
-    for (const [route, chars] of virtualRouteCache) {
+    for (const [route] of virtualRouteCache) {
         files.push({
             route,
             filePath: resolve(projectRoot, CONTENT_ROOT, `_virtual/${route}.md`),
