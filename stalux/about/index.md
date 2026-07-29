@@ -9,7 +9,7 @@ description: About the Stalux blog theme
 
 ## ✨ Design Philosophy
 
-*"Simple, but not simplistic; beautiful, but not flashy."*
+_"Simple, but not simplistic; beautiful, but not flashy."_
 
 Stalux features a dark-themed design with elegant glassmorphism aesthetics. Subtle tiled background patterns add visual depth without distracting from the content. Every element is crafted to keep the focus where it belongs — your writing.
 
