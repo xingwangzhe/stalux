@@ -99,15 +99,15 @@ ul {
 }
 /* 布局：使 body 成为列 flex 容器，并让 main 填充可用高度 */
 .stalux-root {
-    display: flex;
-    flex-direction: column;
     min-height: 100vh;
-    color: white; /* 默认文本颜色，适用于深色背景 */
+    color: white;
 }
 
-/* 主内容区域至少撑满视口高度，页脚自然被推到视口下方 */
+/* 主内容至少撑满视口高度
+ * - 内容不足视口时：min-height 让 main = 100vh，页脚紧跟在视口下方
+ * - 内容超过视口时：main 自然撑高，页脚在内容末尾
+ * 不使用 flex，避免 flex-basis 限制导致内容溢出 main */
 .stalux-main {
-    flex: 1;
     min-height: 100vh;
 }
 
