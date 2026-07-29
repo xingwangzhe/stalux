@@ -21,8 +21,6 @@ import { resolve, basename, extname, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegrationLogger } from "astro";
-// taetype 是 Rust 原生字体引擎，比 subset-font (WASM) 快 2-3 倍
-import * as taetype from "taetype";
 import { register_font_raw, get_glyph_ids, subset_font_full } from "taetype";
 
 // ---------------------------------------------------------------------------

@@ -226,6 +226,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                     await runFontSubsetting(projectRoot, logger, true);
                     // 再添加按需路由切片中间件（放在最前面，优先拦截字体请求）
                     const { createDevFontMiddleware } = await import(
+                        /* @vite-ignore */
                         new URL("./internal/font-subset-dev.ts", import.meta.url).href
                     );
                     const fontMiddleware = createDevFontMiddleware(projectRoot, logger);

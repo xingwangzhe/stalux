@@ -12,7 +12,6 @@ import { resolve, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegrationLogger } from "astro";
-import * as taetype from "taetype";
 import { register_font_raw, get_glyph_ids, subset_font_full } from "taetype";
 
 const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.ttf";
@@ -99,10 +98,8 @@ async function generateSubsetOnDemand(
     for (const ch of chars) charSet.add(ch);
     if (charSet.size === 0) return null;
 
-    // Deduplicate against common subset: read common.css to find its referenced WOFF2
+    // Deduplicate against common subset
     const outDir = resolve(projectRoot, FONT_OUT_DIR);
-    const commonCssPath = join(outDir, "common.css");
-    const commonCharSet = new Set<string>();
 
     // We can't precisely know which chars common covers without re-extracting.
     // But we can read the i18n + config source for a rough estimate.
