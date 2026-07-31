@@ -49,10 +49,16 @@ function getSiteConfig(config: ConfigMap): Record<string, unknown> {
     return config.get("site") ?? {};
 }
 
-/** 解析站点根 URL */
+/**
+ * 解析站点根 URL。
+ *
+ * 唯一真源是 stalux/config/site.yml 的 url；context.site（astro.config.mjs 的 site）
+ * 仅作为 site.yml 缺失时的兜底，避免 llms.txt / *.md 导出与 sitemap / canonical 输出不一致。
+ */
 export function getSite(config: ConfigMap, contextSite?: string): string {
     const siteData = getSiteConfig(config);
-    return (contextSite || (siteData.url as string) || "").replace(/\/$/, "");
+    const configUrl = siteData.url as string | undefined;
+    return (configUrl || contextSite || "").replace(/\/$/, "");
 }
 
 /** 将任意空白压缩为单行 */

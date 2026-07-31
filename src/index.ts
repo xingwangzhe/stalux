@@ -8,7 +8,7 @@
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -143,7 +143,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                 injectScript,
                 updateConfig,
                 addDevToolbarApp,
-                _config,
+                config,
                 logger,
             }) => {
                 const srcDir = fileURLToPath(new URL(".", import.meta.url));
@@ -191,7 +191,45 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
 
                 logger.info(`Stalux initialized (contentDir: ${opt.contentDir})`);
 
-                // 5. 字体裁剪（在 config:setup 阶段执行，保证 dev/build 都能生成）
+                // 5. 站点 URL 单源化：以 stalux/config/site.yml 的 url 为准
+                // sitemap 与 context.site 都派生自 astro.config 的 site 字段，
+                // 这里在构建前将其与主题配置对齐，避免输出与配置不一致的 URL
+                // （例如 README 里的 https://example.com 占位、或用户只改了 site.yml 忘了改 astro.config）。
+                try {
+                    const contentDir = opt.contentDir ?? "stalux";
+                    const siteYamlPath = path.resolve(
+                        process.cwd(),
+                        contentDir,
+                        "config",
+                        "site.yml",
+                    );
+                    const siteYaml = readFileSync(siteYamlPath, "utf-8");
+                    const urlMatch = siteYaml.match(/^url\s*:\s*(.+)$/m);
+                    const yamlUrl = urlMatch?.[1]
+                        .trim()
+                        .replace(/^["']|["']$/g, "")
+                        .replace(/\/+$/, "");
+                    if (yamlUrl) {
+                        const configuredSite = config.site?.replace(/\/+$/, "");
+                        if (!configuredSite || configuredSite === "https://example.com") {
+                            // 未配置或为占位符 → 直接以 site.yml 为准
+                            updateConfig({ site: yamlUrl });
+                            logger.info(
+                                `Stalux: site set to ${yamlUrl} (from ${contentDir}/config/site.yml)`,
+                            );
+                        } else if (configuredSite !== yamlUrl) {
+                            // 用户显式配置了不同的域名 → 保留用户配置，但提示差异
+                            logger.warn(
+                                `Stalux: astro.config site (${configuredSite}) 与 ${contentDir}/config/site.yml 的 url (${yamlUrl}) 不一致。` +
+                                    "sitemap 将使用 astro.config 的 site，llms.txt / *.md 导出将使用 site.yml 的 url，请统一二者。",
+                            );
+                        }
+                    }
+                } catch {
+                    logger.debug("Stalux: site.yml not found, skip site sync");
+                }
+
+                // 6. 字体裁剪（在 config:setup 阶段执行，保证 dev/build 都能生成）
                 try {
                     const projectRoot = process.cwd();
                     await runFontSubsetting(projectRoot, logger, true);
@@ -201,7 +239,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
             },
 
             "astro:build:start": async ({ logger }) => {
-                // 6. 字体裁剪（构建时，生成全部路由子集）
+                // 7. 字体裁剪（构建时，生成全部路由子集）
                 try {
                     const projectRoot = process.cwd();
                     await runFontSubsetting(projectRoot, logger);
@@ -211,7 +249,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
             },
 
             "astro:server:setup": async ({ server, logger }) => {
-                // 7. 字体裁剪（开发模式，生成 common 子集 + 按需路由切片）
+                // 8. 字体裁剪（开发模式，生成 common 子集 + 按需路由切片）
                 try {
                     const projectRoot = process.cwd();
                     // 清除旧的字体缓存
