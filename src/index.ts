@@ -218,9 +218,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                         pushUnique(mdastPlugins, temml());
                         pushUnique(mdastPlugins, featureFlagsMdast);
                         pushUnique(hastPlugins, featureFlagsHast);
-                        logger.debug(
-                            "Stalux: injected satteri plugins (temml/feature-flags)",
-                        );
+                        logger.debug("Stalux: injected satteri plugins (temml/feature-flags)");
                     } else {
                         logger.warn(
                             "Stalux: markdown.processor 不是 satteri，无法注入字数统计/数学公式插件。" +
