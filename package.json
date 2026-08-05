@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -25,6 +25,7 @@
     "files": [
         "src/index.ts",
         "src/config.ts",
+        "src/expressive-code.ts",
         "src/components/**/*.astro",
         "src/components/**/*.ts",
         "src/layouts/**/*.astro",
@@ -45,6 +46,7 @@
     "exports": {
         ".": "./src/index.ts",
         "./config": "./src/config.ts",
+        "./expressive-code": "./src/expressive-code.ts",
         "./schemas": "./src/schemas/config.ts",
         "./schemas/collections": "./src/schemas/collections.ts",
         "./components/*": "./src/components/*",

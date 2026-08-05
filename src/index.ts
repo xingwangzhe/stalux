@@ -353,3 +353,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
 }
 
 export default stalux;
+
+// 便捷导出：带默认行号的 Expressive Code 集成（也可从 @xingwangzhe/stalux/expressive-code 导入）
+export { expressiveCode } from "./expressive-code";

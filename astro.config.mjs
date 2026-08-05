@@ -3,13 +3,13 @@ import { fileURLToPath } from "node:url";
 
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
-import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
-import expressiveCode from "astro-expressive-code";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 
+// 封装版 Expressive Code（默认带代码块行号）
+import { expressiveCode } from "./src/expressive-code.ts";
 // 使用本地 stalux 集成（注入路由、Vite 别名、Pagefind 等）
 import stalux from "./src/index.ts";
 import { featureFlagsHast, featureFlagsMdast } from "./src/plugins/feature-flags.ts";
@@ -124,8 +124,6 @@ export default defineConfig({
             lastmod: new Date(),
         }),
         expressiveCode({
-            // 代码块默认显示行号（@expressive-code/plugin-line-numbers）
-            plugins: [pluginLineNumbers()],
             themes: ["dark-plus", "github-light"],
             styleOverrides: {
                 borderRadius: "0.5rem",
