@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
+import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import expressiveCode from "astro-expressive-code";
@@ -123,6 +124,8 @@ export default defineConfig({
             lastmod: new Date(),
         }),
         expressiveCode({
+            // 代码块默认显示行号（@expressive-code/plugin-line-numbers）
+            plugins: [pluginLineNumbers()],
             themes: ["dark-plus", "github-light"],
             styleOverrides: {
                 borderRadius: "0.5rem",
