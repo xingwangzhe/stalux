@@ -21,6 +21,8 @@ import { createIndex as pagefindCreateIndex } from "pagefind";
 import type { StaluxOptions } from "./config";
 import { staluxComponentsAlias } from "./internal/components-plugin";
 import { runFontSubsetting } from "./internal/font-subset";
+import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
+import { temml } from "./plugins/satteri-temml";
 
 // ---------------------------------------------------------------------------
 // 页面条目定义
@@ -191,7 +193,45 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
 
                 logger.info(`Stalux initialized (contentDir: ${opt.contentDir})`);
 
-                // 5. 站点 URL 单源化：以 stalux/config/site.yml 的 url 为准
+                // 5. 注入 satteri 插件（字数统计/特性标记/数学公式），按插件 name 去重
+                // 源码模式下 astro.config 会显式注册同款插件，插件模式则由集成补齐，
+                // 保证两种模式行为一致（wordCount/readingMinutes/hasImage 由构建期插件写入）。
+                // 去重是必须的：重复注册 featureFlagsMdast 会导致字数统计翻倍。
+                try {
+                    const processor = (config.markdown?.processor ?? undefined) as
+                        | { name?: string; options?: { mdastPlugins?: any[]; hastPlugins?: any[] } }
+                        | undefined;
+                    if (processor?.name === "satteri") {
+                        const mdastPlugins = processor.options?.mdastPlugins ?? [];
+                        const hastPlugins = processor.options?.hastPlugins ?? [];
+                        const seen = new Set<string>();
+                        for (const p of [...mdastPlugins, ...hastPlugins]) {
+                            if (p?.name) seen.add(p.name);
+                        }
+                        const pushUnique = (list: any[], plugin: any) => {
+                            if (plugin?.name) {
+                                if (seen.has(plugin.name)) return;
+                                seen.add(plugin.name);
+                            }
+                            list.push(plugin);
+                        };
+                        pushUnique(mdastPlugins, temml());
+                        pushUnique(mdastPlugins, featureFlagsMdast);
+                        pushUnique(hastPlugins, featureFlagsHast);
+                        logger.debug(
+                            "Stalux: injected satteri plugins (temml/feature-flags)",
+                        );
+                    } else {
+                        logger.warn(
+                            "Stalux: markdown.processor 不是 satteri，无法注入字数统计/数学公式插件。" +
+                                "请在 astro.config 中配置 `processor: satteri({...})`。",
+                        );
+                    }
+                } catch (error) {
+                    logger.warn(`Stalux: 注入 markdown 插件失败: ${String(error)}`);
+                }
+
+                // 6. 站点 URL 单源化：以 stalux/config/site.yml 的 url 为准
                 // sitemap 与 context.site 都派生自 astro.config 的 site 字段，
                 // 这里在构建前将其与主题配置对齐，避免输出与配置不一致的 URL
                 // （例如 README 里的 https://example.com 占位、或用户只改了 site.yml 忘了改 astro.config）。
@@ -229,7 +269,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                     logger.debug("Stalux: site.yml not found, skip site sync");
                 }
 
-                // 6. 字体裁剪（在 config:setup 阶段执行，保证 dev/build 都能生成）
+                // 7. 字体裁剪（在 config:setup 阶段执行，保证 dev/build 都能生成）
                 try {
                     const projectRoot = process.cwd();
                     await runFontSubsetting(projectRoot, logger, true);
@@ -239,7 +279,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
             },
 
             "astro:build:start": async ({ logger }) => {
-                // 7. 字体裁剪（构建时，生成全部路由子集）
+                // 8. 字体裁剪（构建时，生成全部路由子集）
                 try {
                     const projectRoot = process.cwd();
                     await runFontSubsetting(projectRoot, logger);
@@ -249,7 +289,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
             },
 
             "astro:server:setup": async ({ server, logger }) => {
-                // 8. 字体裁剪（开发模式，生成 common 子集 + 按需路由切片）
+                // 9. 字体裁剪（开发模式，生成 common 子集 + 按需路由切片）
                 try {
                     const projectRoot = process.cwd();
                     // 清除旧的字体缓存

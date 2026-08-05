@@ -59,9 +59,9 @@ const mdSourceUrl = exportMd
                 )
             }
         </div>
-        {
-            <div class={style.pageStats}>
-                    {(props.readingTime || props.readingMinutes) && (
+            {
+                <div class={style.pageStats}>
+                    {(Boolean(props.readingTime) || (props.readingMinutes ?? 0) > 0) && (
                         <span class={style.readingTime}>
                             {t("post.readingTime")}{props.readingMinutes && props.readingMinutes > 0
                                 ? (props.readingMinutes < 1
@@ -70,7 +70,7 @@ const mdSourceUrl = exportMd
                                 : props.readingTime}
                         </span>
                     )}
-                    {props.wordCount && props.wordCount > 0 && (
+                    {(props.wordCount ?? 0) > 0 && (
                         <span class={style.wordCount}>
                             {t("post.wordCount")}{props.wordCount}
                         </span>
