@@ -45,7 +45,10 @@ const bgUrls = Object.values(bgModules)
         const nb = parseInt(b.match(/pattern-(\d+)/)?.[1] || "0", 10);
         return na - nb;
     });
-const randomIndex = bgUrls.length > 0 ? Math.floor(Math.random() * bgUrls.length) : 0;
+// 背景索引固定为 0（确定性）：保证 define:vars 内联脚本在构建间稳定，
+// 使 Astro 增量构建的依赖图 hash 可复用。真正的随机背景由客户端
+// background.ts 在运行时为每个访问者挑选。
+const randomIndex = 0;
 const initialBg = bgUrls[randomIndex] || "";
 const llmPromoteRaw = promoteConfig?.llm_promote ?? "";
 const llmPromote = llmPromoteRaw
@@ -72,9 +75,8 @@ const llmPromote = llmPromoteRaw
   <!-- Per-route font subset (generated at build time) -->
   <link rel="stylesheet" href="/fonts/common.css" />
   {fontSubsetUrl && <link rel="stylesheet" href={fontSubsetUrl} />}
-  <script define:vars={{ bgUrls, randomIndex }}>
+  <script define:vars={{ bgUrls }}>
     window.__STALUX_BG_URLS__ = bgUrls;
-    window.__STALUX_BG_INDEX__ = randomIndex;
   </script>
   <script>
     import "../scripts/background.ts";

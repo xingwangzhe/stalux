@@ -1,17 +1,16 @@
 /**
- * 双层随机背景 — 每页服务端随机选图直接渲染，不做 VT crossfade
+ * 双层随机背景 — 客户端运行时随机选图，不做 VT crossfade
  * （去掉 view-transition-name 避免 SVG 全屏瓦片在过渡期间双倍 CPU 光栅化）
+ * 背景随机从服务端移到客户端，保证构建产物确定性，
+ * 使 Astro 增量构建的依赖图 hash 可跨构建复用。
  */
 declare global {
     interface Window {
         __STALUX_BG_URLS__?: string[];
-        __STALUX_BG_INDEX__?: number;
     }
 }
 
 const backgroundImages: string[] = window.__STALUX_BG_URLS__ || [];
-const initialIndexFromSSR =
-    typeof window.__STALUX_BG_INDEX__ === "number" ? window.__STALUX_BG_INDEX__ : -1;
 
 function getLayerEl(layer: "a" | "b"): HTMLElement | null {
     return document.querySelector(`.bg-layer.bg-${layer}`);
@@ -23,25 +22,18 @@ function setLayerOpacity(layer: "a" | "b", opacity: number): void {
 }
 
 function initBackground(): void {
-    if (initialIndexFromSSR >= 0 && backgroundImages.length > 0) {
-        // 服务端已预填充 bg-a，只需确保状态一致
-        document.body.dataset.staluxBgIndex = String(initialIndexFromSSR);
-        document.body.dataset.staluxBgLayer = "a";
-        setLayerOpacity("a", 1);
-        setLayerOpacity("b", 0);
-    } else {
-        // Fallback：客户端自行初始化
-        const index = Math.floor(Math.random() * backgroundImages.length);
-        const layer: "a" | "b" = "a";
-        if (backgroundImages.length > 0) {
-            const el = getLayerEl(layer);
-            if (el) el.style.backgroundImage = `url('${backgroundImages[index]}')`;
-        }
-        setLayerOpacity(layer, 1);
-        setLayerOpacity("b", 0);
-        document.body.dataset.staluxBgIndex = String(index);
-        document.body.dataset.staluxBgLayer = layer;
+    // 背景随机在客户端运行时执行，保证构建产物确定性
+    // （SSR 固定索引 → 内联脚本稳定 → Astro 增量构建依赖图可复用）
+    const index = Math.floor(Math.random() * backgroundImages.length);
+    const layer: "a" | "b" = "a";
+    if (backgroundImages.length > 0) {
+        const el = getLayerEl(layer);
+        if (el) el.style.backgroundImage = `url('${backgroundImages[index]}')`;
     }
+    setLayerOpacity(layer, 1);
+    setLayerOpacity("b", 0);
+    document.body.dataset.staluxBgIndex = String(index);
+    document.body.dataset.staluxBgLayer = layer;
 }
 
 // 初始化（首次加载 + VT 软导航都走这里）
