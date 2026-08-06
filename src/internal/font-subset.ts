@@ -27,6 +27,10 @@ import { resolve, basename, extname, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegrationLogger } from "astro";
+// 与 Astro 内容集合同款的 YAML 解析器（astro 依赖 js-yaml 解析 frontmatter，
+// 见 node_modules/astro/dist/content/loaders/file.js）。用它解析 frontmatter
+// 得到的结果与 getCollection 的 data 一致：引号剥离、类型还原、结构完整。
+import { load as parseYaml } from "js-yaml";
 import subsetFont from "subset-font";
 
 // ---------------------------------------------------------------------------
@@ -100,6 +104,43 @@ interface ContentFile {
     abbrlink?: string;
 }
 
+/**
+ * 用 js-yaml（内容集合同款解析器）解析 frontmatter。
+ *
+ * 结果与 getCollection("posts") 的 data 一致：
+ * - abbrlink：number 转 string、引号剥离（YAML 解析天然处理）
+ * - tags/categories：单行字符串 "Bing" 按 schema preprocess 转 ["Bing"]
+ */
+function parsePostFrontmatter(content: string): {
+    abbrlink?: string;
+    tags: string[];
+    categories: string[];
+} {
+    const m = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (!m) return { abbrlink: undefined, tags: [], categories: [] };
+
+    let data: Record<string, unknown>;
+    try {
+        data = (parseYaml(m[1]) as Record<string, unknown>) ?? {};
+    } catch {
+        return { abbrlink: undefined, tags: [], categories: [] };
+    }
+
+    // 复刻 posts schema 的 preprocess：单行字符串转数组
+    const toList = (v: unknown): string[] => {
+        if (Array.isArray(v)) return v.map((x) => String(x));
+        if (typeof v === "string") return v.trim() ? [v.trim()] : [];
+        return [];
+    };
+
+    const abbr = data.abbrlink;
+    return {
+        abbrlink: abbr === undefined || abbr === null ? undefined : String(abbr),
+        tags: toList(data.tags),
+        categories: toList(data.categories),
+    };
+}
+
 function scanContent(projectRoot: string): ContentFile[] {
     const files: ContentFile[] = [];
     const contentRoot = resolve(projectRoot, CONTENT_ROOT);
@@ -117,11 +158,11 @@ function scanContent(projectRoot: string): ContentFile[] {
             if (!f.endsWith(".md") && !f.endsWith(".mdx")) continue;
             const content = readFileSync(join(postsDir, f), "utf-8");
             const isTemplate = f.startsWith("_");
+            const fm = parsePostFrontmatter(content);
 
             // Per-post routes: skip template (_) files
             if (!isTemplate) {
-                const abbrlinkMatch = content.match(/^abbrlink:\s*(.+)$/m);
-                const abbrlink = abbrlinkMatch?.[1]?.trim() ?? basename(f, extname(f));
+                const abbrlink = fm.abbrlink ?? basename(f, extname(f));
                 files.push({
                     route: `posts/${abbrlink}`,
                     filePath: join(postsDir, f),
@@ -131,11 +172,13 @@ function scanContent(projectRoot: string): ContentFile[] {
 
             // Virtual routes (archives/tags/categories): include ALL posts including templates
             // because content collections load them and they render on those pages
-            const abbrlinkMatch = content.match(/^abbrlink:\s*(.+)$/m);
-            const abbrlink = abbrlinkMatch?.[1]?.trim() ?? basename(f, extname(f));
-            const tags = extractYamlList(content, "tags");
-            const categories = extractYamlList(content, "categories");
-            allPostContents.push({ abbrlink, tags, categories, content });
+            const abbrlink = fm.abbrlink ?? basename(f, extname(f));
+            allPostContents.push({
+                abbrlink,
+                tags: fm.tags,
+                categories: fm.categories,
+                content,
+            });
         }
     }
 
@@ -249,23 +292,6 @@ function scanContent(projectRoot: string): ContentFile[] {
     }
 
     return files;
-}
-
-/** Extract a YAML list value from frontmatter by key */
-function extractYamlList(content: string, key: string): string[] {
-    const lines: string[] = [];
-    const regex = new RegExp(`^${key}:$`, "m");
-    const match = content.match(regex);
-    if (!match) return [];
-    const startIdx = match.index! + match[0].length;
-    const afterKey = content.slice(startIdx);
-    const listMatch = afterKey.match(/^\n((?:\s+-\s+.+\n?)*)/);
-    if (!listMatch) return [];
-    for (const line of listMatch[1].split("\n")) {
-        const item = line.match(/^\s+-\s+(.+)/)?.[1];
-        if (item) lines.push(item.trim());
-    }
-    return lines;
 }
 
 // Cache for virtual route char sets
