@@ -84,6 +84,7 @@ bun run dev
 - 📐 **数学公式渲染**（KaTeX / MathML）
 - 💬 **Waline** 评论系统
 - 🤖 **LLM 发现文件**（llms.txt / llms-full.txt）
+- 🤝 **WebMCP 工具**（W3C 草案，纯前端，供 AI 代理调用）
 - ⚡ **视图过渡动画**
 - 🌐 **国际化**（英文 / 中文）
 - 🏷️ **标签、分类、归档**页面
@@ -159,6 +160,31 @@ bun run preview # 预览构建结果
 ## 📖 文档
 
 完整文档和在线演示：**[stalux.needhelp.icu](https://stalux.needhelp.icu)**
+
+---
+
+## 🤝 WebMCP / AI 代理
+
+Stalux 内置 WebMCP 工具：当 WebMCP 感知的浏览器（如 Chrome 内置 Gemini、或
+[Ask nekuda](https://chromewebstore.google.com/detail/ask-nekuda/amochnnbmnkjjlblolhpddkokhnalkjp)
+扩展）打开你的站点时，AI 代理可以直接调用以下**只读**工具与博客交互——**无需任何后端**：
+
+| 工具                  | 功能                                     | 数据来源                  |
+| --------------------- | ---------------------------------------- | ------------------------- |
+| `stalux_list_posts`   | 分页列出全部文章                         | `/api/post.abbrlink.json` |
+| `stalux_search_posts` | 全文搜索文章                             | Pagefind `/pagefind/`     |
+| `stalux_read_post`    | 读取文章原始 Markdown                    | `/posts/{abbrlink}.md`    |
+| `stalux_site_info`    | 站点信息 + llms.txt / llms-full.txt 入口 | `site.yml`（构建期）      |
+
+所有工具均为 `readOnlyHint: true`，绝不修改任何状态。
+
+**开启 / 关闭：** 跟随 `stalux/config/ai-discovery.yml` 的 `conformance` 设置。
+设为 `disabled` 即停止注册工具；`essential` / `recommended` / `complete` 均会启用。
+
+**浏览器支持：** WebMCP 是 W3C 社区组草案（Chrome 149 Origin Trial）。
+在无原生 `modelContext` 的浏览器上，Stalux 会自动加载
+[`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill)
+兜底；原生支持落地后 polyfill 自动失效（no-op），无需改动。
 
 ---
 

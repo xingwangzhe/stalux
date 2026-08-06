@@ -4,7 +4,7 @@ import Footer from "@components/stalux/layout/footer.astro";
 import { getCollection } from "astro:content";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
-import { getAuthorData, getPromoteData, getSiteData } from "@utils/config-utils";
+import { getAuthorData, getAiDiscoveryData, getPromoteData, getSiteData } from "@utils/config-utils";
 const props = Astro.props as Props;
 
 interface Props {
@@ -26,6 +26,7 @@ const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const authorConfig = getAuthorData(configEntries);
 const promoteConfig = getPromoteData(configEntries);
+const aiConfig = getAiDiscoveryData(configEntries);
 const htmlLang = siteConfig.lang || "zh-CN";
 
 // Resolve font subset CSS URL
@@ -78,6 +79,24 @@ const llmPromote = llmPromoteRaw
   <script>
     import "../scripts/background.ts";
   </script>
+  {
+    aiConfig?.conformance !== "disabled" && (
+      <>
+        <script
+          define:vars={{
+            siteTitle: siteConfig.title,
+            siteUrl: siteConfig.url,
+            siteDesc: siteConfig.description,
+          }}
+        >
+          window.__STALUX_SITE_INFO__ = { title: siteTitle, url: siteUrl, description: siteDesc };
+        </script>
+        <script>
+          import "../scripts/webmcp.ts";
+        </script>
+      </>
+    )
+  }
   <body
     class="stalux-root dark"
     data-stalux-bg-layer="a"

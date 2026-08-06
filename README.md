@@ -84,6 +84,7 @@ bun run dev
 - 📐 **Math formula rendering** (KaTeX / MathML)
 - 💬 **Waline** comment system
 - 🤖 **LLM discovery files** (llms.txt / llms-full.txt)
+- 🤝 **WebMCP tools** for AI agents (W3C draft, pure front-end)
 - ⚡ **View transitions** for smooth navigation
 - 🌐 **i18n** (English / Chinese)
 - 🏷️ **Tags, categories, archives** pages
@@ -159,6 +160,34 @@ bun run preview # Preview production build
 ## 📖 Documentation
 
 Full documentation and live demo: **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
+
+---
+
+## 🤝 WebMCP / AI Agents
+
+Stalux ships built-in WebMCP tools that let AI agents (browsers with
+`document.modelContext`, e.g. Chrome's built-in Gemini or the [Ask nekuda](https://chromewebstore.google.com/detail/ask-nekuda/amochnnbmnkjjlblolhpddkokhnalkjp)
+extension) interact with your blog directly — **no backend required**.
+
+When a WebMCP-aware browser opens your site, these read-only tools are registered:
+
+| Tool                  | What it does                                                            | Backing data              |
+| --------------------- | ----------------------------------------------------------------------- | ------------------------- |
+| `stalux_list_posts`   | Paginated list of all posts                                             | `/api/post.abbrlink.json` |
+| `stalux_search_posts` | Full-text search across posts                                           | Pagefind `/pagefind/`     |
+| `stalux_read_post`    | Fetch a post's raw Markdown                                             | `/posts/{abbrlink}.md`    |
+| `stalux_site_info`    | Site title, URL, description + pointers to `llms.txt` / `llms-full.txt` | `site.yml` (build-time)   |
+
+All tools are `readOnlyHint: true` — they never modify any state.
+
+**Enabling / disabling:** the tools follow the `conformance` setting in
+`stalux/config/ai-discovery.yml`. Set it to `disabled` to stop registering
+tools; `essential` / `recommended` / `complete` all enable them.
+
+**Browser support:** WebMCP is a W3C community-group draft (Chrome 149 Origin
+Trial). On browsers without a native `modelContext`, Stalux loads the
+[`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill)
+so agents still work; the polyfill becomes a no-op once native support lands.
 
 ---
 
