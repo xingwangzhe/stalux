@@ -180,10 +180,12 @@ function listPostsTool(): WebMCPTool {
         description: pick(
             "分页列出博客的全部已发布文章，返回标题、永久链接（abbrlink）、日期、分类、标签、摘要与文章页 URL。" +
                 "需要浏览全站文章、确认某篇文章的 abbrlink 时使用；不返回正文，" +
-                "只要某篇元信息用 stalux_get_post，读正文请用 stalux_read_post。",
+                "只要某篇元信息用 stalux_get_post，读正文请用 stalux_read_post。" +
+                "pageSize 建议设 50 一次拿完，减少翻页；页码越界时会自动返回最后一页（clamped 标记）。",
             "Paginated list of all published posts, returning title, permanent link (abbrlink), date, categories, tags, description and post page URL. " +
                 "Use it to browse the whole blog or find a post's abbrlink; it does not return body content — " +
-                "use stalux_get_post for one post's metadata, or stalux_read_post for the full body.",
+                "use stalux_get_post for one post's metadata, or stalux_read_post for the full body. " +
+                "Prefer pageSize 50 to fetch everything in one call; out-of-range pages clamp to the last page (clamped flag).",
         ),
         annotations: { readOnlyHint: true, untrustedContentHint: false },
         inputSchema: {
@@ -222,23 +224,16 @@ function listPostsTool(): WebMCPTool {
                 );
             const total = list.length;
             const totalPages = Math.ceil(total / pageSize) || 1;
-            const start = (page - 1) * pageSize;
-            if (start >= total) {
-                return err(
-                    "OUT_OF_RANGE",
-                    pick(
-                        "第 " + page + " 页没有文章（共 " + totalPages + " 页）",
-                        "Page " + page + " has no posts (" + totalPages + " pages total)",
-                    ),
-                    {
-                        page,
-                        totalPages,
-                        total,
-                    },
-                );
+            // 越界时自动回退到最后一页（而非报错），agent 翻过头也能拿到数据
+            let clamped = false;
+            let resolvedPage = page;
+            if (page > totalPages) {
+                resolvedPage = totalPages;
+                clamped = true;
             }
+            const start = (resolvedPage - 1) * pageSize;
             const posts = list.slice(start, start + pageSize).map(briefMeta);
-            return { ok: true, page, pageSize, total, totalPages, posts };
+            return { ok: true, page: resolvedPage, pageSize, total, totalPages, clamped, posts };
         },
     };
 }
