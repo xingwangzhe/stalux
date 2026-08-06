@@ -74,7 +74,8 @@ interface RouteCharSet {
 }
 
 interface FontManifest {
-    common: string; // filename of common subset
+    common: string; // filename of common subset TTF
+    commonCss: string; // filename of common subset CSS (content-addressed)
     routes: Record<string, string>; // route → subset filename
     /** Per-post mapping: abbrlink → subset filename */
     posts: Record<string, string>;
@@ -157,22 +158,19 @@ function scanContent(projectRoot: string): ContentFile[] {
         for (const f of readdirSync(postsDir)) {
             if (!f.endsWith(".md") && !f.endsWith(".mdx")) continue;
             const content = readFileSync(join(postsDir, f), "utf-8");
-            const isTemplate = f.startsWith("_");
             const fm = parsePostFrontmatter(content);
 
-            // Per-post routes: skip template (_) files
-            if (!isTemplate) {
-                const abbrlink = fm.abbrlink ?? basename(f, extname(f));
-                files.push({
-                    route: `posts/${abbrlink}`,
-                    filePath: join(postsDir, f),
-                    abbrlink,
-                });
-            }
-
+            // Per-post routes：与内容集合 glob（*.{md,mdx}，含 _ 前缀文件，
+            // 见 schemas/collections.ts）保持一致——这些文件都会生成页面，
+            // 字体子集必须覆盖，否则页面 subset css 缺失 → 404。
+            const abbrlink = fm.abbrlink ?? basename(f, extname(f));
+            files.push({
+                route: `posts/${abbrlink}`,
+                filePath: join(postsDir, f),
+                abbrlink,
+            });
             // Virtual routes (archives/tags/categories): include ALL posts including templates
             // because content collections load them and they render on those pages
-            const abbrlink = fm.abbrlink ?? basename(f, extname(f));
             allPostContents.push({
                 abbrlink,
                 tags: fm.tags,
@@ -423,7 +421,7 @@ export async function runFontSubsetting(
     const outDir = resolve(projectRoot, FONT_OUT_DIR);
     if (existsSync(outDir)) {
         for (const f of readdirSync(outDir)) {
-            if (f.startsWith("common-") || f.startsWith("subset-")) {
+            if (f.startsWith("common-") || f.startsWith("subset-") || f === "common.css") {
                 try {
                     unlinkSync(join(outDir, f));
                 } catch {
@@ -530,7 +528,11 @@ export async function runFontSubsetting(
         }
     }
 
-    // Generate common CSS
+    // Generate common CSS (content-addressed filename: 字符集变化 → hash 变化 →
+    // 文件名变化，浏览器必然拉新 CSS，避免缓存旧 CSS 引用已删除的旧 TTF 导致 404)
+    // dev 模式（skipPerRoute）用固定名 common.css，由 dev 中间件场景复用；
+    // 生产构建用 common-<hash>.css，HTML 从 manifest 读取引用。
+    const commonCssName = skipPerRoute ? "common.css" : `common-${commonHash}.css`;
     const commonCSS = `/* Auto-generated common font subset */
 @font-face {
     font-family: "LXGW WenKai Subset";
@@ -538,7 +540,7 @@ export async function runFontSubsetting(
     font-display: swap;
 }
 `;
-    writeFileSync(join(outDir, "common.css"), commonCSS);
+    writeFileSync(join(outDir, commonCssName), commonCSS);
 
     const groups = deduplicate(routeSets);
     const routeMap: Record<string, string> = {};
@@ -570,8 +572,11 @@ export async function runFontSubsetting(
             }
 
             // Generate per-route CSS (each route gets its own CSS file)
+            // CSS 文件名内容寻址：内容只引用一个 TTF，文件名带上该 TTF 的 hash，
+            // 内容变化 → 文件名变化 → 浏览器必然拉新，避免缓存旧 CSS 引用已删除 TTF。
             // If no unique chars, reference the common TTF as fallback
             const refTtf = existsSync(outPath) ? filename : commonFilename;
+            const refHash = existsSync(outPath) ? hash : commonHash;
             for (const route of routes) {
                 const cssContent = `/* Auto-generated font subset for route: ${route} */
 @font-face {
@@ -581,7 +586,7 @@ export async function runFontSubsetting(
 }
 `;
                 const cssName = route.replace("/", "-");
-                const cssFilename = `subset-${cssName}.css`;
+                const cssFilename = `subset-${cssName}-${refHash}.css`;
                 writeFileSync(join(outDir, cssFilename), cssContent);
                 routeMap[route] = cssFilename;
 
@@ -591,17 +596,24 @@ export async function runFontSubsetting(
                 }
             }
         }
-
-        // 6. Generate manifest
-        const manifest: FontManifest = {
-            common: commonFilename,
-            routes: routeMap,
-            posts: postMap,
-        };
-        writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 2));
-
-        logger.info(
-            `Font subsetting done: ${subsetCount} route subsets + common (${(fontBuffer.length / 1024 / 1024).toFixed(1)} MB → variable)`,
-        );
     }
+
+    // 6. Generate manifest（dev 也生成：routes/posts 为空，供 Stalux.astro import）
+    const manifest: FontManifest = {
+        common: commonFilename,
+        commonCss: commonCssName,
+        routes: routeMap,
+        posts: postMap,
+    };
+    writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 2));
+
+    // 副本写入包内 generated/：Stalux.astro import 它，让 manifest 进入 Astro
+    // 依赖图——manifest 变化时页面必然重建，增量构建 restored 的页面不会引用旧资源。
+    const genDir = resolve(dirname(fileURLToPath(import.meta.url)), "generated");
+    mkdirSync(genDir, { recursive: true });
+    writeFileSync(join(genDir, "fonts-manifest.json"), JSON.stringify(manifest));
+
+    logger.info(
+        `Font subsetting done: ${subsetCount} route subsets + common (${(fontBuffer.length / 1024 / 1024).toFixed(1)} MB → variable)`,
+    );
 }

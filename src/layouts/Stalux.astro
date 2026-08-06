@@ -5,6 +5,9 @@ import { getCollection } from "astro:content";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
 import { getAuthorData, getAiDiscoveryData, getPromoteData, getSiteData } from "@utils/config-utils";
+// font-subset.ts 构建期生成的 manifest 副本（进入 Astro 依赖图，
+// manifest 变化 → 页面重建 → 增量构建 restored 的页面不会引用旧字体资源）
+import fontsManifest from "../internal/generated/fonts-manifest.json";
 const props = Astro.props as Props;
 
 interface Props {
@@ -29,10 +32,38 @@ const promoteConfig = getPromoteData(configEntries);
 const aiConfig = getAiDiscoveryData(configEntries);
 const htmlLang = siteConfig.lang || "zh-CN";
 
-// Resolve font subset CSS URL
-const fontSubsetUrl = props.fontSubsetId
-  ? `/fonts/subset-${props.fontSubsetId}.css`
-  : undefined;
+// Resolve font subset CSS URLs（内容寻址，避免浏览器缓存旧 CSS 引用已删除 TTF → 404）
+// 生产构建：font-subset.ts 生成带 hash 的 CSS 文件名并写入 manifest（副本 import 至此），
+// 这里从 manifest 取文件名，内容变化必然换名、浏览器自动拉新。
+// dev 模式：manifest 的 routes 为空（skipPerRoute），回退固定名 /fonts/common.css 与
+// /fonts/subset-<id>.css，由 dev 按需中间件生成。
+const fontManifest = fontsManifest as
+    | {
+          commonCss?: string;
+          routes?: Record<string, string>;
+      }
+    | null
+    | undefined;
+
+let commonFontCssUrl = "/fonts/common.css";
+let fontSubsetUrl: string | undefined;
+if (props.fontSubsetId) {
+    fontSubsetUrl = `/fonts/subset-${props.fontSubsetId}.css`;
+}
+if (fontManifest?.commonCss) {
+    commonFontCssUrl = `/fonts/${fontManifest.commonCss}`;
+}
+if (props.fontSubsetId && fontManifest?.routes) {
+    // route 键可能是 posts/xxx（页面对应 posts-xxx）或含原始 unicode（tag/category），
+    // 统一归一化比较：route.replace("/", "-") === decodeURIComponent(fontSubsetId)
+    const want = decodeURIComponent(props.fontSubsetId);
+    for (const [route, cssFile] of Object.entries(fontManifest.routes)) {
+        if (route.replace("/", "-") === want) {
+            fontSubsetUrl = `/fonts/${encodeURIComponent(cssFile)}`;
+            break;
+        }
+    }
+}
 
 // 背景 SVG 以静态 URL 硬编码在 background.ts（纯客户端），
 // 集成在 config:setup 时把 SVG 复制到用户项目 public/background/。
@@ -62,7 +93,7 @@ const llmPromote = llmPromoteRaw
     noindex={props.noindex}
   />
   <!-- Per-route font subset (generated at build time) -->
-  <link rel="stylesheet" href="/fonts/common.css" />
+  <link rel="stylesheet" href={commonFontCssUrl} />
   {fontSubsetUrl && <link rel="stylesheet" href={fontSubsetUrl} />}
   <script>
     import "../scripts/background.ts";
