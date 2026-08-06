@@ -39,6 +39,9 @@ const CONTENT_ROOT = "stalux";
 /** Full font input path (relative to project root or package) */
 const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.ttf";
 
+/** Code font input path (Google Sans Code, deterministic static @font-face) */
+const CODE_FONT_INPUT = "src/assets/fonts/GoogleSansCode.woff2";
+
 /** Output directory for generated subsets */
 const FONT_OUT_DIR = "public/fonts";
 
@@ -402,6 +405,47 @@ export async function runFontSubsetting(
                 }
             }
         }
+    }
+
+    // 1.5 代码字体（Google Sans Code）— 确定性静态 @font-face，不经过 Astro 字体管线
+    // Astro 的 <Font> 组件会在 prerender 阶段启动一个随机端口的 HTTP server，
+    // 端口号会嵌进 font-file-url-resolver 虚拟模块的编译产物，破坏增量构建依赖图 hash。
+    // 这里直接复制 woff2 到 public/fonts/ 并生成静态 code.css，完全绕开该管线。
+    try {
+        const codeFontPaths = [
+            resolve(projectRoot, CODE_FONT_INPUT),
+            resolve(projectRoot, "node_modules", "@xingwangzhe", "stalux", CODE_FONT_INPUT),
+            resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", CODE_FONT_INPUT),
+        ];
+        const codeFontPath = codeFontPaths.find((p) => existsSync(p));
+        if (codeFontPath) {
+            const codeFontBuffer = readFileSync(codeFontPath);
+            const codeFontOut = join(outDir, "GoogleSansCode.woff2");
+            if (!existsSync(codeFontOut) || !readFileSync(codeFontOut).equals(codeFontBuffer)) {
+                writeFileSync(codeFontOut, codeFontBuffer);
+                logger.info(
+                    `  code font: ${codeFontBuffer.length / 1024} KB → GoogleSansCode.woff2`,
+                );
+            }
+            // 静态 CSS：@font-face + --font-code 变量（确定性内容，无 hash）
+            const codeCSS = `/* Auto-generated code font (deterministic, no Astro font pipeline) */
+:root {
+    --font-code: "Google Sans Code", "JetBrains Mono", "Fira Code", "Consolas", "Courier New", monospace;
+}
+@font-face {
+    font-family: "Google Sans Code";
+    src: url("/fonts/GoogleSansCode.woff2") format("woff2");
+    font-display: swap;
+}
+`;
+            writeFileSync(join(outDir, "code.css"), codeCSS);
+        } else {
+            logger.warn(
+                `Code font not found at ${CODE_FONT_INPUT}, --font-code falls back to system monospace`,
+            );
+        }
+    } catch (error) {
+        logger.warn(`Code font setup failed: ${String(error)}`);
     }
 
     // 2. Scan content files

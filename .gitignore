@@ -47,3 +47,6 @@ public/fonts/subset-*.woff2
 public/fonts/subset-*.ttf
 public/fonts/subset-*.css
 public/fonts/manifest.json
+# build-generated code font (copied by integration, deterministic)
+public/fonts/GoogleSansCode.woff2
+public/fonts/code.css

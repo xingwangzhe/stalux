@@ -34,22 +34,11 @@ const fontSubsetUrl = props.fontSubsetId
   ? `/fonts/subset-${props.fontSubsetId}.css`
   : undefined;
 
-const bgModules = import.meta.glob<{ default: { src: string } }>(
-    "../assets/background/pattern-*.min.svg",
-    { eager: true },
-);
-const bgUrls = Object.values(bgModules)
-    .map((m) => m.default.src)
-    .sort((a, b) => {
-        const na = parseInt(a.match(/pattern-(\d+)/)?.[1] || "0", 10);
-        const nb = parseInt(b.match(/pattern-(\d+)/)?.[1] || "0", 10);
-        return na - nb;
-    });
-// 背景索引固定为 0（确定性）：保证 define:vars 内联脚本在构建间稳定，
-// 使 Astro 增量构建的依赖图 hash 可复用。真正的随机背景由客户端
-// background.ts 在运行时为每个访问者挑选。
-const randomIndex = 0;
-const initialBg = bgUrls[randomIndex] || "";
+// 背景 SVG 以静态 URL 硬编码在 background.ts（纯客户端），
+// 集成在 config:setup 时把 SVG 复制到用户项目 public/background/。
+// 这里只取第一张作为 SSR 初始背景，客户端运行时随机替换。
+// 不经过 import.meta.glob 资源管线，保证增量构建依赖图 hash 稳定。
+const initialBg = "/background/pattern-1.min.svg";
 const llmPromoteRaw = promoteConfig?.llm_promote ?? "";
 const llmPromote = llmPromoteRaw
   ?.replace(/\{author\}/g, authorConfig.name)
@@ -75,9 +64,6 @@ const llmPromote = llmPromoteRaw
   <!-- Per-route font subset (generated at build time) -->
   <link rel="stylesheet" href="/fonts/common.css" />
   {fontSubsetUrl && <link rel="stylesheet" href={fontSubsetUrl} />}
-  <script define:vars={{ bgUrls }}>
-    window.__STALUX_BG_URLS__ = bgUrls;
-  </script>
   <script>
     import "../scripts/background.ts";
   </script>
@@ -108,7 +94,7 @@ const llmPromote = llmPromoteRaw
   <body
     class="stalux-root dark"
     data-stalux-bg-layer="a"
-    data-stalux-bg-index={randomIndex}
+    data-stalux-bg-index="0"
   >
     {llmPromote && <div style="display:none">{llmPromote}</div>}
     <div

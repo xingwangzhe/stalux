@@ -93,8 +93,10 @@ async function loadPagefind(): Promise<{ search: (q: string) => Promise<unknown>
     if (!pagefindLoadPromise) {
         pagefindLoadPromise = (async () => {
             try {
-                // @vite-ignore: pagefind 索引是构建期产物，不参与依赖打包
-                const mod = await import(/* @vite-ignore */ "/pagefind/pagefind.js");
+                // 用完整 URL 构造，让 Vite 在 dev（vite:import-analysis）与 build 都不解析该路径；
+                // pagefind 索引是构建期产物，运行时从站点根加载。
+                const url = new URL("/pagefind/pagefind.js", location.origin).href;
+                const mod = await import(/* @vite-ignore */ url);
                 return mod.default ?? mod;
             } catch {
                 return null;

@@ -2,7 +2,6 @@
 import { SEO } from "astro-seo";
 import { ClientRouter } from "astro:transitions";
 import { getCollection } from "astro:content";
-import { Font } from "astro:assets";
 import VerCount from "@components/stalux/common/verCount.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
@@ -175,7 +174,8 @@ const ldJson = JSON.stringify(schema, null, 2).replace(/<\//g, "<\\/");
     }}
   />
   <style set:html={`:root{--font-body:"LXGW WenKai Subset","Noto Sans SC","Noto Sans CJK SC",system-ui,-apple-system,sans-serif}`} />
-  <Font cssVariable="--font-code" />
+  <!-- 代码字体：静态 code.css（font-subset.ts 生成，确定性，不经过 Astro <Font> 管线） -->
+  <link rel="stylesheet" href="/fonts/code.css" />
   {
     (headConfig?.anyhead) && (
       <Fragment set:html={headConfig.anyhead} />

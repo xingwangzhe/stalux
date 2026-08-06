@@ -6,7 +6,7 @@ import sitemap from "@astrojs/sitemap";
 import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 // @ts-check
-import { defineConfig, fontProviders } from "astro/config";
+import { defineConfig } from "astro/config";
 
 // 封装版 Expressive Code（默认带代码块行号）
 import { expressiveCode } from "./src/expressive-code.ts";
@@ -77,27 +77,7 @@ export default defineConfig({
         prefetchAll: false,
         defaultStrategy: "hover",
     },
-    fonts: [
-        {
-            provider: fontProviders.local(),
-            name: "Google Sans Code",
-            cssVariable: "--font-code",
-            options: {
-                variants: [
-                    {
-                        weight: "100 900",
-                        style: "normal",
-                        src: ["./src/assets/fonts/GoogleSansCode.woff2"],
-                    },
-                    {
-                        weight: "100 900",
-                        style: "italic",
-                        src: ["./src/assets/fonts/GoogleSansCode-Italic.woff2"],
-                    },
-                ],
-            },
-        },
-    ],
+    // 代码字体由 font-subset.ts 生成静态 code.css 提供（确定性，无 Astro 字体管线随机端口）
     integrations: [
         // Stalux 主题集成（注入路由、Vite 别名、全局 CSS、Pagefind 等）
         stalux({

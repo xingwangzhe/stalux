@@ -1,8 +1,12 @@
 /**
- * 双层随机背景 — 客户端运行时随机选图，不做 VT crossfade
- * （去掉 view-transition-name 避免 SVG 全屏瓦片在过渡期间双倍 CPU 光栅化）
- * 背景随机从服务端移到客户端，保证构建产物确定性，
- * 使 Astro 增量构建的依赖图 hash 可跨构建复用。
+ * 双层随机背景 — 纯客户端实现
+ *
+ * SVG 以静态 URL（/background/pattern-N.min.svg）硬编码，由集成在
+ * config:setup 时复制到用户项目 public/background/。不经过 Astro 资源
+ * 管线（import.meta.glob 会给 SVG 打上每次构建随机的 __ASTRO_ASSET_IMAGE__
+ * 占位符，破坏增量构建依赖图 hash），也不做任何构建期扫描。
+ *
+ * 背景随机在客户端运行时执行，构建产物完全确定。
  */
 declare global {
     interface Window {
@@ -10,7 +14,16 @@ declare global {
     }
 }
 
-const backgroundImages: string[] = window.__STALUX_BG_URLS__ || [];
+/** 背景 SVG 静态 URL 列表（与主题包 public/background/ 的 1-42 号一一对应） */
+const BACKGROUND_URLS: string[] = Array.from(
+    { length: 42 },
+    (_, i) => `/background/pattern-${i + 1}.min.svg`,
+);
+
+/** 优先使用注入列表（若用户自定义），否则用内置硬编码列表 */
+const backgroundImages: string[] = window.__STALUX_BG_URLS__?.length
+    ? window.__STALUX_BG_URLS__
+    : BACKGROUND_URLS;
 
 function getLayerEl(layer: "a" | "b"): HTMLElement | null {
     return document.querySelector(`.bg-layer.bg-${layer}`);
@@ -22,8 +35,7 @@ function setLayerOpacity(layer: "a" | "b", opacity: number): void {
 }
 
 function initBackground(): void {
-    // 背景随机在客户端运行时执行，保证构建产物确定性
-    // （SSR 固定索引 → 内联脚本稳定 → Astro 增量构建依赖图可复用）
+    // 客户端运行时随机选图，构建产物保持确定性
     const index = Math.floor(Math.random() * backgroundImages.length);
     const layer: "a" | "b" = "a";
     if (backgroundImages.length > 0) {

@@ -8,7 +8,7 @@
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -94,6 +94,45 @@ function getRoutes(baseDir: URL): RouteEntry[] {
 }
 
 // ---------------------------------------------------------------------------
+// 背景 SVG 判别式同步
+// ---------------------------------------------------------------------------
+
+/**
+ * 把主题包的 public/background/*.svg 同步到用户项目 public/background/。
+ *
+ * 判别式（非无条件覆盖）：
+ * - 同名文件：内容一致则跳过（幂等）；内容不同才覆盖（主题更新了 SVG）
+ * - 用户新增的文件：保留，不删除（避免误删用户自定义背景）
+ * - 不做整目录 force 复制
+ */
+function syncBackgroundSvgs(srcDir: string): { copied: number; skipped: number } {
+    const srcBg = path.join(srcDir, "../public/background");
+    if (!existsSync(srcBg)) return { copied: 0, skipped: 0 };
+
+    const destBg = path.resolve(process.cwd(), "public", "background");
+    mkdirSync(destBg, { recursive: true });
+
+    let copied = 0;
+    let skipped = 0;
+    for (const name of readdirSync(srcBg)) {
+        if (!name.endsWith(".svg")) continue;
+        const srcFile = path.join(srcBg, name);
+        const destFile = path.join(destBg, name);
+        if (existsSync(destFile)) {
+            const srcBuf = readFileSync(srcFile);
+            const destBuf = readFileSync(destFile);
+            if (srcBuf.equals(destBuf)) {
+                skipped++; // 内容一致，跳过
+                continue;
+            }
+        }
+        copyFileSync(srcFile, destFile);
+        copied++;
+    }
+    return { copied, skipped };
+}
+
+// ---------------------------------------------------------------------------
 // Vite 别名配置（供页面使用 @components etc.）
 // ---------------------------------------------------------------------------
 
@@ -171,6 +210,22 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
 
                 // 2. 注入全局 CSS
                 injectScript("page-ssr", `import "${srcDir}/styles/base/init.css";`);
+
+                // 2.5 同步背景 SVG 到用户项目 public/background/
+                // 纯客户端引入：SVG 以静态 URL（/background/pattern-*.svg）被 background.ts 硬编码引用，
+                // 不经过 Astro 资源管线（import.meta.glob 会打上每次构建随机的 __ASTRO_ASSET_IMAGE__ 占位符，
+                // 破坏增量构建依赖图 hash）。Astro 不会合并集成的 public 目录，这里显式同步一次。
+                // 判别式：内容一致跳过（幂等），内容不同才覆盖，用户新增文件保留。
+                try {
+                    const { copied, skipped } = syncBackgroundSvgs(srcDir);
+                    if (copied > 0) {
+                        logger.info(`Stalux: 同步背景 SVG ${copied} 个（跳过 ${skipped} 个不变）`);
+                    } else if (skipped > 0) {
+                        logger.debug(`Stalux: 背景 SVG 无变化（跳过 ${skipped} 个）`);
+                    }
+                } catch (error) {
+                    logger.warn(`Stalux: 同步背景 SVG 失败: ${String(error)}`);
+                }
 
                 // 3. 注入所有页面路由（仅插件模式，源码模式下使用文件路由）
                 if (isPluginMode) {
