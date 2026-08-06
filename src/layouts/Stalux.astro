@@ -87,9 +87,15 @@ const llmPromote = llmPromoteRaw
             siteTitle: siteConfig.title,
             siteUrl: siteConfig.url,
             siteDesc: siteConfig.description,
+            siteLang: siteConfig.lang,
           }}
         >
-          window.__STALUX_SITE_INFO__ = { title: siteTitle, url: siteUrl, description: siteDesc };
+          window.__STALUX_SITE_INFO__ = {
+            title: siteTitle,
+            url: siteUrl,
+            description: siteDesc,
+            lang: siteLang,
+          };
         </script>
         <script>
           import "../scripts/webmcp.ts";
