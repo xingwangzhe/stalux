@@ -169,12 +169,15 @@ Stalux 内置 WebMCP 工具：当 WebMCP 感知的浏览器（如 Chrome 内置 
 [Ask nekuda](https://chromewebstore.google.com/detail/ask-nekuda/amochnnbmnkjjlblolhpddkokhnalkjp)
 扩展）打开你的站点时，AI 代理可以直接调用以下**只读**工具与博客交互——**无需任何后端**：
 
-| 工具                  | 功能                                     | 数据来源                  |
-| --------------------- | ---------------------------------------- | ------------------------- |
-| `stalux_list_posts`   | 分页列出全部文章                         | `/api/post.abbrlink.json` |
-| `stalux_search_posts` | 全文搜索文章                             | Pagefind `/pagefind/`     |
-| `stalux_read_post`    | 读取文章原始 Markdown                    | `/posts/{abbrlink}.md`    |
-| `stalux_site_info`    | 站点信息 + llms.txt / llms-full.txt 入口 | `site.yml`（构建期）      |
+| 工具                  | 功能                                     | 数据来源               |
+| --------------------- | ---------------------------------------- | ---------------------- |
+| `stalux_list_posts`   | 分页列出全部文章（含元信息）             | `/api/posts.json`      |
+| `stalux_get_post`     | 按 abbrlink / 标题关键词取单篇元信息     | `/api/posts.json`      |
+| `stalux_current_post` | 当前正在浏览的文章元信息                 | `/api/posts.json`      |
+| `stalux_random_post`  | 随机挑一篇文章的元信息                   | `/api/posts.json`      |
+| `stalux_search_posts` | 全文搜索文章                             | Pagefind `/pagefind/`  |
+| `stalux_read_post`    | 读取文章原始 Markdown                    | `/posts/{abbrlink}.md` |
+| `stalux_site_info`    | 站点信息 + llms.txt / llms-full.txt 入口 | `site.yml`（构建期）   |
 
 所有工具均为 `readOnlyHint: true`，绝不修改任何状态。
 

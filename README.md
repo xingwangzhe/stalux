@@ -171,12 +171,15 @@ extension) interact with your blog directly — **no backend required**.
 
 When a WebMCP-aware browser opens your site, these read-only tools are registered:
 
-| Tool                  | What it does                                                            | Backing data              |
-| --------------------- | ----------------------------------------------------------------------- | ------------------------- |
-| `stalux_list_posts`   | Paginated list of all posts                                             | `/api/post.abbrlink.json` |
-| `stalux_search_posts` | Full-text search across posts                                           | Pagefind `/pagefind/`     |
-| `stalux_read_post`    | Fetch a post's raw Markdown                                             | `/posts/{abbrlink}.md`    |
-| `stalux_site_info`    | Site title, URL, description + pointers to `llms.txt` / `llms-full.txt` | `site.yml` (build-time)   |
+| Tool                  | What it does                                                            | Backing data            |
+| --------------------- | ----------------------------------------------------------------------- | ----------------------- |
+| `stalux_list_posts`   | Paginated list of all posts (with meta)                                 | `/api/posts.json`       |
+| `stalux_get_post`     | Fetch one post's metadata by abbrlink or title keyword                  | `/api/posts.json`       |
+| `stalux_current_post` | Metadata of the post currently being viewed                             | `/api/posts.json`       |
+| `stalux_random_post`  | Pick a random post's metadata                                           | `/api/posts.json`       |
+| `stalux_search_posts` | Full-text search across posts                                           | Pagefind `/pagefind/`   |
+| `stalux_read_post`    | Fetch a post's raw Markdown                                             | `/posts/{abbrlink}.md`  |
+| `stalux_site_info`    | Site title, URL, description + pointers to `llms.txt` / `llms-full.txt` | `site.yml` (build-time) |
 
 All tools are `readOnlyHint: true` — they never modify any state.
 

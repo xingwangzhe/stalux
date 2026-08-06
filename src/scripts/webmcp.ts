@@ -3,8 +3,9 @@
  *
  * 遵循 W3C webmachinelearning/webmcp 草案：网页通过 document.modelContext
  * 向浏览器/代理注册工具。所有数据源均为构建期静态产物——
- * /api/post.abbrlink.json（文章索引）、/posts/{id}.md（源码导出）、
- * /llms.txt / /llms-full.txt（站点信息镜像）、/pagefind/（全文索引）。
+ * /api/posts.json（文章元信息索引）、/api/post.abbrlink.json（兼容列表）、
+ * /posts/{id}.md（源码导出）、/llms.txt / /llms-full.txt（站点信息镜像）、
+ * /pagefind/（全文索引）。
  *
  * 浏览器无原生 modelContext 时，由布局注入的 @mcp-b/webmcp-polyfill
  * 提供兜底实现；两者都没有则静默跳过注册，不影响普通访问者。
@@ -87,22 +88,79 @@ const MAX_LIST_PAGE_SIZE = 50;
 const MAX_SEARCH_RESULTS = 10;
 
 // ---------------------------------------------------------------------------
-// 工具定义
+// 文章元信息数据层（/api/posts.json）
 // ---------------------------------------------------------------------------
 
-interface PostIndexEntry {
+interface PostMeta {
     title: string;
-    abbrlink: string | number;
+    abbrlink: string;
+    date?: string;
+    updated?: string;
+    tags?: string[];
+    categories?: string[];
+    desc?: string;
+    wordCount?: number;
+    url: string;
 }
+
+let postsMetaPromise: Promise<PostMeta[] | null> | null = null;
+
+/** 加载文章元信息索引（惰性 + 缓存） */
+function loadPostsMeta(): Promise<PostMeta[] | null> {
+    if (!postsMetaPromise) {
+        postsMetaPromise = fetchJSON("/api/posts.json").then((data) =>
+            Array.isArray(data) ? (data as PostMeta[]) : null,
+        );
+    }
+    return postsMetaPromise;
+}
+
+/** 按 abbrlink 精确查找 */
+function findById(list: PostMeta[], id: string): PostMeta | undefined {
+    return list.find((p) => p.abbrlink === id);
+}
+
+/** 按标题/标签关键词模糊查找（取第一条） */
+function findByKeyword(list: PostMeta[], keyword: string): PostMeta | undefined {
+    const kw = keyword.toLowerCase();
+    return (
+        list.find((p) => p.title.toLowerCase().includes(kw)) ??
+        list.find((p) => (p.tags ?? []).some((t) => t.toLowerCase().includes(kw)))
+    );
+}
+
+/** 简化为输出用的元信息视图 */
+function briefMeta(p: PostMeta): Record<string, unknown> {
+    return {
+        title: p.title,
+        abbrlink: p.abbrlink,
+        date: p.date ?? undefined,
+        tags: p.tags ?? [],
+        categories: p.categories ?? [],
+        desc: p.desc ?? undefined,
+        wordCount: p.wordCount ?? undefined,
+        url: p.url,
+    };
+}
+
+/** 从当前 URL 解析 abbrlink（/posts/{abbrlink}/ 或 /posts/{abbrlink}.md） */
+function currentAbbrlinkFromPath(): string | null {
+    const m = location.pathname.match(/^\/posts\/([^/]+?)(?:\.md)?\/?$/);
+    return m ? decodeURIComponent(m[1]) : null;
+}
+
+// ---------------------------------------------------------------------------
+// 工具定义
+// ---------------------------------------------------------------------------
 
 function listPostsTool(): WebMCPTool {
     return {
         name: "stalux_list_posts",
         title: "列出博客文章",
         description:
-            "分页列出博客的全部已发布文章，返回标题、永久链接（abbrlink）、文章页 URL。" +
+            "分页列出博客的全部已发布文章，返回标题、永久链接（abbrlink）、日期、分类、标签、摘要与文章页 URL。" +
             "需要浏览全站文章、确认某篇文章的 abbrlink 时使用；不返回正文，" +
-            "正文请用 stalux_read_post。",
+            "只要某篇元信息用 stalux_get_post，读正文请用 stalux_read_post。",
         annotations: { readOnlyHint: true, untrustedContentHint: false },
         inputSchema: {
             type: "object",
@@ -124,9 +182,9 @@ function listPostsTool(): WebMCPTool {
                 MAX_LIST_PAGE_SIZE,
                 Math.max(1, Number(input.pageSize) || 10),
             );
-            const index = (await fetchJSON("/api/post.abbrlink.json")) as PostIndexEntry[] | null;
-            if (!Array.isArray(index)) return err("INDEX_UNAVAILABLE", "无法获取文章列表");
-            const total = index.length;
+            const list = await loadPostsMeta();
+            if (!list) return err("INDEX_UNAVAILABLE", "无法获取文章列表");
+            const total = list.length;
             const totalPages = Math.ceil(total / pageSize) || 1;
             const start = (page - 1) * pageSize;
             if (start >= total) {
@@ -140,12 +198,84 @@ function listPostsTool(): WebMCPTool {
                     },
                 );
             }
-            const posts = index.slice(start, start + pageSize).map((p) => ({
-                title: p.title,
-                abbrlink: String(p.abbrlink),
-                url: "/posts/" + p.abbrlink + "/",
-            }));
+            const posts = list.slice(start, start + pageSize).map(briefMeta);
             return { ok: true, page, pageSize, total, totalPages, posts };
+        },
+    };
+}
+
+function getPostTool(): WebMCPTool {
+    return {
+        name: "stalux_get_post",
+        title: "查看文章信息",
+        description:
+            "按 abbrlink 或标题关键词定位一篇文章，返回其元信息（标题、日期、分类、标签、摘要、字数、文章页 URL）。" +
+            "只要元信息时用它，比读取正文便宜得多；读正文请用 stalux_read_post。" +
+            "获取 abbrlink 可先用 stalux_list_posts 或 stalux_search_posts。",
+        annotations: { readOnlyHint: true, untrustedContentHint: false },
+        inputSchema: {
+            type: "object",
+            properties: {
+                id: {
+                    type: "string",
+                    description:
+                        "文章 abbrlink（如 f4442947）或标题关键词（模糊匹配，取第一条命中）",
+                },
+            },
+            required: ["id"],
+            additionalProperties: false,
+        },
+        execute: async (input) => {
+            const id = String(input.id ?? "").trim();
+            if (!id) return err("BAD_INPUT", "请提供文章 abbrlink 或标题关键词");
+            const list = await loadPostsMeta();
+            if (!list) return err("INDEX_UNAVAILABLE", "无法获取文章索引");
+            const post = findById(list, id) ?? findByKeyword(list, id);
+            if (!post) return err("NOT_FOUND", "未找到文章: " + id);
+            return { ok: true, post: briefMeta(post) };
+        },
+    };
+}
+
+function currentPostTool(): WebMCPTool {
+    return {
+        name: "stalux_current_post",
+        title: "当前文章信息",
+        description:
+            "返回用户当前正在浏览的那篇文章的元信息。当用户说「这篇文章」「当前页面」时先调用它确定上下文，" +
+            "比读正文便宜得多。不在文章页时返回错误。",
+        annotations: { readOnlyHint: true, untrustedContentHint: false },
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+        execute: async () => {
+            const id = currentAbbrlinkFromPath();
+            if (!id) {
+                return err("NOT_ON_POST_PAGE", "当前不在文章页（路径: " + location.pathname + "）");
+            }
+            const list = await loadPostsMeta();
+            if (!list) return err("INDEX_UNAVAILABLE", "无法获取文章索引");
+            const post = findById(list, id);
+            if (!post) return err("NOT_FOUND", "未找到当前文章: " + id);
+            return { ok: true, post: briefMeta(post) };
+        },
+    };
+}
+
+function randomPostTool(): WebMCPTool {
+    return {
+        name: "stalux_random_post",
+        title: "随机一篇文章",
+        description:
+            "随机挑选一篇文章并返回其元信息（标题、abbrlink、日期、摘要、URL）。" +
+            "适合推荐、探索、或不确定从哪篇开始时使用；不返回正文，不导航。",
+        annotations: { readOnlyHint: true, untrustedContentHint: false },
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+        execute: async () => {
+            const list = await loadPostsMeta();
+            if (!list || list.length === 0) {
+                return err("INDEX_UNAVAILABLE", "无法获取文章索引");
+            }
+            const post = list[Math.floor(Math.random() * list.length)];
+            return { ok: true, post: briefMeta(post) };
         },
     };
 }
@@ -156,7 +286,8 @@ function searchPostsTool(): WebMCPTool {
         title: "搜索博客文章",
         description:
             "用关键词搜索博客文章的标题、标签、分类与正文全文，返回命中文章的标题、链接与摘要片段。" +
-            "适合「博客里写过 X 吗」「帮我找一下关于 Y 的文章」这类问题。",
+            "适合「博客里写过 X 吗」「帮我找一下关于 Y 的文章」这类问题；" +
+            "定位到具体文章后再用 stalux_read_post 读正文、stalux_get_post 取元信息。",
         annotations: { readOnlyHint: true, untrustedContentHint: false },
         inputSchema: {
             type: "object",
@@ -215,7 +346,8 @@ function readPostTool(): WebMCPTool {
         title: "读取文章 Markdown",
         description:
             "按 abbrlink（文章永久链接 ID）读取一篇博客文章的原始 Markdown 全文，包含 frontmatter 与版权脚注。" +
-            "需要文章完整内容、引用或摘要时使用；获取 abbrlink 可先用 stalux_list_posts 或 stalux_search_posts。",
+            "需要文章完整内容、引用或摘要时使用；只要元信息用 stalux_get_post（更便宜）。" +
+            "获取 abbrlink 可先用 stalux_list_posts 或 stalux_search_posts。",
         annotations: { readOnlyHint: true, untrustedContentHint: false },
         inputSchema: {
             type: "object",
@@ -263,7 +395,15 @@ function siteInfoTool(): WebMCPTool {
 }
 
 function buildTools(): WebMCPTool[] {
-    return [listPostsTool(), searchPostsTool(), readPostTool(), siteInfoTool()];
+    return [
+        listPostsTool(),
+        getPostTool(),
+        currentPostTool(),
+        randomPostTool(),
+        searchPostsTool(),
+        readPostTool(),
+        siteInfoTool(),
+    ];
 }
 
 // ---------------------------------------------------------------------------

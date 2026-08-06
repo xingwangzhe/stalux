@@ -68,6 +68,10 @@ function getRoutes(baseDir: URL): RouteEntry[] {
             pattern: "/api/post.abbrlink.json",
             entrypoint: resolvePage("./pages/api/post.abbrlink.json.ts"),
         },
+        {
+            pattern: "/api/posts.json",
+            entrypoint: resolvePage("./pages/api/posts.json.ts"),
+        },
 
         // ---- Markdown 导出端点 ----
         { pattern: "/index.md", entrypoint: resolvePage("./pages/index.md.ts") },
