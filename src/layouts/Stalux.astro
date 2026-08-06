@@ -36,9 +36,9 @@ const fontSubsetUrl = props.fontSubsetId
 
 // 背景 SVG 以静态 URL 硬编码在 background.ts（纯客户端），
 // 集成在 config:setup 时把 SVG 复制到用户项目 public/background/。
-// 这里只取第一张作为 SSR 初始背景，客户端运行时随机替换。
-// 不经过 import.meta.glob 资源管线，保证增量构建依赖图 hash 稳定。
-const initialBg = "/background/pattern-1.min.svg";
+// SSR 不渲染背景图，默认露出 .bg-layer 的灰墙底色（--stalux-bg-color），
+// 客户端运行时随机选图；不经过 import.meta.glob 资源管线，
+// 保证增量构建依赖图 hash 稳定。
 const llmPromoteRaw = promoteConfig?.llm_promote ?? "";
 const llmPromote = llmPromoteRaw
   ?.replace(/\{author\}/g, authorConfig.name)
@@ -97,12 +97,7 @@ const llmPromote = llmPromoteRaw
     data-stalux-bg-index="0"
   >
     {llmPromote && <div style="display:none">{llmPromote}</div>}
-    <div
-      class="bg-layer bg-a"
-      style={`background-image: url('${initialBg}'); opacity: 1;`}
-      aria-hidden="true"
-    >
-    </div>
+    <div class="bg-layer bg-a" style="opacity: 1;" aria-hidden="true"></div>
     <div class="bg-layer bg-b" aria-hidden="true"></div>
     <main class="stalux-main">
       <slot />

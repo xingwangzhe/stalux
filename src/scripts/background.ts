@@ -6,7 +6,11 @@
  * 管线（import.meta.glob 会给 SVG 打上每次构建随机的 __ASTRO_ASSET_IMAGE__
  * 占位符，破坏增量构建依赖图 hash），也不做任何构建期扫描。
  *
- * 背景随机在客户端运行时执行，构建产物完全确定。
+ * 背景行为：
+ * - SSR 只渲染灰墙底色（--stalux-bg-color），不渲染任何背景图，构建产物确定。
+ * - 首次加载与 VT 软导航每次都会随机选一张背景：astro:page-load 在
+ *   window load（首访）与 swap 完成后、过渡动画期间（软导航）触发，
+ *   此时设置背景，过渡动画中旧图淡出、新图淡入，自然 crossfade 无跳变。
  */
 declare global {
     interface Window {
@@ -34,11 +38,11 @@ function setLayerOpacity(layer: "a" | "b", opacity: number): void {
     if (el) el.style.opacity = String(opacity);
 }
 
-function initBackground(): void {
+function applyBackground(): void {
     // 客户端运行时随机选图，构建产物保持确定性
     const index = Math.floor(Math.random() * backgroundImages.length);
     const layer: "a" | "b" = "a";
-    if (backgroundImages.length > 0) {
+    if (backgroundImages.length > 0 && backgroundImages[index]) {
         const el = getLayerEl(layer);
         if (el) el.style.backgroundImage = `url('${backgroundImages[index]}')`;
     }
@@ -48,16 +52,13 @@ function initBackground(): void {
     document.body.dataset.staluxBgLayer = layer;
 }
 
-// 初始化（首次加载 + VT 软导航都走这里）
-document.addEventListener("astro:page-load", () => {
-    const layer = document.body.dataset.staluxBgLayer as "a" | "b" | undefined;
-    const indexStr = document.body.dataset.staluxBgIndex;
-
-    if (layer && indexStr !== undefined) {
-        // View Transition 后：新页面服务端已渲染正确的背景，直接同步状态
-        setLayerOpacity(layer, 1);
-        setLayerOpacity(layer === "a" ? "b" : "a", 0);
-    } else {
-        initBackground();
-    }
-});
+// 首次加载与 VT 软导航都触发 astro:page-load：
+// - 首次加载：window load 后触发（router.js addEventListener("load", onPageLoad)）。
+// - VT 软导航：swap 完成后、过渡动画期间触发（router.js onPageLoad()），
+//   此时设置随机背景，过渡中旧图淡出、新图淡入，无跳变闪变。
+// 注意：软导航不会重新执行打包的 module 脚本（监听器仍是首访注册的），
+// 所以这里不能做“只执行一次”的去重，每次 page-load 都必须随机；
+// 若软导航后新脚本被重新执行，重复监听导致随机两次也无妨（仍是随机图）。
+// body 的 data-stalux-bg-* 是 SSR 固定占位（a/0，为了构建确定性），
+// 不能再用它判断“服务端已渲染正确背景”，否则随机逻辑永不执行。
+document.addEventListener("astro:page-load", applyBackground);
