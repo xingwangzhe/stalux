@@ -32,13 +32,22 @@ export async function buildTaxonomyStaticPaths(key: TaxonomyKey): Promise<GetSta
         }
     }
 
-    return [...map].map(([name, entry]) => ({
-        params: { [paramName]: name },
-        props: {
-            [paramName]: name,
-            count: entry.posts.length,
-            posts: entry.posts,
-            lastUpdateDate: entry.latestTime,
-        },
-    }));
+    return [...map].map(([name, entry]) => {
+        // 增量构建 cacheKey：该分类/标签下全部文章更新时间拼接，
+        // 任一文章新增/编辑/变更分类都会改变列表输出并失效本页
+        const cacheKey = entry.posts
+            .map((p) => p.data.updated ?? p.data.date)
+            .sort()
+            .join("|");
+        return {
+            params: { [paramName]: name },
+            cacheKey,
+            props: {
+                [paramName]: name,
+                count: entry.posts.length,
+                posts: entry.posts,
+                lastUpdateDate: entry.latestTime,
+            },
+        };
+    });
 }

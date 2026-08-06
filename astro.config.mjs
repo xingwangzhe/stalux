@@ -70,6 +70,8 @@ export default defineConfig({
     site: site,
     experimental: {
         collectionStorage: "chunked",
+        // 增量静态构建：未变化的 getStaticPaths 页面直接复用上次输出，大幅缩短构建时间
+        incrementalBuild: true,
     },
     prefetch: {
         prefetchAll: false,

@@ -78,6 +78,7 @@ export const getStaticPaths = (async () => {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     return posts.map((post) => ({
         params: { post: String(post.data.abbrlink) },
+        cacheKey: post.data.updated ?? post.data.date,
         props: { post },
     }));
 }) satisfies GetStaticPaths;

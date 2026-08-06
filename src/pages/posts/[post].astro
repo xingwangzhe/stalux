@@ -35,8 +35,16 @@ export async function getStaticPaths() {
         // sorted 按日期降序：sorted[i-1] 比当前新（next），sorted[i+1] 比当前旧（prev）
         const nextPost = i > 0 ? sorted[i - 1] : undefined;
         const prevPost = i < sorted.length - 1 ? sorted[i + 1] : undefined;
+        // 增量构建 cacheKey：含自身与 prev/next 的更新时间，
+        // 任一邻居变化（文章新增/编辑导致前后链接变化）时本页也会失效重渲染
+        const cacheKey = [
+            post.data.updated ?? post.data.date,
+            prevPost ? (prevPost.data.updated ?? prevPost.data.date) : "",
+            nextPost ? (nextPost.data.updated ?? nextPost.data.date) : "",
+        ].join("|");
         return {
             params: { post: post.data.abbrlink },
+            cacheKey,
             props: {
                 post,
                 prev: prevPost
