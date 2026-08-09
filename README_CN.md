@@ -54,7 +54,7 @@ export default defineConfig({
 创建 `src/content.config.ts`：
 
 ```ts
-import { defineCollections } from "@xingwangzhe/stalux/schemas";
+import { defineCollections } from "@xingwangzhe/stalux/schemas/collections";
 export const collections = defineCollections({ contentDir: "stalux" });
 ```
 
@@ -143,6 +143,21 @@ stalux/
 ├── about/index.md       # 关于页面
 └── words/               # 随想/语录
 ```
+
+### 统计配置
+
+统计工具统一配置在 `stalux/config/head.yml`，不需要修改模板代码：
+
+```yaml
+id: head
+bingClarityId: "YOUR_CLARITY_PROJECT_ID"
+```
+
+`bingClarityId` 是 Stalux 沿用的字段名，实际对应 Microsoft Clarity Project ID。登录 Clarity 后，在项目 **Settings → Setup → Get tracking code** 中获取对应 ID。Stalux 会把异步 tracking code 注入 `<head>`，并在 Astro View Transitions 下保持单个 loader。不要再通过 `anyhead`、Tag Manager 或其他插件重复接入同一个项目。
+
+Project ID 是公开的浏览器标识；不要把 Clarity Data Export API token 写入这个 YAML 或任何前端代码。如果站点使用严格 CSP、Cookie 横幅或 CMP，请由宿主站点自行配置相应策略和同意信号；主题不替站点判断法律合规。
+
+部署后可检查脚本 URL 是否完整保留 Project ID，并在浏览器 Network 中确认出现 `https://www.clarity.ms/collect` 请求。
 
 ---
 

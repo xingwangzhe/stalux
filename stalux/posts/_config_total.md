@@ -38,7 +38,8 @@ The schema definitions are in `src/schemas/config.ts`, using `z.discriminatedUni
 2. Add your name/bio in `author.yml`
 3. Configure navigation in `navs.yml`
 4. Add social links in `media-links.yml`
-5. Build: `bun run build`
+5. Add analytics in `head.yml` when needed (`bingClarityId` is the Microsoft Clarity Project ID)
+6. Build: `bun run build`
 
 ## Validation
 

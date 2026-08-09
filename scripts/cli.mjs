@@ -60,9 +60,10 @@ items:
 `,
         "head.yml": `id: head
 # googleAnalyticsId: "G-XXXXXXXXXX"
-# clarityId: "xxxxxxxxxx"
-# umamiWebsiteId: ""
-# umamiSrc: ""
+# bingClarityId: "xxxxxxxxxx"
+# umami:
+#     id: ""
+#     url: ""
 # anyhead: ""
 `,
         "footer.yml": `id: footer
@@ -91,7 +92,7 @@ badges:
 custom: |
     <div id="custom-footer-hook"></div>
 `,
-        "media-links.yml": `id: medialinks
+        "media-links.yml": `id: media-links
 items:
     - icon: "github"
       link: "https://github.com/yourname"
@@ -102,24 +103,18 @@ description: "Friends & Resources"
 sites:
     - name: "Astro"
       description: "The web framework for content-driven websites"
-      url: "https://astro.build"
+      link: "https://astro.build"
       icon: "https://astro.build/favicon.svg"
 `,
         "comment.yml": `id: comment
 enabled: false
-waline:
-    serverURL: ""
-    lang: ""
-    locale: ""
-    pageSize: 10
-    recaptchaV3Key: ""
 `,
         "promote.yml": `id: promote
 export_md: false
 # llm_promote: |
 `,
         "ai-discovery.yml": `id: ai-discovery
-conformance: "none"
+conformance: "disabled"
 `,
         "typetexts.yml": `id: typetexts
 items:

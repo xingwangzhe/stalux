@@ -54,7 +54,7 @@ export default defineConfig({
 Create `src/content.config.ts`:
 
 ```ts
-import { defineCollections } from "@xingwangzhe/stalux/schemas";
+import { defineCollections } from "@xingwangzhe/stalux/schemas/collections";
 export const collections = defineCollections({ contentDir: "stalux" });
 ```
 
@@ -143,6 +143,21 @@ stalux/
 ├── about/index.md       # About page
 └── words/               # Quotes / short notes
 ```
+
+### Analytics configuration
+
+Analytics are configured in `stalux/config/head.yml`, so no template changes are needed:
+
+```yaml
+id: head
+bingClarityId: "YOUR_CLARITY_PROJECT_ID"
+```
+
+`bingClarityId` is the historical Stalux field name for a Microsoft Clarity Project ID. Get the ID from the Clarity project under **Settings → Setup → Get tracking code**. Stalux injects the asynchronous tracking code into `<head>` and keeps one loader during Astro View Transitions. Do not install the same project again through `anyhead`, a tag manager, or another plugin.
+
+The Project ID is a public browser identifier. Never put a Clarity Data Export API token in this YAML or in client-side code. If the site uses a strict CSP, consent banner, or CMP, configure those host-site policies and signals separately; this theme does not make legal compliance decisions for the site.
+
+After deployment, verify the script URL contains the exact Project ID and that the browser sends requests to `https://www.clarity.ms/collect`.
 
 ---
 

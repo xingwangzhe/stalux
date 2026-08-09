@@ -1,9 +1,9 @@
 ---
 import { getCollection } from "astro:content";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+import { getHeadData } from "@utils/config-utils";
 const configEntries = await getCollection("config");
 const headConfig = getHeadData(configEntries);
-const gaID = headConfig?.googleAnalyticsId | undefined;
+const gaID = headConfig?.googleAnalyticsId;
 ---
 
 <script

@@ -28,12 +28,27 @@ anyhead: "" # Custom HTML injected into <head>
 
 ### Analytics Tools
 
-| Tool             | Config Field             | Notes                                                       |
-| ---------------- | ------------------------ | ----------------------------------------------------------- |
-| Google Analytics | `googleAnalyticsId`      | Format `G-XXXXXXXXXX`, theme auto-loads GA4                 |
-| Bing Clarity     | `bingClarityId`          | Theme auto-loads Clarity tracking                           |
-| Umami            | `umami.id` + `umami.url` | Both `id` and `url` required                                |
-| Custom snippets  | `anyhead`                | Arbitrary HTML (e.g., verification meta tags, custom fonts) |
+| Tool              | Config Field             | Notes                                                       |
+| ----------------- | ------------------------ | ----------------------------------------------------------- |
+| Google Analytics  | `googleAnalyticsId`      | Format `G-XXXXXXXXXX`, theme auto-loads GA4                 |
+| Microsoft Clarity | `bingClarityId`          | Theme auto-loads Clarity tracking                           |
+| Umami             | `umami.id` + `umami.url` | Both `id` and `url` required                                |
+| Custom snippets   | `anyhead`                | Arbitrary HTML (e.g., verification meta tags, custom fonts) |
+
+### Microsoft Clarity setup
+
+Set the Project ID from your Clarity project in `head.yml`:
+
+```yaml
+id: head
+bingClarityId: "YOUR_CLARITY_PROJECT_ID"
+```
+
+The field name is kept for compatibility with older Stalux configuration, while the product is now called Microsoft Clarity. In the Clarity console, open **Settings → Setup → Get tracking code** and use the Project ID for that project. Stalux injects the asynchronous loader into `<head>` for you; do not paste the same snippet into `anyhead`, Google Tag Manager, or another integration.
+
+The Project ID is a public client-side identifier. It is not the Data Export API token. Keep Data Export tokens server-side and never place them in `head.yml` or browser code. To verify a deployed site, check that the generated `https://www.clarity.ms/tag/<project-id>` URL preserves the configured value and that Network shows `https://www.clarity.ms/collect`. The loader is guarded so Astro View Transitions do not add another Stalux loader.
+
+If the host site has a strict CSP or needs cookie consent, configure those policies and consent signals at the host site. Stalux only loads the tracking code and does not make privacy or legal-compliance decisions.
 
 ## navs.yml — Navigation Bar
 
