@@ -2,7 +2,7 @@ id: head
 # Google Analytics 4 tracking ID (format: G-XXXXXXXXXX)
 # googleAnalyticsId: ""
 # Microsoft Bing Clarity project ID
-# bingClarityId: ""
+bingClarityId: "xzof1nwskv"
 # Umami analytics configuration
 # umami:
 #   id: ""
