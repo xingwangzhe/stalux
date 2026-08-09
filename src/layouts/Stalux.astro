@@ -128,8 +128,8 @@ const llmPromote = llmPromoteRaw
     data-stalux-bg-index="0"
   >
     {llmPromote && <div style="display:none">{llmPromote}</div>}
-    <div class="bg-layer bg-a" style="opacity: 1;" aria-hidden="true"></div>
-    <div class="bg-layer bg-b" aria-hidden="true"></div>
+    <div class="bg-layer bg-a" style="opacity: 1;" transition:persist aria-hidden="true"></div>
+    <div class="bg-layer bg-b" transition:persist aria-hidden="true"></div>
     <main class="stalux-main">
       <slot />
     </main>

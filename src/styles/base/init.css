@@ -263,7 +263,7 @@ ul {
     background: #2a2a2a;
 }
 
-/* 背景层 - 双层随机背景（不在 View Transition 中 crossfade，避免 SVG 双倍光栅化卡顿） */
+/* 背景层 - 双层随机背景，在路由切换时交叉淡入淡出 */
 .bg-layer {
     position: fixed;
     inset: 0;
@@ -275,10 +275,17 @@ ul {
     filter: var(--stalux-bg-filter, none);
     pointer-events: none;
     opacity: 0;
+    transition: opacity 650ms ease-in-out;
     /* 禁止浏览器强制色彩模式（高对比度/暗黑模式）调整背景图颜色 */
     forced-color-adjust: none;
     /* 关键：防止 Safari/WebKit 在暗色模式下自动调整 SVG 背景图颜色 */
     color-scheme: only light;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bg-layer {
+        transition-duration: 0ms;
+    }
 }
 
 /* footer 基础样式，保证页脚始终可见且不覆盖内容 */

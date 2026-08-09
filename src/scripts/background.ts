@@ -38,27 +38,49 @@ function setLayerOpacity(layer: "a" | "b", opacity: number): void {
     if (el) el.style.opacity = String(opacity);
 }
 
-function applyBackground(): void {
-    // 客户端运行时随机选图，构建产物保持确定性
-    const index = Math.floor(Math.random() * backgroundImages.length);
-    const layer: "a" | "b" = "a";
-    if (backgroundImages.length > 0 && backgroundImages[index]) {
-        const el = getLayerEl(layer);
-        if (el) el.style.backgroundImage = `url('${backgroundImages[index]}')`;
-    }
-    setLayerOpacity(layer, 1);
-    setLayerOpacity("b", 0);
-    document.body.dataset.staluxBgIndex = String(index);
-    document.body.dataset.staluxBgLayer = layer;
+function getActiveLayer(): "a" | "b" {
+    const aOpacity = Number(getLayerEl("a")?.style.opacity ?? 0);
+    const bOpacity = Number(getLayerEl("b")?.style.opacity ?? 0);
+    return bOpacity > aOpacity ? "b" : "a";
 }
 
-// 首次加载与 VT 软导航都触发 astro:page-load：
-// - 首次加载：window load 后触发（router.js addEventListener("load", onPageLoad)）。
-// - VT 软导航：swap 完成后、过渡动画期间触发（router.js onPageLoad()），
-//   此时设置随机背景，过渡中旧图淡出、新图淡入，无跳变闪变。
-// 注意：软导航不会重新执行打包的 module 脚本（监听器仍是首访注册的），
-// 所以这里不能做“只执行一次”的去重，每次 page-load 都必须随机；
-// 若软导航后新脚本被重新执行，重复监听导致随机两次也无妨（仍是随机图）。
-// body 的 data-stalux-bg-* 是 SSR 固定占位（a/0，为了构建确定性），
-// 不能再用它判断“服务端已渲染正确背景”，否则随机逻辑永不执行。
-document.addEventListener("astro:page-load", applyBackground);
+function pickBackgroundIndex(previous: number): number {
+    if (backgroundImages.length < 2) return 0;
+    let index = Math.floor(Math.random() * backgroundImages.length);
+    while (index === previous) {
+        index = Math.floor(Math.random() * backgroundImages.length);
+    }
+    return index;
+}
+
+function crossfadeBackground(): void {
+    if (backgroundImages.length === 0) return;
+
+    const activeLayer = getActiveLayer();
+    const nextLayer: "a" | "b" = activeLayer === "a" ? "b" : "a";
+    const previousIndex = Number(document.body.dataset.staluxBgIndex ?? -1);
+    const index = pickBackgroundIndex(previousIndex);
+    const next = getLayerEl(nextLayer);
+    if (!next || !backgroundImages[index]) return;
+
+    next.style.backgroundImage = `url('${backgroundImages[index]}')`;
+    setLayerOpacity(nextLayer, 1);
+    setLayerOpacity(activeLayer, 0);
+    document.body.dataset.staluxBgIndex = String(index);
+    document.body.dataset.staluxBgLayer = nextLayer;
+}
+
+function initializeBackground(): void {
+    const active = getLayerEl(getActiveLayer());
+    if (active?.style.backgroundImage) return;
+    crossfadeBackground();
+}
+
+// before-swap 在 View Transition 的快照之后、DOM 替换之前触发；背景层使用
+// transition:persist 保留，因此可以在页面内容交换期间完成双层 crossfade。
+// 非 VT 浏览器也会触发该生命周期，fallback 同样保持平滑。
+if (!(window as Window & { __STALUX_BG_LISTENER__?: boolean }).__STALUX_BG_LISTENER__) {
+    (window as Window & { __STALUX_BG_LISTENER__?: boolean }).__STALUX_BG_LISTENER__ = true;
+    document.addEventListener("astro:before-swap", crossfadeBackground);
+    document.addEventListener("astro:page-load", initializeBackground);
+}
