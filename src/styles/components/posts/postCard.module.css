@@ -1,3 +1,25 @@
+.post {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.postTitle {
+    margin: 0;
+    line-height: 1.35;
+}
+
+.postTitle a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.postDescription {
+    color: var(--white-70p);
+    line-height: 1.6;
+}
+
 .postContainer {
     background-color: var(--card-bg);
     border-radius: var(--radius-lg);

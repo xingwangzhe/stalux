@@ -23,6 +23,7 @@ pnpm-debug.log*
 
 # lighthouse ci
 .lighthouseci/
+.performance/
 
 # jetbrains setting folder
 .idea/

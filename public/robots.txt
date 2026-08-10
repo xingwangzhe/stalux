@@ -53,11 +53,9 @@ Allow: /
 User-agent: omgili
 Allow: /
 
-# Content Signals - opt in for AI training and search
-Content-Signal: ai-train=yes, search=yes, ai-input=yes
+# AI discovery metadata (non-standard; see the linked files directly)
+# Content-Signal: ai-train=yes, search=yes, ai-input=yes
+# LLM-Full: https://stalux.needhelp.icu/llms-full.txt
 
 # Sitemap
 Sitemap: https://stalux.needhelp.icu/sitemap-index.xml
-
-# LLM full-text dataset
-LLM-Full: https://stalux.needhelp.icu/llms-full.txt

@@ -117,24 +117,30 @@ const mdSourceUrl = exportMd
                 const container = document.querySelector("[data-pagefind-body]");
                 if (!container) return;
 
-                const links = container.querySelectorAll(GALLERY_SELECTOR);
-                await Promise.all(
-                    [...links].map(async (link) => {
-                        const img = link.querySelector("img");
-                        if (!img) return;
+                const links = [...container.querySelectorAll(GALLERY_SELECTOR)];
+                for (const link of links) {
+                    const img = link.querySelector("img");
+                    if (!img) continue;
 
-                        const tempImg = new Image();
-                        tempImg.src = img.currentSrc || img.src;
-                        try {
-                            await tempImg.decode();
-                        } catch {
-                            /* 解码失败时跳过尺寸写入 */
-                            return;
-                        }
-                        link.dataset.pswpWidth = String(tempImg.naturalWidth);
-                        link.dataset.pswpHeight = String(tempImg.naturalHeight);
-                    }),
-                );
+                    const width = img.naturalWidth;
+                    const height = img.naturalHeight;
+                    if (width && height) {
+                        link.dataset.pswpWidth = String(width);
+                        link.dataset.pswpHeight = String(height);
+                        continue;
+                    }
+
+                    const tempImg = new Image();
+                    tempImg.src = img.currentSrc || img.src;
+                    try {
+                        await tempImg.decode();
+                    } catch {
+                        /* 解码失败时跳过尺寸写入 */
+                        continue;
+                    }
+                    link.dataset.pswpWidth = String(tempImg.naturalWidth);
+                    link.dataset.pswpHeight = String(tempImg.naturalHeight);
+                }
             }
 
             let lightbox = null;
@@ -150,7 +156,8 @@ const mdSourceUrl = exportMd
                     lightbox = null;
                 }
 
-                await enrichPhotoSwipeData();
+                // 不阻塞文章首屏；已加载图片会立即写入尺寸，其余图片在后台补齐。
+                void enrichPhotoSwipeData();
 
                 lightbox = new PhotoSwipeLightbox({
                     gallery: "[data-pagefind-body]",

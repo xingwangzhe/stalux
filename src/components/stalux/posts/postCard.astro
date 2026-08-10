@@ -8,9 +8,10 @@ import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, get
 
 interface Props {
     post: CollectionEntry<"posts">;
+    priority?: boolean;
 }
 
-const post = Astro.props.post;
+const { post, priority = false } = Astro.props;
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const timezone = siteConfig.timezone;
@@ -19,16 +20,35 @@ const timezone = siteConfig.timezone;
 const description = post.data.desc || "";
 ---
 
-<a href={`/posts/${post.data.abbrlink}/`} class={style.post + " a-none"} data-astro-prefetch="viewport">
+<article class={style.post}>
     <div class={style.postContainer}>
         {
             post.data.cover && (
-                <div class={style.postCover}>
-                    <img src={post.data.cover} alt={post.data.title} loading="lazy" />
-                </div>
+                <a
+                    href={`/posts/${post.data.abbrlink}/`}
+                    class="a-none"
+                    data-astro-prefetch="viewport"
+                    aria-label={post.data.title}
+                >
+                    <div class={style.postCover}>
+                        <img
+                            src={post.data.cover}
+                            alt={post.data.title}
+                            loading={priority ? "eager" : "lazy"}
+                            decoding="async"
+                            fetchpriority={priority ? "high" : "auto"}
+                            width="640"
+                            height="360"
+                        />
+                    </div>
+                </a>
             )
         }
-        <h2 class={style.postTitle}>{post.data.title}</h2>
+        <h2 class={style.postTitle}>
+            <a href={`/posts/${post.data.abbrlink}/`} class="a-none" data-astro-prefetch="viewport">
+                {post.data.title}
+            </a>
+        </h2>
         <div class={style.time}>
             {
                 post.data.date && (
@@ -57,7 +77,7 @@ const description = post.data.desc || "";
                 {
                     post.data.tags?.map((tag) => (
                         <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
-                            <div class={style.postTag}>{tag}</div>
+                            <span class={style.postTag}>{tag}</span>
                         </a>
                     ))
                 }
@@ -66,18 +86,18 @@ const description = post.data.desc || "";
                 {
                     post.data.categories?.map((category) => (
                         <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
-                            <div class={style.postCategory}>{category}</div>
+                            <span class={style.postCategory}>{category}</span>
                         </a>
                     ))
                 }
             </div>
         </div>
         <a
-            href={`/posts/${post.data.abbrlink}`}
+            href={`/posts/${post.data.abbrlink}/`}
             class={style.readMore + " a-none"}
             data-astro-prefetch
         >
             Read More
         </a>
     </div>
-</a>
+</article>

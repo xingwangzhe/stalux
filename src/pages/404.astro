@@ -27,7 +27,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
   </div>
 
   <script define:vars={{ countdownText: t("page404.countdown", { n: "{n}" }) }} is:inline>
-    let timer: number | undefined;
+    let timer;
 
     function startCountdown() {
       if (timer !== undefined) window.clearInterval(timer);
@@ -40,7 +40,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
         if (seconds <= 0) {
           if (timer !== undefined) window.clearInterval(timer);
           timer = undefined;
-          const home = document.querySelector<HTMLAnchorElement>(".home-btn");
+          const home = document.querySelector(".home-btn");
           home?.click();
         } else {
           el.textContent = countdownText.replace("{n}", String(seconds));

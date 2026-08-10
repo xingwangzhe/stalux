@@ -56,12 +56,18 @@ export const featureFlagsHast = defineHastPlugin({
         filter: ["img"],
         visit(node, ctx) {
             ctx.data.astro.frontmatter.hasImage = true;
-            // 添加懒加载和异步解码（封面图不在此处理，由 postCard.astro 控制）
+            // 第一张正文图片可能成为 LCP，优先加载；其余图片延迟加载。
+            const data = ctx.data as Record<string, unknown>;
+            const firstImage = !data.staluxFirstImageSeen;
+            data.staluxFirstImageSeen = true;
             if (!node.properties?.loading) {
-                ctx.setProperty(node, "loading", "lazy");
+                ctx.setProperty(node, "loading", firstImage ? "eager" : "lazy");
             }
             if (!node.properties?.decoding) {
                 ctx.setProperty(node, "decoding", "async");
+            }
+            if (firstImage && !node.properties?.fetchpriority) {
+                ctx.setProperty(node, "fetchpriority", "high");
             }
         },
     },
