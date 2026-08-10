@@ -3,7 +3,7 @@ import style from "@styles/components/posts/postSidebar.module.css";
 import Date from "@components/stalux/common/date.astro";
 import PostToc from "@components/stalux/posts/postToc.astro";
 import PostTaxonomy from "@components/stalux/posts/PostTaxonomy.astro";
-import { fade } from "astro:transitions";
+import { getSidebarAnimation } from "@utils/view-transitions";
 interface Props {
     headings?: Array<{ depth: number; slug: string; text: string }>;
     tags?: string[];
@@ -16,7 +16,7 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
 <aside
     class={style.sidebarRight}
     transition:name="right-sidebar"
-    transition:animate={fade({ duration: "0.3s" })}
+    transition:animate={getSidebarAnimation("right")}
 >
     <div class={style.sidebarContainer}>
         <Date />

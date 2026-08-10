@@ -78,7 +78,7 @@
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "^0.44.1",
-        "@lucide/astro": "^1.28.0",
+        "@lucide/astro": "^1.31.0",
         "@mcp-b/webmcp-polyfill": "^4.0.0",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.15.2",
@@ -99,9 +99,8 @@
         "temml": "^0.13.4"
     },
     "devDependencies": {
-        "@types/node": "^26.1.2",
         "astro": "^7.2.0",
-        "knip": "^6.31.0",
+        "knip": "^6.32.0",
         "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.62.0",
         "oxlint": "^1.77.0",

@@ -435,10 +435,10 @@ function readPostTool(): WebMCPTool {
         name: "stalux_read_post",
         title: pick("读取文章 Markdown", "Read post Markdown"),
         description: pick(
-            "按 abbrlink（文章永久链接 ID）读取一篇博客文章的原始 Markdown 全文，包含 frontmatter 与版权脚注。" +
+            "按 abbrlink（文章永久链接 ID）读取一篇博客文章的 Markdown 全文，包含规范化 frontmatter、正文与版权脚注。" +
                 "需要文章完整内容、引用或摘要时使用；只要元信息用 stalux_get_post（更便宜）。" +
                 "获取 abbrlink 可先用 stalux_list_posts 或 stalux_search_posts。",
-            "Read the full raw Markdown of a post by abbrlink (permanent link ID), including frontmatter and copyright footer. " +
+            "Read the full Markdown of a post by abbrlink (permanent link ID), including normalized frontmatter, body and copyright footer. " +
                 "Use it for full content, quotes or summarization; for metadata only, stalux_get_post is cheaper. " +
                 "To get an abbrlink, first use stalux_list_posts or stalux_search_posts.",
         ),

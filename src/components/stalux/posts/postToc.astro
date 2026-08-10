@@ -28,19 +28,6 @@ const tocItems = headings
         depth: Math.min(Math.max(item.depth ?? 1, 1), 6),
     }));
 
-// 定义目录内容的过渡动画 - 平滑褶皱效果
-const tocContentAnimation = {
-    old: {
-        name: "fadeSlideDown",
-        duration: "0.3s",
-        easing: "ease-out",
-    },
-    new: {
-        name: "fadeSlideDown",
-        duration: "0.3s",
-        easing: "ease-out",
-    },
-};
 ---
 
 <nav transition:name="toc-container" data-toc-active-class={style.active} aria-label={t("taxonomy.toc")}>

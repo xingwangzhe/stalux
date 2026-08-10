@@ -157,9 +157,9 @@ if (isArticle) {
 const ldJson = JSON.stringify(schema, null, 2).replace(/<\//g, "<\\/");
 ---
 
-<head transition:persist-props>
+<head>
   <meta charset="utf-8" />
-  <ClientRouter />
+  <ClientRouter fallback="animate" />
   <SEO
     title={effectiveTitle}
     description={effectiveDescription}

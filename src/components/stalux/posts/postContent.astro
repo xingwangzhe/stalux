@@ -9,6 +9,7 @@ import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, get
 
 interface Props {
     title: string;
+    transitionName?: string;
     date?: string;
     updated?: string;
     readingTime?: string;
@@ -35,8 +36,8 @@ const mdSourceUrl = exportMd
 
 <article
     class={style.articleContent}
-    transition:name="post-content"
-    transition:animate={fade({ duration: "1.2s" })}>
+    transition:name={props.transitionName ?? "post-content"}
+    transition:animate={fade({ duration: "0.45s" })}>
     <!-- Article Header -->
     <header class={style.articleHeader}>
         <h1 class={style.title}>{props.title}</h1>

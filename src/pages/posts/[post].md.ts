@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import { isMarkdownExportEnabled, loadConfig, type ConfigMap } from "@utils/ai-discovery";
 import { buildCCName, buildCCLink } from "@utils/cc";
 import { createTranslator } from "@utils/i18n";
@@ -89,15 +86,11 @@ export const GET: APIRoute = async ({ props }) => {
 
     const { post } = props as { post: CollectionEntry<"posts"> };
 
-    let markdown: string;
-    if (post.filePath) {
-        const abs = path.resolve(process.cwd(), post.filePath);
-        markdown = await readFile(abs, "utf-8");
-    } else {
-        markdown = reconstructMarkdown(post);
-    }
+    // 内容集合已经提供解析后的 frontmatter 和正文，导出一份内容等价的 Markdown。
+    // 不读取 post.filePath，避免把页面端点绑定到 Node 文件系统。
+    let markdown = reconstructMarkdown(post);
 
-    // 追加版权脚注（不修改原始 md 文件）
+    // 追加版权脚注（不修改内容源文件）
     const footer = generateCCFooter(post, config);
     markdown += "\n\n---\n\n" + footer;
 

@@ -66,10 +66,12 @@ const walineConfig = {
             class="waline-comment-container"
             aria-label={t("comment.title")}
             data-waline-config={
-                // base64 可逆混淆（非加密，仅避免 SSR 注入/转义问题），兼容 Node 与浏览器
-                Buffer.from(
-                    new TextEncoder().encode(JSON.stringify(walineConfig)),
-                ).toString("base64")
+                // base64 可逆混淆（非加密，仅避免 SSR 注入/转义问题）
+                btoa(
+                    Array.from(new TextEncoder().encode(JSON.stringify(walineConfig)), (byte) =>
+                        String.fromCharCode(byte),
+                    ).join(""),
+                )
             }
         >
             <h2 class="waline-comment-title">{t("comment.title")}</h2>

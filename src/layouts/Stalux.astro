@@ -4,7 +4,9 @@ import Footer from "@components/stalux/layout/footer.astro";
 import { getCollection } from "astro:content";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
+import "@styles/shared/view-transitions.css";
 import { getAuthorData, getAiDiscoveryData, getPromoteData, getSiteData } from "@utils/config-utils";
+import { getRouteAnimation, getRouteKind } from "@utils/view-transitions";
 // font-subset.ts 构建期生成的 manifest 副本（进入 Astro 依赖图，
 // manifest 变化 → 页面重建 → 增量构建 restored 的页面不会引用旧字体资源）
 import fontsManifest from "../internal/generated/fonts-manifest.json";
@@ -76,6 +78,8 @@ const llmPromote = llmPromoteRaw
   ?.replace(/\{url\}/g, siteConfig.url)
   ?.replace(/\{title\}/g, siteConfig.title)
   ?.replace(/\{cc\}/g, "CC-BY-NC-SA-4.0");
+const routeKind = getRouteKind(Astro.url.pathname);
+const routeAnimation = getRouteAnimation(routeKind);
 ---
 
 <!doctype html>
@@ -97,6 +101,7 @@ const llmPromote = llmPromoteRaw
   {fontSubsetUrl && <link rel="stylesheet" href={fontSubsetUrl} />}
   <script>
     import "../scripts/background.ts";
+    import "../scripts/view-transitions.ts";
   </script>
   {
     aiConfig?.conformance !== "disabled" && (
@@ -128,9 +133,23 @@ const llmPromote = llmPromoteRaw
     data-stalux-bg-index="0"
   >
     {llmPromote && <div style="display:none">{llmPromote}</div>}
-    <div class="bg-layer bg-a" style="opacity: 1;" transition:persist aria-hidden="true"></div>
-    <div class="bg-layer bg-b" transition:persist aria-hidden="true"></div>
-    <main class="stalux-main">
+    <div
+      class="bg-layer bg-a"
+      style="opacity: 1;"
+      transition:persist="stalux-bg-a"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="bg-layer bg-b"
+      transition:persist="stalux-bg-b"
+      aria-hidden="true"
+    ></div>
+    <main
+      class="stalux-main"
+      data-stalux-route={routeKind}
+      transition:name="stalux-page"
+      transition:animate={routeAnimation}
+    >
       <slot />
     </main>
     <Footer />

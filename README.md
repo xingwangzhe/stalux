@@ -193,7 +193,7 @@ When a WebMCP-aware browser opens your site, these read-only tools are registere
 | `stalux_current_post` | Metadata of the post currently being viewed                             | `/api/posts.json`       |
 | `stalux_random_post`  | Pick a random post's metadata                                           | `/api/posts.json`       |
 | `stalux_search_posts` | Full-text search across posts                                           | Pagefind `/pagefind/`   |
-| `stalux_read_post`    | Fetch a post's raw Markdown                                             | `/posts/{abbrlink}.md`  |
+| `stalux_read_post`    | Fetch a post's normalized Markdown                                      | `/posts/{abbrlink}.md`  |
 | `stalux_site_info`    | Site title, URL, description + pointers to `llms.txt` / `llms-full.txt` | `site.yml` (build-time) |
 
 All tools are `readOnlyHint: true` — they never modify any state.
