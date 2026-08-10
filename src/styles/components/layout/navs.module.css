@@ -1,4 +1,10 @@
 /* 导航容器 — 相对定位，为滚动按钮提供锚点 */
+nav {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
 .navContainer {
     position: relative;
     width: 100%;
@@ -183,20 +189,16 @@
     }
 }
 
-/* 较窄屏幕：隐藏文字，只显示图标 */
+/* 中小屏幕：保留文字，通过横向滚动展示完整导航 */
 @media (max-width: 900px) {
-    .navText {
-        display: none;
-    }
-
     .navItem {
-        font-size: 1em;
-        margin-right: 0.5em;
-        margin-left: 0.5em;
+        font-size: 0.95em;
+        margin-right: 0.25em;
+        margin-left: 0.25em;
     }
 
     .navList {
-        gap: 0.75rem;
+        gap: 0.5rem;
     }
 }
 
@@ -208,6 +210,10 @@
 
     .navContainer {
         overflow: visible;
+    }
+
+    nav {
+        width: auto;
     }
 
     .navList {
