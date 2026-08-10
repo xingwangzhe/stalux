@@ -1,9 +1,11 @@
 ---
 import { getCollection } from "astro:content";
+import { createTranslator } from "@utils/i18n";
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const siteTitle = siteConfig.title;
 const siteDescription = siteConfig.description;
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 import Stalux from "@layouts/Stalux.astro";
 import styles from "@styles/pages/home.module.css";
 import Navs from "@components/stalux/layout/navs.astro";
@@ -21,7 +23,7 @@ import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, get
     <div class={styles.homeNavs}>
       <Navs />
     </div>
-    <h2 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">关于本站</h2>
+    <h2 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{t("ai.about")}</h2>
     <Author />
     <TextType />
     <DateTime />
