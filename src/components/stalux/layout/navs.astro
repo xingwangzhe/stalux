@@ -15,7 +15,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const navs = navsConfig?.items ?? [];
 ---
 
-<nav aria-label="Main navigation" transition:persist-props>
+<nav aria-label={t("nav.main")} transition:persist-props>
     <!-- 汉堡菜单按钮 (仅窄屏显示) -->
     <button
         data-ref="stalux-nav-toggle"
@@ -140,17 +140,17 @@ const navs = navsConfig?.items ?? [];
         if (!navList || !btnLeft || !btnRight) return;
 
         function updateButtons() {
-            const hasOverflow = navList.scrollWidth > navList.clientWidth;
-            const atStart = navList.scrollLeft <= 4;
-            const atEnd = navList.scrollLeft >= navList.scrollWidth - navList.clientWidth - 4;
+            const maxScrollLeft = Math.max(0, navList.scrollWidth - navList.clientWidth);
+            const hasOverflow = maxScrollLeft > 4;
+            const scrollLeft = Math.min(Math.max(navList.scrollLeft, 0), maxScrollLeft);
 
-            if (hasOverflow) {
-                btnLeft.classList.toggle("visible", !atStart);
-                btnRight.classList.toggle("visible", !atEnd);
-            } else {
-                btnLeft.classList.remove("visible");
-                btnRight.classList.remove("visible");
+            if (navList.scrollLeft !== scrollLeft) {
+                navList.scrollLeft = scrollLeft;
             }
+
+            navList.toggleAttribute("data-overflow", hasOverflow);
+            btnLeft.classList.toggle("visible", hasOverflow && scrollLeft > 4);
+            btnRight.classList.toggle("visible", hasOverflow && scrollLeft < maxScrollLeft - 4);
         }
 
         btnLeft.addEventListener("click", () => {
@@ -167,6 +167,9 @@ const navs = navsConfig?.items ?? [];
         // 用 ResizeObserver 监听容器尺寸变化（窗口缩窄/变宽时重新判断）
         const ro = new ResizeObserver(updateButtons);
         ro.observe(navList);
+        if (navList.parentElement) ro.observe(navList.parentElement);
+        window.addEventListener("resize", updateButtons, { passive: true });
+        window.addEventListener("load", updateButtons, { once: true });
 
         // 初始检测
         updateButtons();

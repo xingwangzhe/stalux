@@ -2,8 +2,10 @@
 .navContainer {
     position: relative;
     width: 100%;
+    min-width: 0;
     max-width: 100%;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .navList {
@@ -11,6 +13,9 @@
     gap: 2rem;
     align-items: center;
     justify-content: center;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
     transition: transform 0.3s ease;
     /* 当导航项总宽度超过视口时允许横向滚动，防止右侧项被裁剪 */
     overflow-x: auto;
@@ -19,6 +24,11 @@
     /* 隐藏滚动条但保留滚动功能 */
     scrollbar-width: none;
     -ms-overflow-style: none;
+}
+
+.navList[data-overflow] {
+    justify-content: flex-start;
+    padding-inline: 44px;
 }
 
 .navList::-webkit-scrollbar {
@@ -204,7 +214,7 @@
         position: fixed;
         top: 0;
         right: 0;
-        width: 220px;
+        width: min(220px, calc(100vw - 1rem));
         height: 100vh;
         background: var(--black-20p);
         backdrop-filter: blur(20px);

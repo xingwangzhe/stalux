@@ -1,6 +1,7 @@
 {
     "nav": {
         "menu": "打开导航菜单",
+        "main": "主导航",
         "scrollLeft": "向左滚动导航",
         "scrollRight": "向右滚动导航",
         "search": "搜索"

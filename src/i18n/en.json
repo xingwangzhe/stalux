@@ -1,6 +1,7 @@
 {
     "nav": {
         "menu": "Open navigation menu",
+        "main": "Main navigation",
         "scrollLeft": "Scroll navigation left",
         "scrollRight": "Scroll navigation right",
         "search": "Search"
