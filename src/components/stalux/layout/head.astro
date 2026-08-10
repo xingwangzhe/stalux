@@ -8,7 +8,13 @@ import BingClarity from "@components/stalux/analytics/clarity.astro";
 import "@styles/base/init.css";
 import Umami from "@components/stalux/analytics/umami.astro";
 import { langToOpenGraphLocale } from "@utils/i18n";
-import { getAuthorData, getHeadData, getPromoteData, getSiteData } from "@utils/config-utils";
+import {
+  getAuthorData,
+  getHeadData,
+  getMediaLinksData,
+  getPromoteData,
+  getSiteData,
+} from "@utils/config-utils";
 import { getRouteKind } from "@utils/view-transitions";
 
 const configEntries = await getCollection("config");
@@ -16,6 +22,7 @@ const siteConfig = getSiteData(configEntries);
 const authorConfig = getAuthorData(configEntries);
 const headConfig = getHeadData(configEntries);
 const promoteConfig = getPromoteData(configEntries);
+const mediaLinksConfig = getMediaLinksData(configEntries);
 
 // Twitter 卡片类型定义
 type TwitterCardType = "summary" | "summary_large_image";
@@ -35,11 +42,13 @@ interface Props {
 }
 
 const props = Astro.props as Props;
-const effectiveTitle = props.title;
+const effectiveTitle = siteConfig.seoTitle || props.title;
 const effectiveDescription = props.description;
 const isArticle = props.isArticle ?? false;
 
 const canonicalBase = siteConfig.canonical || siteConfig.url;
+const siteUrl = new URL(canonicalBase || Astro.url.origin).href.replace(/\/$/, "");
+const siteName = siteConfig.title || effectiveTitle;
 const canonicalUrl = canonicalBase
   ? new URL(Astro.url.pathname, `${canonicalBase.replace(/\/$/, "")}/`).href
   : new URL(Astro.url.pathname, Astro.url).href;
@@ -71,6 +80,7 @@ const openGraphConfig: Record<string, unknown> = {
   optional: {
     description: effectiveDescription,
     locale: langToOpenGraphLocale(siteConfig.lang || "zh-CN"),
+    siteName,
   },
   image: {
     url: ogImagePath,
@@ -132,10 +142,18 @@ const extendedMeta = [
 ];
 
 let schema: Record<string, unknown>;
-const siteUrl = canonicalBase || Astro.url.origin;
+const sameAs = mediaLinksConfig?.items
+  .map((item) => item.link)
+  .filter((link) => /^https?:\/\//i.test(link));
+const authorEntity = {
+  "@type": "Person",
+  name: authorConfig.name,
+  ...(toAbsolute(authorConfig.avatar) ? { image: toAbsolute(authorConfig.avatar) } : {}),
+  ...(sameAs.length ? { sameAs } : {}),
+};
 const publisher = {
   "@type": "Organization",
-  name: siteConfig.title || effectiveTitle,
+  name: siteName,
   url: siteUrl,
   ...(authorConfig.avatar ? { logo: toAbsolute(authorConfig.avatar) } : {}),
 };
@@ -150,7 +168,7 @@ if (isArticle) {
     ...(props.date ? { datePublished: props.date } : {}),
     ...(props.updated || props.date ? { dateModified: props.updated || props.date } : {}),
     ...(props.tags?.length ? { keywords: props.tags.join(", ") } : {}),
-    ...(props.author ? { author: { "@type": "Person", name: props.author } } : {}),
+    author: props.author ? { ...authorEntity, name: props.author } : authorEntity,
     publisher,
     inLanguage: siteConfig.lang || "zh-CN",
     mainEntityOfPage: {
@@ -167,6 +185,7 @@ if (isArticle) {
     description: effectiveDescription,
     inLanguage: siteConfig.lang || "zh-CN",
     publisher,
+    author: authorEntity,
   };
 } else {
   schema = {
@@ -176,7 +195,7 @@ if (isArticle) {
     name: effectiveTitle,
     description: effectiveDescription,
     inLanguage: siteConfig.lang || "zh-CN",
-    isPartOf: { "@type": "WebSite", url: siteUrl, name: siteConfig.title },
+    isPartOf: { "@type": "WebSite", url: siteUrl, name: siteName },
   };
 }
 const ldJson = JSON.stringify(schema, null, 2).replace(/<\//g, "<\\/");

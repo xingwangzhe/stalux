@@ -16,6 +16,7 @@ export const siteSchema = z.object({
     title: z.string().min(1, "site.title is required"),
     url: z.string().url("site.url must be a valid URL"),
     description: z.string().min(1, "site.description is required"),
+    seoTitle: z.string().min(1).optional(),
     timezone: z.string().optional().default("Asia/Shanghai"),
     canonical: z.string().url("site.canonical must be a valid URL").optional(),
     twitterSite: z.string().optional(),
