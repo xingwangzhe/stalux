@@ -19,10 +19,10 @@ import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, get
 
 <Stalux title={siteTitle} description={siteDescription} fontSubsetId="home">
   <div class={styles.homeBody}>
-    <h1 class={styles.homeTitle}>{siteTitle}</h1>
     <div class={styles.homeNavs}>
       <Navs />
     </div>
+    <h1 class={styles.homeTitle}>{siteTitle}</h1>
     <h2 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{t("ai.about")}</h2>
     <Author />
     <TextType />

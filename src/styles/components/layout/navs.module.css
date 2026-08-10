@@ -19,30 +19,22 @@ nav {
     gap: 2rem;
     align-items: center;
     justify-content: center;
+    transform: scale(var(--nav-scale, 1));
+    transform-origin: center;
     min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
     transition: transform 0.3s ease;
     /* 当导航项总宽度超过视口时允许横向滚动，防止右侧项被裁剪 */
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    /* 隐藏滚动条但保留滚动功能 */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.navList[data-overflow] {
-    justify-content: flex-start;
-    padding-inline: 44px;
-}
-
-.navList::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
+    width: 100%;
+    overflow: visible;
+    justify-content: center;
 }
 
 /* 滚动按钮 — 仅当内容溢出时显示 */
 .scrollBtn {
+    display: none;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -55,7 +47,6 @@ nav {
     backdrop-filter: blur(8px);
     color: var(--white-full);
     cursor: pointer;
-    display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
@@ -69,7 +60,7 @@ nav {
     background: var(--black-50p);
 }
 
-.scrollBtn.visible {
+.scrollBtn[data-visible] {
     opacity: 1;
     pointer-events: auto;
 }
@@ -83,7 +74,7 @@ nav {
 }
 
 /* 导航容器 hover 时显示滚动按钮 */
-.navContainer:hover .scrollBtn.visible {
+.navContainer:hover .scrollBtn[data-visible] {
     opacity: 1;
 }
 
@@ -206,6 +197,9 @@ nav {
 @media (max-width: 600px) {
     .navToggle {
         display: block;
+        position: fixed;
+        top: 0.75rem;
+        left: 0.75rem;
     }
 
     .navContainer {

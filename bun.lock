@@ -14,7 +14,6 @@
         "@waline/client": "^3.15.2",
         "@xingwangzhe/satteri-mermaid": "0.7.3",
         "@xingwangzhe/satteri-photoswipe": "^0.2.2",
-        "@xingwangzhe/stalux": "1.21.0",
         "@xingwangzhe/tags-cloud": "^1.2.5",
         "animejs": "^4.5.0",
         "astro-expressive-code": "^0.44.1",
@@ -652,8 +651,6 @@
     "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.7.3", "", { "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-rHSoWMyRQUwqEZ9h6Ba6gr1KIOyg3FZs803GBggW1QLmMSf6fjWuS5sComJy01yZocWUKRekk37Poag7Qo9qUA=="],
 
     "@xingwangzhe/satteri-photoswipe": ["@xingwangzhe/satteri-photoswipe@0.2.2", "", { "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-HuyIcbEHqhYw3l1lWHJM/dKYnuG95x855gO4hh5oMlEAF039/2UCoHSwwL6h+0PlBciDAsg7qimKkm7Od045Hw=="],
-
-    "@xingwangzhe/stalux": ["@xingwangzhe/stalux@1.21.0", "", { "dependencies": { "@astrojs/rss": "^4.0.19", "@astrojs/sitemap": "^3.7.3", "@expressive-code/plugin-line-numbers": "^0.44.1", "@lucide/astro": "^1.31.0", "@mcp-b/webmcp-polyfill": "^4.0.0", "@pagefind/component-ui": "^1.5.2", "@waline/client": "^3.15.2", "@xingwangzhe/satteri-mermaid": "0.7.3", "@xingwangzhe/satteri-photoswipe": "^0.2.2", "@xingwangzhe/tags-cloud": "^1.2.5", "animejs": "^4.5.0", "astro-expressive-code": "^0.44.1", "astro-seo": "^1.1.0", "astro-typewriter": "^1.2.0", "badge-maker": "^6.0.0", "js-yaml": "^5.2.3", "pagefind": "^1.5.2", "photoswipe": "^5.4.4", "satteri": "^0.9.5", "simple-icons": "^16.28.0", "subset-font": "^2.5.0", "temml": "^0.13.4" }, "peerDependencies": { "astro": "7.2.0" }, "bin": { "stalux": "scripts/cli.mjs" } }, "sha512-oyGwwm0Wdwh5BtWfBEUovixVpoVfc83reDQejI0lGa/duG4J/hlB3AhsRTBpG+B6JxnDGgeK1Vq9PqIBrjoIwg=="],
 
     "@xingwangzhe/tags-cloud": ["@xingwangzhe/tags-cloud@1.2.5", "", {}, "sha512-yoyh1RBC6k5lwh3uwgrqA8v75eImCj/Jipjfq9SWELySbG3w8PbOnzE+VVUoSCudpA0PIXd2C3AtQuX42ihXOA=="],
 

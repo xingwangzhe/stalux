@@ -140,17 +140,20 @@ const navs = navsConfig?.items ?? [];
         if (!navList || !btnLeft || !btnRight) return;
 
         function updateButtons() {
-            const maxScrollLeft = Math.max(0, navList.scrollWidth - navList.clientWidth);
-            const hasOverflow = maxScrollLeft > 4;
-            const scrollLeft = Math.min(Math.max(navList.scrollLeft, 0), maxScrollLeft);
-
-            if (navList.scrollLeft !== scrollLeft) {
-                navList.scrollLeft = scrollLeft;
-            }
-
-            navList.toggleAttribute("data-overflow", hasOverflow);
-            btnLeft.classList.toggle("visible", hasOverflow && scrollLeft > 4);
-            btnRight.classList.toggle("visible", hasOverflow && scrollLeft < maxScrollLeft - 4);
+            const navWidth = navList.clientWidth;
+            const itemCount = navList.children.length;
+            const baseFontSize = Number.parseFloat(getComputedStyle(navList).fontSize) || 16;
+            const minFontSize = 12;
+            const gap = Number.parseFloat(getComputedStyle(navList).gap) || 0;
+            const estimatedWidth = [...navList.children].reduce(
+                (total, item) => total + item.getBoundingClientRect().width,
+                0,
+            ) + gap * Math.max(0, itemCount - 1);
+            const scale = estimatedWidth > navWidth ? Math.max(minFontSize / baseFontSize, navWidth / estimatedWidth) : 1;
+            navList.style.setProperty("--nav-scale", String(scale));
+            navList.removeAttribute("data-overflow");
+            btnLeft.removeAttribute("data-visible");
+            btnRight.removeAttribute("data-visible");
         }
 
         btnLeft.addEventListener("click", () => {
