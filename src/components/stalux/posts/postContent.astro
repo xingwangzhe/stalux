@@ -107,9 +107,6 @@ const mdSourceUrl = exportMd
 {
     props.hasImage && (
         <script>
-            import PhotoSwipeLightbox from "photoswipe/lightbox";
-            import PhotoSwipe from "photoswipe";
-
             // 选择器必须与 @xingwangzhe/satteri-photoswipe HAST 插件生成的 class 一致
             const GALLERY_SELECTOR = "a.pswp-gallery-item";
 
@@ -146,6 +143,12 @@ const mdSourceUrl = exportMd
             let lightbox = null;
 
             async function initLightbox() {
+                const [{ default: PhotoSwipeLightbox }, { default: PhotoSwipe }] = await Promise.all([
+                    import("photoswipe/lightbox"),
+                    import("photoswipe"),
+                    import("photoswipe/dist/photoswipe.css"),
+                ]);
+
                 // 销毁旧实例（View Transition 导航后，旧 DOM 已移除，需安全销毁）
                 if (lightbox) {
                     try {
@@ -168,15 +171,24 @@ const mdSourceUrl = exportMd
                 lightbox.init();
             }
 
-            // 1) View Transition 导航后触发
-            document.addEventListener("astro:page-load", initLightbox);
+            let initPromise = null;
+            const ensureLightbox = () => {
+                if (!initPromise) initPromise = initLightbox();
+                return initPromise;
+            };
 
-            // 2) 首屏兜底：避免 astro:page-load 在监听器注册前已触发
-            if (document.readyState !== "loading") {
-                setTimeout(initLightbox, 0);
-            } else {
-                document.addEventListener("DOMContentLoaded", () => setTimeout(initLightbox, 0));
-            }
+            // 仅在用户第一次点击图片时加载 PhotoSwipe、其 CSS 和图片尺寸数据，
+            // 文章首屏不再为未使用的灯箱支付 JS/CSS 成本。
+            document.addEventListener("click", (event) => {
+                const target = event.target;
+                if (target instanceof Element && target.closest(GALLERY_SELECTOR)) {
+                    void ensureLightbox();
+                }
+            }, { capture: true });
+
+            document.addEventListener("astro:page-load", () => {
+                initPromise = null;
+            });
         </script>
     )
 }
