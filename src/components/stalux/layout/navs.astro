@@ -87,7 +87,14 @@ const navs = navsConfig?.items ?? [];
 </nav>
 <Search />
 <script>
+    const navWindow = window as Window & {
+        __STALUX_NAV_INITIALIZED__?: boolean;
+    };
+
     document.addEventListener("astro:page-load", () => {
+        if (navWindow.__STALUX_NAV_INITIALIZED__) return;
+        navWindow.__STALUX_NAV_INITIALIZED__ = true;
+
         const searchBtn = document.querySelector(
             '[data-ref="stalux-search-btn"]',
         );
@@ -141,7 +148,20 @@ const navs = navsConfig?.items ?? [];
         const btnRight = document.querySelector('[data-ref="stalux-nav-scroll-right"]');
         if (!navList || !btnLeft || !btnRight) return;
 
+        let frameId = 0;
+        let lastScale = "1";
+
+        function updateScrollButtons() {
+            const hasOverflow = navList.scrollWidth > navList.clientWidth;
+            const atStart = navList.scrollLeft <= 1;
+            const atEnd = navList.scrollLeft + navList.clientWidth >= navList.scrollWidth - 1;
+
+            btnLeft.toggleAttribute("data-visible", hasOverflow && !atStart);
+            btnRight.toggleAttribute("data-visible", hasOverflow && !atEnd);
+        }
+
         function updateButtons() {
+            frameId = 0;
             const navWidth = navList.clientWidth;
             const itemCount = navList.children.length;
             const baseFontSize = Number.parseFloat(getComputedStyle(navList).fontSize) || 16;
@@ -152,10 +172,17 @@ const navs = navsConfig?.items ?? [];
                 0,
             ) + gap * Math.max(0, itemCount - 1);
             const scale = estimatedWidth > navWidth ? Math.max(minFontSize / baseFontSize, navWidth / estimatedWidth) : 1;
-            navList.style.setProperty("--nav-scale", String(scale));
-            navList.removeAttribute("data-overflow");
-            btnLeft.removeAttribute("data-visible");
-            btnRight.removeAttribute("data-visible");
+            const nextScale = String(scale);
+            if (nextScale !== lastScale) {
+                navList.style.setProperty("--nav-scale", nextScale);
+                lastScale = nextScale;
+            }
+            updateScrollButtons();
+        }
+
+        function scheduleUpdate() {
+            if (frameId) return;
+            frameId = requestAnimationFrame(updateButtons);
         }
 
         btnLeft.addEventListener("click", () => {
@@ -165,18 +192,16 @@ const navs = navsConfig?.items ?? [];
         btnRight.addEventListener("click", () => {
             navList.scrollBy({ left: 300, behavior: "smooth" });
         });
-
-        // 监听滚动事件更新按钮状态
-        navList.addEventListener("scroll", updateButtons);
+        navList.addEventListener("scroll", scheduleUpdate, { passive: true });
 
         // 用 ResizeObserver 监听容器尺寸变化（窗口缩窄/变宽时重新判断）
-        const ro = new ResizeObserver(updateButtons);
+        const ro = new ResizeObserver(scheduleUpdate);
         ro.observe(navList);
         if (navList.parentElement) ro.observe(navList.parentElement);
-        window.addEventListener("resize", updateButtons, { passive: true });
-        window.addEventListener("load", updateButtons, { once: true });
+        window.addEventListener("resize", scheduleUpdate, { passive: true });
+        window.addEventListener("load", scheduleUpdate, { once: true });
 
         // 初始检测
-        updateButtons();
+        scheduleUpdate();
     }
 </script>

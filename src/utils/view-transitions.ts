@@ -37,7 +37,7 @@ export type RouteAnimation = {
 const easing = "cubic-bezier(0.25, 0.9, 0.2, 1)";
 const exitAnimation: TransitionAnimation = {
     name: "stalux-page-fade-out",
-    duration: "0.32s",
+    duration: "0.16s",
     easing,
     fillMode: "both",
 };
@@ -48,7 +48,7 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
             old: exitAnimation,
             new: {
                 name: `stalux-page-${name}-in`,
-                duration: "0.42s",
+                duration: "0.2s",
                 easing,
                 fillMode: "both",
             },
@@ -57,7 +57,7 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
             old: exitAnimation,
             new: {
                 name: `stalux-page-${backName}-in`,
-                duration: "0.42s",
+                duration: "0.2s",
                 easing,
                 fillMode: "both",
             },
