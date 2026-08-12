@@ -143,11 +143,20 @@ const mdSourceUrl = exportMd
             let lightbox = null;
 
             async function initLightbox() {
-                const [{ default: PhotoSwipeLightbox }, { default: PhotoSwipe }] = await Promise.all([
+                const [{ default: PhotoSwipeLightbox }, { default: PhotoSwipe }, { default: photoSwipeCss }] = await Promise.all([
                     import("photoswipe/lightbox"),
                     import("photoswipe"),
-                    import("photoswipe/dist/photoswipe.css"),
+                    import("photoswipe/dist/photoswipe.css?raw"),
                 ]);
+
+                // `?raw` keeps Astro from extracting a static stylesheet link.
+                // Inject it only after the first gallery interaction.
+                if (!document.querySelector("style[data-photoswipe]") && photoSwipeCss) {
+                    const style = document.createElement("style");
+                    style.dataset.photoswipe = "true";
+                    style.textContent = photoSwipeCss;
+                    document.head.appendChild(style);
+                }
 
                 // 销毁旧实例（View Transition 导航后，旧 DOM 已移除，需安全销毁）
                 if (lightbox) {
