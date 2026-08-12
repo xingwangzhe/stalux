@@ -2,9 +2,15 @@
 
 ---
 
-<script
-    is:inline
-    defer
-    data-astro-rerun
-    type="text/javascript"
-    src="https://events.vercount.one/js"></script>
+<script is:inline data-astro-rerun>
+    (() => {
+        const load = () => {
+            const script = document.createElement("script");
+            script.defer = true;
+            script.src = "https://events.vercount.one/js";
+            document.head.appendChild(script);
+        };
+        if ("requestIdleCallback" in window) requestIdleCallback(load, { timeout: 5000 });
+        else window.addEventListener("load", () => setTimeout(load, 0), { once: true });
+    })();
+</script>

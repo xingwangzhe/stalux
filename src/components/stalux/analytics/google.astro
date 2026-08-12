@@ -6,26 +6,29 @@ const headConfig = getHeadData(configEntries);
 const gaID = headConfig?.googleAnalyticsId;
 ---
 
-<script
-    is:inline
-    async
-    src={`https://www.googletagmanager.com/gtag/js?id=${gaID}`}
-    type="text/javascript"></script>
 <script is:inline define:vars={{ gaID }}>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-        dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-    gtag("config", gaID);
-
-    // 视图过渡后重新跟踪页面浏览（仅添加一次）
-    if (!window.__gtagListenerAdded) {
-        document.addEventListener("astro:page-load", () => {
-            gtag("event", "page_view", {
-                page_path: window.location.pathname,
-            });
-        });
-        window.__gtagListenerAdded = true;
-    }
+    (() => {
+        const load = () => {
+            if (window.__staluxAnalyticsLoaded) return;
+            window.__staluxAnalyticsLoaded = true;
+            const script = document.createElement("script");
+            script.async = true;
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${gaID}`;
+            document.head.appendChild(script);
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = window.gtag || function () {
+                window.dataLayer.push(arguments);
+            };
+            window.gtag("js", new Date());
+            window.gtag("config", gaID);
+            if (!window.__gtagListenerAdded) {
+                document.addEventListener("astro:page-load", () => {
+                    window.gtag("event", "page_view", { page_path: window.location.pathname });
+                });
+                window.__gtagListenerAdded = true;
+            }
+        };
+        if ("requestIdleCallback" in window) requestIdleCallback(load, { timeout: 3000 });
+        else window.addEventListener("load", () => setTimeout(load, 0), { once: true });
+    })();
 </script>
