@@ -94,6 +94,21 @@ export default defineConfig({
         partytown({
             config: {
                 forward: ["dataLayer.push"],
+                // Partytown 在 worker 里用 fetch 模拟 navigator.sendBeacon，
+                // 但 stats.g.doubleclick.net 只接受原生 sendBeacon，fetch 会失败。
+                // 把这条 Google Signals 的 ping 重写到 Google Analytics 采集端点，避免无意义报错。
+                resolveUrl: (url) => {
+                    if (
+                        url instanceof URL &&
+                        url.hostname === "stats.g.doubleclick.net" &&
+                        url.pathname === "/g/collect"
+                    ) {
+                        return new URL(
+                            `https://www.google-analytics.com/g/collect${url.search}${url.hash}`,
+                        );
+                    }
+                    return url;
+                },
             },
         }),
 

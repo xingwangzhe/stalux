@@ -8,7 +8,7 @@ const gaBootstrap = gaID
     ? `window.dataLayer = window.dataLayer || [];
 window.gtag = function gtag() { dataLayer.push(arguments); };
 gtag("js", new Date());
-gtag("config", ${JSON.stringify(gaID)}, { allow_google_signals: false });`
+gtag("config", ${JSON.stringify(gaID)});`
     : "";
 ---
 
