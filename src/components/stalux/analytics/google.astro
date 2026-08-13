@@ -4,32 +4,31 @@ import { getHeadData } from "@utils/config-utils";
 const configEntries = await getCollection("config");
 const headConfig = getHeadData(configEntries);
 const gaID = headConfig?.googleAnalyticsId;
-const gaBootstrap = gaID
-    ? `window.dataLayer = window.dataLayer || [];
-window.gtag = function gtag() { dataLayer.push(arguments); };
-gtag("js", new Date());
-gtag("config", ${JSON.stringify(gaID)}, { send_page_view: false });
-gtag("event", "page_view", { page_title: document.title, page_location: location.href });`
-    : "";
 ---
 
-{
-    gaID && (
-        <>
-            <script
-                type="text/partytown"
-                src={`https://www.googletagmanager.com/gtag/js?id=${gaID}`}></script>
-            <script type="text/partytown" set:html={gaBootstrap}></script>
-            <script is:inline>
-                let lastPath = window.location.pathname;
+<script is:inline define:vars={{ gaID }}>
+    (() => {
+        const load = () => {
+            if (window.__staluxAnalyticsLoaded) return;
+            window.__staluxAnalyticsLoaded = true;
+            const script = document.createElement("script");
+            script.async = true;
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${gaID}`;
+            document.head.appendChild(script);
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = window.gtag || function () {
+                window.dataLayer.push(arguments);
+            };
+            window.gtag("js", new Date());
+            window.gtag("config", gaID);
+            if (!window.__gtagListenerAdded) {
                 document.addEventListener("astro:page-load", () => {
-                    const path = window.location.pathname;
-                    if (path !== lastPath) {
-                        lastPath = path;
-                        window.gtag?.("event", "page_view", { page_path: path });
-                    }
+                    window.gtag("event", "page_view", { page_path: window.location.pathname });
                 });
-            </script>
-        </>
-    )
-}
+                window.__gtagListenerAdded = true;
+            }
+        };
+        if ("requestIdleCallback" in window) requestIdleCallback(load, { timeout: 3000 });
+        else window.addEventListener("load", () => setTimeout(load, 0), { once: true });
+    })();
+</script>

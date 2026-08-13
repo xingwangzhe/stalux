@@ -2,7 +2,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { satteri } from "@astrojs/markdown-satteri";
-import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
@@ -85,31 +84,6 @@ export default defineConfig({
             contentDir: "stalux",
             pagefind: true,
             devToolbar: true,
-        }),
-
-        // 第三方统计脚本迁入 Web Worker，减轻主线程压力。
-        // 需要脚本显式声明 type="text/partytown" 才会进入 worker（见 analytics/*.astro）。
-        // 第三方统计脚本迁入 Web Worker，减轻主线程压力。
-        // 需要脚本显式声明 type="text/partytown" 才会进入 worker（见 analytics/*.astro）。
-        partytown({
-            config: {
-                forward: ["dataLayer.push", "gtag"],
-                // Partytown 在 worker 里用 fetch 模拟 navigator.sendBeacon，
-                // 但 stats.g.doubleclick.net 只接受原生 sendBeacon，fetch 会失败。
-                // 把这条 Google Signals 的 ping 重写到 Google Analytics 采集端点，避免无意义报错。
-                resolveUrl: (url) => {
-                    if (
-                        url instanceof URL &&
-                        url.hostname === "stats.g.doubleclick.net" &&
-                        url.pathname === "/g/collect"
-                    ) {
-                        return new URL(
-                            `https://www.google-analytics.com/g/collect${url.search}${url.hash}`,
-                        );
-                    }
-                    return url;
-                },
-            },
         }),
 
         sitemap({
