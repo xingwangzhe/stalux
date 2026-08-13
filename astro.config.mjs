@@ -89,12 +89,9 @@ export default defineConfig({
 
         // 第三方统计脚本迁入 Web Worker，减轻主线程压力。
         // 需要脚本显式声明 type="text/partytown" 才会进入 worker（见 analytics/*.astro）。
-        partytown({
-            config: {
-                // 主线程 gtag() 调用转成 dataLayer.push 并转发到 worker 内的 gtag.js
-                forward: ["dataLayer.push"],
-            },
-        }),
+        // Umami 等第三方统计脚本迁入 Web Worker，减轻主线程压力。
+        // 需要脚本显式声明 type="text/partytown" 才会进入 worker（见 analytics/umami.astro）。
+        partytown(),
 
         sitemap({
             filter: (page) => {
