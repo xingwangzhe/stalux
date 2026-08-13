@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.21.11",
+    "version": "1.22.0",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -75,6 +75,7 @@
         "prepare": "git config core.hooksPath scripts/git-hooks"
     },
     "dependencies": {
+        "@astrojs/partytown": "^2.1.7",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "^0.44.1",
