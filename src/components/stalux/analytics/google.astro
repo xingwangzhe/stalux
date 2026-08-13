@@ -4,6 +4,14 @@ import { getHeadData } from "@utils/config-utils";
 const configEntries = await getCollection("config");
 const headConfig = getHeadData(configEntries);
 const gaID = headConfig?.googleAnalyticsId;
+const gaBootstrap = gaID
+    ? `window.dataLayer = window.dataLayer || [];
+window.gtag = function gtag() {
+    dataLayer.push(arguments);
+};
+gtag("js", new Date());
+gtag("config", ${JSON.stringify(gaID)});`
+    : "";
 ---
 
 {
@@ -12,26 +20,14 @@ const gaID = headConfig?.googleAnalyticsId;
             <script
                 type="text/partytown"
                 src={`https://www.googletagmanager.com/gtag/js?id=${gaID}`}></script>
-            <script is:inline define:vars={{ gaID }}>
-                window.dataLayer = window.dataLayer || [];
-                window.gtag =
-                    window.gtag ||
-                    function () {
-                        dataLayer.push(arguments);
-                    };
-                if (!window.__staluxGAConfigured) {
-                    window.__staluxGAConfigured = true;
-                    gtag("js", new Date());
-                    gtag("config", gaID);
-                }
-                if (!window.__staluxGAListenerAdded) {
-                    window.__staluxGAListenerAdded = true;
-                    document.addEventListener("astro:page-load", () => {
-                        gtag("event", "page_view", {
-                            page_path: window.location.pathname,
-                        });
+            <script type="text/partytown" set:html={gaBootstrap}></script>
+            <script is:inline>
+                document.addEventListener("astro:page-load", () => {
+                    window.dataLayer?.push({
+                        event: "page_view",
+                        page_path: window.location.pathname,
                     });
-                }
+                });
             </script>
         </>
     )
