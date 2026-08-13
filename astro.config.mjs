@@ -93,7 +93,7 @@ export default defineConfig({
         // 需要脚本显式声明 type="text/partytown" 才会进入 worker（见 analytics/*.astro）。
         partytown({
             config: {
-                forward: ["dataLayer.push"],
+                forward: ["dataLayer.push", "gtag"],
                 // Partytown 在 worker 里用 fetch 模拟 navigator.sendBeacon，
                 // 但 stats.g.doubleclick.net 只接受原生 sendBeacon，fetch 会失败。
                 // 把这条 Google Signals 的 ping 重写到 Google Analytics 采集端点，避免无意义报错。
