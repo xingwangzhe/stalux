@@ -10,19 +10,63 @@
 
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegration } from "astro";
+import { fontProviders } from "astro/config";
 // pagefind 是 ESM-only 包，需要在模块顶层导入
 // 因为 astro:build:done 钩子中 Vite module runner 已关闭，无法动态 import
 import { createIndex as pagefindCreateIndex } from "pagefind";
 
 import type { StaluxOptions } from "./config";
 import { staluxComponentsAlias } from "./internal/components-plugin";
-import { runFontSubsetting } from "./internal/font-subset";
+import { runFontSlicing, type FontSlice } from "./internal/font-slices";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { temml } from "./plugins/satteri-temml";
+
+// 字体配置（Astro Fonts API）通过 updateConfig 注入，两种模式（源码模板/npm 插件）都生效。
+// 官方 local provider 完全本地读文件（readFile），不联网；
+// 7.2.2 已修复 Fonts API 随机端口污染 incrementalBuild dependencyHash 的问题（PR #17659）。
+function buildFontsConfig(slices: FontSlice[], codeNormal: string, codeItalic?: string) {
+    return [
+        {
+            // 正文：LXGW WenKai 按 unicode-range 分片，浏览器只下载命中区间的分片
+            provider: fontProviders.local(),
+            name: "LXGW WenKai",
+            cssVariable: "--font-body",
+            fallbacks: ["Noto Sans SC", "Noto Sans CJK SC", "system-ui", "sans-serif"],
+            optimizedFallbacks: true,
+            options: {
+                variants: slices.map((slice) => ({
+                    weight: 400,
+                    style: "normal",
+                    src: [slice.src],
+                    unicodeRange: slice.unicodeRange,
+                })),
+            },
+        },
+        {
+            // 代码：Google Sans Code 可变字体，原样注册，不切片
+            provider: fontProviders.local(),
+            name: "Google Sans Code",
+            cssVariable: "--font-code",
+            fallbacks: ["JetBrains Mono", "Fira Code", "Consolas", "Courier New", "monospace"],
+            optimizedFallbacks: true,
+            options: {
+                variants: [
+                    {
+                        weight: "100 900",
+                        style: "normal",
+                        src: [codeNormal],
+                    },
+                    ...(codeItalic
+                        ? [{ weight: "100 900", style: "italic", src: [codeItalic] }]
+                        : []),
+                ],
+            },
+        },
+    ];
+}
 
 // ---------------------------------------------------------------------------
 // 页面条目定义
@@ -326,54 +370,37 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                     logger.debug("Stalux: site.yml not found, skip site sync");
                 }
 
-                // 7. 字体裁剪（在 config:setup 阶段执行，保证 dev/build 都能生成）
+                // 7. 字体：构建期把正文切成 unicode-range 分片，通过官方 Fonts API 注入
+                // （config:setup 阶段执行，保证 dev/build 都能生成；local provider 纯本地读文件）
                 try {
-                    const projectRoot = process.cwd();
-                    await runFontSubsetting(projectRoot, logger, true);
+                    const sliced = await runFontSlicing(process.cwd(), logger);
+                    if (sliced) {
+                        updateConfig({
+                            fonts: buildFontsConfig(
+                                sliced.body,
+                                sliced.codeNormal,
+                                sliced.codeItalic,
+                            ),
+                        });
+                        logger.info(
+                            `Stalux: injected ${sliced.body.length} body font chunks + code font via Fonts API`,
+                        );
+                    }
                 } catch (error) {
-                    logger.debug(`Font subsetting deferred: ${String(error)}`);
+                    logger.warn(`Stalux: font injection failed: ${String(error)}`);
                 }
             },
 
             "astro:build:start": async ({ logger }) => {
-                // 8. 字体裁剪（构建时，生成全部路由子集）
-                try {
-                    const projectRoot = process.cwd();
-                    await runFontSubsetting(projectRoot, logger);
-                } catch (error) {
-                    logger.warn(`Font subsetting skipped: ${String(error)}`);
-                }
+                // 字体分片已在 astro:config:setup 阶段生成并注入，这里无额外处理。
+                // 保留钩子为空实现，便于将来在此处追加构建期逻辑。
+                logger.debug("Stalux: build start (font slices handled in config:setup)");
             },
 
-            "astro:server:setup": async ({ server, logger }) => {
-                // 9. 字体裁剪（开发模式，生成 common 子集 + 按需路由切片）
-                try {
-                    const projectRoot = process.cwd();
-                    // 清除旧的字体缓存
-                    const oldFontDir = resolve(projectRoot, "public/fonts");
-                    if (existsSync(oldFontDir)) {
-                        // 删除旧的 subset-*.css 和 common-*.woff2，让按需中间件重新生成
-                        for (const f of readdirSync(oldFontDir)) {
-                            if (f.startsWith("subset-") || f.startsWith("common-")) continue;
-                        }
-                    }
-                    // 先生成 common 子集
-                    await runFontSubsetting(projectRoot, logger, true);
-                    // 再添加按需路由切片中间件（放在最前面，优先拦截字体请求）
-                    const { createDevFontMiddleware } = await import(
-                        /* @vite-ignore */
-                        new URL("./internal/font-subset-dev.ts", import.meta.url).href
-                    );
-                    const fontMiddleware = createDevFontMiddleware(projectRoot, logger);
-                    server.middlewares.use((req: any, res: any, next: any) => {
-                        if (req.url?.startsWith("/fonts/")) {
-                            return fontMiddleware(req, res, next);
-                        }
-                        next();
-                    });
-                } catch (error) {
-                    logger.debug(`Font subsetting deferred in dev: ${String(error)}`);
-                }
+            "astro:server:setup": async ({ logger }) => {
+                // 字体分片在 config:setup 阶段已生成，dev 模式由官方 Fonts API 的
+                // dev 中间件按需提供，无需自研按需切分中间件。
+                logger.debug("Stalux: dev server ready (fonts served by Astro Fonts API)");
             },
 
             "astro:build:done": async ({ dir, logger }) => {

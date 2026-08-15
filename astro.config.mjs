@@ -77,7 +77,8 @@ export default defineConfig({
         prefetchAll: false,
         defaultStrategy: "hover",
     },
-    // 代码字体由 font-subset.ts 生成静态 code.css 提供（确定性，无 Astro 字体管线随机端口）
+    // 字体由 stalux 集成经官方 Fonts API 注入（--font-body 分片 / --font-code 可变字体），
+    // 见 src/index.ts 的 updateConfig({ fonts })，此处无需配置 fonts 块。
     integrations: [
         // Stalux 主题集成（注入路由、Vite 别名、全局 CSS、Pagefind 等）
         stalux({

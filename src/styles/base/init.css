@@ -221,7 +221,7 @@ ul {
     --border-color-light: #e5e5e5;
 
     /* 字体族栈 */
-    /* --font-body 由 Astro Fonts API 生成（见 astro.config.mjs fonts 配置） */
+    /* --font-body 由 Astro Fonts API 提供（--font-code 同理，见集成注入的 fonts 配置） */
     --font-body-serif: "Noto Serif CJK SC", "Source Han Serif SC", "STSong", Georgia, serif;
 
     /* 字体大小系统 */

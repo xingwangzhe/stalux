@@ -1,4 +1,5 @@
 ---
+import { Font } from "astro:assets";
 import { SEO } from "astro-seo";
 import { ClientRouter } from "astro:transitions";
 import { getCollection } from "astro:content";
@@ -217,9 +218,10 @@ const ldJson = JSON.stringify(schema, null, 2).replace(/<\//g, "<\\/");
       meta: extendedMeta,
     }}
   />
-  <style set:html={`:root{--font-body:"LXGW WenKai Subset","Noto Sans SC","Noto Sans CJK SC",system-ui,-apple-system,sans-serif}`} />
-  <!-- 代码字体：静态 code.css（font-subset.ts 生成，确定性，不经过 Astro <Font> 管线） -->
-  <link rel="stylesheet" href="/fonts/code.css" />
+  <!-- 字体：由 Astro Fonts API 注入（--font-body 分片 / --font-code 可变字体），
+       <Font /> 输出 @font-face 样式；浏览器按 unicode-range 按需下载正文分片 -->
+  <Font cssVariable="--font-body" />
+  <Font cssVariable="--font-code" />
   {
     (headConfig?.anyhead) && (
       <Fragment set:html={headConfig.anyhead} />

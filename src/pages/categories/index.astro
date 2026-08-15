@@ -16,7 +16,6 @@ const hasContent = posts.length > 0;
 <Stalux
     title={t("categories.title") + " | " + siteConfig.title}
     description={t("categories.description", { title: siteConfig.title })}
-    fontSubsetId={hasContent ? "categories" : undefined}
 >
     <div style="height: 3em;"></div>
     <Navs />
