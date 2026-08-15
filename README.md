@@ -8,7 +8,7 @@
 
 **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
-A dark-themed, high-performance Astro blog theme with elegant glassmorphism design, per-route font subsetting, and a focus on content-first reading experience.
+A dark-themed, high-performance Astro blog theme with elegant glassmorphism design, unicode-range font slicing, and a focus on content-first reading experience.
 
 ---
 
@@ -76,7 +76,7 @@ bun run dev
 ## ✨ Features
 
 - 🌙 **Dark mode** with elegant glassmorphism design
-- 🔤 **Per-route font subsetting** — 25 MB font → ~350 KB shared + ~1 KB per page
+- 🔤 **Unicode-range font slicing** — 25 MB font → ~22 woff2 chunks, browser downloads only what matches the page
 - 🔍 **Full-text search** via Pagefind (auto-indexed on build)
 - 📡 **RSS & Atom feeds**
 - 🖼️ **PhotoSwipe** image lightbox
@@ -95,16 +95,11 @@ bun run dev
 
 ## 🔤 Font Optimization
 
-Stalux ships with a 25 MB Chinese font (LXGW WenKai). Instead of loading the full file, the build generates minimal subsets per route:
+Stalux ships with a 25 MB Chinese font (LXGW WenKai) and a variable code font (Google Sans Code). Instead of loading the full files, the build slices the body font into ~22 woff2 chunks by `unicode-range` (via the official Astro Fonts API, `fontProviders.local()`), and the browser downloads only the chunks whose range matches characters on the page — typically 1–2 chunks (~200–600 KB each) for the above-the-fold content.
 
-| Subset    | Size      | Content                                    |
-| --------- | --------- | ------------------------------------------ |
-| Common    | ~350 KB   | UI text, nav, i18n, shared post characters |
-| Per-route | ~0.5–3 KB | Unique characters for each page            |
+Every page emits `@font-face` rules with continuous `unicode-range` descriptors from the `<Font />` component; chunk filenames are content-addressed and deterministic across builds, keeping `experimental.incrementalBuild` caches stable (Astro ≥ 7.2.2).
 
-Every page loads `common.css` + `subset-{route}.css`. All route types are covered: `/`, `/about`, `/words`, `/posts/*`, `/archives`, `/tags`, `/categories`, `/links`.
-
-Powered by `subset-font` (Harfbuzz WASM), running at build time and on-demand in dev mode.
+Powered by `subset-font` (Harfbuzz WASM), slicing at build time into `node_modules/.astro/stalux-fonts/`; the local provider reads files from disk with no network access.
 
 ---
 

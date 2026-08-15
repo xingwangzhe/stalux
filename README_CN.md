@@ -8,7 +8,7 @@
 
 **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
-深色主题、高性能的 Astro 博客主题，采用玻璃拟态设计，支持每路由字体裁剪，专注内容阅读体验。
+深色主题、高性能的 Astro 博客主题，采用玻璃拟态设计，支持 unicode-range 字体分片，专注内容阅读体验。
 
 ---
 
@@ -76,7 +76,7 @@ bun run dev
 ## ✨ 功能特性
 
 - 🌙 **暗色主题** + 玻璃拟态设计
-- 🔤 **每路由字体裁剪** — 25 MB 字体 → 共享 ~350 KB + 每页 ~1 KB
+- 🔤 **unicode-range 字体分片** — 25 MB 字体 → ~22 个 woff2 分片，浏览器按需下载命中分片
 - 🔍 **全文搜索**（Pagefind 构建时自动索引）
 - 📡 **RSS / Atom 订阅**
 - 🖼️ **PhotoSwipe** 图片灯箱
@@ -95,16 +95,11 @@ bun run dev
 
 ## 🔤 字体优化
 
-Stalux 内置 25 MB 中文字体（LXGW WenKai），但访客永远不需要下载完整文件。构建时自动按路由生成最小子集：
+Stalux 内置 25 MB 中文字体（LXGW WenKai）和可变代码字体（Google Sans Code）。访客不需要下载完整文件：构建时把正文字体按 `unicode-range` 切成 ~22 个 woff2 分片（走官方 Astro Fonts API，`fontProviders.local()`），浏览器只下载命中页面字符区间的分片——首屏通常 1–2 个分片（每个 ~200–600 KB）。
 
-| 子集       | 大小      | 内容                                |
-| ---------- | --------- | ----------------------------------- |
-| 公共子集   | ~350 KB   | UI 文本、导航、国际化、文章共享字符 |
-| 每路由子集 | ~0.5–3 KB | 每个页面独有的字符                  |
+每个页面由 `<Font />` 组件输出带连续 `unicode-range` 的 `@font-face`；分片文件名内容寻址、跨构建确定性，保证 `experimental.incrementalBuild` 缓存稳定（需 Astro ≥ 7.2.2）。
 
-每个页面只加载 `common.css` + `subset-{route}.css`。覆盖所有路由类型：`/`、`/about`、`/words`、`/posts/*`、`/archives`、`/tags`、`/categories`、`/links`。
-
-基于 `subset-font`（Harfbuzz WASM），构建时和开发模式按需执行。
+基于 `subset-font`（Harfbuzz WASM），构建时切分到 `node_modules/.astro/stalux-fonts/`；local provider 纯本地读文件，构建不联网。
 
 ---
 
