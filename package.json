@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.23.0",
+    "version": "1.23.1",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -82,9 +82,9 @@
         "@mcp-b/webmcp-polyfill": "^4.0.0",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.15.2",
-        "@xingwangzhe/satteri-mermaid": "0.7.3",
-        "@xingwangzhe/satteri-photoswipe": "^0.2.2",
-        "@xingwangzhe/tags-cloud": "^1.2.5",
+        "@xingwangzhe/satteri-mermaid": "0.7.6",
+        "@xingwangzhe/satteri-photoswipe": "^0.2.3",
+        "@xingwangzhe/tags-cloud": "^1.2.6",
         "animejs": "^4.5.0",
         "astro-expressive-code": "^0.44.1",
         "astro-seo": "^1.1.0",
