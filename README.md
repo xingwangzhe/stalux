@@ -23,7 +23,7 @@ bun add @xingwangzhe/stalux         # Install theme (all dependencies included)
 bunx stalux init                    # Generate stalux/ content directory
 ```
 
-Then configure `astro.config.mjs`:
+Then configure `astro.config.mjs`. Mermaid (including MDAST detection and HAST/SVG rendering) is injected by Stalux automatically, so no manual Mermaid configuration is needed:
 
 ```ts
 import { defineConfig } from "astro/config";
@@ -31,7 +31,6 @@ import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import expressiveCode from "astro-expressive-code";
 import stalux from "@xingwangzhe/stalux";
-import { mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 
 export default defineConfig({
@@ -45,7 +44,7 @@ export default defineConfig({
     markdown: {
         processor: satteri({
             features: { math: true, smartPunctuation: true, gfm: true, frontmatter: true },
-            hastPlugins: [photoswipe(), mermaidHast({ responsive: true, theme: "dark" })],
+            hastPlugins: [photoswipe()],
         }),
     },
 });

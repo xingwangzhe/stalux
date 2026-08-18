@@ -12,6 +12,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import type { AstroIntegration } from "astro";
 import { fontProviders } from "astro/config";
 // pagefind 是 ESM-only 包，需要在模块顶层导入
@@ -296,10 +297,9 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
 
                 logger.info(`Stalux initialized (contentDir: ${opt.contentDir})`);
 
-                // 5. 注入 satteri 插件（字数统计/特性标记/数学公式），按插件 name 去重
-                // 源码模式下 astro.config 会显式注册同款插件，插件模式则由集成补齐，
-                // 保证两种模式行为一致（wordCount/readingMinutes/hasImage 由构建期插件写入）。
-                // 去重是必须的：重复注册 featureFlagsMdast 会导致字数统计翻倍。
+                // 5. 注入 satteri 插件（Mermaid/字数统计/特性标记/数学公式），按插件 name 去重
+                // 两种模式都由集成补齐默认插件，消费方只需配置 Satteri 的基础 features 和自定义插件。
+                // 去重是必须的：重复注册 Mermaid 或 featureFlagsMdast 会导致渲染异常或字数统计翻倍。
                 try {
                     const processor = (config.markdown?.processor ?? undefined) as
                         | { name?: string; options?: { mdastPlugins?: any[]; hastPlugins?: any[] } }
@@ -318,10 +318,21 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                             }
                             list.push(plugin);
                         };
+                        pushUnique(mdastPlugins, mermaidMdast());
                         pushUnique(mdastPlugins, temml());
                         pushUnique(mdastPlugins, featureFlagsMdast);
+                        pushUnique(
+                            hastPlugins,
+                            mermaidHast({
+                                responsive: true,
+                                theme: "dark",
+                                themeOverrides: { clusterBorder: "#cccccc" },
+                            }),
+                        );
                         pushUnique(hastPlugins, featureFlagsHast);
-                        logger.debug("Stalux: injected satteri plugins (temml/feature-flags)");
+                        logger.debug(
+                            "Stalux: injected satteri plugins (mermaid/temml/feature-flags)",
+                        );
                     } else {
                         logger.warn(
                             "Stalux: markdown.processor 不是 satteri，无法注入字数统计/数学公式插件。" +

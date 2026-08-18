@@ -3,7 +3,6 @@ import { fileURLToPath } from "node:url";
 
 import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
-import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 // @ts-check
 import { defineConfig } from "astro/config";
@@ -135,18 +134,8 @@ export default defineConfig({
                 gfm: true,
                 frontmatter: true,
             },
-            mdastPlugins: [temml(), mermaidMdast(), featureFlagsMdast],
-            hastPlugins: [
-                photoswipe(),
-                mermaidHast({
-                    responsive: true,
-                    theme: "dark",
-                    themeOverrides: {
-                        clusterBorder: "#cccccc",
-                    },
-                }),
-                featureFlagsHast,
-            ],
+            mdastPlugins: [temml(), featureFlagsMdast],
+            hastPlugins: [photoswipe(), featureFlagsHast],
         }),
     },
 });

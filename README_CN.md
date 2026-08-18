@@ -23,7 +23,7 @@ bun add @xingwangzhe/stalux         # 安装主题（所有依赖自动包含）
 bunx stalux init                    # 生成 stalux/ 内容目录
 ```
 
-然后配置 `astro.config.mjs`：
+然后配置 `astro.config.mjs`。Mermaid（包括 MDAST 识别和 HAST/SVG 渲染）由 Stalux 集成默认注入，无需手动配置：
 
 ```ts
 import { defineConfig } from "astro/config";
@@ -31,7 +31,6 @@ import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import expressiveCode from "astro-expressive-code";
 import stalux from "@xingwangzhe/stalux";
-import { mermaidHast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 
 export default defineConfig({
@@ -45,7 +44,7 @@ export default defineConfig({
     markdown: {
         processor: satteri({
             features: { math: true, smartPunctuation: true, gfm: true, frontmatter: true },
-            hastPlugins: [photoswipe(), mermaidHast({ responsive: true, theme: "dark" })],
+            hastPlugins: [photoswipe()],
         }),
     },
 });
