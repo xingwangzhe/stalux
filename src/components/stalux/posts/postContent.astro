@@ -140,7 +140,14 @@ const mdSourceUrl = exportMd
                 }
             }
 
-            let lightbox = null;
+            // 状态放 window：View Transitions 软导航会重执行模块脚本，
+            // 用全局标记避免 document 级监听器重复注册导致灯箱重复初始化。
+            const state = (window.__staluxPhotoswipe ||= {
+                lightbox: null,
+                initPromise: null,
+                lightboxInitialized: false,
+                handlerInstalled: false,
+            });
 
             async function initLightbox() {
                 const [{ default: PhotoSwipeLightbox }, { default: PhotoSwipe }, { default: photoSwipeCss }] = await Promise.all([
@@ -159,45 +166,72 @@ const mdSourceUrl = exportMd
                 }
 
                 // 销毁旧实例（View Transition 导航后，旧 DOM 已移除，需安全销毁）
-                if (lightbox) {
+                if (state.lightbox) {
                     try {
-                        lightbox.destroy();
+                        state.lightbox.destroy();
                     } catch {
                         /* ignore */
                     }
-                    lightbox = null;
+                    state.lightbox = null;
                 }
 
                 // 不阻塞文章首屏；已加载图片会立即写入尺寸，其余图片在后台补齐。
                 void enrichPhotoSwipeData();
 
-                lightbox = new PhotoSwipeLightbox({
+                state.lightbox = new PhotoSwipeLightbox({
                     gallery: "[data-pagefind-body]",
                     children: GALLERY_SELECTOR,
                     pswpModule: PhotoSwipe,
                     initialZoomLevel: "fill",
                 });
-                lightbox.init();
+                state.lightbox.init();
             }
 
-            let initPromise = null;
             const ensureLightbox = () => {
-                if (!initPromise) initPromise = initLightbox();
-                return initPromise;
+                if (!state.initPromise) state.initPromise = initLightbox();
+                return state.initPromise;
             };
 
-            // 仅在用户第一次点击图片时加载 PhotoSwipe、其 CSS 和图片尺寸数据，
-            // 文章首屏不再为未使用的灯箱支付 JS/CSS 成本。
-            document.addEventListener("click", (event) => {
+            function handleGalleryClick(event) {
                 const target = event.target;
-                if (target instanceof Element && target.closest(GALLERY_SELECTOR)) {
-                    void ensureLightbox();
-                }
-            }, { capture: true });
+                if (!(target instanceof Element && target.closest(GALLERY_SELECTOR))) return;
 
-            document.addEventListener("astro:page-load", () => {
-                initPromise = null;
-            });
+                // 灯箱就绪后，后续点击交给 PhotoSwipeLightbox 自身的
+                // bubble 阶段处理（它负责 preventDefault + loadAndOpen）。
+                if (state.lightboxInitialized) return;
+
+                // 首次点击：立即阻止浏览器跳转到原始图片（否则会离开文章页），
+                // 异步初始化完成后直接打开被点击的图片。
+                event.preventDefault();
+                const anchor = target.closest(GALLERY_SELECTOR);
+                const clickedIndex = [...document.querySelectorAll(GALLERY_SELECTOR)].indexOf(anchor);
+                const initialPoint = { x: event.clientX, y: event.clientY };
+
+                void ensureLightbox()
+                    .then(() => {
+                        state.lightboxInitialized = true;
+                        if (state.lightbox) {
+                            state.lightbox.loadAndOpen(clickedIndex, undefined, initialPoint);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("[stalux photoswipe] 初始化失败", error);
+                    });
+            }
+
+            if (!state.handlerInstalled) {
+                state.handlerInstalled = true;
+
+                // 仅在用户第一次点击图片时加载 PhotoSwipe、其 CSS 和图片尺寸数据，
+                // 文章首屏不再为未使用的灯箱支付 JS/CSS 成本。
+                document.addEventListener("click", handleGalleryClick, { capture: true });
+
+                // 软导航后旧 DOM 已移除：下次点击重新初始化（initLightbox 会销毁旧实例）。
+                document.addEventListener("astro:page-load", () => {
+                    state.initPromise = null;
+                    state.lightboxInitialized = false;
+                });
+            }
         </script>
     )
 }
