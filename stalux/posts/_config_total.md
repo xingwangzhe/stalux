@@ -6,7 +6,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 10:00:00"
-updated: "2026-07-22 00:00:00"
+updated: "2026-08-18 00:00:00"
 desc: Complete configuration file structure of the Stalux theme — each config section is now a separate YAML file under stalux/config/, with Zod schema validation.
 abbrlink: 0b563d42
 ---
@@ -41,6 +41,21 @@ The schema definitions are in `src/schemas/config.ts`, using `z.discriminatedUni
 5. Add analytics in `head.yml` when needed (`bingClarityId` is the Microsoft Clarity Project ID)
 6. Build: `bun run build`
 
+## Bundled Integrations (Zero Configuration)
+
+Since **v1.24.0**, the Stalux integration bundles the plugins that previously required manual setup in `astro.config.mjs` — `integrations: [stalux()]` is all you need:
+
+| Plugin                                | Default behavior                                             | Disable / customize                                                                        |
+| ------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `@astrojs/sitemap`                    | Bundled; `.md` source endpoints filtered out by default      | `sitemap: false`, or pass options (a custom `filter` stacks with the default `.md` filter) |
+| Expressive Code                       | Bundled, **line numbers enabled**                            | `expressiveCode: false`, or pass options (themes, frames, styles)                          |
+| Math (Temml → MathML)                 | `features.math` enabled on the default `satteri()` processor | Set `markdown.processor: satteri({ features: { math: false } })` in `astro.config.mjs`     |
+| GFM / frontmatter / smart punctuation | Enabled by default on the `satteri()` processor              | Explicit `false` for the same feature key opts out                                         |
+| Mermaid                               | MDAST detection + HAST/SVG rendering                         | n/a — always injected                                                                      |
+| PhotoSwipe                            | Image lightbox (HAST plugin)                                 | n/a — always injected                                                                      |
+
+> If you replace the default `satteri()` processor with another one, Stalux logs a warning and skips the markdown plugin injection.
+
 ## Validation
 
 All config files are validated at build time against their Zod schemas. Missing required fields or invalid formats will produce clear error messages.
@@ -57,5 +72,5 @@ See the `_config_*.md` article series under `stalux/posts/` for each config sect
 | `_config_footer.md`          | footer.yml                                |
 | `_config_comment.md`         | comment.yml                               |
 | `_config_llm_promote.md`     | promote.yml, ai-discovery.yml             |
-| `_config_code.md`            | Expressive Code syntax highlighting       |
+| `_config_code.md`            | Expressive Code (bundled, zero-config)    |
 | `_markdown.md`               | Markdown rendering & Sätteri processor    |

@@ -7,7 +7,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 11:30:00"
-updated: "2026-01-26 12:00:00"
+updated: "2026-08-18 12:00:00"
 desc: The Stalux theme uses Expressive Code to provide powerful code display features, including syntax highlighting, editor/terminal frames, and automatic line wrapping. This article explains how to configure and use these features.
 abbrlink: 55a885fa
 ---
@@ -232,46 +232,54 @@ function heavilyIndentedCode() {
 
 ## Global Configuration
 
-You can configure Expressive Code's default settings in `astro.config.mjs`:
+Expressive Code is **bundled into the Stalux integration** (since v1.24.0) — you don't need to install or import `astro-expressive-code` yourself. Configure its defaults via the `expressiveCode` option of `stalux()`:
 
 ```js
 import { defineConfig } from "astro/config";
-import astroExpressiveCode from "astro-expressive-code";
+import stalux from "@xingwangzhe/stalux";
 
 export default defineConfig({
     integrations: [
-        astroExpressiveCode({
-            // Configure syntax highlighting
-            themes: ["dracula", "solarized-light"],
-            shiki: {
-                // You can pass other plugin options here
-            },
-
-            // Configure frames
-            frames: {
-                // Example: hide the "Copy to clipboard" button
-                showCopyToClipboardButton: false,
-            },
-
-            // Configure default properties
-            defaultProps: {
-                // Enable line wrapping by default
-                wrap: true,
-                // Disable wrapped line indentation for terminal languages
-                overridesByLang: {
-                    "bash,ps,sh": { preserveIndent: false },
+        stalux({
+            expressiveCode: {
+                // Configure syntax highlighting
+                themes: ["dark-plus", "github-light"],
+                shiki: {
+                    // You can pass other plugin options here
                 },
-            },
 
-            // Override default styles
-            styleOverrides: {
+                // Configure frames
                 frames: {
-                    shadowColor: "#124",
+                    // Example: hide the "Copy to clipboard" button
+                    showCopyToClipboardButton: false,
+                },
+
+                // Configure default properties
+                defaultProps: {
+                    // Enable line wrapping by default
+                    wrap: true,
+                    // Disable wrapped line indentation for terminal languages
+                    overridesByLang: {
+                        "bash,ps,sh": { preserveIndent: false },
+                    },
+                },
+
+                // Override default styles
+                styleOverrides: {
+                    frames: {
+                        shadowColor: "#124",
+                    },
                 },
             },
         }),
     ],
 });
 ```
+
+Notes:
+
+- **Line numbers are enabled by default** — the Stalux integration bundles `@expressive-code/plugin-line-numbers`; any `plugins` you pass are appended after it.
+- Pass `expressiveCode: false` to disable Expressive Code entirely.
+- If you need a standalone Expressive Code integration, you can still import `expressiveCode` from `@xingwangzhe/stalux` (or `@xingwangzhe/stalux/expressive-code`).
 
 For more configuration options and advanced features, please refer to the [Expressive Code official documentation](https://expressive-code.com/).

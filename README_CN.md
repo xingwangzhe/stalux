@@ -80,9 +80,10 @@ bun run dev
 - 🔤 **unicode-range 字体分片** — 25 MB 字体 → ~22 个 woff2 分片，浏览器按需下载命中分片
 - 🔍 **全文搜索**（Pagefind 构建时自动索引）
 - 📡 **RSS / Atom 订阅**
+- 🗺️ **Sitemap**（内置打包，自动过滤 `.md` 源码端点）
 - 🖼️ **PhotoSwipe** 图片灯箱
 - 📊 **Mermaid** 图表和流程图
-- 📐 **数学公式渲染**（KaTeX / MathML）
+- 📐 **数学公式渲染**（Temml → MathML）
 - 💬 **Waline** 评论系统
 - 🤖 **LLM 发现文件**（llms.txt / llms-full.txt）
 - 🤝 **WebMCP 工具**（W3C 草案，纯前端，供 AI 代理调用）

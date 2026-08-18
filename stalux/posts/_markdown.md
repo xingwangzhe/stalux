@@ -6,7 +6,7 @@ categories:
     - Markdown
 abbrlink: 2cb4f19c
 date: "2025-05-11 20:00:00"
-updated: "2026-01-26 12:00:00"
+updated: "2026-08-18 12:00:00"
 desc: 'Inline code var example = "hello";'
 cover: http://example.com/favicon.ico
 ---
@@ -157,6 +157,8 @@ Here is a footnote[^1], and another one[^2].
 
 ### LaTeX Math Formulas
 
+> Built-in — Temml converts `$...$` / `$$...$$` to MathML at build time (`features.math` is enabled by default by the Stalux integration). No configuration needed.
+
 Inline formula: $E=mc^2$
 
 Block formula:
@@ -166,6 +168,8 @@ $$
 $$
 
 ### Mermaid
+
+> Built-in — Mermaid diagrams render to SVG at build time (MDAST detection + HAST rendering, injected by the Stalux integration). No configuration needed.
 
 **Flowchart**
 

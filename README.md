@@ -80,9 +80,10 @@ bun run dev
 - 🔤 **Unicode-range font slicing** — 25 MB font → ~22 woff2 chunks, browser downloads only what matches the page
 - 🔍 **Full-text search** via Pagefind (auto-indexed on build)
 - 📡 **RSS & Atom feeds**
+- 🗺️ **Sitemap** (bundled; `.md` source endpoints auto-filtered)
 - 🖼️ **PhotoSwipe** image lightbox
 - 📊 **Mermaid** diagrams and flowcharts
-- 📐 **Math formula rendering** (KaTeX / MathML)
+- 📐 **Math formula rendering** (Temml → MathML)
 - 💬 **Waline** comment system
 - 🤖 **LLM discovery files** (llms.txt / llms-full.txt)
 - 🤝 **WebMCP tools** for AI agents (W3C draft, pure front-end)
