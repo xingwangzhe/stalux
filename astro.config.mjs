@@ -1,24 +1,16 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { satteri } from "@astrojs/markdown-satteri";
-import sitemap from "@astrojs/sitemap";
-import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 // @ts-check
 import { defineConfig } from "astro/config";
 
-// 封装版 Expressive Code（默认带代码块行号）
-import { expressiveCode } from "./src/expressive-code.ts";
-// 使用本地 stalux 集成（注入路由、Vite 别名、Pagefind 等）
+// 使用本地 stalux 集成（注入路由、Vite 别名、Pagefind、satteri 插件等）
 import stalux from "./src/index.ts";
-import { featureFlagsHast, featureFlagsMdast } from "./src/plugins/feature-flags.ts";
-import { temml } from "./src/plugins/satteri-temml.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const site = "https://stalux.needhelp.icu";
-
-import fs from "node:fs";
 
 // 预计算薄标签（< 3 篇文章）的 URL 集合，用于 sitemap 过滤
 function computeThinTagUrls() {
@@ -76,66 +68,52 @@ export default defineConfig({
         prefetchAll: false,
         defaultStrategy: "hover",
     },
-    // 字体由 stalux 集成经官方 Fonts API 注入（--font-body 分片 / --font-code 可变字体），
-    // 见 src/index.ts 的 updateConfig({ fonts })，此处无需配置 fonts 块。
+    // sitemap / expressive-code / markdown 插件（math、photoswipe、mermaid、字数统计、特性标记）
+    // 均由 stalux 集成打包注入，这里只透传自定义选项。
     integrations: [
-        // Stalux 主题集成（注入路由、Vite 别名、全局 CSS、Pagefind 等）
         stalux({
             contentDir: "stalux",
             pagefind: true,
             devToolbar: true,
-        }),
-
-        sitemap({
-            filter: (page) => {
-                // 不把 Markdown 源码端点（/posts/*.md）写入 sitemap
-                if (page.endsWith(".md")) return false;
-                // 排除薄标签页（< 3 篇文章）
-                if (thinTagUrls.has(page)) return false;
-                return (
-                    page.includes("/posts/") ||
-                    page.includes("/about/") ||
-                    page.includes("/links/") ||
-                    page.includes("/words/") ||
-                    page === site + "/" ||
-                    page === site + "/archives/" ||
-                    page.includes("/tags/") ||
-                    page.includes("/categories/")
-                );
-            },
-            lastmod: new Date(),
-        }),
-        expressiveCode({
-            themes: ["dark-plus", "github-light"],
-            styleOverrides: {
-                borderRadius: "0.5rem",
-                codeFontFamily:
-                    'var(--font-code), "JetBrains Mono", "Fira Code", "Consolas", "Courier New", monospace',
-                frames: {
-                    shadowColor: "#124",
+            sitemap: {
+                filter: (page) => {
+                    // 不把 Markdown 源码端点（/posts/*.md）写入 sitemap
+                    if (page.endsWith(".md")) return false;
+                    // 排除薄标签页（< 3 篇文章）
+                    if (thinTagUrls.has(page)) return false;
+                    return (
+                        page.includes("/posts/") ||
+                        page.includes("/about/") ||
+                        page.includes("/links/") ||
+                        page.includes("/words/") ||
+                        page === site + "/" ||
+                        page === site + "/archives/" ||
+                        page.includes("/tags/") ||
+                        page.includes("/categories/")
+                    );
                 },
+                lastmod: new Date(),
             },
-            // 性能优化选项
-            useDarkModeMediaQuery: true,
-            minSyntaxHighlightingColorContrast: 5.5,
-            defaultProps: {
-                wrap: true,
-                overridesByLang: {
-                    "bash,ps,sh": { preserveIndent: false },
+            expressiveCode: {
+                themes: ["dark-plus", "github-light"],
+                styleOverrides: {
+                    borderRadius: "0.5rem",
+                    codeFontFamily:
+                        'var(--font-code), "JetBrains Mono", "Fira Code", "Consolas", "Courier New", monospace',
+                    frames: {
+                        shadowColor: "#124",
+                    },
+                },
+                // 性能优化选项
+                useDarkModeMediaQuery: true,
+                minSyntaxHighlightingColorContrast: 5.5,
+                defaultProps: {
+                    wrap: true,
+                    overridesByLang: {
+                        "bash,ps,sh": { preserveIndent: false },
+                    },
                 },
             },
         }),
     ],
-    markdown: {
-        processor: satteri({
-            features: {
-                math: true,
-                smartPunctuation: true,
-                gfm: true,
-                frontmatter: true,
-            },
-            mdastPlugins: [temml(), featureFlagsMdast],
-            hastPlugins: [photoswipe(), featureFlagsHast],
-        }),
-    },
 });

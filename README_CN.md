@@ -23,31 +23,33 @@ bun add @xingwangzhe/stalux         # 安装主题（所有依赖自动包含）
 bunx stalux init                    # 生成 stalux/ 内容目录
 ```
 
-然后配置 `astro.config.mjs`。Mermaid（包括 MDAST 识别和 HAST/SVG 渲染）由 Stalux 集成默认注入，无需手动配置：
+然后配置 `astro.config.mjs`。所有插件都由 Stalux 集成默认打包注入，**无需手动配置**：
+
+- **Markdown**：Mermaid（MDAST 识别 + HAST/SVG 渲染）、数学公式（Temml → MathML）、字数统计/特性标记、PhotoSwipe 图片灯箱，全部自动注入默认的 `satteri()` processor（math / frontmatter / gfm / 智能标点默认开启）。
+- **Sitemap**：自动打包 `@astrojs/sitemap`（默认过滤掉 `/posts/*.md` 源码端点）。
+- **Expressive Code**：自动打包，默认启用代码块行号。
 
 ```ts
 import { defineConfig } from "astro/config";
-import { satteri } from "@astrojs/markdown-satteri";
-import sitemap from "@astrojs/sitemap";
-import expressiveCode from "astro-expressive-code";
 import stalux from "@xingwangzhe/stalux";
-import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 
 export default defineConfig({
     output: "static",
     site: "https://example.com",
-    integrations: [
-        stalux({ contentDir: "stalux" }),
-        sitemap(),
-        expressiveCode({ themes: ["dark-plus", "github-light"] }),
-    ],
-    markdown: {
-        processor: satteri({
-            features: { math: true, smartPunctuation: true, gfm: true, frontmatter: true },
-            hastPlugins: [photoswipe()],
-        }),
-    },
+    integrations: [stalux({ contentDir: "stalux" })],
 });
+```
+
+如需自定义内置集成，传入选项即可（传 `false` 可关闭）：
+
+```ts
+integrations: [
+    stalux({
+        contentDir: "stalux",
+        sitemap: { filter: (page) => page.startsWith("https://example.com/posts/") },
+        expressiveCode: { themes: ["dark-plus", "github-light"] },
+    }),
+];
 ```
 
 创建 `src/content.config.ts`：

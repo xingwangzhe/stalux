@@ -17,7 +17,7 @@
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import expressiveCodeBase from "astro-expressive-code";
 
-type ExpressiveCodeOptions = NonNullable<Parameters<typeof expressiveCodeBase>[0]>;
+export type ExpressiveCodeOptions = NonNullable<Parameters<typeof expressiveCodeBase>[0]>;
 
 /**
  * 创建带默认行号插件的 Expressive Code 集成。

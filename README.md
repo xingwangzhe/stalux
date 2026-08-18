@@ -23,31 +23,33 @@ bun add @xingwangzhe/stalux         # Install theme (all dependencies included)
 bunx stalux init                    # Generate stalux/ content directory
 ```
 
-Then configure `astro.config.mjs`. Mermaid (including MDAST detection and HAST/SVG rendering) is injected by Stalux automatically, so no manual Mermaid configuration is needed:
+Then configure `astro.config.mjs`. All plugins are bundled into the Stalux integration by default — **no manual configuration is needed**:
+
+- **Markdown**: Mermaid (MDAST detection + HAST/SVG rendering), math formulas (Temml → MathML), word count / feature flags, and PhotoSwipe image lightbox are injected into the default `satteri()` processor automatically (math / frontmatter / gfm / smart punctuation are enabled by default).
+- **Sitemap**: `@astrojs/sitemap` is bundled (`.md` source endpoints are filtered out by default).
+- **Expressive Code**: bundled with line numbers enabled by default.
 
 ```ts
 import { defineConfig } from "astro/config";
-import { satteri } from "@astrojs/markdown-satteri";
-import sitemap from "@astrojs/sitemap";
-import expressiveCode from "astro-expressive-code";
 import stalux from "@xingwangzhe/stalux";
-import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 
 export default defineConfig({
     output: "static",
     site: "https://example.com",
-    integrations: [
-        stalux({ contentDir: "stalux" }),
-        sitemap(),
-        expressiveCode({ themes: ["dark-plus", "github-light"] }),
-    ],
-    markdown: {
-        processor: satteri({
-            features: { math: true, smartPunctuation: true, gfm: true, frontmatter: true },
-            hastPlugins: [photoswipe()],
-        }),
-    },
+    integrations: [stalux({ contentDir: "stalux" })],
 });
+```
+
+To customize the bundled integrations, pass options (or disable them with `false`):
+
+```ts
+integrations: [
+    stalux({
+        contentDir: "stalux",
+        sitemap: { filter: (page) => page.startsWith("https://example.com/posts/") },
+        expressiveCode: { themes: ["dark-plus", "github-light"] },
+    }),
+];
 ```
 
 Create `src/content.config.ts`:

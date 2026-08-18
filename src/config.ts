@@ -4,6 +4,9 @@
  * 用户在 astro.config.mjs 中传入这些选项来自定义主题行为。
  */
 
+import type { SitemapOptions } from "@astrojs/sitemap";
+
+import type { ExpressiveCodeOptions } from "./expressive-code";
 import type { StaluxComponentKey } from "./internal/override";
 
 /** 用户可覆盖的组件映射 */
@@ -55,4 +58,16 @@ export interface StaluxOptions {
 
     /** 站点 URL（默认从 astro.config 读取） */
     site?: string;
+
+    /**
+     * 是否自动打包 @astrojs/sitemap（默认 true）。
+     * 传 false 关闭；传对象自定义选项（filter 会与默认的 .md 源码端点过滤叠加）。
+     */
+    sitemap?: boolean | SitemapOptions;
+
+    /**
+     * 是否自动打包 Expressive Code（默认 true，带代码块行号插件）。
+     * 传 false 关闭；传对象自定义主题/样式等选项。
+     */
+    expressiveCode?: boolean | ExpressiveCodeOptions;
 }

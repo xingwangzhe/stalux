@@ -12,7 +12,9 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import sitemap from "@astrojs/sitemap";
 import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
+import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import type { AstroIntegration } from "astro";
 import { fontProviders } from "astro/config";
 // pagefind 是 ESM-only 包，需要在模块顶层导入
@@ -20,6 +22,7 @@ import { fontProviders } from "astro/config";
 import { createIndex as pagefindCreateIndex } from "pagefind";
 
 import type { StaluxOptions } from "./config";
+import { expressiveCode } from "./expressive-code";
 import { staluxComponentsAlias } from "./internal/components-plugin";
 import { runFontSlicing, type FontSlice } from "./internal/font-slices";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
@@ -213,11 +216,13 @@ function getViteAliases(srcDir: string) {
  * });
  * ```
  */
-export function stalux(options: StaluxOptions = {}): AstroIntegration {
+export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     const opt: StaluxOptions = {
         contentDir: options.contentDir ?? "stalux",
         pagefind: options.pagefind ?? true,
         devToolbar: options.devToolbar ?? true,
+        sitemap: options.sitemap ?? true,
+        expressiveCode: options.expressiveCode ?? true,
         ...options,
     };
 
@@ -225,7 +230,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
     // 安装在 node_modules 中时，页面的文件路由不可用，需要通过 injectRoute 注入
     const isPluginMode = import.meta.url.includes("node_modules");
 
-    return {
+    const coreIntegration: AstroIntegration = {
         name: "stalux",
         hooks: {
             "astro:config:setup": async ({
@@ -297,16 +302,33 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
 
                 logger.info(`Stalux initialized (contentDir: ${opt.contentDir})`);
 
-                // 5. 注入 satteri 插件（Mermaid/字数统计/特性标记/数学公式），按插件 name 去重
-                // 两种模式都由集成补齐默认插件，消费方只需配置 Satteri 的基础 features 和自定义插件。
+                // 5. 注入 satteri 插件（Mermaid/字数统计/特性标记/数学公式/PhotoSwipe），按插件 name 去重
+                // 两种模式都由集成补齐默认插件。Astro 7 的 markdown.processor 默认为 satteri()，
+                // 消费方即使完全不配置 processor，这里也会对默认 processor 的 options 做幂等合并：
+                //   - features：默认开启 math / frontmatter / gfm / smartPunctuation（用户显式 false 则尊重）
+                //   - mdastPlugins：mermaidMdast + temml（数学公式）+ featureFlagsMdast（字数统计）
+                //   - hastPlugins：photoswipe（图片灯箱）+ mermaidHast + featureFlagsHast
                 // 去重是必须的：重复注册 Mermaid 或 featureFlagsMdast 会导致渲染异常或字数统计翻倍。
                 try {
                     const processor = (config.markdown?.processor ?? undefined) as
-                        | { name?: string; options?: { mdastPlugins?: any[]; hastPlugins?: any[] } }
+                        | {
+                              name?: string;
+                              options?: {
+                                  mdastPlugins?: any[];
+                                  hastPlugins?: any[];
+                                  features?: Record<string, unknown>;
+                              };
+                          }
                         | undefined;
                     if (processor?.name === "satteri") {
-                        const mdastPlugins = processor.options?.mdastPlugins ?? [];
-                        const hastPlugins = processor.options?.hastPlugins ?? [];
+                        const options = processor.options ?? {};
+                        const mdastPlugins = (options.mdastPlugins ??= []);
+                        const hastPlugins = (options.hastPlugins ??= []);
+                        const features = (options.features ??= {});
+                        // 默认开启 math / frontmatter / gfm / smartPunctuation
+                        for (const key of ["math", "frontmatter", "gfm", "smartPunctuation"]) {
+                            if (features[key] !== false) features[key] = true;
+                        }
                         const seen = new Set<string>();
                         for (const p of [...mdastPlugins, ...hastPlugins]) {
                             if (p?.name) seen.add(p.name);
@@ -329,13 +351,14 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
                                 themeOverrides: { clusterBorder: "#cccccc" },
                             }),
                         );
+                        pushUnique(hastPlugins, photoswipe());
                         pushUnique(hastPlugins, featureFlagsHast);
                         logger.debug(
-                            "Stalux: injected satteri plugins (mermaid/temml/feature-flags)",
+                            "Stalux: injected satteri plugins (mermaid/temml/photoswipe/feature-flags)",
                         );
                     } else {
                         logger.warn(
-                            "Stalux: markdown.processor 不是 satteri，无法注入字数统计/数学公式插件。" +
+                            "Stalux: markdown.processor 不是 satteri，无法注入字数统计/数学公式/PhotoSwipe 插件。" +
                                 "请在 astro.config 中配置 `processor: satteri({...})`。",
                         );
                     }
@@ -447,6 +470,33 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration {
             },
         },
     };
+
+    // 打包内置集成：Astro 的 integrations 配置支持嵌套数组并自动展平（schema 里 val.flat(Infinity)），
+    // 因此这里返回 [coreIntegration, sitemap, expressiveCode]，让消费方一行 `integrations: [stalux()]` 即可完成配置。
+    const bundled: AstroIntegration[] = [coreIntegration];
+
+    if (opt.sitemap !== false) {
+        const userSitemap = opt.sitemap === true ? undefined : opt.sitemap;
+        // 默认过滤：不把 Markdown 源码端点（/posts/*.md）写入 sitemap；用户自定义 filter 与之叠加
+        const defaultFilter = (page: string) => !page.endsWith(".md");
+        const userFilter = userSitemap?.filter;
+        const filter = userFilter
+            ? (page: string) => defaultFilter(page) && userFilter(page)
+            : defaultFilter;
+        bundled.push(
+            sitemap({
+                ...userSitemap,
+                filter,
+            }),
+        );
+    }
+
+    if (opt.expressiveCode !== false) {
+        const ecOptions = opt.expressiveCode === true ? undefined : opt.expressiveCode;
+        bundled.push(expressiveCode(ecOptions));
+    }
+
+    return bundled;
 }
 
 export default stalux;
