@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.24.2",
+    "version": "1.24.3",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -100,7 +100,6 @@
     "devDependencies": {
         "astro": "^7.2.3",
         "knip": "^6.32.2",
-        "license-checker-rseidelsohn": "5.0.1",
         "oxfmt": "^0.64.0",
         "oxlint": "^1.79.0",
         "typescript": "^7.0.2"
