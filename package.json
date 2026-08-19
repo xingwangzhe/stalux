@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.24.1",
+    "version": "1.24.2",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -78,13 +78,13 @@
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
         "@expressive-code/plugin-line-numbers": "^0.44.1",
-        "@lucide/astro": "^1.31.0",
+        "@lucide/astro": "^1.33.0",
         "@mcp-b/webmcp-polyfill": "^4.0.0",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.15.2",
-        "@xingwangzhe/satteri-mermaid": "0.7.6",
-        "@xingwangzhe/satteri-photoswipe": "^0.2.3",
-        "@xingwangzhe/tags-cloud": "^1.2.6",
+        "@xingwangzhe/satteri-mermaid": "0.7.7",
+        "@xingwangzhe/satteri-photoswipe": "^0.2.4",
+        "@xingwangzhe/tags-cloud": "^1.2.7",
         "animejs": "^4.5.0",
         "astro-expressive-code": "^0.44.1",
         "astro-seo": "^1.1.0",
@@ -92,20 +92,20 @@
         "badge-maker": "^6.0.0",
         "pagefind": "^1.5.2",
         "photoswipe": "^5.4.4",
-        "satteri": "^0.9.5",
+        "satteri": "^0.10.4",
         "simple-icons": "^16.28.0",
         "subset-font": "^2.5.0",
         "temml": "^0.13.4"
     },
     "devDependencies": {
-        "astro": "^7.2.2",
+        "astro": "^7.2.3",
         "knip": "^6.32.2",
         "license-checker-rseidelsohn": "5.0.1",
-        "oxfmt": "^0.63.0",
-        "oxlint": "^1.78.0",
+        "oxfmt": "^0.64.0",
+        "oxlint": "^1.79.0",
         "typescript": "^7.0.2"
     },
     "peerDependencies": {
-        "astro": "7.2.2"
+        "astro": "7.2.3"
     }
 }
