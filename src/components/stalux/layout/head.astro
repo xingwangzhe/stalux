@@ -43,8 +43,6 @@ interface Props {
 }
 
 const props = Astro.props as Props;
-const effectiveTitle = siteConfig.seoTitle || props.title;
-const effectiveDescription = props.description;
 const isArticle = props.isArticle ?? false;
 
 const canonicalBase = siteConfig.canonical || siteConfig.url;
@@ -68,12 +66,20 @@ const isNotFoundPage =
   Astro.url.pathname === "/404" || Astro.url.pathname === "/404/";
 const routeKind = getRouteKind(Astro.url.pathname);
 const isCollectionPage = routeKind.endsWith("-index") || routeKind.endsWith("-detail");
+// seoTitle 是首页的搜索标题，不应覆盖文章/分类等内页标题。
+const effectiveTitle = routeKind === "home" && siteConfig.seoTitle ? siteConfig.seoTitle : props.title;
+const effectiveDescription = props.description;
+const siteTitleSuffix = siteConfig.title ? ` | ${siteConfig.title}` : "";
+const contentTitle =
+  siteTitleSuffix && effectiveTitle.endsWith(siteTitleSuffix)
+    ? effectiveTitle.slice(0, -siteTitleSuffix.length)
+    : effectiveTitle;
 const resolvedNoindex = Boolean(siteConfig.noindex) || isNotFoundPage || Boolean(props.noindex);
 const resolvedNofollow = Boolean(siteConfig.nofollow) || isNotFoundPage;
 
 const openGraphConfig: Record<string, unknown> = {
   basic: {
-    title: effectiveTitle,
+    title: contentTitle,
     type: isArticle ? "article" : "website",
     image: ogImagePath,
     url: canonicalUrl,
@@ -85,7 +91,7 @@ const openGraphConfig: Record<string, unknown> = {
   },
   image: {
     url: ogImagePath,
-    alt: effectiveTitle,
+    alt: contentTitle,
   },
 };
 
@@ -101,11 +107,11 @@ if (isArticle) {
 }
 
 const twitterConfig = {
-  card: "summary_large_image" as TwitterCardType,
-  title: effectiveTitle,
+  card: (props.cover ? "summary_large_image" : "summary") as TwitterCardType,
+  title: contentTitle,
   description: effectiveDescription,
   image: ogImagePath,
-  imageAlt: effectiveTitle,
+  imageAlt: contentTitle,
   ...(siteConfig.twitterSite ? { site: siteConfig.twitterSite } : {}),
 };
 
@@ -140,6 +146,14 @@ const extendedLink = [
 const extendedMeta = [
   { name: "viewport", content: "width=device-width, initial-scale=1" },
   { name: "color-scheme", content: "dark" },
+  ...(!resolvedNoindex
+    ? [
+        {
+          name: "googlebot",
+          content: "max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+        },
+      ]
+    : []),
 ];
 
 let schema: Record<string, unknown>;
@@ -148,55 +162,111 @@ const sameAs = mediaLinksConfig?.items
   .filter((link) => /^https?:\/\//i.test(link));
 const authorEntity = {
   "@type": "Person",
+  "@id": `${siteUrl}/#author`,
   name: authorConfig.name,
+  url: `${siteUrl}/about/`,
   ...(toAbsolute(authorConfig.avatar) ? { image: toAbsolute(authorConfig.avatar) } : {}),
   ...(sameAs.length ? { sameAs } : {}),
 };
 const publisher = {
   "@type": "Organization",
+  "@id": `${siteUrl}/#publisher`,
   name: siteName,
   url: siteUrl,
   ...(authorConfig.avatar ? { logo: toAbsolute(authorConfig.avatar) } : {}),
 };
+const websiteEntity = {
+  "@type": "WebSite",
+  "@id": `${siteUrl}/#website`,
+  url: `${siteUrl}/`,
+  name: siteName,
+  description: siteConfig.description,
+  inLanguage: siteConfig.lang || "zh-CN",
+  publisher: { "@id": `${siteUrl}/#publisher` },
+};
+const breadcrumbItems: Record<string, unknown>[] = [
+  {
+    "@type": "ListItem",
+    position: 1,
+    name: siteName,
+    item: `${siteUrl}/`,
+  },
+];
+if (isArticle && props.categories?.[0]) {
+  breadcrumbItems.push({
+    "@type": "ListItem",
+    position: breadcrumbItems.length + 1,
+    name: props.categories[0],
+    item: `${siteUrl}/categories/${encodeURIComponent(props.categories[0])}/`,
+  });
+}
+if (routeKind !== "home") {
+  breadcrumbItems.push({
+    "@type": "ListItem",
+    position: breadcrumbItems.length + 1,
+    name: contentTitle,
+    item: canonicalUrl,
+  });
+}
+const breadcrumbEntity = {
+  "@type": "BreadcrumbList",
+  "@id": `${canonicalUrl}#breadcrumb`,
+  itemListElement: breadcrumbItems,
+};
 if (isArticle) {
   schema = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: effectiveTitle,
-    description: effectiveDescription,
-    url: canonicalUrl,
-    ...(ogImagePath ? { image: ogImagePath } : {}),
-    ...(props.date ? { datePublished: props.date } : {}),
-    ...(props.updated || props.date ? { dateModified: props.updated || props.date } : {}),
-    ...(props.tags?.length ? { keywords: props.tags.join(", ") } : {}),
-    author: props.author ? { ...authorEntity, name: props.author } : authorEntity,
-    publisher,
-    inLanguage: siteConfig.lang || "zh-CN",
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": canonicalUrl,
-    },
+    "@graph": [
+      websiteEntity,
+      authorEntity,
+      publisher,
+      breadcrumbEntity,
+      {
+        "@type": "BlogPosting",
+        "@id": `${canonicalUrl}#article`,
+        headline: contentTitle,
+        description: effectiveDescription,
+        url: canonicalUrl,
+        ...(ogImagePath ? { image: ogImagePath } : {}),
+        ...(props.date ? { datePublished: props.date } : {}),
+        ...(props.updated || props.date ? { dateModified: props.updated || props.date } : {}),
+        ...(props.tags?.length ? { keywords: props.tags.join(", ") } : {}),
+        ...(props.categories?.length ? { articleSection: props.categories } : {}),
+        author: { "@id": `${siteUrl}/#author`, ...(props.author ? { name: props.author } : {}) },
+        publisher: { "@id": `${siteUrl}/#publisher` },
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        inLanguage: siteConfig.lang || "zh-CN",
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": canonicalUrl,
+        },
+      },
+    ],
   };
 } else if (routeKind === "home") {
   schema = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    url: canonicalUrl,
-    name: effectiveTitle,
-    description: effectiveDescription,
-    inLanguage: siteConfig.lang || "zh-CN",
-    publisher,
-    author: authorEntity,
+    "@graph": [websiteEntity, authorEntity, publisher],
   };
 } else {
   schema = {
     "@context": "https://schema.org",
-    "@type": isCollectionPage ? "CollectionPage" : routeKind === "about" ? "AboutPage" : "WebPage",
-    url: canonicalUrl,
-    name: effectiveTitle,
-    description: effectiveDescription,
-    inLanguage: siteConfig.lang || "zh-CN",
-    isPartOf: { "@type": "WebSite", url: siteUrl, name: siteName },
+    "@graph": [
+      websiteEntity,
+      authorEntity,
+      publisher,
+      breadcrumbEntity,
+      {
+        "@type": isCollectionPage ? "CollectionPage" : routeKind === "about" ? "AboutPage" : "WebPage",
+        "@id": canonicalUrl,
+        url: canonicalUrl,
+        name: contentTitle,
+        description: effectiveDescription,
+        inLanguage: siteConfig.lang || "zh-CN",
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        breadcrumb: { "@id": `${canonicalUrl}#breadcrumb` },
+      },
+    ],
   };
 }
 const ldJson = JSON.stringify(schema, null, 2).replace(/<\//g, "<\\/");
@@ -233,4 +303,3 @@ const ldJson = JSON.stringify(schema, null, 2).replace(/<\//g, "<\\/");
   <script type="application/ld+json" set:html={ldJson} />
   <VerCount />
 </head>
-

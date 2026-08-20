@@ -7,17 +7,16 @@ import { getSiteData, getLinksData } from "@utils/config-utils";
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const linksConfig = getLinksData(configEntries)!;
-const siteTitle = siteConfig.title;
 const siteDescription = siteConfig.description;
 const linksTitle = linksConfig.title;
 const linksDescription = linksConfig.description;
 ---
 
-		<ListPage
-			    title={siteTitle}
-			    description={siteDescription}
-			    heading={linksTitle}
-			    subheading={linksDescription}
-			>
+<ListPage
+    title={linksTitle}
+    description={linksDescription || siteDescription}
+    heading={linksTitle}
+    subheading={linksDescription}
+>
     <LinkList />
 </ListPage>
