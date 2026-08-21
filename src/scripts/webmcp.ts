@@ -56,9 +56,11 @@ interface DocumentWithModelContext extends Document {
 // 语言选择（跟随站点 site.yml 的 lang）
 // ---------------------------------------------------------------------------
 
-const SITE_LANG = (
-    typeof window !== "undefined" ? (window.__STALUX_SITE_INFO__?.lang ?? "zh-CN") : "zh-CN"
-).toLowerCase();
+const SITE_LANG =
+    (typeof document !== "undefined"
+        ? document.body?.dataset.staluxSiteLang
+        : "zh-CN"
+    )?.toLowerCase() ?? "zh-cn";
 
 /** 站点为英文站时为 true */
 const IS_EN = SITE_LANG === "en" || SITE_LANG === "en-us" || SITE_LANG === "en-gb";
@@ -492,7 +494,13 @@ function siteInfoTool(): WebMCPTool {
         annotations: { readOnlyHint: true, untrustedContentHint: false },
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
         execute: async () => {
-            const info = window.__STALUX_SITE_INFO__ ?? {};
+            const body = document.body;
+            const info = window.__STALUX_SITE_INFO__ ?? {
+                title: body?.dataset.staluxSiteTitle,
+                url: body?.dataset.staluxSiteUrl,
+                description: body?.dataset.staluxSiteDescription,
+                lang: body?.dataset.staluxSiteLang,
+            };
             return {
                 ok: true,
                 title: info.title ?? "",

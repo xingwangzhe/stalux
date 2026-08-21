@@ -8,7 +8,14 @@
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
+import {
+    copyFileSync,
+    existsSync,
+    mkdirSync,
+    readFileSync,
+    readdirSync,
+    writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -27,6 +34,34 @@ import { staluxComponentsAlias } from "./internal/components-plugin";
 import { runFontSlicing, type FontSlice } from "./internal/font-slices";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { temml } from "./plugins/satteri-temml";
+
+function stripGeneratedHtmlComments(outDir: string): void {
+    const walk = (dir: string) => {
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+            const target = path.join(dir, entry.name);
+            if (entry.isDirectory()) walk(target);
+            else if (entry.isFile() && entry.name.endsWith(".html")) {
+                const source = readFileSync(target, "utf8");
+                const protectedBlocks: string[] = [];
+                const protectedSource = source.replace(
+                    /<(pre|code|textarea)\b[\s\S]*?<\/\1>/gi,
+                    (block) => {
+                        protectedBlocks.push(block);
+                        return `__STALUX_PROTECTED_HTML_${protectedBlocks.length - 1}__`;
+                    },
+                );
+                const stripped = protectedSource
+                    .replace(/<!--(?!\[if)[\s\S]*?-->/g, "")
+                    .replace(
+                        /__STALUX_PROTECTED_HTML_(\d+)__/g,
+                        (_, index: string) => protectedBlocks[Number(index)] ?? "",
+                    );
+                if (stripped !== source) writeFileSync(target, stripped);
+            }
+        }
+    };
+    walk(outDir);
+}
 
 // 字体配置（Astro Fonts API）通过 updateConfig 注入，两种模式（源码模板/npm 插件）都生效。
 // 官方 local provider 完全本地读文件（readFile），不联网；
@@ -438,9 +473,12 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             },
 
             "astro:build:done": async ({ dir, logger }) => {
+                const outDir = fileURLToPath(dir);
+                stripGeneratedHtmlComments(outDir);
+                logger.info("Removed generated HTML comments (preserved pre/code/textarea blocks)");
+
                 // 6. 后处理：Pagefind 搜索索引
                 if (opt.pagefind) {
-                    const outDir = fileURLToPath(dir);
                     logger.info("Running Pagefind indexer...");
 
                     try {

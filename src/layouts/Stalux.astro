@@ -5,7 +5,7 @@ import { getCollection } from "astro:content";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
 import "@styles/shared/view-transitions.css";
-import { getAuthorData, getAiDiscoveryData, getPromoteData, getSiteData } from "@utils/config-utils";
+import { getAuthorData, getAiDiscoveryData, getHeadData, getPromoteData, getSiteData } from "@utils/config-utils";
 import { getRouteAnimation, getRouteKind } from "@utils/view-transitions";
 const props = Astro.props as Props;
 
@@ -25,6 +25,7 @@ interface Props {
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const authorConfig = getAuthorData(configEntries);
+const headConfig = getHeadData(configEntries);
 const promoteConfig = getPromoteData(configEntries);
 const aiConfig = getAiDiscoveryData(configEntries);
 const htmlLang = siteConfig.lang || "zh-CN";
@@ -65,21 +66,6 @@ const routeAnimation = getRouteAnimation(routeKind);
   {
     aiConfig?.conformance !== "disabled" && (
       <>
-        <script
-          define:vars={{
-            siteTitle: siteConfig.title,
-            siteUrl: siteConfig.url,
-            siteDesc: siteConfig.description,
-            siteLang: siteConfig.lang,
-          }}
-        >
-          window.__STALUX_SITE_INFO__ = {
-            title: siteTitle,
-            url: siteUrl,
-            description: siteDesc,
-            lang: siteLang,
-          };
-        </script>
         <script>
           import "../scripts/webmcp.ts";
         </script>
@@ -90,8 +76,18 @@ const routeAnimation = getRouteAnimation(routeKind);
     class="stalux-root dark"
     data-stalux-bg-layer="a"
     data-stalux-bg-index="0"
+    data-stalux-site-title={siteConfig.title}
+    data-stalux-site-url={siteConfig.url}
+    data-stalux-site-description={siteConfig.description}
+    data-stalux-site-lang={siteConfig.lang}
+    data-stalux-ga-id={headConfig?.googleAnalyticsId}
+    data-stalux-clarity-id={headConfig?.bingClarityId}
   >
-    {llmPromote && <div style="display:none">{llmPromote}</div>}
+    {llmPromote && (
+      <section class="stalux-ai-prompt" data-stalux-ai-prompt aria-label="AI site context">
+        <p>{llmPromote}</p>
+      </section>
+    )}
     <div
       class="bg-layer bg-a"
       style="opacity: 1;"
@@ -116,3 +112,17 @@ const routeAnimation = getRouteAnimation(routeKind);
 </html>
 
 <style></style>
+
+<style>
+  .stalux-ai-prompt {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: pre-wrap;
+    border: 0;
+  }
+</style>

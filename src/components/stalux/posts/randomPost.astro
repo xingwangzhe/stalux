@@ -3,132 +3,23 @@ import style from "@styles/components/posts/randomPost.module.css";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 
-interface Props {
-    count?: number;
-    title?: string;
-}
-
+interface Props { count?: number; title?: string; }
 const configEntries = await getCollection("config");
-const siteConfig = (configEntries.find(e => e.id === "site")?.data ?? {}) as Record<string, unknown>;
+const siteConfig = (configEntries.find((entry) => entry.id === "site")?.data ?? {}) as Record<string, unknown>;
 const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 const { count = 5, title = t("randomPost.title") } = Astro.props;
 ---
-
-<aside class={style.container} transition:persist-props aria-label={t("randomPost.title")}>
+<aside class={style.container} transition:persist-props aria-label={t("randomPost.title")} data-stalux-random-posts data-count={count} data-no-posts={t("randomPost.noPosts")} data-load-failed={t("randomPost.loadFailed")} data-load-error={t("randomPost.loadError")}>
     <div class={style.header}>
         <h3 class={style.title}>{title}</h3>
-        <button
-            id="refresh-random-posts"
-            class={style.refreshButton}
-            title={t("randomPost.refresh")}
-            aria-label={t("randomPost.refresh")}
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            >
-                <path
-                    d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"
-                ></path>
+        <button id="refresh-random-posts" class={style.refreshButton} title={t("randomPost.refresh")} aria-label={t("randomPost.refresh")}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
             </svg>
         </button>
     </div>
     <ul class={style.list} id="random-posts-list">
         <li class={style.loading}>{t("randomPost.loading")}</li>
-	    </ul>
-	</aside>
-
-<script define:vars={{ count, labels: { noPosts: t("randomPost.noPosts"), loadFailed: t("randomPost.loadFailed"), loadError: t("randomPost.loadError") } }}>
-    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-    // 费雪-耶茨洗牌（crypto 优先，回退 Math.random）
-    const shuffleArray = (array) => {
-        const shuffled = [...array];
-        const randomIndex = (max) => {
-            if (globalThis.crypto?.getRandomValues) {
-                const buf = new Uint32Array(1);
-                crypto.getRandomValues(buf);
-                return buf[0] % max;
-            }
-            return Math.floor(Math.random() * max);
-        };
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = randomIndex(i + 1);
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    };
-
-    const fetchRandomPosts = async () => {
-        try {
-            const response = await fetch("/api/post.abbrlink.json");
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            return (await response.json()) ?? [];
-        } catch (error) {
-            console.error("Failed to fetch posts:", error);
-            return [];
-        }
-    };
-
-    const generatePostsHTML = (posts) => {
-        if (posts.length === 0) {
-            return `<li class="no-posts">${labels.noPosts}</li>`;
-        }
-        return posts
-            .map(
-                (post) => `
-            <li class="random-post-item">
-                <a href="/posts/${post.abbrlink}/" class="random-post-link a-none">
-                    ${post.title}
-                </a>
-            </li>
-        `,
-            )
-            .join("");
-    };
-
-    const renderRandomPosts = async (listEl, emptyMsg, errorMsg) => {
-        try {
-            const allPosts = await fetchRandomPosts();
-            if (allPosts.length === 0) {
-                listEl.innerHTML = `<li class="no-posts">${emptyMsg}</li>`;
-                return;
-            }
-            listEl.innerHTML = generatePostsHTML(shuffleArray(allPosts).slice(0, count));
-        } catch (error) {
-            console.error("Error rendering random posts:", error);
-            listEl.innerHTML = `<li class="error">${errorMsg}</li>`;
-        }
-    };
-
-    const refreshRandomPosts = async () => {
-        const randomPostsList = document.getElementById("random-posts-list");
-        if (!randomPostsList) return;
-
-        randomPostsList.style.opacity = "0.5";
-        await sleep(300);
-        await renderRandomPosts(randomPostsList, labels.noPosts, labels.loadFailed);
-        randomPostsList.style.opacity = "1";
-    };
-
-    document.addEventListener("astro:page-load", () => {
-        const refreshButton = document.getElementById("refresh-random-posts");
-        refreshButton?.addEventListener("click", async (e) => {
-            e.preventDefault();
-            refreshButton.classList.add("rotating");
-            await refreshRandomPosts();
-            await sleep(600);
-            refreshButton.classList.remove("rotating");
-        });
-
-        const list = document.getElementById("random-posts-list");
-        if (list) void renderRandomPosts(list, labels.noPosts, labels.loadError);
-    });
-</script>
+    </ul>
+</aside>
+<script src="../../../scripts/random-posts.ts"></script>
