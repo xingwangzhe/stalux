@@ -58,10 +58,12 @@ custom: |
 
 ## Badge Types
 
-| Type        | Fields                                              | Behavior                                              |
-| ----------- | --------------------------------------------------- | ----------------------------------------------------- |
-| Flat badge  | `label`, `message`, `color`, `style`, `alt`, `href` | Renders a single badge                                |
-| Badge group | `title`, `collapsed`, `items[]`                     | Collapsible `<details>` with localStorage persistence |
+| Type        | Fields                                                     | Behavior                                              |
+| ----------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| Flat badge  | `label`, `message`, `color`, `style`, `alt`, `href`, `rel` | Renders a single badge                                |
+| Badge group | `title`, `collapsed`, `items[]`                            | Collapsible `<details>` with localStorage persistence |
+
+Badges with a `href` render as `target="_blank"` links. The `rel` value defaults to `noopener` (keeps `window.opener` safe, lets the target see the `Referer`); set `rel: ""` to drop it entirely, or override with `rel: "nofollow"` to withhold link equity.
 
 ## Common Operations
 

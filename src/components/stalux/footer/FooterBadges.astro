@@ -18,7 +18,7 @@ function badgeImg(opts: Record<string, any>) {
     const src = svgToDataUrl(generateBadge(opts));
     const alt = opts.alt || `${opts.label}: ${opts.message}`;
     if (opts.href) {
-        return `<a href="${opts.href}" target="_blank" rel="noopener noreferrer"><img src="${src}" alt="${alt}" class="badge" /></a>`;
+        return `<a href="${opts.href}" target="_blank" rel="${opts.rel ?? "noopener"}"><img src="${src}" alt="${alt}" class="badge" /></a>`;
     }
     return `<img src="${src}" alt="${alt}" class="badge" />`;
 }

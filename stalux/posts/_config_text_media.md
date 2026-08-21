@@ -91,3 +91,5 @@ sites:
 ```
 
 Each `sites[]` entry requires `name`, `description`, `link`, and `icon`.
+
+Friend-link cards render as `target="_blank"` links with `rel="noopener"` — the referrer is passed through (the target site sees where visitors came from) while `window.opener` stays protected.

@@ -14,6 +14,7 @@ export interface BadgeOptions {
     logoWidth?: number;
     alt?: string;
     href?: string;
+    rel?: string;
 }
 
 export interface BadgeGroup {

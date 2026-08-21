@@ -92,6 +92,7 @@ const badgeFlatSchema = z.object({
     style: z.string().optional(),
     alt: z.string().optional(),
     href: z.string().optional(),
+    rel: z.string().optional(),
 });
 
 const badgeGroupSchema = z.object({
