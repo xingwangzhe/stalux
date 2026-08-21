@@ -92,19 +92,19 @@
         "badge-maker": "^6.0.0",
         "pagefind": "^1.5.2",
         "photoswipe": "^5.4.4",
-        "satteri": "^0.10.4",
+        "satteri": "^0.10.5",
         "simple-icons": "^16.28.0",
         "subset-font": "^2.5.0",
         "temml": "^0.13.4"
     },
     "devDependencies": {
-        "astro": "^7.2.3",
+        "astro": "^7.2.4",
         "knip": "^6.32.2",
         "oxfmt": "^0.64.0",
         "oxlint": "^1.79.0",
         "typescript": "^7.0.2"
     },
     "peerDependencies": {
-        "astro": "7.2.3"
+        "astro": "7.2.4"
     }
 }
