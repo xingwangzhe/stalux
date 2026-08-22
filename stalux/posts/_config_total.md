@@ -18,7 +18,7 @@ The Stalux theme uses Astro content collections. Configuration files are stored 
 ```bash
 stalux/config/
 ├── site.yml          # Site identity: title, url, description, lang, timezone, canonical, favicon
-├── author.yml        # Author info: name, avatar, bio
+├── author.yml        # Author info: name, avatar, bio, optional jobTitle
 ├── head.yml          # Analytics & custom <head>: Google Analytics, Bing Clarity, Umami, anyhead
 ├── navs.yml          # Navigation bar items
 ├── typetexts.yml     # Homepage typing animation texts
@@ -35,7 +35,7 @@ The schema definitions are in `src/schemas/config.ts`, using `z.discriminatedUni
 ## Quick Start
 
 1. Set your site identity in `site.yml`
-2. Add your name/bio in `author.yml`
+2. Add your name/bio in `author.yml`; optionally add the public `jobTitle` for JSON-LD
 3. Configure navigation in `navs.yml`
 4. Add social links in `media-links.yml`
 5. Add analytics in `head.yml` when needed (`bingClarityId` is the Microsoft Clarity Project ID)

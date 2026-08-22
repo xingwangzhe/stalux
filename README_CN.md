@@ -126,7 +126,7 @@ stalux({
 stalux/
 ├── config/              # YAML 配置文件
 │   ├── site.yml         # 站点元信息
-│   ├── author.yml       # 作者信息
+│   ├── author.yml       # 作者信息（name/avatar/bio/jobTitle）
 │   ├── navs.yml         # 导航菜单
 │   ├── footer.yml       # 页脚配置
 │   ├── links.yml        # 友情链接
@@ -206,3 +206,17 @@ Stalux 内置 WebMCP 工具：当 WebMCP 感知的浏览器（如 Chrome 内置 
 ## 📄 许可证
 
 MIT License
+
+### 作者 JSON-LD 配置
+
+`stalux/config/author.yml` 支持可选的 `jobTitle` 字段。填写后，Stalux 会把它写入首页和文章页面 JSON-LD 的 `Person` 实体，帮助 Agent 识别作者的公开职业角色；它不会改变页面上的作者卡片样式：
+
+```yaml title="stalux/config/author.yml"
+id: author
+name: xingwangzhe
+avatar: /avatar.png
+bio: Blog Theme Stalux
+jobTitle: Software Engineer # 可选；输出为 JSON-LD Person.jobTitle
+```
+
+这是构建期元数据配置，不会创建联系 API，也不会暴露私密信息；只应填写本来就准备公开的职业称谓。

@@ -126,7 +126,7 @@ stalux({
 stalux/
 ├── config/              # YAML configuration
 │   ├── site.yml         # Site metadata
-│   ├── author.yml       # Author info
+│   ├── author.yml       # Author info (name/avatar/bio/jobTitle)
 │   ├── navs.yml         # Navigation menu
 │   ├── footer.yml       # Footer badges & copyright
 │   ├── links.yml        # Friend links
@@ -212,3 +212,17 @@ MIT License — see [LICENSE](./LICENSE).
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xingwangzhe/stalux)
 [![Deploy with EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https://github.com/xingwangzhe/stalux)
+
+### Author JSON-LD configuration
+
+`stalux/config/author.yml` accepts the optional `jobTitle` field. When present, Stalux includes it in the homepage and article JSON-LD `Person` entity so agents can identify the author's role without changing the visual author card:
+
+```yaml title="stalux/config/author.yml"
+id: author
+name: xingwangzhe
+avatar: /avatar.png
+bio: Blog Theme Stalux
+jobTitle: Software Engineer # Optional; emitted as JSON-LD Person.jobTitle
+```
+
+This is a build-time metadata field. It does not create a contact endpoint or expose private information; only publish a role that is already intended to be public.

@@ -38,9 +38,10 @@ id: author
 name: xingwangzhe # Display name
 avatar: /avatar.png # Avatar path
 bio: Blog Theme Stalux # Short bio
+jobTitle: Software Engineer # Optional public role, emitted in JSON-LD Person
 ```
 
-Rendered on: post sidebars, homepage author card, SEO JSON-LD.
+Rendered on: post sidebars, homepage author card, and SEO JSON-LD. `jobTitle` is optional and is emitted only in the JSON-LD `Person` entity; it does not change the visual author card.
 
 ## Content Collections
 
