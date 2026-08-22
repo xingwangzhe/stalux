@@ -30,6 +30,7 @@ export const authorSchema = z.object({
     name: z.string().min(1, "author.name is required"),
     avatar: z.string().min(1, "author.avatar is required"),
     bio: z.string().min(1, "author.bio is required"),
+    jobTitle: z.string().optional(),
 });
 
 export const headSchema = z.object({

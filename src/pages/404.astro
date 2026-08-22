@@ -21,6 +21,11 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
     <div class="error-content">
       <h1>404</h1>
       <p>{t("page404.pageNotFound")}</p>
+      <p class="agent-recovery">
+        This URL does not exist. Continue at the <a href="/">home page</a>, browse the
+        <a href="/archives/">archive</a>, read <a href="/llms.txt">llms.txt</a>, or inspect the
+        <a href="/sitemap-index.xml">sitemap</a> to find published content.
+      </p>
       <p id="countdown" class="countdown-text" data-countdown-template={t("page404.countdown", { n: "{n}" })}>{t("page404.countdown", { n: 5 })}</p>
       <a href="/" class="home-btn" data-astro-prefetch>{t("page404.backHome")}</a>
     </div>
@@ -57,6 +62,18 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
     font-size: 0.95rem !important;
     color: var(--white-50p) !important;
     margin: -0.5rem 0 1.5rem 0 !important;
+  }
+
+  .agent-recovery {
+    max-width: 42rem;
+    margin: 0 auto 1.5rem !important;
+    font-size: 1rem !important;
+    line-height: 1.7;
+  }
+
+  .agent-recovery a {
+    color: inherit;
+    text-decoration: underline;
   }
 
   .home-btn {

@@ -76,7 +76,7 @@ const contentTitle =
     : effectiveTitle;
 const resolvedNoindex = Boolean(siteConfig.noindex) || isNotFoundPage || Boolean(props.noindex);
 const resolvedNofollow = Boolean(siteConfig.nofollow) || isNotFoundPage;
-const staluxVersion = "1.25.2";
+const staluxVersion = "1.25.3";
 
 const openGraphConfig: Record<string, unknown> = {
   basic: {
@@ -171,6 +171,7 @@ const authorEntity = {
   url: `${siteUrl}/about/`,
   ...(toAbsolute(authorConfig.avatar) ? { image: toAbsolute(authorConfig.avatar) } : {}),
   ...(sameAs.length ? { sameAs } : {}),
+  ...(authorConfig.jobTitle ? { jobTitle: authorConfig.jobTitle } : {}),
 };
 const publisher = {
   "@type": "Organization",

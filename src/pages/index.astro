@@ -24,6 +24,18 @@ import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, get
     </div>
     <h1 class={styles.homeTitle}>{siteTitle}</h1>
     <h2 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{t("ai.about")}</h2>
+    <section class="agent-home-summary" aria-label="About this site">
+      <h2>About this technical blog</h2>
+      <p>
+        {siteDescription} This is a personal, public, read-only knowledge base for developers and
+        AI agents looking for published technical articles, practical notes, project investigations,
+        and reproducible web engineering details. Start with the <a href="/index.md">Markdown home
+        page</a>, <a href="/api/posts.json">published post index</a>, <a href="/openapi.json">read API
+        description</a>, or <a href="/llms.txt">agent guidance</a>. Individual posts are available as
+        HTML and Markdown, and the <a href="/rss.xml">RSS feed</a> provides a machine-readable update
+        stream. The site does not require an account and these discovery endpoints do not mutate data.
+      </p>
+    </section>
     <Author />
     <TextType />
     <DateTime />
@@ -31,3 +43,27 @@ import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, get
     <ToArchive />
   </div>
 </Stalux>
+
+<style>
+  .agent-home-summary {
+    max-width: 52rem;
+    margin: 1rem auto 0;
+    padding: 0 1rem;
+    text-align: left;
+  }
+
+  .agent-home-summary h2 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .agent-home-summary p {
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .agent-home-summary a {
+    color: inherit;
+    text-decoration: underline;
+  }
+</style>

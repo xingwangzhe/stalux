@@ -15,6 +15,10 @@ export const GET: APIRoute = async () => {
         status: 200,
         headers: {
             "Content-Type": "application/json; charset=utf-8",
+            "Cache-Control": "public, max-age=0, must-revalidate",
+            "RateLimit-Limit": "60",
+            "RateLimit-Remaining": "59",
+            "RateLimit-Reset": "60",
         },
     });
 };
