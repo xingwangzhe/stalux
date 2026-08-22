@@ -16,11 +16,13 @@ Do not add a configuration field only to satisfy a third-party score. It must ha
 
 Every version update must explicitly check the homepage for the Agent-discovery content regression fixed in v1.25.5:
 
-1. The Agent summary must remain present in the generated SSR HTML so crawlers can read it.
+1. The Agent summary must remain present in the SSG-generated static HTML artifact so crawlers can read it. This is build-time output, not runtime SSR.
 2. The same summary must be visually hidden with the approved clipped/one-pixel technique and must not enter normal layout flow.
-3. Do not use `display: none`, the `hidden` attribute, or `aria-hidden` as a substitute for SSR content; do not render the summary as an ordinary visible section.
+3. Do not use `display: none`, the `hidden` attribute, or `aria-hidden` as a substitute for the static HTML content; do not render the summary as an ordinary visible section.
 4. After every `bun run build`, assert both conditions against `dist/index.html` (content marker present and visual-hidden CSS present), then inspect a rendered homepage or screenshot when the homepage layout has changed.
 5. A failed visual-regression check blocks version bump, commit, tag, npm publish, and downstream `myblog` upgrade until fixed.
+
+Stalux and the consuming `myblog` remain SSG/static-first. Do not introduce Astro SSR output, a runtime server endpoint, or server-only rendering just to satisfy an Agent readiness audit. Use build-time generated HTML, static JSON, Markdown, RSS, sitemap, and WebMCP client behavior where they are genuinely supported.
 
 ## Search-engine submission guidance
 
