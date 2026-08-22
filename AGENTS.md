@@ -12,6 +12,16 @@ Any new or changed user-facing configuration field must be handled as one change
 
 Do not add a configuration field only to satisfy a third-party score. It must have a real Stalux runtime consumer, documented semantics, and a safe static-site behavior. Do not document dynamic API, rate-limit enforcement, MCP, authentication, or other capabilities that a static deployment cannot actually provide.
 
+### Version-release visual regression gate (mandatory)
+
+Every version update must explicitly check the homepage for the Agent-discovery content regression fixed in v1.25.5:
+
+1. The Agent summary must remain present in the generated SSR HTML so crawlers can read it.
+2. The same summary must be visually hidden with the approved clipped/one-pixel technique and must not enter normal layout flow.
+3. Do not use `display: none`, the `hidden` attribute, or `aria-hidden` as a substitute for SSR content; do not render the summary as an ordinary visible section.
+4. After every `bun run build`, assert both conditions against `dist/index.html` (content marker present and visual-hidden CSS present), then inspect a rendered homepage or screenshot when the homepage layout has changed.
+5. A failed visual-regression check blocks version bump, commit, tag, npm publish, and downstream `myblog` upgrade until fixed.
+
 ## Search-engine submission guidance
 
 Stalux 是主题源码仓库。搜索引擎提交通常属于消费主题的博客仓库，而不是主题仓库。处理线上博客时，要区分“IndexNow 接受通知”和“搜索引擎已经收录”，也不要把 OAuth token、refresh token、API key、密码或其他凭据写入源码。
