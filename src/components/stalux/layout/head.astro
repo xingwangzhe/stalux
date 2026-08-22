@@ -76,6 +76,7 @@ const contentTitle =
     : effectiveTitle;
 const resolvedNoindex = Boolean(siteConfig.noindex) || isNotFoundPage || Boolean(props.noindex);
 const resolvedNofollow = Boolean(siteConfig.nofollow) || isNotFoundPage;
+const staluxVersion = "1.25.2";
 
 const openGraphConfig: Record<string, unknown> = {
   basic: {
@@ -146,6 +147,9 @@ const extendedLink = [
 const extendedMeta = [
   { name: "viewport", content: "width=device-width, initial-scale=1" },
   { name: "color-scheme", content: "dark" },
+  { name: "generator", content: `Stalux ${staluxVersion}` },
+  { name: "theme", content: "Stalux" },
+  { name: "stalux-version", content: staluxVersion },
   ...(!resolvedNoindex
     ? [
         {
