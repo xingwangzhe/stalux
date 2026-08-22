@@ -147,6 +147,7 @@ function getRoutes(baseDir: URL): RouteEntry[] {
         { pattern: "/atom.xml", entrypoint: resolvePage("./pages/atom.xml.ts") },
         { pattern: "/llms.txt", entrypoint: resolvePage("./pages/llms.txt.ts") },
         { pattern: "/llms-full.txt", entrypoint: resolvePage("./pages/llms-full.txt.ts") },
+        { pattern: "/openapi.json", entrypoint: resolvePage("./pages/openapi.json.ts") },
         {
             pattern: "/api/post.abbrlink.json",
             entrypoint: resolvePage("./pages/api/post.abbrlink.json.ts"),

@@ -468,6 +468,38 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
     lines.push(buildMdLink("llms-full.txt", `${site}/llms-full.txt`, t("ai.llmsFullTxtDesc")));
     lines.push("");
 
+    // Developer resources and agent guidance. Keep these links predictable so an
+    // agent can discover the read API without scraping the HTML application shell.
+    lines.push("## Developer resources");
+    lines.push(
+        buildMdLink(
+            "OpenAPI specification",
+            `${site}/openapi.json`,
+            "Machine-readable description of the read-only blog API.",
+        ),
+    );
+    lines.push(
+        buildMdLink(
+            "Published post index",
+            `${site}/api/posts.json`,
+            "JSON metadata for published posts, including stable abbrlink identifiers.",
+        ),
+    );
+    lines.push(
+        buildMdLink(
+            "Post identifier index",
+            `${site}/api/post.abbrlink.json`,
+            "JSON mapping of published post titles to stable identifiers.",
+        ),
+    );
+    lines.push("");
+
+    lines.push("## When to use this site");
+    lines.push(
+        "Use the read API or Markdown endpoints when you need to search, cite, summarize, or retrieve the author's published technical articles. Start with `/openapi.json` or `/api/posts.json`, then fetch a specific `/posts/{abbrlink}.md` resource. The endpoints are read-only and do not require authentication.",
+    );
+    lines.push("");
+
     // Optional
     lines.push(`## ${t("ai.optional")}`);
     lines.push(buildMdLink(t("ai.rss"), `${site}/rss.xml`));

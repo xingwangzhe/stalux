@@ -19,6 +19,9 @@ export const GET: APIRoute = async (context) => {
     const { t } = createTranslator(lang);
     const text = await renderArchivesMd(site, exportMd, t);
     return new Response(text, {
-        headers: { "Content-Type": "text/markdown; charset=utf-8" },
+        headers: {
+            "Content-Type": "text/markdown; charset=utf-8",
+            Vary: "Accept, Accept-Encoding",
+        },
     });
 };

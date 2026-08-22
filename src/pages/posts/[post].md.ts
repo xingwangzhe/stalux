@@ -98,6 +98,7 @@ export const GET: APIRoute = async ({ props }) => {
         status: 200,
         headers: {
             "Content-Type": "text/markdown; charset=utf-8",
+            Vary: "Accept, Accept-Encoding",
         },
     });
 };

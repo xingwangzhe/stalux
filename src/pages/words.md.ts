@@ -9,6 +9,9 @@ export const GET: APIRoute = async () => {
 
     const text = await renderWordsMd();
     return new Response(text, {
-        headers: { "Content-Type": "text/markdown; charset=utf-8" },
+        headers: {
+            "Content-Type": "text/markdown; charset=utf-8",
+            Vary: "Accept, Accept-Encoding",
+        },
     });
 };

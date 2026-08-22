@@ -21,6 +21,7 @@ export const GET: APIRoute = async (context) => {
     return new Response(text, {
         headers: {
             "Content-Type": "text/plain; charset=utf-8",
+            Vary: "Accept, Accept-Encoding",
         },
     });
 };

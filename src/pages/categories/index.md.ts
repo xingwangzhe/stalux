@@ -22,6 +22,9 @@ export const GET: APIRoute = async (context) => {
     const map = buildTaxonomyMap(posts, "categories");
     const text = renderTaxonomyListMd(map, site, "categories", t("ai.allCategories"));
     return new Response(text, {
-        headers: { "Content-Type": "text/markdown; charset=utf-8" },
+        headers: {
+            "Content-Type": "text/markdown; charset=utf-8",
+            Vary: "Accept, Accept-Encoding",
+        },
     });
 };
