@@ -1,3 +1,4 @@
+import { analyzeFeatureFlags } from "@plugins/feature-flags";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 
@@ -12,17 +13,19 @@ export const prerender = true;
 export const GET: APIRoute = async () => {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
 
-    const payload = posts.map((post) => ({
-        title: post.data.title,
-        abbrlink: String(post.data.abbrlink),
-        date: post.data.date ?? undefined,
-        updated: post.data.updated ?? undefined,
-        tags: post.data.tags ?? [],
-        categories: post.data.categories ?? [],
-        desc: post.data.desc ?? "",
-        wordCount: post.data.wordCount ?? undefined,
-        url: `/posts/${post.data.abbrlink}/`,
-    }));
+    const payload = await Promise.all(
+        posts.map(async (post) => ({
+            title: post.data.title,
+            abbrlink: String(post.data.abbrlink),
+            date: post.data.date ?? undefined,
+            updated: post.data.updated ?? undefined,
+            tags: post.data.tags ?? [],
+            categories: post.data.categories ?? [],
+            desc: post.data.desc ?? "",
+            wordCount: (await analyzeFeatureFlags(post.body)).wordCount,
+            url: `/posts/${post.data.abbrlink}/`,
+        })),
+    );
 
     return new Response(JSON.stringify(payload), {
         status: 200,

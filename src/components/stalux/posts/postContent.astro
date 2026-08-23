@@ -12,7 +12,6 @@ interface Props {
     transitionName?: string;
     date?: string;
     updated?: string;
-    readingTime?: string;
     readingMinutes?: number;
     wordCount?: number;
     hasImage?: boolean;
@@ -62,13 +61,13 @@ const mdSourceUrl = exportMd
         </div>
             {
                 <div class={style.pageStats}>
-                    {(Boolean(props.readingTime) || (props.readingMinutes ?? 0) > 0) && (
+                    {(props.readingMinutes ?? 0) > 0 && (
                         <span class={style.readingTime}>
                             {t("post.readingTime")}{props.readingMinutes && props.readingMinutes > 0
                                 ? (props.readingMinutes < 1
                                     ? t("common.lessThanOneMinute")
                                     : t("common.minute", { n: props.readingMinutes }))
-                                : props.readingTime}
+                                : ""}
                         </span>
                     )}
                     {(props.wordCount ?? 0) > 0 && (

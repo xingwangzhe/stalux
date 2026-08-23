@@ -1,6 +1,9 @@
+import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
+import { splitToWords } from "@echogarden/text-segmentation";
+import jsTokens from "js-tokens";
 /**
  * Sätteri 插件：在构建时完成字数统计和特性标记，
- * 通过 ctx.data.astro.frontmatter 把最终结果传递到 frontmatter，运行时无需再算。
+ * 只从 Sätteri 的 MDAST/HAST 节点读取信息，并通过 ctx 注入最终结果。
  *
  * 字数统计策略：
  * - 只数 heading 和 paragraph 的内容（用 ctx.textContent 获取纯文本）。
@@ -15,34 +18,79 @@
  */
 import { defineMdastPlugin, defineHastPlugin } from "satteri";
 
-import { countWords } from "../utils/count-words.ts";
-
 const WORDS_PER_MINUTE = 400;
+const CODE_SECONDS_PER_NON_EMPTY_LINE = 2;
 
-/** 从纯文本统计字数并累加到 frontmatter。 */
-function flushWordCount(ctx: any, text: string) {
-    const prev = (ctx.data.astro.frontmatter.wordCount as number) ?? 0;
-    const wc = prev + countWords(text);
-    const fm = ctx.data.astro.frontmatter;
-    fm.wordCount = wc;
-    fm.readingMinutes = Math.ceil(wc / WORDS_PER_MINUTE);
-    // 搜索全文：拼接所有 heading + paragraph 的纯文本
-    fm.searchText = ((fm.searchText as string) || "") + " " + text;
+type FeatureFlagsState = {
+    proseText: string;
+    codeTokens: number;
+    codeCharacters: number;
+    codeNonEmptyLines: number;
+    codeBlocks: number;
+    hasImage: boolean;
+};
+
+function getState(ctx: any): FeatureFlagsState {
+    const data = ctx.data as Record<string, unknown>;
+    return (data.staluxFeatureFlags ??= {
+        proseText: "",
+        codeTokens: 0,
+        codeCharacters: 0,
+        codeNonEmptyLines: 0,
+        codeBlocks: 0,
+        hasImage: false,
+    }) as FeatureFlagsState;
+}
+
+function injectState(ctx: any) {
+    const state = getState(ctx);
+    const injected = ctx.data.astro.frontmatter as Record<string, unknown>;
+    injected.proseText = state.proseText;
+    injected.codeTokens = state.codeTokens;
+    injected.codeCharacters = state.codeCharacters;
+    injected.codeNonEmptyLines = state.codeNonEmptyLines;
+    injected.codeBlocks = state.codeBlocks;
+    injected.hasImage = state.hasImage;
+}
+
+function countCodeTokens(value: string, lang?: string): number {
+    if (/^(?:js|jsx|javascript|ts|tsx|typescript)$/.test(lang ?? "")) {
+        return Array.from(jsTokens(value, { jsx: /jsx|tsx/.test(lang ?? "") })).filter(
+            (token) =>
+                ![
+                    "WhiteSpace",
+                    "LineTerminatorSequence",
+                    "MultiLineComment",
+                    "SingleLineComment",
+                    "HashbangComment",
+                ].includes(token.type),
+        ).length;
+    }
+    return value.match(/\p{L}[\p{L}\p{N}_]*|\p{N}+(?:\.\p{N}+)?|[^\s]/gu)?.length ?? 0;
 }
 
 export const featureFlagsMdast = defineMdastPlugin({
     name: "feature-flags-mdast",
 
-    code(_node, _ctx) {
-        // 独立的 code 块不参与字数统计
+    code(node, ctx) {
+        const state = getState(ctx);
+        state.codeBlocks++;
+        state.codeCharacters += [...node.value].length;
+        state.codeNonEmptyLines += node.value
+            .split(/\r?\n/u)
+            .filter((line) => /\S/u.test(line)).length;
+        state.codeTokens += countCodeTokens(node.value, node.lang);
+        injectState(ctx);
     },
 
     heading(node, ctx) {
-        flushWordCount(ctx, ctx.textContent(node));
+        getState(ctx).proseText += ` ${ctx.textContent(node)}`;
+        injectState(ctx);
     },
 
     paragraph(node, ctx) {
-        flushWordCount(ctx, ctx.textContent(node));
+        getState(ctx).proseText += ` ${ctx.textContent(node)}`;
+        injectState(ctx);
     },
 });
 
@@ -55,7 +103,9 @@ export const featureFlagsHast = defineHastPlugin({
     element: {
         filter: ["img"],
         visit(node, ctx) {
-            ctx.data.astro.frontmatter.hasImage = true;
+            const state = getState(ctx);
+            state.hasImage = true;
+            (ctx.data.astro.frontmatter as Record<string, unknown>).hasImage = true;
             // 第一张正文图片可能成为 LCP，优先加载；其余图片延迟加载。
             const data = ctx.data as Record<string, unknown>;
             const firstImage = !data.staluxFirstImageSeen;
@@ -72,3 +122,32 @@ export const featureFlagsHast = defineHastPlugin({
         },
     },
 });
+
+/**
+ * 直接用 Sätteri AST 分析一篇文章，供文章页、全局统计和 API 复用。
+ * 这里不复用内容集合的 data，也不读取 Astro 的渲染 metadata。
+ */
+export async function analyzeFeatureFlags(body: string | undefined): Promise<{
+    hasImage: boolean;
+    readingMinutes: number;
+    wordCount: number;
+}> {
+    const processor = await createSatteriMarkdownProcessor({
+        mdastPlugins: [featureFlagsMdast],
+        hastPlugins: [featureFlagsHast],
+    });
+    const result = await processor.render(body ?? "");
+    const metadata = result.metadata.frontmatter as Record<string, unknown>;
+    const proseWords = (
+        await splitToWords(String(metadata.proseText ?? ""))
+    ).nonPunctuationEntries.filter((entry) => /\S/u.test(entry.text)).length;
+    const codeNonEmptyLines = Number(metadata.codeNonEmptyLines ?? 0);
+    return {
+        hasImage: metadata.hasImage === true,
+        readingMinutes: Math.ceil(
+            proseWords / WORDS_PER_MINUTE +
+                (codeNonEmptyLines * CODE_SECONDS_PER_NON_EMPTY_LINE) / 60,
+        ),
+        wordCount: proseWords,
+    };
+}

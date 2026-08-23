@@ -2,6 +2,7 @@
 import Stalux from "@layouts/Stalux.astro";
 import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, type CollectionEntry, render } from "astro:content";
+import { analyzeFeatureFlags } from "@plugins/feature-flags";
 import { toTimestamp } from "@utils/dayjs";
 import Navs from "@components/stalux/layout/navs.astro";
 import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
@@ -14,19 +15,11 @@ const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const authorConfig = getAuthorData(configEntries);
 const props = Astro.props as Props;
-const { Content, headings, remarkPluginFrontmatter } = await render(props.post);
+const { Content, headings } = await render(props.post);
 
-// 从 remarkPluginFrontmatter 读取 feature flags 和字数统计（由 satteri 插件在构建时写入）
-const flags = {
-    hasImage: remarkPluginFrontmatter?.hasImage ?? false,
-};
-
-// 字数统计直接从 frontmatter 读取
-const minutesRead = (remarkPluginFrontmatter?.minutesRead as string) ?? "";
-const readingMinutes = (remarkPluginFrontmatter?.readingMinutes as number) ?? 0;
-const wordCount = (remarkPluginFrontmatter?.wordCount as number) ?? 0;
-// desc 可能为空字符串，需用 || 做“空串回退”，不能用 ??（?? 会把 "" 当作有效值）
-const autoDesc = props.post.data.desc || (remarkPluginFrontmatter?.desc as string) || "";
+// 文章统计完全由 Sätteri AST 分析，不读取 render metadata。
+const flags = await analyzeFeatureFlags(props.post.body);
+const autoDesc = props.post.data.desc || "";
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
@@ -71,7 +64,7 @@ export async function getStaticPaths() {
 >
     <div style="height:3em"></div>
     <Navs /><div style="height:3em"></div>
-        <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingTime={minutesRead} readingMinutes={readingMinutes} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={authorConfig.name} authorAvatar={authorConfig.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={wordCount} hasImage={flags.hasImage}>
+        <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingMinutes={flags.readingMinutes} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={authorConfig.name} authorAvatar={authorConfig.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={flags.wordCount} hasImage={flags.hasImage}>
         <Content/>
     </PostLayout>
 </Stalux>

@@ -14,7 +14,6 @@ interface Props {
     title: string;
     date?: string;
     updated?: string;
-    readingTime?: string;
     readingMinutes?: number;
     wordCount?: number;
     tags?: string[];
@@ -57,7 +56,6 @@ const walineConfig = walineSection && walineSection.serverURL ? {
             title={props.title}
             date={props.date}
             updated={props.updated}
-            readingTime={props.readingTime}
             readingMinutes={props.readingMinutes}
             wordCount={props.wordCount}
             hasImage={props.hasImage}

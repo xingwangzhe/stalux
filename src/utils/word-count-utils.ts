@@ -1,33 +1,11 @@
+import { analyzeFeatureFlags } from "@plugins/feature-flags";
 /**
  * 站点字数统计工具
  *
  * Astro 7.1 启用 deferRender 后，post.rendered 不再在 content sync 阶段预计算。
- * 因此改为直接从 post.body（原始 markdown）统计字数，不再依赖 Sätteri 的渲染结果。
+ * 因此统一通过 Sätteri AST 分析 post.body，确保各出口使用同一套结果。
  */
 import { getCollection } from "astro:content";
-
-// ---------------------------------------------------------------------------
-// 字数统计算法（基于 W3C Intl.Segmenter，body-based）
-// ---------------------------------------------------------------------------
-
-const bodySegmenter = new Intl.Segmenter("zh", { granularity: "word" });
-
-/**
- * 从原始 markdown 正文估算字数。
- * - 中文：`Intl.Segmenter` 逐字分割，每个汉字计 1
- * - 英文：按词计 1
- * - 纯数字序列：不计入（与旧正则行为一致）
- * - 标点/空白不计
- */
-function countWordsFromBody(body: string | undefined | null): number {
-    if (!body) return 0;
-    let count = 0;
-    for (const { segment, isWordLike } of bodySegmenter.segment(body)) {
-        // 排除纯数字序列（如年份、代码行号等），与旧正则行为保持一致
-        if (isWordLike && !/^\d+$/.test(segment)) count++;
-    }
-    return count;
-}
 
 // ---------------------------------------------------------------------------
 // 模块级缓存（整个构建周期只计算一次）
@@ -43,7 +21,8 @@ export async function getTotalWordCount(): Promise<number> {
     if (_cachedTotal !== null) return _cachedTotal;
     try {
         const posts = await getCollection("posts", ({ data }) => !data.draft);
-        _cachedTotal = posts.reduce((sum, post) => sum + countWordsFromBody(post.body), 0);
+        const results = await Promise.all(posts.map((post) => analyzeFeatureFlags(post.body)));
+        _cachedTotal = results.reduce((sum, result) => sum + result.wordCount, 0);
         return _cachedTotal;
     } catch (error) {
         console.error("计算文章总字数时出错:", error);
@@ -56,18 +35,20 @@ let _cachedDescriptions: Map<string, { desc: string; wordCount: number }> | null
 /**
  * 获取所有已发布文章的描述和字数缓存，供 RSS/Atom/LLMs feed 共享。
  * - desc   ：直接从 frontmatter 读取（post.data.desc）
- * - wordCount：从 post.body 估算
+ * - wordCount：从 Sätteri AST 分析 post.body
  */
 export async function getPostDescriptions(): Promise<
     Map<string, { desc: string; wordCount: number }>
 > {
     if (_cachedDescriptions !== null) return _cachedDescriptions;
     const posts = await getCollection("posts", ({ data }) => !data.draft);
-    const results = posts.map((post) => ({
-        id: String(post.data.abbrlink ?? post.id),
-        desc: post.data.desc || "",
-        wordCount: countWordsFromBody(post.body),
-    }));
+    const results = await Promise.all(
+        posts.map(async (post) => ({
+            id: String(post.data.abbrlink ?? post.id),
+            desc: post.data.desc || "",
+            wordCount: (await analyzeFeatureFlags(post.body)).wordCount,
+        })),
+    );
     _cachedDescriptions = new Map(
         results.map((r) => [r.id, { desc: r.desc, wordCount: r.wordCount }]),
     );

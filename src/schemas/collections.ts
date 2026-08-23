@@ -61,8 +61,6 @@ const postSchema = z.object({
             invalid_type_error: "desc must be a string",
         })
         .min(1, "desc is required"),
-    minutesRead: z.string().optional(),
-    wordCount: z.number().optional(),
     cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
     cover: z.string().optional(),
 });
