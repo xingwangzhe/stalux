@@ -6,10 +6,9 @@ import jsTokens from "js-tokens";
  * 只从 Sätteri 的 MDAST/HAST 节点读取信息，并通过 ctx 注入最终结果。
  *
  * 字数统计策略：
- * - 从 root 递归收集正文文本，覆盖列表、引用、表格等嵌套块。
- * - 独立的 code 块、math/displayMath 公式不参与计数
- *   （代码是"看"不是"读"，符号表达式不按词计）。
- * - 行内 code 和行内 math 会被 textContent(paragraph) 自然包含。
+ * - 统计 paragraph、heading 和 tableCell，覆盖列表、引用、表格等正文。
+ * - 独立的 code 块、math/displayMath 公式不参与正文词数统计。
+ * - 行内 code 参与正文统计，inlineMath 单独计入公式阅读成本。
  *
  * 特性标记：
  * - HAST 阶段 <img> 检测      → hasImage
@@ -20,6 +19,9 @@ import { defineMdastPlugin, defineHastPlugin } from "satteri";
 
 const WORDS_PER_MINUTE = 400;
 const CODE_SECONDS_PER_NON_EMPTY_LINE = 2;
+const INLINE_MATH_BASE_SECONDS = 1;
+const DISPLAY_MATH_BASE_SECONDS = 4;
+const MATH_SECONDS_PER_NON_WHITESPACE_CHARACTER = 0.03;
 
 type FeatureFlagsState = {
     proseText: string;
@@ -27,6 +29,10 @@ type FeatureFlagsState = {
     codeCharacters: number;
     codeNonEmptyLines: number;
     codeBlocks: number;
+    inlineMathBlocks: number;
+    displayMathBlocks: number;
+    mathCharacters: number;
+    mathNonWhitespaceCharacters: number;
     hasImage: boolean;
 };
 
@@ -38,6 +44,10 @@ function getState(ctx: any): FeatureFlagsState {
         codeCharacters: 0,
         codeNonEmptyLines: 0,
         codeBlocks: 0,
+        inlineMathBlocks: 0,
+        displayMathBlocks: 0,
+        mathCharacters: 0,
+        mathNonWhitespaceCharacters: 0,
         hasImage: false,
     }) as FeatureFlagsState;
 }
@@ -50,6 +60,10 @@ function injectState(ctx: any) {
     injected.codeCharacters = state.codeCharacters;
     injected.codeNonEmptyLines = state.codeNonEmptyLines;
     injected.codeBlocks = state.codeBlocks;
+    injected.inlineMathBlocks = state.inlineMathBlocks;
+    injected.displayMathBlocks = state.displayMathBlocks;
+    injected.mathCharacters = state.mathCharacters;
+    injected.mathNonWhitespaceCharacters = state.mathNonWhitespaceCharacters;
     injected.hasImage = state.hasImage;
 }
 
@@ -69,6 +83,26 @@ function countCodeTokens(value: string, lang?: string): number {
     return value.match(/\p{L}[\p{L}\p{N}_]*|\p{N}+(?:\.\p{N}+)?|[^\s]/gu)?.length ?? 0;
 }
 
+function countMath(node: any, ctx: any, display: boolean) {
+    const state = getState(ctx);
+    const value = String(node.value ?? "");
+    if (display) state.displayMathBlocks++;
+    else state.inlineMathBlocks++;
+    state.mathCharacters += [...value].length;
+    state.mathNonWhitespaceCharacters += (value.match(/\S/gu) ?? []).length;
+    injectState(ctx);
+}
+
+function collectProseNodeText(node: any): string {
+    if (node.type === "inlineMath" || node.type === "math" || node.type === "code") {
+        return "";
+    }
+    if (node.type === "text" || node.type === "inlineCode") {
+        return node.value ?? "";
+    }
+    return Array.isArray(node.children) ? node.children.map(collectProseNodeText).join(" ") : "";
+}
+
 export const featureFlagsMdast = defineMdastPlugin({
     name: "feature-flags-mdast",
 
@@ -83,18 +117,26 @@ export const featureFlagsMdast = defineMdastPlugin({
         injectState(ctx);
     },
 
+    math(node, ctx) {
+        countMath(node, ctx, true);
+    },
+
+    inlineMath(node, ctx) {
+        countMath(node, ctx, false);
+    },
+
     heading(node, ctx) {
-        getState(ctx).proseText += ` ${ctx.textContent(node)}`;
+        getState(ctx).proseText += ` ${collectProseNodeText(node)}`;
         injectState(ctx);
     },
 
     paragraph(node, ctx) {
-        getState(ctx).proseText += ` ${ctx.textContent(node)}`;
+        getState(ctx).proseText += ` ${collectProseNodeText(node)}`;
         injectState(ctx);
     },
 
     tableCell(node, ctx) {
-        getState(ctx).proseText += ` ${ctx.textContent(node)}`;
+        getState(ctx).proseText += ` ${collectProseNodeText(node)}`;
         injectState(ctx);
     },
 });
@@ -140,6 +182,7 @@ export async function analyzeFeatureFlags(body: string | undefined): Promise<{
     const processor = await createSatteriMarkdownProcessor({
         mdastPlugins: [featureFlagsMdast],
         hastPlugins: [featureFlagsHast],
+        features: { math: true },
     });
     const result = await processor.render(body ?? "");
     const metadata = result.metadata.frontmatter as Record<string, unknown>;
@@ -147,11 +190,18 @@ export async function analyzeFeatureFlags(body: string | undefined): Promise<{
         await splitToWords(String(metadata.proseText ?? ""))
     ).nonPunctuationEntries.filter((entry) => /\S/u.test(entry.text)).length;
     const codeNonEmptyLines = Number(metadata.codeNonEmptyLines ?? 0);
+    const inlineMathBlocks = Number(metadata.inlineMathBlocks ?? 0);
+    const displayMathBlocks = Number(metadata.displayMathBlocks ?? 0);
+    const mathNonWhitespaceCharacters = Number(metadata.mathNonWhitespaceCharacters ?? 0);
     return {
         hasImage: metadata.hasImage === true,
         readingMinutes: Math.ceil(
             proseWords / WORDS_PER_MINUTE +
-                (codeNonEmptyLines * CODE_SECONDS_PER_NON_EMPTY_LINE) / 60,
+                (codeNonEmptyLines * CODE_SECONDS_PER_NON_EMPTY_LINE +
+                    inlineMathBlocks * INLINE_MATH_BASE_SECONDS +
+                    displayMathBlocks * DISPLAY_MATH_BASE_SECONDS +
+                    mathNonWhitespaceCharacters * MATH_SECONDS_PER_NON_WHITESPACE_CHARACTER) /
+                    60,
         ),
         wordCount: proseWords,
     };
