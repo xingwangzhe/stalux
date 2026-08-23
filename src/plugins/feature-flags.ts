@@ -6,7 +6,7 @@ import jsTokens from "js-tokens";
  * 只从 Sätteri 的 MDAST/HAST 节点读取信息，并通过 ctx 注入最终结果。
  *
  * 字数统计策略：
- * - 只数 heading 和 paragraph 的内容（用 ctx.textContent 获取纯文本）。
+ * - 从 root 递归收集正文文本，覆盖列表、引用、表格等嵌套块。
  * - 独立的 code 块、math/displayMath 公式不参与计数
  *   （代码是"看"不是"读"，符号表达式不按词计）。
  * - 行内 code 和行内 math 会被 textContent(paragraph) 自然包含。
@@ -89,6 +89,11 @@ export const featureFlagsMdast = defineMdastPlugin({
     },
 
     paragraph(node, ctx) {
+        getState(ctx).proseText += ` ${ctx.textContent(node)}`;
+        injectState(ctx);
+    },
+
+    tableCell(node, ctx) {
         getState(ctx).proseText += ` ${ctx.textContent(node)}`;
         injectState(ctx);
     },

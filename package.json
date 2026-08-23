@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.25.6",
+    "version": "1.25.7",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -78,6 +78,7 @@
         "@astrojs/markdown-satteri": "0.3.7",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
+        "@echogarden/icu-segmentation-wasm": "^0.4.0",
         "@echogarden/text-segmentation": "^0.7.0",
         "@expressive-code/plugin-line-numbers": "^0.44.1",
         "@lucide/astro": "^1.33.0",
