@@ -170,20 +170,40 @@ export const featureFlagsHast = defineHastPlugin({
     },
 });
 
-/**
- * 直接用 Sätteri AST 分析一篇文章，供文章页、全局统计和 API 复用。
- * 这里不复用内容集合的 data，也不读取 Astro 的渲染 metadata。
- */
-export async function analyzeFeatureFlags(body: string | undefined): Promise<{
+type FeatureFlagsResult = {
     hasImage: boolean;
     readingMinutes: number;
     wordCount: number;
-}> {
-    const processor = await createSatteriMarkdownProcessor({
+};
+
+let processorPromise: ReturnType<typeof createSatteriMarkdownProcessor> | undefined;
+const analysisCache = new Map<string, Promise<FeatureFlagsResult>>();
+
+function getFeatureFlagsProcessor() {
+    processorPromise ??= createSatteriMarkdownProcessor({
         mdastPlugins: [featureFlagsMdast],
         hastPlugins: [featureFlagsHast],
         features: { math: true },
     });
+    return processorPromise;
+}
+
+/**
+ * 直接用 Sätteri AST 分析一篇文章，供文章页、全局统计和 API 复用。
+ * 这里不复用内容集合的 data，也不读取 Astro 的渲染 metadata。
+ */
+export function analyzeFeatureFlags(body: string | undefined): Promise<FeatureFlagsResult> {
+    const content = body ?? "";
+    const cached = analysisCache.get(content);
+    if (cached) return cached;
+
+    const resultPromise = analyzeFeatureFlagsUncached(content);
+    analysisCache.set(content, resultPromise);
+    return resultPromise;
+}
+
+async function analyzeFeatureFlagsUncached(body: string): Promise<FeatureFlagsResult> {
+    const processor = await getFeatureFlagsProcessor();
     const result = await processor.render(body ?? "");
     const metadata = result.metadata.frontmatter as Record<string, unknown>;
     const proseWords = (
