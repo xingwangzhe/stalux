@@ -5,8 +5,8 @@ import { ClientRouter } from "astro:transitions";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
 import VerCount from "@components/stalux/common/verCount.astro";
-import { STALUX_VERSION } from "@internal/version";
 import { SEO } from "astro-seo";
+import packageJson from "../../../../package.json";
 import "@styles/base/init.css";
 import Umami from "@components/stalux/analytics/umami.astro";
 import {
@@ -33,7 +33,7 @@ const seo = buildSeoDocument({
     pathname: Astro.url.pathname,
     protocol: Astro.url.protocol,
     exportMarkdown: Boolean(promoteConfig?.export_md),
-    version: STALUX_VERSION,
+    version: packageJson.version,
 });
 const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
 ---
