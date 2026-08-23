@@ -1,7 +1,7 @@
-import { toTimestamp, parseDate, isValid, formatInTimeZone } from "@utils/dayjs";
+import type { CollectionEntry } from "astro:content";
+import { formatInTimeZone, isValid, parseDate, toTimestamp } from "@utils/dayjs";
 import { toMachineDateTime } from "@utils/semantic-time";
 import { getPostDescriptions } from "@utils/word-count-utils";
-import type { CollectionEntry } from "astro:content";
 
 interface FeedConfig {
     timezone: string;

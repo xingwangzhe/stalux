@@ -1,11 +1,4 @@
-import { getCollection, type CollectionEntry } from "astro:content";
-
-type Post = CollectionEntry<"posts">;
-
-/** 统一拉取已发布的文章集合，避免各统计函数重复查询。 */
-async function getPosts(): Promise<Post[]> {
-    return getCollection("posts", ({ data }) => !data.draft);
-}
+import { getPostContentIndex, type PostEntry } from "./content-index";
 
 /**
  * 统计 posts 中每个分类键出现的次数。
@@ -14,8 +7,8 @@ async function getPosts(): Promise<Post[]> {
  * @param defaultValue 文章没有任何分类键时的兜底分类名（可选）
  */
 function countBy(
-    posts: Post[],
-    keyFn: (post: Post) => string[] | undefined,
+    posts: PostEntry[],
+    keyFn: (post: PostEntry) => string[] | undefined,
     defaultValue?: string,
 ): Array<{ name: string; count: number }> {
     const counts = new Map<string, number>();
@@ -34,8 +27,8 @@ function countBy(
  * @returns Array<{ name: string; count: number }>
  */
 export async function getTagCountList() {
-    const posts = await getPosts();
-    return countBy(posts, (p) => p.data.tags);
+    const { tags } = await getPostContentIndex();
+    return [...tags.values()].map(({ name, posts }) => ({ name, count: posts.length }));
 }
 
 /**
@@ -43,6 +36,14 @@ export async function getTagCountList() {
  * @returns Array<{ name: string; count: number }>
  */
 export async function getCategoryCountList() {
-    const posts = await getPosts();
-    return countBy(posts, (p) => p.data.categories, "uncategorized");
+    const { posts, categories } = await getPostContentIndex();
+    const counts = [...categories.values()].map(({ name, posts: categoryPosts }) => ({
+        name,
+        count: categoryPosts.length,
+    }));
+    const uncategorized = countBy(posts, (post) => post.data.categories, "uncategorized").find(
+        ({ name }) => name === "uncategorized",
+    );
+    if (uncategorized) counts.push(uncategorized);
+    return counts;
 }

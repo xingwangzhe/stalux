@@ -1,4 +1,3 @@
-import { analyzeFeatureFlags } from "@plugins/feature-flags";
 /**
  * 站点字数统计工具
  *
@@ -6,6 +5,7 @@ import { analyzeFeatureFlags } from "@plugins/feature-flags";
  * 因此统一通过 Sätteri AST 分析 post.body，确保各出口使用同一套结果。
  */
 import { getCollection } from "astro:content";
+import { analyzeFeatureFlags } from "@plugins/feature-flags";
 
 // ---------------------------------------------------------------------------
 // 模块级缓存（整个构建周期只计算一次）

@@ -5,9 +5,10 @@
  */
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
-
+import { getPostContentIndex } from "./content-index";
 import { toTimestamp } from "./dayjs";
 import { createTranslator } from "./i18n";
+import { toPublicUrl } from "./public-routes";
 
 export type ConfigMap = Map<string, Record<string, unknown>>;
 export type Post = CollectionEntry<"posts">;
@@ -84,7 +85,7 @@ function buildMdLink(title: string, url: string, desc?: string): string {
 
 /** 生成页面链接，支持 HTML 或 .md 版本 */
 function pageUrl(site: string, path: string, exportMd: boolean): string {
-    return exportMd ? `${site}/${path}.md` : `${site}/${path}/`;
+    return toPublicUrl(site, `/${path}`, exportMd);
 }
 
 /** 生成文章链接，可切换 .md 源码版本 */
@@ -94,12 +95,7 @@ export function postUrl(site: string, abbrlink: string | number, exportMd: boole
 
 /** 获取已发布文章并按日期降序排列 */
 export async function getPublishedPosts(): Promise<Post[]> {
-    const posts = await getCollection("posts", ({ data }) => !data.draft);
-    return posts.sort((a, b) => {
-        const aTime = toTimestamp(a.data.date || 0);
-        const bTime = toTimestamp(b.data.date || 0);
-        return bTime - aTime; // newest first
-    });
+    return (await getPostContentIndex()).posts;
 }
 
 /** 获取 about 页面 */
@@ -155,8 +151,9 @@ export function buildTaxonomyMap(posts: Post[], key: "tags" | "categories"): Map
     const map = new Map<string, Post[]>();
     for (const post of posts) {
         for (const name of (post.data[key] ?? []) as string[]) {
-            if (!map.has(name)) map.set(name, []);
-            map.get(name)!.push(post);
+            const entries = map.get(name);
+            if (entries) entries.push(post);
+            else map.set(name, [post]);
         }
     }
     return map;
@@ -209,7 +206,7 @@ export function renderTaxonomyListMd(
         lines.push(buildMdLink(name, url, `${posts.length} posts`));
     }
     lines.push("");
-    return lines.join("\n").trimEnd() + "\n";
+    return `${lines.join("\n").trimEnd()}\n`;
 }
 
 /** 渲染单个分类/标签页 Markdown */
@@ -229,7 +226,7 @@ export function renderTaxonomyPageMd(
     lines.push(`URL: ${pageUrl}`);
     lines.push("");
     lines.push(renderPostListMd(posts, site, exportMd, `${posts.length} posts`));
-    return lines.join("\n").trimEnd() + "\n";
+    return `${lines.join("\n").trimEnd()}\n`;
 }
 
 /** 渲染 About 页 Markdown */
@@ -244,7 +241,7 @@ export async function renderAboutMd(site: string): Promise<string> {
     lines.push("");
     lines.push((about.body as string) || "");
     lines.push("");
-    return lines.join("\n").trimEnd() + "\n";
+    return `${lines.join("\n").trimEnd()}\n`;
 }
 
 /** 渲染 Words 页 Markdown */
@@ -262,7 +259,7 @@ export async function renderWordsMd(): Promise<string> {
         lines.push((word.body as string) || "");
         lines.push("");
     }
-    return lines.join("\n").trimEnd() + "\n";
+    return `${lines.join("\n").trimEnd()}\n`;
 }
 
 /** 渲染 Links 页 Markdown */
@@ -284,7 +281,7 @@ export function renderLinksMd(config: ConfigMap, site: string, t: (key: string) 
         }
     }
     lines.push("");
-    return lines.join("\n").trimEnd() + "\n";
+    return `${lines.join("\n").trimEnd()}\n`;
 }
 
 /** 渲染 Archives 页 Markdown */
@@ -300,7 +297,7 @@ export async function renderArchivesMd(
     lines.push(`URL: ${site}/archives/`);
     lines.push("");
     lines.push(renderPostListMd(posts, site, exportMd));
-    return lines.join("\n").trimEnd() + "\n";
+    return `${lines.join("\n").trimEnd()}\n`;
 }
 
 /** 渲染首页 Markdown */
@@ -325,13 +322,13 @@ export async function renderIndexMd(
     lines.push("");
 
     lines.push(`## ${t("ai.markdownSources")}`);
-    lines.push(buildMdLink("Home", `${site}/index.md`));
-    lines.push(buildMdLink("About", `${site}/about.md`));
-    lines.push(buildMdLink("Words", `${site}/words.md`));
-    lines.push(buildMdLink("Links", `${site}/links.md`));
-    lines.push(buildMdLink("Archives", `${site}/archives.md`));
-    lines.push(buildMdLink("Categories", `${site}/categories.md`));
-    lines.push(buildMdLink("Tags", `${site}/tags.md`));
+    lines.push(buildMdLink("Home", toPublicUrl(site, "/", true)));
+    lines.push(buildMdLink("About", toPublicUrl(site, "/about", true)));
+    lines.push(buildMdLink("Words", toPublicUrl(site, "/words", true)));
+    lines.push(buildMdLink("Links", toPublicUrl(site, "/links", true)));
+    lines.push(buildMdLink("Archives", toPublicUrl(site, "/archives", true)));
+    lines.push(buildMdLink("Categories", toPublicUrl(site, "/categories", true)));
+    lines.push(buildMdLink("Tags", toPublicUrl(site, "/tags", true)));
     lines.push(buildMdLink("LLMs.txt", `${site}/llms.txt`));
     lines.push(buildMdLink("LLMs-full.txt", `${site}/llms-full.txt`));
     lines.push("");
@@ -344,7 +341,7 @@ export async function renderIndexMd(
 
     lines.push(`## ${t("ai.latestPosts")}`);
     lines.push(renderPostListMd(posts.slice(0, 10), site, true));
-    return lines.join("\n").trimEnd() + "\n";
+    return `${lines.join("\n").trimEnd()}\n`;
 }
 
 // ---------------------------------------------------------------------------
@@ -509,7 +506,7 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
     }
     lines.push("");
 
-    return lines.join("\n").trimEnd() + "\n";
+    return `${lines.join("\n").trimEnd()}\n`;
 }
 
 /** 生成 llms-full.txt 内容：全站 Markdown 镜像 */
@@ -581,5 +578,5 @@ export async function renderLlmsFullTxt(config: ConfigMap, site: string): Promis
         sections.push("");
     }
 
-    return sections.join("\n").trimEnd() + "\n";
+    return `${sections.join("\n").trimEnd()}\n`;
 }

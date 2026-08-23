@@ -1,11 +1,12 @@
 ---
-import Stalux from "@layouts/Stalux.astro";
-import PostLayout from "@layouts/PostLayout.astro";
-import { getCollection, type CollectionEntry, render } from "astro:content";
-import { analyzeFeatureFlags } from "@plugins/feature-flags";
-import { toTimestamp } from "@utils/dayjs";
+import { type CollectionEntry, getCollection, render } from "astro:content";
 import Navs from "@components/stalux/layout/navs.astro";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+import PostLayout from "@layouts/PostLayout.astro";
+import Stalux from "@layouts/Stalux.astro";
+import { analyzeFeatureFlags } from "@plugins/feature-flags";
+import { getAuthorData, getSiteData } from "@utils/config-utils";
+import { getPostContentIndex } from "@utils/content-index";
+
 interface Props {
     post: CollectionEntry<"posts">;
     prev?: { url: string; title: string };
@@ -22,12 +23,10 @@ const flags = await analyzeFeatureFlags(props.post.body);
 const autoDesc = props.post.data.desc || "";
 
 export async function getStaticPaths() {
-    const posts = await getCollection("posts", ({ data }) => !data.draft);
-    const sorted = posts.sort((a,b) => toTimestamp(b.data.date) - toTimestamp(a.data.date));
-    return sorted.map((post, i) => {
-        // sorted 按日期降序：sorted[i-1] 比当前新（next），sorted[i+1] 比当前旧（prev）
-        const nextPost = i > 0 ? sorted[i - 1] : undefined;
-        const prevPost = i < sorted.length - 1 ? sorted[i + 1] : undefined;
+    const index = await getPostContentIndex();
+    return index.posts.map((post) => {
+        const { previous: prevPost, next: nextPost } =
+            index.neighbors.get(String(post.data.abbrlink)) ?? {};
         // 增量构建 cacheKey：含自身与 prev/next 的更新时间，
         // 任一邻居变化（文章新增/编辑导致前后链接变化）时本页也会失效重渲染
         const cacheKey = [
@@ -41,18 +40,19 @@ export async function getStaticPaths() {
             props: {
                 post,
                 prev: prevPost
-                    ? { url: "/posts/" + prevPost.data.abbrlink, title: prevPost.data.title }
+                    ? { url: `/posts/${prevPost.data.abbrlink}`, title: prevPost.data.title }
                     : undefined,
                 next: nextPost
-                    ? { url: "/posts/" + nextPost.data.abbrlink, title: nextPost.data.title }
+                    ? { url: `/posts/${nextPost.data.abbrlink}`, title: nextPost.data.title }
                     : undefined,
             },
         };
     });
 }
 ---
+
 <Stalux
-    title={props.post.data.title + " | " + siteConfig.title}
+    title={`${props.post.data.title} | ${siteConfig.title}`}
     description={autoDesc}
     cover={props.post.data.cover}
     isArticle={true}
@@ -63,8 +63,24 @@ export async function getStaticPaths() {
     author={authorConfig.name}
 >
     <div style="height:3em"></div>
-    <Navs /><div style="height:3em"></div>
-        <PostLayout title={props.post.data.title} date={props.post.data.date} updated={props.post.data.updated} readingMinutes={flags.readingMinutes} tags={props.post.data.tags||[]} categories={props.post.data.categories||[]} headings={headings} author={authorConfig.name} authorAvatar={authorConfig.avatar} prev={props.prev} next={props.next} cc={props.post.data.cc} wordCount={flags.wordCount} hasImage={flags.hasImage}>
-        <Content/>
+    <Navs />
+    <div style="height:3em"></div>
+    <PostLayout
+        title={props.post.data.title}
+        date={props.post.data.date}
+        updated={props.post.data.updated}
+        readingMinutes={flags.readingMinutes}
+        tags={props.post.data.tags||[]}
+        categories={props.post.data.categories||[]}
+        headings={headings}
+        author={authorConfig.name}
+        authorAvatar={authorConfig.avatar}
+        prev={props.prev}
+        next={props.next}
+        cc={props.post.data.cc}
+        wordCount={flags.wordCount}
+        hasImage={flags.hasImage}
+    >
+        <Content />
     </PostLayout>
 </Stalux>

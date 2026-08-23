@@ -1,3 +1,4 @@
+import type { CollectionEntry } from "astro:content";
 import {
     getSite,
     isMarkdownExportEnabled,
@@ -6,7 +7,6 @@ import {
 } from "@utils/ai-discovery";
 import { buildTaxonomyStaticPaths } from "@utils/taxonomy";
 import type { APIRoute } from "astro";
-import type { CollectionEntry } from "astro:content";
 
 export const prerender = true;
 

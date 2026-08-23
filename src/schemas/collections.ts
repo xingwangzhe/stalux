@@ -15,9 +15,9 @@
  * ```
  */
 
+import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
-import { defineCollection } from "astro:content";
 
 import { configSchema } from "./config";
 
@@ -36,14 +36,11 @@ export interface CollectionPaths {
 
 const postSchema = z.object({
     title: z.string().min(1, "title is required"),
-    abbrlink: z
-        .string({ invalid_type_error: "abbrlink must be a string or number" })
-        .or(z.number().transform((num) => num.toString())),
+    abbrlink: z.union([z.string(), z.number().transform((num) => num.toString())], {
+        error: "abbrlink must be a string or number",
+    }),
     date: z
-        .string({
-            required_error: "date is required",
-            invalid_type_error: "date must be a string",
-        })
+        .string({ error: "date must be a string" })
         .min(1, "date is required, format: YYYY-MM-DD HH:mm:ss"),
     updated: z.string().optional(),
     draft: z.boolean().optional().default(false),
@@ -55,12 +52,7 @@ const postSchema = z.object({
         (val) => (typeof val === "string" ? [val] : val),
         z.array(z.string()).optional(),
     ),
-    desc: z
-        .string({
-            required_error: "desc is required",
-            invalid_type_error: "desc must be a string",
-        })
-        .min(1, "desc is required"),
+    desc: z.string({ error: "desc must be a string" }).min(1, "desc is required"),
     cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
     cover: z.string().optional(),
 });
@@ -119,7 +111,7 @@ export function defineCollections(paths: CollectionPaths = {}) {
         }),
         schema: z.object({
             source: z.string().optional(),
-            link: z.string().url("words.link must be a valid URL").optional(),
+            link: z.url("words.link must be a valid URL").optional(),
             sourceDate: z.string().optional(),
             date: z.string().optional(),
             updated: z.string().optional(),

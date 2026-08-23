@@ -82,8 +82,10 @@ export function formatInTimeZone(
             offset = `+${offset}`;
         }
         const m = offset.match(/^([+-])(\d{1,2})(?::?(\d{2}))?$/);
-        if (m) {
-            offset = `${m[1]}${m[2].padStart(2, "0")}:${m[3] || "00"}`;
+        const sign = m?.[1];
+        const hours = m?.[2];
+        if (sign && hours) {
+            offset = `${sign}${hours.padStart(2, "0")}:${m?.[3] || "00"}`;
         }
     }
 

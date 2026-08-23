@@ -1,12 +1,13 @@
 ---
+import { getCollection } from "astro:content";
 import ListPage from "@components/stalux/layout/listPage.astro";
 import LinkList from "@components/stalux/links/linkList.astro";
-import { getCollection } from "astro:content";
-import { getSiteData, getLinksData } from "@utils/config-utils";
+import { getLinksData, getSiteData } from "@utils/config-utils";
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
-const linksConfig = getLinksData(configEntries)!;
+const linksConfig = getLinksData(configEntries);
+if (!linksConfig) throw new Error("Missing required config entry: links");
 const siteDescription = siteConfig.description;
 const linksTitle = linksConfig.title;
 const linksDescription = linksConfig.description;

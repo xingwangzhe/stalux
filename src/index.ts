@@ -8,19 +8,12 @@
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
-import {
-    copyFileSync,
-    existsSync,
-    mkdirSync,
-    readFileSync,
-    readdirSync,
-    writeFileSync,
-} from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import sitemap from "@astrojs/sitemap";
-import { mermaidMdast, mermaidHast } from "@xingwangzhe/satteri-mermaid";
+import { mermaidHast, mermaidMdast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import type { AstroIntegration } from "astro";
 import { fontProviders } from "astro/config";
@@ -31,37 +24,15 @@ import { createIndex as pagefindCreateIndex } from "pagefind";
 import type { StaluxOptions } from "./config";
 import { expressiveCode } from "./expressive-code";
 import { staluxComponentsAlias } from "./internal/components-plugin";
-import { runFontSlicing, type FontSlice } from "./internal/font-slices";
+import { type FontSlice, runFontSlicing } from "./internal/font-slices";
+import { createInjectedRoutes } from "./internal/injected-routes";
+import {
+    appendUniquePlugin,
+    collectPluginNames,
+    prepareSatteriProcessor,
+} from "./internal/satteri-config";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { temml } from "./plugins/satteri-temml";
-
-function stripGeneratedHtmlComments(outDir: string): void {
-    const walk = (dir: string) => {
-        for (const entry of readdirSync(dir, { withFileTypes: true })) {
-            const target = path.join(dir, entry.name);
-            if (entry.isDirectory()) walk(target);
-            else if (entry.isFile() && entry.name.endsWith(".html")) {
-                const source = readFileSync(target, "utf8");
-                const protectedBlocks: string[] = [];
-                const protectedSource = source.replace(
-                    /<(pre|code|textarea)\b[\s\S]*?<\/\1>/gi,
-                    (block) => {
-                        protectedBlocks.push(block);
-                        return `__STALUX_PROTECTED_HTML_${protectedBlocks.length - 1}__`;
-                    },
-                );
-                const stripped = protectedSource
-                    .replace(/<!--(?!\[if)[\s\S]*?-->/g, "")
-                    .replace(
-                        /__STALUX_PROTECTED_HTML_(\d+)__/g,
-                        (_, index: string) => protectedBlocks[Number(index)] ?? "",
-                    );
-                if (stripped !== source) writeFileSync(target, stripped);
-            }
-        }
-    };
-    walk(outDir);
-}
 
 // 字体配置（Astro Fonts API）通过 updateConfig 注入，两种模式（源码模板/npm 插件）都生效。
 // 官方 local provider 完全本地读文件（readFile），不联网；
@@ -104,76 +75,6 @@ function buildFontsConfig(slices: FontSlice[], codeNormal: string, codeItalic?: 
                 ],
             },
         },
-    ];
-}
-
-// ---------------------------------------------------------------------------
-// 页面条目定义
-// ---------------------------------------------------------------------------
-
-interface RouteEntry {
-    pattern: string;
-    entrypoint: string;
-    prerender?: boolean;
-}
-
-/**
- * 获取所有需要注入的路由列表
- */
-function getRoutes(baseDir: URL): RouteEntry[] {
-    const resolvePage = (relPath: string): string => fileURLToPath(new URL(relPath, baseDir));
-
-    return [
-        // ---- 静态页面 ----
-        { pattern: "/", entrypoint: resolvePage("./pages/index.astro") },
-        { pattern: "/about/", entrypoint: resolvePage("./pages/about.astro") },
-        { pattern: "/archives/", entrypoint: resolvePage("./pages/archives.astro") },
-        { pattern: "/links/", entrypoint: resolvePage("./pages/links.astro") },
-        { pattern: "/words/", entrypoint: resolvePage("./pages/words.astro") },
-        { pattern: "/404", entrypoint: resolvePage("./pages/404.astro") },
-
-        // ---- 动态页面 ----
-        { pattern: "/posts/[post]", entrypoint: resolvePage("./pages/posts/[post].astro") },
-        { pattern: "/tags/", entrypoint: resolvePage("./pages/tags/index.astro") },
-        { pattern: "/tags/[tag]", entrypoint: resolvePage("./pages/tags/[tag].astro") },
-        { pattern: "/categories/", entrypoint: resolvePage("./pages/categories/index.astro") },
-        {
-            pattern: "/categories/[category]",
-            entrypoint: resolvePage("./pages/categories/[category].astro"),
-        },
-
-        // ---- API 端点 ----
-        { pattern: "/rss.xml", entrypoint: resolvePage("./pages/rss.xml.ts") },
-        { pattern: "/atom.xml", entrypoint: resolvePage("./pages/atom.xml.ts") },
-        { pattern: "/llms.txt", entrypoint: resolvePage("./pages/llms.txt.ts") },
-        { pattern: "/llms-full.txt", entrypoint: resolvePage("./pages/llms-full.txt.ts") },
-        { pattern: "/openapi.json", entrypoint: resolvePage("./pages/openapi.json.ts") },
-        {
-            pattern: "/api/post.abbrlink.json",
-            entrypoint: resolvePage("./pages/api/post.abbrlink.json.ts"),
-        },
-        {
-            pattern: "/api/posts.json",
-            entrypoint: resolvePage("./pages/api/posts.json.ts"),
-        },
-
-        // ---- Markdown 导出端点 ----
-        { pattern: "/index.md", entrypoint: resolvePage("./pages/index.md.ts") },
-        { pattern: "/about.md", entrypoint: resolvePage("./pages/about.md.ts") },
-        { pattern: "/archives.md", entrypoint: resolvePage("./pages/archives.md.ts") },
-        { pattern: "/links.md", entrypoint: resolvePage("./pages/links.md.ts") },
-        { pattern: "/words.md", entrypoint: resolvePage("./pages/words.md.ts") },
-        { pattern: "/tags/index.md", entrypoint: resolvePage("./pages/tags/index.md.ts") },
-        { pattern: "/tags/[tag].md", entrypoint: resolvePage("./pages/tags/[tag].md.ts") },
-        {
-            pattern: "/categories/index.md",
-            entrypoint: resolvePage("./pages/categories/index.md.ts"),
-        },
-        {
-            pattern: "/categories/[category].md",
-            entrypoint: resolvePage("./pages/categories/[category].md.ts"),
-        },
-        { pattern: "/posts/[post].md", entrypoint: resolvePage("./pages/posts/[post].md.ts") },
     ];
 }
 
@@ -296,6 +197,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
 
                 // 2. 注入全局 CSS
                 injectScript("page-ssr", `import "${srcDir}/styles/base/init.css";`);
+                injectScript("page", `import "${srcDir}/scripts/core-runtime.ts";`);
 
                 // 2.5 同步背景 SVG 到用户项目 public/background/
                 // 纯客户端引入：SVG 以静态 URL（/background/pattern-*.svg）被 background.ts 硬编码引用，
@@ -315,7 +217,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
 
                 // 3. 注入所有页面路由（仅插件模式，源码模式下使用文件路由）
                 if (isPluginMode) {
-                    const routes = getRoutes(new URL(".", import.meta.url));
+                    const routes = createInjectedRoutes(new URL(".", import.meta.url));
                     for (const route of routes) {
                         injectRoute(route);
                     }
@@ -346,49 +248,23 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 //   - hastPlugins：photoswipe（图片灯箱）+ mermaidHast + featureFlagsHast
                 // 去重是必须的：重复注册 Mermaid 或 featureFlagsMdast 会导致渲染异常或字数统计翻倍。
                 try {
-                    const processor = (config.markdown?.processor ?? undefined) as
-                        | {
-                              name?: string;
-                              options?: {
-                                  mdastPlugins?: any[];
-                                  hastPlugins?: any[];
-                                  features?: Record<string, unknown>;
-                              };
-                          }
-                        | undefined;
-                    if (processor?.name === "satteri") {
-                        const options = processor.options ?? {};
-                        const mdastPlugins = (options.mdastPlugins ??= []);
-                        const hastPlugins = (options.hastPlugins ??= []);
-                        const features = (options.features ??= {});
-                        // 默认开启 math / frontmatter / gfm / smartPunctuation
-                        for (const key of ["math", "frontmatter", "gfm", "smartPunctuation"]) {
-                            if (features[key] !== false) features[key] = true;
-                        }
-                        const seen = new Set<string>();
-                        for (const p of [...mdastPlugins, ...hastPlugins]) {
-                            if (p?.name) seen.add(p.name);
-                        }
-                        const pushUnique = (list: any[], plugin: any) => {
-                            if (plugin?.name) {
-                                if (seen.has(plugin.name)) return;
-                                seen.add(plugin.name);
-                            }
-                            list.push(plugin);
-                        };
-                        pushUnique(mdastPlugins, mermaidMdast());
-                        pushUnique(mdastPlugins, temml());
-                        pushUnique(mdastPlugins, featureFlagsMdast);
-                        pushUnique(
-                            hastPlugins,
+                    const processorOptions = prepareSatteriProcessor(config.markdown?.processor);
+                    if (processorOptions) {
+                        const seen = collectPluginNames(processorOptions);
+                        appendUniquePlugin(processorOptions.mdastPlugins, mermaidMdast(), seen);
+                        appendUniquePlugin(processorOptions.mdastPlugins, temml(), seen);
+                        appendUniquePlugin(processorOptions.mdastPlugins, featureFlagsMdast, seen);
+                        appendUniquePlugin(
+                            processorOptions.hastPlugins,
                             mermaidHast({
                                 responsive: true,
                                 theme: "dark",
                                 themeOverrides: { clusterBorder: "#cccccc" },
                             }),
+                            seen,
                         );
-                        pushUnique(hastPlugins, photoswipe());
-                        pushUnique(hastPlugins, featureFlagsHast);
+                        appendUniquePlugin(processorOptions.hastPlugins, photoswipe(), seen);
+                        appendUniquePlugin(processorOptions.hastPlugins, featureFlagsHast, seen);
                         logger.debug(
                             "Stalux: injected satteri plugins (mermaid/temml/photoswipe/feature-flags)",
                         );
@@ -416,8 +292,9 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     );
                     const siteYaml = readFileSync(siteYamlPath, "utf-8");
                     const urlMatch = siteYaml.match(/^url\s*:\s*(.+)$/m);
-                    const yamlUrl = urlMatch?.[1]
-                        .trim()
+                    const rawYamlUrl = urlMatch?.[1];
+                    const yamlUrl = rawYamlUrl
+                        ?.trim()
                         .replace(/^["']|["']$/g, "")
                         .replace(/\/+$/, "");
                     if (yamlUrl) {
@@ -461,24 +338,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 }
             },
 
-            "astro:build:start": async ({ logger }) => {
-                // 字体分片已在 astro:config:setup 阶段生成并注入，这里无额外处理。
-                // 保留钩子为空实现，便于将来在此处追加构建期逻辑。
-                logger.debug("Stalux: build start (font slices handled in config:setup)");
-            },
-
-            "astro:server:setup": async ({ logger }) => {
-                // 字体分片在 config:setup 阶段已生成，dev 模式由官方 Fonts API 的
-                // dev 中间件按需提供，无需自研按需切分中间件。
-                logger.debug("Stalux: dev server ready (fonts served by Astro Fonts API)");
-            },
-
             "astro:build:done": async ({ dir, logger }) => {
                 const outDir = fileURLToPath(dir);
-                stripGeneratedHtmlComments(outDir);
-                logger.info("Removed generated HTML comments (preserved pre/code/textarea blocks)");
 
-                // 6. 后处理：Pagefind 搜索索引
+                // 后处理：Pagefind 搜索索引。启用时任何失败都必须让构建失败，
+                // 避免发布一个页面正常但搜索已损坏的产物。
                 if (opt.pagefind) {
                     logger.info("Running Pagefind indexer...");
 
@@ -486,15 +350,14 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         const { index, errors } = await pagefindCreateIndex();
 
                         if (!index) {
-                            logger.error("Pagefind failed to create index");
-                            errors?.forEach((e) => logger.error(e));
-                            return;
+                            throw new Error(
+                                `Pagefind failed to create index: ${errors?.join("; ") ?? "unknown error"}`,
+                            );
                         }
 
                         const { page_count } = await index.addDirectory({ path: outDir });
                         if (page_count === 0) {
-                            logger.warn("Pagefind: no pages indexed");
-                            return;
+                            throw new Error("Pagefind did not index any pages");
                         }
 
                         const { outputPath } = await index.writeFiles({
@@ -504,6 +367,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         logger.info(`Pagefind indexed ${page_count} pages → ${outputPath}`);
                     } catch (error) {
                         logger.error(`Pagefind indexing failed: ${String(error)}`);
+                        throw error;
                     }
                 }
             },
@@ -538,6 +402,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     return bundled;
 }
 
+/** @alias Public default-import form of the named integration export. */
 export default stalux;
 
 // 便捷导出：带默认行号的 Expressive Code 集成（也可从 @xingwangzhe/stalux/expressive-code 导入）

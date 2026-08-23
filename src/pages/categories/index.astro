@@ -1,20 +1,19 @@
 ---
-import Stalux from "@layouts/Stalux.astro";
 import { getCollection } from "astro:content";
-import { createTranslator } from "@utils/i18n";
-import Navs from "@components/stalux/layout/navs.astro";
 import CategoriesList from "@components/stalux/categories/categoriesList.astro";
+import Navs from "@components/stalux/layout/navs.astro";
+import Stalux from "@layouts/Stalux.astro";
 import styles from "@styles/pages/categories.module.css";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+import { getSiteData } from "@utils/config-utils";
+import { createTranslator } from "@utils/i18n";
+
 const configEntries2 = await getCollection("config");
 const siteConfig = getSiteData(configEntries2);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
-const posts = await getCollection("posts", ({ data }) => !data.draft);
-const hasContent = posts.length > 0;
 ---
 
 <Stalux
-    title={t("categories.title") + " | " + siteConfig.title}
+    title={`${t("categories.title")} | ${siteConfig.title}`}
     description={t("categories.description", { title: siteConfig.title })}
 >
     <div style="height: 3em;"></div>

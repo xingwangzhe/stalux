@@ -1,8 +1,8 @@
-import { isMarkdownExportEnabled, loadConfig, type ConfigMap } from "@utils/ai-discovery";
-import { buildCCName, buildCCLink } from "@utils/cc";
+import { type CollectionEntry, getCollection } from "astro:content";
+import { type ConfigMap, isMarkdownExportEnabled, loadConfig } from "@utils/ai-discovery";
+import { buildCCLink, buildCCName } from "@utils/cc";
 import { createTranslator } from "@utils/i18n";
 import type { APIRoute, GetStaticPaths } from "astro";
-import { getCollection, type CollectionEntry } from "astro:content";
 
 export const prerender = true;
 
@@ -92,7 +92,7 @@ export const GET: APIRoute = async ({ props }) => {
 
     // 追加版权脚注（不修改内容源文件）
     const footer = generateCCFooter(post, config);
-    markdown += "\n\n---\n\n" + footer;
+    markdown += `\n\n---\n\n${footer}`;
 
     return new Response(markdown, {
         status: 200,

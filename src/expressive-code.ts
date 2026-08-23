@@ -28,4 +28,5 @@ export function expressiveCode(options: ExpressiveCodeOptions = {}) {
     return expressiveCodeBase({ ...options, plugins });
 }
 
+/** @alias Public default-import form of the named integration export. */
 export default expressiveCode;

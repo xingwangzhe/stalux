@@ -94,6 +94,7 @@ export function resolveComponentPath(
     overrides: ComponentOverrideMap = {},
     componentsDir: string,
 ): string {
-    if (overrides[key]) return overrides[key]!;
-    return componentsDir + "/stalux/" + STALUX_COMPONENTS[key];
+    const override = overrides[key];
+    if (override) return override;
+    return `${componentsDir}/stalux/${STALUX_COMPONENTS[key]}`;
 }

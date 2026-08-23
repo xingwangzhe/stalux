@@ -1,22 +1,22 @@
 ---
 import { Font } from "astro:assets";
-import { SEO } from "astro-seo";
-import { ClientRouter } from "astro:transitions";
 import { getCollection } from "astro:content";
-import VerCount from "@components/stalux/common/verCount.astro";
-import GoogleAnalytics from "@components/stalux/analytics/google.astro";
+import { ClientRouter } from "astro:transitions";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
+import GoogleAnalytics from "@components/stalux/analytics/google.astro";
+import VerCount from "@components/stalux/common/verCount.astro";
+import { STALUX_VERSION } from "@internal/version";
+import { SEO } from "astro-seo";
 import "@styles/base/init.css";
 import Umami from "@components/stalux/analytics/umami.astro";
-import { langToOpenGraphLocale } from "@utils/i18n";
 import {
-  getAuthorData,
-  getHeadData,
-  getMediaLinksData,
-  getPromoteData,
-  getSiteData,
+    getAuthorData,
+    getHeadData,
+    getMediaLinksData,
+    getPromoteData,
+    getSiteData,
 } from "@utils/config-utils";
-import { getRouteKind } from "@utils/view-transitions";
+import { buildSeoDocument, type SeoPageInput } from "@utils/seo-document";
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
@@ -25,286 +25,45 @@ const headConfig = getHeadData(configEntries);
 const promoteConfig = getPromoteData(configEntries);
 const mediaLinksConfig = getMediaLinksData(configEntries);
 
-// Twitter 卡片类型定义
-type TwitterCardType = "summary" | "summary_large_image";
-
-// 最小必要 SEO 配置
-interface Props {
-  title: string;
-  description: string;
-  cover?: string;
-  isArticle?: boolean;
-  date?: string;
-  updated?: string;
-  tags?: string[];
-  categories?: string[];
-  author?: string;
-  noindex?: boolean;
-}
-
-const props = Astro.props as Props;
-const isArticle = props.isArticle ?? false;
-
-const canonicalBase = siteConfig.canonical || siteConfig.url;
-const siteUrl = new URL(canonicalBase || Astro.url.origin).href.replace(/\/$/, "");
-const siteName = siteConfig.title || effectiveTitle;
-const canonicalUrl = canonicalBase
-  ? new URL(Astro.url.pathname, `${canonicalBase.replace(/\/$/, "")}/`).href
-  : new URL(Astro.url.pathname, Astro.url).href;
-const faviconPath = siteConfig.favicon || "/favicon.ico";
-// 社交分享图片 / JSON-LD image 必须用绝对 URL
-const baseImgUrl = canonicalBase?.replace(/\/$/, "") || Astro.url.origin;
-const toAbsolute = (value?: string) => {
-  if (!value) return undefined;
-  if (/^(?:https?:|data:|\/\/)/i.test(value)) {
-    return value.startsWith("//") ? `${Astro.url.protocol}${value}` : value;
-  }
-  return `${baseImgUrl}/${value.replace(/^\/+/, "")}`;
-};
-const ogImagePath = toAbsolute(props.cover || authorConfig.avatar || faviconPath);
-const isNotFoundPage =
-  Astro.url.pathname === "/404" || Astro.url.pathname === "/404/";
-const routeKind = getRouteKind(Astro.url.pathname);
-const isCollectionPage = routeKind.endsWith("-index") || routeKind.endsWith("-detail");
-// seoTitle 是首页的搜索标题，不应覆盖文章/分类等内页标题。
-const effectiveTitle = routeKind === "home" && siteConfig.seoTitle ? siteConfig.seoTitle : props.title;
-const effectiveDescription = props.description;
-const siteTitleSuffix = siteConfig.title ? ` | ${siteConfig.title}` : "";
-const contentTitle =
-  siteTitleSuffix && effectiveTitle.endsWith(siteTitleSuffix)
-    ? effectiveTitle.slice(0, -siteTitleSuffix.length)
-    : effectiveTitle;
-const resolvedNoindex = Boolean(siteConfig.noindex) || isNotFoundPage || Boolean(props.noindex);
-const resolvedNofollow = Boolean(siteConfig.nofollow) || isNotFoundPage;
-const staluxVersion = "1.25.5";
-
-const openGraphConfig: Record<string, unknown> = {
-  basic: {
-    title: contentTitle,
-    type: isArticle ? "article" : "website",
-    image: ogImagePath,
-    url: canonicalUrl,
-  },
-  optional: {
-    description: effectiveDescription,
-    locale: langToOpenGraphLocale(siteConfig.lang || "zh-CN"),
-    siteName,
-  },
-  image: {
-    url: ogImagePath,
-    alt: contentTitle,
-  },
-};
-
-// 文章页：添加 article Open Graph 标签
-if (isArticle) {
-  const article: Record<string, unknown> = {};
-  if (props.date) article.publishedTime = props.date;
-  if (props.updated) article.modifiedTime = props.updated;
-  if (props.author) article.authors = [props.author];
-  if (props.categories?.length) article.section = props.categories[0];
-  if (props.tags?.length) article.tags = props.tags;
-  openGraphConfig.article = article;
-}
-
-const twitterConfig = {
-  card: (props.cover ? "summary_large_image" : "summary") as TwitterCardType,
-  title: contentTitle,
-  description: effectiveDescription,
-  image: ogImagePath,
-  imageAlt: contentTitle,
-  ...(siteConfig.twitterSite ? { site: siteConfig.twitterSite } : {}),
-};
-
-const extendedLink = [
-  { rel: "icon", href: faviconPath },
-  {
-    rel: "alternate",
-    type: "application/rss+xml",
-    title: siteConfig.title || "RSS Feed",
-    href: "/rss.xml",
-  },
-];
-
-		// 向爬虫暴露 Markdown 替代链接
-		// 支持首页、文章、关于、一言、友链、归档、分类、标签
-		const exportMd = Boolean(promoteConfig?.export_md);
-		const normalizedPath = Astro.url.pathname.replace(/\/$/, "") || "/";
-		const mdRootPaths = ["/about", "/words", "/links", "/archives", "/categories", "/tags", "/posts"];
-		const hasMarkdownVersion =
-			exportMd &&
-			(normalizedPath === "/" ||
-				mdRootPaths.some((p) => normalizedPath === p || normalizedPath.startsWith(p + "/")));
-		if (hasMarkdownVersion) {
-			const mdHref = normalizedPath === "/" ? "/index.md" : normalizedPath + ".md";
-			extendedLink.push({
-				rel: "alternate",
-				type: "text/markdown",
-				title: "Markdown source",
-				href: mdHref,
-			});
-		}
-const extendedMeta = [
-  { name: "viewport", content: "width=device-width, initial-scale=1" },
-  { name: "color-scheme", content: "dark" },
-  { name: "generator", content: `Stalux ${staluxVersion}` },
-  { name: "theme", content: "Stalux" },
-  { name: "stalux-version", content: staluxVersion },
-  ...(!resolvedNoindex
-    ? [
-        {
-          name: "googlebot",
-          content: "max-image-preview:large, max-snippet:-1, max-video-preview:-1",
-        },
-      ]
-    : []),
-];
-
-let schema: Record<string, unknown>;
-const sameAs = mediaLinksConfig?.items
-  .map((item) => item.link)
-  .filter((link) => /^https?:\/\//i.test(link));
-const authorEntity = {
-  "@type": "Person",
-  "@id": `${siteUrl}/#author`,
-  name: authorConfig.name,
-  url: `${siteUrl}/about/`,
-  ...(toAbsolute(authorConfig.avatar) ? { image: toAbsolute(authorConfig.avatar) } : {}),
-  ...(sameAs.length ? { sameAs } : {}),
-  ...(authorConfig.jobTitle ? { jobTitle: authorConfig.jobTitle } : {}),
-};
-const publisher = {
-  "@type": "Organization",
-  "@id": `${siteUrl}/#publisher`,
-  name: siteName,
-  url: siteUrl,
-  ...(authorConfig.avatar ? { logo: toAbsolute(authorConfig.avatar) } : {}),
-};
-const websiteEntity = {
-  "@type": "WebSite",
-  "@id": `${siteUrl}/#website`,
-  url: `${siteUrl}/`,
-  name: siteName,
-  description: siteConfig.description,
-  inLanguage: siteConfig.lang || "zh-CN",
-  publisher: { "@id": `${siteUrl}/#publisher` },
-};
-const breadcrumbItems: Record<string, unknown>[] = [
-  {
-    "@type": "ListItem",
-    position: 1,
-    name: siteName,
-    item: `${siteUrl}/`,
-  },
-];
-if (isArticle && props.categories?.[0]) {
-  breadcrumbItems.push({
-    "@type": "ListItem",
-    position: breadcrumbItems.length + 1,
-    name: props.categories[0],
-    item: `${siteUrl}/categories/${encodeURIComponent(props.categories[0])}/`,
-  });
-}
-if (routeKind !== "home") {
-  breadcrumbItems.push({
-    "@type": "ListItem",
-    position: breadcrumbItems.length + 1,
-    name: contentTitle,
-    item: canonicalUrl,
-  });
-}
-const breadcrumbEntity = {
-  "@type": "BreadcrumbList",
-  "@id": `${canonicalUrl}#breadcrumb`,
-  itemListElement: breadcrumbItems,
-};
-if (isArticle) {
-  schema = {
-    "@context": "https://schema.org",
-    "@graph": [
-      websiteEntity,
-      authorEntity,
-      publisher,
-      breadcrumbEntity,
-      {
-        "@type": "BlogPosting",
-        "@id": `${canonicalUrl}#article`,
-        headline: contentTitle,
-        description: effectiveDescription,
-        url: canonicalUrl,
-        ...(ogImagePath ? { image: ogImagePath } : {}),
-        ...(props.date ? { datePublished: props.date } : {}),
-        ...(props.updated || props.date ? { dateModified: props.updated || props.date } : {}),
-        ...(props.tags?.length ? { keywords: props.tags.join(", ") } : {}),
-        ...(props.categories?.length ? { articleSection: props.categories } : {}),
-        author: { "@id": `${siteUrl}/#author`, ...(props.author ? { name: props.author } : {}) },
-        publisher: { "@id": `${siteUrl}/#publisher` },
-        isPartOf: { "@id": `${siteUrl}/#website` },
-        inLanguage: siteConfig.lang || "zh-CN",
-        mainEntityOfPage: {
-          "@type": "WebPage",
-          "@id": canonicalUrl,
-        },
-      },
-    ],
-  };
-} else if (routeKind === "home") {
-  schema = {
-    "@context": "https://schema.org",
-    "@graph": [websiteEntity, authorEntity, publisher],
-  };
-} else {
-  schema = {
-    "@context": "https://schema.org",
-    "@graph": [
-      websiteEntity,
-      authorEntity,
-      publisher,
-      breadcrumbEntity,
-      {
-        "@type": isCollectionPage ? "CollectionPage" : routeKind === "about" ? "AboutPage" : "WebPage",
-        "@id": canonicalUrl,
-        url: canonicalUrl,
-        name: contentTitle,
-        description: effectiveDescription,
-        inLanguage: siteConfig.lang || "zh-CN",
-        isPartOf: { "@id": `${siteUrl}/#website` },
-        breadcrumb: { "@id": `${canonicalUrl}#breadcrumb` },
-      },
-    ],
-  };
-}
-const ldJson = JSON.stringify(schema).replace(/<\//g, "<\\/");
+const seo = buildSeoDocument({
+    site: siteConfig,
+    author: authorConfig,
+    mediaLinks: mediaLinksConfig?.items.map((item) => item.link) ?? [],
+    page: Astro.props as SeoPageInput,
+    pathname: Astro.url.pathname,
+    protocol: Astro.url.protocol,
+    exportMarkdown: Boolean(promoteConfig?.export_md),
+    version: STALUX_VERSION,
+});
+const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
 ---
 
 <head>
-  <meta charset="utf-8" />
-  <ClientRouter fallback="animate" />
-  <SEO
-    title={effectiveTitle}
-    description={effectiveDescription}
-    canonical={canonicalUrl}
-    nofollow={resolvedNofollow}
-    noindex={resolvedNoindex}
-    openGraph={openGraphConfig}
-    twitter={twitterConfig}
-    extend={{
-      link: extendedLink,
-      meta: extendedMeta,
+    <meta charset="utf-8">
+    <ClientRouter fallback="animate" />
+    <SEO
+        title={seo.title}
+        description={seo.description}
+        canonical={seo.canonical}
+        nofollow={seo.nofollow}
+        noindex={seo.noindex}
+        openGraph={seo.openGraph}
+        twitter={seo.twitter}
+        extend={{
+            link: seo.links,
+            meta: seo.meta,
     }}
-  />
-  <!-- 字体：由 Astro Fonts API 注入（--font-body 分片 / --font-code 可变字体），
+    />
+    <!-- 字体：由 Astro Fonts API 注入（--font-body 分片 / --font-code 可变字体），
        <Font /> 输出 @font-face 样式；浏览器按 unicode-range 按需下载正文分片 -->
-  <Font cssVariable="--font-body" />
-  <Font cssVariable="--font-code" />
-  {
-    (headConfig?.anyhead) && (
+    <Font cssVariable="--font-body" />
+    <Font cssVariable="--font-code" />
+    {(headConfig?.anyhead) && (
       <Fragment set:html={headConfig.anyhead} />
-    )
-  }
-  {headConfig?.googleAnalyticsId && <GoogleAnalytics />}
-  {headConfig?.bingClarityId && <BingClarity />}
-  {headConfig?.umami?.id && headConfig?.umami?.url && <Umami />}
-  <script type="application/ld+json" set:html={ldJson} />
-  <VerCount />
+    )}
+    {headConfig?.googleAnalyticsId && <GoogleAnalytics />}
+    {headConfig?.bingClarityId && <BingClarity />}
+    {headConfig?.umami?.id && headConfig?.umami?.url && <Umami />}
+    <script is:inline type="application/ld+json" set:html={ldJson} />
+    <VerCount />
 </head>

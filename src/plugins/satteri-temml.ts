@@ -7,8 +7,8 @@
  *
  * 输出纯 MathML，浏览器原生渲染，无需额外的 CSS/字体。
  */
-import { defineMdastPlugin } from "satteri";
-import temmlLib from "temml";
+import { defineMdastPlugin, type MdastNode, type MdastVisitorContext } from "satteri";
+import temmlLib, { type Options as TemmlOptions } from "temml";
 
 const emptyOptions = {};
 
@@ -21,17 +21,19 @@ function escapeHtml(value: string): string {
         .replaceAll("'", "&#39;");
 }
 
-function renderTemmlError(value: string, error: unknown, options: Record<string, any>): string {
+type MathNode = Extract<MdastNode, { type: "math" | "inlineMath" }>;
+
+function renderTemmlError(value: string, error: unknown, options: TemmlOptions): string {
     const title = escapeHtml(String(error));
     const color = escapeHtml(options.errorColor ?? "#cc0000");
     return `<span class="temml-error" style="color:${color}" title="${title}">${escapeHtml(value)}</span>`;
 }
 
 function renderMath(
-    node: { value: string },
+    node: Readonly<MathNode>,
     displayMode: boolean,
-    options: Record<string, any>,
-    ctx: any,
+    options: TemmlOptions,
+    ctx: MdastVisitorContext,
 ): string {
     const value = node.value;
     try {
@@ -64,14 +66,14 @@ function renderMath(
  * 创建一个 Sätteri temml mdast 插件。
  * @param options - 透传给 temml.renderToString 的选项（displayMode 除外）
  */
-export function temml(options?: Record<string, any>) {
+export function temml(options?: TemmlOptions) {
     const settings = options ?? emptyOptions;
     return defineMdastPlugin({
         name: "temml",
-        math(node: any, ctx: any) {
+        math(node, ctx) {
             return { rawHtml: renderMath(node, true, settings, ctx) };
         },
-        inlineMath(node: any, ctx: any) {
+        inlineMath(node, ctx) {
             return {
                 type: "html",
                 value: renderMath(node, false, settings, ctx),

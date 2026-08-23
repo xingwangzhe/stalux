@@ -1,4 +1,5 @@
 import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
+import type { HastVisitorContext, MdastNode, MdastVisitorContext } from "satteri";
 /**
  * Sätteri 插件：在构建时完成字数统计和特性标记，
  * 只从 Sätteri 的 MDAST/HAST 节点读取信息，并通过 ctx 注入最终结果。
@@ -13,7 +14,14 @@ import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
  * - mermaid 处理交由 @xingwangzhe/satteri-mermaid 的 mdast + hast 插件
  * - 数学公式由 satteri-temml 插件直接输出 MathML，无需额外标记
  */
-import { defineMdastPlugin, defineHastPlugin } from "satteri";
+import { defineHastPlugin, defineMdastPlugin } from "satteri";
+
+declare module "satteri" {
+    interface DataMap {
+        staluxFeatureFlags?: FeatureFlagsState;
+        staluxFirstImageSeen?: boolean;
+    }
+}
 
 const WORDS_PER_MINUTE = 400;
 const CODE_SECONDS_PER_NON_EMPTY_LINE = 2;
@@ -43,9 +51,13 @@ type FeatureFlagsState = {
     hasImage: boolean;
 };
 
-function getState(ctx: any): FeatureFlagsState {
-    const data = ctx.data as Record<string, unknown>;
-    return (data.staluxFeatureFlags ??= {
+type PluginContext = MdastVisitorContext | HastVisitorContext;
+
+function getState(ctx: PluginContext): FeatureFlagsState {
+    const existing = ctx.data.staluxFeatureFlags;
+    if (existing) return existing;
+
+    const state: FeatureFlagsState = {
         proseText: "",
         codeTokens: 0,
         codeWordCount: 0,
@@ -58,12 +70,20 @@ function getState(ctx: any): FeatureFlagsState {
         mathNonWhitespaceCharacters: 0,
         mathWordCount: 0,
         hasImage: false,
-    }) as FeatureFlagsState;
+    };
+    ctx.data.staluxFeatureFlags = state;
+    return state;
 }
 
-function injectState(ctx: any) {
+function getFrontmatter(ctx: PluginContext): Record<string, unknown> {
+    const astroData = ctx.data.astro;
+    if (!astroData) throw new Error("Satteri did not provide Astro frontmatter data");
+    return astroData.frontmatter;
+}
+
+function injectState(ctx: PluginContext) {
     const state = getState(ctx);
-    const injected = ctx.data.astro.frontmatter as Record<string, unknown>;
+    const injected = getFrontmatter(ctx);
     injected.proseText = state.proseText;
     injected.codeTokens = state.codeTokens;
     injected.codeWordCount = state.codeWordCount;
@@ -121,7 +141,7 @@ function countMathTokens(value: string): number {
     return value.match(MATH_TOKEN)?.length ?? 0;
 }
 
-function countMath(node: any, ctx: any, display: boolean) {
+function countMath(node: { value: string }, ctx: MdastVisitorContext, display: boolean) {
     const state = getState(ctx);
     const value = String(node.value ?? "");
     if (display) state.displayMathBlocks++;
@@ -132,14 +152,16 @@ function countMath(node: any, ctx: any, display: boolean) {
     injectState(ctx);
 }
 
-function collectProseNodeText(node: any): string {
+function collectProseNodeText(node: Readonly<MdastNode>): string {
     if (node.type === "inlineMath" || node.type === "math" || node.type === "code") {
         return "";
     }
     if (node.type === "text" || node.type === "inlineCode") {
-        return node.value ?? "";
+        return node.value;
     }
-    return Array.isArray(node.children) ? node.children.map(collectProseNodeText).join(" ") : "";
+    return "children" in node && Array.isArray(node.children)
+        ? node.children.map(collectProseNodeText).join(" ")
+        : "";
 }
 
 export const featureFlagsMdast = defineMdastPlugin({
@@ -152,7 +174,7 @@ export const featureFlagsMdast = defineMdastPlugin({
         state.codeNonEmptyLines += node.value
             .split(/\r?\n/u)
             .filter((line) => /\S/u.test(line)).length;
-        const codeTokens = countCodeTokens(node.value, node.lang);
+        const codeTokens = countCodeTokens(node.value, node.lang ?? undefined);
         state.codeTokens += codeTokens;
         state.codeWordCount += codeTokens;
         injectState(ctx);
@@ -193,11 +215,10 @@ export const featureFlagsHast = defineHastPlugin({
         visit(node, ctx) {
             const state = getState(ctx);
             state.hasImage = true;
-            (ctx.data.astro.frontmatter as Record<string, unknown>).hasImage = true;
+            getFrontmatter(ctx).hasImage = true;
             // 第一张正文图片可能成为 LCP，优先加载；其余图片延迟加载。
-            const data = ctx.data as Record<string, unknown>;
-            const firstImage = !data.staluxFirstImageSeen;
-            data.staluxFirstImageSeen = true;
+            const firstImage = !ctx.data.staluxFirstImageSeen;
+            ctx.data.staluxFirstImageSeen = true;
             if (!node.properties?.loading) {
                 ctx.setProperty(node, "loading", firstImage ? "eager" : "lazy");
             }

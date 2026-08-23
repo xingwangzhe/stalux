@@ -1,7 +1,7 @@
+import { getCollection } from "astro:content";
 import { getSite, isAiFileEnabled, loadConfig, renderLlmsFullTxt } from "@utils/ai-discovery";
 import { getAiDiscoveryData } from "@utils/config-utils";
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
 
 export const prerender = true;
 

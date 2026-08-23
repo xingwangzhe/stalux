@@ -1,6 +1,6 @@
+import { getCollection } from "astro:content";
 import { analyzeFeatureFlags } from "@plugins/feature-flags";
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
 
 export const prerender = true;
 

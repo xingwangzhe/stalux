@@ -1,14 +1,13 @@
+import { getCollection } from "astro:content";
 import rss from "@astrojs/rss";
+import { getSiteData } from "@utils/config-utils";
 import { buildFeedItems } from "@utils/feed";
 import { createTranslator, langToFeedLanguage } from "@utils/i18n";
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
 
-export const GET: APIRoute = async (context) => {
+export const GET: APIRoute = async () => {
     const configCollection = await getCollection("config");
-    const siteEntry = configCollection.find((e) => e.id === "site");
-    if (!siteEntry) throw new Error("Missing site config");
-    const stalux = siteEntry.data;
+    const stalux = getSiteData(configCollection);
 
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const items = await buildFeedItems(stalux, posts, "updated");
@@ -19,7 +18,7 @@ export const GET: APIRoute = async (context) => {
     return rss({
         title: stalux?.title || "Stalux Blog",
         description: stalux?.description || "A blog powered by Stalux theme",
-        site: stalux?.url || context.site?.toString(),
+        site: stalux.url,
         items,
         customData: `<language>${langToFeedLanguage(lang)}</language>\n<copyright>${t("rss.copyright")}</copyright>`,
         xmlns: {

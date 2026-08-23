@@ -1,11 +1,11 @@
 ---
-import Navs from "@components/stalux/layout/navs.astro";
-import Stalux from "@layouts/Stalux.astro";
-import WordList from "@components/stalux/words/wordList.astro";
 import { getCollection } from "astro:content";
-import { createTranslator } from "@utils/i18n";
+import Navs from "@components/stalux/layout/navs.astro";
+import WordList from "@components/stalux/words/wordList.astro";
+import Stalux from "@layouts/Stalux.astro";
 import styles from "@styles/pages/words.module.css";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+import { getSiteData } from "@utils/config-utils";
+import { createTranslator } from "@utils/i18n";
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
@@ -13,7 +13,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const entries = await getCollection("words", ({ data }) => !data.draft);
 ---
 
-<Stalux title={t("words.title") + " | " + siteConfig.title} description={t("words.description")}>
+<Stalux title={`${t("words.title")} | ${siteConfig.title}`} description={t("words.description")}>
     <div style="height: 3em;"></div>
     <Navs />
     <h1 class={styles.title}>{t("words.heading")}</h1>

@@ -1,16 +1,17 @@
 ---
-import Stalux from "@layouts/Stalux.astro";
-import PostContent from "@components/stalux/posts/postContent.astro";
-import PostCC from "@components/stalux/posts/postCC.astro";
-import WalineComment from "@components/stalux/posts/WalineComment.astro";
-import { buildWalineProps } from "@utils/waline";
 import { getCollection, render } from "astro:content";
 import Navs from "@components/stalux/layout/navs.astro";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+import PostCC from "@components/stalux/posts/postCC.astro";
+import PostContent from "@components/stalux/posts/postContent.astro";
+import WalineComment from "@components/stalux/posts/WalineComment.astro";
+import Stalux from "@layouts/Stalux.astro";
+import { getAuthorData, getCommentData, getSiteData } from "@utils/config-utils";
+import { buildWalineProps } from "@utils/waline";
 
 // 获取关于页面内容
 const aboutPages = await getCollection("about");
 const aboutPage = aboutPages[0];
+if (!aboutPage) throw new Error("Missing about content");
 const { Content } = await render(aboutPage);
 
 // 获取配置
@@ -19,13 +20,13 @@ const siteConfig = getSiteData(configEntries);
 const commentConfig = getCommentData(configEntries);
 const walineSection = commentConfig?.waline;
 const commentEnabled = commentConfig?.enabled ?? false;
-const walineConfig = walineSection && walineSection.serverURL ? walineSection : undefined;
+const walineConfig = walineSection?.serverURL ? walineSection : undefined;
 const authorConfig = getAuthorData(configEntries);
 const author = authorConfig.name;
 ---
 
 <Stalux
-    title={aboutPage.data.title + " | " + siteConfig.title}
+    title={`${aboutPage.data.title} | ${siteConfig.title}`}
     description={aboutPage.data.description}
 >
     <div style="height: 3em;"></div>
@@ -45,15 +46,13 @@ const author = authorConfig.name;
                 url={Astro.url.href}
                 cc="CC-BY-NC-SA-4.0"
             />
-            {
-                commentEnabled && walineConfig?.serverURL && (
+            {commentEnabled && walineConfig?.serverURL && (
                     <WalineComment
                         {...buildWalineProps(walineConfig)}
                         path={Astro.url.pathname}
                         title={aboutPage.data.title}
                     />
-                )
-            }
+                )}
         </PostContent>
     </div>
 </Stalux>
