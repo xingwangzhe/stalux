@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
     build:
-        name: Lint & Build
+        name: Validate
         runs-on: ubuntu-latest
         timeout-minutes: 20
 
@@ -23,16 +23,18 @@ jobs:
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
               with:
-                  bun-version: latest
+                  bun-version: 1.4.0
+
+            - name: Cache Astro incremental build
+              uses: actions/cache@v5
+              with:
+                  path: node_modules/.astro
+                  key: astro-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
+                  restore-keys: |
+                      astro-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
 
             - name: Install dependencies
-              run: bun install
+              run: bun ci
 
-            - name: Lint (oxlint)
-              run: bun run lint
-
-            - name: Format check (oxfmt)
-              run: bun run fmt:check
-
-            - name: Build (astro)
-              run: bun run build
+            - name: Validate
+              run: bun run validate
