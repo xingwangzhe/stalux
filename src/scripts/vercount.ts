@@ -18,4 +18,5 @@ document.addEventListener("astro:page-load", load);
 if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", load, { once: true });
 else load();
+
 export {};

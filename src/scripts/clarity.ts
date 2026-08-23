@@ -2,12 +2,14 @@ declare global {
     interface Window {
         clarity?: ((...args: unknown[]) => void) & { q?: unknown[][] };
         __staluxClarityLoaded?: boolean;
+        __staluxClarityPageLoadListener?: boolean;
     }
 }
 
 function load() {
     const id = document.body?.dataset.staluxClarityId;
-    if (!id || document.getElementById("stalux-clarity-script")) return;
+    if (!id || window.__staluxClarityLoaded || document.getElementById("stalux-clarity-script"))
+        return;
     window.__staluxClarityLoaded = true;
     window.clarity =
         window.clarity ||
@@ -19,8 +21,12 @@ function load() {
     document.head.appendChild(script);
 }
 
-document.addEventListener("astro:page-load", load);
+if (!window.__staluxClarityPageLoadListener) {
+    window.__staluxClarityPageLoadListener = true;
+    document.addEventListener("astro:page-load", load);
+}
 if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", load, { once: true });
 else load();
+
 export {};

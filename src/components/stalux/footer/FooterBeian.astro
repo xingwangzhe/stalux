@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
 interface Props {
     icp?: string;
@@ -18,8 +18,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const showBeian = !!(icp || pubsec);
 ---
 
-{
-    showBeian && (
+{showBeian && (
         <div class="beian-info">
             {icp && (
                 <a
@@ -45,47 +44,46 @@ const showBeian = !!(icp || pubsec);
                 </a>
             )}
         </div>
-    )
-}
+    )}
 
 <style>
-    .beian-info {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
+.beian-info {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
 
-    .beian-info a {
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        transition: color 0.3s ease;
-        font-size: 0.9rem;
-    }
+.beian-info a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.9rem;
+}
 
-    .beian-info a:hover {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-    }
+.beian-info a:hover {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
 
-    .public-security-beian {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        transition: color 0.3s ease;
-        font-size: 0.9rem;
-    }
+.public-security-beian {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.9rem;
+}
 
-    .public-security-beian:hover {
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-    }
+.public-security-beian:hover {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
 
-    .public-security-beian img {
-        width: 15px;
-        height: 15px;
-        display: inline-block;
-    }
+.public-security-beian img {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+}
 </style>

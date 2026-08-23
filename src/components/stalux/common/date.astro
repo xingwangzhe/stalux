@@ -3,57 +3,6 @@ import styles from "@styles/components/common/date.module.css";
 ---
 
 <div id={styles["date-time"]} class="date-time" transition:persist-props>
-    <time id={styles["date"]} data-ref="date" datetime=""></time>
-    <time id={styles["time"]} data-ref="time" datetime=""></time>
+    <time id={styles.date} data-ref="date" datetime=""></time>
+    <time id={styles.time} data-ref="time" datetime=""></time>
 </div>
-
-<script>
-    const pad2 = (n: number) => String(n).padStart(2, "0");
-
-    /** 机器可读：yyyy-MM-dd / HH:mm:ss（本地时区） */
-    function toMachineDate(d: Date): string {
-        return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-    }
-    function toMachineTime(d: Date): string {
-        return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-    }
-
-    /** 展示用日期：中文 2026年07月16日 / 英文 Jul 16, 2026 */
-    function toDisplayDate(d: Date, lang: string): string {
-        if (lang.startsWith("zh")) {
-            return `${d.getFullYear()}年${pad2(d.getMonth() + 1)}月${pad2(d.getDate())}日`;
-        }
-        return new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-        }).format(d);
-    }
-
-    function updateDateTime() {
-        const now = new Date();
-        const dateEl = document.querySelector('[data-ref="date"]');
-        const timeEl = document.querySelector('[data-ref="time"]');
-        const lang = document.documentElement.lang || "zh-CN";
-
-        if (dateEl) {
-            dateEl.textContent = toDisplayDate(now, lang);
-            dateEl.setAttribute("datetime", toMachineDate(now));
-        }
-        if (timeEl) {
-            const t = toMachineTime(now);
-            timeEl.textContent = t;
-            timeEl.setAttribute("datetime", t);
-        }
-    }
-
-    // 全局只保留一个 1Hz 定时器：用单例守卫避免视图切换时累加定时器。
-    let timerId: ReturnType<typeof setInterval> | null = null;
-
-    document.addEventListener("astro:page-load", () => {
-        updateDateTime();
-        if (timerId === null) {
-            timerId = setInterval(updateDateTime, 1000);
-        }
-    });
-</script>

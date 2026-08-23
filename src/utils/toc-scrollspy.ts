@@ -3,7 +3,7 @@
  * 并将该条目滚动到侧边栏可视区域内。
  */
 
-export function initTocScrollSpy(activeClass: string) {
+export function initTocScrollSpy(activeClass: string): (() => void) | undefined {
     const tocLinks = document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]");
     if (tocLinks.length === 0) return;
 
@@ -23,17 +23,27 @@ export function initTocScrollSpy(activeClass: string) {
 
     let activeLink: HTMLAnchorElement | null = null;
     let pending = false;
+    let frameId = 0;
     let sidebarHovered = false;
+    const controller = new AbortController();
 
     // 鼠标悬停在侧边栏上时跳过自动滚动，避免跟用户手动操作冲突
     const sidebar = tocLinks[0]?.closest<HTMLElement>("[data-toc-active-class]");
     if (sidebar) {
-        sidebar.addEventListener("mouseenter", () => {
-            sidebarHovered = true;
-        });
-        sidebar.addEventListener("mouseleave", () => {
-            sidebarHovered = false;
-        });
+        sidebar.addEventListener(
+            "mouseenter",
+            () => {
+                sidebarHovered = true;
+            },
+            { signal: controller.signal },
+        );
+        sidebar.addEventListener(
+            "mouseleave",
+            () => {
+                sidebarHovered = false;
+            },
+            { signal: controller.signal },
+        );
     }
 
     // 切换当前高亮的目录项，并将该项滚动到侧边栏可视区域内
@@ -55,7 +65,8 @@ export function initTocScrollSpy(activeClass: string) {
             // 用 rAF 合并同一帧内的多次回调，避免频繁触发布局计算
             if (pending) return;
             pending = true;
-            requestAnimationFrame(() => {
+            frameId = requestAnimationFrame(() => {
+                frameId = 0;
                 pending = false;
 
                 // 找到视口上方 35% 区域内最靠上的标题
@@ -85,11 +96,22 @@ export function initTocScrollSpy(activeClass: string) {
 
     // 拦截 TOC 锚点点击，替换为平滑滚动
     for (const link of tocLinks) {
-        link.addEventListener("click", (e) => {
-            e.preventDefault();
-            const id = link.getAttribute("href")?.replace("#", "");
-            const target = id ? document.getElementById(id) : null;
-            target?.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+        link.addEventListener(
+            "click",
+            (event) => {
+                event.preventDefault();
+                const id = link.getAttribute("href")?.replace("#", "");
+                const target = id ? document.getElementById(id) : null;
+                target?.scrollIntoView({ behavior: "smooth", block: "start" });
+            },
+            { signal: controller.signal },
+        );
     }
+
+    return () => {
+        controller.abort();
+        observer.disconnect();
+        if (frameId) cancelAnimationFrame(frameId);
+        activeLink?.classList.remove(activeClass);
+    };
 }

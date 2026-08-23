@@ -1,25 +1,32 @@
 ---
-import Head from "@components/stalux/layout/head.astro";
-import Footer from "@components/stalux/layout/footer.astro";
 import { getCollection } from "astro:content";
+import Footer from "@components/stalux/layout/footer.astro";
+import Head from "@components/stalux/layout/head.astro";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
 import "@styles/shared/view-transitions.css";
-import { getAuthorData, getAiDiscoveryData, getHeadData, getPromoteData, getSiteData } from "@utils/config-utils";
+import {
+    getAiDiscoveryData,
+    getAuthorData,
+    getHeadData,
+    getPromoteData,
+    getSiteData,
+} from "@utils/config-utils";
 import { getRouteAnimation, getRouteKind } from "@utils/view-transitions";
+
 const props = Astro.props as Props;
 
 interface Props {
-  title: string;
-  description: string;
-  cover?: string;
-  isArticle?: boolean;
-  date?: string;
-  updated?: string;
-  tags?: string[];
-  categories?: string[];
-  author?: string;
-  noindex?: boolean;
+    title: string;
+    description: string;
+    cover?: string;
+    isArticle?: boolean;
+    date?: string;
+    updated?: string;
+    tags?: string[];
+    categories?: string[];
+    author?: string;
+    noindex?: boolean;
 }
 
 const configEntries = await getCollection("config");
@@ -37,84 +44,76 @@ const htmlLang = siteConfig.lang || "zh-CN";
 // 保证增量构建依赖图 hash 稳定。
 const llmPromoteRaw = promoteConfig?.llm_promote ?? "";
 const llmPromote = llmPromoteRaw
-  ?.replace(/\{author\}/g, authorConfig.name)
-  ?.replace(/\{url\}/g, siteConfig.url)
-  ?.replace(/\{title\}/g, siteConfig.title)
-  ?.replace(/\{cc\}/g, "CC-BY-NC-SA-4.0");
+    ?.replace(/\{author\}/g, authorConfig.name)
+    ?.replace(/\{url\}/g, siteConfig.url)
+    ?.replace(/\{title\}/g, siteConfig.title)
+    ?.replace(/\{cc\}/g, "CC-BY-NC-SA-4.0");
 const routeKind = getRouteKind(Astro.url.pathname);
 const routeAnimation = getRouteAnimation(routeKind);
 ---
 
 <!doctype html>
 <html lang={htmlLang}>
-  <Head
-    title={props.title}
-    description={props.description}
-    cover={props.cover}
-    isArticle={props.isArticle}
-    date={props.date}
-    updated={props.updated}
-    tags={props.tags}
-    categories={props.categories}
-    author={props.author}
-    noindex={props.noindex}
-  />
-  <script>
+    <Head
+        title={props.title}
+        description={props.description}
+        cover={props.cover}
+        isArticle={props.isArticle}
+        date={props.date}
+        updated={props.updated}
+        tags={props.tags}
+        categories={props.categories}
+        author={props.author}
+        noindex={props.noindex}
+    />
+    <script>
     import "../scripts/background.ts";
     import "../scripts/view-transitions.ts";
-  </script>
-  {
-    aiConfig?.conformance !== "disabled" && (
-      <>
-        <script>
-          import "../scripts/webmcp.ts";
-        </script>
-      </>
-    )
-  }
-  <body
-    class="stalux-root dark"
-    data-stalux-bg-layer="a"
-    data-stalux-bg-index="0"
-    data-stalux-site-title={siteConfig.title}
-    data-stalux-site-url={siteConfig.url}
-    data-stalux-site-description={siteConfig.description}
-    data-stalux-site-lang={siteConfig.lang}
-    data-stalux-ga-id={headConfig?.googleAnalyticsId}
-    data-stalux-clarity-id={headConfig?.bingClarityId}
-  >
-    {llmPromote && (
+    </script>
+    {aiConfig?.conformance !== "disabled" && (
+      <script>
+        import "../scripts/webmcp.ts";
+      </script>
+    )}
+    <body
+        class="stalux-root dark"
+        data-stalux-bg-layer="a"
+        data-stalux-bg-index="0"
+        data-stalux-site-title={siteConfig.title}
+        data-stalux-site-url={siteConfig.url}
+        data-stalux-site-description={siteConfig.description}
+        data-stalux-site-lang={siteConfig.lang}
+        data-stalux-ga-id={headConfig?.googleAnalyticsId}
+        data-stalux-clarity-id={headConfig?.bingClarityId}
+    >
+        {llmPromote && (
       <section class="stalux-ai-prompt" data-stalux-ai-prompt aria-label="AI site context">
         <p>{llmPromote}</p>
       </section>
     )}
-    <div
-      class="bg-layer bg-a"
-      style="opacity: 1;"
-      transition:persist="stalux-bg-a"
-      aria-hidden="true"
-    ></div>
-    <div
-      class="bg-layer bg-b"
-      transition:persist="stalux-bg-b"
-      aria-hidden="true"
-    ></div>
-    <main
-      class="stalux-main"
-      data-stalux-route={routeKind}
-      transition:name="stalux-page"
-      transition:animate={routeAnimation}
-    >
-      <slot />
-    </main>
-    <Footer />
-  </body>
+        <div
+            class="bg-layer bg-a"
+            style="opacity: 1;"
+            transition:persist="stalux-bg-a"
+            aria-hidden="true"
+        ></div>
+        <div class="bg-layer bg-b" transition:persist="stalux-bg-b" aria-hidden="true"></div>
+        <main
+            class="stalux-main"
+            data-stalux-route={routeKind}
+            transition:name="stalux-page"
+            transition:animate={routeAnimation}
+        >
+            <slot />
+        </main>
+        <Footer />
+    </body>
 </html>
 
 <style></style>
 
 <style>
-  .stalux-ai-prompt {
+.stalux-ai-prompt {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -124,5 +123,5 @@ const routeAnimation = getRouteAnimation(routeKind);
     clip: rect(0, 0, 0, 0);
     white-space: pre-wrap;
     border: 0;
-  }
+}
 </style>

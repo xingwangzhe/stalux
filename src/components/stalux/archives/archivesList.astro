@@ -1,9 +1,9 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
-import { getSiteData } from "@utils/config-utils";
-import { createTranslator } from "@utils/i18n";
+import { type CollectionEntry, getCollection } from "astro:content";
 import styles from "@styles/components/archives/archivesList.module.css";
-import { toTimestamp, parseDate, format } from "@utils/dayjs";
+import { getSiteData } from "@utils/config-utils";
+import { format, parseDate, toTimestamp } from "@utils/dayjs";
+import { createTranslator } from "@utils/i18n";
 
 interface Props {
     posts?: CollectionEntry<"posts">[];
@@ -15,26 +15,18 @@ const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.d
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
-const archivesByYearMonth: Record<
-    number,
-    Record<number, CollectionEntry<"posts">[]>
-> = {};
-const yearCounts: Record<number, number> = {};
+const archivesByYearMonth = new Map<number, Map<number, CollectionEntry<"posts">[]>>();
 
 posts.forEach((post) => {
     if (!post.data.date) return;
     const date = parseDate(post.data.date);
     const year = date.getUTCFullYear();
     const month = date.getUTCMonth() + 1;
-    if (!archivesByYearMonth[year]) {
-        archivesByYearMonth[year] = {};
-        yearCounts[year] = 0;
-    }
-    if (!archivesByYearMonth[year][month]) {
-        archivesByYearMonth[year][month] = [];
-    }
-    archivesByYearMonth[year][month].push(post);
-    yearCounts[year] += 1;
+    const months = archivesByYearMonth.get(year) ?? new Map();
+    const monthPosts = months.get(month) ?? [];
+    monthPosts.push(post);
+    months.set(month, monthPosts);
+    archivesByYearMonth.set(year, months);
 });
 
 // 每个 post 只解析一次时间，供排序比较器复用，避免比较器里反复 new Date()
@@ -43,46 +35,45 @@ const tsCache = new Map<CollectionEntry<"posts">, number>(
 );
 
 // 对每个月内的文章按 date 字段降序排序（用缓存时间戳做纯数字比较）
-for (const [, months] of Object.entries(archivesByYearMonth)) {
-    for (const month of Object.keys(months).map(Number)) {
-        months[month].sort((a, b) => (tsCache.get(b) ?? 0) - (tsCache.get(a) ?? 0));
+for (const months of archivesByYearMonth.values()) {
+    for (const monthPosts of months.values()) {
+        monthPosts.sort((a, b) => (tsCache.get(b) ?? 0) - (tsCache.get(a) ?? 0));
     }
 }
 
-// 按年份降序排序 -
-const sortedYears = Object.keys(archivesByYearMonth)
-    .map(Number)
-    .sort((a: number, b: number) => b - a);
+const archiveYears = [...archivesByYearMonth.entries()]
+    .sort(([left], [right]) => right - left)
+    .map(([year, months]) => ({
+        year,
+        count: [...months.values()].reduce((total, monthPosts) => total + monthPosts.length, 0),
+        months: [...months.entries()]
+            .sort(([left], [right]) => right - left)
+            .map(([month, monthPosts]) => ({ month, posts: monthPosts })),
+    }));
 ---
 
 <section class={styles.archivesContainer}>
     <div class={styles.pageHeader}>
         <div class={styles.timelineContainer}>
-            {
-                sortedYears.length > 0 ? (
-                    sortedYears.map((year) => (
+            {archiveYears.length > 0 ? (
+                    archiveYears.map((archiveYear) => (
                         <div
                             class={styles.yearSection}
-                            data-year={String(year)}
+                            data-year={String(archiveYear.year)}
                         >
                             <div class={styles.yearHeader} data-year-header style="opacity:0">
-                                <h2 class={styles.yearTitle}>{year}</h2>
+                                <h2 class={styles.yearTitle}>{archiveYear.year}</h2>
                                 <div class={styles.yearCount}>
-                                    {t("archives.postCount", { n: yearCounts[year] ?? 0 })}
+                                    {t("archives.postCount", { n: archiveYear.count })}
                                 </div>
                             </div>
-                            {Object.keys(archivesByYearMonth[year])
-                                .map(Number)
-                                .sort((a, b) => b - a)
-                                .map((month) => (
+                            {archiveYear.months.map(({ month, posts: monthPosts }) => (
                                     <div class={styles.monthSection} data-month-section style="opacity:0">
                                         <h3 class={styles.monthTitle}>
                                             {t("archives.month", { n: month })}
                                         </h3>
                                         <ul class={styles.postList}>
-                                            {archivesByYearMonth[year][
-                                                month
-                                            ].map((post) => (
+                                            {monthPosts.map((post) => (
                                                 <li class={styles.postItem} data-post-item style="opacity:0">
                                                     <time
                                                         class={styles.postDate}
@@ -106,11 +97,9 @@ const sortedYears = Object.keys(archivesByYearMonth)
                     ))
                 ) : (
                     <div class={styles.noPosts}>{t("archives.noPosts")}</div>
-                )
-            }
+                )}
         </div>
 
         <slot name="main" />
     </div>
-
 </section>

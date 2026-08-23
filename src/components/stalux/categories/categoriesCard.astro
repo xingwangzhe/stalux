@@ -1,6 +1,6 @@
 ---
-import styles from "@styles/components/categories/categoriesCard.module.css";
 import { getCollection } from "astro:content";
+import styles from "@styles/components/categories/categoriesCard.module.css";
 import { createTranslator } from "@utils/i18n";
 
 interface Props {
@@ -12,18 +12,22 @@ interface Props {
 
 const props = Astro.props as Props;
 const configEntries = await getCollection("config");
-const siteConfig = (configEntries.find(e => e.id === "site")?.data ?? {}) as Record<string, unknown>;
+const siteConfig = (configEntries.find((e) => e.id === "site")?.data ?? {}) as Record<
+    string,
+    unknown
+>;
 const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 ---
 
 <article class={styles.categoryCard}>
     <a
         href={`/categories/${props.category.name}/`}
-        class={styles.categoryheader + " a-none"}
+        class={`${styles.categoryheader} a-none`}
         data-astro-prefetch
     >
         <div class={styles.categoryIcon}>
             <svg
+                aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 width="24"

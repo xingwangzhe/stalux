@@ -1,9 +1,9 @@
 ---
-import style from "@styles/components/posts/postCC.module.css";
-import ccIcon from "@assets/cc-icon.svg?raw";
 import { getCollection } from "astro:content";
+import ccIcon from "@assets/cc-icon.svg?raw";
+import style from "@styles/components/posts/postCC.module.css";
+import { buildCCLink, buildCCName } from "@utils/cc";
 import { createTranslator } from "@utils/i18n";
-import { buildCCName, buildCCLink } from "@utils/cc";
 
 interface Props {
     title: string;
@@ -13,7 +13,10 @@ interface Props {
 }
 
 const configEntries = await getCollection("config");
-const siteConfig = (configEntries.find(e => e.id === "site")?.data ?? {}) as Record<string, unknown>;
+const siteConfig = (configEntries.find((e) => e.id === "site")?.data ?? {}) as Record<
+    string,
+    unknown
+>;
 const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 const { title, author, url, cc = "CC-BY-NC-SA-4.0" } = Astro.props;
 
@@ -25,24 +28,19 @@ const licenseName = buildCCName(cc, t);
     <div class={style.ccContent}>
         <p class={style.ccTitle}>{title}</p>
         <p class={style.ccAuthor}>{t("post.author")}{author}</p>
-        {
-            url && (
+        {url && (
                 <p class={style.ccUrl}>
                     {t("post.articleLink")}
                     <a href={url} target="_blank" rel="noopener noreferrer">
                         {url}
                     </a>
                 </p>
-            )
-        }
-		<p class={style.ccLicense}>
-		    {t("post.licensedUnder")} <a
-		        href={licenseLink}
-		        target="_blank"
-		        rel="noopener noreferrer"
-		    >
-		        {licenseName}
-		    </a>{t("post.licenseSuffix")}
+            )}
+        <p class={style.ccLicense}>
+            {t("post.licensedUnder")}
+            <a href={licenseLink} target="_blank" rel="noopener noreferrer">
+                {licenseName}
+            </a>{t("post.licenseSuffix")}
         </p>
     </div>
 

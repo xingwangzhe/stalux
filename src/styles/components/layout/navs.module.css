@@ -29,7 +29,6 @@ nav {
     flex-wrap: wrap;
     width: 100%;
     overflow: visible;
-    justify-content: center;
 }
 
 /* 滚动按钮 — 仅当内容溢出时显示 */

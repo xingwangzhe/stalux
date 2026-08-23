@@ -38,17 +38,14 @@ export function isBadgeGroup(item: BadgeItem): item is BadgeGroup {
  */
 export function generateBadge(options: BadgeOptions): string {
     try {
-        const format = Object.fromEntries(
-            Object.entries({
-                label: options.label,
-                message: options.message,
-                color: options.color ?? "blue",
-                style: options.style ?? "flat",
-                labelColor: options.labelColor,
-                logo: options.logo,
-                logoWidth: options.logoWidth,
-            }).filter(([, v]) => v !== undefined),
-        ) as Parameters<typeof makeBadge>[0];
+        const format: Parameters<typeof makeBadge>[0] = {
+            label: options.label,
+            message: options.message,
+            color: options.color ?? "blue",
+            style: options.style ?? "flat",
+            ...(options.labelColor ? { labelColor: options.labelColor } : {}),
+            ...(options.logo ? { logoBase64: options.logo } : {}),
+        };
 
         return makeBadge(format);
     } catch (error) {

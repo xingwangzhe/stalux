@@ -16,6 +16,50 @@
     }
 }
 
+@media (max-width: 768px) {
+    .tagCard {
+        animation: stalux-tag-arrive 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    .tagCard:nth-child(2) {
+        animation-delay: 30ms;
+    }
+
+    .tagCard:nth-child(3) {
+        animation-delay: 60ms;
+    }
+
+    .tagCard:nth-child(4) {
+        animation-delay: 90ms;
+    }
+
+    .tagCard:nth-child(5) {
+        animation-delay: 120ms;
+    }
+
+    .tagCard:nth-child(n + 6) {
+        animation-delay: 150ms;
+    }
+}
+
+@keyframes stalux-tag-arrive {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tagCard {
+        animation: none;
+    }
+}
+
 /* ── 桌面端：Canvas 容器（移动端隐藏） ── */
 .canvas {
     display: none;
@@ -41,7 +85,10 @@
     color: var(--white-full);
     text-decoration: none;
     border: 1px solid var(--white-20p);
-    transition: all var(--transition-slow);
+    transition:
+        transform var(--transition-slow),
+        border-color var(--transition-slow),
+        box-shadow var(--transition-slow);
     overflow: hidden;
 }
 

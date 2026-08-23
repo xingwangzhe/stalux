@@ -14,17 +14,14 @@ const { entry, timezone } = Astro.props;
 const { Content } = await render(entry);
 const { source, link, sourceDate, date, abbrlink } = entry.data;
 
-const machineDate = date && timezone
-    ? toMachineDateTime(date, timezone)
-    : date;
+const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
 ---
 
 <article class={styles.card} id={abbrlink ? `word-${abbrlink}` : undefined}>
     <div class={styles.body} data-pagefind-body>
         <Content />
     </div>
-    {
-        (date || source || sourceDate) && (
+    {(date || source || sourceDate) && (
             <footer class={styles.footer}>
                 {date ? (
                     <time class={styles.date} datetime={machineDate}>
@@ -57,6 +54,5 @@ const machineDate = date && timezone
                     )
                 }
             </footer>
-        )
-    }
+        )}
 </article>

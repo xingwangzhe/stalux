@@ -1,7 +1,7 @@
 ---
-import styles from "@styles/components/posts/postList.module.css";
-import { getCollection, type CollectionEntry } from "astro:content";
+import { type CollectionEntry, getCollection } from "astro:content";
 import PostCard from "@components/stalux/posts/postCard.astro";
+import styles from "@styles/components/posts/postList.module.css";
 
 interface Props {
     posts?: CollectionEntry<"posts">[];
@@ -12,14 +12,12 @@ const props = Astro.props as Props;
 const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
 ---
 
-<div data-stalux="postlist" class={styles["container"]}>
+<div data-stalux="postlist" class={styles.container}>
     <ul class={styles["post-list"]}>
-        {
-            posts.map((post, index) => (
+        {posts.map((post, index) => (
                 <li>
                     <PostCard post={post} priority={index === 0} />
                 </li>
-            ))
-        }
+            ))}
     </ul>
 </div>

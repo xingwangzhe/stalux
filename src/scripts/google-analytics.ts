@@ -4,16 +4,17 @@ declare global {
         gtag?: (...args: unknown[]) => void;
         __staluxAnalyticsLoaded?: boolean;
         __staluxAnalyticsPageLoadListener?: boolean;
+        __staluxGoogleScriptLoaded?: boolean;
     }
 }
 
 function load() {
     const gaID = document.body?.dataset.staluxGaId;
     if (!gaID) return;
-    const hasScript = document.querySelector('script[data-stalux-google="true"]');
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || ((...args: unknown[]) => window.dataLayer?.push(args));
-    if (!hasScript) {
+    if (!window.__staluxGoogleScriptLoaded) {
+        window.__staluxGoogleScriptLoaded = true;
         const script = document.createElement("script");
         script.async = true;
         script.dataset.staluxGoogle = "true";

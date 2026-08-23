@@ -1,10 +1,10 @@
 ---
 import { getCollection } from "astro:content";
+import Search from "@components/stalux/common/search.astro";
+import styles from "@styles/components/layout/navs.module.css";
+import { getNavsData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 import { getLucideIcon } from "@utils/lucide-icons";
-import styles from "@styles/components/layout/navs.module.css";
-import Search from "@components/stalux/common/search.astro";
-import { getSiteData, getNavsData } from "@utils/config-utils";
 
 const MenuIcon = getLucideIcon("menu");
 const SearchIcon = getLucideIcon("search");
@@ -18,6 +18,7 @@ const navs = navsConfig?.items ?? [];
 <nav aria-label={t("nav.main")} transition:persist-props>
     <!-- 汉堡菜单按钮 (仅窄屏显示) -->
     <button
+        type="button"
         data-ref="stalux-nav-toggle"
         class={styles.navToggle}
         aria-label={t("nav.menu")}
@@ -31,17 +32,19 @@ const navs = navsConfig?.items ?? [];
     <!-- 导航列表 -->
     <div class={styles.navContainer}>
         <button
+            type="button"
             data-ref="stalux-nav-scroll-left"
             class={styles.scrollBtn}
             data-side="left"
             aria-label={t("nav.scrollLeft")}
         >
-            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
         </button>
 
         <ul data-ref="stalux-nav-list" class={styles.navList}>
-            {
-                navs.map((item) => {
+            {navs.map((item) => {
                     const NavIcon = item.icon ? getLucideIcon(item.icon) : null;
                     return (
                         <li class={styles.navItem}>
@@ -58,8 +61,7 @@ const navs = navsConfig?.items ?? [];
                             </a>
                         </li>
                     );
-                })
-            }
+                })}
             <li class={styles.navItem}>
                 <a
                     href="#search"
@@ -76,132 +78,16 @@ const navs = navsConfig?.items ?? [];
         </ul>
 
         <button
+            type="button"
             data-ref="stalux-nav-scroll-right"
             class={styles.scrollBtn}
             data-side="right"
             aria-label={t("nav.scrollRight")}
         >
-            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
         </button>
     </div>
 </nav>
 <Search />
-<script>
-    const navWindow = window as Window & {
-        __STALUX_NAV_INITIALIZED__?: boolean;
-    };
-
-    document.addEventListener("astro:page-load", () => {
-        if (navWindow.__STALUX_NAV_INITIALIZED__) return;
-        navWindow.__STALUX_NAV_INITIALIZED__ = true;
-
-        const searchBtn = document.querySelector(
-            '[data-ref="stalux-search-btn"]',
-        );
-        searchBtn?.addEventListener("click", async (e) => {
-            e.preventDefault();
-            closeNav();
-            await import("@pagefind/component-ui");
-            await import("@pagefind/component-ui/css");
-            document.getElementById("search")?.open();
-        });
-
-        // 汉堡菜单交互
-        const navToggle = document.querySelector(
-            '[data-ref="stalux-nav-toggle"]',
-        );
-        const navList = document.querySelector('[data-ref="stalux-nav-list"]');
-        const navOverlay = document.querySelector(
-            '[data-ref="stalux-nav-overlay"]',
-        );
-
-        function openNav() {
-            navList?.setAttribute("data-state", "open");
-            navOverlay?.setAttribute("data-state", "show");
-            document.body.style.overflow = "hidden";
-        }
-
-        function closeNav() {
-            navList?.removeAttribute("data-state");
-            navOverlay?.removeAttribute("data-state");
-            document.body.style.overflow = "";
-        }
-
-        navToggle?.addEventListener("click", openNav);
-        navOverlay?.addEventListener("click", closeNav);
-
-        // 点击导航链接后关闭侧边栏
-        const navLinks = document.querySelectorAll(
-            '[data-ref="stalux-nav-link"]',
-        );
-        navLinks?.forEach((link) => {
-            link.addEventListener("click", closeNav);
-        });
-
-        // --- 动态导航滚动按钮 ---
-        initNavScroll();
-    });
-
-    function initNavScroll() {
-        const navList = document.querySelector('[data-ref="stalux-nav-list"]');
-        const btnLeft = document.querySelector('[data-ref="stalux-nav-scroll-left"]');
-        const btnRight = document.querySelector('[data-ref="stalux-nav-scroll-right"]');
-        if (!navList || !btnLeft || !btnRight) return;
-
-        let frameId = 0;
-        let lastScale = "1";
-
-        function updateScrollButtons() {
-            const hasOverflow = navList.scrollWidth > navList.clientWidth;
-            const atStart = navList.scrollLeft <= 1;
-            const atEnd = navList.scrollLeft + navList.clientWidth >= navList.scrollWidth - 1;
-
-            btnLeft.toggleAttribute("data-visible", hasOverflow && !atStart);
-            btnRight.toggleAttribute("data-visible", hasOverflow && !atEnd);
-        }
-
-        function updateButtons() {
-            frameId = 0;
-            const navWidth = navList.clientWidth;
-            const itemCount = navList.children.length;
-            const baseFontSize = Number.parseFloat(getComputedStyle(navList).fontSize) || 16;
-            const minFontSize = 12;
-            const gap = Number.parseFloat(getComputedStyle(navList).gap) || 0;
-            const estimatedWidth = [...navList.children].reduce(
-                (total, item) => total + item.getBoundingClientRect().width,
-                0,
-            ) + gap * Math.max(0, itemCount - 1);
-            const scale = estimatedWidth > navWidth ? Math.max(minFontSize / baseFontSize, navWidth / estimatedWidth) : 1;
-            const nextScale = String(scale);
-            if (nextScale !== lastScale) {
-                navList.style.setProperty("--nav-scale", nextScale);
-                lastScale = nextScale;
-            }
-            updateScrollButtons();
-        }
-
-        function scheduleUpdate() {
-            if (frameId) return;
-            frameId = requestAnimationFrame(updateButtons);
-        }
-
-        btnLeft.addEventListener("click", () => {
-            navList.scrollBy({ left: -300, behavior: "smooth" });
-        });
-
-        btnRight.addEventListener("click", () => {
-            navList.scrollBy({ left: 300, behavior: "smooth" });
-        });
-        navList.addEventListener("scroll", scheduleUpdate, { passive: true });
-
-        // 用 ResizeObserver 监听容器尺寸变化（窗口缩窄/变宽时重新判断）
-        const ro = new ResizeObserver(scheduleUpdate);
-        ro.observe(navList);
-        if (navList.parentElement) ro.observe(navList.parentElement);
-        window.addEventListener("resize", scheduleUpdate, { passive: true });
-        window.addEventListener("load", scheduleUpdate, { once: true });
-
-        // 初始检测
-        scheduleUpdate();
-    }
-</script>

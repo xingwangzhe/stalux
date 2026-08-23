@@ -1,35 +1,18 @@
 ---
 import "@waline/client/style";
 import { getCollection } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
+import type { WalineComponentProps } from "@utils/waline";
 
-interface Props {
+interface Props extends WalineComponentProps {
     path?: string;
     title?: string;
-    serverURL?: string;
-    lang?: string;
-    locale?: any;
-    emoji?: any;
-    requiredMeta?: string[];
-    reaction?: boolean;
-    meta?: string[];
-    wordLimit?: number;
-    pageSize?: number;
-    login?: string;
-    recaptchaV3Key?: string;
-    turnstileKey?: string;
-    dark?: string | boolean;
-    noCopyright?: boolean;
-    commentSorting?: string;
-    imageUploader?: any;
-    highlighter?: any;
-    texRenderer?: any;
-    search?: any;
 }
 
 const configEntries = await getCollection("config");
-const siteConfig = (configEntries.find(e => e.id === "site")?.data ?? {}) as Record<string, unknown>;
-const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
 // 为客户端脚本准备配置对象：先给默认配置，再用实际传入的 props 覆盖。
 // 这样避免把同一组字段在 Props 接口、解构默认值、init 调用里各写一遍。
@@ -59,8 +42,7 @@ const walineConfig = {
 };
 ---
 
-{
-    walineConfig.serverURL && (
+{walineConfig.serverURL && (
         <section
             id="waline-container"
             class="waline-comment-container"
@@ -80,532 +62,450 @@ const walineConfig = {
                 {t("comment.disclaimer")}
             </div>
         </section>
-    )
-}
+    )}
 
-<script>
-    import { init } from "@waline/client";
-    let walineInstance: ReturnType<typeof init> | null = null;
-
-    // 安全销毁 Waline 实例
-    const safeDestroy = () => {
-        try {
-            if (walineInstance?.destroy) {
-                const commentEl = document.getElementById("waline-comment");
-                if (commentEl && commentEl.parentNode) {
-                    walineInstance.destroy();
-                }
-            }
-        } catch (e) {
-            console.warn("Waline destroy error:", e);
-        }
-        walineInstance = null;
-    };
-
-    // 初始化 Waline 评论系统
-    const initWaline = async () => {
-        const container = document.getElementById("waline-container");
-        if (!container) {
-            return;
-        }
-
-        let walineConfig;
-        try {
-            // base64 可逆混淆解码（无 unescape，兼容 Node/浏览器）
-            const base64 = container.dataset.walineConfig || "";
-            const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-            const jsonStr = new TextDecoder().decode(bytes);
-            walineConfig = JSON.parse(jsonStr);
-        } catch (error) {
-            console.error("Failed to decode Waline config:", error);
-            return;
-        }
-
-        // 先销毁旧实例
-        safeDestroy();
-
-        if (!walineConfig.serverURL) {
-            console.warn("Waline serverURL not configured");
-            return;
-        }
-
-        const commentEl = document.getElementById("waline-comment");
-        if (!commentEl) {
-            return;
-        }
-
-        try {
-            // 直接将配置对象展开传给 init，无需逐字段罗列
-            walineInstance = init({
-                el: commentEl,
-                ...walineConfig,
-                path: walineConfig.path || window.location.pathname,
-            });
-        } catch (error) {
-            console.error("Failed to initialize Waline:", error);
-        }
-    };
-
-    // 首屏加载
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initWaline, {
-            once: true,
-        });
-    } else {
-        setTimeout(initWaline, 0);
-    }
-
-    // 视图过渡：页面导航前清理
-    document.addEventListener("astro:before-swap", safeDestroy);
-
-    // 视图过渡：页面导航后重新初始化
-    document.addEventListener("astro:page-load", initWaline);
-</script>
+<script src="../../../scripts/waline.ts"></script>
 
 <style is:global>
-    :root {
-        --waline-accent: var(--stalux-accent-color);
-        --waline-accent-rgb: 100, 255, 218;
-    }
+:root {
+    --waline-accent: var(--stalux-accent-color);
+    --waline-accent-rgb: 100, 255, 218;
+}
 
-    /* 评论区容器与博客风格一致 */
-    .waline-comment-container {
-        margin-top: 3rem;
-        margin-bottom: 1rem;
-        padding: 2rem;
-        border-radius: 12px;
-        animation: fadeInUpComment 0.8s ease-in-out forwards;
+/* 评论区容器与博客风格一致 */
+.waline-comment-container {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding: 2rem;
+    border-radius: 12px;
+    animation: fadeInUpComment 0.8s ease-in-out forwards;
+    opacity: 0;
+    animation-delay: 0.3s;
+}
+
+/* 评论区标题样式与博客风格一致 */
+.waline-comment-title {
+    margin: 0 0 1.5rem 0;
+    font-size: 2rem;
+    text-align: center;
+    background: linear-gradient(90deg, var(--white-90p), rgba(var(--waline-accent-rgb), 0.9));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Waline根元素自定义 */
+.wl-panel {
+    background-color: rgba(17, 17, 17, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+/* 修改输入框样式 */
+.wl-editor,
+.wl-input {
+    background-color: rgba(17, 17, 17, 0.5) !important;
+    color: var(--white-90p) !important;
+    border: 1px solid rgba(100, 100, 100, 0.3) !important;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* 输入框焦点状态 */
+.wl-editor:focus,
+.wl-input:focus {
+    border-color: rgba(var(--waline-accent-rgb), 0.5) !important;
+    box-shadow: 0 0 5px rgba(var(--waline-accent-rgb), 0.3) !important;
+    outline: none;
+}
+
+/* 修复登录后头像向下偏移 — 全局 a::after 下划线动画撑高了 wl-login-nick */
+.wl-login-nick {
+    display: block !important;
+    height: var(--waline-avatar-size, 52px);
+    overflow: hidden;
+}
+.wl-login-nick::after {
+    display: none;
+}
+
+/* 修复 markdown 全局 img margin 误伤 Waline 头像 */
+.waline-comment-container img {
+    margin: 0 !important;
+}
+.wl-btn {
+    background: rgba(var(--waline-accent-rgb), 0.6) !important;
+    color: var(--white-full) !important;
+    border: none !important;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.wl-btn:hover {
+    background: rgba(var(--waline-accent-rgb), 0.7) !important;
+    transform: none;
+    box-shadow: none !important;
+}
+
+.wl-btn.primary {
+    background: rgba(var(--waline-accent-rgb), 0.6) !important;
+}
+
+.wl-btn.primary:hover {
+    background: rgba(var(--waline-accent-rgb), 0.7) !important;
+    transform: none;
+    box-shadow: none !important;
+}
+
+/* 标签文字颜色 */
+.wl-header label {
+    color: var(--white-85p);
+    font-weight: 500;
+}
+
+/* 评论卡片样式 */
+.wl-card {
+    background-color: rgba(17, 17, 17, 0.3) !important;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-top: 1.2rem;
+    border: 1px solid rgba(70, 70, 70, 0.2) !important;
+    transition: all 0.3s ease;
+}
+
+.wl-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+}
+
+/* 修改用户名样式 */
+.wl-nick {
+    color: rgba(var(--waline-accent-rgb), 0.95) !important;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.wl-nick:hover {
+    color: rgba(var(--waline-accent-rgb), 1) !important;
+}
+
+/* 评论内容样式 */
+.wl-content {
+    color: var(--white-90p);
+    line-height: 1.7;
+    margin: 0.8rem 0;
+    word-break: break-word;
+}
+
+/* 回复按钮样式 */
+.wl-reply {
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+.wl-reply:hover {
+    opacity: 1;
+    text-decoration: none;
+}
+
+/* 表情面板样式 */
+.wl-emoji-popup,
+.wl-gif-popup {
+    background-color: rgba(25, 25, 25, 0.95) !important;
+    border: 1px solid rgba(70, 70, 70, 0.3) !important;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+/* 表情按钮样式 */
+.wl-emoji-popup button {
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.wl-emoji-popup button:hover {
+    background-color: rgba(var(--waline-accent-rgb), 0.2);
+    transform: scale(1.05);
+}
+
+/* 文章评价反应区域 */
+.wl-reaction {
+    background-color: rgba(17, 17, 17, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(70, 70, 70, 0.2);
+    text-align: center;
+}
+
+.wl-reaction-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--white-90p);
+}
+
+.wl-reaction-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.wl-reaction-item {
+    background-color: rgba(30, 30, 30, 0.5) !important;
+    border-radius: 8px;
+    margin: 5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(70, 70, 70, 0.2) !important;
+}
+
+.wl-reaction-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    background-color: rgba(40, 40, 40, 0.8) !important;
+    border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+}
+
+.wl-reaction-img {
+    padding: 6px;
+}
+
+.wl-reaction-img img {
+    transition: transform 0.3s ease;
+}
+
+.wl-reaction-item:hover .wl-reaction-img img {
+    transform: scale(1.15);
+}
+
+.wl-reaction-votes {
+    font-size: 0.8rem;
+    padding: 5px 0;
+    background-color: rgba(var(--waline-accent-rgb), 0.7);
+    color: var(--white-full);
+}
+
+/* 评论计数和排序 */
+.wl-meta-head {
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(70, 70, 70, 0.3);
+    padding-bottom: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wl-count {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--white-90p);
+}
+
+.wl-sort {
+    display: flex;
+    gap: 1rem;
+}
+
+.wl-sort li {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--white-70p);
+}
+
+.wl-sort li:hover {
+    color: var(--white-90p);
+}
+
+.wl-sort li.active {
+    color: rgba(var(--waline-accent-rgb), 1);
+    font-weight: 500;
+}
+
+/* 页码导航 */
+.wl-page {
+    margin-top: 1.2rem;
+    text-align: center;
+}
+
+.wl-page button {
+    background: rgba(30, 30, 30, 0.5) !important;
+    color: var(--white-80p) !important;
+    border: 1px solid rgba(70, 70, 70, 0.3) !important;
+    border-radius: 6px;
+    margin: 0 5px;
+    padding: 5px 10px;
+    transition: all 0.2s ease;
+}
+
+.wl-page button:hover:not(:disabled) {
+    background: rgba(var(--waline-accent-rgb), 0.7) !important;
+    color: var(--white-full) !important;
+    transform: translateY(-2px);
+}
+
+.wl-page button.active {
+    background: rgba(var(--waline-accent-rgb), 0.8) !important;
+    color: var(--white-full) !important;
+}
+
+/* Waline底部版权信息 */
+.wl-power {
+    opacity: 0.6;
+    font-size: 0.85rem;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.wl-power a {
+    color: rgba(var(--waline-accent-rgb), 0.9);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.wl-power a:hover {
+    color: rgba(var(--waline-accent-rgb), 1);
+    text-decoration: underline;
+}
+
+/* 评论为空状态 */
+.wl-empty {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--white-60p);
+    font-size: 1.1rem;
+}
+
+/* 支持文字数量统计 */
+.wl-text-number {
+    font-size: 0.9rem;
+    color: var(--white-60p);
+}
+
+/* 添加动画效果 */
+@keyframes fadeInUpComment {
+    from {
         opacity: 0;
-        animation-delay: 0.3s;
+        transform: translateY(30px);
     }
-
-    /* 评论区标题样式与博客风格一致 */
-    .waline-comment-title {
-        margin: 0 0 1.5rem 0;
-        font-size: 2rem;
-        text-align: center;
-        background: linear-gradient(
-            90deg,
-            var(--white-90p),
-            rgba(var(--waline-accent-rgb), 0.9)
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    /* Waline根元素自定义 */
-    .wl-panel {
-        background-color: rgba(17, 17, 17, 0.3);
-        border-radius: 12px;
-        padding: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 1.5rem;
-    }
-
-    /* 修改输入框样式 */
-    .wl-editor,
-    .wl-input {
-        background-color: rgba(17, 17, 17, 0.5) !important;
-        color: var(--white-90p) !important;
-        border: 1px solid rgba(100, 100, 100, 0.3) !important;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-    /* 输入框焦点状态 */
-    .wl-editor:focus,
-    .wl-input:focus {
-        border-color: rgba(var(--waline-accent-rgb), 0.5) !important;
-        box-shadow: 0 0 5px rgba(var(--waline-accent-rgb), 0.3) !important;
-        outline: none;
-    }
-
-    /* 修复登录后头像向下偏移 — 全局 a::after 下划线动画撑高了 wl-login-nick */
-    .wl-login-nick {
-        display: block !important;
-        height: var(--waline-avatar-size, 52px);
-        overflow: hidden;
-    }
-    .wl-login-nick::after {
-        display: none;
-    }
-
-    /* 修复 markdown 全局 img margin 误伤 Waline 头像 */
-    .waline-comment-container img {
-        margin: 0 !important;
-    }
-    .wl-btn {
-        background: rgba(var(--waline-accent-rgb), 0.6) !important;
-        color: var(--white-full) !important;
-        border: none !important;
-        border-radius: 6px;
-        transition: all 0.2s ease;
-        font-weight: 500;
-        padding: 8px 15px;
-        cursor: pointer;
-    }
-
-    .wl-btn:hover {
-        background: rgba(var(--waline-accent-rgb), 0.7) !important;
-        transform: none;
-        box-shadow: none !important;
-    }
-
-    .wl-btn.primary {
-        background: rgba(var(--waline-accent-rgb), 0.6) !important;
-    }
-
-    .wl-btn.primary:hover {
-        background: rgba(var(--waline-accent-rgb), 0.7) !important;
-        transform: none;
-        box-shadow: none !important;
-    }
-
-    /* 标签文字颜色 */
-    .wl-header label {
-        color: var(--white-85p);
-        font-weight: 500;
-    }
-
-    /* 评论卡片样式 */
-    .wl-card {
-        background-color: rgba(17, 17, 17, 0.3) !important;
-        border-radius: 12px;
-        padding: 1.2rem;
-        margin-top: 1.2rem;
-        border: 1px solid rgba(70, 70, 70, 0.2) !important;
-        transition: all 0.3s ease;
-    }
-
-    .wl-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
-    }
-
-    /* 修改用户名样式 */
-    .wl-nick {
-        color: rgba(var(--waline-accent-rgb), 0.95) !important;
-        font-weight: 600;
-        transition: all 0.2s ease;
-    }
-
-    .wl-nick:hover {
-        color: rgba(var(--waline-accent-rgb), 1) !important;
-    }
-
-    /* 评论内容样式 */
-    .wl-content {
-        color: var(--white-90p);
-        line-height: 1.7;
-        margin: 0.8rem 0;
-        word-break: break-word;
-    }
-
-    /* 回复按钮样式 */
-    .wl-reply {
-        opacity: 0.8;
-        transition: all 0.2s ease;
-    }
-
-    .wl-reply:hover {
+    to {
         opacity: 1;
-        text-decoration: none;
+        transform: translateY(0);
+    }
+}
+
+/* 降低选中文本高亮程度，移除外边框 */
+.waline-comment-container *::selection {
+    background: rgba(var(--waline-accent-rgb), 0.25);
+    color: inherit;
+    border: none;
+    outline: none;
+}
+
+.waline-comment-container *::-moz-selection {
+    background: rgba(var(--waline-accent-rgb), 0.25);
+    color: inherit;
+    border: none;
+    outline: none;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .waline-comment-container {
+        padding: 1.5rem;
+        margin-top: 2rem;
     }
 
-    /* 表情面板样式 */
-    .wl-emoji-popup,
-    .wl-gif-popup {
-        background-color: rgba(25, 25, 25, 0.95) !important;
-        border: 1px solid rgba(70, 70, 70, 0.3) !important;
-        border-radius: 10px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(10px);
+    .waline-comment-title {
+        font-size: 1.8rem;
     }
 
-    /* 表情按钮样式 */
-    .wl-emoji-popup button {
-        border-radius: 6px;
-        transition: all 0.2s ease;
+    .wl-panel {
+        padding: 0.8rem;
     }
 
-    .wl-emoji-popup button:hover {
-        background-color: rgba(var(--waline-accent-rgb), 0.2);
-        transform: scale(1.05);
+    .wl-header {
+        flex-direction: column;
     }
 
-    /* 文章评价反应区域 */
-    .wl-reaction {
-        background-color: rgba(17, 17, 17, 0.3);
-        border-radius: 12px;
+    .wl-header-item {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* 平板设备上的嵌套评论处理 */
+    .wl-card {
+        padding: 0.8rem;
+        margin-left: 0;
+    }
+
+    .wl-children {
+        margin-left: 0;
+        padding-left: 0;
+    }
+
+    .wl-children .wl-card {
+        margin-left: 0;
+        border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
+        padding-left: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .waline-comment-container {
         padding: 1rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid rgba(70, 70, 70, 0.2);
-        text-align: center;
+        margin-top: 1.5rem;
     }
 
-    .wl-reaction-title {
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-        color: var(--white-90p);
+    .waline-comment-title {
+        font-size: 1.6rem;
+    }
+
+    .wl-panel {
+        padding: 0.8rem;
     }
 
     .wl-reaction-list {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
+        gap: 5px;
     }
 
-    .wl-reaction-item {
-        background-color: rgba(30, 30, 30, 0.5) !important;
-        border-radius: 8px;
-        margin: 5px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border: 1px solid rgba(70, 70, 70, 0.2) !important;
+    .wl-card {
+        padding: 0.75rem;
+        margin-left: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
 
-    .wl-reaction-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        background-color: rgba(40, 40, 40, 0.8) !important;
-        border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+    /* 小屏幕上的嵌套评论处理 */
+    .wl-children {
+        margin-left: 0;
+        padding-left: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
 
-    .wl-reaction-img {
-        padding: 6px;
+    .wl-children .wl-card {
+        margin-left: 0;
+        border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
+        padding-left: 0.6rem;
+        width: 100%;
     }
 
-    .wl-reaction-img img {
-        transition: transform 0.3s ease;
+    .wl-children .wl-children .wl-card {
+        border-left: 3px solid rgba(var(--waline-accent-rgb), 0.3);
+        padding-left: 0.6rem;
     }
 
-    .wl-reaction-item:hover .wl-reaction-img img {
-        transform: scale(1.15);
-    }
-
-    .wl-reaction-votes {
-        font-size: 0.8rem;
-        padding: 5px 0;
-        background-color: rgba(var(--waline-accent-rgb), 0.7);
-        color: var(--white-full);
-    }
-
-    /* 评论计数和排序 */
     .wl-meta-head {
-        margin-bottom: 1.2rem;
-        border-bottom: 1px solid rgba(70, 70, 70, 0.3);
-        padding-bottom: 0.8rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
     }
-
-    .wl-count {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: var(--white-90p);
-    }
-
-    .wl-sort {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .wl-sort li {
-        cursor: pointer;
-        transition: all 0.2s ease;
-        color: var(--white-70p);
-    }
-
-    .wl-sort li:hover {
-        color: var(--white-90p);
-    }
-
-    .wl-sort li.active {
-        color: rgba(var(--waline-accent-rgb), 1);
-        font-weight: 500;
-    }
-
-    /* 页码导航 */
-    .wl-page {
-        margin-top: 1.2rem;
-        text-align: center;
-    }
-
-    .wl-page button {
-        background: rgba(30, 30, 30, 0.5) !important;
-        color: var(--white-80p) !important;
-        border: 1px solid rgba(70, 70, 70, 0.3) !important;
-        border-radius: 6px;
-        margin: 0 5px;
-        padding: 5px 10px;
-        transition: all 0.2s ease;
-    }
-
-    .wl-page button:hover:not(:disabled) {
-        background: rgba(var(--waline-accent-rgb), 0.7) !important;
-        color: var(--white-full) !important;
-        transform: translateY(-2px);
-    }
-
-    .wl-page button.active {
-        background: rgba(var(--waline-accent-rgb), 0.8) !important;
-        color: var(--white-full) !important;
-    }
-
-    /* Waline底部版权信息 */
-    .wl-power {
-        opacity: 0.6;
-        font-size: 0.85rem;
-        margin-top: 2rem;
-        text-align: center;
-    }
-
-    .wl-power a {
-        color: rgba(var(--waline-accent-rgb), 0.9);
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .wl-power a:hover {
-        color: rgba(var(--waline-accent-rgb), 1);
-        text-decoration: underline;
-    }
-
-    /* 评论为空状态 */
-    .wl-empty {
-        text-align: center;
-        padding: 2rem 0;
-        color: var(--white-60p);
-        font-size: 1.1rem;
-    }
-
-    /* 支持文字数量统计 */
-    .wl-text-number {
-        font-size: 0.9rem;
-        color: var(--white-60p);
-    }
-
-    /* 添加动画效果 */
-    @keyframes fadeInUpComment {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* 降低选中文本高亮程度，移除外边框 */
-    .waline-comment-container *::selection {
-        background: rgba(var(--waline-accent-rgb), 0.25);
-        color: inherit;
-        border: none;
-        outline: none;
-    }
-
-    .waline-comment-container *::-moz-selection {
-        background: rgba(var(--waline-accent-rgb), 0.25);
-        color: inherit;
-        border: none;
-        outline: none;
-    }
-
-    /* 响应式调整 */
-    @media (max-width: 768px) {
-        .waline-comment-container {
-            padding: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .waline-comment-title {
-            font-size: 1.8rem;
-        }
-
-        .wl-panel {
-            padding: 0.8rem;
-        }
-
-        .wl-header {
-            flex-direction: column;
-        }
-
-        .wl-header-item {
-            width: 100%;
-            margin-bottom: 0.5rem;
-        }
-
-        /* 平板设备上的嵌套评论处理 */
-        .wl-card {
-            padding: 0.8rem;
-            margin-left: 0;
-        }
-
-        .wl-children {
-            margin-left: 0;
-            padding-left: 0;
-        }
-
-        .wl-children .wl-card {
-            margin-left: 0;
-            border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
-            padding-left: 0.8rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .waline-comment-container {
-            padding: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .waline-comment-title {
-            font-size: 1.6rem;
-        }
-
-        .wl-panel {
-            padding: 0.8rem;
-        }
-
-        .wl-reaction-list {
-            gap: 5px;
-        }
-
-        .wl-card {
-            padding: 0.75rem;
-            margin-left: 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* 小屏幕上的嵌套评论处理 */
-        .wl-children {
-            margin-left: 0;
-            padding-left: 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .wl-children .wl-card {
-            margin-left: 0;
-            border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
-            padding-left: 0.6rem;
-            width: 100%;
-        }
-
-        .wl-children .wl-children .wl-card {
-            border-left: 3px solid rgba(var(--waline-accent-rgb), 0.3);
-            padding-left: 0.6rem;
-        }
-
-        .wl-meta-head {
-            flex-direction: column;
-            gap: 0.5rem;
-            align-items: flex-start;
-        }
-    }
+}
 </style>

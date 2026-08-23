@@ -1,11 +1,9 @@
 ---
-import PostAuthor from "@components/stalux/posts/postAuthor.astro";
-import style from "@styles/components/posts/postSidebar.module.css";
 import SocialMedia from "@components/stalux/links/socialMedia.astro";
+import PostAuthor from "@components/stalux/posts/postAuthor.astro";
 import RandomPost from "@components/stalux/posts/randomPost.astro";
+import style from "@styles/components/posts/postSidebar.module.css";
 import { getSidebarAnimation } from "@utils/view-transitions";
-// 判断是否为文章页面
-const isPostPage = Astro.url.pathname.includes("/posts/");
 ---
 
 <aside
@@ -22,20 +20,20 @@ const isPostPage = Astro.url.pathname.includes("/posts/");
     </div>
 
     <style>
+    :global(.stalux-root) {
+        --sidebar-width: 280px;
+    }
+
+    @media (max-width: 1200px) {
         :global(.stalux-root) {
-            --sidebar-width: 280px;
+            --sidebar-width: 240px;
         }
+    }
 
-        @media (max-width: 1200px) {
-            :global(.stalux-root) {
-                --sidebar-width: 240px;
-            }
+    @media (max-width: 768px) {
+        :global(.stalux-root) {
+            --sidebar-width: 0;
         }
-
-        @media (max-width: 768px) {
-            :global(.stalux-root) {
-                --sidebar-width: 0;
-            }
-        }
+    }
     </style>
 </aside>

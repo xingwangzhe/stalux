@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+import { getHeadData } from "@utils/config-utils";
+
 const configEntries = await getCollection("config");
 const headConfig = getHeadData(configEntries);
 const umamiConfig = headConfig?.umami;
@@ -9,8 +10,10 @@ const umamiURL = umamiConfig?.url;
 ---
 
 <script
+    is:inline
     defer
     src={umamiURL}
     data-website-id={umamiID}
     type="text/javascript"
-    data-astro-rerun></script>
+    transition:persist="stalux-umami"
+></script>

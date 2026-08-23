@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
+import styles from "@styles/components/archives/toArchive.module.css";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
-import styles from "@styles/components/archives/toArchive.module.css";
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);

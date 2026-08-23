@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
 interface Props {
     showStats?: boolean;
@@ -15,8 +15,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const { showStats = true, wordCount, buildtime } = Astro.props;
 ---
 
-{
-    showStats && (
+{showStats && (
         <p class="site-stats">
             <span id="vercount_container_site_uv">
                 {t("footer.visitors")}<span id="vercount_value_site_uv">Loading...</span>{" "}
@@ -36,39 +35,34 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
                 {t("footer.chars")}
             </span>
         </p>
-    )
-}
+    )}
 
-{
-    buildtime && (
+{buildtime && (
         <div class="site-build-time" data-stalux-buildtime={buildtime} data-stalux-runtime-format={t("footer.runtimeFormat")}>
             <span>
                 {t("footer.runningTime")}
                 <span id="runtime-counter" />
             </span>
         </div>
-    )
-}
-
-<script src="../../../scripts/runtime-counter.ts"></script>
+    )}
 
 <style>
-    .site-stats {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        font-size: 0.9rem;
-    }
+.site-stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
 
-    .stats-separator {
-        color: rgba(255, 255, 255, 0.5);
-    }
+.stats-separator {
+    color: rgba(255, 255, 255, 0.5);
+}
 
-    .site-build-time {
-        margin-top: 0.5rem;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.8);
-        text-align: center;
-    }
+.site-build-time {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+}
 </style>

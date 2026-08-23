@@ -48,9 +48,7 @@ interface ModelContext {
     registerTool: (tool: WebMCPTool, options?: { signal?: AbortSignal }) => Promise<undefined>;
 }
 
-interface DocumentWithModelContext extends Document {
-    modelContext?: ModelContext;
-}
+type DocumentWithModelContext = { modelContext?: ModelContext };
 
 // ---------------------------------------------------------------------------
 // 语言选择（跟随站点 site.yml 的 lang）
@@ -169,8 +167,9 @@ function briefMeta(p: PostMeta): Record<string, unknown> {
 
 /** 从当前 URL 解析 abbrlink（/posts/{abbrlink}/ 或 /posts/{abbrlink}.md） */
 function currentAbbrlinkFromPath(): string | null {
-    const m = location.pathname.match(/^\/posts\/([^/]+?)(?:\.md)?\/?$/);
-    return m ? decodeURIComponent(m[1]) : null;
+    const match = location.pathname.match(/^\/posts\/([^/]+?)(?:\.md)?\/?$/);
+    const encoded = match?.[1];
+    return encoded ? decodeURIComponent(encoded) : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -207,8 +206,8 @@ function listPostsTool(): WebMCPTool {
                     maximum: MAX_LIST_PAGE_SIZE,
                     default: 10,
                     description: pick(
-                        "每页条数，最大 " + MAX_LIST_PAGE_SIZE,
-                        "Items per page, max " + MAX_LIST_PAGE_SIZE,
+                        `每页条数，最大 ${MAX_LIST_PAGE_SIZE}`,
+                        `Items per page, max ${MAX_LIST_PAGE_SIZE}`,
                     ),
                 },
             },
@@ -351,6 +350,7 @@ function randomPostTool(): WebMCPTool {
                 );
             }
             const post = list[Math.floor(Math.random() * list.length)];
+            if (!post) return err("INDEX_EMPTY", pick("文章索引为空", "Post index is empty"));
             return { ok: true, post: briefMeta(post) };
         },
     };
@@ -463,7 +463,7 @@ function readPostTool(): WebMCPTool {
             const id = String(input.id ?? "").trim();
             if (!id)
                 return err("BAD_INPUT", pick("请提供文章 abbrlink", "Provide a post abbrlink"));
-            const url = "/posts/" + encodeURIComponent(id) + ".md";
+            const url = `/posts/${encodeURIComponent(id)}.md`;
             const r = await fetch(url, { headers: { Accept: "text/markdown" } });
             if (r.status === 404)
                 return err("NOT_FOUND", pick("未找到文章: ", "Post not found: ") + id);
@@ -507,8 +507,8 @@ function siteInfoTool(): WebMCPTool {
                 url: info.url ?? "",
                 description: info.description ?? "",
                 lang: info.lang ?? "",
-                llms: (info.url ?? "") + "/llms.txt",
-                llmsFull: (info.url ?? "") + "/llms-full.txt",
+                llms: `${info.url ?? ""}/llms.txt`,
+                llmsFull: `${info.url ?? ""}/llms-full.txt`,
             };
         },
     };
@@ -559,7 +559,7 @@ async function registerTools(): Promise<{ registered: string[]; reason?: string 
             await ctx.registerTool(tool, { signal: controller.signal });
             registered.push(tool.name);
         } catch (e) {
-            console.warn("[stalux/webmcp] 注册失败: " + tool.name, e);
+            console.warn(`[stalux/webmcp] 注册失败: ${tool.name}`, e);
         }
     }
     return { registered };

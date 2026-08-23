@@ -12,6 +12,8 @@
  *   window load（首访）与 swap 完成后、过渡动画期间（软导航）触发，
  *   此时设置背景，过渡动画中旧图淡出、新图淡入，自然 crossfade 无跳变。
  */
+export {};
+
 declare global {
     interface Window {
         __STALUX_BG_URLS__?: string[];

@@ -9,7 +9,7 @@
 /* ===== @font-face 声明 ===== */
 
 @font-face {
-    font-family: "Temml";
+    font-family: "Temml", serif;
     src: url("/fonts/Temml.woff2") format("woff2");
     font-weight: normal;
     font-style: normal;
@@ -50,7 +50,7 @@ math.tml-display {
 }
 
 *.mathscr {
-    font-family: "Temml";
+    font-family: "Temml", serif;
 }
 
 /* Cramped superscripts in WebKit */
@@ -127,7 +127,7 @@ mover > :first-child {
 @supports (not (-moz-appearance: none)) {
     /* prime vertical alignment */
     mo.tml-prime {
-        font-family: Temml;
+        font-family: Temml, serif;
     }
     /* Italic correction on superscripts */
     .tml-sml-pad {

@@ -1,10 +1,9 @@
 ---
-import style from "@styles/components/posts/postCard.module.css";
-import { toMachineDateTime } from "@utils/semantic-time";
-import { getCollection } from "astro:content";
-
 import type { CollectionEntry } from "astro:content";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+import { getCollection } from "astro:content";
+import style from "@styles/components/posts/postCard.module.css";
+import { getSiteData } from "@utils/config-utils";
+import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
     post: CollectionEntry<"posts">;
@@ -22,8 +21,7 @@ const description = post.data.desc || "";
 
 <article class={style.post}>
     <div class={style.postContainer}>
-        {
-            post.data.cover && (
+        {post.data.cover && (
                 <a
                     href={`/posts/${post.data.abbrlink}/`}
                     class="a-none"
@@ -42,59 +40,50 @@ const description = post.data.desc || "";
                         />
                     </div>
                 </a>
-            )
-        }
+            )}
         <h2 class={style.postTitle}>
             <a href={`/posts/${post.data.abbrlink}/`} class="a-none" data-astro-prefetch="viewport">
                 {post.data.title}
             </a>
         </h2>
         <div class={style.time}>
-            {
-                post.data.date && (
+            {post.data.date && (
                     <time
                         class={style.postDate}
                         datetime={timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date}
                     >
                         {post.data.date}
                     </time>
-                )
-            }
-            {
-                post.data.updated && (
+                )}
+            {post.data.updated && (
                     <time
                         class={style.postUpdated}
                         datetime={timezone ? toMachineDateTime(post.data.updated, timezone) : post.data.updated}
                     >
                         {post.data.updated}
                     </time>
-                )
-            }
+                )}
         </div>
         <div class={style.postDescription}>{description}</div>
         <div class={style.postMeta}>
             <div class={style.postTags}>
-                {
-                    post.data.tags?.map((tag) => (
+                {post.data.tags?.map((tag) => (
                         <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
                             <span class={style.postTag}>{tag}</span>
                         </a>
-                    ))
-                }
+                    ))}
             </div>
             <div class={style.postCategories}>
-                {
-                    post.data.categories?.map((category) => (
+                {post.data.categories?.map((category) => (
                         <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
                             <span class={style.postCategory}>{category}</span>
                         </a>
-                    ))
-                }
+                    ))}
             </div>
         </div>
         <a
             href={`/posts/${post.data.abbrlink}/`}
-            class={style.readMore + " a-none"}
+            class={`${style.readMore} a-none`}
             data-astro-prefetch
         >
             Read More

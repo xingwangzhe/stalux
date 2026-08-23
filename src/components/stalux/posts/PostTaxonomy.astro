@@ -1,7 +1,7 @@
 ---
+import { getCollection } from "astro:content";
 import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postTaxonomy.module.css";
-import { getCollection } from "astro:content";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
@@ -45,8 +45,7 @@ const cfg = {
 
 <nav class={style.container} transition:name={cfg.containerName} aria-label={title ?? cfg.heading}>
     {items.length > 0 && <h3 class={style.title}>{title ?? cfg.heading}</h3>}
-    {
-        items.length > 0 ? (
+    {items.length > 0 ? (
             <div
                 class={cfg.listClass}
                 transition:name={cfg.contentName}
@@ -60,6 +59,5 @@ const cfg = {
             </div>
         ) : (
             <div class={style.empty}>{cfg.empty}</div>
-        )
-    }
+        )}
 </nav>

@@ -3,9 +3,9 @@ import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postContent.module.css";
 import "@styles/components/markdown.css";
 import { getCollection } from "astro:content";
+import { getPromoteData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 import { toMachineDateTime } from "@utils/semantic-time";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
 interface Props {
     title: string;
@@ -28,39 +28,34 @@ const timezone = siteConfig.timezone;
 // /about 等非文章页面固定不显示 Markdown 原文按钮
 const isAboutPage = Astro.url.pathname.startsWith("/about");
 const exportMd = Boolean(promoteConfig?.export_md) && !isAboutPage;
-const mdSourceUrl = exportMd
-    ? Astro.url.pathname.replace(/\/$/, "") + ".md"
-    : "";
+const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "";
 ---
 
 <article
     class={style.articleContent}
+    data-stalux-gallery={props.hasImage ? "true" : undefined}
     transition:name={props.transitionName ?? "post-content"}
-    transition:animate={fade({ duration: "0.45s" })}>
+    transition:animate={fade({ duration: "0.45s" })}
+>
     <!-- Article Header -->
     <header class={style.articleHeader}>
         <h1 class={style.title}>{props.title}</h1>
         <div class={style.metadata}>
-            {
-                props.date && (
+            {props.date && (
                     <time class={style.metaItem} datetime={timezone ? toMachineDateTime(props.date, timezone) : props.date}>
                         {t("post.publishTime")}
                         {props.date}
                     </time>
-                )
-            }
+                )}
 
-            {
-                props.updated && (
+            {props.updated && (
                     <time class={style.metaItem} datetime={timezone ? toMachineDateTime(props.updated, timezone) : props.updated}>
                         {t("post.updateTime")}
                         {props.updated}
                     </time>
-                )
-            }
+                )}
         </div>
-            {
-                <div class={style.pageStats}>
+        {<div class={style.pageStats}>
                     {(props.readingMinutes ?? 0) > 0 && (
                         <span class={style.readingTime}>
                             {t("post.readingTime")}{props.readingMinutes && props.readingMinutes > 0
@@ -79,10 +74,8 @@ const mdSourceUrl = exportMd
                         {t("post.viewCount")}
                         <span id="vercount_value_page_pv">Loading...</span>
                     </span>
-                </div>
-        }
-        {
-            exportMd && (
+                </div>}
+        {exportMd && (
                 <div class={style.sourceLinkRow}>
                     <a
                         class={style.sourceLink}
@@ -93,8 +86,7 @@ const mdSourceUrl = exportMd
                         {t("post.viewSource")}
                     </a>
                 </div>
-            )
-        }
+            )}
     </header>
 
     <!-- Article Body -->
@@ -103,134 +95,4 @@ const mdSourceUrl = exportMd
     </section>
 </article>
 
-{
-    props.hasImage && (
-        <script>
-            // 选择器必须与 @xingwangzhe/satteri-photoswipe HAST 插件生成的 class 一致
-            const GALLERY_SELECTOR = "a.pswp-gallery-item";
-
-            async function enrichPhotoSwipeData() {
-                const container = document.querySelector("[data-pagefind-body]");
-                if (!container) return;
-
-                const links = [...container.querySelectorAll(GALLERY_SELECTOR)];
-                for (const link of links) {
-                    const img = link.querySelector("img");
-                    if (!img) continue;
-
-                    const width = img.naturalWidth;
-                    const height = img.naturalHeight;
-                    if (width && height) {
-                        link.dataset.pswpWidth = String(width);
-                        link.dataset.pswpHeight = String(height);
-                        continue;
-                    }
-
-                    const tempImg = new Image();
-                    tempImg.src = img.currentSrc || img.src;
-                    try {
-                        await tempImg.decode();
-                    } catch {
-                        /* 解码失败时跳过尺寸写入 */
-                        continue;
-                    }
-                    link.dataset.pswpWidth = String(tempImg.naturalWidth);
-                    link.dataset.pswpHeight = String(tempImg.naturalHeight);
-                }
-            }
-
-            // 状态放 window：View Transitions 软导航会重执行模块脚本，
-            // 用全局标记避免 document 级监听器重复注册导致灯箱重复初始化。
-            const state = (window.__staluxPhotoswipe ||= {
-                lightbox: null,
-                initPromise: null,
-                lightboxInitialized: false,
-                handlerInstalled: false,
-            });
-
-            async function initLightbox() {
-                const [{ default: PhotoSwipeLightbox }, { default: PhotoSwipe }, { default: photoSwipeCss }] = await Promise.all([
-                    import("photoswipe/lightbox"),
-                    import("photoswipe"),
-                    import("photoswipe/dist/photoswipe.css?raw"),
-                ]);
-
-                // `?raw` keeps Astro from extracting a static stylesheet link.
-                // Inject it only after the first gallery interaction.
-                if (!document.querySelector("style[data-photoswipe]") && photoSwipeCss) {
-                    const style = document.createElement("style");
-                    style.dataset.photoswipe = "true";
-                    style.textContent = photoSwipeCss;
-                    document.head.appendChild(style);
-                }
-
-                // 销毁旧实例（View Transition 导航后，旧 DOM 已移除，需安全销毁）
-                if (state.lightbox) {
-                    try {
-                        state.lightbox.destroy();
-                    } catch {
-                        /* ignore */
-                    }
-                    state.lightbox = null;
-                }
-
-                // 不阻塞文章首屏；已加载图片会立即写入尺寸，其余图片在后台补齐。
-                void enrichPhotoSwipeData();
-
-                state.lightbox = new PhotoSwipeLightbox({
-                    gallery: "[data-pagefind-body]",
-                    children: GALLERY_SELECTOR,
-                    pswpModule: PhotoSwipe,
-                    initialZoomLevel: "fill",
-                });
-                state.lightbox.init();
-            }
-
-            const ensureLightbox = () => {
-                if (!state.initPromise) state.initPromise = initLightbox();
-                return state.initPromise;
-            };
-
-            function handleGalleryClick(event) {
-                const target = event.target;
-                if (!(target instanceof Element && target.closest(GALLERY_SELECTOR))) return;
-
-                // 灯箱就绪后，后续点击交给 PhotoSwipeLightbox 自身的
-                // bubble 阶段处理（它负责 preventDefault + loadAndOpen）。
-                if (state.lightboxInitialized) return;
-
-                // 首次点击：立即阻止浏览器跳转到原始图片（否则会离开文章页），
-                // 异步初始化完成后直接打开被点击的图片。
-                event.preventDefault();
-                const anchor = target.closest(GALLERY_SELECTOR);
-                const clickedIndex = [...document.querySelectorAll(GALLERY_SELECTOR)].indexOf(anchor);
-                const initialPoint = { x: event.clientX, y: event.clientY };
-
-                void ensureLightbox()
-                    .then(() => {
-                        state.lightboxInitialized = true;
-                        if (state.lightbox) {
-                            state.lightbox.loadAndOpen(clickedIndex, undefined, initialPoint);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("[stalux photoswipe] 初始化失败", error);
-                    });
-            }
-
-            if (!state.handlerInstalled) {
-                state.handlerInstalled = true;
-
-                // 仅在用户第一次点击图片时加载 PhotoSwipe、其 CSS 和图片尺寸数据，
-                // 文章首屏不再为未使用的灯箱支付 JS/CSS 成本。
-                document.addEventListener("click", handleGalleryClick, { capture: true });
-
-                // 软导航后旧 DOM 已移除：下次点击重新初始化（initLightbox 会销毁旧实例）。
-                document.addEventListener("astro:page-load", () => {
-                    state.initPromise = null;
-                    state.lightboxInitialized = false;
-                });
-            }
-        </script>
-    )
-}
+<script src="../../../scripts/photoswipe.ts"></script>

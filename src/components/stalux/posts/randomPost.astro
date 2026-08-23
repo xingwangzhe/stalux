@@ -1,20 +1,55 @@
 ---
-import style from "@styles/components/posts/randomPost.module.css";
 import { getCollection } from "astro:content";
+import style from "@styles/components/posts/randomPost.module.css";
 import { createTranslator } from "@utils/i18n";
 
-interface Props { count?: number; title?: string; }
+interface Props {
+    count?: number;
+    title?: string;
+}
 const configEntries = await getCollection("config");
-const siteConfig = (configEntries.find((entry) => entry.id === "site")?.data ?? {}) as Record<string, unknown>;
+const siteConfig = (configEntries.find((entry) => entry.id === "site")?.data ?? {}) as Record<
+    string,
+    unknown
+>;
 const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 const { count = 5, title = t("randomPost.title") } = Astro.props;
 ---
-<aside class={style.container} transition:persist-props aria-label={t("randomPost.title")} data-stalux-random-posts data-count={count} data-no-posts={t("randomPost.noPosts")} data-load-failed={t("randomPost.loadFailed")} data-load-error={t("randomPost.loadError")}>
+
+<aside
+    class={style.container}
+    transition:persist-props
+    aria-label={t("randomPost.title")}
+    data-stalux-random-posts
+    data-count={count}
+    data-no-posts={t("randomPost.noPosts")}
+    data-load-failed={t("randomPost.loadFailed")}
+    data-load-error={t("randomPost.loadError")}
+>
     <div class={style.header}>
         <h3 class={style.title}>{title}</h3>
-        <button id="refresh-random-posts" class={style.refreshButton} title={t("randomPost.refresh")} aria-label={t("randomPost.refresh")}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+        <button
+            type="button"
+            id="refresh-random-posts"
+            class={style.refreshButton}
+            title={t("randomPost.refresh")}
+            aria-label={t("randomPost.refresh")}
+        >
+            <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path
+                    d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"
+                ></path>
             </svg>
         </button>
     </div>

@@ -6,12 +6,7 @@
 
 [data-pagefind-body] {
     font-family:
-        var(--font-body),
-        "Noto Sans SC",
-        "Noto Sans CJK SC",
-        system-ui,
-        -apple-system,
-        sans-serif;
+        var(--font-body), "Noto Sans SC", "Noto Sans CJK SC", system-ui, -apple-system, sans-serif;
     font-size: var(--font-size-base);
     line-height: 1.75;
     color: var(--white-85p);

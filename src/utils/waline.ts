@@ -1,27 +1,50 @@
-/**
- * 从主题配置（stalux.comment.waline，类型较宽松）中提取 Waline 组件所需的 props，
- * 集中处理字段透传，避免在每个调用处（about / PostLayout）重复十几行 as any 赋值块。
- */
-export function buildWalineProps(walineConfig: unknown) {
-    const c = (walineConfig ?? {}) as Record<string, unknown>;
+import type { CommentData } from "@schemas/config";
+
+export interface WalineComponentProps {
+    serverURL?: string;
+    lang?: string;
+    locale?: unknown;
+    emoji?: string[];
+    requiredMeta?: string[];
+    reaction?: boolean;
+    meta?: string[];
+    wordLimit?: number;
+    pageSize?: number;
+    login?: string;
+    recaptchaV3Key?: string;
+    turnstileKey?: string;
+    dark?: string | boolean;
+    noCopyright?: boolean;
+    commentSorting?: string;
+    imageUploader?: unknown;
+    highlighter?: unknown;
+    texRenderer?: unknown;
+    search?: unknown;
+}
+
+type WalineSection = NonNullable<CommentData["waline"]>;
+
+/** Build the one typed component boundary shared by article and About comments. */
+export function buildWalineProps(config: WalineSection): WalineComponentProps {
     return {
-        serverURL: c.serverURL,
-        lang: c.lang,
-        locale: c.locale,
-        emoji: c.emoji,
-        reaction: c.reaction,
-        meta: c.meta,
-        wordLimit: c.wordLimit,
-        pageSize: c.pageSize,
-        login: c.login,
-        recaptchaV3Key: c.recaptchaV3Key,
-        turnstileKey: c.turnstileKey,
-        dark: c.dark,
-        noCopyright: c.noCopyright,
-        commentSorting: c.commentSorting,
-        imageUploader: c.imageUploader,
-        highlighter: c.highlighter,
-        texRenderer: c.texRenderer,
-        search: c.search,
+        serverURL: config.serverURL,
+        lang: config.lang,
+        locale: config.locale,
+        emoji: config.emoji,
+        requiredMeta: config.requiredMeta,
+        reaction: config.reaction,
+        meta: config.meta,
+        wordLimit: config.wordLimit,
+        pageSize: config.pageSize,
+        login: config.login,
+        recaptchaV3Key: config.recaptchaV3Key,
+        turnstileKey: config.turnstileKey,
+        dark: config.dark,
+        noCopyright: config.noCopyright,
+        commentSorting: config.commentSorting,
+        imageUploader: config.imageUploader,
+        highlighter: config.highlighter,
+        texRenderer: config.texRenderer,
+        search: config.search,
     };
 }

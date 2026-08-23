@@ -1,23 +1,23 @@
 ---
 // 按需导入图标 — Vite tree-shake 只打包用到的图标
-import {
-    siGithub,
-    siBilibili,
-    siQq,
-    siMaildotru,
-    siJuejin,
-    siX,
-    type SimpleIcon,
-} from "simple-icons";
+
 import { getCollection } from "astro:content";
 import styles from "@styles/components/links/socialLinks.module.css";
-import { getSiteData, getMediaLinksData } from "@utils/config-utils";
+import { getMediaLinksData } from "@utils/config-utils";
+import {
+    type SimpleIcon,
+    siBilibili,
+    siGithub,
+    siJuejin,
+    siMaildotru,
+    siQq,
+    siX,
+} from "simple-icons";
+
 const configEntries = await getCollection("config");
-const siteConfig = getSiteData(configEntries);
 const mediaLinksSection = getMediaLinksData(configEntries);
 const mediaLinks = mediaLinksSection?.items ?? [];
-	
-	const isPostPage = Astro.url.pathname.startsWith("/posts/");
+const isPostPage = Astro.url.pathname.startsWith("/posts/");
 
 // 静态图标映射表：新增图标时只需添加对应的 simple-icons 导入和映射
 const iconMap: Record<string, SimpleIcon> = {
@@ -34,10 +34,14 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
 }
 ---
 
-<nav class={styles["social-links"]} transition:persist-props aria-label="Social media">
+<nav
+    class={styles["social-links"]}
+    transition:persist-props
+    aria-label="Social media"
+    data-stalux-social-animate={String(!isPostPage)}
+>
     <ul>
-        {
-            mediaLinks.map((item) => {
+        {mediaLinks.map((item) => {
                 const icon = item.icon ? getIconByTitle(item.icon) : undefined;
                 return (
                     <li class="social_icon">
@@ -66,37 +70,12 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
                                 </div>
                             ) : (
                                 <span class="custom-icon">
-                                    {item.icon
-                                        ? item.icon.charAt(0).toUpperCase()
-                                        : ""}
+                                    {item.icon ? item.icon.charAt(0).toUpperCase() : ""}
                                 </span>
                             )}
                         </a>
                     </li>
                 );
-            })
-        }
-	    </ul>
-	</nav>
-
-{
-    !isPostPage && (
-        <script>
-            import { animate } from "animejs";
-            animate(".social_icon", {
-                y: [
-                    { to: "-2.75rem", ease: "outExpo", duration: 600 },
-                    { to: 0, ease: "outBounce", duration: 800, delay: 100 },
-                ],
-                rotate: {
-                    from: "-1turn",
-                    delay: 0,
-                },
-                delay: (_, i) => i * 50,
-                ease: "inOutCirc",
-                loopDelay: 1000,
-                loop: true,
-            });
-        </script>
-    )
-}
+            })}
+    </ul>
+</nav>

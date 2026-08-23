@@ -1,12 +1,13 @@
 ---
-import PostLeft from "@components/stalux/posts/postLeft.astro";
-import PostContent from "@components/stalux/posts/postContent.astro";
-import PostRight from "@components/stalux/posts/postRight.astro";
-import PostNavigation from "@components/stalux/posts/postNavigation.astro";
-import PostCC from "@components/stalux/posts/postCC.astro";
-import WalineComment from "@components/stalux/posts/WalineComment.astro";
-import { buildWalineProps } from "@utils/waline";
 import { getCollection } from "astro:content";
+import PostCC from "@components/stalux/posts/postCC.astro";
+import PostContent from "@components/stalux/posts/postContent.astro";
+import PostLeft from "@components/stalux/posts/postLeft.astro";
+import PostNavigation from "@components/stalux/posts/postNavigation.astro";
+import PostRight from "@components/stalux/posts/postRight.astro";
+import WalineComment from "@components/stalux/posts/WalineComment.astro";
+import { getCommentData } from "@utils/config-utils";
+import { buildWalineProps } from "@utils/waline";
 import "@styles/base/math.css";
 import layoutStyle from "@styles/components/posts/postLayout.module.css";
 
@@ -34,16 +35,18 @@ const headings = props.headings ?? [];
 const author = props.author ?? "Author";
 // 获取 Waline 配置
 const configEntries = await getCollection("config");
-const commentConfig = (configEntries.find(e => e.id === "comment")?.data ?? {}) as Record<string, unknown>;
-const walineSection = commentConfig.waline as Record<string, unknown> | undefined;
-const commentEnabled = (commentConfig.enabled as boolean) ?? false;
-const walineConfig = walineSection && walineSection.serverURL ? {
-    ...walineSection,
-    emoji: walineSection.emoji ?? [
-        "https://unpkg.com/@waline/emojis@1.1.0/bilibili",
-        "https://unpkg.com/@waline/emojis@1.1.0/bmoji",
-    ],
-} : undefined;
+const commentConfig = getCommentData(configEntries);
+const walineSection = commentConfig?.waline;
+const commentEnabled = commentConfig?.enabled ?? false;
+const walineConfig = walineSection?.serverURL
+    ? {
+          ...walineSection,
+          emoji: walineSection.emoji ?? [
+              "https://unpkg.com/@waline/emojis@1.1.0/bilibili",
+              "https://unpkg.com/@waline/emojis@1.1.0/bmoji",
+          ],
+      }
+    : undefined;
 ---
 
 <div class={layoutStyle.postLayout}>
@@ -61,22 +64,15 @@ const walineConfig = walineSection && walineSection.serverURL ? {
             hasImage={props.hasImage}
         >
             <slot />
-            <PostCC
-                title={props.title}
-                author={author}
-                url={Astro.url.href}
-                cc={props.cc}
-            />
+            <PostCC title={props.title} author={author} url={Astro.url.href} cc={props.cc} />
             <PostNavigation prev={props.prev} next={props.next} />
-            {
-                commentEnabled && walineConfig?.serverURL && (
+            {commentEnabled && walineConfig?.serverURL && (
                     <WalineComment
                         {...buildWalineProps(walineConfig)}
                         path={Astro.url.pathname}
                         title={props.title}
                     />
-                )
-            }
+                )}
         </PostContent>
 
         <!-- Right Sidebar -->

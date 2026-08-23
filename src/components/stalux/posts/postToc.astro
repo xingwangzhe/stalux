@@ -1,9 +1,9 @@
 ---
+import { getCollection } from "astro:content";
 import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postToc.module.css";
-import { getCollection } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
-import { initTocScrollSpy } from "@utils/toc-scrollspy";
 
 interface TocHeading {
     depth: number;
@@ -17,23 +17,25 @@ interface Props {
 }
 
 const configEntries = await getCollection("config");
-const siteConfig = (configEntries.find(e => e.id === "site")?.data ?? {}) as Record<string, unknown>;
-const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
+const siteConfig = getSiteData(configEntries);
+const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const { headings = [], title = t("taxonomy.toc") } = Astro.props;
 
 const tocItems = headings
-    .filter((item) => item && item.slug && item.text)
+    .filter((item) => item?.slug && item.text)
     .map((item) => ({
         ...item,
         depth: Math.min(Math.max(item.depth ?? 1, 1), 6),
     }));
-
 ---
 
-<nav transition:name="toc-container" data-toc-active-class={style.active} aria-label={t("taxonomy.toc")}>
+<nav
+    transition:name="toc-container"
+    data-toc-active-class={style.active}
+    aria-label={t("taxonomy.toc")}
+>
     <h3 class={style.title}>{title}</h3>
-    {
-        tocItems.length > 0 ? (
+    {tocItems.length > 0 ? (
             <ul
                 class={style.list}
                 transition:name="toc-content"
@@ -53,23 +55,20 @@ const tocItems = headings
             </ul>
         ) : (
             <div class={style.empty}>{t("taxonomy.noToc")}</div>
-        )
-    }
+        )}
 </nav>
 
-<script>
-    import { initTocScrollSpy } from "@utils/toc-scrollspy";
-
-    document.addEventListener("astro:page-load", () => {
-        const container = document.querySelector("[data-toc-active-class]");
-        const activeClass = container?.getAttribute("data-toc-active-class");
-        if (activeClass) initTocScrollSpy(activeClass);
-    });
-</script>
+<script src="../../../scripts/toc-scrollspy.ts"></script>
 
 <style is:global>
-    @keyframes fadeSlideDown {
-        from { opacity: 0; transform: translateY(-8px); }
-        to   { opacity: 1; transform: translateY(0); }
+@keyframes fadeSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 </style>

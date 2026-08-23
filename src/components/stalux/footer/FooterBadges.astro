@@ -1,9 +1,9 @@
 ---
-import type { BadgeItem } from "@utils/badge-generator";
-import { generateBadge, svgToDataUrl, isBadgeGroup } from "@utils/badge-generator";
-import { createTranslator } from "@utils/i18n";
 import { getCollection } from "astro:content";
+import type { BadgeItem, BadgeOptions } from "@utils/badge-generator";
+import { generateBadge, isBadgeGroup, svgToDataUrl } from "@utils/badge-generator";
 import { getSiteData } from "@utils/config-utils";
+import { createTranslator } from "@utils/i18n";
 
 interface Props {
     badges?: BadgeItem[];
@@ -14,7 +14,7 @@ const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
-function badgeImg(opts: Record<string, any>) {
+function badgeImg(opts: BadgeOptions) {
     const src = svgToDataUrl(generateBadge(opts));
     const alt = opts.alt || `${opts.label}: ${opts.message}`;
     if (opts.href) {
@@ -24,8 +24,7 @@ function badgeImg(opts: Record<string, any>) {
 }
 ---
 
-{
-    badges && badges.length > 0 && (
+{badges && badges.length > 0 && (
         <div class="badges-wrapper">
             {badges.map((item: BadgeItem, idx: number) => {
                 if (isBadgeGroup(item)) {
@@ -39,7 +38,7 @@ function badgeImg(opts: Record<string, any>) {
                                 <span class="badge-group-hint" data-hint="collapsed">{t("footer.expand")}</span>
                             </summary>
                             <div class="badge-group-items badges">
-                                {item.items.map((b: any) => (
+                                {item.items.map((b) => (
                                     <Fragment set:html={badgeImg(b)} />
                                 ))}
                             </div>
@@ -49,108 +48,87 @@ function badgeImg(opts: Record<string, any>) {
                 return <Fragment set:html={badgeImg(item)} />;
             })}
         </div>
-    )
-}
-
-<script>
-    function initBadgeGroups() {
-        document.querySelectorAll<HTMLDetailsElement>(".badge-group").forEach((el) => {
-            const key = `badge-${el.id}`;
-            const saved = localStorage.getItem(key);
-            if (saved !== null) {
-                el.open = saved === "open";
-            } else {
-                // 首次访问使用默认折叠状态
-                el.open = el.getAttribute("data-default-open") === "true";
-            }
-            el.addEventListener("toggle", () => {
-                localStorage.setItem(key, el.open ? "open" : "closed");
-            });
-        });
-    }
-    document.addEventListener("astro:page-load", initBadgeGroups);
-    initBadgeGroups();
-</script>
+    )}
 
 <style>
-    .badges-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
+.badges-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
 
-    .badge-group {
-        width: 100%;
-        border: none;
-    }
+.badge-group {
+    width: 100%;
+    border: none;
+}
 
-    .badge-group-summary {
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.2rem 0;
-        color: var(--white-70p);
-        font-size: 0.85rem;
-        user-select: none;
-        list-style: none;
-        transition: color 0.2s;
-    }
-    .badge-group-summary:hover {
-        color: var(--white-70p);
-    }
-    .badge-group-summary::-webkit-details-marker {
-        display: none;
-    }
+.badge-group-summary {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0;
+    color: var(--white-70p);
+    font-size: 0.85rem;
+    user-select: none;
+    list-style: none;
+    transition: color 0.2s;
+}
+.badge-group-summary:hover {
+    color: var(--white-70p);
+}
+.badge-group-summary::-webkit-details-marker {
+    display: none;
+}
 
-    .badge-group-arrow {
-        font-size: 0.65rem;
-        transition: transform 0.2s;
-        display: inline-block;
-    }
-    .badge-group[open] .badge-group-arrow {
-        transform: rotate(90deg);
-    }
+.badge-group-arrow {
+    font-size: 0.65rem;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+.badge-group[open] .badge-group-arrow {
+    transform: rotate(90deg);
+}
 
-    .badge-group-title {
-        color: var(--white-80p);
-    }
+.badge-group-title {
+    color: var(--white-80p);
+}
 
-    .badge-group-hint {
-        font-size: 0.7rem;
-        color: var(--white-70p);
-    }
-    .badge-group[open] .badge-group-hint[data-hint="collapsed"],
-    .badge-group:not([open]) .badge-group-hint[data-hint="expanded"] {
-        display: none;
-    }
+.badge-group-hint {
+    font-size: 0.7rem;
+    color: var(--white-70p);
+}
+.badge-group[open] .badge-group-hint[data-hint="collapsed"],
+.badge-group:not([open]) .badge-group-hint[data-hint="expanded"] {
+    display: none;
+}
 
-    .badge-group-items {
-        padding-top: 0.35rem;
-    }
+.badge-group-items {
+    padding-top: 0.35rem;
+}
 
+.badges {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.badge {
+    height: 20px;
+    vertical-align: middle;
+}
+
+@media (max-width: 768px) {
     .badges {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+        gap: 0.3rem;
     }
-
     .badge {
-        height: 20px;
-        vertical-align: middle;
+        height: 18px;
     }
-
-    @media (max-width: 768px) {
-        .badges {
-            gap: 0.3rem;
-        }
-        .badge {
-            height: 18px;
-        }
-    }
+}
 </style>

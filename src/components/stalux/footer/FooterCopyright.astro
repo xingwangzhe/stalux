@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
 interface Props {
     author?: string;
@@ -26,16 +26,16 @@ const copyrightYear =
 </small>
 
 <style>
-    .copyright {
-        color: var(--white-70p);
-        font-weight: 500;
-        display: flex;
-        gap: 0.3em;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
+.copyright {
+    color: var(--white-70p);
+    font-weight: 500;
+    display: flex;
+    gap: 0.3em;
+    justify-content: center;
+    flex-wrap: wrap;
+}
 
-    .copyright span {
-        margin: 0;
-    }
+.copyright span {
+    margin: 0;
+}
 </style>

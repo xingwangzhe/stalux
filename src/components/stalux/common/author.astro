@@ -1,9 +1,9 @@
 ---
-// @ts-expect-error
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import styles from "@styles/components/common/author.module.css";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
+import { getAuthorData } from "@utils/config-utils";
+
 const configEntries = await getCollection("config");
 const authorConfig = getAuthorData(configEntries);
 interface Props {
@@ -18,16 +18,9 @@ const navigationHref = isHomePage ? "/about" : "/";
 ---
 
 <article class={styles.author} transition:persist-props>
-    <figure
-        class={`${styles.authorFigure} ${props.iscolum ? styles.figureColumn : ""}`}
-    >
+    <figure class={`${styles.authorFigure} ${props.iscolum ? styles.figureColumn : ""}`}>
         <a href={navigationHref} class="a-none" data-astro-prefetch>
-            <Image
-                src={authorConfig.avatar}
-                alt={authorConfig.name}
-                width={100}
-                height={100}
-            />
+            <Image src={authorConfig.avatar} alt={authorConfig.name} width={100} height={100} />
         </a>
         <figcaption>{authorConfig.name}</figcaption>
         {props.showBio && <p>{authorConfig.bio}</p>}

@@ -1,25 +1,29 @@
 ---
-import { getTagCountList } from "@utils/collections-stats";
 import { getCollection } from "astro:content";
+import styles from "@styles/components/tags/tagsCloud.module.css";
+import { getTagCountList } from "@utils/collections-stats";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
-import styles from "@styles/components/tags/tagsCloud.module.css";
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const tagList = await getTagCountList();
-const tagLinks = tagList.map((t) => ({ type: "link" as const, text: t.name, url: `/tags/${t.name}/` }));
+const tagLinks = tagList.map((t) => ({
+    type: "link" as const,
+    text: t.name,
+    url: `/tags/${t.name}/`,
+}));
 ---
 
 <!-- 移动端：SSR 卡片 -->
 <div class={styles.cards} id="tags-cards">
-    {
-        tagList.length > 0 ? (
+    {tagList.length > 0 ? (
             tagList.map(({ name, count }) => (
                 <a
                     href={`/tags/${name}/`}
                     class={styles.tagCard}
+                    data-stalux-tag-card
                     data-count={count}
                     data-astro-prefetch
                 >
@@ -29,72 +33,12 @@ const tagLinks = tagList.map((t) => ({ type: "link" as const, text: t.name, url:
             ))
         ) : (
             <div class={styles.noTags}>{t("tags.noTags")}</div>
-        )
-    }
+        )}
 </div>
 
 <!-- 桌面端：Canvas 标签云 -->
-<div
-    class={styles.canvas}
-    id="tags-canvas"
-    data-tags={JSON.stringify(tagLinks)}
-></div>
+<div class={styles.canvas} id="tags-canvas" data-tags={JSON.stringify(tagLinks)}></div>
 
 <script>
-    import { TagCloud } from "@xingwangzhe/tags-cloud";
-    import { stagger, createTimeline } from "animejs";
-
-    document.addEventListener("astro:page-load", () => {
-        // ── 移动端卡片入场动画 ──
-        const cardsContainer = document.getElementById("tags-cards");
-        if (cardsContainer && window.matchMedia("(max-width: 768px)").matches) {
-            if (!cardsContainer.dataset.animated) {
-                cardsContainer.dataset.animated = "1";
-                const cards = cardsContainer.querySelectorAll<HTMLElement>(".tagCard");
-                if (cards.length > 0) {
-                    cards.forEach((c) => (c.style.opacity = "0"));
-                    createTimeline().add(
-                        cards,
-                        { opacity: [0, 1], duration: 400, ease: "outExpo", delay: stagger(30, { start: 0 }) },
-                        0,
-                    );
-                }
-            }
-        }
-
-        // ── 桌面端：3D 标签云 ──
-        const canvasContainer = document.getElementById("tags-canvas");
-        if (!canvasContainer) return;
-        if (canvasContainer.dataset.inited === "1") return;
-        if (window.matchMedia("(max-width: 768px)").matches) return;
-
-        canvasContainer.dataset.inited = "1";
-
-        type LinkTag = { type: "link"; text: string; url: string };
-        const rawTags: LinkTag[] = JSON.parse(canvasContainer.dataset.tags || "[]");
-        if (rawTags.length === 0) return;
-        // 内部链接不应打开新标签页 — TagCloud 默认 link 类型会 window.open(_, _blank)
-        const tags = rawTags.map((t) => ({ ...t, onClick: () => { window.location.href = t.url; } }));
-
-        const N = tags.length;
-        const vw = window.innerWidth;
-        const baseRadius = vw < 1024 ? 330 : vw < 1440 ? 420 : 480;
-        const baseN = 100;
-        const densityScale = Math.sqrt(Math.max(N, baseN) / baseN);
-        const containerWidth = canvasContainer.getBoundingClientRect().width;
-        const maxRadius = Math.round(containerWidth * 0.6);
-        const radius = Math.min(Math.round(baseRadius * densityScale), maxRadius);
-
-        // 扩展容器高度以容纳球体垂直投影（宽度保持 100% 自然居中）
-        canvasContainer.style.height = `${Math.round(radius * 2)}px`;
-
-        new TagCloud(canvasContainer, {
-            tags,
-            radius,
-            spinY: 0.15,
-            fontSize: 16,
-            color: "#ffffff",
-            fontFamily: "system-ui, -apple-system, sans-serif",
-        });
-    });
+import "../../../scripts/tags-cloud";
 </script>

@@ -1,8 +1,8 @@
 ---
-import styles from "@styles/components/links/linkCard.module.css";
 import { getCollection } from "astro:content";
+import styles from "@styles/components/links/linkCard.module.css";
+import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
-import { getSiteData, getAuthorData, getHeadData, getNavsData, getLinksData, getCommentData, getFooterData, getPromoteData, getTypetextsData, getMediaLinksData } from "@utils/config-utils";
 
 interface LinkItem {
     title?: string;
@@ -28,12 +28,7 @@ const desc = link.description ?? "";
 const icon = link.icon ?? link.avatar ?? "/favicon.ico";
 ---
 
-<a
-    class={styles.card + " a-none"}
-    href={href}
-    target="_blank"
-    rel="noopener"
->
+<a class={`${styles.card} a-none`} href={href} target="_blank" rel="noopener">
     <div class={styles.avatar}>
         <img
             src={icon}
@@ -41,7 +36,7 @@ const icon = link.icon ?? link.avatar ?? "/favicon.ico";
             loading="lazy"
             width="80"
             height="80"
-        />
+        >
     </div>
     <div class={styles.content}>
         <h2 class={styles.title}>{title}</h2>

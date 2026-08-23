@@ -1,57 +1,64 @@
 ---
-import FooterCopyright from "@components/stalux/footer/FooterCopyright.astro";
-import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
-import FooterThemeInfo from "@components/stalux/footer/FooterThemeInfo.astro";
-import FooterStats from "@components/stalux/footer/FooterStats.astro";
+import { getCollection } from "astro:content";
 import FooterBadges from "@components/stalux/footer/FooterBadges.astro";
-import { getSiteData, getAuthorData, getFooterData } from "@utils/config-utils";
-			import type { BadgeItem, BadgeOptions, isBadgeGroup } from "@utils/badge-generator";
-			import { getCollection } from "astro:content";
-			import { getTotalWordCount, formatWordCount } from "@utils/word-count-utils";
-			import footerStyle from "@styles/components/footer/footer.module.css";
-			
-			// 获取配置
-			const configEntries = await getCollection("config");
-			const siteConfig = getSiteData(configEntries);
-			const footerConfig = getFooterData(configEntries);
-			const authorConfig = getAuthorData(configEntries);
-			const author = authorConfig.name;
-			
-			// 标准化 badges（扁平 badge 或 分组），确保 style 字段合法
-			const badges: BadgeItem[] | undefined = footerConfig?.badges?.map(
-			    (item: any) => {
-		        if (item.title && item.items) {
-		            return {
-		                title: item.title,
-		                collapsed: item.collapsed ?? true,
-		                items: item.items.map((b: any) => ({
-		                    ...b,
-		                    style: (["flat","plastic","flat-square","for-the-badge","social"].includes(b.style) ? b.style : "flat") as BadgeOptions["style"],
-		                })),
-		            };
-		        }
-		        return {
-		            ...item,
-		            style: (["flat","plastic","flat-square","for-the-badge","social"].includes(item.style) ? item.style : "flat") as BadgeOptions["style"],
-		        };
-		    },
-		);
-	
-	const totalWordCount = await getTotalWordCount();
-	const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "zh-CN");
+import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
+import FooterCopyright from "@components/stalux/footer/FooterCopyright.astro";
+import FooterStats from "@components/stalux/footer/FooterStats.astro";
+import FooterThemeInfo from "@components/stalux/footer/FooterThemeInfo.astro";
+import footerStyle from "@styles/components/footer/footer.module.css";
+import type { BadgeItem, BadgeOptions } from "@utils/badge-generator";
+import { getAuthorData, getFooterData, getSiteData } from "@utils/config-utils";
+import { formatWordCount, getTotalWordCount } from "@utils/word-count-utils";
+
+// 获取配置
+const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
+const footerConfig = getFooterData(configEntries);
+const authorConfig = getAuthorData(configEntries);
+const author = authorConfig.name;
+
+// 标准化 badges（扁平 badge 或 分组），确保 style 字段合法
+const badgeStyles = new Set<BadgeOptions["style"]>([
+    "flat",
+    "plastic",
+    "flat-square",
+    "for-the-badge",
+    "social",
+]);
+const normalizeBadgeStyle = (style: string | undefined): BadgeOptions["style"] =>
+    style && badgeStyles.has(style as BadgeOptions["style"])
+        ? (style as BadgeOptions["style"])
+        : "flat";
+const badges: BadgeItem[] | undefined = footerConfig?.badges?.map((item) => {
+    if ("title" in item) {
+        return {
+            title: item.title,
+            collapsed: item.collapsed ?? true,
+            items: item.items.map((badge) => ({
+                ...badge,
+                style: normalizeBadgeStyle(badge.style),
+            })),
+        };
+    }
+    return {
+        ...item,
+        style: normalizeBadgeStyle(item.style),
+    };
+});
+
+const totalWordCount = await getTotalWordCount();
+const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "zh-CN");
 ---
 
 <footer class={footerStyle.siteFooter} transition:persist-props>
     <div class={footerStyle.footerContent}>
         <!-- 版权信息 -->
-        {
-            footerConfig?.copyright?.enabled && (
+        {footerConfig?.copyright?.enabled && (
                 <FooterCopyright
                     author={author}
                     startYear={footerConfig?.copyright?.startYear}
                 />
-            )
-        }
+            )}
 
         <!-- 徽章展示 -->
         <FooterBadges badges={badges} />
@@ -76,10 +83,7 @@ import { getSiteData, getAuthorData, getFooterData } from "@utils/config-utils";
         />
 
         <!-- 站点统计 -->
-        <FooterStats
-            wordCount={formattedWordCount}
-            buildtime={footerConfig?.buildtime}
-        />
+        <FooterStats wordCount={formattedWordCount} buildtime={footerConfig?.buildtime} />
 
         <!-- 自定义内容 -->
         {footerConfig?.custom && <Fragment set:html={footerConfig.custom} />}
