@@ -115,9 +115,11 @@ function findFont(projectRoot: string, rel: string): string | undefined {
 }
 
 /** Render a [start, end] range as a CSS unicode-range value. */
-function toUnicodeRange(ranges: Array<[number, number]>): string[] {
-    const fmt = (cp: number) => `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
-    return ranges.map(([s, e]) => (s === e ? fmt(s) : `${fmt(s)}-${fmt(e)}`));
+export function toUnicodeRange(ranges: Array<[number, number]>): string[] {
+    const hex = (codePoint: number) => codePoint.toString(16).toUpperCase().padStart(4, "0");
+    return ranges.map(([start, end]) =>
+        start === end ? `U+${hex(start)}` : `U+${hex(start)}-${hex(end)}`,
+    );
 }
 
 /** Collect every code point in the ranges as a deduped, sorted string. */

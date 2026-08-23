@@ -16,7 +16,11 @@ export function buildCCLink(licenseCode: string): string {
         return "https://creativecommons.org/licenses/by-nc-sa/4.0/";
     }
 
-    const [, pathPart, version] = match;
+    const pathPart = match[1];
+    const version = match[2];
+    if (!pathPart || !version) {
+        return "https://creativecommons.org/licenses/by-nc-sa/4.0/";
+    }
     return `https://creativecommons.org/licenses/${pathPart.toLowerCase()}/${version}/`;
 }
 
@@ -35,12 +39,17 @@ export function buildCCName(licenseCode: string, t: Translator["t"]): string {
     const match = licenseCode.match(/^CC-?(.+)-(\d+(?:\.\d+))$/);
     if (!match) {
         // 无法解析时回退为默认 CC-BY-NC-SA-4.0
-        const elements = ["BY", "NC", "SA"].map((code) => t("cc." + code)).join("-");
+        const elements = ["BY", "NC", "SA"].map((code) => t(`cc.${code}`)).join("-");
         return t("cc.format", { elements, version: "4.0" });
     }
 
-    const [, pathPart, version] = match;
+    const pathPart = match[1];
+    const version = match[2];
+    if (!pathPart || !version) {
+        const elements = ["BY", "NC", "SA"].map((code) => t(`cc.${code}`)).join("-");
+        return t("cc.format", { elements, version: "4.0" });
+    }
     const codes = pathPart.split("-");
-    const elements = codes.map((code) => t("cc." + code)).join("-");
+    const elements = codes.map((code) => t(`cc.${code}`)).join("-");
     return t("cc.format", { elements, version });
 }

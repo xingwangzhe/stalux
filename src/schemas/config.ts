@@ -14,11 +14,11 @@ export const siteSchema = z.object({
     id: z.literal("site"),
     lang: z.string().optional().default("zh-CN"),
     title: z.string().min(1, "site.title is required"),
-    url: z.string().url("site.url must be a valid URL"),
+    url: z.url("site.url must be a valid URL"),
     description: z.string().min(1, "site.description is required"),
     seoTitle: z.string().min(1).optional(),
     timezone: z.string().optional().default("Asia/Shanghai"),
-    canonical: z.string().url("site.canonical must be a valid URL").optional(),
+    canonical: z.url("site.canonical must be a valid URL").optional(),
     twitterSite: z.string().optional(),
     noindex: z.boolean().optional().default(false),
     nofollow: z.boolean().optional().default(false),
@@ -156,7 +156,7 @@ export const commentSchema = z.object({
     enabled: z.boolean().optional().default(false),
     waline: z
         .object({
-            serverURL: z.string().url("comment.waline.serverURL must be a valid URL").optional(),
+            serverURL: z.url("comment.waline.serverURL must be a valid URL").optional(),
             lang: z.string().optional().default("zh-CN"),
             locale: z.any().optional(),
             emoji: z

@@ -1,16 +1,6 @@
-export type RouteKind =
-    | "home"
-    | "archive"
-    | "links"
-    | "words"
-    | "about"
-    | "tags-index"
-    | "tags-detail"
-    | "categories-index"
-    | "categories-detail"
-    | "article"
-    | "not-found"
-    | "other";
+import { getRouteKind, type RouteKind } from "./public-routes";
+
+export { getRouteKind, type RouteKind };
 
 export type TransitionAnimation = {
     name: string;
@@ -63,29 +53,6 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
             },
         },
     };
-}
-
-function normalizedPath(pathname: string): string {
-    const path = pathname.replace(/\/+$/, "");
-    return path || "/";
-}
-
-export function getRouteKind(pathname: string): RouteKind {
-    const path = normalizedPath(pathname);
-
-    if (path === "/") return "home";
-    if (path === "/archives") return "archive";
-    if (path === "/links") return "links";
-    if (path === "/words") return "words";
-    if (path === "/about") return "about";
-    if (path === "/404") return "not-found";
-    if (path === "/tags") return "tags-index";
-    if (path.startsWith("/tags/")) return "tags-detail";
-    if (path === "/categories") return "categories-index";
-    if (path.startsWith("/categories/")) return "categories-detail";
-    if (path.startsWith("/posts/")) return "article";
-
-    return "other";
 }
 
 const routeAnimations: Record<RouteKind, RouteAnimation> = {
