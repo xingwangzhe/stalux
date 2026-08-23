@@ -1,5 +1,4 @@
 import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
-import jsTokens from "js-tokens";
 /**
  * Sätteri 插件：在构建时完成字数统计和特性标记，
  * 只从 Sätteri 的 MDAST/HAST 节点读取信息，并通过 ctx 注入最终结果。
@@ -80,19 +79,15 @@ function injectState(ctx: any) {
 }
 
 function countCodeTokens(value: string, lang?: string): number {
-    if (/^(?:js|jsx|javascript|ts|tsx|typescript)$/.test(lang ?? "")) {
-        return Array.from(jsTokens(value, { jsx: /jsx|tsx/.test(lang ?? "") })).filter(
-            (token) =>
-                ![
-                    "WhiteSpace",
-                    "LineTerminatorSequence",
-                    "MultiLineComment",
-                    "SingleLineComment",
-                    "HashbangComment",
-                ].includes(token.type),
-        ).length;
-    }
-    return value.match(/\p{L}[\p{L}\p{N}_]*|\p{N}+(?:\.\p{N}+)?|[^\s]/gu)?.length ?? 0;
+    // 统计阶段不依赖语法高亮器：移除注释后，按标识符、数字、字符串和符号计数。
+    // lang 保留在签名中，方便后续按语言增加规则，但当前规则对常见代码语言通用。
+    void lang;
+    const withoutComments = value.replace(/\/\/[^\r\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/gu, " ");
+    return (
+        withoutComments.match(
+            /`(?:\\.|[^`])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\p{L}[\p{L}\p{N}_]*|\p{N}+(?:\.\p{N}+)?|[^\s]/gu,
+        )?.length ?? 0
+    );
 }
 
 function countProseWords(value: string): number {
