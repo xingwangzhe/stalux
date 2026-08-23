@@ -1,5 +1,4 @@
 import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
-import { splitToWords } from "@echogarden/text-segmentation";
 import jsTokens from "js-tokens";
 /**
  * Sätteri 插件：在构建时完成字数统计和特性标记，
@@ -7,8 +6,8 @@ import jsTokens from "js-tokens";
  *
  * 字数统计策略：
  * - 统计 paragraph、heading 和 tableCell，覆盖列表、引用、表格等正文。
- * - 独立的 code 块、math/displayMath 公式不参与正文词数统计。
- * - 行内 code 参与正文统计，inlineMath 单独计入公式阅读成本。
+ * - 行内 code 属于正文；独立 code、math/displayMath 由各自 lexer 统计。
+ * - 代码和数学公式都计入最终 wordCount，同时保留结构化阅读成本字段。
  *
  * 特性标记：
  * - HAST 阶段 <img> 检测      → hasImage
@@ -22,10 +21,18 @@ const CODE_SECONDS_PER_NON_EMPTY_LINE = 2;
 const INLINE_MATH_BASE_SECONDS = 1;
 const DISPLAY_MATH_BASE_SECONDS = 4;
 const MATH_SECONDS_PER_NON_WHITESPACE_CHARACTER = 0.03;
+const CODE_SECONDS_PER_TOKEN = 0.12;
+const MATH_SECONDS_PER_TOKEN = 0.2;
+const proseSegmenter = new Intl.Segmenter("und", { granularity: "grapheme" });
+const HAN_GRAPHEME = /^\p{Script=Han}$/u;
+const LETTER_GRAPHEME = /^[\p{Letter}\p{Mark}]$/u;
+const NUMBER_GRAPHEME = /^\p{Number}$/u;
+const MATH_TOKEN = /\\[a-zA-Z]+|[a-zA-Z]+|\d+(?:\.\d+)?|[^\s{}]/gu;
 
 type FeatureFlagsState = {
     proseText: string;
     codeTokens: number;
+    codeWordCount: number;
     codeCharacters: number;
     codeNonEmptyLines: number;
     codeBlocks: number;
@@ -33,6 +40,7 @@ type FeatureFlagsState = {
     displayMathBlocks: number;
     mathCharacters: number;
     mathNonWhitespaceCharacters: number;
+    mathWordCount: number;
     hasImage: boolean;
 };
 
@@ -41,6 +49,7 @@ function getState(ctx: any): FeatureFlagsState {
     return (data.staluxFeatureFlags ??= {
         proseText: "",
         codeTokens: 0,
+        codeWordCount: 0,
         codeCharacters: 0,
         codeNonEmptyLines: 0,
         codeBlocks: 0,
@@ -48,6 +57,7 @@ function getState(ctx: any): FeatureFlagsState {
         displayMathBlocks: 0,
         mathCharacters: 0,
         mathNonWhitespaceCharacters: 0,
+        mathWordCount: 0,
         hasImage: false,
     }) as FeatureFlagsState;
 }
@@ -57,6 +67,7 @@ function injectState(ctx: any) {
     const injected = ctx.data.astro.frontmatter as Record<string, unknown>;
     injected.proseText = state.proseText;
     injected.codeTokens = state.codeTokens;
+    injected.codeWordCount = state.codeWordCount;
     injected.codeCharacters = state.codeCharacters;
     injected.codeNonEmptyLines = state.codeNonEmptyLines;
     injected.codeBlocks = state.codeBlocks;
@@ -64,6 +75,7 @@ function injectState(ctx: any) {
     injected.displayMathBlocks = state.displayMathBlocks;
     injected.mathCharacters = state.mathCharacters;
     injected.mathNonWhitespaceCharacters = state.mathNonWhitespaceCharacters;
+    injected.mathWordCount = state.mathWordCount;
     injected.hasImage = state.hasImage;
 }
 
@@ -83,6 +95,37 @@ function countCodeTokens(value: string, lang?: string): number {
     return value.match(/\p{L}[\p{L}\p{N}_]*|\p{N}+(?:\.\p{N}+)?|[^\s]/gu)?.length ?? 0;
 }
 
+function countProseWords(value: string): number {
+    let count = 0;
+    let inWord = false;
+    let inNumber = false;
+
+    for (const { segment } of proseSegmenter.segment(value)) {
+        if (HAN_GRAPHEME.test(segment)) {
+            count++;
+            inWord = false;
+            inNumber = false;
+        } else if (LETTER_GRAPHEME.test(segment)) {
+            if (!inWord) count++;
+            inWord = true;
+            inNumber = false;
+        } else if (NUMBER_GRAPHEME.test(segment)) {
+            if (!inNumber) count++;
+            inNumber = true;
+            inWord = false;
+        } else {
+            inWord = false;
+            inNumber = false;
+        }
+    }
+
+    return count;
+}
+
+function countMathTokens(value: string): number {
+    return value.match(MATH_TOKEN)?.length ?? 0;
+}
+
 function countMath(node: any, ctx: any, display: boolean) {
     const state = getState(ctx);
     const value = String(node.value ?? "");
@@ -90,6 +133,7 @@ function countMath(node: any, ctx: any, display: boolean) {
     else state.inlineMathBlocks++;
     state.mathCharacters += [...value].length;
     state.mathNonWhitespaceCharacters += (value.match(/\S/gu) ?? []).length;
+    state.mathWordCount += countMathTokens(value);
     injectState(ctx);
 }
 
@@ -113,7 +157,9 @@ export const featureFlagsMdast = defineMdastPlugin({
         state.codeNonEmptyLines += node.value
             .split(/\r?\n/u)
             .filter((line) => /\S/u.test(line)).length;
-        state.codeTokens += countCodeTokens(node.value, node.lang);
+        const codeTokens = countCodeTokens(node.value, node.lang);
+        state.codeTokens += codeTokens;
+        state.codeWordCount += codeTokens;
         injectState(ctx);
     },
 
@@ -206,9 +252,9 @@ async function analyzeFeatureFlagsUncached(body: string): Promise<FeatureFlagsRe
     const processor = await getFeatureFlagsProcessor();
     const result = await processor.render(body ?? "");
     const metadata = result.metadata.frontmatter as Record<string, unknown>;
-    const proseWords = (
-        await splitToWords(String(metadata.proseText ?? ""))
-    ).nonPunctuationEntries.filter((entry) => /\S/u.test(entry.text)).length;
+    const proseWords = countProseWords(String(metadata.proseText ?? ""));
+    const codeWordCount = Number(metadata.codeWordCount ?? 0);
+    const mathWordCount = Number(metadata.mathWordCount ?? 0);
     const codeNonEmptyLines = Number(metadata.codeNonEmptyLines ?? 0);
     const inlineMathBlocks = Number(metadata.inlineMathBlocks ?? 0);
     const displayMathBlocks = Number(metadata.displayMathBlocks ?? 0);
@@ -218,11 +264,13 @@ async function analyzeFeatureFlagsUncached(body: string): Promise<FeatureFlagsRe
         readingMinutes: Math.ceil(
             proseWords / WORDS_PER_MINUTE +
                 (codeNonEmptyLines * CODE_SECONDS_PER_NON_EMPTY_LINE +
+                    codeWordCount * CODE_SECONDS_PER_TOKEN +
                     inlineMathBlocks * INLINE_MATH_BASE_SECONDS +
                     displayMathBlocks * DISPLAY_MATH_BASE_SECONDS +
+                    mathWordCount * MATH_SECONDS_PER_TOKEN +
                     mathNonWhitespaceCharacters * MATH_SECONDS_PER_NON_WHITESPACE_CHARACTER) /
                     60,
         ),
-        wordCount: proseWords,
+        wordCount: proseWords + codeWordCount + mathWordCount,
     };
 }

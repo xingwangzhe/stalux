@@ -8,8 +8,6 @@
         "@astrojs/markdown-satteri": "0.3.7",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
-        "@echogarden/icu-segmentation-wasm": "^0.4.0",
-        "@echogarden/text-segmentation": "^0.7.0",
         "@expressive-code/plugin-line-numbers": "^0.44.1",
         "@lucide/astro": "^1.33.0",
         "@mcp-b/webmcp-polyfill": "^4.0.0",
@@ -37,6 +35,7 @@
         "oxfmt": "^0.64.0",
         "oxlint": "^1.79.0",
         "typescript": "^7.0.2",
+        "vite": "8.2.2",
       },
       "peerDependencies": {
         "astro": "7.2.4",
@@ -121,10 +120,6 @@
     "@clack/prompts": ["@clack/prompts@1.7.0", "https://registry.npmmirror.com/@clack/prompts/-/prompts-1.7.0.tgz", { "dependencies": { "@clack/core": "1.4.3", "fast-string-width": "^3.0.2", "fast-wrap-ansi": "^0.2.0", "sisteransi": "^1.0.5" } }, "sha512-y7/yvZ2TPAnR9+jnc00klvNNLkJiXFFrQA/hlLCcxA9a2A4zQIOimyFQ9XfwYKiGD1fb5GY8vbKIIgO8d5Tb2A=="],
 
     "@ctrl/tinycolor": ["@ctrl/tinycolor@4.2.0", "https://registry.npmmirror.com/@ctrl/tinycolor/-/tinycolor-4.2.0.tgz", {}, "sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A=="],
-
-    "@echogarden/icu-segmentation-wasm": ["@echogarden/icu-segmentation-wasm@0.4.0", "https://registry.npmmirror.com/@echogarden/icu-segmentation-wasm/-/icu-segmentation-wasm-0.4.0.tgz", { "dependencies": { "wasm-heap-manager": "~0.4.0" } }, "sha512-vfqjdWyyn2ywA2PKtWQ+2qFEd4yklmxwDE8C3WfIHekhT9RVHlOhwzmjAnLhVpct6JaWFKtTBJ9tNUWWrvvlpg=="],
-
-    "@echogarden/text-segmentation": ["@echogarden/text-segmentation@0.7.0", "https://registry.npmmirror.com/@echogarden/text-segmentation/-/text-segmentation-0.7.0.tgz", { "dependencies": { "regexp-composer": "~0.3.0" }, "peerDependencies": { "@echogarden/icu-segmentation-wasm": "~0.4.0" }, "optionalPeers": ["@echogarden/icu-segmentation-wasm"] }, "sha512-igTQBGlBrUgYjr/yp4U+ActFOS8TcCdnklXYd5bCRuTunAW054g/jFoyMRYExrdfAc4rGQWvaYlbAJc2qb/uuQ=="],
 
     "@emmetio/abbreviation": ["@emmetio/abbreviation@2.3.3", "https://registry.npmmirror.com/@emmetio/abbreviation/-/abbreviation-2.3.3.tgz", { "dependencies": { "@emmetio/scanner": "^1.0.4" } }, "sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA=="],
 
@@ -974,8 +969,6 @@
 
     "regex-utilities": ["regex-utilities@2.3.0", "https://registry.npmmirror.com/regex-utilities/-/regex-utilities-2.3.0.tgz", {}, "sha512-8VhliFJAWRaUiVvREIiW2NXXTmHs4vMNnSzuJVhscgmGav3g9VDxLrQndI3dZZVVdp0ZO/5v0xmX516/7M9cng=="],
 
-    "regexp-composer": ["regexp-composer@0.3.0", "https://registry.npmmirror.com/regexp-composer/-/regexp-composer-0.3.0.tgz", {}, "sha512-ckR2a9zQeVBuGdNcHxC5yVHnDN2HdDaSg7DN8SOn1b6xzdqIFmy2/W1yvYX2x4pO31lBDEJdWb69Bd00NahS8w=="],
-
     "rehype-expressive-code": ["rehype-expressive-code@0.44.1", "https://registry.npmmirror.com/rehype-expressive-code/-/rehype-expressive-code-0.44.1.tgz", { "dependencies": { "expressive-code": "^0.44.1" } }, "sha512-+VZgs7Evw4LXRN3owpoBNSTpYuW6GeOdjqcUT1TuY8o/4MGPtbd0EU7Bgrju7X8KrQ6SslOBAuGWJ5fV5TriJQ=="],
 
     "request-light": ["request-light@0.7.0", "https://registry.npmmirror.com/request-light/-/request-light-0.7.0.tgz", {}, "sha512-lMbBMrDoxgsyO+yB3sDcrDuX85yYt7sS8BfQd11jtbW/z5ZWgLZRcEGLsLoYw7I0WSUGQBs8CC8ScIxkTX1+6Q=="],
@@ -1131,8 +1124,6 @@
     "vue": ["vue@3.5.41", "https://registry.npmmirror.com/vue/-/vue-3.5.41.tgz", { "dependencies": { "@vue/compiler-dom": "3.5.41", "@vue/compiler-sfc": "3.5.41", "@vue/runtime-dom": "3.5.41", "@vue/server-renderer": "3.5.41", "@vue/shared": "3.5.41" }, "peerDependencies": { "typescript": "*" }, "optionalPeers": ["typescript"] }, "sha512-2laE0p+aK+/AOPG/XL/WepOs/GlK755LJ1XECi9kDUrz1FKNw8rb2Xzlw9JS1rqEV55nb0ttsKxVlTCcd+R5cg=="],
 
     "walk-up-path": ["walk-up-path@4.0.0", "https://registry.npmmirror.com/walk-up-path/-/walk-up-path-4.0.0.tgz", {}, "sha512-3hu+tD8YzSLGuFYtPRb48vdhKMi0KQV5sn+uWr8+7dMEq/2G/dtLrdDinkLjqq5TIbIBjYJ4Ax/n3YiaW7QM8A=="],
-
-    "wasm-heap-manager": ["wasm-heap-manager@0.4.0", "https://registry.npmmirror.com/wasm-heap-manager/-/wasm-heap-manager-0.4.0.tgz", {}, "sha512-qQ6BffXkayv4WnHmxW2+uRIImQndvgg75mDmZEhvJ9qkJVWUi5D28yW1tjTwZhB2betS6IHivsREGTMmYItvWg=="],
 
     "wawoff2": ["wawoff2@2.0.1", "https://registry.npmmirror.com/wawoff2/-/wawoff2-2.0.1.tgz", { "dependencies": { "argparse": "^2.0.1" }, "bin": { "woff2_compress.js": "bin/woff2_compress.js", "woff2_decompress.js": "bin/woff2_decompress.js" } }, "sha512-r0CEmvpH63r4T15ebFqeOjGqU4+EgTx4I510NtK35EMciSdcTxCw3Byy3JnBonz7iyIFZ0AbVo0bbFpEVuhCYA=="],
 
