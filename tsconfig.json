@@ -1,10 +1,17 @@
 {
     "extends": "astro/tsconfigs/strict",
     "include": [".astro/types.d.ts", "**/*"],
-    "exclude": ["dist"],
+    "exclude": ["dist", "coverage"],
     "compilerOptions": {
         "strictNullChecks": true,
         "allowJs": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noUncheckedIndexedAccess": true,
+        "noUncheckedSideEffectImports": true,
+        "useUnknownInCatchVariables": true,
+        "verbatimModuleSyntax": true,
         "paths": {
             "@components/*": ["./src/components/*"],
             "@assets/*": ["./src/assets/*"],

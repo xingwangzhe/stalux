@@ -44,6 +44,7 @@
         "!src/content.config.ts"
     ],
     "type": "module",
+    "packageManager": "bun@1.4.0",
     "exports": {
         ".": "./src/index.ts",
         "./config": "./src/config.ts",
@@ -63,15 +64,24 @@
         "./package.json": "./package.json"
     },
     "scripts": {
-        "dev": "astro dev ",
-        "build": "astro build ",
-        "preview": "astro preview ",
+        "dev": "astro dev",
+        "build": "astro build && bun run verify:build",
+        "preview": "astro preview",
         "astro": "astro",
-        "init": "node scripts/cli.mjs init",
-        "fmt": "oxfmt",
-        "fmt:check": "oxfmt --check",
-        "lint": "oxlint",
-        "lint:fix": "oxlint --fix",
+        "init": "bun scripts/cli.mjs init",
+        "check": "biome check .",
+        "check:fix": "biome check --write .",
+        "format": "biome format --write .",
+        "format:check": "biome format .",
+        "lint": "biome lint .",
+        "lint:fix": "biome lint --write .",
+        "astro:check": "astro check --minimumFailingSeverity warning",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "knip": "knip",
+        "verify:build": "bun scripts/verify-build.mjs",
+        "validate": "bun run check && bun run astro:check && bun run knip && bun run test:coverage && bun run build",
         "prepare": "git config core.hooksPath scripts/git-hooks"
     },
     "dependencies": {
@@ -86,7 +96,6 @@
         "@xingwangzhe/satteri-mermaid": "0.7.7",
         "@xingwangzhe/satteri-photoswipe": "^0.2.4",
         "@xingwangzhe/tags-cloud": "^1.2.7",
-        "animejs": "^4.5.0",
         "astro-expressive-code": "^0.44.1",
         "astro-seo": "^1.1.0",
         "astro-typewriter": "^1.2.0",
@@ -99,12 +108,14 @@
         "temml": "^0.13.4"
     },
     "devDependencies": {
+        "@astrojs/check": "0.9.10",
+        "@biomejs/biome": "2.5.10",
+        "@vitest/coverage-v8": "4.1.11",
         "astro": "^7.2.4",
         "knip": "^6.32.2",
-        "oxfmt": "^0.64.0",
-        "oxlint": "^1.79.0",
-        "typescript": "^7.0.2",
-        "vite": "8.2.2"
+        "typescript": "npm:@typescript/typescript6@6.0.2",
+        "vite": "8.2.2",
+        "vitest": "4.1.11"
     },
     "peerDependencies": {
         "astro": "7.2.4"

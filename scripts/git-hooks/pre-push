@@ -1,27 +1,23 @@
 #!/bin/sh
-# pre-commit hook: require both lint and fmt to pass before allowing a commit.
-# - lint: oxlint, fails on any error or warning
-# - fmt:  oxfmt --check (dry-run), fails if any file needs formatting
-# If either check fails, the commit is aborted with the corresponding fix hint.
+# pre-push hook: require Biome's unified quality check before allowing a push.
 
 # Always run from the repository root so package.json is found regardless of cwd
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT" || exit 1
 
-echo "▶ Running lint (oxlint)..."
-if ! bun run lint; then
+echo "▶ Running Biome check..."
+if ! bun run check; then
     echo ""
-    echo "✗ lint failed, commit aborted."
-    echo "  Run 'bun run lint:fix' to fix the issues before committing."
+    echo "✗ Biome check failed, push aborted."
+    echo "  Run 'bun run check:fix' before pushing."
     exit 1
 fi
 
-echo "▶ Running fmt check (oxfmt --check)..."
-if ! bun run fmt:check; then
+echo "▶ Running Astro type check..."
+if ! bun run astro:check; then
     echo ""
-    echo "✗ Code is not properly formatted (dry-run reports changes needed), commit aborted."
-    echo "  Run 'bun run fmt' to format the whole repository before committing."
+    echo "✗ Astro type check failed, push aborted."
     exit 1
 fi
 
-echo "✓ lint and fmt checks passed, commit allowed."
+echo "✓ Biome and Astro checks passed, push allowed."

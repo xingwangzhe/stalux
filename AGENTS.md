@@ -7,7 +7,7 @@ Any new or changed user-facing configuration field must be handled as one change
 1. Update the Zod schema and all runtime consumers.
 2. Search every relevant Markdown document (`README.md`, `README_CN.md`, and `stalux/posts/*_config*.md`) and document the field, default/optional behavior, output surface, and privacy implications.
 3. Add or update a focused build assertion for the generated public artifact. For JSON-LD/config changes, parse the generated HTML or JSON rather than relying only on TypeScript compilation.
-4. Run `bun run fmt`, `bun run fmt:check`, `bun run lint`, `timeout 900 bun run build`, and `bun pm pack --dry-run`.
+4. Run `bun run check:fix`, `bun run validate`, and `bun pm pack --dry-run`.
 5. Bump the package version, commit the implementation and docs together, push the branch and annotated tag, wait for CI/npm visibility, then upgrade `myblog` and run two builds.
 
 Do not add a configuration field only to satisfy a third-party score. It must have a real Stalux runtime consumer, documented semantics, and a safe static-site behavior. Do not document dynamic API, rate-limit enforcement, MCP, authentication, or other capabilities that a static deployment cannot actually provide.
