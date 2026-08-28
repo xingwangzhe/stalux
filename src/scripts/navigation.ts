@@ -1,7 +1,21 @@
 import { registerPageLifecycle } from "./page-runtime";
+import { upgradeAndOpenSearchDialog } from "./search-dialog";
 
 interface SearchDialog extends HTMLElement {
-    open: () => void;
+    open?: () => void;
+    close?: () => void;
+}
+
+async function openSearchDialog(): Promise<void> {
+    await import("@pagefind/component-ui");
+    const dialog = document.querySelector<SearchDialog>("pagefind-modal#search");
+    await upgradeAndOpenSearchDialog(
+        {
+            whenDefined: (name) => customElements.whenDefined(name),
+            upgrade: (element) => customElements.upgrade(element),
+        },
+        dialog,
+    );
 }
 
 registerPageLifecycle("navigation", () => {
@@ -64,11 +78,7 @@ registerPageLifecycle("navigation", () => {
         async (event) => {
             event.preventDefault();
             closeNav();
-            await Promise.all([
-                import("@pagefind/component-ui"),
-                import("@pagefind/component-ui/css"),
-            ]);
-            document.querySelector<SearchDialog>("#search")?.open();
+            await openSearchDialog();
         },
         listenerOptions,
     );
@@ -102,6 +112,7 @@ registerPageLifecycle("navigation", () => {
     scheduleUpdate();
 
     return () => {
+        document.querySelector<SearchDialog>("pagefind-modal#search")?.close?.();
         controller.abort();
         resizeObserver.disconnect();
         if (frameId) cancelAnimationFrame(frameId);

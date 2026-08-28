@@ -2,6 +2,9 @@
 import { getCollection } from "astro:content";
 import Footer from "@components/stalux/layout/footer.astro";
 import Head from "@components/stalux/layout/head.astro";
+// Keep Pagefind styles on the layout's static CSS graph. The component JavaScript
+// remains lazy-loaded when search opens, but preview must always have stable CSS.
+import "@pagefind/component-ui/css";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
 import "@styles/shared/view-transitions.css";

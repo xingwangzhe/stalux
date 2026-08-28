@@ -26,6 +26,7 @@ import { expressiveCode } from "./expressive-code";
 import { staluxComponentsAlias } from "./internal/components-plugin";
 import { type FontSlice, runFontSlicing } from "./internal/font-slices";
 import { createInjectedRoutes } from "./internal/injected-routes";
+import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
 import {
     appendUniquePlugin,
     collectPluginNames,
@@ -179,6 +180,10 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 logger,
             }) => {
                 const srcDir = fileURLToPath(new URL(".", import.meta.url));
+                const runtimeCacheKey = createRuntimeCacheKey(
+                    path.join(srcDir, "scripts"),
+                    path.resolve(srcDir, "../package.json"),
+                );
 
                 // 1. 注入 Vite 别名 + 组件覆盖插件 + Vue 特性标记（Waline 依赖）
                 updateConfig({
@@ -191,6 +196,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             __VUE_OPTIONS_API__: true,
                             __VUE_PROD_DEVTOOLS__: false,
                             __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+                            __STALUX_RUNTIME_CACHE_KEY__: JSON.stringify(runtimeCacheKey),
                         },
                     },
                 });

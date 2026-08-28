@@ -1,4 +1,5 @@
 import { registerPageLifecycle } from "./page-runtime";
+import { createRetryableInitializer } from "./retryable-initializer";
 
 const GALLERY_SELECTOR = "a.pswp-gallery-item";
 
@@ -34,23 +35,13 @@ registerPageLifecycle("photoswipe", () => {
 
     const controller = new AbortController();
     let lightbox: import("photoswipe/lightbox").default | undefined;
-    let initPromise: Promise<void> | undefined;
     let initialized = false;
 
     const initialize = async () => {
-        const [{ default: PhotoSwipeLightbox }, { default: PhotoSwipe }, { default: css }] =
-            await Promise.all([
-                import("photoswipe/lightbox"),
-                import("photoswipe"),
-                import("photoswipe/dist/photoswipe.css?raw"),
-            ]);
-
-        if (!document.querySelector("style[data-photoswipe]") && css) {
-            const style = document.createElement("style");
-            style.dataset.photoswipe = "true";
-            style.textContent = css;
-            document.head.appendChild(style);
-        }
+        const [{ default: PhotoSwipeLightbox }, { default: PhotoSwipe }] = await Promise.all([
+            import("photoswipe/lightbox"),
+            import("photoswipe"),
+        ]);
 
         void enrichPhotoSwipeData(container);
         lightbox = new PhotoSwipeLightbox({
@@ -62,7 +53,7 @@ registerPageLifecycle("photoswipe", () => {
         lightbox.init();
     };
 
-    const ensureInitialized = () => (initPromise ??= initialize());
+    const ensureInitialized = createRetryableInitializer(initialize);
     const handleClick = (event: MouseEvent) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
@@ -93,7 +84,6 @@ registerPageLifecycle("photoswipe", () => {
         controller.abort();
         lightbox?.destroy();
         lightbox = undefined;
-        initPromise = undefined;
         initialized = false;
     };
 });

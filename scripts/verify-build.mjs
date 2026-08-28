@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
 import packageJson from "../package.json" with { type: "json" };
+import { findMissingAssetReferences } from "./verify-build-utils.mjs";
 
 const root = process.cwd();
 const dist = path.join(root, "dist");
@@ -92,10 +93,24 @@ assert(!sitemap.includes("<lastmod>"), "sitemap contains synthetic build-time la
 const files = walk(dist);
 const htmlCount = files.filter((file) => file.endsWith(".html")).length;
 const fontCount = files.filter((file) => file.endsWith(".woff2")).length;
+
+const assetSources = files.filter((file) => /\.(?:css|html|js)$/u.test(file));
+const assetContents = new Map(
+    assetSources.map((source) => [path.relative(dist, source), readFileSync(source, "utf8")]),
+);
+const existingAssets = new Set(
+    files.map((file) => `/${path.relative(dist, file).split(path.sep).join("/")}`),
+);
+const missingAssetReferences = findMissingAssetReferences(assetContents, existingAssets);
+
 assert(htmlCount >= 40, `expected at least 40 HTML pages, found ${htmlCount}`);
 assert(fontCount >= 24, `expected sliced body and code fonts, found ${fontCount}`);
 assert(statSync(path.join(dist, "pagefind", "pagefind.js")).size > 0, "Pagefind output is missing");
+assert(
+    missingAssetReferences.length === 0,
+    `generated files reference missing assets:\n${missingAssetReferences.join("\n")}`,
+);
 
 console.info(
-    `[verify-build] ${htmlCount} HTML pages, ${fontCount} fonts, SEO and agent output verified`,
+    `[verify-build] ${htmlCount} HTML pages, ${fontCount} fonts, ${assetSources.length} asset sources, SEO and agent output verified`,
 );

@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
 import Navs from "@components/stalux/layout/navs.astro";
+import { getRuntimeCacheKey } from "@internal/runtime-cache-key";
 import PostLayout from "@layouts/PostLayout.astro";
 import Stalux from "@layouts/Stalux.astro";
 import { analyzeFeatureFlags } from "@plugins/feature-flags";
@@ -33,6 +34,7 @@ export async function getStaticPaths() {
             post.data.updated ?? post.data.date,
             prevPost ? (prevPost.data.updated ?? prevPost.data.date) : "",
             nextPost ? (nextPost.data.updated ?? nextPost.data.date) : "",
+            getRuntimeCacheKey(),
         ].join("|");
         return {
             params: { post: post.data.abbrlink },

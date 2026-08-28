@@ -1,5 +1,6 @@
 import type { GetStaticPathsResult } from "astro";
 
+import { getRuntimeCacheKey } from "../internal/runtime-cache-key";
 import { getPostContentIndex, type TaxonomyKey } from "./content-index";
 
 /**
@@ -17,7 +18,7 @@ export async function buildTaxonomyStaticPaths(key: TaxonomyKey): Promise<GetSta
     return [...taxonomy].map(([name, entry]) => {
         return {
             params: { [paramName]: name },
-            cacheKey: entry.cacheKey,
+            cacheKey: `${entry.cacheKey}|${getRuntimeCacheKey()}`,
             props: {
                 [paramName]: name,
                 count: entry.posts.length,

@@ -15,7 +15,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const navs = navsConfig?.items ?? [];
 ---
 
-<nav aria-label={t("nav.main")} transition:persist-props>
+<nav aria-label={t("nav.main")}>
     <!-- 汉堡菜单按钮 (仅窄屏显示) -->
     <button
         type="button"
