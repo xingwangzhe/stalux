@@ -32,6 +32,7 @@ import {
     collectPluginNames,
     prepareSatteriProcessor,
 } from "./internal/satteri-config";
+import { createViteAliases } from "./internal/vite-aliases";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { temml } from "./plugins/satteri-temml";
 
@@ -119,24 +120,6 @@ function syncBackgroundSvgs(srcDir: string): { copied: number; skipped: number }
 }
 
 // ---------------------------------------------------------------------------
-// Vite 别名配置（供页面使用 @components etc.）
-// ---------------------------------------------------------------------------
-
-function getViteAliases(srcDir: string) {
-    return {
-        "@components": path.resolve(srcDir, "components"),
-        "@assets": path.resolve(srcDir, "assets"),
-        "@layouts": path.resolve(srcDir, "layouts"),
-        "@scripts": path.resolve(srcDir, "scripts"),
-        "@styles": path.resolve(srcDir, "styles"),
-        "@utils": path.resolve(srcDir, "utils"),
-        "@i18n": path.resolve(srcDir, "i18n"),
-        "@plugins": path.resolve(srcDir, "plugins"),
-        "@schemas": path.resolve(srcDir, "schemas"),
-    };
-}
-
-// ---------------------------------------------------------------------------
 // 集成入口
 // ---------------------------------------------------------------------------
 
@@ -189,7 +172,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 updateConfig({
                     vite: {
                         resolve: {
-                            alias: getViteAliases(srcDir),
+                            alias: createViteAliases(srcDir),
                         },
                         plugins: [staluxComponentsAlias(opt.components)],
                         define: {
