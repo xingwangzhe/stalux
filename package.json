@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.25.14",
+    "version": "1.25.15",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -85,39 +85,39 @@
         "prepare": "git config core.hooksPath scripts/git-hooks"
     },
     "dependencies": {
-        "@astrojs/markdown-satteri": "0.3.8",
+        "@astrojs/markdown-satteri": "0.4.0",
         "@astrojs/rss": "^4.0.19",
-        "@astrojs/sitemap": "^3.7.3",
-        "@expressive-code/plugin-line-numbers": "^0.44.1",
-        "@lucide/astro": "^1.35.0",
-        "@mcp-b/webmcp-polyfill": "^5.0.1",
+        "@astrojs/sitemap": "^3.7.4",
+        "@expressive-code/plugin-line-numbers": "^0.44.2",
+        "@lucide/astro": "^1.38.0",
+        "@mcp-b/webmcp-polyfill": "^5.1.0",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.15.2",
         "@xingwangzhe/satteri-mermaid": "0.7.7",
         "@xingwangzhe/satteri-photoswipe": "^0.2.4",
         "@xingwangzhe/tags-cloud": "^1.2.7",
-        "astro-expressive-code": "^0.44.1",
-        "astro-seo": "^1.1.0",
+        "astro-expressive-code": "^0.44.2",
+        "astro-seo": "^1.2.0",
         "astro-typewriter": "^1.2.0",
         "badge-maker": "^6.0.0",
         "pagefind": "^1.5.2",
         "photoswipe": "^5.4.4",
         "satteri": "^0.10.5",
-        "simple-icons": "^16.28.0",
-        "subset-font": "^2.6.0",
-        "temml": "^0.13.4"
+        "simple-icons": "^16.29.0",
+        "subset-font": "^2.7.0",
+        "temml": "^0.13.5"
     },
     "devDependencies": {
         "@astrojs/check": "0.9.10",
         "@biomejs/biome": "2.5.11",
         "@vitest/coverage-v8": "4.1.11",
-        "astro": "^7.2.9",
-        "knip": "^6.32.3",
+        "astro": "^7.2.10",
+        "knip": "^6.34.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
         "vite": "8.2.2",
         "vitest": "4.1.11"
     },
     "peerDependencies": {
-        "astro": "7.2.9"
+        "astro": "7.2.10"
     }
 }
