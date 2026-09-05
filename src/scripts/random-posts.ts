@@ -1,4 +1,7 @@
+import { createClientLogger } from "./logger";
 import { registerPageLifecycle } from "./page-runtime";
+
+const logger = createClientLogger("random-posts");
 
 const sleep = (ms: number, signal: AbortSignal) =>
     new Promise<void>((resolve) => {
@@ -49,16 +52,19 @@ async function refresh(container: HTMLElement, fallback: string, signal: AbortSi
     await sleep(300, signal);
     if (signal.aborted) return;
     try {
+        logger.debug("refresh started");
         const posts = shuffle(await fetchPosts(signal)).slice(
             0,
             Number(container.dataset.count ?? 5),
         );
         if (signal.aborted) return;
+        logger.debug(`refresh completed; posts=${posts.length}`);
         list.innerHTML = posts.length
             ? render(posts)
             : `<li class="no-posts">${container.dataset.noPosts ?? fallback}</li>`;
-    } catch {
+    } catch (error) {
         if (signal.aborted) return;
+        logger.error("refresh failed; showing fallback", error);
         list.innerHTML = `<li class="error">${container.dataset.loadFailed ?? fallback}</li>`;
     } finally {
         if (!signal.aborted) list.style.opacity = "1";

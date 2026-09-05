@@ -1,3 +1,4 @@
+import { describeError } from "../utils/diagnostics";
 /**
  * Build-time CJK font slicing engine (Astro Fonts API variant).
  *
@@ -148,6 +149,10 @@ export async function runFontSlicing(
     projectRoot: string,
     logger: AstroIntegrationLogger,
 ): Promise<SlicedFonts | null> {
+    const started = performance.now();
+    let cached = 0;
+    let generated = 0;
+    logger.debug("locating font inputs");
     // 1. Locate fonts (check project root first, then stalux package dir)
     const fontPath = findFont(projectRoot, FONT_INPUT);
     if (!fontPath) {
@@ -177,17 +182,21 @@ export async function runFontSlicing(
         const filename = `lxgw-wenkai-slice-${def.id}-${hash}.woff2`;
         const outPath = join(outDir, filename);
 
-        if (!existsSync(outPath)) {
+        if (existsSync(outPath)) {
+            cached++;
+            logger.debug(`body slice ${def.id}: cache hit`);
+        } else {
             try {
                 const data = await subsetFont(fontBuffer, chars, { targetFormat: "woff2" });
                 if (data.length > 0) {
                     writeFileSync(outPath, data);
+                    generated++;
                     logger.debug(
                         `  body slice ${def.id}: ${(data.length / 1024).toFixed(1)} KB → ${filename}`,
                     );
                 }
             } catch (error) {
-                logger.warn(`  body slice ${def.id} failed: ${String(error)}`);
+                logger.warn(`  body slice ${def.id} failed: ${describeError(error)}`);
             }
         }
 
@@ -201,6 +210,9 @@ export async function runFontSlicing(
         return null;
     }
 
+    logger.debug(
+        `generated=${generated}; cached=${cached}; elapsed=${(performance.now() - started).toFixed(1)}ms`,
+    );
     logger.info(
         `Font slicing done: ${body.length} body chunks + code font ` +
             `(source ${(fontBuffer.length / 1024 / 1024).toFixed(1)} MB → woff2 chunks)`,

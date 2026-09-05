@@ -11,7 +11,7 @@ export const GET: APIRoute = async (context) => {
     const site = getSite(config, context.site?.toString());
     const lang = (config.get("site")?.lang as string) || "zh-CN";
     const { t } = createTranslator(lang);
-    const text = await renderIndexMd(config, site, t);
+    const text = await renderIndexMd(config, site, t, context.logger);
     return new Response(text, {
         headers: {
             "Content-Type": "text/markdown; charset=utf-8",

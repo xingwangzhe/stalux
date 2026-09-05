@@ -1,3 +1,4 @@
+import type { AstroRuntimeLogger } from "astro";
 import { getPostContentIndex, type PostEntry } from "./content-index";
 
 /**
@@ -26,8 +27,8 @@ function countBy(
  * 获取标签计数统计（用于标签云）
  * @returns Array<{ name: string; count: number }>
  */
-export async function getTagCountList() {
-    const { tags } = await getPostContentIndex();
+export async function getTagCountList(logger?: AstroRuntimeLogger) {
+    const { tags } = await getPostContentIndex(logger);
     return [...tags.values()].map(({ name, posts }) => ({ name, count: posts.length }));
 }
 
@@ -35,8 +36,8 @@ export async function getTagCountList() {
  * 获取分类计数统计（用于分类列表）
  * @returns Array<{ name: string; count: number }>
  */
-export async function getCategoryCountList() {
-    const { posts, categories } = await getPostContentIndex();
+export async function getCategoryCountList(logger?: AstroRuntimeLogger) {
+    const { posts, categories } = await getPostContentIndex(logger);
     const counts = [...categories.values()].map(({ name, posts: categoryPosts }) => ({
         name,
         count: categoryPosts.length,

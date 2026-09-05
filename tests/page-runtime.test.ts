@@ -67,4 +67,48 @@ describe("page runtime", () => {
         unregister();
         expect(mount).not.toHaveBeenCalled();
     });
+    it("reports mount failures once and preserves the thrown error", () => {
+        const target = new RuntimeTarget();
+        target.readyState = "complete";
+        const { value, queued } = environment(target);
+        const error = new Error("mount failure");
+        const output = vi.spyOn(console, "error").mockImplementation(() => undefined);
+        try {
+            registerPageLifecycle(
+                "broken",
+                () => {
+                    throw error;
+                },
+                value,
+            );
+            expect(() => queued[0]?.()).toThrow(error);
+            expect(output).toHaveBeenCalledOnce();
+            expect(output.mock.calls[0]?.[0]).toContain("[stalux/broken] page mount failed");
+        } finally {
+            output.mockRestore();
+        }
+    });
+
+    it("reports cleanup failures once and clears the disposer", () => {
+        const target = new RuntimeTarget();
+        target.readyState = "complete";
+        const { value, queued } = environment(target);
+        const error = new Error("cleanup failure");
+        const output = vi.spyOn(console, "error").mockImplementation(() => undefined);
+        try {
+            registerPageLifecycle(
+                "broken-cleanup",
+                () => () => {
+                    throw error;
+                },
+                value,
+            );
+            queued[0]?.();
+            expect(() => queued[0]?.()).toThrow(error);
+            expect(output).toHaveBeenCalledOnce();
+            expect(() => queued[0]?.()).not.toThrow();
+        } finally {
+            output.mockRestore();
+        }
+    });
 });

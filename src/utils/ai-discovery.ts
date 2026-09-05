@@ -5,8 +5,10 @@
  */
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
+import type { AstroRuntimeLogger } from "astro";
 import { getPostContentIndex } from "./content-index";
 import { toTimestamp } from "./dayjs";
+import { logDetail } from "./diagnostics";
 import { createTranslator } from "./i18n";
 import { toPublicUrl } from "./public-routes";
 
@@ -94,8 +96,8 @@ export function postUrl(site: string, abbrlink: string | number, exportMd: boole
 }
 
 /** 获取已发布文章并按日期降序排列 */
-export async function getPublishedPosts(): Promise<Post[]> {
-    return (await getPostContentIndex()).posts;
+export async function getPublishedPosts(logger?: AstroRuntimeLogger): Promise<Post[]> {
+    return (await getPostContentIndex(logger)).posts;
 }
 
 /** 获取 about 页面 */
@@ -105,7 +107,10 @@ async function loadAbout(): Promise<About | undefined> {
 }
 
 /** 从 media-links section 中解析社交媒体链接 */
-function getMediaLinks(config: ConfigMap): Array<{ name: string; url: string }> {
+function getMediaLinks(
+    config: ConfigMap,
+    logger?: AstroRuntimeLogger,
+): Array<{ name: string; url: string }> {
     const mediaSection = config.get("media-links");
     if (!mediaSection) return [];
     const items = (mediaSection as Record<string, unknown>).items as
@@ -123,7 +128,11 @@ function getMediaLinks(config: ConfigMap): Array<{ name: string; url: string }> 
                 const domain = hostname.replace(/^www\./, "").split(".")[0];
                 name = domain ? domain.charAt(0).toUpperCase() + domain.slice(1) : "Link";
             } catch {
-                // 无法解析 URL 时保持默认
+                logDetail(
+                    logger,
+                    "ai-discovery",
+                    "media link host unavailable; using default label",
+                );
             }
             return { name, url };
         });
@@ -289,8 +298,9 @@ export async function renderArchivesMd(
     site: string,
     exportMd: boolean,
     t: (key: string) => string,
+    logger?: AstroRuntimeLogger,
 ): Promise<string> {
-    const posts = await getPublishedPosts();
+    const posts = await getPublishedPosts(logger);
     const lines: string[] = [];
     lines.push(`# ${t("archives.title")}`);
     lines.push("");
@@ -305,8 +315,9 @@ export async function renderIndexMd(
     config: ConfigMap,
     site: string,
     t: (key: string) => string,
+    logger?: AstroRuntimeLogger,
 ): Promise<string> {
-    const posts = await getPublishedPosts();
+    const posts = await getPublishedPosts(logger);
     const siteData = getSiteConfig(config);
     const lang = (siteData.lang as string) || "zh-CN";
     const about = await loadAbout();
@@ -349,13 +360,17 @@ export async function renderIndexMd(
 // ---------------------------------------------------------------------------
 
 /** 生成 llms.txt 核心 markdown 内容 */
-export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<string> {
-    const posts = await getPublishedPosts();
+export async function renderLlmsTxt(
+    config: ConfigMap,
+    site: string,
+    logger?: AstroRuntimeLogger,
+): Promise<string> {
+    const posts = await getPublishedPosts(logger);
     const about = await loadAbout();
     const siteData = getSiteConfig(config);
     const authorSection = config.get("author") as Record<string, unknown> | undefined;
     const linksSection = config.get("links") as Record<string, unknown> | undefined;
-    const mediaLinks = getMediaLinks(config);
+    const mediaLinks = getMediaLinks(config, logger);
     const email = getEmail(config);
     const lang = (siteData.lang as string) || "zh-CN";
     const { t } = createTranslator(lang);
@@ -510,11 +525,15 @@ export async function renderLlmsTxt(config: ConfigMap, site: string): Promise<st
 }
 
 /** 生成 llms-full.txt 内容：全站 Markdown 镜像 */
-export async function renderLlmsFullTxt(config: ConfigMap, site: string): Promise<string> {
+export async function renderLlmsFullTxt(
+    config: ConfigMap,
+    site: string,
+    logger?: AstroRuntimeLogger,
+): Promise<string> {
     const siteData = getSiteConfig(config);
     const lang = (siteData.lang as string) || "zh-CN";
     const { t } = createTranslator(lang);
-    const posts = await getPublishedPosts();
+    const posts = await getPublishedPosts(logger);
     const categoryMap = buildTaxonomyMap(posts, "categories");
     const tagMap = buildTaxonomyMap(posts, "tags");
     const exportMd = isMarkdownExportEnabled(config);
@@ -533,7 +552,7 @@ export async function renderLlmsFullTxt(config: ConfigMap, site: string): Promis
 
     sections.push("---");
     sections.push("");
-    sections.push(await renderIndexMd(config, site, t));
+    sections.push(await renderIndexMd(config, site, t, logger));
     sections.push("---");
     sections.push("");
     sections.push(await renderAboutMd(site));
@@ -545,7 +564,7 @@ export async function renderLlmsFullTxt(config: ConfigMap, site: string): Promis
     sections.push(renderLinksMd(config, site, t));
     sections.push("---");
     sections.push("");
-    sections.push(await renderArchivesMd(site, exportMd, t));
+    sections.push(await renderArchivesMd(site, exportMd, t, logger));
     sections.push("---");
     sections.push("");
     sections.push(renderTaxonomyListMd(categoryMap, site, "categories", t("ai.allCategories")));

@@ -10,7 +10,7 @@ export const prerender = true;
  * 相比 /api/post.abbrlink.json，包含完整元信息（日期/分类/标签/摘要/字数），
  * 是 stalux_get_post / stalux_random_post 等 WebMCP 工具的廉价数据源。
  */
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ logger }) => {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
 
     const payload = await Promise.all(
@@ -22,7 +22,7 @@ export const GET: APIRoute = async () => {
             tags: post.data.tags ?? [],
             categories: post.data.categories ?? [],
             desc: post.data.desc ?? "",
-            wordCount: (await analyzeFeatureFlags(post.body)).wordCount,
+            wordCount: (await analyzeFeatureFlags(post.body, logger)).wordCount,
             url: `/posts/${post.data.abbrlink}/`,
         })),
     );

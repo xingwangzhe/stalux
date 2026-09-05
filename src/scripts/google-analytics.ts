@@ -1,3 +1,7 @@
+import { createClientLogger } from "./logger";
+
+const logger = createClientLogger("google-analytics");
+
 declare global {
     interface Window {
         dataLayer?: unknown[];
@@ -19,6 +23,15 @@ function load() {
         script.async = true;
         script.dataset.staluxGoogle = "true";
         script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaID)}`;
+        script.addEventListener("load", () => logger.debug("external script loaded"), {
+            once: true,
+        });
+        script.addEventListener(
+            "error",
+            () => logger.warn("external script failed to load (network or content blocker)"),
+            { once: true },
+        );
+        logger.debug("loading external script");
         document.head.appendChild(script);
     }
     if (!window.__staluxAnalyticsLoaded) {
@@ -44,5 +57,3 @@ if (!window.__staluxAnalyticsPageLoadListener) {
 if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", load, { once: true });
 else load();
-
-export {};

@@ -20,7 +20,6 @@ import { fontProviders } from "astro/config";
 // pagefind 是 ESM-only 包，需要在模块顶层导入
 // 因为 astro:build:done 钩子中 Vite module runner 已关闭，无法动态 import
 import { createIndex as pagefindCreateIndex } from "pagefind";
-
 import type { StaluxOptions } from "./config";
 import { expressiveCode } from "./expressive-code";
 import { staluxComponentsAlias } from "./internal/components-plugin";
@@ -35,6 +34,7 @@ import {
 import { createViteAliases } from "./internal/vite-aliases";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { temml } from "./plugins/satteri-temml";
+import { describeError } from "./utils/diagnostics";
 
 // 字体配置（Astro Fonts API）通过 updateConfig 注入，两种模式（源码模板/npm 插件）都生效。
 // 官方 local provider 完全本地读文件（readFile），不联网；
@@ -162,6 +162,13 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 config,
                 logger,
             }) => {
+                const started = performance.now();
+                const configLogger = logger.fork("stalux/config");
+                const assetsLogger = logger.fork("stalux/assets");
+                const routesLogger = logger.fork("stalux/routes");
+                const markdownLogger = logger.fork("stalux/markdown");
+                const fontsLogger = logger.fork("stalux/fonts");
+                configLogger.debug(`setup started; mode=${isPluginMode ? "plugin" : "source"}`);
                 const srcDir = fileURLToPath(new URL(".", import.meta.url));
                 const runtimeCacheKey = createRuntimeCacheKey(
                     path.join(srcDir, "scripts"),
@@ -174,8 +181,14 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         resolve: {
                             alias: createViteAliases(srcDir),
                         },
-                        plugins: [staluxComponentsAlias(opt.components)],
+                        plugins: [
+                            staluxComponentsAlias(opt.components, logger.fork("stalux/components")),
+                        ],
                         define: {
+                            __STALUX_DEBUG__: JSON.stringify(
+                                process.env.STALUX_DEBUG === "1" ||
+                                    process.argv.includes("--verbose"),
+                            ),
                             __VUE_OPTIONS_API__: true,
                             __VUE_PROD_DEVTOOLS__: false,
                             __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
@@ -196,12 +209,12 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 try {
                     const { copied, skipped } = syncBackgroundSvgs(srcDir);
                     if (copied > 0) {
-                        logger.info(`Stalux: 同步背景 SVG ${copied} 个（跳过 ${skipped} 个不变）`);
+                        assetsLogger.info(`同步背景 SVG ${copied} 个（跳过 ${skipped} 个不变）`);
                     } else if (skipped > 0) {
-                        logger.debug(`Stalux: 背景 SVG 无变化（跳过 ${skipped} 个）`);
+                        assetsLogger.debug(`背景 SVG 无变化（跳过 ${skipped} 个）`);
                     }
                 } catch (error) {
-                    logger.warn(`Stalux: 同步背景 SVG 失败: ${String(error)}`);
+                    assetsLogger.warn(`同步背景 SVG 失败: ${describeError(error)}`);
                 }
 
                 // 3. 注入所有页面路由（仅插件模式，源码模式下使用文件路由）
@@ -210,9 +223,10 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     for (const route of routes) {
                         injectRoute(route);
                     }
-                    logger.debug(`Stalux: injected ${routes.length} routes`);
+                    routesLogger.debug(`injected ${routes.length} routes`);
+                    for (const route of routes) routesLogger.debug(`route=${route.pattern}`);
                 } else {
-                    logger.info("Stalux: running in source mode, file-based routing active");
+                    routesLogger.debug("source mode; file-based routing active");
                 }
 
                 // 4. 可选：添加 Dev Toolbar 应用
@@ -227,7 +241,9 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     });
                 }
 
-                logger.info(`Stalux initialized (contentDir: ${opt.contentDir})`);
+                configLogger.debug(
+                    `contentDir=${opt.contentDir}; toolbar=${opt.devToolbar}; pagefind=${opt.pagefind}`,
+                );
 
                 // 5. 注入 satteri 插件（Mermaid/字数统计/特性标记/数学公式/PhotoSwipe），按插件 name 去重
                 // 两种模式都由集成补齐默认插件。Astro 7 的 markdown.processor 默认为 satteri()，
@@ -241,7 +257,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     if (processorOptions) {
                         const seen = collectPluginNames(processorOptions);
                         appendUniquePlugin(processorOptions.mdastPlugins, mermaidMdast(), seen);
-                        appendUniquePlugin(processorOptions.mdastPlugins, temml(), seen);
+                        appendUniquePlugin(
+                            processorOptions.mdastPlugins,
+                            temml(undefined, markdownLogger),
+                            seen,
+                        );
                         appendUniquePlugin(processorOptions.mdastPlugins, featureFlagsMdast, seen);
                         appendUniquePlugin(
                             processorOptions.hastPlugins,
@@ -254,17 +274,17 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         );
                         appendUniquePlugin(processorOptions.hastPlugins, photoswipe(), seen);
                         appendUniquePlugin(processorOptions.hastPlugins, featureFlagsHast, seen);
-                        logger.debug(
-                            "Stalux: injected satteri plugins (mermaid/temml/photoswipe/feature-flags)",
+                        markdownLogger.debug(
+                            "injected satteri plugins (mermaid/temml/photoswipe/feature-flags)",
                         );
                     } else {
-                        logger.warn(
-                            "Stalux: markdown.processor 不是 satteri，无法注入字数统计/数学公式/PhotoSwipe 插件。" +
+                        markdownLogger.warn(
+                            "markdown.processor 不是 satteri，无法注入字数统计/数学公式/PhotoSwipe 插件。" +
                                 "请在 astro.config 中配置 `processor: satteri({...})`。",
                         );
                     }
                 } catch (error) {
-                    logger.warn(`Stalux: 注入 markdown 插件失败: ${String(error)}`);
+                    markdownLogger.warn(`注入 markdown 插件失败: ${describeError(error)}`);
                 }
 
                 // 6. 站点 URL 单源化：以 stalux/config/site.yml 的 url 为准
@@ -302,14 +322,18 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             );
                         }
                     }
-                } catch {
-                    logger.debug("Stalux: site.yml not found, skip site sync");
+                } catch (error) {
+                    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+                        configLogger.debug("site.yml not found; site sync skipped");
+                    } else {
+                        configLogger.warn(`site sync failed: ${describeError(error)}`);
+                    }
                 }
 
                 // 7. 字体：构建期把正文切成 unicode-range 分片，通过官方 Fonts API 注入
                 // （config:setup 阶段执行，保证 dev/build 都能生成；local provider 纯本地读文件）
                 try {
-                    const sliced = await runFontSlicing(process.cwd(), logger);
+                    const sliced = await runFontSlicing(process.cwd(), fontsLogger);
                     if (sliced) {
                         updateConfig({
                             fonts: buildFontsConfig(
@@ -318,16 +342,19 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                                 sliced.codeItalic,
                             ),
                         });
-                        logger.info(
-                            `Stalux: injected ${sliced.body.length} body font chunks + code font via Fonts API`,
+                        fontsLogger.debug(
+                            `injected ${sliced.body.length} body font chunks + code font via Fonts API`,
                         );
                     }
                 } catch (error) {
-                    logger.warn(`Stalux: font injection failed: ${String(error)}`);
+                    fontsLogger.warn(`font injection failed: ${describeError(error)}`);
                 }
+                configLogger.info(`initialized in ${(performance.now() - started).toFixed(1)}ms`);
             },
 
-            "astro:build:done": async ({ dir, logger }) => {
+            "astro:build:done": async ({ dir, logger: rootLogger }) => {
+                const logger = rootLogger.fork("stalux/pagefind");
+                const started = performance.now();
                 const outDir = fileURLToPath(dir);
 
                 // 后处理：Pagefind 搜索索引。启用时任何失败都必须让构建失败，
@@ -353,11 +380,15 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             outputPath: path.join(outDir, "pagefind"),
                         });
 
-                        logger.info(`Pagefind indexed ${page_count} pages → ${outputPath}`);
+                        logger.info(
+                            `indexed ${page_count} pages → ${outputPath} (${(performance.now() - started).toFixed(1)}ms)`,
+                        );
                     } catch (error) {
-                        logger.error(`Pagefind indexing failed: ${String(error)}`);
+                        logger.error(`Pagefind indexing failed: ${describeError(error)}`);
                         throw error;
                     }
+                } else {
+                    logger.debug("disabled; indexing skipped");
                 }
             },
         },

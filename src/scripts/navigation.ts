@@ -1,5 +1,9 @@
+import { createClientLogger } from "./logger";
+
 import { registerPageLifecycle } from "./page-runtime";
 import { upgradeAndOpenSearchDialog } from "./search-dialog";
+
+const logger = createClientLogger("navigation");
 
 interface SearchDialog extends HTMLElement {
     open?: () => void;
@@ -7,6 +11,7 @@ interface SearchDialog extends HTMLElement {
 }
 
 async function openSearchDialog(): Promise<void> {
+    logger.debug("loading search UI");
     await import("@pagefind/component-ui");
     const dialog = document.querySelector<SearchDialog>("pagefind-modal#search");
     await upgradeAndOpenSearchDialog(
@@ -78,7 +83,13 @@ registerPageLifecycle("navigation", () => {
         async (event) => {
             event.preventDefault();
             closeNav();
-            await openSearchDialog();
+            try {
+                await openSearchDialog();
+                logger.debug("search dialog opened");
+            } catch (error) {
+                logger.error("search dialog failed to open; next click can retry", error);
+                throw error;
+            }
         },
         listenerOptions,
     );

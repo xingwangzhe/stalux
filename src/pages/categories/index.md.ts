@@ -18,7 +18,7 @@ export const GET: APIRoute = async (context) => {
     const site = getSite(config, context.site?.toString());
     const lang = (config.get("site")?.lang as string) || "zh-CN";
     const { t } = createTranslator(lang);
-    const posts = await getPublishedPosts();
+    const posts = await getPublishedPosts(context.logger);
     const map = buildTaxonomyMap(posts, "categories");
     const text = renderTaxonomyListMd(map, site, "categories", t("ai.allCategories"));
     return new Response(text, {

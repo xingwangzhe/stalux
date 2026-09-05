@@ -46,7 +46,7 @@ const badges: BadgeItem[] | undefined = footerConfig?.badges?.map((item) => {
     };
 });
 
-const totalWordCount = await getTotalWordCount();
+const totalWordCount = await getTotalWordCount(Astro.logger);
 const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "zh-CN");
 ---
 

@@ -18,6 +18,7 @@
 
 import { fileURLToPath } from "node:url";
 
+import type { AstroIntegrationLogger } from "astro";
 import type { Plugin } from "vite";
 
 import type { ComponentOverrideMap } from "../config";
@@ -28,7 +29,10 @@ const VIRTUAL_PREFIX = "@stalux/component/";
 /**
  * 创建 Vite 别名插件，处理 `@stalux/component/*` → 实际组件路径
  */
-export function staluxComponentsAlias(overrides: ComponentOverrideMap = {}): Plugin {
+export function staluxComponentsAlias(
+    overrides: ComponentOverrideMap = {},
+    logger?: AstroIntegrationLogger,
+): Plugin {
     // 包内 components 目录的绝对路径
     const componentsDir = fileURLToPath(new URL("../components", import.meta.url));
 
@@ -41,6 +45,8 @@ export function staluxComponentsAlias(overrides: ComponentOverrideMap = {}): Plu
 
             // 使用 resolveComponentPath 获取实际路径
             const resolvedPath = resolveComponentPath(componentName, overrides, componentsDir);
+
+            logger?.debug(`${componentName}: ${overrides[componentName] ? "override" : "default"}`);
 
             // 如果是用户提供的相对路径，相对于项目根解析
             if (overrides[componentName]) {

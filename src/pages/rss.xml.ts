@@ -5,12 +5,12 @@ import { buildFeedItems } from "@utils/feed";
 import { createTranslator, langToFeedLanguage } from "@utils/i18n";
 import type { APIRoute } from "astro";
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ logger }) => {
     const configCollection = await getCollection("config");
     const stalux = getSiteData(configCollection);
 
     const posts = await getCollection("posts", ({ data }) => !data.draft);
-    const items = await buildFeedItems(stalux, posts, "atom:updated");
+    const items = await buildFeedItems(stalux, posts, "atom:updated", logger);
 
     const lang = stalux?.lang || "zh-CN";
     const { t } = createTranslator(lang);

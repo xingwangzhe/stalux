@@ -1,3 +1,5 @@
+import { createClientLogger } from "./logger";
+
 export type PageDisposer = () => void;
 export type PageMount = () => PageDisposer | undefined;
 
@@ -40,12 +42,17 @@ export function registerPageLifecycle(
     environment = getBrowserEnvironment(),
 ): PageDisposer {
     if (!environment) return () => undefined;
+    const logger = createClientLogger(key);
 
     const { host, target, queueTask } = environment;
     const registry = host.__staluxPageRuntime ?? new Map<string, RuntimeRegistration>();
     host.__staluxPageRuntime = registry;
     const existing = registry.get(key);
-    if (existing) return existing.unregister;
+    if (existing) {
+        logger.debug("registration reused");
+        return existing.unregister;
+    }
+    logger.debug("lifecycle registered");
 
     let active = true;
     const registration: RuntimeRegistration = {
@@ -53,13 +60,30 @@ export function registerPageLifecycle(
     };
 
     const disposePage = () => {
-        registration.disposePage?.();
-        registration.disposePage = undefined;
+        try {
+            if (registration.disposePage) logger.debug("disposing page");
+            registration.disposePage?.();
+        } catch (error) {
+            logger.error("page disposal failed", error);
+            throw error;
+        } finally {
+            registration.disposePage = undefined;
+        }
     };
     const mountPage = () => {
         if (!active) return;
         disposePage();
-        registration.disposePage = mount() || undefined;
+        const started = performance.now();
+        logger.debug("mount started");
+        try {
+            registration.disposePage = mount() || undefined;
+            logger.debug(
+                `mount completed in ${(performance.now() - started).toFixed(1)}ms; cleanup=${Boolean(registration.disposePage)}`,
+            );
+        } catch (error) {
+            logger.error("page mount failed", error);
+            throw error;
+        }
     };
     const handlePageLoad = () => mountPage();
     const handleBeforeSwap = () => disposePage();

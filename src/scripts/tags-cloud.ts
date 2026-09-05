@@ -1,6 +1,9 @@
 import { TagCloud } from "@xingwangzhe/tags-cloud";
+import { createClientLogger } from "./logger";
 
 import { registerPageLifecycle } from "./page-runtime";
+
+const logger = createClientLogger("tags-cloud");
 
 interface LinkTag {
     type: "link";
@@ -11,7 +14,10 @@ interface LinkTag {
 function parseTags(value: string | undefined): LinkTag[] {
     try {
         const parsed: unknown = JSON.parse(value ?? "[]");
-        if (!Array.isArray(parsed)) return [];
+        if (!Array.isArray(parsed)) {
+            logger.warn("tag data is not an array; using empty list");
+            return [];
+        }
         return parsed.filter(
             (tag): tag is LinkTag =>
                 typeof tag === "object" &&
@@ -24,13 +30,17 @@ function parseTags(value: string | undefined): LinkTag[] {
                 typeof tag.url === "string",
         );
     } catch {
+        logger.warn("tag data decoding failed; using empty list");
         return [];
     }
 }
 
 registerPageLifecycle("tags-cloud", () => {
     const mobile = window.matchMedia("(max-width: 768px)").matches;
-    if (mobile) return;
+    if (mobile) {
+        logger.debug("mobile layout; cloud skipped");
+        return;
+    }
 
     const container = document.getElementById("tags-canvas");
     if (!container) return;
@@ -55,5 +65,6 @@ registerPageLifecycle("tags-cloud", () => {
         color: "#ffffff",
         fontFamily: "system-ui, -apple-system, sans-serif",
     });
+    logger.debug(`cloud initialized; tags=${tags.length}`);
     return () => cloud.destroy();
 });

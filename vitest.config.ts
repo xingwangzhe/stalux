@@ -14,6 +14,8 @@ export default getViteConfig({
                 "src/internal/runtime-cache-key.ts",
                 "src/internal/satteri-config.ts",
                 "src/scripts/page-runtime.ts",
+                "src/scripts/logger.ts",
+                "src/utils/diagnostics.ts",
                 "src/scripts/retryable-initializer.ts",
                 "src/scripts/search-dialog.ts",
                 "src/utils/cc.ts",

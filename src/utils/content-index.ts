@@ -1,6 +1,7 @@
 import { type CollectionEntry, getCollection } from "astro:content";
-
+import type { AstroRuntimeLogger } from "astro";
 import { toTimestamp } from "./dayjs";
+import { logDetail } from "./diagnostics";
 
 export type PostEntry = CollectionEntry<"posts">;
 export type TaxonomyKey = "tags" | "categories";
@@ -126,14 +127,29 @@ export function buildPostContentIndex<T extends IndexablePost>(
 
 let productionIndex: Promise<PostContentIndex<PostEntry>> | undefined;
 
-async function loadPostContentIndex(): Promise<PostContentIndex<PostEntry>> {
+async function loadPostContentIndex(
+    logger?: AstroRuntimeLogger,
+): Promise<PostContentIndex<PostEntry>> {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
-    return buildPostContentIndex(posts);
+    const started = performance.now();
+    const index = buildPostContentIndex(posts);
+    logDetail(
+        logger,
+        "content-index",
+        `posts=${posts.length}; tags=${index.tags.size}; categories=${index.categories.size}; elapsed=${(performance.now() - started).toFixed(1)}ms`,
+    );
+    return index;
 }
 
 /** Production content is immutable during one build; dev deliberately bypasses the cache for HMR. */
-export function getPostContentIndex(): Promise<PostContentIndex<PostEntry>> {
-    if (import.meta.env.DEV) return loadPostContentIndex();
-    productionIndex ??= loadPostContentIndex();
+export function getPostContentIndex(
+    logger?: AstroRuntimeLogger,
+): Promise<PostContentIndex<PostEntry>> {
+    if (import.meta.env.DEV) {
+        logDetail(logger, "content-index", "dev cache bypass");
+        return loadPostContentIndex(logger);
+    }
+    logDetail(logger, "content-index", productionIndex ? "cache hit" : "cache miss");
+    productionIndex ??= loadPostContentIndex(logger);
     return productionIndex;
 }

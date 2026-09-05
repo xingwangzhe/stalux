@@ -15,7 +15,7 @@ const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
 function badgeImg(opts: BadgeOptions) {
-    const src = svgToDataUrl(generateBadge(opts));
+    const src = svgToDataUrl(generateBadge(opts, Astro.logger));
     const alt = opts.alt || `${opts.label}: ${opts.message}`;
     if (opts.href) {
         return `<a href="${opts.href}" target="_blank" rel="${opts.rel ?? "noopener"}"><img src="${src}" alt="${alt}" class="badge" /></a>`;

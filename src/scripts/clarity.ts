@@ -1,3 +1,7 @@
+import { createClientLogger } from "./logger";
+
+const logger = createClientLogger("clarity");
+
 declare global {
     interface Window {
         clarity?: ((...args: unknown[]) => void) & { q?: unknown[][] };
@@ -18,6 +22,13 @@ function load() {
     script.id = "stalux-clarity-script";
     script.async = true;
     script.src = `https://www.clarity.ms/tag/${encodeURIComponent(id)}`;
+    script.addEventListener("load", () => logger.debug("external script loaded"), { once: true });
+    script.addEventListener(
+        "error",
+        () => logger.warn("external script failed to load (network or content blocker)"),
+        { once: true },
+    );
+    logger.debug("loading external script");
     document.head.appendChild(script);
 }
 
@@ -28,5 +39,3 @@ if (!window.__staluxClarityPageLoadListener) {
 if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", load, { once: true });
 else load();
-
-export {};

@@ -226,3 +226,32 @@ jobTitle: Software Engineer # Optional; emitted as JSON-LD Person.jobTitle
 ```
 
 This is a build-time metadata field. It does not create a contact endpoint or expose private information; only publish a role that is already intended to be public.
+
+
+## Development diagnostics
+
+Stalux routes integration, content-loader and rendering diagnostics through Astro's official logger. Normal mode keeps summaries, warnings and errors. Verbose mode adds configuration/routes, component overrides, font cache, Markdown analysis/cache, content statistics, feeds, asset sync and Pagefind stages.
+
+```bash title="Stalux diagnostics"
+bun run dev:debug
+bun run build:debug
+# In a consuming project:
+STALUX_DEBUG=1 bun run dev --verbose
+STALUX_DEBUG=1 bun run build --verbose
+# Silence Astro; standalone verification output remains separate:
+bun run astro -- build --silent
+```
+
+| Surface | Behavior |
+| --- | --- |
+| Terminal | Integration loggers use `fork("stalux/module")`; rendering uses `Astro.logger`, with explicit context propagation to utilities and loaders. Astro levels, custom destinations and `--silent` remain authoritative. |
+| Browser console | A separate lightweight logger uses `[stalux/module]` prefixes. Detail requires development mode plus `STALUX_DEBUG=1` or `--verbose`; enable Verbose messages in DevTools. Production only emits warnings and errors. |
+| Content diagnostics | `getStaticPaths()` has no runtime logger; pure computation errors are reported by callers or Astro. Math failures use Sätteri diagnostics without duplicate error reporting. |
+
+Browser diagnostics cover mount/disposal, navigation, search, PhotoSwipe, Waline, WebMCP, backgrounds and external analytics script loading. Logs stay local: no reporting endpoint or telemetry is added. Search terms, article bodies, complete configuration and credentials are not intentionally logged. Errors retain module, cause and stack; common credentials and URL query parameters are redacted, but review third-party error text before sharing.
+
+In Astro 7.3, integration `logger.debug()` uses the official `DEBUG/--verbose` channel, separate from custom JSON destinations. `info/warn/error` and rendering diagnostics use the configured destination. Do not enable `--verbose` or `DEBUG` when requesting a silent run.
+
+Timing is emitted only as logs, never included in generated pages or cache keys. Switching between normal and verbose builds may require one rebuild; repeated builds in the same mode remain deterministic. Consumers running `astro dev --background` can read terminal output with `astro dev logs`.
+
+Keep the TypeScript 6 alias for `astro check`, upgrade Vitest and its coverage provider together, and run `bun run validate` before releasing.

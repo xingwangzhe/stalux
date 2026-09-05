@@ -1,6 +1,9 @@
 import { init, type WalineInitOptions } from "@waline/client";
+import { createClientLogger } from "./logger";
 
 import { registerPageLifecycle } from "./page-runtime";
+
+const logger = createClientLogger("waline");
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -18,11 +21,13 @@ registerPageLifecycle("waline", () => {
         );
         decoded = JSON.parse(new TextDecoder().decode(bytes));
     } catch (error) {
-        console.error("Failed to decode Waline config:", error);
+        logger.warn(
+            `config decoding failed (${error instanceof Error ? error.name : "unknown error"})`,
+        );
         return;
     }
     if (!isRecord(decoded) || typeof decoded.serverURL !== "string") {
-        console.warn("Waline serverURL not configured");
+        logger.warn("serverURL not configured");
         return;
     }
 
@@ -33,6 +38,7 @@ registerPageLifecycle("waline", () => {
         path: typeof decoded.path === "string" ? decoded.path : window.location.pathname,
     } as WalineInitOptions;
     const instance = init(options);
+    logger.debug("comment widget initialized");
 
     return () => instance?.destroy();
 });

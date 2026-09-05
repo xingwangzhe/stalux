@@ -1,8 +1,10 @@
+import type { AstroRuntimeLogger } from "astro";
 /**
  * 徽章生成器工具
  * 基于 badge-maker 库生成徽章
  */
 import { makeBadge } from "badge-maker";
+import { logFailure } from "./diagnostics";
 
 export interface BadgeOptions {
     label: string;
@@ -36,7 +38,7 @@ export function isBadgeGroup(item: BadgeItem): item is BadgeGroup {
  * @param options 徽章选项
  * @returns 返回徽章SVG字符串
  */
-export function generateBadge(options: BadgeOptions): string {
+export function generateBadge(options: BadgeOptions, logger?: AstroRuntimeLogger): string {
     try {
         const format: Parameters<typeof makeBadge>[0] = {
             label: options.label,
@@ -49,7 +51,7 @@ export function generateBadge(options: BadgeOptions): string {
 
         return makeBadge(format);
     } catch (error) {
-        console.error("Badge generation error:", error);
+        logFailure(logger, "badges", "generation failed", error);
         return "";
     }
 }

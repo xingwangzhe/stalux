@@ -18,6 +18,7 @@ import Tag from "@lucide/astro/icons/tag";
 import TrainFront from "@lucide/astro/icons/train-front";
 import User from "@lucide/astro/icons/user";
 import X from "@lucide/astro/icons/x";
+import type { AstroRuntimeLogger } from "astro";
 
 /** config.yml 中 icon 字段（kebab-case）→ Astro 图标组件 */
 const iconMap: Record<string, AstroComponent> = {
@@ -39,12 +40,15 @@ const iconMap: Record<string, AstroComponent> = {
 /**
  * 按 kebab-case 名称取图标组件；找不到时打日志并返回 null。
  */
-export function getLucideIcon(iconName: string | undefined | null): AstroComponent | null {
+export function getLucideIcon(
+    iconName: string | undefined | null,
+    logger?: AstroRuntimeLogger,
+): AstroComponent | null {
     if (!iconName) return null;
     const Icon = iconMap[iconName];
     if (!Icon) {
-        console.error(
-            `lucide 图标 '${iconName}' 未找到，请在 src/utils/lucide-icons.ts 中添加映射`,
+        logger?.warn(
+            `[stalux/icons] lucide 图标 '${iconName}' 未找到，请在 src/utils/lucide-icons.ts 中添加映射`,
         );
         return null;
     }

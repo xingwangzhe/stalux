@@ -20,7 +20,7 @@ const props = Astro.props as Props;
 const { Content, headings } = await render(props.post);
 
 // 文章统计完全由 Sätteri AST 分析，不读取 render metadata。
-const flags = await analyzeFeatureFlags(props.post.body);
+const flags = await analyzeFeatureFlags(props.post.body, Astro.logger);
 const autoDesc = props.post.data.desc || "";
 
 export async function getStaticPaths() {

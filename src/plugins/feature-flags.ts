@@ -1,4 +1,5 @@
 import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
+import type { AstroRuntimeLogger } from "astro";
 import type { HastVisitorContext, MdastNode, MdastVisitorContext } from "satteri";
 /**
  * Sätteri 插件：在构建时完成字数统计和特性标记，
@@ -15,6 +16,7 @@ import type { HastVisitorContext, MdastNode, MdastVisitorContext } from "satteri
  * - 数学公式由 satteri-temml 插件直接输出 MathML，无需额外标记
  */
 import { defineHastPlugin, defineMdastPlugin } from "satteri";
+import { logDetail } from "../utils/diagnostics";
 
 declare module "satteri" {
     interface DataMap {
@@ -254,10 +256,17 @@ function getFeatureFlagsProcessor() {
  * 直接用 Sätteri AST 分析一篇文章，供文章页、全局统计和 API 复用。
  * 这里不复用内容集合的 data，也不读取 Astro 的渲染 metadata。
  */
-export function analyzeFeatureFlags(body: string | undefined): Promise<FeatureFlagsResult> {
+export function analyzeFeatureFlags(
+    body: string | undefined,
+    logger?: AstroRuntimeLogger,
+): Promise<FeatureFlagsResult> {
     const content = body ?? "";
     const cached = analysisCache.get(content);
-    if (cached) return cached;
+    if (cached) {
+        logDetail(logger, "markdown-analysis", "cache hit");
+        return cached;
+    }
+    logDetail(logger, "markdown-analysis", "cache miss; analyzing feature flags");
 
     const resultPromise = analyzeFeatureFlagsUncached(content);
     analysisCache.set(content, resultPromise);

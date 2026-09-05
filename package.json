@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.25.15",
+    "version": "1.26.0",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -82,14 +82,16 @@
         "knip": "knip",
         "verify:build": "bun scripts/verify-build.mjs",
         "validate": "bun run check && bun run astro:check && bun run knip && bun run test:coverage && bun run build",
-        "prepare": "git config core.hooksPath scripts/git-hooks"
+        "prepare": "git config core.hooksPath scripts/git-hooks",
+        "dev:debug": "STALUX_DEBUG=1 astro dev --verbose",
+        "build:debug": "STALUX_DEBUG=1 astro build --verbose && bun run verify:build"
     },
     "dependencies": {
         "@astrojs/markdown-satteri": "0.4.0",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.4",
         "@expressive-code/plugin-line-numbers": "^0.44.2",
-        "@lucide/astro": "^1.38.0",
+        "@lucide/astro": "^1.41.0",
         "@mcp-b/webmcp-polyfill": "^5.1.0",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.15.2",
@@ -109,15 +111,15 @@
     },
     "devDependencies": {
         "@astrojs/check": "0.9.10",
-        "@biomejs/biome": "2.5.11",
-        "@vitest/coverage-v8": "4.1.11",
-        "astro": "^7.2.10",
+        "@biomejs/biome": "2.5.12",
+        "@vitest/coverage-v8": "5.0.0",
+        "astro": "^7.3.1",
         "knip": "^6.34.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
         "vite": "8.2.2",
-        "vitest": "4.1.11"
+        "vitest": "5.0.0"
     },
     "peerDependencies": {
-        "astro": "7.2.10"
+        "astro": "7.3.1"
     }
 }

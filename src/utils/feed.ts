@@ -2,6 +2,8 @@ import type { CollectionEntry } from "astro:content";
 import { formatInTimeZone, isValid, parseDate, toTimestamp } from "@utils/dayjs";
 import { toMachineDateTime } from "@utils/semantic-time";
 import { getPostDescriptions } from "@utils/word-count-utils";
+import type { AstroRuntimeLogger } from "astro";
+import { logDetail } from "./diagnostics";
 
 interface FeedConfig {
     timezone: string;
@@ -28,6 +30,7 @@ export async function buildFeedItems(
     stalux: FeedConfig,
     posts: CollectionEntry<"posts">[],
     updatedTag: string,
+    logger?: AstroRuntimeLogger,
 ): Promise<FeedItem[]> {
     const sortedPosts = [...posts].sort((a, b) => {
         // Newest first: compare post dates, use the greater of updated/date
@@ -36,7 +39,8 @@ export async function buildFeedItems(
         return bTime - aTime;
     });
 
-    const descriptions = await getPostDescriptions();
+    const descriptions = await getPostDescriptions(logger);
+    logDetail(logger, "feed", `rendering ${sortedPosts.length} entries; format=${updatedTag}`);
     return Promise.all(
         sortedPosts.map(async (post) => {
             const cached = descriptions.get(String(post.data.abbrlink));

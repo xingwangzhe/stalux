@@ -16,10 +16,26 @@
  */
 
 import { defineCollection } from "astro:content";
-import { glob } from "astro/loaders";
+import { glob, type Loader } from "astro/loaders";
 import { z } from "astro/zod";
 
 import { configSchema } from "./config";
+
+/** Preserve glob's name, watch behavior and incremental store; only trace the load boundary. */
+function tracedLoader(loader: Loader): Loader {
+    return {
+        ...loader,
+        async load(context) {
+            const logger = context.logger.fork(`stalux/content/${context.collection}`);
+            const started = performance.now();
+            logger.debug("load started");
+            await loader.load(context);
+            logger.debug(
+                `load completed; entries=${context.store.entries().length}; elapsed=${(performance.now() - started).toFixed(1)}ms`,
+            );
+        },
+    };
+}
 
 // ---------------------------------------------------------------------------
 // 集合配置选项
@@ -71,31 +87,37 @@ export function defineCollections(paths: CollectionPaths = {}) {
     const root = paths.contentDir ?? "stalux";
 
     const posts = defineCollection({
-        loader: glob({
-            pattern: ["*.{md,mdx}"],
-            base: `${root}/posts/`,
-            generateId: ({ data }) => String((data as Record<string, unknown>).abbrlink ?? ""),
-            retainBody: true,
-            deferRender: true,
-        }),
+        loader: tracedLoader(
+            glob({
+                pattern: ["*.{md,mdx}"],
+                base: `${root}/posts/`,
+                generateId: ({ data }) => String((data as Record<string, unknown>).abbrlink ?? ""),
+                retainBody: true,
+                deferRender: true,
+            }),
+        ),
         schema: postSchema,
     });
 
     const config = defineCollection({
-        loader: glob({
-            pattern: ["*.yml"],
-            base: `${root}/config/`,
-            generateId: ({ data }) => String((data as Record<string, unknown>).id ?? ""),
-        }),
+        loader: tracedLoader(
+            glob({
+                pattern: ["*.yml"],
+                base: `${root}/config/`,
+                generateId: ({ data }) => String((data as Record<string, unknown>).id ?? ""),
+            }),
+        ),
         schema: configSchema,
     });
 
     const about = defineCollection({
-        loader: glob({
-            base: `${root}/about`,
-            pattern: "**/*.{md,mdx}",
-            retainBody: true,
-        }),
+        loader: tracedLoader(
+            glob({
+                base: `${root}/about`,
+                pattern: "**/*.{md,mdx}",
+                retainBody: true,
+            }),
+        ),
         schema: z.object({
             title: z.string().min(1, "about.title is required"),
             description: z.string().min(1, "about.description is required"),
@@ -103,12 +125,14 @@ export function defineCollections(paths: CollectionPaths = {}) {
     });
 
     const words = defineCollection({
-        loader: glob({
-            pattern: ["*.md"],
-            base: `${root}/words/`,
-            retainBody: true,
-            deferRender: true,
-        }),
+        loader: tracedLoader(
+            glob({
+                pattern: ["*.md"],
+                base: `${root}/words/`,
+                retainBody: true,
+                deferRender: true,
+            }),
+        ),
         schema: z.object({
             source: z.string().optional(),
             link: z.url("words.link must be a valid URL").optional(),

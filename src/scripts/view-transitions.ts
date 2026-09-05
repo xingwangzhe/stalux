@@ -1,4 +1,7 @@
 import { getRouteKind } from "@utils/view-transitions";
+import { createClientLogger } from "./logger";
+
+const logger = createClientLogger("view-transitions");
 
 interface TransitionWindow extends Window {
     __STALUX_VT_LISTENER__?: boolean;
@@ -7,6 +10,7 @@ interface TransitionWindow extends Window {
 function setRouteState(pathname: string): void {
     const html = document.documentElement;
     const route = getRouteKind(pathname);
+    logger.debug(`route state=${route}`);
     html.dataset.staluxRoute = route;
     document.querySelector("main.stalux-main")?.setAttribute("data-stalux-route", route);
 }

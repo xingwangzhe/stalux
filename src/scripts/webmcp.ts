@@ -1,3 +1,5 @@
+import { createClientLogger } from "./logger";
+
 /**
  * Stalux WebMCP 工具注册（纯前端，零后端）
  *
@@ -19,6 +21,8 @@
 // 有原生实现或已存在 WebMCP-aware 扩展时，polyfill 检测到后自动 no-op。
 // 放在模块顶部 import，保证其副作用在下方注册逻辑执行前完成。
 import "@mcp-b/webmcp-polyfill";
+
+const logger = createClientLogger("webmcp");
 
 declare global {
     interface Window {
@@ -78,18 +82,23 @@ function err(
     message: string,
     extra?: Record<string, unknown>,
 ): { ok: false; code: string; message: string } & Record<string, unknown> {
+    logger.debug(`tool result error=${code}`);
     return { ok: false, code, message, ...extra };
 }
 
 async function fetchJSON(url: string): Promise<unknown> {
     const r = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!r.ok) return null;
+    if (!r.ok) {
+        logger.debug(`JSON request failed; status=${r.status}`);
+        return null;
+    }
     return r.json();
 }
 
 /** 动态加载 Pagefind 全文索引（仅首次调用，结果跨调用缓存） */
 let pagefindLoadPromise: Promise<{ search: (q: string) => Promise<unknown> } | null> | null = null;
 async function loadPagefind(): Promise<{ search: (q: string) => Promise<unknown> } | null> {
+    logger.debug(pagefindLoadPromise ? "Pagefind module cache hit" : "loading Pagefind module");
     if (!pagefindLoadPromise) {
         pagefindLoadPromise = (async () => {
             try {
@@ -99,6 +108,7 @@ async function loadPagefind(): Promise<{ search: (q: string) => Promise<unknown>
                 const mod = await import(/* @vite-ignore */ url);
                 return mod.default ?? mod;
             } catch {
+                logger.warn("Pagefind index unavailable; search requires a production index");
                 return null;
             }
         })();
@@ -422,6 +432,7 @@ function searchPostsTool(): WebMCPTool {
                             excerpt: (data?.excerpt ?? "").slice(0, 240),
                         };
                     } catch {
+                        logger.warn("search result data unavailable; skipping result");
                         return null;
                     }
                 }),
@@ -537,6 +548,7 @@ async function registerTools(): Promise<{ registered: string[]; reason?: string 
     const doc = document as DocumentWithModelContext;
     const ctx = doc.modelContext;
     if (!ctx || typeof ctx.registerTool !== "function") {
+        logger.debug("modelContext unavailable; registration skipped");
         return { registered: [], reason: "unsupported" };
     }
 
@@ -545,7 +557,7 @@ async function registerTools(): Promise<{ registered: string[]; reason?: string 
         try {
             activeController.abort();
         } catch {
-            /* 忽略注销异常 */
+            logger.debug("previous registration cleanup unavailable");
         }
     }
     const controller = new AbortController();
@@ -559,7 +571,7 @@ async function registerTools(): Promise<{ registered: string[]; reason?: string 
             await ctx.registerTool(tool, { signal: controller.signal });
             registered.push(tool.name);
         } catch (e) {
-            console.warn(`[stalux/webmcp] 注册失败: ${tool.name}`, e);
+            logger.error(`tool registration failed: ${tool.name}`, e);
         }
     }
     return { registered };
@@ -572,16 +584,15 @@ async function registerTools(): Promise<{ registered: string[]; reason?: string 
 if (typeof document !== "undefined") {
     // 首屏加载 + View Transitions 软导航都执行（soft navigation 时页面状态会重建）
     document.addEventListener("astro:page-load", () => {
-        void registerTools().then((r) => {
-            if (r.reason === "unsupported") return; // 无 WebMCP 环境，静默跳过
-            if (r.registered.length) {
-                console.info(
-                    "[stalux/webmcp] 已注册 " +
-                        r.registered.length +
-                        " 个工具: " +
-                        r.registered.join(", "),
-                );
-            }
-        });
+        void registerTools()
+            .then((r) => {
+                if (r.reason === "unsupported") return; // 无 WebMCP 环境，静默跳过
+                if (r.registered.length) {
+                    logger.debug(
+                        `已注册 ${r.registered.length} 个工具: ${r.registered.join(", ")}`,
+                    );
+                }
+            })
+            .catch((error: unknown) => logger.error("registration batch failed", error));
     });
 }

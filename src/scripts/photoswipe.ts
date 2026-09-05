@@ -1,5 +1,9 @@
+import { createClientLogger } from "./logger";
+
 import { registerPageLifecycle } from "./page-runtime";
 import { createRetryableInitializer } from "./retryable-initializer";
+
+const logger = createClientLogger("photoswipe");
 
 const GALLERY_SELECTOR = "a.pswp-gallery-item";
 
@@ -20,6 +24,7 @@ async function enrichPhotoSwipeData(container: Element): Promise<void> {
         try {
             await temporaryImage.decode();
         } catch {
+            logger.debug("image dimensions unavailable; skipping enrichment");
             continue;
         }
         link.dataset.pswpWidth = String(temporaryImage.naturalWidth);
@@ -38,6 +43,7 @@ registerPageLifecycle("photoswipe", () => {
     let initialized = false;
 
     const initialize = async () => {
+        logger.debug("loading lightbox modules");
         const [{ default: PhotoSwipeLightbox }, { default: PhotoSwipe }] = await Promise.all([
             import("photoswipe/lightbox"),
             import("photoswipe"),
@@ -50,7 +56,11 @@ registerPageLifecycle("photoswipe", () => {
             pswpModule: PhotoSwipe,
             initialZoomLevel: "fill",
         });
+        lightbox.on("openingAnimationEnd", () => logger.debug("opening animation completed"));
+        lightbox.on("close", () => logger.debug("lightbox closing"));
+        lightbox.on("destroy", () => logger.debug("lightbox destroyed"));
         lightbox.init();
+        logger.debug("lightbox initialized");
     };
 
     const ensureInitialized = createRetryableInitializer(initialize);
@@ -68,10 +78,11 @@ registerPageLifecycle("photoswipe", () => {
         void ensureInitialized()
             .then(() => {
                 initialized = true;
+                logger.debug(`opening image index=${clickedIndex}`);
                 lightbox?.loadAndOpen(clickedIndex, undefined, initialPoint);
             })
             .catch((error: unknown) => {
-                console.error("[stalux photoswipe] 初始化失败", error);
+                logger.error("initialization failed; next click can retry", error);
             });
     };
 

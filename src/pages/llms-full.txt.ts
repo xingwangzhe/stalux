@@ -15,7 +15,7 @@ export const GET: APIRoute = async (context) => {
     }
     const config = await loadConfig();
     const site = getSite(config, context.site?.toString());
-    const text = await renderLlmsFullTxt(config, site);
+    const text = await renderLlmsFullTxt(config, site, context.logger);
 
     return new Response(text, {
         headers: {

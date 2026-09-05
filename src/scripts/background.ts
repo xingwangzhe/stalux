@@ -12,7 +12,9 @@
  *   window load（首访）与 swap 完成后、过渡动画期间（软导航）触发，
  *   此时设置背景，过渡动画中旧图淡出、新图淡入，自然 crossfade 无跳变。
  */
-export {};
+import { createClientLogger } from "./logger";
+
+const logger = createClientLogger("background");
 
 declare global {
     interface Window {
@@ -63,7 +65,11 @@ function crossfadeBackground(): void {
     const previousIndex = Number(document.body.dataset.staluxBgIndex ?? -1);
     const index = pickBackgroundIndex(previousIndex);
     const next = getLayerEl(nextLayer);
-    if (!next || !backgroundImages[index]) return;
+    if (!next || !backgroundImages[index]) {
+        logger.debug("background layer unavailable; skipped");
+        return;
+    }
+    logger.debug(`crossfade layer=${nextLayer}; index=${index}`);
 
     next.style.backgroundImage = `url('${backgroundImages[index]}')`;
     setLayerOpacity(nextLayer, 1);

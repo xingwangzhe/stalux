@@ -8,7 +8,7 @@ import { createTranslator } from "@utils/i18n";
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
-const tagList = await getTagCountList();
+const tagList = await getTagCountList(Astro.logger);
 const tagLinks = tagList.map((t) => ({
     type: "link" as const,
     text: t.name,

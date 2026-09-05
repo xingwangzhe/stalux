@@ -3,7 +3,7 @@ import CategoriesCard from "@components/stalux/categories/categoriesCard.astro";
 import styles from "@styles/components/categories/categoriesList.module.css";
 import { getCategoryCountList } from "@utils/collections-stats";
 
-const categoryList = await getCategoryCountList();
+const categoryList = await getCategoryCountList(Astro.logger);
 ---
 
 <ul class={`${styles.categoriesList} stagger-children`}>
