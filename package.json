@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.26.0",
+    "version": "1.26.1",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -87,11 +87,11 @@
         "build:debug": "STALUX_DEBUG=1 astro build --verbose && bun run verify:build"
     },
     "dependencies": {
-        "@astrojs/markdown-satteri": "0.4.0",
+        "@astrojs/markdown-satteri": "0.4.1",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.4",
         "@expressive-code/plugin-line-numbers": "^0.44.2",
-        "@lucide/astro": "^1.41.0",
+        "@lucide/astro": "^1.42.0",
         "@mcp-b/webmcp-polyfill": "^5.1.0",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.15.2",
@@ -105,7 +105,7 @@
         "pagefind": "^1.5.2",
         "photoswipe": "^5.4.4",
         "satteri": "^0.10.5",
-        "simple-icons": "^16.29.0",
+        "simple-icons": "^16.30.0",
         "subset-font": "^2.7.0",
         "temml": "^0.13.5"
     },
@@ -113,13 +113,13 @@
         "@astrojs/check": "0.9.10",
         "@biomejs/biome": "2.5.12",
         "@vitest/coverage-v8": "5.0.0",
-        "astro": "^7.3.1",
-        "knip": "^6.34.0",
+        "astro": "^7.3.2",
+        "knip": "^6.35.1",
         "typescript": "npm:@typescript/typescript6@6.0.2",
         "vite": "8.2.2",
         "vitest": "5.0.0"
     },
     "peerDependencies": {
-        "astro": "7.3.1"
+        "astro": "7.3.2"
     }
 }
