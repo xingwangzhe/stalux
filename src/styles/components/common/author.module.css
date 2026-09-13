@@ -1,8 +1,8 @@
+/* 作者卡片为无边框设计：此处不声明 border */
 .author {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    border: 1px solid var(--color-border);
     margin-top: 4em;
 }
 
@@ -45,7 +45,6 @@
     .author {
         margin-top: 2em;
         padding: 1em 0.5em;
-        border-width: 0.5px;
         max-width: 95vw;
         width: 100%;
         box-sizing: border-box;
