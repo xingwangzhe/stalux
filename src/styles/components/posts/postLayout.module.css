@@ -96,10 +96,6 @@
 
 /* 小屏幕手机 */
 @media (max-width: 480px) {
-    .postLayout {
-        padding: 0;
-    }
-
     .container {
         gap: 1.25rem;
         padding: 0;
