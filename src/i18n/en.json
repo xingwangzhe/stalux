@@ -24,6 +24,7 @@
         "backHome": "Back to Home"
     },
     "post": {
+        "navigation": "Post navigation",
         "publishTime": "Published: ",
         "updateTime": "Updated: ",
         "readingTime": "🕒 Reading time: ",

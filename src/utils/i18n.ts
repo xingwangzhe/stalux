@@ -12,7 +12,9 @@ export interface Translator {
 }
 
 export function createTranslator(lang: string): Translator {
-    const dict = dicts[lang] || dicts["zh-CN"];
+    const normalizedLang = lang.toLowerCase();
+    const language = normalizedLang.startsWith("en") ? "en" : "zh-CN";
+    const dict = dicts[language] ?? dicts["zh-CN"] ?? en;
 
     function t(key: string, params?: Record<string, string | number>): string {
         const keys = key.split(".");
@@ -21,12 +23,12 @@ export function createTranslator(lang: string): Translator {
             if (text && typeof text === "object") {
                 text = (text as Record<string, unknown>)[k];
             } else {
-                return key;
+                return lookup(en, key) ?? key;
             }
         }
-        if (typeof text !== "string") return key;
+        if (typeof text !== "string" || !text.trim()) text = lookup(en, key) ?? key;
 
-        let result = text;
+        let result = text as string;
         if (params) {
             for (const [k, v] of Object.entries(params)) {
                 result = result.replace(`{${k}}`, String(v));
@@ -35,7 +37,16 @@ export function createTranslator(lang: string): Translator {
         return result;
     }
 
-    return { t, lang };
+    return { t, lang: language };
+}
+
+function lookup(dictionary: Record<string, unknown>, key: string): string | undefined {
+    let value: unknown = dictionary;
+    for (const part of key.split(".")) {
+        if (!value || typeof value !== "object") return;
+        value = (value as Record<string, unknown>)[part];
+    }
+    return typeof value === "string" && value.trim() ? value : undefined;
 }
 
 /**

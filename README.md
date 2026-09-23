@@ -88,7 +88,7 @@ bun run dev
 - 🤖 **LLM discovery files** (llms.txt / llms-full.txt)
 - 🤝 **WebMCP tools** for AI agents (W3C draft, pure front-end)
 - ⚡ **View transitions** for smooth navigation
-- 🌐 **i18n** (English / Chinese)
+- 🌐 **i18n** (English / Simplified Chinese; missing locale keys fall back to English)
 - 🏷️ **Tags, categories, archives** pages
 - 🎨 **Component override system** (Starlight-style)
 - 🛠️ **Easy YAML configuration** — no coding required

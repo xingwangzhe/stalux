@@ -18,7 +18,7 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 ---
 
 {(props.prev || props.next) && (
-        <nav class={style.postNavigation} aria-label="文章导航">
+        <nav class={style.postNavigation} aria-label={t("post.navigation")}>
             <div class={style.postNavigationInner}>
                 {props.prev ? (
                     <a

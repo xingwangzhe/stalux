@@ -24,6 +24,7 @@
         "backHome": "返回首页"
     },
     "post": {
+        "navigation": "文章导航",
         "publishTime": "发布时间：",
         "updateTime": "更新时间：",
         "readingTime": "🕒 阅读时间：",

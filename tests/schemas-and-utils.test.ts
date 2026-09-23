@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import en from "../src/i18n/en.json";
+import zhCN from "../src/i18n/zh-CN.json";
 import { authorSchema, commentSchema, siteSchema } from "../src/schemas/config";
 import { buildCCLink, buildCCName } from "../src/utils/cc";
+import { createTranslator } from "../src/utils/i18n";
 
 describe("configuration schemas", () => {
     it("applies safe site defaults", () => {
@@ -59,5 +62,40 @@ describe("Creative Commons helpers", () => {
         expect(buildCCName("CC-BY-NC-SA-4.0", translate)).toBe("BY-NC-SA 4.0");
         expect(buildCCName("CC0-1.0", translate)).toBe("zero");
         expect(buildCCName("invalid", translate)).toBe("BY-NC-SA 4.0");
+    });
+});
+
+describe("translation dictionaries", () => {
+    const flatten = (value: unknown, prefix = ""): Map<string, unknown> => {
+        const entries = new Map<string, unknown>();
+        if (value && typeof value === "object" && !Array.isArray(value)) {
+            for (const [key, child] of Object.entries(value)) {
+                for (const [path, leaf] of flatten(child, prefix ? `${prefix}.${key}` : key)) {
+                    entries.set(path, leaf);
+                }
+            }
+        } else {
+            entries.set(prefix, value);
+        }
+        return entries;
+    };
+
+    it("has matching, non-empty keys in every supported dictionary", () => {
+        const english = flatten(en);
+        const chinese = flatten(zhCN);
+        expect([...chinese.keys()].sort()).toEqual([...english.keys()].sort());
+        for (const [language, entries] of Object.entries({ en: english, "zh-CN": chinese })) {
+            for (const [key, value] of entries) {
+                expect(value, `${language}.${key}`).toEqual(expect.any(String));
+                expect(String(value).trim(), `${language}.${key}`).not.toBe("");
+            }
+        }
+    });
+
+    it("uses English for English regional locales and falls back to English for missing keys", () => {
+        const { t, lang } = createTranslator("en-GB");
+        expect(lang).toBe("en");
+        expect(t("post.navigation")).toBe("Post navigation");
+        expect(t("missing.key")).toBe("missing.key");
     });
 });
