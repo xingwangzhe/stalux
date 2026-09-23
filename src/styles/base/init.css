@@ -112,9 +112,6 @@ ul {
     --stalux-bg-filter: none;
     --stalux-text-shadow: #64ffda 0.1rem 0.1rem 0.2rem;
     --stalux-accent-color: #64ffda;
-    --stalux-search-backdrop: rgba(0, 0, 0, 0.1);
-    --stalux-search-box-bg: rgba(0, 0, 0, 0.1);
-    --stalux-search-border: rgba(0, 0, 0, 0.2);
 
     /* 卡片和标签颜色 Token（可在这里统一调整主题色/透明度） */
     --card-bg: rgba(0, 0, 0, 0.2);
@@ -146,19 +143,13 @@ ul {
     --white-30p: rgba(255, 255, 255, 0.3);
     --white-20p: rgba(255, 255, 255, 0.2);
     --white-15p: rgba(255, 255, 255, 0.15);
-    --white-12p: rgba(255, 255, 255, 0.12);
     --white-10p: rgba(255, 255, 255, 0.1);
-    --white-8p: rgba(255, 255, 255, 0.08);
     --white-05p: rgba(255, 255, 255, 0.05);
 
-    --black-full: #000000;
     --black-30p: rgba(0, 0, 0, 0.3);
-    --black-28p: rgba(0, 0, 0, 0.28);
     --black-20p: rgba(0, 0, 0, 0.2);
     --black-15p: rgba(0, 0, 0, 0.15);
     --black-10p: rgba(0, 0, 0, 0.1);
-    --black-05p: rgba(0, 0, 0, 0.05);
-    --black-03p: rgba(0, 0, 0, 0.03);
 
     /* 强调色变体 */
     --accent-90p: rgba(100, 255, 218, 0.9);
@@ -170,7 +161,6 @@ ul {
     --accent-40p: rgba(100, 255, 218, 0.4);
     --accent-30p: rgba(100, 255, 218, 0.3);
     --accent-20p: rgba(100, 255, 218, 0.2);
-    --accent-10p: rgba(100, 255, 218, 0.1);
 
     /* 常用过渡和动画 */
     --transition-fast: 0.18s ease;
@@ -181,7 +171,6 @@ ul {
     --transition-slowest: 0.6s ease;
 
     --easing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --easing-smooth: cubic-bezier(0.25, 0.9, 0.2, 1);
 
     /* 常用间距值 */
     --space-2xs: 0.25rem;
@@ -197,9 +186,7 @@ ul {
     --radius-sm: 4px;
     --radius-md: 6px;
     --radius-lg: 8px;
-    --radius-xl: 10px;
     --radius-full: 9999px;
-    --radius-circle: 50%;
 
     /* 常用阴影 */
     --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -210,18 +197,12 @@ ul {
     --shadow-dark: rgba(0, 0, 0, 0.753);
 
     /* 语义化颜色 */
-    --date-text-color: #e8f2ff;
-    --updated-text-color: #fff7de;
     --muted-text: #bbb;
-    --border-color-light: #e5e5e5;
 
     /* 字体族栈 */
     /* --font-body 由 Astro Fonts API 提供（--font-code 同理，见集成注入的 fonts 配置） */
-    --font-body-serif: "Noto Serif CJK SC", "Source Han Serif SC", "STSong", Georgia, serif;
 
     /* 字体大小系统 */
-    --font-size-title: 2.8rem;
-    --font-size-h2: 2rem;
     --font-size-subtitle: 1.35rem;
     --font-size-base: 1.1rem;
     --font-size-small: 0.95rem;
@@ -232,7 +213,6 @@ ul {
     --border-thin: 1px;
     --border-medium: 2px;
     --border-thick: 3px;
-    --border-thicker: 4px;
 }
 ::-webkit-scrollbar {
     width: 8px;

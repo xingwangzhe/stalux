@@ -18,22 +18,4 @@ import { getSidebarAnimation } from "@utils/view-transitions";
     <div class={style.sidebarContainer}>
         <RandomPost />
     </div>
-
-    <style>
-    :global(.stalux-root) {
-        --sidebar-width: 280px;
-    }
-
-    @media (max-width: 1200px) {
-        :global(.stalux-root) {
-            --sidebar-width: 240px;
-        }
-    }
-
-    @media (max-width: 768px) {
-        :global(.stalux-root) {
-            --sidebar-width: 0;
-        }
-    }
-    </style>
 </aside>

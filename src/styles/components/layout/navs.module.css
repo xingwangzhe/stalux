@@ -55,8 +55,9 @@ nav {
     box-shadow: var(--shadow-md);
 }
 
+/* 维持既有渲染：未定义的 --black-50p 使 hover 背景解析为透明 */
 .scrollBtn:hover {
-    background: var(--black-50p);
+    background: transparent;
 }
 
 .scrollBtn[data-visible] {
