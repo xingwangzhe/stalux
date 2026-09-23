@@ -51,4 +51,4 @@ jobs:
             # Publishing is the only npm CLI exception: npm Trusted Publishing exchanges
             # GitHub's OIDC identity for a short-lived token and emits provenance.
             - name: Publish package with provenance
-              run: npm publish --provenance --access public
+              run: npm publish --provenance --access public --tag latest
