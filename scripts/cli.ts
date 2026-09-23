@@ -9,19 +9,23 @@
  *
  * 说明：
  *   - 只在 stalux/ 目录下生成内容配置文件和示例文章
- *   - 不会覆盖已有的 package.json、astro.config.mjs、src/content.config.ts
+ *   - 不会覆盖已有的 package.json、astro.config.ts、src/content.config.ts
  *   - 静默运行，无交互式问答
  *   - 静默运行，无交互式问答
  */
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { join, resolve as pathResolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
 // ---------------------------------------------------------------------------
 // 默认内容模板数据
 // ---------------------------------------------------------------------------
 
-function getConfigYamls() {
+function timestamp(): string {
+    return new Date().toISOString().replace("T", " ").slice(0, 19);
+}
+
+function getConfigYamls(): Record<string, string> {
     const year = new Date().getFullYear();
     const now = new Date().toISOString();
     return {
@@ -126,8 +130,8 @@ items:
     };
 }
 
-function getExamplePost() {
-    const date = new Date().toISOString().replace("T", " ").slice(0, 19);
+function getExamplePost(): string {
+    const date = timestamp();
     return `---
 title: Hello Stalux!
 abbrlink: hello-stalux
@@ -157,7 +161,7 @@ For more details, visit [Stalux documentation](https://stalux.needhelp.icu).
 `;
 }
 
-function getAboutMd() {
+function getAboutMd(): string {
     return `---
 title: About Me
 description: About this blog and the author
@@ -175,8 +179,8 @@ This is my personal space where I share technology, life, and thoughts.
 `;
 }
 
-function getWordsTemplate() {
-    const date = new Date().toISOString().replace("T", " ").slice(0, 19);
+function getWordsTemplate(): string {
+    const date = timestamp();
     return `---
 source: "Author Name"
 link: "https://example.com"
@@ -188,8 +192,8 @@ date: "${date}"
 `;
 }
 
-function getWordsExample() {
-    const date = new Date().toISOString().replace("T", " ").slice(0, 19);
+function getWordsExample(): string {
+    const date = timestamp();
     return `---
 source: "Albert Einstein"
 link: "https://example.com"
@@ -205,84 +209,52 @@ date: "${date}"
 // 主流程
 // ---------------------------------------------------------------------------
 
-function main() {
-    const args = process.argv.slice(2);
-
-    if (args[0] === "--help" || args[0] === "-h" || !args[0]) {
-        printHelp();
-        process.exit(0);
+function writeIfMissing(filePath: string, label: string, content: string): void {
+    if (existsSync(filePath)) {
+        console.log(`  ⏭  ${label} (exists, skipped)`);
+        return;
     }
 
-    if (args[0] !== "init") {
-        console.error(`❌ Unknown command: ${args[0]}`);
+    mkdirSync(dirname(filePath), { recursive: true });
+    writeFileSync(filePath, content);
+    console.log(`  ✅  ${label}`);
+}
+
+function main([command, targetArg = "."]: string[] = process.argv.slice(2)): void {
+    if (!command || command === "--help" || command === "-h") {
         printHelp();
-        process.exit(1);
+        return;
     }
 
-    const targetArg = args[1] || ".";
-    const targetPath = pathResolve(process.cwd(), targetArg);
+    if (command !== "init") {
+        console.error(`❌ Unknown command: ${command}`);
+        printHelp();
+        process.exitCode = 1;
+        return;
+    }
 
-    console.log(`📦 Initializing Stalux content in ${targetPath}...`);
-    console.log("");
-
-    // 创建 stalux/ 目录结构
+    const targetPath = resolve(process.cwd(), targetArg);
     const contentRoot = join(targetPath, "stalux");
-    const dirs = ["config", "posts", "about", "words"];
-    for (const dir of dirs) {
+    console.log(`📦 Initializing Stalux content in ${targetPath}...\n`);
+
+    for (const dir of ["config", "posts", "about", "words"]) {
         mkdirSync(join(contentRoot, dir), { recursive: true });
     }
 
-    // 生成 config YAML 文件（不覆盖已有）
-    const configs = getConfigYamls();
-    for (const [file, content] of Object.entries(configs)) {
-        const filePath = join(contentRoot, "config", file);
-        if (existsSync(filePath)) {
-            console.log(`  ⏭  stalux/config/${file} (exists, skipped)`);
-            continue;
-        }
-        writeFileSync(filePath, content);
-        console.log(`  ✅  stalux/config/${file}`);
+    const files = {
+        ...Object.fromEntries(
+            Object.entries(getConfigYamls()).map(([name, content]) => [`config/${name}`, content]),
+        ),
+        "posts/hello-stalux.md": getExamplePost(),
+        "about/index.md": getAboutMd(),
+        "words/_template.md": getWordsTemplate(),
+        "words/einstein-imagination.md": getWordsExample(),
+    };
+    for (const [file, content] of Object.entries(files)) {
+        writeIfMissing(join(contentRoot, file), `stalux/${file}`, content);
     }
 
-    // 生成示例文章
-    const postPath = join(contentRoot, "posts", "hello-stalux.md");
-    if (!existsSync(postPath)) {
-        writeFileSync(postPath, getExamplePost());
-        console.log(`  ✅  stalux/posts/hello-stalux.md`);
-    } else {
-        console.log(`  ⏭  stalux/posts/hello-stalux.md (exists, skipped)`);
-    }
-
-    // 生成 about 页面
-    const aboutPath = join(contentRoot, "about", "index.md");
-    if (!existsSync(aboutPath)) {
-        writeFileSync(aboutPath, getAboutMd());
-        console.log(`  ✅  stalux/about/index.md`);
-    } else {
-        console.log(`  ⏭  stalux/about/index.md (exists, skipped)`);
-    }
-
-    // 生成 words
-    const wordsDir = join(contentRoot, "words");
-    const wordsTemplatePath = join(wordsDir, "_template.md");
-    if (!existsSync(wordsTemplatePath)) {
-        writeFileSync(wordsTemplatePath, getWordsTemplate());
-        console.log(`  ✅  stalux/words/_template.md`);
-    } else {
-        console.log(`  ⏭  stalux/words/_template.md (exists, skipped)`);
-    }
-
-    const einsteinPath = join(wordsDir, "einstein-imagination.md");
-    if (!existsSync(einsteinPath)) {
-        writeFileSync(einsteinPath, getWordsExample());
-        console.log(`  ✅  stalux/words/einstein-imagination.md`);
-    } else {
-        console.log(`  ⏭  stalux/words/einstein-imagination.md (exists, skipped)`);
-    }
-
-    console.log("");
-    console.log("  ✅  Done! Stalux content initialized.");
-    console.log("");
+    console.log("\n  ✅  Done! Stalux content initialized.\n");
     printNextSteps();
 }
 
@@ -311,7 +283,7 @@ function printHelp() {
 function printNextSteps() {
     console.log("  📝  Next Steps:");
     console.log("");
-    console.log("    1. Add stalux to your astro.config.mjs:");
+    console.log("    1. Add stalux to your astro.config.ts:");
     console.log('       import stalux from "@xingwangzhe/stalux";');
     console.log('       integrations: [stalux({ contentDir: "stalux" })],');
     console.log("");

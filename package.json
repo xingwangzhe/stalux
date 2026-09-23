@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.26.2",
+    "version": "2.0.0",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -19,8 +19,11 @@
         "type": "git",
         "url": "git+https://github.com/xingwangzhe/stalux.git"
     },
+    "engines": {
+        "node": ">=26"
+    },
     "bin": {
-        "stalux": "scripts/cli.mjs"
+        "stalux": ".release/cli.mjs"
     },
     "files": [
         "src/index.ts",
@@ -40,7 +43,7 @@
         "src/scripts/**/*.ts",
         "public/background/**",
         "src/assets/**/*",
-        "scripts/cli.mjs",
+        ".release/cli.mjs",
         "!src/content.config.ts"
     ],
     "type": "module",
@@ -65,10 +68,13 @@
     },
     "scripts": {
         "dev": "astro dev",
-        "build": "astro build && bun run verify:build",
+        "build": "astro build && node scripts/verify-build.ts",
         "preview": "astro preview",
         "astro": "astro",
-        "init": "bun scripts/cli.mjs init",
+        "init": "node scripts/cli.ts init",
+        "node:check": "tsc6 --project tsconfig.node.json",
+        "build:cli": "bun build scripts/cli.ts --target=node --outfile .release/cli.mjs",
+        "prepack": "bun run build:cli",
         "check": "biome check .",
         "check:fix": "biome check --write .",
         "format": "biome format --write .",
@@ -80,11 +86,11 @@
         "test:run": "vitest run",
         "test:coverage": "vitest run --coverage",
         "knip": "knip",
-        "verify:build": "bun scripts/verify-build.mjs",
-        "validate": "bun run check && bun run astro:check && bun run knip && bun run test:coverage && bun run build",
+        "verify:build": "node scripts/verify-build.ts",
+        "validate": "bun run check && bun run node:check && bun run astro:check && bun run knip && bun run test:coverage && bun run build && bun run build:cli",
         "prepare": "git config core.hooksPath scripts/git-hooks",
         "dev:debug": "STALUX_DEBUG=1 astro dev --verbose",
-        "build:debug": "STALUX_DEBUG=1 astro build --verbose && bun run verify:build"
+        "build:debug": "STALUX_DEBUG=1 astro build --verbose && node scripts/verify-build.ts"
     },
     "dependencies": {
         "@astrojs/markdown-satteri": "0.4.2",
@@ -112,6 +118,7 @@
     "devDependencies": {
         "@astrojs/check": "0.9.10",
         "@biomejs/biome": "2.5.14",
+        "@types/node": "^26.6.2",
         "@vitest/coverage-v8": "5.0.1",
         "astro": "^7.3.4",
         "knip": "^6.37.0",

@@ -3,6 +3,8 @@
     "include": [".astro/types.d.ts", "**/*"],
     "exclude": ["dist", "coverage"],
     "compilerOptions": {
+        "target": "ESNext",
+        "allowImportingTsExtensions": true,
         "strictNullChecks": true,
         "allowJs": true,
         "forceConsistentCasingInFileNames": true,

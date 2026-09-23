@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { findMissingAssetReferences } from "../scripts/verify-build-utils.mjs";
+import { findMissingAssetReferences } from "../scripts/verify-build-utils.ts";
 
 describe("generated asset references", () => {
     it("reports a generated file that references a missing Astro asset", () => {

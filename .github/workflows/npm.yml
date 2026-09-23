@@ -20,10 +20,16 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@v7
+              uses: actions/checkout@v7.0.1
+
+            - name: Setup Node.js for trusted publishing
+              uses: actions/setup-node@v7.0.0
+              with:
+                  node-version: 26
+                  registry-url: https://registry.npmjs.org
 
             - name: Setup Bun
-              uses: oven-sh/setup-bun@v2
+              uses: oven-sh/setup-bun@v2.2.0
               with:
                   bun-version: 1.4.0
 
@@ -44,11 +50,5 @@ jobs:
 
             # Publishing is the only npm CLI exception: npm Trusted Publishing exchanges
             # GitHub's OIDC identity for a short-lived token and emits provenance.
-            - name: Setup Node.js for trusted publishing
-              uses: actions/setup-node@v7
-              with:
-                  node-version: 24
-                  registry-url: https://registry.npmjs.org
-
             - name: Publish package with provenance
               run: npm publish --provenance --access public

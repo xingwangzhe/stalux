@@ -23,7 +23,7 @@ bun add @xingwangzhe/stalux         # Install theme (all dependencies included)
 bunx stalux init                    # Generate stalux/ content directory
 ```
 
-Then configure `astro.config.mjs`. All plugins are bundled into the Stalux integration by default — **no manual configuration is needed**:
+Requires Node.js 26 or later. Then configure `astro.config.ts`. All plugins are bundled into the Stalux integration by default — **no manual configuration is needed**:
 
 - **Markdown**: Mermaid (MDAST detection + HAST/SVG rendering), math formulas (Temml → MathML), word count / feature flags, and PhotoSwipe image lightbox are injected into the default `satteri()` processor automatically (math / frontmatter / gfm / smart punctuation are enabled by default).
 - **Sitemap**: `@astrojs/sitemap` is bundled (`.md` source endpoints are filtered out by default).

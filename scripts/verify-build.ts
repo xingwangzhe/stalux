@@ -2,33 +2,35 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
 import packageJson from "../package.json" with { type: "json" };
-import { findMissingAssetReferences } from "./verify-build-utils.mjs";
+import { findMissingAssetReferences } from "./verify-build-utils.ts";
 
 const root = process.cwd();
 const dist = path.join(root, "dist");
 
-function assert(condition, message) {
+function assert(condition: unknown, message: string): asserts condition {
     if (!condition) throw new Error(`[verify-build] ${message}`);
 }
 
-function read(relativePath) {
+function read(relativePath: string): string {
     return readFileSync(path.join(dist, relativePath), "utf8");
 }
 
-function walk(directory) {
+function walk(directory: string): string[] {
     return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
         const target = path.join(directory, entry.name);
         return entry.isDirectory() ? walk(target) : [target];
     });
 }
 
-function verifyJsonLd(html, route) {
+function verifyJsonLd(html: string, route: string): void {
     const blocks = [
         ...html.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gu),
     ];
     assert(blocks.length > 0, `${route} has no JSON-LD`);
     for (const block of blocks) {
-        const parsed = JSON.parse(block[1]);
+        const json = block[1];
+        assert(json !== undefined, `${route} has malformed JSON-LD`);
+        const parsed = JSON.parse(json);
         assert(
             parsed["@context"] === "https://schema.org",
             `${route} JSON-LD has no schema context`,

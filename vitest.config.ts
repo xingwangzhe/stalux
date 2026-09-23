@@ -10,7 +10,7 @@ export default getViteConfig({
             reporter: ["text", "json-summary", "html"],
             reportsDirectory: "./coverage",
             include: [
-                "scripts/verify-build-utils.mjs",
+                "scripts/verify-build-utils.ts",
                 "src/internal/runtime-cache-key.ts",
                 "src/internal/satteri-config.ts",
                 "src/scripts/page-runtime.ts",
