@@ -33,6 +33,7 @@ describe("page-specific font subsets", () => {
             expect(first.cacheHit).toBe(false);
             expect(second.cacheHit).toBe(true);
             expect(first.html).toContain("font-display:swap");
+            expect(first.html).toContain("font-weight:100 900");
             expect(first.html).toContain("U+9996");
             expect(first.html).toContain("U+6298");
             expect(first.html).toContain("U+5C55");
@@ -54,6 +55,9 @@ describe("page-specific font subsets", () => {
             );
             expect(first.html).toContain(
                 '--font-code:"LXGW WenKai-Page Subset","Original Font",system-ui,sans-serif',
+            );
+            expect(first.html).toContain(
+                'body{font-family:var(--font-body),"Original Font",system-ui,sans-serif}',
             );
             expect(first.html).toContain('src:url("/ascii.woff2");unicode-range:U+0020-007E');
             expect(first.html).not.toContain('src:url("/large.woff2")');

@@ -201,7 +201,9 @@ export function writePageFontSubset(
     const codeStack = originalCodeStack
         ? `${originalCodeStack},"LXGW WenKai-Page Subset"`
         : `"LXGW WenKai-Page Subset",${fallbackStack}`;
-    const css = `@font-face{font-family:"LXGW WenKai-Page Subset";src:url("${rel}") format("woff2");font-style:normal;font-weight:400;font-display:swap;unicode-range:${[...chars].map((c) => `U+${c.codePointAt(0)?.toString(16).toUpperCase()}`).join(",")}}:root{--font-body:"LXGW WenKai-Page Subset",${fallbackStack};--font-code:${codeStack}}`;
+    // The source font is regular; advertise a weight range so browsers synthesize
+    // bold weights from these same glyphs instead of falling back to system CJK.
+    const css = `@font-face{font-family:"LXGW WenKai-Page Subset";src:url("${rel}") format("woff2");font-style:normal;font-weight:100 900;font-display:swap;unicode-range:${[...chars].map((c) => `U+${c.codePointAt(0)?.toString(16).toUpperCase()}`).join(",")}}:root{--font-body:"LXGW WenKai-Page Subset",${fallbackStack};--font-code:${codeStack}}body{font-family:var(--font-body),${fallbackStack}}`;
     const withoutBroadBodyFonts = html.replace(
         /@font-face\{[^}]*font-family:"LXGW WenKai-[^"]+"[^}]*\}/g,
         (face) => {
