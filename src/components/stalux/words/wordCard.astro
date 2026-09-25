@@ -22,37 +22,32 @@ const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
         <Content />
     </div>
     {(date || source || sourceDate) && (
-            <footer class={styles.footer}>
-                {date ? (
-                    <time class={styles.date} datetime={machineDate}>
-                        {date}
-                    </time>
-                ) : (
-                    <span />
-                )}
-                {
-                    (source || sourceDate) && (
-                        <div class={styles.sourceMeta}>
-                            {sourceDate && (
-                                <span class={styles.sourceDate}>{sourceDate}</span>
-                            )}
-                            {source && (
-                                link ? (
-                                    <a
-                                        href={link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class={styles.sourceLink}
-                                    >
-                                        — {source}
-                                    </a>
-                                ) : (
-                                    <span class={styles.sourceText}>— {source}</span>
-                                )
-                            )}
-                        </div>
-                    )
-                }
-            </footer>
+    <footer class={styles.footer}>
+        {date ? (
+            <time class={styles.date} datetime={machineDate}>
+                {date}
+            </time>
+        ) : (
+            <span />
         )}
+        {(source || sourceDate) && (
+            <div class={styles.sourceMeta}>
+                {sourceDate && <span class={styles.sourceDate}>{sourceDate}</span>}
+                {source &&
+                    (link ? (
+                        <a
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class={styles.sourceLink}
+                        >
+                            — {source}
+                        </a>
+                    ) : (
+                        <span class={styles.sourceText}>— {source}</span>
+                    ))}
+            </div>
+        )}
+    </footer>
+)}
 </article>

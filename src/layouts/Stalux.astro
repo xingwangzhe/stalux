@@ -73,11 +73,7 @@ const routeAnimation = getRouteAnimation(routeKind);
     import "../scripts/background.ts";
     import "../scripts/view-transitions.ts";
     </script>
-    {aiConfig?.conformance !== "disabled" && (
-      <script>
-        import "../scripts/webmcp.ts";
-      </script>
-    )}
+    {aiConfig?.conformance !== "disabled" && <script>import "../scripts/webmcp.ts";</script>}
     <body
         class="stalux-root dark"
         data-stalux-bg-layer="a"
@@ -90,10 +86,10 @@ const routeAnimation = getRouteAnimation(routeKind);
         data-stalux-clarity-id={headConfig?.bingClarityId}
     >
         {llmPromote && (
-      <section class="stalux-ai-prompt" data-stalux-ai-prompt aria-label="AI site context">
+    <section class="stalux-ai-prompt" data-stalux-ai-prompt aria-label="AI site context">
         <p>{llmPromote}</p>
-      </section>
-    )}
+    </section>
+)}
         <div
             class="bg-layer bg-a"
             style="opacity: 1;"

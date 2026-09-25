@@ -74,11 +74,7 @@ assert(
     pages.home.includes(`name="stalux-version" content="${packageJson.version}"`),
     "generated Stalux version is out of sync with package.json",
 );
-assert(
-    pages.home.includes("unicode-range:U+0020-007E"),
-    "body font does not expose its valid ASCII unicode range",
-);
-assert(!/unicode-range:[^;}]*-U\+/u.test(pages.home), "body font contains invalid CSS ranges");
+assert(pages.home.includes("Google Sans Code"), "Astro local code font is missing");
 assert(pages.home.includes('class="agent-home-summary"'), "agent home summary is missing");
 assert(
     /\.agent-home-summary[^}]*clip:rect\(0,\s*0,\s*0,\s*0\)[^}]*position:absolute/gu.test(
@@ -100,19 +96,24 @@ const assetSources = files.filter((file) => /\.(?:css|html|js)$/u.test(file));
 const assetContents = new Map(
     assetSources.map((source) => [path.relative(dist, source), readFileSync(source, "utf8")]),
 );
+assert(
+    [...assetContents.values()].some((content) =>
+        content.includes('--font-body:"Noto Sans SC", "Noto Sans CJK SC"'),
+    ),
+    "body font fallback stack is missing",
+);
 const existingAssets = new Set(
     files.map((file) => `/${path.relative(dist, file).split(path.sep).join("/")}`),
 );
 const missingAssetReferences = findMissingAssetReferences(assetContents, existingAssets);
 
 assert(htmlCount >= 40, `expected at least 40 HTML pages, found ${htmlCount}`);
-assert(fontCount >= 24, `expected sliced body and code fonts, found ${fontCount}`);
+assert(fontCount >= 2, `expected normal and italic code fonts, found ${fontCount}`);
 assert(statSync(path.join(dist, "pagefind", "pagefind.js")).size > 0, "Pagefind output is missing");
 assert(
     missingAssetReferences.length === 0,
     `generated files reference missing assets:\n${missingAssetReferences.join("\n")}`,
 );
-
 console.info(
     `[verify-build] ${htmlCount} HTML pages, ${fontCount} fonts, ${assetSources.length} asset sources, SEO and agent output verified`,
 );

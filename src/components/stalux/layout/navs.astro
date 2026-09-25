@@ -45,23 +45,21 @@ const navs = navsConfig?.items ?? [];
 
         <ul data-ref="stalux-nav-list" class={styles.navList}>
             {navs.map((item) => {
-                    const NavIcon = item.icon ? getLucideIcon(item.icon, Astro.logger) : null;
-                    return (
-                        <li class={styles.navItem}>
-                            <a
-                                href={item.link}
-                                class={styles.navLink}
-                                data-ref="stalux-nav-link"
-                                data-astro-prefetch
-                            >
-                                {NavIcon && (
-                                    <NavIcon size={20} stroke-width={2} class="nav-icon" />
-                                )}
-                                <span class={styles.navText}>{item.title}</span>
-                            </a>
-                        </li>
-                    );
-                })}
+    const NavIcon = item.icon ? getLucideIcon(item.icon, Astro.logger) : null;
+    return (
+        <li class={styles.navItem}>
+            <a
+                href={item.link}
+                class={styles.navLink}
+                data-ref="stalux-nav-link"
+                data-astro-prefetch
+            >
+                {NavIcon && <NavIcon size={20} stroke-width={2} class="nav-icon" />}
+                <span class={styles.navText}>{item.title}</span>
+            </a>
+        </li>
+    );
+})}
             <li class={styles.navItem}>
                 <a
                     href="#search"
@@ -69,9 +67,7 @@ const navs = navsConfig?.items ?? [];
                     data-ref="stalux-search-btn"
                     aria-label={t("search.title")}
                 >
-                    {SearchIcon && (
-                        <SearchIcon size={20} stroke-width={2} class="nav-icon" />
-                    )}
+                    {SearchIcon && <SearchIcon size={20} stroke-width={2} class="nav-icon" />}
                     <span class={styles.navText}>{t("nav.search")}</span>
                 </a>
             </li>

@@ -67,12 +67,12 @@ const walineConfig = walineSection?.serverURL
             <PostCC title={props.title} author={author} url={Astro.url.href} cc={props.cc} />
             <PostNavigation prev={props.prev} next={props.next} />
             {commentEnabled && walineConfig?.serverURL && (
-                    <WalineComment
-                        {...buildWalineProps(walineConfig)}
-                        path={Astro.url.pathname}
-                        title={props.title}
-                    />
-                )}
+    <WalineComment
+        {...buildWalineProps(walineConfig)}
+        path={Astro.url.pathname}
+        title={props.title}
+    />
+)}
         </PostContent>
 
         <!-- Right Sidebar -->

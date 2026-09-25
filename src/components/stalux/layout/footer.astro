@@ -54,26 +54,17 @@ const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "z
     <div class={footerStyle.footerContent}>
         <!-- 版权信息 -->
         {footerConfig?.copyright?.enabled && (
-                <FooterCopyright
-                    author={author}
-                    startYear={footerConfig?.copyright?.startYear}
-                />
-            )}
+    <FooterCopyright author={author} startYear={footerConfig?.copyright?.startYear} />
+)}
 
         <!-- 徽章展示 -->
         <FooterBadges badges={badges} />
 
         <!-- 备案信息 -->
         <FooterBeian
-            icp={footerConfig?.beian?.icp?.enabled
-                ? footerConfig?.beian?.icp?.number
-                : undefined}
-            pubsec={footerConfig?.beian?.security?.enabled
-                ? footerConfig?.beian?.security?.text
-                : undefined}
-            pubsecNumber={footerConfig?.beian?.security?.enabled
-                ? footerConfig?.beian?.security?.number
-                : undefined}
+            icp={footerConfig?.beian?.icp?.enabled ? footerConfig?.beian?.icp?.number : undefined}
+            pubsec={footerConfig?.beian?.security?.enabled ? footerConfig?.beian?.security?.text : undefined}
+            pubsecNumber={footerConfig?.beian?.security?.enabled ? footerConfig?.beian?.security?.number : undefined}
         />
 
         <!-- 主题信息 -->

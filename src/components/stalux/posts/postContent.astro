@@ -43,51 +43,56 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
         <h1 class={style.title}>{props.title}</h1>
         <div class={style.metadata}>
             {props.date && (
-                    <time class={style.metaItem} datetime={timezone ? toMachineDateTime(props.date, timezone) : props.date}>
-                        {t("post.publishTime")}
-                        {props.date}
-                    </time>
-                )}
+    <time
+        class={style.metaItem}
+        datetime={timezone ? toMachineDateTime(props.date, timezone) : props.date}
+    >
+        {t("post.publishTime")}
+        {props.date}
+    </time>
+)}
 
             {props.updated && (
-                    <time class={style.metaItem} datetime={timezone ? toMachineDateTime(props.updated, timezone) : props.updated}>
-                        {t("post.updateTime")}
-                        {props.updated}
-                    </time>
-                )}
+    <time
+        class={style.metaItem}
+        datetime={timezone ? toMachineDateTime(props.updated, timezone) : props.updated}
+    >
+        {t("post.updateTime")}
+        {props.updated}
+    </time>
+)}
         </div>
-        {<div class={style.pageStats}>
-                    {(props.readingMinutes ?? 0) > 0 && (
-                        <span class={style.readingTime}>
-                            {t("post.readingTime")}{props.readingMinutes && props.readingMinutes > 0
-                                ? (props.readingMinutes < 1
-                                    ? t("common.lessThanOneMinute")
-                                    : t("common.minute", { n: props.readingMinutes }))
-                                : ""}
-                        </span>
-                    )}
-                    {(props.wordCount ?? 0) > 0 && (
-                        <span class={style.wordCount}>
-                            {t("post.wordCount")}{props.wordCount}
-                        </span>
-                    )}
-                    <span id="vercount_container_page_pv">
-                        {t("post.viewCount")}
-                        <span id="vercount_value_page_pv">Loading...</span>
-                    </span>
-                </div>}
+        {(
+    <div class={style.pageStats}>
+        {(props.readingMinutes ?? 0) > 0 && (
+            <span class={style.readingTime}>
+                {t("post.readingTime")}
+                {props.readingMinutes && props.readingMinutes > 0
+                    ? props.readingMinutes < 1
+                        ? t("common.lessThanOneMinute")
+                        : t("common.minute", { n: props.readingMinutes })
+                    : ""}
+            </span>
+        )}
+        {(props.wordCount ?? 0) > 0 && (
+            <span class={style.wordCount}>
+                {t("post.wordCount")}
+                {props.wordCount}
+            </span>
+        )}
+        <span id="vercount_container_page_pv">
+            {t("post.viewCount")}
+            <span id="vercount_value_page_pv">Loading...</span>
+        </span>
+    </div>
+)}
         {exportMd && (
-                <div class={style.sourceLinkRow}>
-                    <a
-                        class={style.sourceLink}
-                        href={mdSourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        {t("post.viewSource")}
-                    </a>
-                </div>
-            )}
+    <div class={style.sourceLinkRow}>
+        <a class={style.sourceLink} href={mdSourceUrl} target="_blank" rel="noopener noreferrer">
+            {t("post.viewSource")}
+        </a>
+    </div>
+)}
     </header>
 
     <!-- Article Body -->

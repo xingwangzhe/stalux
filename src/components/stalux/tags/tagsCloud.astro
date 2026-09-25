@@ -19,21 +19,21 @@ const tagLinks = tagList.map((t) => ({
 <!-- 移动端：SSR 卡片 -->
 <div class={styles.cards} id="tags-cards">
     {tagList.length > 0 ? (
-            tagList.map(({ name, count }) => (
-                <a
-                    href={`/tags/${name}/`}
-                    class={styles.tagCard}
-                    data-stalux-tag-card
-                    data-count={count}
-                    data-astro-prefetch
-                >
-                    <span class={styles.tagName}>{name}</span>
-                    <span class={styles.tagCount}>{count}</span>
-                </a>
-            ))
-        ) : (
-            <div class={styles.noTags}>{t("tags.noTags")}</div>
-        )}
+    tagList.map(({ name, count }) => (
+        <a
+            href={`/tags/${name}/`}
+            class={styles.tagCard}
+            data-stalux-tag-card
+            data-count={count}
+            data-astro-prefetch
+        >
+            <span class={styles.tagName}>{name}</span>
+            <span class={styles.tagCount}>{count}</span>
+        </a>
+    ))
+) : (
+    <div class={styles.noTags}>{t("tags.noTags")}</div>
+)}
 </div>
 
 <!-- 桌面端：Canvas 标签云 -->

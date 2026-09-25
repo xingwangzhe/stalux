@@ -25,30 +25,34 @@ function badgeImg(opts: BadgeOptions) {
 ---
 
 {badges && badges.length > 0 && (
-        <div class="badges-wrapper">
-            {badges.map((item: BadgeItem, idx: number) => {
-                if (isBadgeGroup(item)) {
-                    const groupId = `badge-group-${idx}`;
-                    return (
-                        <details class="badge-group" id={groupId}>
-                            <summary class="badge-group-summary">
-                                <span class="badge-group-arrow">&#9654;</span>
-                                <span class="badge-group-title">{item.title}</span>
-                                <span class="badge-group-hint" data-hint="expanded">{t("footer.collapse")}</span>
-                                <span class="badge-group-hint" data-hint="collapsed">{t("footer.expand")}</span>
-                            </summary>
-                            <div class="badge-group-items badges">
-                                {item.items.map((b) => (
-                                    <Fragment set:html={badgeImg(b)} />
-                                ))}
-                            </div>
-                        </details>
-                    );
-                }
-                return <Fragment set:html={badgeImg(item)} />;
-            })}
-        </div>
-    )}
+    <div class="badges-wrapper">
+        {badges.map((item: BadgeItem, idx: number) => {
+            if (isBadgeGroup(item)) {
+                const groupId = `badge-group-${idx}`;
+                return (
+                    <details class="badge-group" id={groupId}>
+                        <summary class="badge-group-summary">
+                            <span class="badge-group-arrow">&#9654;</span>
+                            <span class="badge-group-title">{item.title}</span>
+                            <span class="badge-group-hint" data-hint="expanded">
+                                {t("footer.collapse")}
+                            </span>
+                            <span class="badge-group-hint" data-hint="collapsed">
+                                {t("footer.expand")}
+                            </span>
+                        </summary>
+                        <div class="badge-group-items badges">
+                            {item.items.map((b) => (
+                                <Fragment set:html={badgeImg(b)} />
+                            ))}
+                        </div>
+                    </details>
+                );
+            }
+            return <Fragment set:html={badgeImg(item)} />;
+        })}
+    </div>
+)}
 
 <style>
 .badges-wrapper {

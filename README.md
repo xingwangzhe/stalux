@@ -8,7 +8,7 @@
 
 **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
-A dark-themed, high-performance Astro blog theme with elegant glassmorphism design, unicode-range font slicing, and a focus on content-first reading experience.
+A dark-themed, high-performance Astro blog theme with elegant glassmorphism design, native per-page CJK font subsets, and a focus on content-first reading experience.
 
 ---
 
@@ -77,7 +77,7 @@ bun run dev
 ## ✨ Features
 
 - 🌙 **Dark mode** with elegant glassmorphism design
-- 🔤 **Unicode-range font slicing** — 25 MB font → ~22 woff2 chunks, browser downloads only what matches the page
+- 🔤 **Native per-page font subsets** — Rust/N-API emits cached WOFF2 subsets for each page's visible CJK text
 - 🔍 **Full-text search** via Pagefind (auto-indexed on build)
 - 📡 **RSS & Atom feeds**
 - 🗺️ **Sitemap** (bundled; `.md` source endpoints auto-filtered)
@@ -97,11 +97,11 @@ bun run dev
 
 ## 🔤 Font Optimization
 
-Stalux ships with a 25 MB Chinese font (LXGW WenKai) and a variable code font (Google Sans Code). Instead of loading the full files, the build slices the body font into ~22 woff2 chunks by `unicode-range` (via the official Astro Fonts API, `fontProviders.local()`), and the browser downloads only the chunks whose range matches characters on the page — typically 1–2 chunks (~200–600 KB each) for the above-the-fold content.
+Stalux ships with LXGW WenKai and a variable code font (Google Sans Code). During the build, the Rust/N-API package `@xingwangzhe/cjk-font-split-native` creates one content-addressed WOFF2 subset from each page's visible or expandable CJK text. The browser downloads only the page subset; repeated character sets share the same file. CJK text inside code and MathML is covered too.
 
-Every page emits `@font-face` rules with continuous `unicode-range` descriptors from the `<Font />` component; chunk filenames are content-addressed and deterministic across builds, keeping `experimental.incrementalBuild` caches stable (Astro ≥ 7.2.2).
+The subset CSS uses an exact per-character `unicode-range` and `font-display: swap`, so visible text and the downloaded glyphs stay aligned. The variable code font continues to use Astro's local Fonts API.
 
-Powered by `subset-font` (Harfbuzz WASM), slicing at build time into `node_modules/.astro/stalux-fonts/`; the local provider reads files from disk with no network access.
+The persistent BLAKE3 cache key includes font bytes, face index, normalized character set, and algorithm version. Cache files live under `node_modules/.astro/` and are reused across pages and incremental builds. Font inputs are read locally; builds do not fetch fonts from the network.
 
 ---
 

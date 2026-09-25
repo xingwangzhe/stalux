@@ -46,18 +46,18 @@ const cfg = {
 <nav class={style.container} transition:name={cfg.containerName} aria-label={title ?? cfg.heading}>
     {items.length > 0 && <h3 class={style.title}>{title ?? cfg.heading}</h3>}
     {items.length > 0 ? (
-            <div
-                class={cfg.listClass}
-                transition:name={cfg.contentName}
-                transition:animate={fade({ duration: "0.3s" })}
-            >
-                {items.map((item) => (
-                    <a href={`${cfg.prefix}${item}/`} class={`${cfg.itemClass} a-none`} data-astro-prefetch>
-                        {item}
-                    </a>
-                ))}
-            </div>
-        ) : (
-            <div class={style.empty}>{cfg.empty}</div>
-        )}
+    <div
+        class={cfg.listClass}
+        transition:name={cfg.contentName}
+        transition:animate={fade({ duration: "0.3s" })}
+    >
+        {items.map((item) => (
+            <a href={`${cfg.prefix}${item}/`} class={`${cfg.itemClass} a-none`} data-astro-prefetch>
+                {item}
+            </a>
+        ))}
+    </div>
+) : (
+    <div class={style.empty}>{cfg.empty}</div>
+)}
 </nav>

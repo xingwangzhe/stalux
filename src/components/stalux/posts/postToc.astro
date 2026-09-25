@@ -36,26 +36,26 @@ const tocItems = headings
 >
     <h3 class={style.title}>{title}</h3>
     {tocItems.length > 0 ? (
-            <ul
-                class={style.list}
-                transition:name="toc-content"
-                transition:animate={fade({ duration: "0.3s" })}
-            >
-                {tocItems.map((heading) => (
-                    <li>
-                        <a
-                            class={`${style.item} ${style[`depth-${heading.depth}`] || ""} a-none`}
-                            href={`#${heading.slug}`}
-                            data-toc-link
-                        >
-                            {heading.text}
-                        </a>
-                    </li>
-                ))}
-            </ul>
-        ) : (
-            <div class={style.empty}>{t("taxonomy.noToc")}</div>
-        )}
+    <ul
+        class={style.list}
+        transition:name="toc-content"
+        transition:animate={fade({ duration: "0.3s" })}
+    >
+        {tocItems.map((heading) => (
+            <li>
+                <a
+                    class={`${style.item} ${style[`depth-${heading.depth}`] || ""} a-none`}
+                    href={`#${heading.slug}`}
+                    data-toc-link
+                >
+                    {heading.text}
+                </a>
+            </li>
+        ))}
+    </ul>
+) : (
+    <div class={style.empty}>{t("taxonomy.noToc")}</div>
+)}
 </nav>
 
 <script src="../../../scripts/toc-scrollspy.ts"></script>

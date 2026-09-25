@@ -221,18 +221,70 @@ export const featureFlagsHast = defineHastPlugin({
             // 第一张正文图片可能成为 LCP，优先加载；其余图片延迟加载。
             const firstImage = !ctx.data.staluxFirstImageSeen;
             ctx.data.staluxFirstImageSeen = true;
-            if (!node.properties?.loading) {
-                ctx.setProperty(node, "loading", firstImage ? "eager" : "lazy");
-            }
-            if (!node.properties?.decoding) {
-                ctx.setProperty(node, "decoding", "async");
-            }
-            if (firstImage && !node.properties?.fetchpriority) {
-                ctx.setProperty(node, "fetchpriority", "high");
+            const properties = applyImageLoadingPolicy({ ...(node.properties ?? {}) }, firstImage);
+            for (const key of ["loading", "decoding", "fetchpriority"] as const) {
+                const value = properties[key];
+                if (typeof value === "string") ctx.setProperty(node, key, value);
             }
         },
     },
 });
+
+export function applyImageLoadingPolicy(
+    properties: Record<string, unknown>,
+    firstImage: boolean,
+): Record<string, unknown> {
+    if (!properties.loading) properties.loading = firstImage ? "eager" : "lazy";
+    if (!properties.decoding) properties.decoding = "async";
+    if (firstImage) {
+        if (!properties.fetchpriority) properties.fetchpriority = "high";
+    } else {
+        properties.loading = "lazy";
+        if (properties.fetchpriority === "high") properties.fetchpriority = "auto";
+    }
+    return properties;
+}
+
+export function applyHtmlImageLoadingPolicy(html: string): string {
+    return html.replace(
+        /<section\b(?=[^>]*\bdata-pagefind-body\b)[^>]*>[\s\S]*?<\/section>/gi,
+        (body) => {
+            let imageIndex = 0;
+            return body.replace(/<img\b[^>]*>/gi, (tag) => {
+                const isFirstBodyImage = imageIndex++ === 0;
+                const attributes = new Map<string, string>();
+                for (const match of tag.matchAll(/\s([\w:-]+)(?:="([^"]*)")?/g)) {
+                    const name = match[1];
+                    if (name) attributes.set(name.toLowerCase(), match[2] ?? "");
+                }
+
+                const updates: Record<string, string> = {
+                    decoding: attributes.get("decoding") || "async",
+                    loading: isFirstBodyImage ? "eager" : "lazy",
+                };
+                if (isFirstBodyImage) {
+                    updates.fetchpriority = "high";
+                } else if (attributes.get("fetchpriority") === "high") {
+                    updates.fetchpriority = "auto";
+                }
+
+                let result = tag;
+                for (const [name, value] of Object.entries(updates)) {
+                    const pattern = new RegExp(`\\s${name}(?:="[^"]*")?`, "i");
+                    if (pattern.test(result)) {
+                        result = result.replace(pattern, ` ${name}="${value}"`);
+                    } else {
+                        result = result.replace(
+                            /\s*\/?>$/,
+                            (ending) => ` ${name}="${value}"${ending.trimStart()}`,
+                        );
+                    }
+                }
+                return result;
+            });
+        },
+    );
+}
 
 type FeatureFlagsResult = {
     hasImage: boolean;

@@ -47,12 +47,12 @@ const author = authorConfig.name;
                 cc="CC-BY-NC-SA-4.0"
             />
             {commentEnabled && walineConfig?.serverURL && (
-                    <WalineComment
-                        {...buildWalineProps(walineConfig)}
-                        path={Astro.url.pathname}
-                        title={aboutPage.data.title}
-                    />
-                )}
+    <WalineComment
+        {...buildWalineProps(walineConfig)}
+        path={Astro.url.pathname}
+        title={aboutPage.data.title}
+    />
+)}
         </PostContent>
     </div>
 </Stalux>

@@ -1,5 +1,17 @@
 # Stalux development instructions
 
+## 版本线与发布禁令（最高优先级）
+
+Stalux 的软件著作权登记版本属于 **1.x.x**。此项目必须长期保持 **1.x 大版本**，发布版本只允许 `1.<minor>.<patch>`；这是项目的硬性产品约束，优先于通常的 SemVer 主版本升级建议。
+
+- **严禁发布、打 tag、提交或推送任何 `2.x.x` 版本**，包括 `2.0.0`。即使改动包含破坏性 API，也必须留在 `1.x.x` 版本线内处理；不得以 SemVer 规范为由 bump 到 2。
+- 修改 `package.json` 的 `version`、创建 release tag 或触发 npm 发布前，先确认版本严格匹配 `^1\.\d+\.\d+$`，并确认 tag 严格为对应的 `v1.x.x`。不确定时停止发布操作，不能自行升级主版本。
+- 版本只能在 1.x 内递增，例如 `1.27.1 → 1.27.2` 或 `1.27.1 → 1.28.0`。npm `latest` dist-tag 也必须始终指向 1.x 稳定版。
+- 发布前必须确认 GitHub workflow 对 `2.x.x` 有明确失败守卫，而不只是检查 tag 与 `package.json` 相等；CI 检查通过后才可推送 `v1.x.x` tag。
+- 仓库历史中曾误发 `2.0.0`，该版本已在 npm 标记为废弃。不要重新发布 2.x，也不要移除该版本的废弃提示；后续发布以当前 1.x 最新稳定版本为基线。
+
+如果发现工作区、tag、workflow dispatch 参数或拟议变更会产生 `2.x.x`，必须阻止发布并报告原因，不能尝试通过强推、覆盖 tag 或改 dist-tag 绕过此约束。
+
 ## Configuration and documentation release contract
 
 Any new or changed user-facing configuration field must be handled as one change set:

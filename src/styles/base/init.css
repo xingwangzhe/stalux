@@ -200,7 +200,8 @@ ul {
     --muted-text: #bbb;
 
     /* 字体族栈 */
-    /* --font-body 由 Astro Fonts API 提供（--font-code 同理，见集成注入的 fonts 配置） */
+    --font-body: "Noto Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+    /* --font-code 由 Astro Fonts API 提供；构建时将页面 CJK 子集追加为其回退。 */
 
     /* 字体大小系统 */
     --font-size-subtitle: 1.35rem;

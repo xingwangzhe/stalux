@@ -9,34 +9,30 @@ const showThemeInfoSection = !!(showPoweredBy || showThemeInfo);
 ---
 
 {showThemeInfoSection && (
-        <div class="theme-info">
-            {showPoweredBy && (
-                <span>
-                    Powered by
-                    <a
-                        href="https://astro.build"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Astro
-                    </a>
-                </span>
-            )}
-            {showPoweredBy && showThemeInfo && <span> | </span>}
-            {showThemeInfo && (
-                <span>
-                    Theme is
-                    <a
-                        href="https://github.com/xingwangzhe/stalux"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Stalux
-                    </a>
-                </span>
-            )}
-        </div>
-    )}
+    <div class="theme-info">
+        {showPoweredBy && (
+            <span>
+                Powered by
+                <a href="https://astro.build" target="_blank" rel="noopener noreferrer">
+                    Astro
+                </a>
+            </span>
+        )}
+        {showPoweredBy && showThemeInfo && <span> | </span>}
+        {showThemeInfo && (
+            <span>
+                Theme is
+                <a
+                    href="https://github.com/xingwangzhe/stalux"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Stalux
+                </a>
+            </span>
+        )}
+    </div>
+)}
 
 <style>
 .theme-info {

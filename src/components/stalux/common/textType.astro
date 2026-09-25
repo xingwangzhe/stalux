@@ -8,6 +8,4 @@ const configEntries = await getCollection("config");
 const typetextsConfig = getTypetextsData(configEntries);
 ---
 
-{typetextsConfig?.items && (
-        <Typewriter class={styles.typeWriter} messages={typetextsConfig?.items} />
-    )}
+{typetextsConfig?.items && <Typewriter class={styles.typeWriter} messages={typetextsConfig?.items} />}

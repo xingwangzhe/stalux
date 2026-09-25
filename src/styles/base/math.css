@@ -35,7 +35,7 @@ math {
     direction: ltr;
     /* Prevent Firefox from omitting the dot on i or j. */
     font-feature-settings: "dtls" off;
-    font-family: "Latin Modern Math", math;
+    font-family: "Latin Modern Math", var(--font-body), math;
 }
 
 math * {

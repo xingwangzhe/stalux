@@ -56,48 +56,40 @@ const archiveYears = [...archivesByYearMonth.entries()]
     <div class={styles.pageHeader}>
         <div class={styles.timelineContainer}>
             {archiveYears.length > 0 ? (
-                    archiveYears.map((archiveYear) => (
-                        <div
-                            class={styles.yearSection}
-                            data-year={String(archiveYear.year)}
-                        >
-                            <div class={styles.yearHeader} data-year-header style="opacity:0">
-                                <h2 class={styles.yearTitle}>{archiveYear.year}</h2>
-                                <div class={styles.yearCount}>
-                                    {t("archives.postCount", { n: archiveYear.count })}
-                                </div>
-                            </div>
-                            {archiveYear.months.map(({ month, posts: monthPosts }) => (
-                                    <div class={styles.monthSection} data-month-section style="opacity:0">
-                                        <h3 class={styles.monthTitle}>
-                                            {t("archives.month", { n: month })}
-                                        </h3>
-                                        <ul class={styles.postList}>
-                                            {monthPosts.map((post) => (
-                                                <li class={styles.postItem} data-post-item style="opacity:0">
-                                                    <time
-                                                        class={styles.postDate}
-                                                        datetime={post.data.date}
-                                                    >
-                                                        {format(parseDate(post.data.date), 'yyyy-MM-dd')}
-                                                    </time>
-                                                    <a
-                                                        href={`/posts/${post.data.abbrlink}/`}
-                                                        class={styles.postLink}
-                                                        data-astro-prefetch="viewport"
-                                                    >
-                                                        {post.data.title}
-                                                    </a>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                        </div>
-                    ))
-                ) : (
-                    <div class={styles.noPosts}>{t("archives.noPosts")}</div>
-                )}
+    archiveYears.map((archiveYear) => (
+        <div class={styles.yearSection} data-year={String(archiveYear.year)}>
+            <div class={styles.yearHeader} data-year-header style="opacity:0">
+                <h2 class={styles.yearTitle}>{archiveYear.year}</h2>
+                <div class={styles.yearCount}>
+                    {t("archives.postCount", { n: archiveYear.count })}
+                </div>
+            </div>
+            {archiveYear.months.map(({ month, posts: monthPosts }) => (
+                <div class={styles.monthSection} data-month-section style="opacity:0">
+                    <h3 class={styles.monthTitle}>{t("archives.month", { n: month })}</h3>
+                    <ul class={styles.postList}>
+                        {monthPosts.map((post) => (
+                            <li class={styles.postItem} data-post-item style="opacity:0">
+                                <time class={styles.postDate} datetime={post.data.date}>
+                                    {format(parseDate(post.data.date), "yyyy-MM-dd")}
+                                </time>
+                                <a
+                                    href={`/posts/${post.data.abbrlink}/`}
+                                    class={styles.postLink}
+                                    data-astro-prefetch="viewport"
+                                >
+                                    {post.data.title}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
+        </div>
+    ))
+) : (
+    <div class={styles.noPosts}>{t("archives.noPosts")}</div>
+)}
         </div>
 
         <slot name="main" />

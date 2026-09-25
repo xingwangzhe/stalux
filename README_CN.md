@@ -8,7 +8,7 @@
 
 **[stalux.needhelp.icu](https://stalux.needhelp.icu)**
 
-深色主题、高性能的 Astro 博客主题，采用玻璃拟态设计，支持 unicode-range 字体分片，专注内容阅读体验。
+深色主题、高性能的 Astro 博客主题，采用玻璃拟态设计，支持 native 页面 CJK 字体子集，专注内容阅读体验。
 
 ---
 
@@ -77,7 +77,7 @@ bun run dev
 ## ✨ 功能特性
 
 - 🌙 **暗色主题** + 玻璃拟态设计
-- 🔤 **unicode-range 字体分片** — 25 MB 字体 → ~22 个 woff2 分片，浏览器按需下载命中分片
+- 🔤 **Native 页面字体子集** — Rust/N-API 为每页可见中文生成带缓存的 WOFF2 子集
 - 🔍 **全文搜索**（Pagefind 构建时自动索引）
 - 📡 **RSS / Atom 订阅**
 - 🗺️ **Sitemap**（内置打包，自动过滤 `.md` 源码端点）
@@ -97,11 +97,11 @@ bun run dev
 
 ## 🔤 字体优化
 
-Stalux 内置 25 MB 中文字体（LXGW WenKai）和可变代码字体（Google Sans Code）。访客不需要下载完整文件：构建时把正文字体按 `unicode-range` 切成 ~22 个 woff2 分片（走官方 Astro Fonts API，`fontProviders.local()`），浏览器只下载命中页面字符区间的分片——首屏通常 1–2 个分片（每个 ~200–600 KB）。
+Stalux 内置中文字体 LXGW WenKai 和可变代码字体 Google Sans Code。构建时由 Rust/N-API 包 `@xingwangzhe/cjk-font-split-native` 按页面可见或可展开的 CJK 正文生成内容寻址 WOFF2 子集；字符集相同的页面复用同一个文件。代码和 MathML 中可见的中文也会纳入子集。
 
-每个页面由 `<Font />` 组件输出带连续 `unicode-range` 的 `@font-face`；分片文件名内容寻址、跨构建确定性，保证 `experimental.incrementalBuild` 缓存稳定（需 Astro ≥ 7.2.2）。
+子集 CSS 使用精确到字符的 `unicode-range` 和 `font-display: swap`，让可见文本与下载字形对应。代码可变字体仍通过 Astro 官方 local Fonts API 注入。
 
-基于 `subset-font`（Harfbuzz WASM），构建时切分到 `node_modules/.astro/stalux-fonts/`；local provider 纯本地读文件，构建不联网。
+持久 BLAKE3 缓存键包含字体内容、face index、规范化字符集和算法版本；缓存保存在 `node_modules/.astro/`，可跨页面和增量构建复用。字体输入从本地读取，构建不会联网下载字体。
 
 ---
 

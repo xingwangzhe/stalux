@@ -29,13 +29,13 @@ const licenseName = buildCCName(cc, t);
         <p class={style.ccTitle}>{title}</p>
         <p class={style.ccAuthor}>{t("post.author")}{author}</p>
         {url && (
-                <p class={style.ccUrl}>
-                    {t("post.articleLink")}
-                    <a href={url} target="_blank" rel="noopener noreferrer">
-                        {url}
-                    </a>
-                </p>
-            )}
+    <p class={style.ccUrl}>
+        {t("post.articleLink")}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+            {url}
+        </a>
+    </p>
+)}
         <p class={style.ccLicense}>
             {t("post.licensedUnder")}
             <a href={licenseLink} target="_blank" rel="noopener noreferrer">

@@ -19,32 +19,28 @@ const showBeian = !!(icp || pubsec);
 ---
 
 {showBeian && (
-        <div class="beian-info">
-            {icp && (
-                <a
-                    href="https://beian.miit.gov.cn/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {icp}
-                </a>
-            )}
-            {pubsec && pubsecNumber && (
-                <a
-                    href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${pubsecNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="public-security-beian"
-                >
-                    <img
-                        src="https://beian.mps.gov.cn/img/logo01.dd7ff50e.png"
-                        alt={t("footer.securityIcon")}
-                    />
-                    {pubsec}
-                </a>
-            )}
-        </div>
-    )}
+    <div class="beian-info">
+        {icp && (
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+                {icp}
+            </a>
+        )}
+        {pubsec && pubsecNumber && (
+            <a
+                href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${pubsecNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="public-security-beian"
+            >
+                <img
+                    src="https://beian.mps.gov.cn/img/logo01.dd7ff50e.png"
+                    alt={t("footer.securityIcon")}
+                />
+                {pubsec}
+            </a>
+        )}
+    </div>
+)}
 
 <style>
 .beian-info {

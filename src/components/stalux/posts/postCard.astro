@@ -22,25 +22,25 @@ const description = post.data.desc || "";
 <article class={style.post}>
     <div class={style.postContainer}>
         {post.data.cover && (
-                <a
-                    href={`/posts/${post.data.abbrlink}/`}
-                    class="a-none"
-                    data-astro-prefetch="viewport"
-                    aria-label={post.data.title}
-                >
-                    <div class={style.postCover}>
-                        <img
-                            src={post.data.cover}
-                            alt={post.data.title}
-                            loading={priority ? "eager" : "lazy"}
-                            decoding="async"
-                            fetchpriority={priority ? "high" : "auto"}
-                            width="640"
-                            height="360"
-                        />
-                    </div>
-                </a>
-            )}
+    <a
+        href={`/posts/${post.data.abbrlink}/`}
+        class="a-none"
+        data-astro-prefetch="viewport"
+        aria-label={post.data.title}
+    >
+        <div class={style.postCover}>
+            <img
+                src={post.data.cover}
+                alt={post.data.title}
+                loading={priority ? "eager" : "lazy"}
+                decoding="async"
+                fetchpriority={priority ? "high" : "auto"}
+                width="640"
+                height="360"
+            />
+        </div>
+    </a>
+)}
         <h2 class={style.postTitle}>
             <a href={`/posts/${post.data.abbrlink}/`} class="a-none" data-astro-prefetch="viewport">
                 {post.data.title}
@@ -48,37 +48,37 @@ const description = post.data.desc || "";
         </h2>
         <div class={style.time}>
             {post.data.date && (
-                    <time
-                        class={style.postDate}
-                        datetime={timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date}
-                    >
-                        {post.data.date}
-                    </time>
-                )}
+    <time
+        class={style.postDate}
+        datetime={timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date}
+    >
+        {post.data.date}
+    </time>
+)}
             {post.data.updated && (
-                    <time
-                        class={style.postUpdated}
-                        datetime={timezone ? toMachineDateTime(post.data.updated, timezone) : post.data.updated}
-                    >
-                        {post.data.updated}
-                    </time>
-                )}
+    <time
+        class={style.postUpdated}
+        datetime={timezone ? toMachineDateTime(post.data.updated, timezone) : post.data.updated}
+    >
+        {post.data.updated}
+    </time>
+)}
         </div>
         <div class={style.postDescription}>{description}</div>
         <div class={style.postMeta}>
             <div class={style.postTags}>
                 {post.data.tags?.map((tag) => (
-                        <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
-                            <span class={style.postTag}>{tag}</span>
-                        </a>
-                    ))}
+    <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
+        <span class={style.postTag}>{tag}</span>
+    </a>
+))}
             </div>
             <div class={style.postCategories}>
                 {post.data.categories?.map((category) => (
-                        <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
-                            <span class={style.postCategory}>{category}</span>
-                        </a>
-                    ))}
+    <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
+        <span class={style.postCategory}>{category}</span>
+    </a>
+))}
             </div>
         </div>
         <a

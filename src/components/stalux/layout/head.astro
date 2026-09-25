@@ -50,17 +50,13 @@ const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
         openGraph={seo.openGraph}
         twitter={seo.twitter}
         extend={{
-            link: seo.links,
-            meta: seo.meta,
-    }}
+    link: seo.links,
+    meta: seo.meta,
+}}
     />
-    <!-- 字体：由 Astro Fonts API 注入（--font-body 分片 / --font-code 可变字体），
-       <Font /> 输出 @font-face 样式；浏览器按 unicode-range 按需下载正文分片 -->
-    <Font cssVariable="--font-body" />
+    <!-- 代码字体由 Astro Fonts API 注入；正文按页面生成 native CJK 子集。 -->
     <Font cssVariable="--font-code" />
-    {(headConfig?.anyhead) && (
-      <Fragment set:html={headConfig.anyhead} />
-    )}
+    {headConfig?.anyhead && <Fragment set:html={headConfig.anyhead} />}
     {headConfig?.googleAnalyticsId && <GoogleAnalytics />}
     {headConfig?.bingClarityId && <BingClarity />}
     {headConfig?.umami?.id && headConfig?.umami?.url && <Umami />}

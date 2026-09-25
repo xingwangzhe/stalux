@@ -1,29 +1,25 @@
-import { describeError } from "../utils/diagnostics";
 /**
- * Build-time CJK font slicing engine (Astro Fonts API variant).
+ * Build-time CJK font subsetting engine.
  *
- * Slices the full-size LXGW WenKai font (25 MB TTF) into ~20 woff2 chunks
- * by unicode-range, registered through the official `fontProviders.local()`
- * pipeline (`updateConfig({ fonts })`). The browser downloads only the chunks
- * whose unicode-range matches characters on the page.
+ * LXGW WenKai is subset per rendered page with the native N-API package. Only
+ * the independent Google Sans Code font uses Astro's local Fonts API.
  *
  * Astro's local provider reads font files from disk (`readFile`), so no
  * network access is involved at build time — identical behavior on GitHub
- * Actions and CN mirrors. Slices are emitted to `node_modules/.astro/`
- * (the Astro cacheDir) so they stay out of the repo and out of `dist/fonts`.
+ * Actions and CN mirrors. Page subset cache is emitted to `node_modules/.astro/`
+ * so it stays out of the repo and out of `dist/fonts`.
  *
  * Output layout:
- *   node_modules/.astro/stalux-fonts/
- *     lxgw-wenkai-slice-{n}-{hash}.woff2   — unicode-range chunk (content-addressed)
+ *   node_modules/.astro/stalux-page-fonts/
+ *     page-{hash}.woff2   — page-specific content-addressed CJK subset
  */
 
-import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, unlinkSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
+import { subsetFont } from "@xingwangzhe/cjk-font-split-native";
 import type { AstroIntegrationLogger } from "astro";
-import subsetFont from "subset-font";
+import { type DefaultTreeAdapterMap, parse } from "parse5";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -36,70 +32,21 @@ const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.ttf";
 const CODE_FONT_INPUT = "src/assets/fonts/GoogleSansCode.woff2";
 const CODE_FONT_ITALIC_INPUT = "src/assets/fonts/GoogleSansCode-Italic.woff2";
 
-/** Output directory for generated slices (under the Astro cacheDir) */
-const SLICE_OUT_DIR = "node_modules/.astro/stalux-fonts";
-
-/** Chunk size (code points) for the CJK Unified Ideographs block */
-const CJK_CHUNK_SIZE = 1050;
+const PAGE_SLICE_OUT_DIR = "node_modules/.astro/stalux-page-fonts";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export interface FontSlice {
-    /** Absolute path to the generated woff2 file */
-    src: string;
-    /** Unicode ranges for the @font-face unicode-range descriptor */
-    unicodeRange: string[];
-}
-
-export interface SlicedFonts {
-    /** Body font slices (LXGW WenKai), one variant per chunk */
-    body: FontSlice[];
+export interface FontInputs {
+    /** Build-time per-page subset cache, outside dist so incremental builds can reuse it. */
+    pageSubsetDir: string;
+    fontBuffer: Buffer;
     /** Absolute path to the code font woff2 */
     codeNormal: string;
     /** Absolute path to the code italic woff2, if present */
     codeItalic?: string;
 }
-
-interface SliceDef {
-    /** Ordinal used in the output filename */
-    id: number;
-    /** [start, end] code-point ranges covered by this slice */
-    ranges: Array<[number, number]>;
-}
-
-// ---------------------------------------------------------------------------
-// Slice definitions
-// ---------------------------------------------------------------------------
-
-/**
- * CJK Unified Ideographs (U+4E00–U+9FFF) split into fixed-size chunks.
- * Chunk boundaries are content-independent, so slices are deterministic
- * across builds (no per-page character scanning).
- */
-function buildCjkChunks(start = 0x4e00, end = 0x9fff, size = CJK_CHUNK_SIZE): SliceDef[] {
-    const chunks: SliceDef[] = [];
-    for (let s = start, id = 2; s <= end; s += size, id++) {
-        chunks.push({ id, ranges: [[s, Math.min(s + size - 1, end)]] });
-    }
-    return chunks;
-}
-
-const SLICES: SliceDef[] = [
-    // ASCII printable + Latin-1 supplement
-    { id: 0, ranges: [[0x20, 0x7e]] },
-    // CJK punctuation / fullwidth forms / general punctuation
-    {
-        id: 1,
-        ranges: [
-            [0x2000, 0x206f],
-            [0x3000, 0x303f],
-            [0xff00, 0xffef],
-        ],
-    },
-    ...buildCjkChunks(),
-];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -115,43 +62,22 @@ function findFont(projectRoot: string, rel: string): string | undefined {
     return candidates.find((p) => existsSync(p));
 }
 
-/** Render a [start, end] range as a CSS unicode-range value. */
-export function toUnicodeRange(ranges: Array<[number, number]>): string[] {
-    const hex = (codePoint: number) => codePoint.toString(16).toUpperCase().padStart(4, "0");
-    return ranges.map(([start, end]) =>
-        start === end ? `U+${hex(start)}` : `U+${hex(start)}-${hex(end)}`,
-    );
-}
-
-/** Collect every code point in the ranges as a deduped, sorted string. */
-function rangesToChars(ranges: Array<[number, number]>): string {
-    const set = new Set<string>();
-    for (const [s, e] of ranges) {
-        for (let cp = s; cp <= e; cp++) {
-            set.add(String.fromCodePoint(cp));
-        }
-    }
-    return [...set].sort().join("");
-}
-
 // ---------------------------------------------------------------------------
 // Main entry
 // ---------------------------------------------------------------------------
 
 /**
- * Slice the body font into unicode-range woff2 chunks and resolve the code
- * fonts, all from local disk. Returns `null` when the body font is missing so
+ * Resolve the body-font source for native page subsetting and code fonts for
+ * Astro's local provider. Returns `null` when a required font is missing so
  * the caller can skip font injection (pages fall back to system fonts).
  *
  * Called from the `astro:config:setup` hook before `updateConfig({ fonts })`.
  */
-export async function runFontSlicing(
+export async function resolveFontInputs(
     projectRoot: string,
     logger: AstroIntegrationLogger,
-): Promise<SlicedFonts | null> {
+): Promise<FontInputs | null> {
     const started = performance.now();
-    let cached = 0;
-    let generated = 0;
     logger.debug("locating font inputs");
     // 1. Locate fonts (check project root first, then stalux package dir)
     const fontPath = findFont(projectRoot, FONT_INPUT);
@@ -167,55 +93,144 @@ export async function runFontSlicing(
     const codeItalic = findFont(projectRoot, CODE_FONT_ITALIC_INPUT);
 
     const fontBuffer = readFileSync(fontPath);
-    const outDir = resolve(projectRoot, SLICE_OUT_DIR);
-    mkdirSync(outDir, { recursive: true });
-
-    // 2. Slice the body font into unicode-range chunks.
-    // Filename is content-addressed (md5 of the character set): identical
-    // input chars → identical bytes → identical name across builds, keeping
-    // the incremental-build dependency graph stable.
-    const body: FontSlice[] = [];
-    for (const def of SLICES) {
-        const chars = rangesToChars(def.ranges);
-        if (!chars) continue;
-        const hash = createHash("md5").update(chars).digest("hex").slice(0, 12);
-        const filename = `lxgw-wenkai-slice-${def.id}-${hash}.woff2`;
-        const outPath = join(outDir, filename);
-
-        if (existsSync(outPath)) {
-            cached++;
-            logger.debug(`body slice ${def.id}: cache hit`);
-        } else {
-            try {
-                const data = await subsetFont(fontBuffer, chars, { targetFormat: "woff2" });
-                if (data.length > 0) {
-                    writeFileSync(outPath, data);
-                    generated++;
-                    logger.debug(
-                        `  body slice ${def.id}: ${(data.length / 1024).toFixed(1)} KB → ${filename}`,
-                    );
-                }
-            } catch (error) {
-                logger.warn(`  body slice ${def.id} failed: ${describeError(error)}`);
-            }
-        }
-
-        if (existsSync(outPath)) {
-            body.push({ src: outPath, unicodeRange: toUnicodeRange(def.ranges) });
-        }
-    }
-
-    if (body.length === 0) {
-        logger.warn("Body font slicing produced no chunks, skipping font injection");
-        return null;
-    }
-
-    logger.debug(
-        `generated=${generated}; cached=${cached}; elapsed=${(performance.now() - started).toFixed(1)}ms`,
-    );
+    logger.debug(`font inputs located in ${(performance.now() - started).toFixed(1)}ms`);
     logger.info(
-        `Font slicing done: ${body.length} body chunks + code font ` +
-            `(source ${(fontBuffer.length / 1024 / 1024).toFixed(1)} MB → woff2 chunks)`,
+        `Native page-font source ready (LXGW ${(fontBuffer.length / 1024 / 1024).toFixed(1)} MB)`,
     );
-    return { body, codeNormal, codeItalic };
+    return {
+        pageSubsetDir: resolve(projectRoot, PAGE_SLICE_OUT_DIR),
+        fontBuffer,
+        codeNormal,
+        codeItalic,
+    };
+}
+
+export interface PageFontSubset {
+    html: string;
+    filename: string;
+    sourcePath: string;
+    cacheHit: boolean;
+}
+
+type HtmlNode = DefaultTreeAdapterMap["node"];
+
+const NON_RENDERED_ELEMENTS = new Set(["script", "style", "template", "title"]);
+const VISUALLY_HIDDEN_CLASSES = new Set([
+    "agent-home-summary",
+    "screen-reader-only",
+    "sr-only",
+    "visually-hidden",
+]);
+
+function findBody(node: HtmlNode): HtmlNode | undefined {
+    if ("tagName" in node && node.tagName === "body") return node;
+    if ("childNodes" in node) {
+        for (const child of node.childNodes) {
+            const body = findBody(child);
+            if (body) return body;
+        }
+    }
+    return undefined;
+}
+
+function isHiddenElement(attrs: Array<{ name: string; value: string }>): boolean {
+    const attributes = new Map(attrs.map(({ name, value }) => [name, value]));
+    if (attributes.has("hidden") || attributes.has("inert")) return true;
+
+    const classes = (attributes.get("class") ?? "").split(/\s+/u);
+    if (classes.some((name) => VISUALLY_HIDDEN_CLASSES.has(name))) return true;
+
+    const style = attributes.get("style") ?? "";
+    return /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*hidden|content-visibility\s*:\s*hidden)\s*(?:;|$)/iu.test(
+        style,
+    );
+}
+
+/** Collect renderable body text nodes, including content inside collapsed controls. */
+function collectBodyText(node: HtmlNode, output: string[]): void {
+    if (node.nodeName === "#text" && "value" in node) {
+        output.push(node.value);
+        return;
+    }
+
+    if (!("childNodes" in node)) return;
+    if (
+        "tagName" in node &&
+        (NON_RENDERED_ELEMENTS.has(node.tagName) || isHiddenElement(node.attrs))
+    ) {
+        return;
+    }
+
+    for (const child of node.childNodes) collectBodyText(child, output);
+}
+
+/** Create a cached body-font subset containing precisely the page's CJK code points. */
+export function writePageFontSubset(
+    html: string,
+    fontBuffer: Buffer,
+    cacheDir: string,
+    publicUrlPrefix = "/_astro/fonts/",
+): PageFontSubset | undefined {
+    const document = parse(html);
+    const body = findBody(document);
+    if (!body) return undefined;
+
+    const bodyText: string[] = [];
+    collectBodyText(body, bodyText);
+    const chars = [
+        ...new Set(
+            [...bodyText.join("")].filter((char) =>
+                /[\u2000-\u206f\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]/u.test(char),
+            ),
+        ),
+    ]
+        .sort()
+        .join("");
+    if (!chars) return undefined;
+
+    const result = subsetFont(fontBuffer, chars, cacheDir);
+    const filename = `page-${result.hash}.woff2`;
+
+    const rel = `${publicUrlPrefix}${filename}`;
+    // Keep Astro's broad unicode-range font out of the fallback stack; otherwise
+    // a character outside this page's subset would download multiple 300 KB slices.
+    const originalFontStack = html.match(/--font-body:\s*([^;}]+)/u)?.[1]?.trim();
+    const fallbackStack =
+        originalFontStack || '"Noto Sans SC","Noto Sans CJK SC",system-ui,sans-serif';
+    const originalCodeStack = html.match(/--font-code:\s*([^;}]+)/u)?.[1]?.trim();
+    const codeStack = originalCodeStack
+        ? `${originalCodeStack},"LXGW WenKai-Page Subset"`
+        : `"LXGW WenKai-Page Subset",${fallbackStack}`;
+    const css = `@font-face{font-family:"LXGW WenKai-Page Subset";src:url("${rel}") format("woff2");font-style:normal;font-weight:400;font-display:swap;unicode-range:${[...chars].map((c) => `U+${c.codePointAt(0)?.toString(16).toUpperCase()}`).join(",")}}:root{--font-body:"LXGW WenKai-Page Subset",${fallbackStack};--font-code:${codeStack}}`;
+    const withoutBroadBodyFonts = html.replace(
+        /@font-face\{[^}]*font-family:"LXGW WenKai-[^"]+"[^}]*\}/g,
+        (face) => {
+            const unicodeRange = face.match(/unicode-range:([^;}]+)/i)?.[1] ?? "";
+            const hasCjkRange = unicodeRange.split(",").some((range) => {
+                const start = range.match(/U\+([\da-f]+)/i)?.[1];
+                if (!start) return false;
+                const codePoint = Number.parseInt(start, 16);
+                return codePoint >= 0x4e00 && codePoint <= 0x9fff;
+            });
+            return hasCjkRange ? "" : face;
+        },
+    );
+    const outputHtml = withoutBroadBodyFonts.replace(
+        /<\/head\s*>/i,
+        `<style data-stalux-page-font>${css}</style></head>`,
+    );
+    return { html: outputHtml, filename, sourcePath: result.path, cacheHit: result.cacheHit };
+}
+
+/** Remove stale page subsets so deploy artifacts only contain the current build's referenced files. */
+export function clearPageFontSubsets(
+    outputDir: string,
+    referencedFiles: Set<string> = new Set(),
+): void {
+    if (!existsSync(outputDir)) return;
+    for (const name of readdirSync(outputDir)) {
+        if (name.startsWith("page-") && name.endsWith(".woff2") && !referencedFiles.has(name)) {
+            unlinkSync(join(outputDir, name));
+        }
+    }
 }

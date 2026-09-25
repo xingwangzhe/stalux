@@ -1,6 +1,7 @@
-import { init, type WalineInitOptions } from "@waline/client";
+import type { WalineInitOptions } from "@waline/client";
+import walineCss from "@waline/client/style?inline";
+import staluxWalineCss from "../styles/components/posts/waline.css?inline";
 import { createClientLogger } from "./logger";
-
 import { registerPageLifecycle } from "./page-runtime";
 
 const logger = createClientLogger("waline");
@@ -31,14 +32,34 @@ registerPageLifecycle("waline", () => {
         return;
     }
 
-    const options = {
-        ...decoded,
-        el: commentElement,
-        serverURL: decoded.serverURL,
-        path: typeof decoded.path === "string" ? decoded.path : window.location.pathname,
-    } as WalineInitOptions;
-    const instance = init(options);
-    logger.debug("comment widget initialized");
+    let disposed = false;
+    let destroy: (() => void) | undefined;
 
-    return () => instance?.destroy();
+    void import("@waline/client")
+        .then((waline) => {
+            if (disposed || !commentElement.isConnected) return;
+            const style = document.createElement("style");
+            style.dataset.staluxWaline = "true";
+            style.textContent = `${walineCss}\n${staluxWalineCss}`;
+            document.head.append(style);
+            const options = {
+                ...decoded,
+                el: commentElement,
+                serverURL: decoded.serverURL,
+                path: typeof decoded.path === "string" ? decoded.path : window.location.pathname,
+            } as WalineInitOptions;
+            const instance = waline.init(options);
+            destroy = () => instance?.destroy();
+            logger.debug("comment widget initialized");
+        })
+        .catch((error) => {
+            logger.warn(
+                `comment assets failed to load (${error instanceof Error ? error.name : "unknown error"})`,
+            );
+        });
+
+    return () => {
+        disposed = true;
+        destroy?.();
+    };
 });

@@ -42,40 +42,40 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
 >
     <ul>
         {mediaLinks.map((item) => {
-                const icon = item.icon ? getIconByTitle(item.icon) : undefined;
-                return (
-                    <li class="social_icon">
-                        <a
-                            href={item.link}
-                            target="_blank"
-                            aria-label={item.icon}
-                            rel="noopener noreferrer"
-                            title={item.icon}
-                            class="a-none"
+    const icon = item.icon ? getIconByTitle(item.icon) : undefined;
+    return (
+        <li class="social_icon">
+            <a
+                href={item.link}
+                target="_blank"
+                aria-label={item.icon}
+                rel="noopener noreferrer"
+                title={item.icon}
+                class="a-none"
+            >
+                {icon ? (
+                    <div class="icon-container">
+                        <svg
+                            role="img"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="currentColor"
+                            aria-hidden="true"
                         >
-                            {icon ? (
-                                <div class="icon-container">
-                                    <svg
-                                        role="img"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        fill="currentColor"
-                                        aria-hidden="true"
-                                    >
-                                        <title>{icon.title}</title>
-                                        <path d={icon.path} />
-                                    </svg>
-                                </div>
-                            ) : (
-                                <span class="custom-icon">
-                                    {item.icon ? item.icon.charAt(0).toUpperCase() : ""}
-                                </span>
-                            )}
-                        </a>
-                    </li>
-                );
-            })}
+                            <title>{icon.title}</title>
+                            <path d={icon.path} />
+                        </svg>
+                    </div>
+                ) : (
+                    <span class="custom-icon">
+                        {item.icon ? item.icon.charAt(0).toUpperCase() : ""}
+                    </span>
+                )}
+            </a>
+        </li>
+    );
+})}
     </ul>
 </nav>

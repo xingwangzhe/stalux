@@ -8,7 +8,14 @@
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
+import {
+    copyFileSync,
+    existsSync,
+    promises as fs,
+    mkdirSync,
+    readdirSync,
+    readFileSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,7 +30,11 @@ import { createIndex as pagefindCreateIndex } from "pagefind";
 import type { StaluxOptions } from "./config";
 import { expressiveCode } from "./expressive-code";
 import { staluxComponentsAlias } from "./internal/components-plugin";
-import { type FontSlice, runFontSlicing } from "./internal/font-slices";
+import {
+    clearPageFontSubsets,
+    resolveFontInputs,
+    writePageFontSubset,
+} from "./internal/font-slices";
 import { createInjectedRoutes } from "./internal/injected-routes";
 import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
 import {
@@ -32,36 +43,23 @@ import {
     prepareSatteriProcessor,
 } from "./internal/satteri-config";
 import { createViteAliases } from "./internal/vite-aliases";
-import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
+import {
+    applyHtmlImageLoadingPolicy,
+    featureFlagsHast,
+    featureFlagsMdast,
+} from "./plugins/feature-flags";
 import { temml } from "./plugins/satteri-temml";
 import { describeError } from "./utils/diagnostics";
 
-// 字体配置（Astro Fonts API）通过 updateConfig 注入，两种模式（源码模板/npm 插件）都生效。
-// 官方 local provider 完全本地读文件（readFile），不联网；
-// 7.2.2 已修复 Fonts API 随机端口污染 incrementalBuild dependencyHash 的问题（PR #17659）。
-function buildFontsConfig(slices: FontSlice[], codeNormal: string, codeItalic?: string) {
+// 代码字体通过 Astro Fonts API 注入；正文字体由 native N-API 按页面生成子集。
+function buildFontsConfig(codeNormal: string, codeItalic?: string) {
     return [
-        {
-            // 正文：LXGW WenKai 按 unicode-range 分片，浏览器只下载命中区间的分片
-            provider: fontProviders.local(),
-            name: "LXGW WenKai",
-            cssVariable: "--font-body",
-            fallbacks: ["Noto Sans SC", "Noto Sans CJK SC", "system-ui", "sans-serif"],
-            optimizedFallbacks: true,
-            options: {
-                variants: slices.map((slice) => ({
-                    weight: 400,
-                    style: "normal",
-                    src: [slice.src],
-                    unicodeRange: slice.unicodeRange,
-                })),
-            },
-        },
         {
             // 代码：Google Sans Code 可变字体，原样注册，不切片
             provider: fontProviders.local(),
             name: "Google Sans Code",
             cssVariable: "--font-code",
+            display: "optional" as const,
             fallbacks: ["JetBrains Mono", "Fira Code", "Consolas", "Courier New", "monospace"],
             optimizedFallbacks: true,
             options: {
@@ -150,6 +148,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     // 探测是否为插件模式（通过 npm 安装）vs 源码开发模式
     // 安装在 node_modules 中时，页面的文件路由不可用，需要通过 injectRoute 注入
     const isPluginMode = import.meta.url.includes("node_modules");
+    let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
 
     const coreIntegration: AstroIntegration = {
         name: "stalux",
@@ -330,20 +329,20 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     }
                 }
 
-                // 7. 字体：构建期把正文切成 unicode-range 分片，通过官方 Fonts API 注入
-                // （config:setup 阶段执行，保证 dev/build 都能生成；local provider 纯本地读文件）
+                // 7. 字体：解析本地字体输入；正文字体由 native N-API 在 build:done 阶段逐页生成。
                 try {
-                    const sliced = await runFontSlicing(process.cwd(), fontsLogger);
+                    const sliced = await resolveFontInputs(process.cwd(), fontsLogger);
                     if (sliced) {
+                        pageFontData = {
+                            fontBuffer: sliced.fontBuffer,
+                            outputDir: path.join(fileURLToPath(config.outDir), "_astro", "fonts"),
+                            cacheDir: sliced.pageSubsetDir,
+                        };
                         updateConfig({
-                            fonts: buildFontsConfig(
-                                sliced.body,
-                                sliced.codeNormal,
-                                sliced.codeItalic,
-                            ),
+                            fonts: buildFontsConfig(sliced.codeNormal, sliced.codeItalic),
                         });
                         fontsLogger.debug(
-                            `injected ${sliced.body.length} body font chunks + code font via Fonts API`,
+                            "injected code font via Astro Fonts API; page body subsets use native N-API",
                         );
                     }
                 } catch (error) {
@@ -353,9 +352,58 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             },
 
             "astro:build:done": async ({ dir, logger: rootLogger }) => {
-                const logger = rootLogger.fork("stalux/pagefind");
+                const logger = rootLogger.fork("stalux/build");
                 const started = performance.now();
-                const outDir = fileURLToPath(dir);
+                const outDir = pageFontData
+                    ? path.dirname(path.dirname(pageFontData.outputDir))
+                    : fileURLToPath(new URL(String(dir)));
+
+                // Astro's Markdown image transform drops arbitrary lazy-loading hints
+                // added during HAST processing. Reapply the policy to emitted HTML.
+                const htmlFiles = await fs.readdir(outDir, { recursive: true });
+                let optimizedImagePages = 0;
+                let pageFontPages = 0;
+                if (pageFontData) await fs.mkdir(pageFontData.outputDir, { recursive: true });
+                if (pageFontData) await fs.mkdir(pageFontData.cacheDir, { recursive: true });
+                const referencedPageFonts = new Set<string>();
+                for (const entry of htmlFiles) {
+                    if (typeof entry !== "string" || !entry.endsWith(".html")) continue;
+                    const output = path.join(outDir, entry);
+                    const before = await fs.readFile(output, "utf8");
+                    const withoutPageFont = before.replace(
+                        /<style data-stalux-page-font>[\s\S]*?<\/style>/gi,
+                        "",
+                    );
+                    let after = applyHtmlImageLoadingPolicy(withoutPageFont);
+                    if (pageFontData) {
+                        const pageFont = writePageFontSubset(
+                            after,
+                            pageFontData.fontBuffer,
+                            pageFontData.cacheDir,
+                            "/_astro/fonts/",
+                        );
+                        if (pageFont) {
+                            after = pageFont.html;
+                            pageFontPages++;
+                            referencedPageFonts.add(pageFont.filename);
+                            copyFileSync(
+                                pageFont.sourcePath,
+                                path.join(pageFontData.outputDir, pageFont.filename),
+                            );
+                        }
+                    }
+                    if (after !== before) {
+                        await fs.writeFile(output, after);
+                        optimizedImagePages++;
+                    }
+                }
+                if (pageFontData) {
+                    clearPageFontSubsets(pageFontData.outputDir, referencedPageFonts);
+                }
+                logger.info(`applied image loading hints to ${optimizedImagePages} HTML pages`);
+                logger.info(
+                    `generated page-specific body font subsets for ${pageFontPages} HTML pages`,
+                );
 
                 // 后处理：Pagefind 搜索索引。启用时任何失败都必须让构建失败，
                 // 避免发布一个页面正常但搜索已损坏的产物。
