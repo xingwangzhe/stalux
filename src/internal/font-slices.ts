@@ -15,8 +15,8 @@
  */
 
 import { existsSync, readdirSync, readFileSync, unlinkSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname, join, resolve, sep } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { subsetFont } from "@xingwangzhe/cjk-font-split-native";
 import type { AstroIntegrationLogger } from "astro";
 import { type DefaultTreeAdapterMap, parse } from "parse5";
@@ -122,6 +122,63 @@ const VISUALLY_HIDDEN_CLASSES = new Set([
     "visually-hidden",
 ]);
 
+function cssGeneratedText(css: string): string {
+    return [...css.matchAll(/\bcontent\s*:\s*(["'])(.*?)\1\s*(?:!important\s*)?(?:;|})/gis)]
+        .map(([, , value]) =>
+            (value ?? "").replace(/\\([\da-f]{1,6})\s?|\\(.)/gi, (_, hex, char) =>
+                hex ? String.fromCodePoint(Number.parseInt(hex, 16)) : char,
+            ),
+        )
+        .join(" ");
+}
+
+function collectStylesheetLinks(node: HtmlNode, output: string[]): void {
+    if ("tagName" in node && node.tagName === "link") {
+        const attrs = new Map(node.attrs.map(({ name, value }) => [name, value]));
+        if (attrs.get("rel")?.split(/\s+/u).includes("stylesheet")) {
+            const href = attrs.get("href");
+            if (href) output.push(href);
+        }
+    }
+    if ("childNodes" in node) {
+        for (const child of node.childNodes) collectStylesheetLinks(child, output);
+    }
+}
+
+/** Read local CSS files linked from an emitted page and return generated text strings. */
+export function readLinkedStylesheetText(
+    html: string,
+    pagePath: string,
+    outputDir: string,
+    cache = new Map<string, string>(),
+): string {
+    const root = resolve(outputDir);
+    const links: string[] = [];
+    collectStylesheetLinks(parse(html), links);
+    const content: string[] = [];
+    for (const href of links) {
+        if (/^(?:[a-z][a-z\d+.-]*:|\/\/|data:)/iu.test(href)) continue;
+        let cssPath: string;
+        try {
+            cssPath = href.startsWith("/")
+                ? resolve(root, `.${new URL(href, "https://stalux.local").pathname}`)
+                : fileURLToPath(new URL(href, pathToFileURL(pagePath)));
+        } catch {
+            continue;
+        }
+        if (cssPath !== root && !cssPath.startsWith(`${root}${sep}`)) continue;
+        if (!cache.has(cssPath)) {
+            try {
+                cache.set(cssPath, readFileSync(cssPath, "utf8"));
+            } catch {
+                cache.set(cssPath, "");
+            }
+        }
+        content.push(cssGeneratedText(cache.get(cssPath) ?? ""));
+    }
+    return content.join(" ");
+}
+
 function findBody(node: HtmlNode): HtmlNode | undefined {
     if ("tagName" in node && node.tagName === "body") return node;
     if ("childNodes" in node) {
@@ -164,31 +221,45 @@ function collectBodyText(node: HtmlNode, output: string[]): void {
     for (const child of node.childNodes) collectBodyText(child, output);
 }
 
-/** Create a cached body-font subset containing precisely the page's CJK code points. */
+function formatUnicodeRange(chars: string[]): string {
+    const points = chars.map((char) => char.codePointAt(0) as number).sort((a, b) => a - b);
+    const ranges: Array<[number, number]> = [];
+    for (const point of points) {
+        const last = ranges.at(-1);
+        if (last && point === last[1] + 1) last[1] = point;
+        else ranges.push([point, point]);
+    }
+    const format = (point: number) => point.toString(16).toUpperCase().padStart(4, "0");
+    return ranges
+        .map(([start, end]) => `U+${format(start)}${start === end ? "" : `-${format(end)}`}`)
+        .join(",");
+}
+
+/** Create a cached body-font subset containing the page's visible text characters. */
 export function writePageFontSubset(
     html: string,
     fontBuffer: Buffer,
     cacheDir: string,
     publicUrlPrefix = "/_astro/fonts/",
+    linkedStylesheetText = "",
 ): PageFontSubset | undefined {
     const document = parse(html);
     const body = findBody(document);
     if (!body) return undefined;
 
-    const bodyText: string[] = [];
-    collectBodyText(body, bodyText);
-    const chars = [
-        ...new Set(
-            [...bodyText.join("")].filter((char) =>
-                /[\u2000-\u206f\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]/u.test(char),
-            ),
+    const bodyText: string[] = [
+        ...[...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi)].map(([, css]) =>
+            cssGeneratedText(css ?? ""),
         ),
-    ]
-        .sort()
-        .join("");
-    if (!chars) return undefined;
+        linkedStylesheetText,
+    ];
+    collectBodyText(body, bodyText);
+    const chars = [...new Set([...bodyText.join("")].filter((char) => !/\p{C}/u.test(char)))].sort(
+        (a, b) => (a.codePointAt(0) as number) - (b.codePointAt(0) as number),
+    );
+    if (chars.length === 0) return undefined;
 
-    const result = subsetFont(fontBuffer, chars, cacheDir);
+    const result = subsetFont(fontBuffer, chars.join(""), cacheDir);
     const filename = `page-${result.hash}.woff2`;
 
     const rel = `${publicUrlPrefix}${filename}`;
@@ -203,7 +274,7 @@ export function writePageFontSubset(
         : `"LXGW WenKai-Page Subset",${fallbackStack}`;
     // The source font is regular; advertise a weight range so browsers synthesize
     // bold weights from these same glyphs instead of falling back to system CJK.
-    const css = `@font-face{font-family:"LXGW WenKai-Page Subset";src:url("${rel}") format("woff2");font-style:normal;font-weight:100 900;font-display:swap;unicode-range:${[...chars].map((c) => `U+${c.codePointAt(0)?.toString(16).toUpperCase()}`).join(",")}}:root{--font-body:"LXGW WenKai-Page Subset",${fallbackStack};--font-code:${codeStack}}body{font-family:var(--font-body),${fallbackStack}}`;
+    const css = `@font-face{font-family:"LXGW WenKai-Page Subset";src:url("${rel}") format("woff2");font-style:normal;font-weight:100 900;font-display:swap;unicode-range:${formatUnicodeRange(chars)}}:root{--font-body:"LXGW WenKai-Page Subset",${fallbackStack};--font-code:${codeStack}}body{font-family:var(--font-body),${fallbackStack}}`;
     const withoutBroadBodyFonts = html.replace(
         /@font-face\{[^}]*font-family:"LXGW WenKai-[^"]+"[^}]*\}/g,
         (face) => {

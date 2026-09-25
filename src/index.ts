@@ -32,6 +32,7 @@ import { expressiveCode } from "./expressive-code";
 import { staluxComponentsAlias } from "./internal/components-plugin";
 import {
     clearPageFontSubsets,
+    readLinkedStylesheetText,
     resolveFontInputs,
     writePageFontSubset,
 } from "./internal/font-slices";
@@ -366,6 +367,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 if (pageFontData) await fs.mkdir(pageFontData.outputDir, { recursive: true });
                 if (pageFontData) await fs.mkdir(pageFontData.cacheDir, { recursive: true });
                 const referencedPageFonts = new Set<string>();
+                const linkedCssTextCache = new Map<string, string>();
                 for (const entry of htmlFiles) {
                     if (typeof entry !== "string" || !entry.endsWith(".html")) continue;
                     const output = path.join(outDir, entry);
@@ -376,11 +378,18 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     );
                     let after = applyHtmlImageLoadingPolicy(withoutPageFont);
                     if (pageFontData) {
+                        const linkedStylesheetText = readLinkedStylesheetText(
+                            after,
+                            output,
+                            outDir,
+                            linkedCssTextCache,
+                        );
                         const pageFont = writePageFontSubset(
                             after,
                             pageFontData.fontBuffer,
                             pageFontData.cacheDir,
                             "/_astro/fonts/",
+                            linkedStylesheetText,
                         );
                         if (pageFont) {
                             after = pageFont.html;
