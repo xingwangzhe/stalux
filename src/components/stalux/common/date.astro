@@ -6,3 +6,24 @@ import styles from "@styles/components/common/date.module.css";
     <time id={styles.date} data-ref="date" datetime=""></time>
     <time id={styles.time} data-ref="time" datetime=""></time>
 </div>
+
+<script is:inline>
+(() => {
+    const dateElement = document.querySelector('[data-ref="date"]');
+    const timeElement = document.querySelector('[data-ref="time"]');
+    if (!dateElement || !timeElement) return;
+    const now = new Date();
+    const pad = (value) => String(value).padStart(2, "0");
+    const lang = document.documentElement.lang || "zh-CN";
+    dateElement.textContent = lang.startsWith("zh")
+        ? `${now.getFullYear()}年${pad(now.getMonth() + 1)}月${pad(now.getDate())}日`
+        : new Intl.DateTimeFormat("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "2-digit",
+          }).format(now);
+    dateElement.dateTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    timeElement.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    timeElement.dateTime = timeElement.textContent;
+})();
+</script>

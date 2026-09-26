@@ -84,6 +84,8 @@ const routeAnimation = getRouteAnimation(routeKind);
         data-stalux-site-lang={siteConfig.lang}
         data-stalux-ga-id={headConfig?.googleAnalyticsId}
         data-stalux-clarity-id={headConfig?.bingClarityId}
+        data-stalux-umami-id={headConfig?.umami?.id}
+        data-stalux-umami-url={headConfig?.umami?.url}
     >
         {llmPromote && (
     <section class="stalux-ai-prompt" data-stalux-ai-prompt aria-label="AI site context">

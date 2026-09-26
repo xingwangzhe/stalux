@@ -15,7 +15,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 20
         permissions:
-            contents: read
+            contents: write
             id-token: write
 
         steps:
@@ -39,20 +39,29 @@ jobs:
             - name: Validate
               run: bun run validate
 
-            - name: Verify 1.x version and matching tag
+            - name: Verify 1.x version and matching release tag
               run: >-
                   bun -e 'const manifest = await Bun.file("package.json").json();
                   if (!/^1\.\d+\.\d+$/.test(manifest.version)) {
                     throw new Error(`Stalux releases must stay on 1.x.x; found ${manifest.version}`);
                   }
-                  if (process.env.GITHUB_REF.startsWith("refs/tags/")) {
-                    const expected = `v${manifest.version}`;
-                    if (process.env.GITHUB_REF_NAME !== expected) {
-                      throw new Error(`Tag ${process.env.GITHUB_REF_NAME} does not match ${expected}`);
-                    }
+                  if (!process.env.GITHUB_REF.startsWith("refs/tags/")) {
+                    throw new Error("The publish workflow must run from a version tag");
+                  }
+                  const expected = `v${manifest.version}`;
+                  if (process.env.GITHUB_REF_NAME !== expected) {
+                    throw new Error(`Tag ${process.env.GITHUB_REF_NAME} does not match ${expected}`);
                   }'
 
             # Publishing is the only npm CLI exception: npm Trusted Publishing exchanges
             # GitHub's OIDC identity for a short-lived token and emits provenance.
             - name: Publish package with provenance
               run: npm publish --provenance --access public --tag latest
+
+            - name: Create GitHub Release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RELEASE_TAG: ${{ github.ref_name }}
+              run: >-
+                  gh release view "$RELEASE_TAG" >/dev/null 2>&1 ||
+                  gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --generate-notes

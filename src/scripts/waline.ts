@@ -1,6 +1,3 @@
-import type { WalineInitOptions } from "@waline/client";
-import walineCss from "@waline/client/style?inline";
-import staluxWalineCss from "../styles/components/posts/waline.css?inline";
 import { createClientLogger } from "./logger";
 import { registerPageLifecycle } from "./page-runtime";
 
@@ -34,32 +31,39 @@ registerPageLifecycle("waline", () => {
 
     let disposed = false;
     let destroy: (() => void) | undefined;
+    let observer: IntersectionObserver | undefined;
 
-    void import("@waline/client")
-        .then((waline) => {
-            if (disposed || !commentElement.isConnected) return;
-            const style = document.createElement("style");
-            style.dataset.staluxWaline = "true";
-            style.textContent = `${walineCss}\n${staluxWalineCss}`;
-            document.head.append(style);
-            const options = {
-                ...decoded,
-                el: commentElement,
-                serverURL: decoded.serverURL,
-                path: typeof decoded.path === "string" ? decoded.path : window.location.pathname,
-            } as WalineInitOptions;
-            const instance = waline.init(options);
-            destroy = () => instance?.destroy();
-            logger.debug("comment widget initialized");
-        })
-        .catch((error) => {
-            logger.warn(
-                `comment assets failed to load (${error instanceof Error ? error.name : "unknown error"})`,
-            );
-        });
+    const load = () => {
+        observer?.disconnect();
+        observer = undefined;
+        void import("./waline-client")
+            .then(({ mountWaline }) => {
+                if (disposed || !commentElement.isConnected) return;
+                destroy = mountWaline(decoded, commentElement);
+                logger.debug("comment widget initialized near viewport");
+            })
+            .catch((error) => {
+                logger.warn(
+                    `comment assets failed to load (${error instanceof Error ? error.name : "unknown error"})`,
+                );
+            });
+    };
+
+    if ("IntersectionObserver" in window) {
+        observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) load();
+            },
+            { rootMargin: "1000px 0px" },
+        );
+        observer.observe(container);
+    } else {
+        load();
+    }
 
     return () => {
         disposed = true;
+        observer?.disconnect();
         destroy?.();
     };
 });
