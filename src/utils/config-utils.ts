@@ -39,7 +39,9 @@ function findConfig<Id extends ConfigId>(
 export function getSiteData(entries: CollectionEntry<"config">[]): SiteData {
     const site = findConfig(entries, "site");
     if (!site) throw new Error("Missing site config");
-    return site;
+    // Content collection loaders may omit Zod defaults from parsed YAML data.
+    // Keep the public default stable for older consumer configs that lack this key.
+    return { ...site, accentColor: site.accentColor ?? "#EAB308" };
 }
 
 export function getAuthorData(entries: CollectionEntry<"config">[]): AuthorData {

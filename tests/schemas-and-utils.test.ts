@@ -80,6 +80,7 @@ describe("accent color tokens", () => {
         expect(getAccentColorStyle("#3366CC")).toContain("--stalux-accent-color: #3366cc");
         expect(getAccentColorStyle("#3366CC")).toContain("--stalux-accent-rgb: 51, 102, 204");
         expect(getAccentColorStyle("#3366CC")).toContain("--accent-50p: rgba(51, 102, 204, 0.5)");
+        expect(getAccentColorStyle(undefined)).toContain("--stalux-accent-color: #eab308");
         expect(() => getAccentColorStyle("#369")).toThrow();
     });
 });

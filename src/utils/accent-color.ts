@@ -3,7 +3,7 @@ const ACCENT_COLOR_PATTERN = /^#[\da-fA-F]{6}$/;
 const ACCENT_OPACITIES = [90, 85, 80, 70, 60, 50, 40, 30, 20] as const;
 
 /** Build the CSS custom properties shared by Stalux and its comment styles. */
-export function getAccentColorStyle(accentColor: string): string {
+export function getAccentColorStyle(accentColor = "#EAB308"): string {
     if (!ACCENT_COLOR_PATTERN.test(accentColor)) {
         throw new Error(`Invalid Stalux accent color "${accentColor}". Expected #RRGGBB.`);
     }
