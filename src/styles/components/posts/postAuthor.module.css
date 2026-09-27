@@ -13,10 +13,10 @@
 .authorCard {
     display: flex;
     flex-direction: column;
-    background: var(--black-10p);
+    background: var(--black-05p);
     border-radius: var(--radius-lg);
     padding: var(--space-md);
-    box-shadow: var(--shadow-sidebar);
+    box-shadow: var(--card-box-shadow);
     transition: all var(--transition-normal) ease;
 }
 

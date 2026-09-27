@@ -4,7 +4,7 @@
     background: var(--surface-glass);
     border-radius: var(--radius-lg, 12px);
     padding: 1.5rem;
-    box-shadow: var(--shadow-sidebar);
+    box-shadow: var(--card-box-shadow);
     transition:
         transform var(--transition-normal) ease,
         box-shadow var(--transition-normal) ease;
@@ -20,7 +20,7 @@
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-raised-hover);
+    box-shadow: var(--card-box-shadow-hover);
 }
 
 /* 被 hash 定位的卡片 — 主题光晕 */

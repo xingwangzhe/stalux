@@ -99,7 +99,7 @@
 
 /* 评论卡片样式 */
 .wl-card {
-    background-color: rgba(17, 17, 17, 0.3) !important;
+    background-color: rgba(17, 17, 17, 0.05) !important;
     border-radius: 12px;
     padding: 1.2rem;
     margin-top: 1.2rem;
@@ -109,7 +109,7 @@
 
 .wl-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
     border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
 }
 

@@ -113,14 +113,14 @@ ul {
     --stalux-text-shadow: var(--stalux-accent-color) 0.08rem 0.08rem 0.18rem;
     --stalux-accent-color: #eab308;
     --stalux-accent-rgb: 234, 179, 8;
-    --surface-glass: var(--black-10p);
+    --surface-glass: var(--black-05p);
     --surface-glass-shadow: var(--shadow-sidebar);
 
     /* 卡片和标签颜色 Token（可在这里统一调整主题色/透明度） */
     --card-bg: var(--surface-glass);
     --card-border: rgba(255, 255, 255, 0.1);
-    --card-box-shadow: var(--shadow-sidebar);
-    --card-box-shadow-hover: var(--shadow-raised-hover);
+    --card-box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    --card-box-shadow-hover: 0 14px 28px rgba(0, 0, 0, 0.12);
 
     --tag-bg: rgba(255, 255, 255, 0.12);
     --tag-bg-hover: rgba(255, 255, 255, 0.18);
@@ -153,6 +153,7 @@ ul {
     --black-20p: rgba(0, 0, 0, 0.2);
     --black-15p: rgba(0, 0, 0, 0.15);
     --black-10p: rgba(0, 0, 0, 0.1);
+    --black-05p: rgba(0, 0, 0, 0.05);
 
     /* 强调色变体 */
     --accent-90p: rgba(var(--stalux-accent-rgb), 0.9);

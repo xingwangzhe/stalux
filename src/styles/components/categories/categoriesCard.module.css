@@ -7,7 +7,7 @@
     background-color: var(--surface-glass);
     border-radius: 0.8rem;
     color: var(--white-full);
-    box-shadow: var(--shadow-sidebar);
+    box-shadow: var(--card-box-shadow);
     transition:
         transform 220ms ease,
         background-color 220ms ease,
@@ -36,8 +36,8 @@
 
 .categoryCard:hover {
     transform: translateY(-3px);
-    background-color: rgba(255, 255, 255, 0.08);
-    box-shadow: var(--shadow-raised-hover);
+    background-color: var(--white-05p);
+    box-shadow: var(--card-box-shadow-hover);
 }
 
 .categoryCard:hover::before {

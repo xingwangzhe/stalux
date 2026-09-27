@@ -16,13 +16,13 @@
         box-shadow 220ms ease,
         background-color 220ms ease,
         border-color 220ms ease;
-    box-shadow: var(--shadow-sidebar);
+    box-shadow: var(--card-box-shadow);
 }
 
 .card:hover {
     transform: translateY(-3px);
-    background: #ffffff26;
-    box-shadow: var(--shadow-raised-hover);
+    background: var(--white-05p);
+    box-shadow: var(--card-box-shadow-hover);
 }
 
 .avatar {
