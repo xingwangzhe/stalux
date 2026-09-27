@@ -45,9 +45,19 @@
 }
 
 .card:hover .avatar img {
-    transform: rotate(5deg) scale(1.04);
+    transform: scale(1.04);
+    animation: link-avatar-spin 700ms ease-in-out 1;
     box-shadow: 0 0 20px var(--accent-50p);
     border-color: var(--accent-85p);
+}
+
+@keyframes link-avatar-spin {
+    from {
+        transform: rotate(0deg) scale(1.04);
+    }
+    to {
+        transform: rotate(360deg) scale(1.04);
+    }
 }
 
 .content {
@@ -96,5 +106,13 @@
 
     .description {
         font-size: 0.9rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card:hover .avatar img {
+        animation: none;
+        transform: none;
+        transition: none;
     }
 }
