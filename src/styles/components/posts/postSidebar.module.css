@@ -30,11 +30,13 @@
 .sidebarContainer {
     display: flex;
     flex-direction: column;
-    background: var(--black-10p);
-    border-radius: var(--radius-lg);
+    background: var(--surface-glass);
+    border-radius: 14px;
     padding: var(--space-md);
-    box-shadow: var(--shadow-sidebar);
-    transition: all var(--transition-normal) ease;
+    box-shadow: var(--surface-glass-shadow);
+    transition:
+        box-shadow 220ms ease,
+        background-color 220ms ease;
 }
 
 @media (max-width: 1400px) {

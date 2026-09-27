@@ -36,6 +36,7 @@ import {
     resolveFontInputs,
     writePageFontSubset,
 } from "./internal/font-slices";
+import { addLocalImageDimensions } from "./internal/image-dimensions";
 import { createInjectedRoutes } from "./internal/injected-routes";
 import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
 import {
@@ -376,7 +377,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         /<style data-stalux-page-font>[\s\S]*?<\/style>/gi,
                         "",
                     );
-                    let after = applyHtmlImageLoadingPolicy(withoutPageFont);
+                    const withImageDimensions = await addLocalImageDimensions(
+                        withoutPageFont,
+                        outDir,
+                    );
+                    let after = applyHtmlImageLoadingPolicy(withImageDimensions);
                     if (pageFontData) {
                         const linkedStylesheetText = readLinkedStylesheetText(
                             after,

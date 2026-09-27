@@ -16,6 +16,11 @@ export const siteSchema = z.object({
     title: z.string().min(1, "site.title is required"),
     url: z.url("site.url must be a valid URL"),
     description: z.string().min(1, "site.description is required"),
+    accentColor: z
+        .string()
+        .regex(/^#[\da-fA-F]{6}$/, "site.accentColor must be a six-digit HEX color such as #EAB308")
+        .optional()
+        .default("#EAB308"),
     seoTitle: z.string().min(1).optional(),
     timezone: z.string().optional().default("Asia/Shanghai"),
     canonical: z.url("site.canonical must be a valid URL").optional(),

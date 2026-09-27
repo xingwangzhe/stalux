@@ -1,6 +1,5 @@
 ---
 import { getCollection } from "astro:content";
-import { fade } from "astro:transitions";
 import style from "@styles/components/posts/postToc.module.css";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
@@ -36,11 +35,7 @@ const tocItems = headings
 >
     <h3 class={style.title}>{title}</h3>
     {tocItems.length > 0 ? (
-    <ul
-        class={style.list}
-        transition:name="toc-content"
-        transition:animate={fade({ duration: "0.3s" })}
-    >
+    <ul class={style.list} transition:name="toc-content">
         {tocItems.map((heading) => (
             <li>
                 <a

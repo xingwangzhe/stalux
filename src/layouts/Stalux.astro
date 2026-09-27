@@ -8,6 +8,7 @@ import "@pagefind/component-ui/css";
 import "@styles/base/init.css";
 import "@styles/shared/stagger.css";
 import "@styles/shared/view-transitions.css";
+import { getAccentColorStyle } from "@utils/accent-color";
 import {
     getAiDiscoveryData,
     getAuthorData,
@@ -56,7 +57,7 @@ const routeAnimation = getRouteAnimation(routeKind);
 ---
 
 <!doctype html>
-<html lang={htmlLang}>
+<html lang={htmlLang} style={getAccentColorStyle(siteConfig.accentColor)}>
     <Head
         title={props.title}
         description={props.description}

@@ -2,8 +2,14 @@ import { describe, expect, it } from "vitest";
 import en from "../src/i18n/en.json";
 import zhCN from "../src/i18n/zh-CN.json";
 import { authorSchema, commentSchema, siteSchema } from "../src/schemas/config";
+import { getAccentColorStyle } from "../src/utils/accent-color";
 import { buildCCLink, buildCCName } from "../src/utils/cc";
 import { createTranslator } from "../src/utils/i18n";
+import {
+    getPostTitleTransitionName,
+    getRouteAnimation,
+    getSidebarAnimation,
+} from "../src/utils/view-transitions";
 
 describe("configuration schemas", () => {
     it("applies safe site defaults", () => {
@@ -19,7 +25,30 @@ describe("configuration schemas", () => {
             noindex: false,
             nofollow: false,
             favicon: "/favicon.ico",
+            accentColor: "#EAB308",
         });
+    });
+
+    it("accepts a six-digit theme accent and rejects malformed values", () => {
+        const valid = siteSchema.parse({
+            id: "site",
+            title: "Site",
+            url: "https://example.com",
+            description: "Description",
+            accentColor: "#3366CC",
+        });
+        expect(valid.accentColor).toBe("#3366CC");
+        for (const accentColor of ["3366CC", "#369", "#GG66CC", "red"]) {
+            expect(() =>
+                siteSchema.parse({
+                    id: "site",
+                    title: "Site",
+                    url: "https://example.com",
+                    description: "Description",
+                    accentColor,
+                }),
+            ).toThrow();
+        }
     });
 
     it("rejects malformed URLs and missing author fields", () => {
@@ -43,6 +72,55 @@ describe("configuration schemas", () => {
             wordLimit: 200,
             pageSize: 10,
         });
+    });
+});
+
+describe("accent color tokens", () => {
+    it("derives the base color, RGB, and opacity variants", () => {
+        expect(getAccentColorStyle("#3366CC")).toContain("--stalux-accent-color: #3366cc");
+        expect(getAccentColorStyle("#3366CC")).toContain("--stalux-accent-rgb: 51, 102, 204");
+        expect(getAccentColorStyle("#3366CC")).toContain("--accent-50p: rgba(51, 102, 204, 0.5)");
+        expect(() => getAccentColorStyle("#369")).toThrow();
+    });
+});
+
+describe("route transition mapping", () => {
+    it("selects direction-aware page animations and stable post identity", () => {
+        const kinds = [
+            "home",
+            "archive",
+            "links",
+            "words",
+            "about",
+            "tags-index",
+            "tags-detail",
+            "categories-index",
+            "categories-detail",
+            "article",
+            "not-found",
+            "other",
+        ] as const;
+        for (const kind of kinds) {
+            const animation = getRouteAnimation(kind);
+            expect(animation.forwards.new).toHaveProperty("name");
+            expect(animation.backwards.new).toHaveProperty("name");
+            expect(animation.forwards.new).not.toEqual(animation.backwards.new);
+        }
+        expect(getRouteAnimation("article").backwards.new).toMatchObject({
+            name: "stalux-article-enter-back",
+        });
+        expect(getRouteAnimation("tags-detail").forwards.new).toMatchObject({
+            name: "stalux-taxonomy-enter",
+        });
+        expect(getSidebarAnimation("left").forwards.new).toMatchObject({
+            name: "stalux-sidebar-left-in",
+        });
+        expect(getSidebarAnimation("right").backwards.new).toMatchObject({
+            name: "stalux-sidebar-right-back-in",
+        });
+        expect(getPostTitleTransitionName("post-1")).toBe(getPostTitleTransitionName("post-1"));
+        expect(getPostTitleTransitionName("post-1")).not.toBe(getPostTitleTransitionName("post-2"));
+        expect(getPostTitleTransitionName("post-1")).toMatch(/^stalux-post-title-[a-z0-9]+$/);
     });
 });
 

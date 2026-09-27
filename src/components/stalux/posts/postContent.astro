@@ -1,5 +1,4 @@
 ---
-import { fade } from "astro:transitions";
 import "photoswipe/dist/photoswipe.css";
 import style from "@styles/components/posts/postContent.module.css";
 import "@styles/components/markdown.css";
@@ -11,6 +10,7 @@ import { toMachineDateTime } from "@utils/semantic-time";
 interface Props {
     title: string;
     transitionName?: string;
+    titleTransitionName?: string;
     date?: string;
     updated?: string;
     readingMinutes?: number;
@@ -35,12 +35,11 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
 <article
     class={style.articleContent}
     data-stalux-gallery={props.hasImage ? "true" : undefined}
-    transition:name={props.transitionName ?? "post-content"}
-    transition:animate={fade({ duration: "0.45s" })}
+    transition:name={props.transitionName}
 >
     <!-- Article Header -->
     <header class={style.articleHeader}>
-        <h1 class={style.title}>{props.title}</h1>
+        <h1 class={style.title} transition:name={props.titleTransitionName}>{props.title}</h1>
         <div class={style.metadata}>
             {props.date && (
     <time

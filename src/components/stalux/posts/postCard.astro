@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 import style from "@styles/components/posts/postCard.module.css";
 import { getSiteData } from "@utils/config-utils";
 import { toMachineDateTime } from "@utils/semantic-time";
+import { getPostTitleTransitionName } from "@utils/view-transitions";
 
 interface Props {
     post: CollectionEntry<"posts">;
@@ -41,7 +42,10 @@ const description = post.data.desc || "";
         </div>
     </a>
 )}
-        <h2 class={style.postTitle}>
+        <h2
+            class={style.postTitle}
+            transition:name={priority ? getPostTitleTransitionName(post.data.abbrlink) : undefined}
+        >
             <a href={`/posts/${post.data.abbrlink}/`} class="a-none" data-astro-prefetch="viewport">
                 {post.data.title}
             </a>

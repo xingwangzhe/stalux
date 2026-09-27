@@ -8,7 +8,7 @@ const categoryList = await getCategoryCountList(Astro.logger);
 
 <ul class={`${styles.categoriesList} stagger-children`}>
     {categoryList.map((category) => (
-    <li class={styles.item} style="opacity:0">
+    <li class={styles.item}>
         <CategoriesCard category={category} />
     </li>
 ))}

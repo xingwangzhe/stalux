@@ -13,7 +13,7 @@ abbrlink: 0b563d42
 
 ## Configuration File Structure
 
-The Stalux theme uses Astro content collections. Configuration files are stored as individual YAML files under `stalux/config/`, each validated by a dedicated Zod schema:
+The Stalux theme uses Astro content collections. Configuration files are stored as individual YAML files under `stalux/config/`, each validated by a dedicated Zod schema. `site.yml` accepts an optional six-digit HEX `accentColor` (default `#EAB308`) that controls the theme and Waline accent; choose a shade with sufficient contrast against your background:
 
 ```bash
 stalux/config/

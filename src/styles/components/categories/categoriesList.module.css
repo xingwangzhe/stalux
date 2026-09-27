@@ -11,17 +11,14 @@
 }
 
 .item {
-    animation: fadeInUp 0.5s ease both;
-    opacity: 0;
+    animation: contentReveal 220ms ease 360ms both;
 }
 
-@keyframes fadeInUp {
+@keyframes contentReveal {
     from {
         opacity: 0;
-        transform: translateY(20px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 }

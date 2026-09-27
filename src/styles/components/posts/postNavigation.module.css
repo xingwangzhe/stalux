@@ -29,8 +29,7 @@
         transform var(--transition-normal),
         box-shadow var(--transition-normal),
         color var(--transition-normal);
-    border: var(--border-thin) solid var(--white-20p);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-sidebar);
     flex: 1 1 0;
     min-width: 0;
     position: relative;
@@ -53,7 +52,7 @@
 
 .postNavLink:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 16px var(--shadow-dark);
+    box-shadow: var(--shadow-raised-hover);
 }
 
 .postNavLink:hover::before {

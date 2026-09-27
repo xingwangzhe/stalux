@@ -1,9 +1,10 @@
 .card {
     width: 100%;
-    background: var(--white-10p);
+    box-sizing: border-box;
+    background: var(--surface-glass);
     border-radius: var(--radius-lg, 12px);
     padding: 1.5rem;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sidebar);
     transition:
         transform var(--transition-normal) ease,
         box-shadow var(--transition-normal) ease;
@@ -12,9 +13,14 @@
     gap: 0.75rem;
 }
 
+.body :global(.expressive-code) {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-raised-hover);
 }
 
 /* 被 hash 定位的卡片 — 主题光晕 */

@@ -24,7 +24,7 @@ nav {
     min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
-    transition: transform 0.3s ease;
+    transition: transform 220ms cubic-bezier(0.22, 0.72, 0.22, 1);
     /* 当导航项总宽度超过视口时允许横向滚动，防止右侧项被裁剪 */
     flex-wrap: wrap;
     width: 100%;
@@ -213,7 +213,8 @@ nav {
     .navList {
         position: fixed;
         top: 0;
-        right: 0;
+        left: 0;
+        right: auto;
         width: min(220px, calc(100vw - 1rem));
         height: 100vh;
         background: var(--black-20p);
@@ -223,7 +224,7 @@ nav {
         justify-content: flex-start;
         gap: 0;
         padding: 0.5rem 1rem 2rem 1rem;
-        transform: translateX(100%);
+        transform: translateX(-100%);
         z-index: 1000;
         overflow-y: auto;
         pointer-events: none;

@@ -21,6 +21,7 @@ lang: en # Language: "en" | "zh-CN"
 title: Stalux Blog Theme # Site title
 url: https://stalux.needhelp.icu # Site URL (used for canonical, RSS, OpenGraph)
 description: "Blog theme Stalux ..." # Site description (SEO, OpenGraph)
+accentColor: "#EAB308" # Optional shared theme and Waline accent; six-digit HEX
 timezone: "Asia/Shanghai" # IANA timezone for date formatting
 favicon: "/stalux.ico" # Favicon path
 canonical: "https://stalux.needhelp.icu" # Canonical URL (optional, falls back to url)
@@ -28,6 +29,8 @@ canonical: "https://stalux.needhelp.icu" # Canonical URL (optional, falls back t
 # noindex: false                      # Global noindex (optional, default false)
 # nofollow: false                     # Global nofollow (optional, default false)
 ```
+
+`accentColor` defaults to `#EAB308` and accepts `#RRGGBB`. Stalux derives the theme's translucent accent tokens and Waline color from it. Choose a color with sufficient contrast against the site's background.
 
 ## author.yml — Author Information
 

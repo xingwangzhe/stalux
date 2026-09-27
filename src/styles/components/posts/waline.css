@@ -1,5 +1,5 @@
 :root {
-    --waline-accent-rgb: 100, 255, 218;
+    --waline-accent-rgb: var(--stalux-accent-rgb);
 }
 
 /* 评论区容器与博客风格一致 */
@@ -8,9 +8,8 @@
     margin-bottom: 1rem;
     padding: 2rem;
     border-radius: 12px;
-    animation: fadeInUpComment 0.8s ease-in-out forwards;
-    opacity: 0;
-    animation-delay: 0.3s;
+    animation: fadeInUpComment 0.35s ease-out both;
+    animation-delay: 0.08s;
 }
 
 /* 评论区标题样式与博客风格一致 */

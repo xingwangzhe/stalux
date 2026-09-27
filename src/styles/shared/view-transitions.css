@@ -1,127 +1,14 @@
-/* 页面外壳的路由专属入场动画；列表和卡片继续使用各自的 stagger。 */
-@keyframes stalux-sidebar-left-out {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(-34px);
-    }
-}
-
-@keyframes stalux-sidebar-left-in {
-    from {
-        opacity: 0;
-        transform: translateX(-34px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-sidebar-left-back-in {
-    from {
-        opacity: 0;
-        transform: translateX(34px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-sidebar-left-back-out {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(34px);
-    }
-}
-
-@keyframes stalux-sidebar-right-in {
-    from {
-        opacity: 0;
-        transform: translateX(34px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-sidebar-right-back-in {
-    from {
-        opacity: 0;
-        transform: translateX(-34px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-sidebar-right-out {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(34px);
-    }
-}
-
-@keyframes stalux-sidebar-right-back-out {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(-34px);
-    }
-}
-
-@keyframes stalux-page-fade-out {
-    from {
-        opacity: 1;
-    }
+/* Keep route motion on the page shell; named child elements handle continuity. */
+@keyframes stalux-page-exit {
     to {
         opacity: 0;
     }
 }
 
-@keyframes stalux-page-home-in {
+@keyframes stalux-page-enter {
     from {
         opacity: 0;
-        transform: scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes stalux-page-home-back-in {
-    from {
-        opacity: 0;
-        transform: scale(1.02);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes stalux-page-vertical-in {
-    from {
-        opacity: 0;
-        transform: translateY(14px);
+        transform: translateY(9px);
     }
     to {
         opacity: 1;
@@ -129,10 +16,10 @@
     }
 }
 
-@keyframes stalux-page-vertical-back-in {
+@keyframes stalux-page-enter-back {
     from {
         opacity: 0;
-        transform: translateY(-14px);
+        transform: translateY(-9px);
     }
     to {
         opacity: 1;
@@ -140,120 +27,10 @@
     }
 }
 
-@keyframes stalux-page-grid-in {
+@keyframes stalux-taxonomy-enter {
     from {
         opacity: 0;
-        transform: translateY(8px) scale(0.975);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes stalux-page-category-grid-in {
-    from {
-        opacity: 0;
-        transform: translateY(8px) scale(0.975);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes stalux-page-grid-back-in {
-    from {
-        opacity: 0;
-        transform: translateY(-8px) scale(0.985);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes stalux-page-category-grid-back-in {
-    from {
-        opacity: 0;
-        transform: translateY(-8px) scale(0.985);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes stalux-page-rise-in {
-    from {
-        opacity: 0;
-        transform: translateY(18px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-page-rise-back-in {
-    from {
-        opacity: 0;
-        transform: translateY(-18px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-page-content-in {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-page-content-back-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-page-tag-cloud-in {
-    from {
-        opacity: 0;
-        transform: scale(0.985);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes stalux-page-tag-cloud-back-in {
-    from {
-        opacity: 0;
-        transform: scale(1.015);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes stalux-page-from-right-in {
-    from {
-        opacity: 0;
-        transform: translateX(22px);
+        transform: translateX(12px);
     }
     to {
         opacity: 1;
@@ -261,10 +38,10 @@
     }
 }
 
-@keyframes stalux-page-from-left-in {
+@keyframes stalux-taxonomy-enter-back {
     from {
         opacity: 0;
-        transform: translateX(-22px);
+        transform: translateX(-12px);
     }
     to {
         opacity: 1;
@@ -272,7 +49,7 @@
     }
 }
 
-@keyframes stalux-page-article-in {
+@keyframes stalux-article-enter {
     from {
         opacity: 0;
         transform: translateY(6px);
@@ -283,7 +60,7 @@
     }
 }
 
-@keyframes stalux-page-article-back-in {
+@keyframes stalux-article-enter-back {
     from {
         opacity: 0;
         transform: translateY(-6px);
@@ -294,43 +71,75 @@
     }
 }
 
-@keyframes stalux-page-error-in {
+@keyframes stalux-sidebar-left-in {
     from {
         opacity: 0;
-        transform: scale(0.97);
+        transform: translateX(-14px);
     }
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateX(0);
     }
 }
 
-@keyframes stalux-page-error-back-in {
-    from {
-        opacity: 0;
-        transform: scale(0.97);
-    }
+@keyframes stalux-sidebar-left-out {
     to {
-        opacity: 1;
-        transform: scale(1);
+        opacity: 0;
+        transform: translateX(-10px);
     }
 }
 
-@keyframes stalux-page-fade-in {
+@keyframes stalux-sidebar-left-back-in {
     from {
         opacity: 0;
+        transform: translateX(14px);
     }
     to {
         opacity: 1;
+        transform: translateX(0);
     }
 }
 
-@keyframes stalux-page-fade-back-in {
+@keyframes stalux-sidebar-left-back-out {
+    to {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+}
+
+@keyframes stalux-sidebar-right-in {
     from {
         opacity: 0;
+        transform: translateX(14px);
     }
     to {
         opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes stalux-sidebar-right-out {
+    to {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+}
+
+@keyframes stalux-sidebar-right-back-in {
+    from {
+        opacity: 0;
+        transform: translateX(-14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes stalux-sidebar-right-back-out {
+    to {
+        opacity: 0;
+        transform: translateX(-10px);
     }
 }
 
@@ -343,14 +152,25 @@
     transform-origin: center top;
 }
 
+::view-transition-group(*) {
+    animation-duration: 240ms;
+    animation-timing-function: cubic-bezier(0.22, 0.72, 0.22, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
-    ::view-transition-group(stalux-page),
-    ::view-transition-old(stalux-page),
-    ::view-transition-new(stalux-page) {
-        animation: none !important;
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
     }
 
-    .stalux-main {
-        animation: none !important;
+    .stalux-main,
+    .stalux-main *,
+    .postLayout * {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
     }
 }

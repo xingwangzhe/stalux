@@ -2,6 +2,16 @@ import { getRouteKind, type RouteKind } from "./public-routes";
 
 export { getRouteKind, type RouteKind };
 
+/** Stable, CSS-safe transition names for matching a post card to its title. */
+export function getPostTitleTransitionName(postId: string | number): string {
+    let hash = 2166136261;
+    for (const character of String(postId)) {
+        hash ^= character.codePointAt(0) ?? 0;
+        hash = Math.imul(hash, 16777619);
+    }
+    return `stalux-post-title-${(hash >>> 0).toString(36)}`;
+}
+
 export type TransitionAnimation = {
     name: string;
     delay?: number | string;
@@ -24,10 +34,10 @@ export type RouteAnimation = {
     };
 };
 
-const easing = "cubic-bezier(0.25, 0.9, 0.2, 1)";
+const easing = "cubic-bezier(0.22, 0.72, 0.22, 1)";
 const exitAnimation: TransitionAnimation = {
-    name: "stalux-page-fade-out",
-    duration: "0.16s",
+    name: "stalux-page-exit",
+    duration: "0.14s",
     easing,
     fillMode: "both",
 };
@@ -37,8 +47,8 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
         forwards: {
             old: exitAnimation,
             new: {
-                name: `stalux-page-${name}-in`,
-                duration: "0.2s",
+                name: `stalux-${name}`,
+                duration: "0.22s",
                 easing,
                 fillMode: "both",
             },
@@ -46,8 +56,8 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
         backwards: {
             old: exitAnimation,
             new: {
-                name: `stalux-page-${backName}-in`,
-                duration: "0.2s",
+                name: `stalux-${backName}`,
+                duration: "0.22s",
                 easing,
                 fillMode: "both",
             },
@@ -56,18 +66,18 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
 }
 
 const routeAnimations: Record<RouteKind, RouteAnimation> = {
-    home: createRouteAnimation("home", "home-back"),
-    archive: createRouteAnimation("vertical", "vertical-back"),
-    links: createRouteAnimation("grid", "grid-back"),
-    words: createRouteAnimation("rise", "rise-back"),
-    about: createRouteAnimation("content", "content-back"),
-    "tags-index": createRouteAnimation("tag-cloud", "tag-cloud-back"),
-    "tags-detail": createRouteAnimation("from-right", "from-left"),
-    "categories-index": createRouteAnimation("category-grid", "category-grid-back"),
-    "categories-detail": createRouteAnimation("from-left", "from-right"),
-    article: createRouteAnimation("article", "article-back"),
-    "not-found": createRouteAnimation("error", "error-back"),
-    other: createRouteAnimation("fade", "fade-back"),
+    home: createRouteAnimation("page-enter"),
+    archive: createRouteAnimation("page-enter"),
+    links: createRouteAnimation("page-enter"),
+    words: createRouteAnimation("page-enter"),
+    about: createRouteAnimation("page-enter"),
+    "tags-index": createRouteAnimation("page-enter"),
+    "tags-detail": createRouteAnimation("taxonomy-enter", "taxonomy-enter-back"),
+    "categories-index": createRouteAnimation("page-enter"),
+    "categories-detail": createRouteAnimation("taxonomy-enter", "taxonomy-enter-back"),
+    article: createRouteAnimation("article-enter", "article-enter-back"),
+    "not-found": createRouteAnimation("page-enter"),
+    other: createRouteAnimation("page-enter"),
 };
 
 export function getRouteAnimation(routeKind: RouteKind): RouteAnimation {
@@ -81,7 +91,7 @@ function createSidebarAnimation(
 ): TransitionAnimation {
     return {
         name: `stalux-sidebar-${side}-${backwards ? "back-" : ""}${phase}`,
-        duration: "0.8s",
+        duration: "0.22s",
         easing,
         fillMode: "both",
     };

@@ -3,6 +3,7 @@ lang: en
 title: Stalux Blog Theme
 url: https://stalux.needhelp.icu
 description: "Blog theme Stalux - A professional display platform for content creators, supporting various customization features including comment system integration, friend link management, social media sharing, and rich SEO optimization options to make your content more attractive and discoverable."
+accentColor: "#EAB308" # Shared theme accent color (six-digit HEX)
 timezone: "Asia/Shanghai"
 # canonical: https://stalux.needhelp.icu
 favicon: "/stalux.ico"

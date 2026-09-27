@@ -69,6 +69,7 @@ export async function getStaticPaths() {
     <div style="height:3em"></div>
     <PostLayout
         title={props.post.data.title}
+        postId={props.post.data.abbrlink}
         date={props.post.data.date}
         updated={props.post.data.updated}
         readingMinutes={flags.readingMinutes}

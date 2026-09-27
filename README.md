@@ -40,6 +40,12 @@ export default defineConfig({
 });
 ```
 
+Set the optional `accentColor` in `stalux/config/site.yml` to customize the shared theme and Waline accent. It accepts a six-digit HEX color and defaults to `#EAB308`; choose a color with sufficient contrast against your background.
+
+```yaml title="stalux/config/site.yml"
+accentColor: "#EAB308"
+```
+
 To customize the bundled integrations, pass options (or disable them with `false`):
 
 ```ts

@@ -40,6 +40,12 @@ export default defineConfig({
 });
 ```
 
+主题颜色可在 `stalux/config/site.yml` 通过可选的 `accentColor` 统一设置，支持六位 HEX，默认 `#EAB308`。该颜色会驱动主题强调色与 Waline 强调色；请确保实际使用的颜色与背景保持足够对比度。
+
+```yaml title="stalux/config/site.yml"
+accentColor: "#EAB308"
+```
+
 如需自定义内置集成，传入选项即可（传 `false` 可关闭）：
 
 ```ts

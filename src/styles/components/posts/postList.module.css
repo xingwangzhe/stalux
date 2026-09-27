@@ -18,7 +18,8 @@
     }
 
     ul > li {
-        flex: 1 1 22rem; /* 最小宽度 22rem，自动填充每行 */
+        flex: 1 1 min(22rem, 100%);
+        min-width: 0;
         margin: 0;
     }
 }

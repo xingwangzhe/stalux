@@ -33,6 +33,7 @@ function getConfigYamls(): Record<string, string> {
 lang: en
 title: "My Blog"
 description: "A blog built with Stalux theme"
+accentColor: "#EAB308" # Shared theme accent color (six-digit HEX)
 url: "https://example.com"
 timezone: "Asia/Shanghai"
 `,
