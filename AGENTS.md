@@ -24,6 +24,12 @@ Any new or changed user-facing configuration field must be handled as one change
 
 Do not add a configuration field only to satisfy a third-party score. It must have a real Stalux runtime consumer, documented semantics, and a safe static-site behavior. Do not document dynamic API, rate-limit enforcement, MCP, authentication, or other capabilities that a static deployment cannot actually provide.
 
+### Astro content collection defaults: consumer compatibility gate
+
+Astro's YAML content collection loader may omit Zod `.default()` values from `entry.data` in consuming projects. Treat schema defaults as validation/type documentation, not proof that the runtime value exists. For each new optional config field, set or normalize its default in the shared runtime config accessor (and keep any value-generating helper defensive where appropriate), then build an isolated copy of a real consumer whose config does not include the new key.
+
+**Incident: 1.29.0 `site.accentColor`.** The schema declared `#EAB308`, but production myblog's `site.yml` omitted the field and Astro rendered `undefined`; its first build failed on `/404` with `Invalid Stalux accent color "undefined". Expected #RRGGBB.`. Fixed in 1.29.1 by normalizing the site config in `getSiteData()` and adding a `#EAB308` fallback in `getAccentColorStyle()`. Regression coverage asserts the helper's missing-value fallback. An isolated myblog clone with the unmodified config then built 696 pages, indexed 698 Pagefind pages, and generated a sitemap index. Keep the production consumer untouched until the clone passes.
+
 ### Version-release visual regression gate (mandatory)
 
 Every version update must explicitly check the homepage for the Agent-discovery content regression fixed in v1.25.5:
