@@ -6,7 +6,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 11:00:00"
-updated: "2026-07-22 00:00:00"
+updated: "2026-09-27 00:00:00"
 desc: Site identity configuration (site.yml, author.yml), content collection structure, frontmatter field references, and writing notes.
 abbrlink: ad81245d
 ---
@@ -31,6 +31,8 @@ canonical: "https://stalux.needhelp.icu" # Canonical URL (optional, falls back t
 ```
 
 `accentColor` defaults to `#EAB308` and accepts `#RRGGBB`. Stalux derives the theme's translucent accent tokens and Waline color from it. Choose a color with sufficient contrast against the site's background.
+
+This setting is optional: leave it out to keep the default, and existing `site.yml` files do not need to be edited. Stalux applies the default while reading site configuration as well as when generating color tokens, because Astro's YAML content collection may omit Zod defaults from runtime data. This compatibility fix is included in Stalux v1.29.1. In v1.29.0, a consumer build with `accentColor` omitted could fail while rendering `/404` with an `undefined` accent color.
 
 ## author.yml — Author Information
 
