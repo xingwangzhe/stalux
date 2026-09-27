@@ -28,7 +28,7 @@ const desc = link.description ?? "";
 const icon = link.icon ?? link.avatar ?? "/favicon.ico";
 ---
 
-<a class={`${styles.card} a-none`} href={href} target="_blank" rel="noopener">
+<a class={styles.card} href={href} target="_blank" rel="noopener">
     <div class={styles.avatar}>
         <img
             src={icon}

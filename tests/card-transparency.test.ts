@@ -29,4 +29,10 @@ describe("card transparency", () => {
         expect(styles).toContain("background-color: rgba(17, 17, 17, 0.05) !important");
         expect(styles).not.toContain("#ffffff26");
     });
+
+    it("does not let the global transparent anchor style erase the link card surface", () => {
+        const linkCard = read("../src/components/stalux/links/linkCard.astro");
+        expect(linkCard).toContain("class={styles.card}");
+        expect(linkCard).not.toMatch(/class=\{`\$\{styles\.card\} a-none`\}/u);
+    });
 });
