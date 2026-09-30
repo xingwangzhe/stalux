@@ -1,4 +1,5 @@
 import { registerPageLifecycle } from "./page-runtime";
+import { observeVisibleClock } from "./visible-clock";
 
 registerPageLifecycle("runtime-counter", () => {
     const container = document.querySelector<HTMLElement>("[data-stalux-buildtime]");
@@ -17,7 +18,5 @@ registerPageLifecycle("runtime-counter", () => {
             .replace("{minutes}", String(Math.floor((total % 3600) / 60)))
             .replace("{seconds}", String(total % 60));
     };
-    update();
-    const timer = window.setInterval(update, 1000);
-    return () => window.clearInterval(timer);
+    return observeVisibleClock(counter, update);
 });

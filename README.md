@@ -109,6 +109,10 @@ The subset CSS uses an exact per-character `unicode-range` and `font-display: sw
 
 The persistent BLAKE3 cache key includes font bytes, face index, normalized character set, and algorithm version. Cache files live under `node_modules/.astro/` and are reused across pages and incremental builds. Font inputs are read locally; builds do not fetch fonts from the network.
 
+### Visibility-aware loading and updates
+
+The desktop tag cloud loads dynamically near the viewport. Switching to mobile, leaving the viewport or hiding the document destroys it and stops animation scheduling; becoming visible recreates it. Tag clicks use Astro client navigation. Clocks and the footer runtime update only while visible, and the date changes only on a new day. Comments load within half a viewport (capped at 400px). Tag groups, archive months and category cards retain static HTML while deferring offscreen rendering.
+
 ### Modern JavaScript
 
 TypeScript uses ESNext. The theme defaults `vite.build.target` to `"esnext"` to retain modern syntax with minimal compatibility transforms; an explicit consumer target takes precedence. This targets modern browsers, does not polyfill missing Web APIs, and does not move ordinary scripts onto the GPU. Biome enforces `noVar` and `useConst` as errors in maintained source; dependencies and generated bundles are outside this source policy.

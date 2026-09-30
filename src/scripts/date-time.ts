@@ -1,4 +1,5 @@
 import { registerPageLifecycle } from "./page-runtime";
+import { observeVisibleClock } from "./visible-clock";
 
 const pad2 = (value: number) => String(value).padStart(2, "0");
 
@@ -26,15 +27,18 @@ registerPageLifecycle("date-time", () => {
     const timeElement = document.querySelector<HTMLTimeElement>('[data-ref="time"]');
     if (!dateElement || !timeElement) return;
     const lang = document.documentElement.lang || "zh-CN";
+    let lastDate = "";
     const update = () => {
         const now = new Date();
         const time = toMachineTime(now);
-        dateElement.textContent = toDisplayDate(now, lang);
-        dateElement.dateTime = toMachineDate(now);
+        const date = toMachineDate(now);
+        if (date !== lastDate) {
+            dateElement.textContent = toDisplayDate(now, lang);
+            dateElement.dateTime = date;
+            lastDate = date;
+        }
         timeElement.textContent = time;
         timeElement.dateTime = time;
     };
-    update();
-    const timer = window.setInterval(update, 1_000);
-    return () => window.clearInterval(timer);
+    return observeVisibleClock(timeElement, update);
 });
