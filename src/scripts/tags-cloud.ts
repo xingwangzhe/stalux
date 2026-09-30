@@ -1,4 +1,4 @@
-import { TagCloud } from "@xingwangzhe/tags-cloud";
+import { navigate } from "astro:transitions/client";
 import { createClientLogger } from "./logger";
 
 import { registerPageLifecycle } from "./page-runtime";
@@ -36,35 +36,69 @@ function parseTags(value: string | undefined): LinkTag[] {
 }
 
 registerPageLifecycle("tags-cloud", () => {
-    const mobile = window.matchMedia("(max-width: 768px)").matches;
-    if (mobile) {
-        logger.debug("mobile layout; cloud skipped");
-        return;
-    }
-
     const container = document.getElementById("tags-canvas");
     if (!container) return;
-    const rawTags = parseTags(container.dataset.tags);
-    if (rawTags.length === 0) return;
-    const tags = rawTags.map((tag) => ({
-        ...tag,
-        onClick: () => {
-            window.location.href = tag.url;
+    const desktop = window.matchMedia("(min-width: 769px)");
+    const controller = new AbortController();
+    let cloud: import("@xingwangzhe/tags-cloud").TagCloud | undefined;
+    let visible = false;
+    let loading = false;
+    let disposed = false;
+    const active = () => !disposed && desktop.matches && visible && !document.hidden;
+    const update = async () => {
+        if (!active()) {
+            // destroy also cancels the library's rAF; pause() only skips drawing.
+            cloud?.destroy();
+            cloud = undefined;
+            return;
+        }
+        if (cloud || loading) return;
+        loading = true;
+        try {
+            const { TagCloud } = await import("@xingwangzhe/tags-cloud");
+            if (!active()) return;
+            const tags = parseTags(container.dataset.tags).map((tag) => ({
+                ...tag,
+                onClick: () => {
+                    void navigate(tag.url);
+                },
+            }));
+            if (!tags.length) return;
+            const width = container.clientWidth;
+            const baseRadius =
+                window.innerWidth < 1_024 ? 330 : window.innerWidth < 1_440 ? 420 : 480;
+            const radius = Math.min(
+                Math.round(baseRadius * Math.sqrt(Math.max(tags.length, 100) / 100)),
+                Math.round(width * 0.6),
+            );
+            cloud = new TagCloud(container, {
+                tags,
+                radius,
+                spinY: 0.15,
+                fontSize: 16,
+                color: "#ffffff",
+                fontFamily: "system-ui, -apple-system, sans-serif",
+            });
+        } catch (error) {
+            logger.warn(`tag cloud loading failed: ${String(error)}`);
+        } finally {
+            loading = false;
+        }
+    };
+    const observer = new IntersectionObserver(
+        (entries) => {
+            visible = entries.some((entry) => entry.isIntersecting);
+            void update();
         },
-    }));
-    const width = container.getBoundingClientRect().width;
-    const baseRadius = window.innerWidth < 1_024 ? 330 : window.innerWidth < 1_440 ? 420 : 480;
-    const densityScale = Math.sqrt(Math.max(tags.length, 100) / 100);
-    const radius = Math.min(Math.round(baseRadius * densityScale), Math.round(width * 0.6));
-    container.style.height = `${Math.round(radius * 2)}px`;
-    const cloud = new TagCloud(container, {
-        tags,
-        radius,
-        spinY: 0.15,
-        fontSize: 16,
-        color: "#ffffff",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-    });
-    logger.debug(`cloud initialized; tags=${tags.length}`);
-    return () => cloud.destroy();
+        { rootMargin: "200px 0px" },
+    );
+    observer.observe(container);
+    desktop.addEventListener("change", update, { signal: controller.signal });
+    document.addEventListener("visibilitychange", update, { signal: controller.signal });
+    return () => {
+        disposed = true;
+        controller.abort();
+        observer.disconnect();
+        cloud?.destroy();
+    };
 });

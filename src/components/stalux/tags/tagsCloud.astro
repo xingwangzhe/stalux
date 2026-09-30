@@ -9,6 +9,10 @@ const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const tagList = await getTagCountList(Astro.logger);
+const tagGroups = Array.from({ length: Math.ceil(tagList.length / 32) }, (_, index) =>
+    tagList.slice(index * 32, (index + 1) * 32),
+);
+const cloudDensity = Math.sqrt(Math.max(tagList.length, 100) / 100);
 const tagLinks = tagList.map((t) => ({
     type: "link" as const,
     text: t.name,
@@ -19,17 +23,21 @@ const tagLinks = tagList.map((t) => ({
 <!-- 移动端：SSR 卡片 -->
 <div class={styles.cards} id="tags-cards">
     {tagList.length > 0 ? (
-    tagList.map(({ name, count }) => (
-        <a
-            href={`/tags/${name}/`}
-            class={styles.tagCard}
-            data-stalux-tag-card
-            data-count={count}
-            data-astro-prefetch
-        >
-            <span class={styles.tagName}>{name}</span>
-            <span class={styles.tagCount}>{count}</span>
-        </a>
+    tagGroups.map((group) => (
+        <div class={styles.tagGroup}>
+            {group.map(({ name, count }) => (
+                <a
+                    href={`/tags/${name}/`}
+                    class={styles.tagCard}
+                    data-stalux-tag-card
+                    data-count={count}
+                    data-astro-prefetch
+                >
+                    <span class={styles.tagName}>{name}</span>
+                    <span class={styles.tagCount}>{count}</span>
+                </a>
+            ))}
+        </div>
     ))
 ) : (
     <div class={styles.noTags}>{t("tags.noTags")}</div>
@@ -37,7 +45,9 @@ const tagLinks = tagList.map((t) => ({
 </div>
 
 <!-- 桌面端：Canvas 标签云 -->
-<div class={styles.canvas} id="tags-canvas" data-tags={JSON.stringify(tagLinks)}></div>
+<div class={styles.canvasFrame} style={{ "--cloud-density": cloudDensity }}>
+    <div class={styles.canvas} id="tags-canvas" data-tags={JSON.stringify(tagLinks)}></div>
+</div>
 
 <script>
 import "../../../scripts/tags-cloud";
