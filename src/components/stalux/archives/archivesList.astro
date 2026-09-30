@@ -65,24 +65,34 @@ const archiveYears = [...archivesByYearMonth.entries()]
                 </div>
             </div>
             {archiveYear.months.map(({ month, posts: monthPosts }) => (
-                <div class={styles.monthSection}>
+                <div
+                    class={styles.monthSection}
+                    style={{ "--archive-estimate": `${Math.ceil(monthPosts.length / 12) * 12 * 48 + 40}px` }}
+                >
                     <h3 class={styles.monthTitle}>{t("archives.month", { n: month })}</h3>
-                    <ul class={styles.postList}>
-                        {monthPosts.map((post) => (
-                            <li class={styles.postItem}>
-                                <time class={styles.postDate} datetime={post.data.date}>
-                                    {format(parseDate(post.data.date), "yyyy-MM-dd")}
-                                </time>
-                                <a
-                                    href={`/posts/${post.data.abbrlink}/`}
-                                    class={styles.postLink}
-                                    data-astro-prefetch="viewport"
-                                >
-                                    {post.data.title}
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
+                    {Array.from({ length: Math.ceil(monthPosts.length / 12) }, (_, index) =>
+                        monthPosts.slice(index * 12, (index + 1) * 12),
+                    ).map((group) => (
+                        <ul
+                            class={styles.postList}
+                            style={{ "--archive-group-estimate": `${group.length * 48}px` }}
+                        >
+                            {group.map((post) => (
+                                <li class={styles.postItem}>
+                                    <time class={styles.postDate} datetime={post.data.date}>
+                                        {format(parseDate(post.data.date), "yyyy-MM-dd")}
+                                    </time>
+                                    <a
+                                        href={`/posts/${post.data.abbrlink}/`}
+                                        class={styles.postLink}
+                                        data-astro-prefetch="viewport"
+                                    >
+                                        {post.data.title}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    ))}
                 </div>
             ))}
         </div>

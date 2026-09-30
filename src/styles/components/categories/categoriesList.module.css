@@ -9,3 +9,15 @@
     max-width: 1200px;
     list-style: none;
 }
+
+.categoriesList > li {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 180px;
+    overflow-clip-margin: 30px;
+}
+
+@supports not (content-visibility: auto) {
+    .categoriesList > li {
+        contain-intrinsic-block-size: auto;
+    }
+}

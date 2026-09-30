@@ -1,13 +1,30 @@
 /* ── 移动端：卡片容器（桌面端隐藏） ── */
 .cards {
+    display: block;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.tagGroup {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
     justify-content: center;
     align-items: flex-start;
-    align-content: flex-start;
-    padding: 1rem;
-    box-sizing: border-box;
+    margin-bottom: 0.75rem;
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 24rem;
+    overflow-clip-margin: 30px;
+}
+
+@supports not (content-visibility: auto) {
+    .tagGroup {
+        contain-intrinsic-block-size: auto;
+    }
+}
+
+.canvasFrame {
+    container-type: inline-size;
 }
 
 @media (min-width: 769px) {
@@ -22,6 +39,8 @@
 .canvas {
     display: none;
     width: 100%;
+    --cloud-base-diameter: 660px;
+    height: min(calc(var(--cloud-base-diameter) * var(--cloud-density)), 120cqw);
     min-height: 520px;
     position: relative;
 }
@@ -122,4 +141,15 @@
     text-align: center;
     padding: 2rem;
     width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .canvas {
+        --cloud-base-diameter: 840px;
+    }
+}
+@media (min-width: 1440px) {
+    .canvas {
+        --cloud-base-diameter: 960px;
+    }
 }

@@ -66,6 +66,10 @@
 }
 
 .monthSection {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto var(--archive-estimate, 600px);
+    margin-left: calc(-1 * var(--tl-pad));
+    padding-left: var(--tl-pad);
     margin-bottom: 2rem;
     position: relative;
 }
@@ -82,9 +86,11 @@
 
 /* 文章列表和项目样式（静态 DOM）*/
 .postList {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto var(--archive-group-estimate, 576px);
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding: 0 0 0 var(--tl-pad);
+    margin: 0 0 0 calc(-1 * var(--tl-pad));
 }
 
 .postItem {
@@ -95,6 +101,13 @@
     display: flex;
     gap: 0.75rem;
     align-items: center;
+}
+
+@supports not (content-visibility: auto) {
+    .monthSection,
+    .postList {
+        contain-intrinsic-block-size: auto;
+    }
 }
 
 .postItem::before {
