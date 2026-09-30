@@ -40,6 +40,8 @@ registerPageLifecycle("navigation", () => {
     const listenerOptions = { signal: controller.signal };
     let frameId = 0;
     let lastScale = "1";
+    let needsScale = true;
+    const mobileNav = window.matchMedia("(max-width: 600px)");
 
     const closeNav = () => {
         navList.removeAttribute("data-state");
@@ -51,36 +53,50 @@ registerPageLifecycle("navigation", () => {
         navOverlay?.setAttribute("data-state", "show");
         document.body.style.overflow = "hidden";
     };
-    const updateScrollButtons = () => {
-        const hasOverflow = navList.scrollWidth > navList.clientWidth;
-        const atStart = navList.scrollLeft <= 1;
-        const atEnd = navList.scrollLeft + navList.clientWidth >= navList.scrollWidth - 1;
-        buttonLeft.toggleAttribute("data-visible", hasOverflow && !atStart);
-        buttonRight.toggleAttribute("data-visible", hasOverflow && !atEnd);
-    };
     const updateButtons = () => {
         frameId = 0;
-        const baseFontSize = Number.parseFloat(getComputedStyle(navList).fontSize) || 16;
-        const gap = Number.parseFloat(getComputedStyle(navList).gap) || 0;
-        const estimatedWidth =
-            [...navList.children].reduce(
-                (total, item) => total + item.getBoundingClientRect().width,
-                0,
-            ) +
-            gap * Math.max(0, navList.children.length - 1);
-        const scale =
-            estimatedWidth > navList.clientWidth
-                ? Math.max(12 / baseFontSize, navList.clientWidth / estimatedWidth)
-                : 1;
-        const nextScale = String(scale);
+        // Read layout before writing styles or attributes. Scrolling does not
+        // change item sizes, so only resize events need to recalculate scale.
+        const { clientWidth, scrollWidth, scrollLeft } = navList;
+        let nextScale = lastScale;
+        if (needsScale) {
+            needsScale = false;
+            if (mobileNav.matches) {
+                nextScale = "1";
+            } else {
+                const style = getComputedStyle(navList);
+                const baseFontSize = Number.parseFloat(style.fontSize) || 16;
+                const gap = Number.parseFloat(style.gap) || 0;
+                let estimatedWidth = gap * Math.max(0, navList.children.length - 1);
+                for (const item of navList.children) {
+                    // offsetWidth excludes the existing transform, avoiding
+                    // scale feedback during repeated resize notifications.
+                    if (item instanceof HTMLElement) estimatedWidth += item.offsetWidth;
+                }
+                nextScale = String(
+                    estimatedWidth > clientWidth
+                        ? Math.max(12 / baseFontSize, clientWidth / estimatedWidth)
+                        : 1,
+                );
+            }
+        }
         if (nextScale !== lastScale) {
             navList.style.setProperty("--nav-scale", nextScale);
             lastScale = nextScale;
         }
-        updateScrollButtons();
+        const hasOverflow = scrollWidth > clientWidth;
+        buttonLeft.toggleAttribute("data-visible", hasOverflow && scrollLeft > 1);
+        buttonRight.toggleAttribute(
+            "data-visible",
+            hasOverflow && scrollLeft + clientWidth < scrollWidth - 1,
+        );
     };
     const scheduleUpdate = () => {
         if (!frameId) frameId = requestAnimationFrame(updateButtons);
+    };
+    const scheduleResize = () => {
+        needsScale = true;
+        scheduleUpdate();
     };
 
     document.querySelector("[data-ref='stalux-search-btn']")?.addEventListener(
@@ -117,12 +133,14 @@ registerPageLifecycle("navigation", () => {
         passive: true,
         signal: controller.signal,
     });
-    window.addEventListener("resize", scheduleUpdate, {
+    window.addEventListener("resize", scheduleResize, {
         passive: true,
         signal: controller.signal,
     });
 
-    const resizeObserver = new ResizeObserver(scheduleUpdate);
+    document.fonts.addEventListener("loadingdone", scheduleResize, listenerOptions);
+
+    const resizeObserver = new ResizeObserver(scheduleResize);
     resizeObserver.observe(navList);
     if (navList.parentElement) resizeObserver.observe(navList.parentElement);
     scheduleUpdate();

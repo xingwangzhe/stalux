@@ -32,7 +32,7 @@ export async function buildFeedItems(
     updatedTag: string,
     logger?: AstroRuntimeLogger,
 ): Promise<FeedItem[]> {
-    const sortedPosts = [...posts].sort((a, b) => {
+    const sortedPosts = posts.toSorted((a, b) => {
         // Newest first: compare post dates, use the greater of updated/date
         const aTime = toTimestamp(a.data.updated || a.data.date);
         const bTime = toTimestamp(b.data.updated || b.data.date);

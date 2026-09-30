@@ -109,6 +109,10 @@ The subset CSS uses an exact per-character `unicode-range` and `font-display: sw
 
 The persistent BLAKE3 cache key includes font bytes, face index, normalized character set, and algorithm version. Cache files live under `node_modules/.astro/` and are reused across pages and incremental builds. Font inputs are read locally; builds do not fetch fonts from the network.
 
+### Modern JavaScript
+
+TypeScript uses ESNext. The theme defaults `vite.build.target` to `"esnext"` to retain modern syntax with minimal compatibility transforms; an explicit consumer target takes precedence. This targets modern browsers, does not polyfill missing Web APIs, and does not move ordinary scripts onto the GPU. Biome enforces `noVar` and `useConst` as errors in maintained source; dependencies and generated bundles are outside this source policy.
+
 ### Initial CSS and search styles
 
 The theme defaults to Astro's `build.inlineStylesheets: "always"`, placing route styles in the HTML to reduce stylesheet requests before the first paint. An explicit consumer setting of `build.inlineStylesheets: "never"` keeps external stylesheets. Inlining increases each HTML response in exchange for a shorter stylesheet request chain on a first visit.

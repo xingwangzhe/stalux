@@ -34,7 +34,11 @@
                 "noImportantStyles": "off"
             },
             "style": {
-                "noDescendingSpecificity": "off"
+                "noDescendingSpecificity": "off",
+                "useConst": "error"
+            },
+            "suspicious": {
+                "noVar": "error"
             }
         }
     },

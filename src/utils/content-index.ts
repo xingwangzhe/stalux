@@ -94,7 +94,7 @@ function finalizeTaxonomy<T extends IndexablePost>(
 export function buildPostContentIndex<T extends IndexablePost>(
     sourcePosts: readonly T[],
 ): PostContentIndex<T> {
-    const posts = [...sourcePosts].sort(
+    const posts = sourcePosts.toSorted(
         (left, right) => toTimestamp(right.data.date) - toTimestamp(left.data.date),
     );
     const byAbbrlink = new Map<string, T>();

@@ -109,6 +109,10 @@ Stalux 内置中文字体 LXGW WenKai 和可变代码字体 Google Sans Code。�
 
 持久 BLAKE3 缓存键包含字体内容、face index、规范化字符集和算法版本；缓存保存在 `node_modules/.astro/`，可跨页面和增量构建复用。字体输入从本地读取，构建不会联网下载字体。
 
+### 现代 JavaScript
+
+TypeScript 使用 ESNext，主题默认将 `vite.build.target` 设为 `"esnext"`，保留现代 JavaScript 语法并减少兼容转换；消费方显式指定的 target 优先。此目标面向现代浏览器，不会自动补齐缺失的 Web API，也不代表普通脚本会使用 GPU。自有源码由 Biome 的 `noVar`、`useConst` 错误规则约束；第三方依赖和构建器生成的代码不在这项源码约束内。
+
 ### 首屏 CSS 与搜索样式
 
 主题默认通过 Astro 的 `build.inlineStylesheets: "always"` 把路由样式放入 HTML，减少首次绘制等待外部 CSS 的请求。消费项目显式设置 `build.inlineStylesheets: "never"` 时保留外部样式表。内联会增加每页 HTML 大小，换取首访更短的样式请求链。

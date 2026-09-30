@@ -186,6 +186,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             config.build.inlineStylesheets === "never" ? "never" : "always",
                     },
                     vite: {
+                        build: { target: config.vite.build?.target ?? "esnext" },
                         resolve: {
                             alias: createViteAliases(srcDir),
                         },
