@@ -18,7 +18,7 @@ const sorted = [...entries].sort((a, b) => {
 });
 ---
 
-<ul class={`${styles.list} stagger-children`}>
+<ul class={styles.list}>
     {sorted.map((entry) => {
     const hash = entry.data.abbrlink ? `#word-${entry.data.abbrlink}` : undefined;
     return (

@@ -10,8 +10,7 @@
     box-shadow: var(--card-box-shadow);
     transition:
         transform 220ms ease,
-        background-color 220ms ease,
-        box-shadow 220ms ease;
+        background-color 220ms ease;
     overflow: hidden;
     height: fit-content;
 }
@@ -19,10 +18,7 @@
 .categoryCard::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: linear-gradient(
         120deg,
         rgba(255, 255, 255, 0),
@@ -76,8 +72,7 @@
     transition:
         transform 240ms ease,
         background-color 240ms ease,
-        color 240ms ease,
-        box-shadow 240ms ease;
+        color 240ms ease;
     z-index: 2;
     transform-origin: center center;
     background: var(--black-15p);

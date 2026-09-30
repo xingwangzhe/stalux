@@ -13,7 +13,6 @@
     overflow: visible;
     transition:
         transform 220ms ease,
-        box-shadow 220ms ease,
         background-color 220ms ease,
         border-color 220ms ease;
     box-shadow: var(--card-box-shadow);
@@ -40,7 +39,6 @@
     transform-origin: center;
     transition:
         transform 220ms ease,
-        box-shadow 220ms ease,
         border-color 220ms ease;
 }
 

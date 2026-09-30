@@ -9,7 +9,7 @@ const linksConfig = getLinksData(configEntries);
 const links = linksConfig?.sites ?? [];
 ---
 
-<ul class={`${styles.list} stagger-children`}>
+<ul class={styles.list}>
     {links.map((link) => (
     <li class={styles.item}>
         <LinkCard link={link} />

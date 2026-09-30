@@ -80,64 +80,6 @@
     width: 100%;
 }
 
-/* 懒加载指示器样式 */
-.lazyloadObserver {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 0;
-    opacity: 0.8;
-    transition: opacity var(--transition-normal) ease;
-}
-
-.lazyloadObserver:hover {
-    opacity: 1;
-}
-
-.loadingSpinner {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-}
-
-.loadingSpinner .dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin: 0 3px;
-    border-radius: 50%;
-    background-color: var(--accent-80p);
-    animation: dotPulse 1.4s infinite ease-in-out both;
-}
-
-.loadingSpinner .dot:nth-child(1) {
-    animation-delay: -0.32s;
-}
-
-.loadingSpinner .dot:nth-child(2) {
-    animation-delay: -0.16s;
-}
-
-.loadingSpinner .dot:nth-child(3) {
-    animation-delay: 0s;
-}
-
-@keyframes dotPulse {
-    0%,
-    80%,
-    100% {
-        transform: scale(0.3);
-    }
-    40% {
-        transform: scale(1);
-    }
-}
-
-.loadingText {
-    font-size: 0.9rem;
-    color: var(--white-70p);
-}
-
 /* 文章列表和项目样式（静态 DOM）*/
 .postList {
     list-style: none;
@@ -200,10 +142,6 @@
     z-index: 1;
 }
 
-.monthBlock {
-    margin: 0.5rem 0;
-}
-
 @media (max-width: 768px) {
     .archivesContainer {
         padding: 1.5rem 0.5rem 2rem 1.5rem;
@@ -211,14 +149,6 @@
 
     .pageHeader {
         margin-bottom: 2rem;
-    }
-
-    .pageHeader .page-title {
-        font-size: 2rem;
-    }
-
-    .pageHeader .page-description {
-        font-size: 1rem;
     }
 
     .timelineContainer {
@@ -242,10 +172,6 @@
 @media (max-width: 480px) {
     .archivesContainer {
         padding: 1.5rem 0.5rem 2rem 1.2rem;
-    }
-
-    .pageHeader .page-title {
-        font-size: 1.8rem;
     }
 
     .timelineContainer {

@@ -23,21 +23,21 @@
 }
 
 /* 中等屏幕：4个卡片一行 */
-@media (max-width: 1399px) and (min-width: 1100px) {
+@media (1100px <= width <= 1399px) {
     .list {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
 /* 小屏幕：3个卡片一行 */
-@media (max-width: 1099px) and (min-width: 768px) {
+@media (768px <= width <= 1099px) {
     .list {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 /* 平板：2个卡片一行 */
-@media (max-width: 767px) and (min-width: 480px) {
+@media (480px <= width <= 767px) {
     .list {
         grid-template-columns: repeat(2, 1fr);
         gap: 16px;
