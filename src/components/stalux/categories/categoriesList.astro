@@ -6,9 +6,9 @@ import { getCategoryCountList } from "@utils/collections-stats";
 const categoryList = await getCategoryCountList(Astro.logger);
 ---
 
-<ul class={`${styles.categoriesList} stagger-children`}>
+<ul class={styles.categoriesList}>
     {categoryList.map((category) => (
-    <li class={styles.item}>
+    <li>
         <CategoriesCard category={category} />
     </li>
 ))}

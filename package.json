@@ -94,6 +94,7 @@
     },
     "dependencies": {
         "@astrojs/markdown-satteri": "0.4.2",
+        "@astrojs/partytown": "2.1.8",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.4",
         "@expressive-code/plugin-line-numbers": "^0.44.2",

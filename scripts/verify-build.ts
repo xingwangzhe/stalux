@@ -46,6 +46,21 @@ const pages = {
     notFound: read("404.html"),
 };
 
+const searchStyle = pages.home.match(/<link\b[^>]*data-stalux-search-style[^>]*>/u)?.[0];
+assert(searchStyle, "search CSS asset link is missing");
+assert(
+    [...pages.home.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)].some((match) =>
+        match[1]?.includes(".stalux-main"),
+    ),
+    "critical layout CSS must be in the initial HTML",
+);
+assert(searchStyle.includes('rel="prefetch"'), "search CSS must not block the first paint");
+assert(searchStyle.includes('as="style"'), "search CSS must be emitted as a stylesheet asset");
+assert(
+    /<noscript><link[^>]+rel="stylesheet"/u.test(pages.home),
+    "search CSS needs a no-script fallback",
+);
+
 assert(
     pages.home.includes('<link rel="canonical" href="https://stalux.needhelp.icu/">'),
     "home canonical is incorrect",

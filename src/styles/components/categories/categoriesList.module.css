@@ -9,16 +9,3 @@
     max-width: 1200px;
     list-style: none;
 }
-
-.item {
-    animation: contentReveal 220ms ease 360ms both;
-}
-
-@keyframes contentReveal {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}

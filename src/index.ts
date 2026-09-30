@@ -18,7 +18,7 @@ import {
 } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
+import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import { mermaidHast, mermaidMdast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
@@ -179,6 +179,12 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
 
                 // 1. 注入 Vite 别名 + 组件覆盖插件 + Vue 特性标记（Waline 依赖）
                 updateConfig({
+                    // Keep route CSS on the first-response path. Search UI CSS is
+                    // a separate prefetched asset; respect explicit external CSS.
+                    build: {
+                        inlineStylesheets:
+                            config.build.inlineStylesheets === "never" ? "never" : "always",
+                    },
                     vite: {
                         resolve: {
                             alias: createViteAliases(srcDir),
@@ -458,8 +464,13 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     };
 
     // 打包内置集成：Astro 的 integrations 配置支持嵌套数组并自动展平（schema 里 val.flat(Infinity)），
-    // 因此这里返回 [coreIntegration, sitemap, expressiveCode]，让消费方一行 `integrations: [stalux()]` 即可完成配置。
-    const bundled: AstroIntegration[] = [coreIntegration];
+    // 因此这里返回 [coreIntegration, partytown, sitemap, expressiveCode]，让消费方一行 `integrations: [stalux()]` 即可完成配置。
+    const bundled: AstroIntegration[] = [
+        coreIntegration,
+        partytown({
+            config: { forward: ["dataLayer.push", "gtag"], mainWindowAccessors: ["CSS"] },
+        }),
+    ];
 
     if (opt.sitemap !== false) {
         const userSitemap = opt.sitemap === true ? undefined : opt.sitemap;

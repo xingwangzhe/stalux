@@ -109,6 +109,12 @@ Stalux 内置中文字体 LXGW WenKai 和可变代码字体 Google Sans Code。�
 
 持久 BLAKE3 缓存键包含字体内容、face index、规范化字符集和算法版本；缓存保存在 `node_modules/.astro/`，可跨页面和增量构建复用。字体输入从本地读取，构建不会联网下载字体。
 
+### 首屏 CSS 与搜索样式
+
+主题默认通过 Astro 的 `build.inlineStylesheets: "always"` 把路由样式放入 HTML，减少首次绘制等待外部 CSS 的请求。消费项目显式设置 `build.inlineStylesheets: "never"` 时保留外部样式表。内联会增加每页 HTML 大小，换取首访更短的样式请求链。
+
+Pagefind 搜索弹窗样式单独输出为带哈希的静态文件，以 `prefetch` 提示浏览器提前获取；打开搜索时才作为样式表启用，并等待加载完成后显示弹窗。它不阻塞正文首屏，也不依赖搜索 JavaScript 动态生成 CSS 文件；无脚本访问保留 `<noscript>` 样式回退。
+
 ---
 
 ## 🎨 组件覆盖
@@ -156,11 +162,17 @@ id: head
 bingClarityId: "YOUR_CLARITY_PROJECT_ID"
 ```
 
-`bingClarityId` 是 Stalux 沿用的字段名，实际对应 Microsoft Clarity Project ID。登录 Clarity 后，在项目 **Settings → Setup → Get tracking code** 中获取对应 ID。Stalux 会把异步 tracking code 注入 `<head>`，并在 Astro View Transitions 下保持单个 loader。不要再通过 `anyhead`、Tag Manager 或其他插件重复接入同一个项目。
+> 当前分支的 Partytown 迁移是未发布候选。典型路由测试中 TBT 下降，但首页和分类页的 LCP 存在回退，尚未完成性能验收。以下说明描述候选实现。
+
+`stalux()` 内置 Partytown：Google Analytics、Clarity、Umami 和 Vercount 的第三方脚本在 Web Worker 中执行，消费项目无需额外添加 Partytown 集成。主题通过 `astro:page-load` 发送页面统计，并在支持 `Element.moveBefore()` 的浏览器中保留导航期间的 worker。Vercount 会在新页面 DOM 就绪后重新绑定显示节点。
+
+使用 Google Analytics 时，请在 **管理 → 数据流 → 增强型衡量 → 网页浏览量 → 高级设置** 关闭“根据浏览器历史记录事件判断的页面更改”。主题已设置 `send_page_view: false` 并显式发送每次导航的 URL 和标题；GA 的历史自动统计需要在后台单独关闭，否则软导航会重复计数。其他增强型衡量选项可以保留。参见 [Google 页面浏览量文档](https://developers.google.com/analytics/devguides/collection/ga4/views)。
+
+`bingClarityId` 是 Stalux 沿用的字段名，实际对应 Microsoft Clarity Project ID。登录 Clarity 后，在项目 **Settings → Setup → Get tracking code** 中获取对应 ID。Stalux 会通过 Partytown 加载 tracking code，并在支持保留 worker 的浏览器中保持单个 loader。不要再通过 `anyhead`、Tag Manager 或其他插件重复接入同一个项目。
 
 Project ID 是公开的浏览器标识；不要把 Clarity Data Export API token 写入这个 YAML 或任何前端代码。如果站点使用严格 CSP、Cookie 横幅或 CMP，请由宿主站点自行配置相应策略和同意信号；主题不替站点判断法律合规。
 
-部署后可检查脚本 URL 是否完整保留 Project ID，并在浏览器 Network 中确认出现 `https://www.clarity.ms/collect` 请求。
+部署后可检查脚本 URL 是否完整保留 Project ID，并在浏览器 Network 中确认出现 Clarity `/collect` 请求（收集域名可能为 `a.clarity.ms` 等区域端点）。
 
 ---
 

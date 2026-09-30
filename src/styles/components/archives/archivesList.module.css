@@ -9,7 +9,6 @@
     --tl-line: var(--radius-sm);
     --tl-pad: var(--space-xl);
     padding-left: var(--tl-pad);
-    animation: contentReveal 220ms ease 360ms both;
 }
 
 .timelineContainer::before {
@@ -79,7 +78,6 @@
     background-color: var(--black-10p);
     border-radius: 0.5rem;
     width: 100%;
-    animation: stalux-content-reveal 220ms ease 360ms both;
 }
 
 /* 懒加载指示器样式 */
@@ -262,14 +260,5 @@
 
     .monthTitle {
         font-size: 1.1rem;
-    }
-}
-
-@keyframes contentReveal {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
     }
 }

@@ -4,4 +4,3 @@ import "./date-time";
 import "./footer-badges";
 import "./navigation";
 import "./runtime-counter";
-import "./vercount";

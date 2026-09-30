@@ -109,6 +109,12 @@ The subset CSS uses an exact per-character `unicode-range` and `font-display: sw
 
 The persistent BLAKE3 cache key includes font bytes, face index, normalized character set, and algorithm version. Cache files live under `node_modules/.astro/` and are reused across pages and incremental builds. Font inputs are read locally; builds do not fetch fonts from the network.
 
+### Initial CSS and search styles
+
+The theme defaults to Astro's `build.inlineStylesheets: "always"`, placing route styles in the HTML to reduce stylesheet requests before the first paint. An explicit consumer setting of `build.inlineStylesheets: "never"` keeps external stylesheets. Inlining increases each HTML response in exchange for a shorter stylesheet request chain on a first visit.
+
+Pagefind dialog CSS is emitted as a separate hashed static file with a `prefetch` hint. Opening search activates the stylesheet and waits for it before displaying the dialog. It does not block the initial content or depend on JavaScript generating a CSS asset. A `<noscript>` stylesheet fallback is included.
+
 ---
 
 ## 🎨 Component Override
@@ -156,11 +162,17 @@ id: head
 bingClarityId: "YOUR_CLARITY_PROJECT_ID"
 ```
 
-`bingClarityId` is the historical Stalux field name for a Microsoft Clarity Project ID. Get the ID from the Clarity project under **Settings → Setup → Get tracking code**. Stalux injects the asynchronous tracking code into `<head>` and keeps one loader during Astro View Transitions. Do not install the same project again through `anyhead`, a tag manager, or another plugin.
+> The Partytown migration in this branch is an unpublished candidate. Representative route measurements show lower TBT, but LCP regresses on the homepage and category page, so performance validation is incomplete. The following describes the candidate implementation.
+
+`stalux()` includes Partytown. The Google Analytics, Clarity, Umami, and Vercount scripts run in a Web Worker without an additional consumer integration. Page tracking follows `astro:page-load`; browsers with `Element.moveBefore()` preserve the worker during navigation. Vercount binds its counters again after the incoming page DOM is ready.
+
+For Google Analytics, turn off **Page changes based on browser history events** under **Admin → Data streams → Enhanced measurement → Page views → Advanced settings**. Stalux sets `send_page_view: false` and sends the URL and title for each navigation explicitly. GA's history tracking must also be disabled in the property to prevent duplicate soft-navigation pageviews. Other enhanced measurement options can remain enabled. See [Google's pageview documentation](https://developers.google.com/analytics/devguides/collection/ga4/views).
+
+`bingClarityId` is the historical Stalux field name for a Microsoft Clarity Project ID. Get the ID from the Clarity project under **Settings → Setup → Get tracking code**. Stalux loads the tracking code through Partytown and keeps one loader in browsers that support preserving the worker. Do not install the same project again through `anyhead`, a tag manager, or another plugin.
 
 The Project ID is a public browser identifier. Never put a Clarity Data Export API token in this YAML or in client-side code. If the site uses a strict CSP, consent banner, or CMP, configure those host-site policies and signals separately; this theme does not make legal compliance decisions for the site.
 
-After deployment, verify the script URL contains the exact Project ID and that the browser sends requests to `https://www.clarity.ms/collect`.
+After deployment, verify the script URL contains the exact Project ID and that the browser sends Clarity `/collect` requests (the collection host may be a regional endpoint such as `a.clarity.ms`).
 
 ---
 

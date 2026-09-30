@@ -1,7 +1,7 @@
 import { createClientLogger } from "./logger";
 
 import { registerPageLifecycle } from "./page-runtime";
-import { upgradeAndOpenSearchDialog } from "./search-dialog";
+import { ensureSearchStyles, upgradeAndOpenSearchDialog } from "./search-dialog";
 
 const logger = createClientLogger("navigation");
 
@@ -12,7 +12,12 @@ interface SearchDialog extends HTMLElement {
 
 async function openSearchDialog(): Promise<void> {
     logger.debug("loading search UI");
-    await import("@pagefind/component-ui");
+    await Promise.all([
+        import("@pagefind/component-ui"),
+        ensureSearchStyles(
+            document.querySelector<HTMLLinkElement>("link[data-stalux-search-style]"),
+        ),
+    ]);
     const dialog = document.querySelector<SearchDialog>("pagefind-modal#search");
     await upgradeAndOpenSearchDialog(
         {

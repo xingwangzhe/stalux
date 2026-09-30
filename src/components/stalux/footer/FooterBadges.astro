@@ -15,12 +15,18 @@ const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
 function badgeImg(opts: BadgeOptions) {
-    const src = svgToDataUrl(generateBadge(opts, Astro.logger));
+    const svg = generateBadge(opts, Astro.logger);
+    const src = svgToDataUrl(svg);
     const alt = opts.alt || `${opts.label}: ${opts.message}`;
+    const width = svg.match(/<svg\b[^>]*\bwidth="(\d+)"/)?.[1];
+    const height = svg.match(/<svg\b[^>]*\bheight="(\d+)"/)?.[1];
+    const dimensions = width && height ? ` width="${width}" height="${height}"` : "";
+    // Closed badge groups should not initialize every SVG document during first paint.
+    const img = `<img src="${src}" alt="${alt}" class="badge" loading="lazy" decoding="async"${dimensions} />`;
     if (opts.href) {
-        return `<a href="${opts.href}" target="_blank" rel="${opts.rel ?? "noopener"}"><img src="${src}" alt="${alt}" class="badge" /></a>`;
+        return `<a href="${opts.href}" target="_blank" rel="${opts.rel ?? "noopener"}">${img}</a>`;
     }
-    return `<img src="${src}" alt="${alt}" class="badge" />`;
+    return img;
 }
 ---
 
@@ -61,6 +67,11 @@ function badgeImg(opts: BadgeOptions) {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.5rem;
+}
+
+/* Badge HTML is emitted by set:html, so target it through the scoped wrapper. */
+.badges-wrapper :global(.badge) {
+    width: auto;
 }
 
 .badge-group {

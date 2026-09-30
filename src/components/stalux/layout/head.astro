@@ -4,11 +4,11 @@ import { getCollection } from "astro:content";
 import { ClientRouter } from "astro:transitions";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
-import VerCount from "@components/stalux/common/verCount.astro";
-import { SEO } from "astro-seo";
-import packageJson from "../../../../package.json";
-import "@styles/base/init.css";
 import Umami from "@components/stalux/analytics/umami.astro";
+import VerCount from "@components/stalux/common/verCount.astro";
+// Emit a stable asset even while the search component JavaScript stays lazy.
+// The closed search dialog does not need to block the page's first paint.
+import pagefindStyles from "@pagefind/component-ui/css?url";
 import {
     getAuthorData,
     getHeadData,
@@ -17,6 +17,8 @@ import {
     getSiteData,
 } from "@utils/config-utils";
 import { buildSeoDocument, type SeoPageInput } from "@utils/seo-document";
+import { SEO } from "astro-seo";
+import packageJson from "../../../../package.json";
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
@@ -56,6 +58,8 @@ const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
     />
     <!-- 代码字体由 Astro Fonts API 注入；正文按页面生成 native CJK 子集。 -->
     <Font cssVariable="--font-code" />
+    <link rel="prefetch" as="style" href={pagefindStyles} data-stalux-search-style>
+    <noscript><link rel="stylesheet" href={pagefindStyles}></noscript>
     {headConfig?.anyhead && <Fragment set:html={headConfig.anyhead} />}
     {headConfig?.googleAnalyticsId && <GoogleAnalytics />}
     {headConfig?.bingClarityId && <BingClarity />}
