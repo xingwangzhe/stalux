@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.29.5",
+    "version": "1.29.6",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -114,7 +114,8 @@
         "photoswipe": "^5.4.4",
         "satteri": "^0.10.5",
         "simple-icons": "^16.32.0",
-        "temml": "^0.13.5"
+        "temml": "^0.13.5",
+        "yaml": "^2.9.1"
     },
     "devDependencies": {
         "@astrojs/check": "0.9.10",

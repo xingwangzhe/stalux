@@ -130,7 +130,7 @@ Note:
 - `export_md` is a site-level opt-in config, not a per-article frontmatter field.
 - When disabled or omitted, no `.md` export files are generated.
 - Only non-draft articles get post `.md` endpoints.
-- The sitemap filters out `.md` pages to avoid duplicate content issues.
+- When `promote.export_md` is `true`, published post `.md` endpoints are included in the sitemap. Other Markdown mirrors remain excluded by default.
 - Useful for readers who want to view or reuse the raw source.
 
 ## Writing and Validation

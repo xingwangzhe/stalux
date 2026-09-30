@@ -27,6 +27,7 @@ import { fontProviders } from "astro/config";
 // pagefind 是 ESM-only 包，需要在模块顶层导入
 // 因为 astro:build:done 钩子中 Vite module runner 已关闭，无法动态 import
 import { createIndex as pagefindCreateIndex } from "pagefind";
+import { parse as parseYaml } from "yaml";
 import type { StaluxOptions } from "./config";
 import { expressiveCode } from "./expressive-code";
 import { staluxComponentsAlias } from "./internal/components-plugin";
@@ -462,15 +463,64 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
 
     if (opt.sitemap !== false) {
         const userSitemap = opt.sitemap === true ? undefined : opt.sitemap;
-        // 默认过滤：不把 Markdown 源码端点（/posts/*.md）写入 sitemap；用户自定义 filter 与之叠加
-        const defaultFilter = (page: string) => !page.endsWith(".md");
+        const contentDir = opt.contentDir ?? "stalux";
+        const promotePath = path.join(process.cwd(), contentDir, "config", "promote.yml");
+        const promoteConfig = existsSync(promotePath)
+            ? (parseYaml(readFileSync(promotePath, "utf8")) as { export_md?: boolean } | undefined)
+            : undefined;
+        const exportMarkdown = promoteConfig?.export_md === true;
+        const sitePath = path.join(process.cwd(), contentDir, "config", "site.yml");
+        const siteConfig = existsSync(sitePath)
+            ? (parseYaml(readFileSync(sitePath, "utf8")) as { url?: string } | undefined)
+            : undefined;
+        const sitemapSite = opt.site ?? siteConfig?.url;
+        const defaultFilter = (page: string) =>
+            exportMarkdown || !new URL(page).pathname.endsWith(".md");
         const userFilter = userSitemap?.filter;
         const filter = userFilter
             ? (page: string) => defaultFilter(page) && userFilter(page)
             : defaultFilter;
+        const customPages = [...(userSitemap?.customPages ?? [])];
+        if (exportMarkdown) {
+            const postsDir = path.resolve(process.cwd(), contentDir, "posts");
+            if (existsSync(postsDir)) {
+                for (const filename of readdirSync(postsDir)) {
+                    if (!filename.endsWith(".md") && !filename.endsWith(".mdx")) {
+                        continue;
+                    }
+                    const source = readFileSync(path.join(postsDir, filename), "utf8");
+                    const opening = source.startsWith("---\r\n")
+                        ? 5
+                        : source.startsWith("---\n")
+                          ? 4
+                          : 0;
+                    if (!opening) continue;
+                    const closing = source.indexOf("\n---", opening);
+                    if (closing < 0) continue;
+                    const frontmatterText = source.slice(opening, closing);
+                    const frontmatter = frontmatterText.endsWith("\r")
+                        ? frontmatterText.slice(0, -1)
+                        : frontmatterText;
+                    const postData = parseYaml(frontmatter) as
+                        | { abbrlink?: string | number; draft?: boolean }
+                        | undefined;
+                    if (postData?.draft || postData?.abbrlink == null) continue;
+                    if (!sitemapSite) continue;
+                    const normalizedSite = sitemapSite.endsWith("/")
+                        ? sitemapSite.slice(0, -1)
+                        : sitemapSite;
+                    const url = new URL(
+                        `posts/${encodeURIComponent(String(postData.abbrlink))}.md`,
+                        `${normalizedSite}/`,
+                    );
+                    customPages.push(url.href);
+                }
+            }
+        }
         bundled.push(
             sitemap({
                 ...userSitemap,
+                customPages,
                 filter,
             }),
         );

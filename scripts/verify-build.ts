@@ -85,7 +85,14 @@ assert(
 for (const [route, html] of Object.entries(pages)) verifyJsonLd(html, route);
 
 const sitemap = read("sitemap-0.xml");
-assert(!sitemap.includes(".md</loc>"), "sitemap contains Markdown endpoints");
+assert(
+    sitemap.includes("/posts/0035a0ee.md</loc>"),
+    "sitemap is missing the generated Markdown post endpoint",
+);
+assert(
+    !sitemap.includes("/about.md</loc>"),
+    "sitemap contains a non-canonical Markdown page endpoint",
+);
 assert(!sitemap.includes("<lastmod>"), "sitemap contains synthetic build-time lastmod values");
 
 const files = walk(dist);

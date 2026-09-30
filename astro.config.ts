@@ -1,10 +1,19 @@
 // @ts-check
+
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { defineConfig } from "astro/config";
+import { parse as parseYaml } from "yaml";
 
 // 使用本地 stalux 集成（注入路由、Vite 别名、Pagefind、satteri 插件等）
 import stalux from "./src/index.ts";
 
 const site = "https://stalux.needhelp.icu";
+const promotePath = path.join(process.cwd(), "stalux/config/promote.yml");
+const promoteConfig = existsSync(promotePath)
+    ? (parseYaml(readFileSync(promotePath, "utf8")) as { export_md?: boolean } | undefined)
+    : undefined;
+const exportMarkdown = promoteConfig?.export_md === true;
 
 // https://astro.build/config
 export default defineConfig({
@@ -28,17 +37,16 @@ export default defineConfig({
             devToolbar: true,
             sitemap: {
                 filter: (page) => {
-                    // 不把 Markdown 源码端点（/posts/*.md）写入 sitemap
-                    if (page.endsWith(".md")) return false;
                     return (
-                        page.includes("/posts/") ||
-                        page.includes("/about/") ||
-                        page.includes("/links/") ||
-                        page.includes("/words/") ||
-                        page === `${site}/` ||
-                        page === `${site}/archives/` ||
-                        page.includes("/tags/") ||
-                        page.includes("/categories/")
+                        (exportMarkdown || !new URL(page).pathname.endsWith(".md")) &&
+                        (page.includes("/posts/") ||
+                            page.includes("/about/") ||
+                            page.includes("/links/") ||
+                            page.includes("/words/") ||
+                            page === `${site}/` ||
+                            page === `${site}/archives/` ||
+                            page.includes("/tags/") ||
+                            page.includes("/categories/"))
                     );
                 },
             },
