@@ -67,7 +67,9 @@ const archiveYears = [...archivesByYearMonth.entries()]
             {archiveYear.months.map(({ month, posts: monthPosts }) => (
                 <div
                     class={styles.monthSection}
-                    style={{ "--archive-estimate": `${Math.ceil(monthPosts.length / 12) * 12 * 48 + 40}px` }}
+                    style={{
+                        "--archive-estimate": `${Math.ceil(monthPosts.length / 12) * 12 * 48 + 40}px`,
+                    }}
                 >
                     <h3 class={styles.monthTitle}>{t("archives.month", { n: month })}</h3>
                     {Array.from({ length: Math.ceil(monthPosts.length / 12) }, (_, index) =>

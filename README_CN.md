@@ -172,7 +172,7 @@ bingClarityId: "YOUR_CLARITY_PROJECT_ID"
 
 > 当前分支的 Partytown 迁移是未发布候选。典型路由测试中 TBT 下降，但首页和分类页的 LCP 存在回退，尚未完成性能验收。以下说明描述候选实现。
 
-`stalux()` 内置 Partytown：Google Analytics、Clarity、Umami 和 Vercount 的第三方脚本在 Web Worker 中执行，消费项目无需额外添加 Partytown 集成。主题通过 `astro:page-load` 发送页面统计，并在支持 `Element.moveBefore()` 的浏览器中保留导航期间的 worker。Vercount 会在新页面 DOM 就绪后重新绑定显示节点。
+`stalux()` 内置 Partytown：Google Analytics、Clarity 和 Umami 的第三方脚本在 Web Worker 中执行，消费项目无需额外添加 Partytown 集成。主题通过 `astro:page-load` 发送页面统计，并在支持 `Element.moveBefore()` 的浏览器中保留导航期间的 worker。Vercount 在主窗口异步加载，避免可见计数等待 worker 启动和跨线程 DOM 通信；每次 `astro:page-load` 后执行一次，重新绑定新页面计数节点，并读取当前 URL 和本站访客 Cookie。
 
 使用 Google Analytics 时，请在 **管理 → 数据流 → 增强型衡量 → 网页浏览量 → 高级设置** 关闭“根据浏览器历史记录事件判断的页面更改”。主题已设置 `send_page_view: false` 并显式发送每次导航的 URL 和标题；GA 的历史自动统计需要在后台单独关闭，否则软导航会重复计数。其他增强型衡量选项可以保留。参见 [Google 页面浏览量文档](https://developers.google.com/analytics/devguides/collection/ga4/views)。
 

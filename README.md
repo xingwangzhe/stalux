@@ -172,7 +172,7 @@ bingClarityId: "YOUR_CLARITY_PROJECT_ID"
 
 > The Partytown migration in this branch is an unpublished candidate. Representative route measurements show lower TBT, but LCP regresses on the homepage and category page, so performance validation is incomplete. The following describes the candidate implementation.
 
-`stalux()` includes Partytown. The Google Analytics, Clarity, Umami, and Vercount scripts run in a Web Worker without an additional consumer integration. Page tracking follows `astro:page-load`; browsers with `Element.moveBefore()` preserve the worker during navigation. Vercount binds its counters again after the incoming page DOM is ready.
+`stalux()` includes Partytown. The Google Analytics, Clarity, and Umami scripts run in a Web Worker without an additional consumer integration. Page tracking follows `astro:page-load`; browsers with `Element.moveBefore()` preserve the worker during navigation. Vercount loads asynchronously in the main window, avoiding worker startup and DOM bridge delays for visible counters. It runs once after each `astro:page-load` to bind incoming page counters and use the current URL and first-party visitor cookie.
 
 For Google Analytics, turn off **Page changes based on browser history events** under **Admin → Data streams → Enhanced measurement → Page views → Advanced settings**. Stalux sets `send_page_view: false` and sends the URL and title for each navigation explicitly. GA's history tracking must also be disabled in the property to prevent duplicate soft-navigation pageviews. Other enhanced measurement options can remain enabled. See [Google's pageview documentation](https://developers.google.com/analytics/devguides/collection/ga4/views).
 

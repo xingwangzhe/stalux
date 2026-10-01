@@ -1,5 +1,5 @@
 /**
- * Keep third-party code in Partytown. This small main-thread bridge owns the
+ * Keep analytics trackers in Partytown. This small main-thread bridge owns the
  * Astro navigation lifecycle and tells the worker about each completed page.
  */
 declare global {
@@ -116,12 +116,15 @@ function trackUmamiPage(): void {
 }
 
 function trackVercountPage(): void {
-    // Vercount captures its display elements at startup. A new Astro body needs
-    // a new worker execution so the counters refer to the incoming DOM.
+    // Visible counters need the current window's URL, cookie and DOM nodes.
+    // Avoid worker startup and synchronous DOM bridges; bind fresh nodes once
+    // per completed Astro navigation using the small upstream async script.
     document.querySelector("script[data-stalux-vercount]")?.remove();
-    appendWorkerScript("https://events.vercount.one/js", {
-        "data-stalux-vercount": "true",
-    });
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://events.vercount.one/js";
+    script.dataset.staluxVercount = "true";
+    document.head.appendChild(script);
 }
 
 if (!state.installed) {
