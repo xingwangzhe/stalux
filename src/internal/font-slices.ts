@@ -34,6 +34,17 @@ const CODE_FONT_ITALIC_INPUT = "src/assets/fonts/GoogleSansCode-Italic.woff2";
 
 const PAGE_SLICE_OUT_DIR = "node_modules/.astro/stalux-page-fonts";
 
+/**
+ * Characters always reserved in every page subset, regardless of page content.
+ *
+ * Digits are extracted from rendered text nodes, so any number produced at
+ * runtime (clock, counters, dates, values injected by client scripts) or
+ * carried only in attributes would fall outside the subset and render as
+ * fallback glyphs — a visible "font splitting" bug. Reserving 0-9 costs
+ * ~10 glyphs per page and makes digit rendering unconditional.
+ */
+export const RESERVED_GLYPHS = "0123456789";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -242,6 +253,7 @@ export function writePageFontSubset(
     cacheDir: string,
     publicUrlPrefix = "/_astro/fonts/",
     linkedStylesheetText = "",
+    extraChars = "",
 ): PageFontSubset | undefined {
     const document = parse(html);
     const body = findBody(document);
@@ -254,7 +266,8 @@ export function writePageFontSubset(
         linkedStylesheetText,
     ];
     collectBodyText(body, bodyText);
-    const chars = [...new Set([...bodyText.join("")].filter((char) => !/\p{C}/u.test(char)))].sort(
+    const glyphSource = `${RESERVED_GLYPHS}${extraChars}${bodyText.join("")}`;
+    const chars = [...new Set([...glyphSource].filter((char) => !/\p{C}/u.test(char)))].sort(
         (a, b) => (a.codePointAt(0) as number) - (b.codePointAt(0) as number),
     );
     if (chars.length === 0) return undefined;

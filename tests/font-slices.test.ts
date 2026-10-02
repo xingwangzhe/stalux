@@ -15,6 +15,7 @@ import { describe, expect, it } from "vitest";
 
 import {
     clearPageFontSubsets,
+    RESERVED_GLYPHS,
     readLinkedStylesheetText,
     writePageFontSubset,
 } from "../src/internal/font-slices";
@@ -130,6 +131,49 @@ describe("page-specific font subsets", () => {
             expect(subset?.html).toContain("U+0045");
             expect(subset?.html).toContain("U+00A9");
             expect(subset?.html).not.toContain("U+006D");
+        } finally {
+            rmSync(root, { recursive: true, force: true });
+        }
+    });
+
+    it("reserves Arabic digits in every page subset even when the page has none", () => {
+        const root = mkdtempSync(join(tmpdir(), "stalux-digit-font-"));
+        try {
+            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf");
+            const digitless =
+                "<html><head></head><body><p>无数字页面</p><span>abc</span></body></html>";
+            const withExtra = writePageFontSubset(
+                digitless,
+                font,
+                join(root, "cache"),
+                "/_astro/fonts/",
+                "",
+                "%",
+            );
+            expect(withExtra).toBeDefined();
+            const range =
+                withExtra?.html.match(
+                    /@font-face\{font-family:"LXGW WenKai-Page Subset"[^}]*unicode-range:([^}]+)/u,
+                )?.[1] ?? "";
+            expect(range).not.toBe("");
+            // 0-9 must always be covered; they collapse into one contiguous range.
+            expect(range).toContain("U+0030-0039");
+            const covered = (char: string) => {
+                const point = char.codePointAt(0) as number;
+                return range.split(",").some((entry) => {
+                    const [start, end] = entry.replace(/^U\+/u, "").split("-");
+                    return (
+                        point >= Number.parseInt(start ?? "", 16) &&
+                        point <= Number.parseInt(end ?? start ?? "", 16)
+                    );
+                });
+            };
+            for (const digit of RESERVED_GLYPHS) {
+                expect(covered(digit), `expected reserved digit ${digit}`).toBe(true);
+            }
+            // Extra characters are additive on top of the reserved digits.
+            expect(range).toContain("U+0025");
+            expect(RESERVED_GLYPHS).toBe("0123456789");
         } finally {
             rmSync(root, { recursive: true, force: true });
         }
