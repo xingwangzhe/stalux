@@ -3,7 +3,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import UnoCSS from "unocss/vite";
 import { build as viteBuild } from "vite";
-import { componentShortcuts } from "../src/styles/shortcuts.ts";
+import {
+    featureStateClasses,
+    nativeFeatures,
+    type StyleFeature,
+    styleFeatures,
+} from "../src/styles/features.ts";
+import { componentShortcuts, shortcutGroups } from "../src/styles/shortcuts.ts";
 import unoConfig from "../uno.config.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -13,25 +19,19 @@ function readStyle(filename: string): string {
         (_match, relative: string) => readStyle(path.resolve(path.dirname(filename), relative)),
     );
 }
-const featurePatterns = {
-    archives: /^stalux-(?:archive-|archives-)/,
-    article:
-        /^stalux-(?:random-|toc-|sidebar|pagination|article$|byline-|license|post-(?!card$|list-))/,
-    categories: /^stalux-(?:category|categories)/,
-    links: /^stalux-(?:links$|link-)/,
-    tags: /^stalux-(?:cloud-|tag-)/,
-    words: /^stalux-(?:word-|word-list-)/,
-} as const;
 async function compile(
-    input: string,
+    sources: readonly string[],
     suffix: string,
     utilities: boolean,
-    feature?: keyof typeof featurePatterns,
+    feature?: StyleFeature,
 ) {
     const output = `${root}src/styles/generated${suffix}.css`;
     const entry = `${root}.styles-entry${suffix}-${process.pid}.ts`;
     const stylesheet = `${root}.styles-entry${suffix}-${process.pid}.css`;
-    writeFileSync(stylesheet, readStyle(`${root}src/styles/${input}`));
+    writeFileSync(
+        stylesheet,
+        `${suffix === "-waline" ? "" : "@layer theme, base, components, utilities;\n"}${sources.map((input) => readStyle(`${root}src/styles/${input}`)).join("\n")}`,
+    );
     writeFileSync(
         entry,
         `${utilities ? 'import "virtual:uno.css";\n' : ""}import ${JSON.stringify(`./.styles-entry${suffix}-${process.pid}.css`)};\n`,
@@ -52,16 +52,22 @@ async function compile(
                 UnoCSS({
                     ...unoConfig,
                     configFile: false,
-                    ...(feature
+                    ...(feature && feature !== "common"
                         ? {
                               content: { filesystem: [], pipeline: false },
-                              safelist: Object.keys(componentShortcuts).filter((name) =>
-                                  featurePatterns[feature].test(name),
-                              ),
+                              safelist: [
+                                  ...Object.keys(componentShortcuts).filter(
+                                      (name) => shortcutGroups[name] === feature,
+                                  ),
+                                  ...featureStateClasses(feature),
+                              ],
                           }
                         : utilities
                           ? {
-                                blocklist: Object.values(featurePatterns),
+                                blocklist: Object.keys(componentShortcuts).filter(
+                                    (name) => shortcutGroups[name] !== "common",
+                                ),
+                                safelist: featureStateClasses("common"),
                             }
                           : {}),
                 }),
@@ -107,11 +113,9 @@ async function compile(
     }
 }
 async function compileAll() {
-    await compile("theme.css", "", true);
-    for (const feature of Object.keys(featurePatterns) as Array<keyof typeof featurePatterns>)
-        await compile(`${feature}.css`, `-${feature}`, true, feature);
-    await compile("prose.css", "-prose", false);
-    await compile("components/posts/waline.css", "-waline", false);
+    for (const [feature, { sources, suffix }] of Object.entries(styleFeatures))
+        await compile(sources, suffix, true, feature as StyleFeature);
+    for (const { sources, suffix } of nativeFeatures) await compile(sources, suffix, false);
 }
 await compileAll();
 if (process.argv.includes("--watch")) {

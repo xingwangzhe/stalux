@@ -1,36 +1,46 @@
 # Stalux 样式维护（UnoCSS）
 
-保留经典首页、文章三栏、极繁背景、透明面板、运行时 accentColor 和原有交互。主题包预编译 CSS，消费项目不必安装 UnoCSS。不引入 reset。共享样式默认输出为可缓存外部 CSS，尊重显式 `build.inlineStylesheets: "always"`。归档、分类、标签、短句和正文/数学通过使用它们的组件导入，不进入首页共享包。
-
-生成样式首先声明 `theme, base, components, utilities` 的层顺序，避免基础 ul/p 规则覆盖组件的间距与颜色。
+经典首页、文章三栏、极繁背景和运行时 accentColor 保持原有行为。消费项目使用主题预编译的 CSS，不需要 UnoCSS，也不注入 Preflight/reset。
 
 ## 维护位置
 
-| 位置 | 职责 |
+| 位置 | 用途 |
 | --- | --- |
-| `uno.config.ts` | Wind3 utilities、共享 shortcuts、玻璃/光晕/阴影规则、扫描范围、CSS layers |
-| `src/styles/shortcuts.ts` | 组件基础类；模板继续使用简短的 `stalux-` 类名，精确值使用 UnoCSS arbitrary properties |
-| `src/styles/theme.css` | 主入口；基础层、组件层、正文的加载顺序 |
-| `src/styles/theme/*.css` | 子元素、hover/focus、响应式、复杂状态规则；通过 `@apply` 组合 utilities 和共享 shortcuts |
-| `src/styles/theme/prose.css` | 专用 Markdown 排版；在组件规则后加载，保留原来的级联顺序 |
-| `src/styles/theme/base.css` | 全局基础行为及主题 CSS variables；不是 UnoCSS reset |
-| `src/styles/base/math.css`、`src/styles/shared/*.css` | 数学字体、必要动效及 View Transitions |
-| `src/styles/components/posts/waline.css` | 第三方评论适配，独立预编译后懒加载 |
+| `uno.config.ts` | Wind3、主题 token 映射、共享能力及层级顺序 |
+| `src/styles/shortcuts.ts` | 按功能明确归属的组件差异与短类名；共享基础类与组件类组合使用 |
+| `src/styles/rules/*.ts` | 按功能组织的限定选择器、伪元素、状态与响应式规则 |
+| `src/styles/features.ts` | common/article/archives/categories/links/tags/words 和原生 prose/waline 输出清单 |
+| `src/styles/rule-utils.ts` | 将 utilities 与差异声明编译为 UnoCSS selector rules；控制媒体查询顺序 |
+| `src/styles/base.css` | 基础行为、字体栈与运行时 CSS variables |
+| `src/styles/motion.css` | keyframes、交错动画、View Transitions |
+| `src/styles/content.css` | Markdown 后代排版规则 |
+| `src/styles/math.css` | 数学字体、MathML 与浏览器差异 |
+| `src/styles/integrations.css` | Waline 适配与其动画 |
 
-简单局部样式可直接写 utility；重复布局优先使用 `stalux-flex-center`、`stalux-flex-row`、`stalux-stack`、`stalux-list-reset`。组件只保留自己的差异。颜色和配置值继续走现有 CSS variables，不构造动态 utility 名称。
+保留八个 CSS 导入入口与所有 `generated*.css` 文件名。入口转发至预编译产物，直接导入公开路径同样有效；构建清单单独读取原生规则文件，避免生成文件循环导入。不要手工编辑生成文件。
 
-## Astro 与 npm 两种模式
+## 选择规则
 
-源码项目使用官方 `@unocss/astro`，默认 reset 关闭。`injectEntry: false` 避免与已经预编译的主题 CSS 重复注入；插件仍支持 Astro 内的 directives 转换。开发脚本同时监听源码与配置，将 utilities/shortcuts 和复杂 CSS 编译成按组件分组的产物。
+简单、局部样式直接使用 utilities。重复组件布局使用 `stalux-u-*` 基础类，和 `stalux-*` 组件差异组合。基础类输出到 components layer，因此更窄断点的组件规则仍能覆盖它们。新增组件必须明确写入 `shortcutsByFeature`，不得靠名称前缀猜测归属。
 
-`bun run styles:build` 使用已有 Vite 与 `unocss/vite` 编译 `generated.css`、`generated-{archives,article,categories,links,tags,words,prose}.css` 和 `generated-waline.css`。输出内容不变时不重写文件，保留增量缓存。构建、validate 与打包前强制编译；npm 包包含所有生成样式，由 `stalux()` 注入。消费方的覆盖组件新增 utilities 需由其自己的 UnoCSS 工具链编译。
+复杂状态使用 `StyleSpec`：选择器、无 variant 的 utilities、差异声明、可选媒体/支持查询。 utilities 未识别时构建失败。使用限定选择器保留目录高亮、导航开关、第三方 DOM 状态；不将原 CSS 文本搬进 TypeScript 字符串。
 
-`bun run dev` 同时运行样式监听与 Astro。监听排除生成文件，串行编译并合并连续变化，避免自触发循环。不要直接编辑 generated 文件。
+媒体查询采用明确顺序：较宽 max-width 在前、较窄在后，reduced-motion 和打印规则靠后。不要依赖 UnoCSS 对自定义 wrapper 的字母排序。必要 fallback、不同 specificity 和有意的层级覆盖不视为冗余。
 
-## 保留原生 CSS 的理由
+正文、数学排版、第三方覆盖和 View Transition 伪元素保留原生 CSS。不要使用默认 Typography 外观替换主题正文。复杂结构继续通过容器控制，避免向 Markdown 或第三方 HTML 追加大量类名。
 
-媒体查询断点、嵌套状态与子元素、目录高亮、keyframes、正文和数学排版、PhotoSwipe/Waline 覆盖、浏览器专用属性及 reduced-motion 保留精确 CSS，避免为了缩短字数改变行为。Shortcuts 负责基础组合，不取代这些规则。
+## 编译与消费
 
-维护量应同时计算 CSS、shortcuts、配置和模板表达；`@apply` 或 shortcuts 中的重复 token 仍属于样式维护量。源码行数减少不代表浏览器 CSS 或 HTML 一定减少，验收报告需要分别测量。
+源码开发使用 `@unocss/astro` 且 `injectEntry: false`；`scripts/build-styles.ts` 使用现有 Vite/UnoCSS 编译主题。common 扫描组件、布局、页面、脚本并排除其他功能 shortcuts，各功能使用明确的 shortcuts 与状态规则清单。跨功能共享能力进入 common，其余由使用该功能的组件导入；prose/math 和 Waline 独立生成。
 
-生成 CSS 的内容哈希进入共享运行时缓存指纹。样式变化会失效路由缓存，避免恢复引用旧 CSS 哈希的 HTML；相同输出与相同内容的重新写入不会改变指纹。
+构建、validate、打包前运行 `bun run styles:build`。默认外部 CSS 可缓存，尊重消费者显式设置的 `inlineStylesheets: "always"`。消费者自编的 utility 由自己的工具链处理，原有组件覆盖接口保持兼容。
+
+输出内容不变时不重写文件。watch 排除生成文件并串行合并变化；生成 CSS 内容哈希进入运行时缓存指纹，样式修改会使旧路由产物失效，相同内容不会失效。
+
+## 衡量精简
+
+同时报告原生 CSS、自定义 rules、shortcuts、配置、模板 class 与内联 style 的维护表达量。将 CSS 搬进 TypeScript 不算消除规则；注释/空行减少也不是声明去重。
+
+统计整个构建目录和每条路由实际加载 CSS 的 raw/gzip/Brotli 体积，另报 HTML class 增长。以相同内容、视口和缓存条件进行 Chrome Stable 测量；减少文件数不等于减少传输，实验室结果不能宣称真实用户性能已经改善。
+
+官方资料：[Shortcuts](https://unocss.dev/config/shortcuts)、[Rules](https://unocss.dev/config/rules)、[Layers](https://unocss.dev/config/layers)、[Directives](https://unocss.dev/transformers/directives)、[内容提取](https://unocss.dev/guide/extracting)、[Astro 集成](https://unocss.dev/integrations/astro)。

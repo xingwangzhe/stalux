@@ -21,7 +21,7 @@ const description = post.data.desc || "";
 ---
 
 <article class="block h-full text-inherit no-underline">
-    <div class="stalux-post-card">
+    <div class="stalux-post-card stalux-u-flex stalux-u-flex-col stalux-u-w-full stalux-u-min-w-0">
         {post.data.cover && (
     <a
         href={`/posts/${post.data.abbrlink}/`}
@@ -29,7 +29,7 @@ const description = post.data.desc || "";
         data-astro-prefetch="viewport"
         aria-label={post.data.title}
     >
-        <div class="stalux-card-post-cover">
+        <div class="stalux-card-post-cover stalux-u-w-full stalux-u-min-w-0">
             <img
                 src={post.data.cover}
                 alt={post.data.title}
@@ -50,7 +50,7 @@ const description = post.data.desc || "";
                 {post.data.title}
             </a>
         </h2>
-        <div class="stalux-card-time">
+        <div class="stalux-card-time stalux-u-items-center stalux-u-flex-wrap">
             {post.data.date && (
     <time
         class="stalux-card-post-date"
@@ -68,16 +68,20 @@ const description = post.data.desc || "";
     </time>
 )}
         </div>
-        <div class="stalux-card-post-description">{description}</div>
-        <div class="stalux-card-post-meta">
-            <div class="stalux-card-post-tags">
+        <div class="stalux-card-post-description stalux-u-min-w-0">{description}</div>
+        <div class="stalux-card-post-meta stalux-u-flex stalux-u-flex-col">
+            <div
+                class="stalux-card-post-tags stalux-u-flex stalux-u-items-center stalux-u-flex-wrap"
+            >
                 {post.data.tags?.map((tag) => (
     <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
         <span class="stalux-card-post-tag">{tag}</span>
     </a>
 ))}
             </div>
-            <div class="stalux-card-post-categories">
+            <div
+                class="stalux-card-post-categories stalux-u-flex stalux-u-items-center stalux-u-flex-wrap"
+            >
                 {post.data.categories?.map((category) => (
     <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
         <span class="stalux-card-post-category">{category}</span>

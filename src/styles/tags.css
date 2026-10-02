@@ -1,2 +1,1 @@
-@layer theme, base, components, utilities;
-@import "./theme/tags.css";
+@import "./generated-tags.css";

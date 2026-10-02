@@ -29,6 +29,10 @@
         background-color: transparent;
         cursor: pointer;
         text-decoration-skip-ink: auto;
+        position: relative;
+        transition:
+            color 0.2s ease,
+            text-shadow 0.2s ease;
     }
 
     .a-none {
@@ -41,13 +45,6 @@
 
     .a-none::after {
         display: none !important;
-    }
-
-    a {
-        position: relative;
-        transition:
-            color 0.2s ease,
-            text-shadow 0.2s ease;
     }
 
     /* 下划线动画 */

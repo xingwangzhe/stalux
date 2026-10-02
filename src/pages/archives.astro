@@ -19,8 +19,8 @@ const posts = await getCollection("posts", ({ data }) => !data.draft);
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <h1 class="stalux-page-title">{t("archives.heading")}</h1>
-    <div class="stalux-page-description">
+    <h1 class="stalux-page-title stalux-u-text-center">{t("archives.heading")}</h1>
+    <div class="stalux-page-description stalux-u-text-center">
         {t("archives.desc", { n: posts.length })}
     </div>
     <ArchivesList posts={posts} />

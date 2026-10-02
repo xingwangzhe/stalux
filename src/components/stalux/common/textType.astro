@@ -8,4 +8,9 @@ const configEntries = await getCollection("config");
 const typetextsConfig = getTypetextsData(configEntries);
 ---
 
-{typetextsConfig?.items && <Typewriter class="stalux-typewriter" messages={typetextsConfig?.items} />}
+{typetextsConfig?.items && (
+    <Typewriter
+        class="stalux-typewriter stalux-u-flex stalux-u-justify-center stalux-u-w-full stalux-u-text-center"
+        messages={typetextsConfig?.items}
+    />
+)}

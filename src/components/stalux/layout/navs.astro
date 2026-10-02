@@ -27,14 +27,14 @@ const navs = navsConfig?.items ?? [];
     </button>
 
     <!-- 侧边栏遮罩 -->
-    <div data-ref="stalux-nav-overlay" class="stalux-nav-overlay"></div>
+    <div data-ref="stalux-nav-overlay" class="stalux-nav-overlay stalux-u-w-full"></div>
 
     <!-- 导航列表 -->
-    <div class="stalux-nav-container">
+    <div class="stalux-nav-container stalux-u-w-full stalux-u-min-w-0">
         <button
             type="button"
             data-ref="stalux-nav-scroll-left"
-            class="stalux-nav-scroll-btn"
+            class="stalux-nav-scroll-btn stalux-u-items-center stalux-u-justify-center"
             data-side="left"
             aria-label={t("nav.scrollLeft")}
         >
@@ -43,11 +43,14 @@ const navs = navsConfig?.items ?? [];
             </svg>
         </button>
 
-        <ul data-ref="stalux-nav-list" class="stalux-nav-list">
+        <ul
+            data-ref="stalux-nav-list"
+            class="stalux-nav-list stalux-u-flex stalux-u-items-center stalux-u-justify-center stalux-u-flex-wrap stalux-u-w-full stalux-u-min-w-0"
+        >
             {navs.map((item) => {
     const NavIcon = item.icon ? getLucideIcon(item.icon, Astro.logger) : null;
     return (
-        <li class="stalux-nav-item">
+        <li class="stalux-nav-item stalux-u-flex stalux-u-items-center">
             <a
                 href={item.link}
                 class="stalux-nav-link"
@@ -60,7 +63,7 @@ const navs = navsConfig?.items ?? [];
         </li>
     );
 })}
-            <li class="stalux-nav-item">
+            <li class="stalux-nav-item stalux-u-flex stalux-u-items-center">
                 <a
                     href="#search"
                     class="stalux-nav-link"
@@ -76,7 +79,7 @@ const navs = navsConfig?.items ?? [];
         <button
             type="button"
             data-ref="stalux-nav-scroll-right"
-            class="stalux-nav-scroll-btn"
+            class="stalux-nav-scroll-btn stalux-u-items-center stalux-u-justify-center"
             data-side="right"
             aria-label={t("nav.scrollRight")}
         >

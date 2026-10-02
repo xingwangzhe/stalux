@@ -16,8 +16,8 @@ const entries = await getCollection("words", ({ data }) => !data.draft);
 <Stalux title={`${t("words.title")} | ${siteConfig.title}`} description={t("words.description")}>
     <div style="height: 3em;"></div>
     <Navs />
-    <h1 class="stalux-page-title">{t("words.heading")}</h1>
-    <div class="stalux-page-description">
+    <h1 class="stalux-page-title stalux-u-text-center">{t("words.heading")}</h1>
+    <div class="stalux-page-description stalux-u-text-center">
         {t("words.desc", { n: entries.length })}
     </div>
     <WordList entries={entries} timezone={siteConfig.timezone} />

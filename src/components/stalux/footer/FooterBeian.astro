@@ -19,7 +19,7 @@ const showBeian = !!(icp || pubsec);
 ---
 
 {showBeian && (
-    <div class="stalux-beian-beian-info">
+    <div class="stalux-beian-beian-info stalux-u-flex stalux-u-justify-center stalux-u-flex-wrap">
         {icp && (
             <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
                 {icp}
@@ -30,7 +30,7 @@ const showBeian = !!(icp || pubsec);
                 href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${pubsecNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="stalux-beian-public-security-beian"
+                class="stalux-beian-public-security-beian stalux-u-items-center"
             >
                 <img
                     src="https://beian.mps.gov.cn/img/logo01.dd7ff50e.png"

@@ -16,7 +16,7 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
 ---
 
 {showStats && (
-    <p class="stalux-stats-site-stats">
+    <p class="stalux-stats-site-stats stalux-u-flex stalux-u-justify-center stalux-u-flex-wrap">
         <span id="vercount_container_site_uv">
             {t("footer.visitors")}
             <span id="vercount_value_site_uv">Loading...</span> {t("footer.visits")}
@@ -36,7 +36,7 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
 
 {buildtime && (
     <div
-        class="stalux-stats-site-build-time"
+        class="stalux-stats-site-build-time stalux-u-text-center"
         data-stalux-buildtime={buildtime}
         data-stalux-runtime-format={t("footer.runtimeFormat")}
     >

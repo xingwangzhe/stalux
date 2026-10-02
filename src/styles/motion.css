@@ -1,3 +1,33 @@
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 共享列表入场动画延迟 — 由 Stalux.astro 全局导入 */
+
+.stagger-children > *:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.stagger-children > *:nth-child(2) {
+    animation-delay: 0.15s;
+}
+.stagger-children > *:nth-child(3) {
+    animation-delay: 0.2s;
+}
+.stagger-children > *:nth-child(4) {
+    animation-delay: 0.25s;
+}
+.stagger-children > *:nth-child(5) {
+    animation-delay: 0.3s;
+}
+.stagger-children > *:nth-child(n + 6) {
+    animation-delay: 0.35s;
+}
+
 /* Keep route motion on the page shell; named child elements handle continuity. */
 @keyframes stalux-page-exit {
     to {
@@ -172,5 +202,71 @@
         animation-iteration-count: 1 !important;
         transition-duration: 1ms !important;
         scroll-behavior: auto !important;
+    }
+}
+
+@layer components {
+    @keyframes stalux-social-stalux-social-arrive {
+        from {
+            opacity: 0;
+            transform: translateY(0.75rem) rotate(-12deg);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) rotate(0);
+        }
+    }
+}
+
+@layer components {
+    @keyframes stalux-random-spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+}
+
+@layer components {
+    @keyframes stalux-post-content-reveal {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+@layer components {
+    @keyframes stalux-link-avatar-spin {
+        from {
+            transform: rotate(0deg) scale(1.04);
+        }
+        to {
+            transform: rotate(360deg) scale(1.04);
+        }
+    }
+}
+
+@layer components {
+    @keyframes stalux-word-word-glow {
+        0% {
+            box-shadow:
+                0 0 30px var(--accent-50p),
+                0 0 80px var(--accent-30p),
+                var(--shadow-lg);
+            transform: scale(1.02);
+        }
+        100% {
+            box-shadow:
+                0 0 20px var(--accent-40p),
+                0 0 60px var(--accent-20p),
+                var(--shadow-lg);
+            transform: scale(1);
+        }
     }
 }

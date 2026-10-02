@@ -1,2 +1,1 @@
-@layer theme, base, components, utilities;
-@import "./theme/article.css";
+@import "./generated-article.css";

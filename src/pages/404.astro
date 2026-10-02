@@ -16,7 +16,10 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <div class="stalux-404-error-container" data-pagefind-ignore>
+    <div
+        class="stalux-404-error-container stalux-u-flex stalux-u-items-center stalux-u-justify-center stalux-u-text-center"
+        data-pagefind-ignore
+    >
         <div class="stalux-404-error-content">
             <h1>404</h1>
             <p>{t("page404.pageNotFound")}</p>

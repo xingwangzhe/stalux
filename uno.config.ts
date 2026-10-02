@@ -1,4 +1,5 @@
 import { defineConfig, presetWind3, type StaticShortcut, transformerDirectives } from "unocss";
+import { componentRules } from "./src/styles/features.ts";
 import { componentShortcuts } from "./src/styles/shortcuts.ts";
 
 export default defineConfig({
@@ -8,9 +9,12 @@ export default defineConfig({
             ink: Object.fromEntries(
                 [
                     "full",
+                    "95",
                     "90",
                     "85",
                     "80",
+                    "78",
+                    "75",
                     "70",
                     "60",
                     "50",
@@ -29,6 +33,9 @@ export default defineConfig({
                 `var(--space-${key})`,
             ]),
         ),
+        borderRadius: Object.fromEntries(
+            ["sm", "md", "lg", "full"].map((key) => [`stalux-${key}`, `var(--radius-${key})`]),
+        ),
     },
     transformers: [transformerDirectives({ throwOnMissing: true })],
     content: { filesystem: ["src/{components,layouts,pages,scripts}/**/*.{astro,ts}"] },
@@ -38,6 +45,14 @@ export default defineConfig({
         ["stalux-glass", { background: "var(--surface-glass)" }],
         ["stalux-glow", { "text-shadow": "var(--stalux-text-shadow)" }],
         ["shadow-stalux", { "box-shadow": "var(--card-box-shadow)" }],
+        // Named Wind3 font sizes also set line-height; these preserve the inherited line-height.
+        ...["subtitle", "base", "small", "smaller", "tiny"].map(
+            (key): import("unocss").StaticRule => [
+                `text-stalux-${key}`,
+                { "font-size": `var(--font-size-${key})` },
+            ],
+        ),
+        ...componentRules,
     ],
     shortcuts: [
         ["stalux-flex-center", "flex items-center justify-center"],

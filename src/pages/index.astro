@@ -20,11 +20,13 @@ import { getSiteData } from "@utils/config-utils";
 ---
 
 <Stalux title={siteTitle} description={siteDescription}>
-    <div class="stalux-home-body">
-        <div class="stalux-home-navs">
+    <div class="stalux-home-body stalux-u-flex stalux-u-items-center stalux-u-flex-col">
+        <div
+            class="stalux-home-navs stalux-u-flex stalux-u-justify-center stalux-u-w-full stalux-u-min-w-0"
+        >
             <Navs />
         </div>
-        <h1 class="stalux-home-title">{siteTitle}</h1>
+        <h1 class="stalux-home-title stalux-u-text-center">{siteTitle}</h1>
         <h2
             class="sr-only"
             style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"

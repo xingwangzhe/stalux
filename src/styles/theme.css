@@ -1,12 +1,1 @@
-@layer theme, base, components, utilities;
-@import "./theme/pages.css";
-@import "./theme/posts.css";
-@import "./theme/links.css";
-@import "./theme/layout.css";
-@import "./theme/footer.css";
-@import "./theme/common.css";
-@import "./theme/inline.css";
-@import "./theme/base.css";
-@import "./shared/animations.css";
-@import "./shared/stagger.css";
-@import "./shared/view-transitions.css";
+@import "./generated.css";

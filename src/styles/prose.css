@@ -1,3 +1,1 @@
-@layer theme, base, components, utilities;
-@import "./theme/prose.css";
-@import "./base/math.css";
+@import "./generated-prose.css";
