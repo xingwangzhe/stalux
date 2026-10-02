@@ -28,7 +28,7 @@ jobs:
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2.2.0
               with:
-                  bun-version: 1.4.0
+                  bun-version: latest
 
             - name: Cache Astro incremental build
               uses: actions/cache@v6.1.0
