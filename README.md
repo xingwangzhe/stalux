@@ -105,6 +105,8 @@ bun run dev
 
 Stalux ships with LXGW WenKai and a variable code font (Google Sans Code). During the build, the Rust/N-API package `@xingwangzhe/cjk-font-split-native` creates one content-addressed WOFF2 subset from each page's visible or expandable CJK text. The browser downloads only the page subset; repeated character sets share the same file. CJK text inside code and MathML is covered too.
 
+Arabic digits `0-9` are always reserved in every subset (`RESERVED_GLYPHS`), even on pages without any visible number. Digits produced at runtime by client scripts — clocks, counters, dates, injected values — never appear in the built HTML, so reserving them keeps numbers from falling back to a system font. Callers can append more characters through the optional `extraChars` argument of `writePageFontSubset`.
+
 The subset CSS uses an exact per-character `unicode-range` and `font-display: swap`, so visible text and the downloaded glyphs stay aligned. The variable code font continues to use Astro's local Fonts API.
 
 The persistent BLAKE3 cache key includes font bytes, face index, normalized character set, and algorithm version. Cache files live under `node_modules/.astro/` and are reused across pages and incremental builds. Font inputs are read locally; builds do not fetch fonts from the network.

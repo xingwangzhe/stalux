@@ -105,6 +105,8 @@ bun run dev
 
 Stalux 内置中文字体 LXGW WenKai 和可变代码字体 Google Sans Code。构建时由 Rust/N-API 包 `@xingwangzhe/cjk-font-split-native` 按页面可见或可展开的 CJK 正文生成内容寻址 WOFF2 子集；字符集相同的页面复用同一个文件。代码和 MathML 中可见的中文也会纳入子集。
 
+每个子集都会无条件保留阿拉伯数字 `0-9`（`RESERVED_GLYPHS`），即使页面里没有任何可见数字。时钟、计数、日期、脚本注入的值等在运行时生成的数字不会出现在构建产物 HTML 中，预留它们可避免数字回退到系统字体。调用方可通过 `writePageFontSubset` 的可选参数 `extraChars` 追加更多预留字符。
+
 子集 CSS 使用精确到字符的 `unicode-range` 和 `font-display: swap`，让可见文本与下载字形对应。代码可变字体仍通过 Astro 官方 local Fonts API 注入。
 
 持久 BLAKE3 缓存键包含字体内容、face index、规范化字符集和算法版本；缓存保存在 `node_modules/.astro/`，可跨页面和增量构建复用。字体输入从本地读取，构建不会联网下载字体。
