@@ -5,7 +5,7 @@ import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
 import FooterCopyright from "@components/stalux/footer/FooterCopyright.astro";
 import FooterStats from "@components/stalux/footer/FooterStats.astro";
 import FooterThemeInfo from "@components/stalux/footer/FooterThemeInfo.astro";
-import footerStyle from "@styles/components/footer/footer.module.css";
+
 import type { BadgeItem, BadgeOptions } from "@utils/badge-generator";
 import { getAuthorData, getFooterData, getSiteData } from "@utils/config-utils";
 import { formatWordCount, getTotalWordCount } from "@utils/word-count-utils";
@@ -50,8 +50,8 @@ const totalWordCount = await getTotalWordCount(Astro.logger);
 const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "zh-CN");
 ---
 
-<footer class={footerStyle.siteFooter} transition:persist-props>
-    <div class={footerStyle.footerContent}>
+<footer class="stalux-footer" transition:persist-props>
+    <div class="stalux-footer-content">
         <!-- 版权信息 -->
         {footerConfig?.copyright?.enabled && (
     <FooterCopyright author={author} startYear={footerConfig?.copyright?.startYear} />

@@ -15,16 +15,16 @@ import TextType from "@components/stalux/common/textType.astro";
 import Navs from "@components/stalux/layout/navs.astro";
 import SocialMedia from "@components/stalux/links/socialMedia.astro";
 import Stalux from "@layouts/Stalux.astro";
-import styles from "@styles/pages/home.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 ---
 
 <Stalux title={siteTitle} description={siteDescription}>
-    <div class={styles.homeBody}>
-        <div class={styles.homeNavs}>
+    <div class="stalux-home-body">
+        <div class="stalux-home-navs">
             <Navs />
         </div>
-        <h1 class={styles.homeTitle}>{siteTitle}</h1>
+        <h1 class="stalux-home-title">{siteTitle}</h1>
         <h2
             class="sr-only"
             style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
@@ -54,17 +54,3 @@ import { getSiteData } from "@utils/config-utils";
         <ToArchive />
     </div>
 </Stalux>
-
-<style>
-.agent-home-summary {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: normal;
-    border: 0;
-}
-</style>

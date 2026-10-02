@@ -119,7 +119,7 @@ TypeScript 使用 ESNext，主题默认将 `vite.build.target` 设为 `"esnext"`
 
 ### 首屏 CSS 与搜索样式
 
-主题默认通过 Astro 的 `build.inlineStylesheets: "always"` 把路由样式放入 HTML，减少首次绘制等待外部 CSS 的请求。消费项目显式设置 `build.inlineStylesheets: "never"` 时保留外部样式表。内联会增加每页 HTML 大小，换取首访更短的样式请求链。
+主题默认使用 Astro 的 `build.inlineStylesheets: "never"`，共享样式作为带哈希、可缓存的外部 CSS 输出，组件专用样式按页面加载。样式表正常阻塞首次绘制，避免无样式内容闪烁；消费项目显式设置 `build.inlineStylesheets: "always"` 可恢复内联，但会增加每页 HTML 大小。
 
 Pagefind 搜索弹窗样式单独输出为带哈希的静态文件，以 `prefetch` 提示浏览器提前获取；打开搜索时才作为样式表启用，并等待加载完成后显示弹窗。它不阻塞正文首屏，也不依赖搜索 JavaScript 动态生成 CSS 文件；无脚本访问保留 `<noscript>` 样式回退。
 
@@ -275,3 +275,7 @@ Astro 7.3 的集成 `logger.debug()` 使用官方 `DEBUG/--verbose` 通道，不
 耗时只写入日志，不写入静态页面或缓存键。正常构建与详细构建切换后可能需要一次重新构建，同一模式连续构建保持确定性。使用 `astro dev --background` 的消费项目可通过 `astro dev logs` 查看终端日志。
 
 维护依赖时保留 TypeScript 6 别名以支持 `astro check`；Vitest 与 `@vitest/coverage-v8` 同步升级。所有质量检查使用 `bun run validate`。
+
+## 样式开发与输出
+
+Stalux 使用 UnoCSS 在主题内预编译样式，消费项目无需安装或配置 UnoCSS。共享 CSS 默认作为可缓存的外部样式表输出，正文、数学、归档、分类、标签和短句样式随相应组件加载。显式设置 Astro 的 `build.inlineStylesheets: "always"` 可恢复内联输出。自定义组件新增的 UnoCSS utilities 需要消费方自行编译。样式维护位置与开发监听参见 [STYLING.md](./docs/STYLING.md)。

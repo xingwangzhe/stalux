@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import styles from "@styles/components/archives/toArchive.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
@@ -9,6 +9,6 @@ const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 ---
 
-<div id={styles.archs}>
+<div id={"stalux-to-archive-archs"}>
     <a href="/archives" data-astro-prefetch>{t("archives.viewAll")}</a>
 </div>

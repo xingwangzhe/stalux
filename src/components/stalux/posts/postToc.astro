@@ -1,6 +1,7 @@
 ---
+import "../../../styles/generated-article.css";
 import { getCollection } from "astro:content";
-import style from "@styles/components/posts/postToc.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
@@ -30,16 +31,16 @@ const tocItems = headings
 
 <nav
     transition:name="toc-container"
-    data-toc-active-class={style.active}
+    data-toc-active-class="stalux-toc-active"
     aria-label={t("taxonomy.toc")}
 >
-    <h3 class={style.title}>{title}</h3>
+    <h3 class="stalux-toc-title">{title}</h3>
     {tocItems.length > 0 ? (
-    <ul class={style.list} transition:name="toc-content">
+    <ul class="stalux-toc-list" transition:name="toc-content">
         {tocItems.map((heading) => (
             <li>
                 <a
-                    class={`${style.item} ${style[`depth-${heading.depth}`] || ""} a-none`}
+                    class={`stalux-toc-item ${({ 1: "stalux-toc-depth-1", 2: "stalux-toc-depth-2", 3: "stalux-toc-depth-3", 4: "stalux-toc-depth-4", 5: "stalux-toc-depth-5", 6: "stalux-toc-depth-6" } as Record<number, string>)[heading.depth] || ""} a-none`}
                     href={`#${heading.slug}`}
                     data-toc-link
                 >
@@ -49,21 +50,8 @@ const tocItems = headings
         ))}
     </ul>
 ) : (
-    <div class={style.empty}>{t("taxonomy.noToc")}</div>
+    <div class="stalux-toc-empty">{t("taxonomy.noToc")}</div>
 )}
 </nav>
 
 <script src="../../../scripts/toc-scrollspy.ts"></script>
-
-<style is:global>
-@keyframes fadeSlideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-</style>

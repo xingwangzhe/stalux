@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import styles from "@styles/components/common/textType.module.css";
+
 import { getTypetextsData } from "@utils/config-utils";
 import Typewriter from "astro-typewriter";
 
@@ -8,4 +8,4 @@ const configEntries = await getCollection("config");
 const typetextsConfig = getTypetextsData(configEntries);
 ---
 
-{typetextsConfig?.items && <Typewriter class={styles.typeWriter} messages={typetextsConfig?.items} />}
+{typetextsConfig?.items && <Typewriter class="stalux-typewriter" messages={typetextsConfig?.items} />}

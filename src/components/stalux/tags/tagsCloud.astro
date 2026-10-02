@@ -1,6 +1,7 @@
 ---
+import "../../../styles/generated-tags.css";
 import { getCollection } from "astro:content";
-import styles from "@styles/components/tags/tagsCloud.module.css";
+
 import { getTagCountList } from "@utils/collections-stats";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
@@ -21,32 +22,32 @@ const tagLinks = tagList.map((t) => ({
 ---
 
 <!-- 移动端：SSR 卡片 -->
-<div class={styles.cards} id="tags-cards">
+<div class="stalux-cloud-cards" id="tags-cards">
     {tagList.length > 0 ? (
     tagGroups.map((group) => (
-        <div class={styles.tagGroup}>
+        <div class="stalux-cloud-tag-group">
             {group.map(({ name, count }) => (
                 <a
                     href={`/tags/${name}/`}
-                    class={styles.tagCard}
+                    class="stalux-cloud-tag-card"
                     data-stalux-tag-card
                     data-count={count}
                     data-astro-prefetch
                 >
-                    <span class={styles.tagName}>{name}</span>
-                    <span class={styles.tagCount}>{count}</span>
+                    <span class="stalux-cloud-tag-name">{name}</span>
+                    <span class="stalux-cloud-tag-count">{count}</span>
                 </a>
             ))}
         </div>
     ))
 ) : (
-    <div class={styles.noTags}>{t("tags.noTags")}</div>
+    <div class="stalux-cloud-no-tags">{t("tags.noTags")}</div>
 )}
 </div>
 
 <!-- 桌面端：Canvas 标签云 -->
-<div class={styles.canvasFrame} style={{ "--cloud-density": cloudDensity }}>
-    <div class={styles.canvas} id="tags-canvas" data-tags={JSON.stringify(tagLinks)}></div>
+<div class="stalux-cloud-canvas-frame" style={{ "--cloud-density": cloudDensity }}>
+    <div class="stalux-cloud-canvas" id="tags-canvas" data-tags={JSON.stringify(tagLinks)}></div>
 </div>
 
 <script>

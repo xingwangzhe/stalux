@@ -1,7 +1,8 @@
 ---
+import "../../../styles/generated-article.css";
+import "../../../styles/generated-prose.css";
 import "photoswipe/dist/photoswipe.css";
-import style from "@styles/components/posts/postContent.module.css";
-import "@styles/components/markdown.css";
+
 import { getCollection } from "astro:content";
 import { getPromoteData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
@@ -33,17 +34,19 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
 ---
 
 <article
-    class={style.articleContent}
+    class="stalux-article"
     data-stalux-gallery={props.hasImage ? "true" : undefined}
     transition:name={props.transitionName}
 >
     <!-- Article Header -->
-    <header class={style.articleHeader}>
-        <h1 class={style.title} transition:name={props.titleTransitionName}>{props.title}</h1>
-        <div class={style.metadata}>
+    <header class="stalux-post-article-header">
+        <h1 class="stalux-post-title" transition:name={props.titleTransitionName}>
+            {props.title}
+        </h1>
+        <div class="stalux-post-metadata">
             {props.date && (
     <time
-        class={style.metaItem}
+        class="stalux-post-meta-item"
         datetime={timezone ? toMachineDateTime(props.date, timezone) : props.date}
     >
         {t("post.publishTime")}
@@ -53,7 +56,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
 
             {props.updated && (
     <time
-        class={style.metaItem}
+        class="stalux-post-meta-item"
         datetime={timezone ? toMachineDateTime(props.updated, timezone) : props.updated}
     >
         {t("post.updateTime")}
@@ -62,9 +65,9 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
 )}
         </div>
         {(
-    <div class={style.pageStats}>
+    <div class="stalux-post-page-stats">
         {(props.readingMinutes ?? 0) > 0 && (
-            <span class={style.readingTime}>
+            <span class="stalux-post-reading-time">
                 {t("post.readingTime")}
                 {props.readingMinutes && props.readingMinutes > 0
                     ? props.readingMinutes < 1
@@ -74,7 +77,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
             </span>
         )}
         {(props.wordCount ?? 0) > 0 && (
-            <span class={style.wordCount}>
+            <span class="wordCount">
                 {t("post.wordCount")}
                 {props.wordCount}
             </span>
@@ -86,8 +89,13 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
     </div>
 )}
         {exportMd && (
-    <div class={style.sourceLinkRow}>
-        <a class={style.sourceLink} href={mdSourceUrl} target="_blank" rel="noopener noreferrer">
+    <div class="stalux-post-source-link-row">
+        <a
+            class="stalux-post-source-link"
+            href={mdSourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+        >
             {t("post.viewSource")}
         </a>
     </div>
@@ -95,7 +103,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
     </header>
 
     <!-- Article Body -->
-    <section class={style.body} data-pagefind-body>
+    <section class="stalux-post-body stalux-prose" data-pagefind-body>
         <slot />
     </section>
 </article>

@@ -1,7 +1,8 @@
 ---
+import "../../../styles/generated-article.css";
 import { getCollection } from "astro:content";
 import Author from "@components/stalux/common/author.astro";
-import style from "@styles/components/posts/postAuthor.module.css";
+
 import { getAuthorData } from "@utils/config-utils";
 
 const configEntries = await getCollection("config");
@@ -11,11 +12,11 @@ const authorConfig = getAuthorData(configEntries);
 const isPostPage = Astro.url.pathname.includes("/posts/");
 ---
 
-<aside class={style.sidebarContainer} style={isPostPage ? "margin-top: -3em;" : ""}>
-    <div class={style.authorSection}>
-        <div class={style.authorCard}>
+<aside class="stalux-byline-sidebar-container" style={isPostPage ? "margin-top: -3em;" : ""}>
+    <div class="stalux-byline-author-section">
+        <div class="stalux-byline-author-card">
             <Author iscolum />
-            <p class={style.authorBio}>{authorConfig.bio}</p>
+            <p class="stalux-byline-author-bio">{authorConfig.bio}</p>
         </div>
     </div>
 </aside>

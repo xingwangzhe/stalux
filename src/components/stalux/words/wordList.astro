@@ -1,7 +1,8 @@
 ---
+import "../../../styles/generated-words.css";
 import type { CollectionEntry } from "astro:content";
 import WordCard from "@components/stalux/words/wordCard.astro";
-import styles from "@styles/components/words/wordList.module.css";
+
 import { toTimestamp } from "@utils/dayjs";
 
 interface Props {
@@ -18,11 +19,11 @@ const sorted = [...entries].sort((a, b) => {
 });
 ---
 
-<ul class={styles.list}>
+<ul class="stalux-word-list-list">
     {sorted.map((entry) => {
     const hash = entry.data.abbrlink ? `#word-${entry.data.abbrlink}` : undefined;
     return (
-        <li class={styles.item}>
+        <li class="stalux-word-list-item">
             {hash ? (
                 <a
                     href={hash}

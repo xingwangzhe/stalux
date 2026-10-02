@@ -1,6 +1,7 @@
 ---
+import "../../../styles/generated-archives.css";
 import { type CollectionEntry, getCollection } from "astro:content";
-import styles from "@styles/components/archives/archivesList.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 import { format, parseDate, toTimestamp } from "@utils/dayjs";
 import { createTranslator } from "@utils/i18n";
@@ -52,41 +53,44 @@ const archiveYears = [...archivesByYearMonth.entries()]
     }));
 ---
 
-<section class={styles.archivesContainer}>
-    <div class={styles.pageHeader}>
-        <div class={styles.timelineContainer}>
+<section class="stalux-archive-container">
+    <div class="stalux-archive-page-header">
+        <div class="stalux-archive-timeline-container">
             {archiveYears.length > 0 ? (
     archiveYears.map((archiveYear) => (
-        <div class={styles.yearSection} data-year={String(archiveYear.year)}>
-            <div class={styles.yearHeader}>
-                <h2 class={styles.yearTitle}>{archiveYear.year}</h2>
-                <div class={styles.yearCount}>
+        <div class="stalux-archive-year-section" data-year={String(archiveYear.year)}>
+            <div class="stalux-archive-year-header">
+                <h2 class="stalux-archive-year-title">{archiveYear.year}</h2>
+                <div class="stalux-archive-year-count">
                     {t("archives.postCount", { n: archiveYear.count })}
                 </div>
             </div>
             {archiveYear.months.map(({ month, posts: monthPosts }) => (
                 <div
-                    class={styles.monthSection}
+                    class="stalux-archive-month-section"
                     style={{
                         "--archive-estimate": `${Math.ceil(monthPosts.length / 12) * 12 * 48 + 40}px`,
                     }}
                 >
-                    <h3 class={styles.monthTitle}>{t("archives.month", { n: month })}</h3>
+                    <h3 class="stalux-archive-month-title">{t("archives.month", { n: month })}</h3>
                     {Array.from({ length: Math.ceil(monthPosts.length / 12) }, (_, index) =>
                         monthPosts.slice(index * 12, (index + 1) * 12),
                     ).map((group) => (
                         <ul
-                            class={styles.postList}
+                            class="stalux-archive-post-list"
                             style={{ "--archive-group-estimate": `${group.length * 48}px` }}
                         >
                             {group.map((post) => (
-                                <li class={styles.postItem}>
-                                    <time class={styles.postDate} datetime={post.data.date}>
+                                <li class="stalux-archive-post-item">
+                                    <time
+                                        class="stalux-archive-post-date"
+                                        datetime={post.data.date}
+                                    >
                                         {format(parseDate(post.data.date), "yyyy-MM-dd")}
                                     </time>
                                     <a
                                         href={`/posts/${post.data.abbrlink}/`}
-                                        class={styles.postLink}
+                                        class="stalux-archive-post-link"
                                         data-astro-prefetch="viewport"
                                     >
                                         {post.data.title}
@@ -100,7 +104,7 @@ const archiveYears = [...archivesByYearMonth.entries()]
         </div>
     ))
 ) : (
-    <div class={styles.noPosts}>{t("archives.noPosts")}</div>
+    <div class="stalux-archive-no-posts">{t("archives.noPosts")}</div>
 )}
         </div>
 

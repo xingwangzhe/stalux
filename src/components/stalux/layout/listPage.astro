@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Navs from "@components/stalux/layout/navs.astro";
 import Stalux from "@layouts/Stalux.astro";
-import styles from "@styles/pages/listPage.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 
 interface Props {
@@ -20,7 +20,7 @@ const siteConfig = getSiteData(configEntries);
 <Stalux title={`${title} | ${siteConfig.title}`} description={description}>
     <div style="height: 3em;"></div>
     <Navs />
-    <h1 class={styles.title}>{heading}</h1>
-    {subheading && <div class={styles.description}>{subheading}</div>}
+    <h1 class="stalux-page-title">{heading}</h1>
+    {subheading && <div class="stalux-page-description">{subheading}</div>}
     <slot />
 </Stalux>

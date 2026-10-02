@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
-import style from "@styles/components/posts/postCard.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 import { toMachineDateTime } from "@utils/semantic-time";
 import { getPostTitleTransitionName } from "@utils/view-transitions";
@@ -20,8 +20,8 @@ const timezone = siteConfig.timezone;
 const description = post.data.desc || "";
 ---
 
-<article class={style.post}>
-    <div class={style.postContainer}>
+<article class="block h-full text-inherit no-underline">
+    <div class="stalux-post-card">
         {post.data.cover && (
     <a
         href={`/posts/${post.data.abbrlink}/`}
@@ -29,7 +29,7 @@ const description = post.data.desc || "";
         data-astro-prefetch="viewport"
         aria-label={post.data.title}
     >
-        <div class={style.postCover}>
+        <div class="stalux-card-post-cover">
             <img
                 src={post.data.cover}
                 alt={post.data.title}
@@ -43,17 +43,17 @@ const description = post.data.desc || "";
     </a>
 )}
         <h2
-            class={style.postTitle}
+            class="stalux-card-post-title"
             transition:name={priority ? getPostTitleTransitionName(post.data.abbrlink) : undefined}
         >
             <a href={`/posts/${post.data.abbrlink}/`} class="a-none" data-astro-prefetch="viewport">
                 {post.data.title}
             </a>
         </h2>
-        <div class={style.time}>
+        <div class="stalux-card-time">
             {post.data.date && (
     <time
-        class={style.postDate}
+        class="stalux-card-post-date"
         datetime={timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date}
     >
         {post.data.date}
@@ -61,33 +61,33 @@ const description = post.data.desc || "";
 )}
             {post.data.updated && (
     <time
-        class={style.postUpdated}
+        class="stalux-card-post-updated"
         datetime={timezone ? toMachineDateTime(post.data.updated, timezone) : post.data.updated}
     >
         {post.data.updated}
     </time>
 )}
         </div>
-        <div class={style.postDescription}>{description}</div>
-        <div class={style.postMeta}>
-            <div class={style.postTags}>
+        <div class="stalux-card-post-description">{description}</div>
+        <div class="stalux-card-post-meta">
+            <div class="stalux-card-post-tags">
                 {post.data.tags?.map((tag) => (
     <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
-        <span class={style.postTag}>{tag}</span>
+        <span class="stalux-card-post-tag">{tag}</span>
     </a>
 ))}
             </div>
-            <div class={style.postCategories}>
+            <div class="stalux-card-post-categories">
                 {post.data.categories?.map((category) => (
     <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
-        <span class={style.postCategory}>{category}</span>
+        <span class="stalux-card-post-category">{category}</span>
     </a>
 ))}
             </div>
         </div>
         <a
             href={`/posts/${post.data.abbrlink}/`}
-            class={`${style.readMore} a-none`}
+            class="stalux-card-read-more a-none"
             data-astro-prefetch
         >
             Read More

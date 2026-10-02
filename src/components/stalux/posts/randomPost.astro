@@ -1,6 +1,7 @@
 ---
+import "../../../styles/generated-article.css";
 import { getCollection } from "astro:content";
-import style from "@styles/components/posts/randomPost.module.css";
+
 import { createTranslator } from "@utils/i18n";
 
 interface Props {
@@ -17,7 +18,7 @@ const { count = 5, title = t("randomPost.title") } = Astro.props;
 ---
 
 <aside
-    class={style.container}
+    class="stalux-random-container"
     transition:persist-props
     aria-label={t("randomPost.title")}
     data-stalux-random-posts
@@ -26,12 +27,12 @@ const { count = 5, title = t("randomPost.title") } = Astro.props;
     data-load-failed={t("randomPost.loadFailed")}
     data-load-error={t("randomPost.loadError")}
 >
-    <div class={style.header}>
-        <h3 class={style.title}>{title}</h3>
+    <div class="stalux-random-header">
+        <h3 class="stalux-random-title">{title}</h3>
         <button
             type="button"
             id="refresh-random-posts"
-            class={style.refreshButton}
+            class="stalux-random-refresh"
             title={t("randomPost.refresh")}
             aria-label={t("randomPost.refresh")}
         >
@@ -53,8 +54,8 @@ const { count = 5, title = t("randomPost.title") } = Astro.props;
             </svg>
         </button>
     </div>
-    <ul class={style.list} id="random-posts-list">
-        <li class={style.loading}>{t("randomPost.loading")}</li>
+    <ul class="stalux-random-list" id="random-posts-list">
+        <li class="stalux-random-loading">{t("randomPost.loading")}</li>
     </ul>
 </aside>
 <script src="../../../scripts/random-posts.ts"></script>

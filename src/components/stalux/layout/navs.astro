@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Search from "@components/stalux/common/search.astro";
-import styles from "@styles/components/layout/navs.module.css";
+
 import { getNavsData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 import { getLucideIcon } from "@utils/lucide-icons";
@@ -20,21 +20,21 @@ const navs = navsConfig?.items ?? [];
     <button
         type="button"
         data-ref="stalux-nav-toggle"
-        class={styles.navToggle}
+        class="stalux-nav-toggle"
         aria-label={t("nav.menu")}
     >
         {MenuIcon && <MenuIcon size={20} stroke-width={2} class="nav-icon" />}
     </button>
 
     <!-- 侧边栏遮罩 -->
-    <div data-ref="stalux-nav-overlay" class={styles.navOverlay}></div>
+    <div data-ref="stalux-nav-overlay" class="stalux-nav-overlay"></div>
 
     <!-- 导航列表 -->
-    <div class={styles.navContainer}>
+    <div class="stalux-nav-container">
         <button
             type="button"
             data-ref="stalux-nav-scroll-left"
-            class={styles.scrollBtn}
+            class="stalux-nav-scroll-btn"
             data-side="left"
             aria-label={t("nav.scrollLeft")}
         >
@@ -43,32 +43,32 @@ const navs = navsConfig?.items ?? [];
             </svg>
         </button>
 
-        <ul data-ref="stalux-nav-list" class={styles.navList}>
+        <ul data-ref="stalux-nav-list" class="stalux-nav-list">
             {navs.map((item) => {
     const NavIcon = item.icon ? getLucideIcon(item.icon, Astro.logger) : null;
     return (
-        <li class={styles.navItem}>
+        <li class="stalux-nav-item">
             <a
                 href={item.link}
-                class={styles.navLink}
+                class="stalux-nav-link"
                 data-ref="stalux-nav-link"
                 data-astro-prefetch
             >
                 {NavIcon && <NavIcon size={20} stroke-width={2} class="nav-icon" />}
-                <span class={styles.navText}>{item.title}</span>
+                <span class="stalux-nav-text">{item.title}</span>
             </a>
         </li>
     );
 })}
-            <li class={styles.navItem}>
+            <li class="stalux-nav-item">
                 <a
                     href="#search"
-                    class={styles.navLink}
+                    class="stalux-nav-link"
                     data-ref="stalux-search-btn"
                     aria-label={t("search.title")}
                 >
                     {SearchIcon && <SearchIcon size={20} stroke-width={2} class="nav-icon" />}
-                    <span class={styles.navText}>{t("nav.search")}</span>
+                    <span class="stalux-nav-text">{t("nav.search")}</span>
                 </a>
             </li>
         </ul>
@@ -76,7 +76,7 @@ const navs = navsConfig?.items ?? [];
         <button
             type="button"
             data-ref="stalux-nav-scroll-right"
-            class={styles.scrollBtn}
+            class="stalux-nav-scroll-btn"
             data-side="right"
             aria-label={t("nav.scrollRight")}
         >

@@ -1,0 +1,143 @@
+@layer components {
+    /* navs */
+    nav {
+        @apply w-full min-w-0 max-w-full;
+    }
+    .stalux-nav-scroll-btn:hover {
+        background: transparent;
+    }
+
+    .stalux-nav-scroll-btn[data-visible] {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .stalux-nav-scroll-btn[data-side="left"] {
+        left: 4px;
+    }
+
+    .stalux-nav-scroll-btn[data-side="right"] {
+        right: 4px;
+    }
+    .stalux-nav-container:hover .stalux-nav-scroll-btn[data-visible] {
+        opacity: 1;
+    }
+    .stalux-nav-scroll-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    .stalux-nav-link,
+    .stalux-nav-link:visited {
+        @apply text-inherit no-underline cursor-pointer stalux-flex-row w-full;
+        background: none;
+        border: none;
+        font: inherit;
+        padding: 0.5rem 0.75rem;
+        gap: 0.5rem;
+        min-height: 44px;
+    }
+
+    .stalux-nav-link .nav-icon {
+        stroke: var(--white-full);
+    }
+
+    .stalux-nav-link:hover .nav-icon,
+    .stalux-nav-link:hover .stalux-nav-text {
+        stroke: var(--stalux-accent-color);
+        color: var(--stalux-accent-color);
+    }
+
+    .stalux-nav-toggle svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .stalux-nav-overlay[data-state="show"] {
+        @apply block;
+        opacity: 1;
+        pointer-events: auto;
+    }
+    @media (max-width: 1100px) {
+        .stalux-nav-list {
+            gap: 1rem;
+        }
+
+        .stalux-nav-item {
+            font-size: 1em;
+            margin-right: 0.6em;
+            margin-left: 0.6em;
+        }
+    }
+    @media (max-width: 900px) {
+        .stalux-nav-item {
+            font-size: 0.95em;
+            margin-right: 0.25em;
+            margin-left: 0.25em;
+        }
+
+        .stalux-nav-list {
+            gap: 0.5rem;
+        }
+    }
+    @media (max-width: 600px) {
+        .stalux-nav-toggle {
+            @apply block fixed;
+            top: 0.75rem;
+            left: 0.75rem;
+        }
+
+        .stalux-nav-container {
+            overflow: visible;
+        }
+
+        nav {
+            width: auto;
+        }
+
+        .stalux-nav-list {
+            @apply fixed flex-col items-start justify-start overflow-y-auto pointer-events-none;
+            top: 0;
+            left: 0;
+            right: auto;
+            width: min(220px, calc(100vw - 1rem));
+            height: 100vh;
+            background: var(--black-20p);
+            backdrop-filter: blur(20px);
+            gap: 0;
+            padding: 0.5rem 1rem 2rem 1rem;
+            transform: translateX(-100%);
+            z-index: 1000;
+        }
+
+        .stalux-nav-list[data-state="open"] {
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .stalux-nav-item {
+            @apply w-full m-0 shrink-0;
+            border-bottom: 1px solid var(--white-10p);
+            font-size: 0.9em;
+        }
+
+        .stalux-nav-text {
+            display: inline;
+        }
+
+        .stalux-nav-link {
+            @apply w-full;
+            padding: 0.45rem 0.75rem;
+            min-height: 44px;
+            font-size: inherit;
+        }
+
+        .stalux-nav-link .nav-icon {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}

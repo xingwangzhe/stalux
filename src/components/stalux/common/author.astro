@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import styles from "@styles/components/common/author.module.css";
+
 import { getAuthorData } from "@utils/config-utils";
 
 const configEntries = await getCollection("config");
@@ -17,8 +17,8 @@ const isHomePage = Astro.url.pathname === "/";
 const navigationHref = isHomePage ? "/about" : "/";
 ---
 
-<article class={styles.author} transition:persist-props>
-    <figure class={`${styles.authorFigure} ${props.iscolum ? styles.figureColumn : ""}`}>
+<article class="stalux-author" transition:persist-props>
+    <figure class={`stalux-author-figure ${props.iscolum ? "stalux-author-figure-column" : ""}`}>
         <a href={navigationHref} class="a-none" data-astro-prefetch>
             <Image src={authorConfig.avatar} alt={authorConfig.name} width={100} height={100} />
         </a>

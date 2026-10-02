@@ -48,12 +48,19 @@ const pages = {
 
 const searchStyle = pages.home.match(/<link\b[^>]*data-stalux-search-style[^>]*>/u)?.[0];
 assert(searchStyle, "search CSS asset link is missing");
-assert(
-    [...pages.home.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)].some((match) =>
-        match[1]?.includes(".stalux-main"),
+const initialStyleLinks = [
+    ...pages.home.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"#]+)"[^>]*>/gu),
+];
+const initialStyles = [
+    ...[...pages.home.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)].map(
+        (match) => match[1] ?? "",
     ),
-    "critical layout CSS must be in the initial HTML",
-);
+    ...initialStyleLinks.map((match) => read((match[1] ?? "").replace(/^\//u, ""))),
+].join("\n");
+assert(initialStyles.includes(".stalux-main"), "initial render has no blocking layout stylesheet");
+assert(initialStyleLinks.length > 0, "shared CSS must be a cacheable stylesheet asset");
+assert(!initialStyles.includes(".stalux-cloud-tag-card"), "homepage includes unused tag-cloud CSS");
+assert(!initialStyles.includes(".stalux-prose"), "homepage includes unused article typography CSS");
 assert(searchStyle.includes('rel="prefetch"'), "search CSS must not block the first paint");
 assert(searchStyle.includes('as="style"'), "search CSS must be emitted as a stylesheet asset");
 assert(
@@ -93,7 +100,7 @@ assert(pages.home.includes("Google Sans Code"), "Astro local code font is missin
 assert(pages.home.includes('class="agent-home-summary"'), "agent home summary is missing");
 assert(
     /\.agent-home-summary[^}]*clip:rect\(0,\s*0,\s*0,\s*0\)[^}]*position:absolute/gu.test(
-        pages.home,
+        initialStyles,
     ),
     "agent home summary is not visually hidden",
 );

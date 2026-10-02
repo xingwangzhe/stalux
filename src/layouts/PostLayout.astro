@@ -1,4 +1,5 @@
 ---
+import "../styles/generated-article.css";
 import { getCollection } from "astro:content";
 import PostCC from "@components/stalux/posts/postCC.astro";
 import PostContent from "@components/stalux/posts/postContent.astro";
@@ -9,8 +10,6 @@ import WalineComment from "@components/stalux/posts/WalineComment.astro";
 import { getCommentData } from "@utils/config-utils";
 import { getPostTitleTransitionName } from "@utils/view-transitions";
 import { buildWalineProps } from "@utils/waline";
-import "@styles/base/math.css";
-import layoutStyle from "@styles/components/posts/postLayout.module.css";
 
 interface Props {
     title: string;
@@ -51,8 +50,8 @@ const walineConfig = walineSection?.serverURL
     : undefined;
 ---
 
-<div class={layoutStyle.postLayout}>
-    <div class={layoutStyle.container}>
+<div class="stalux-post-page">
+    <div class="stalux-post-layout">
         <!-- Left Sidebar -->
         <PostLeft author={author} authorAvatar={props.authorAvatar} />
 

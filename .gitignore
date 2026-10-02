@@ -40,7 +40,8 @@ coverage/
 .codegraph/
 .playwright-cli/
 .playwright-mcp/
-docs/
+docs/*
+!docs/STYLING.md
 
 # build-generated font subsets (rebuilt each build by integration)
 public/fonts/common-*.woff2
@@ -56,3 +57,7 @@ src/internal/generated/
 # build-generated code font (copied by integration, deterministic)
 public/fonts/GoogleSansCode.woff2
 public/fonts/code.css
+
+src/styles/generated*.css
+
+.styles-entry*

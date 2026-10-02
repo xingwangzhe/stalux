@@ -1,7 +1,8 @@
 ---
+import "../../../styles/generated-article.css";
 import { getCollection } from "astro:content";
 import ccIcon from "@assets/cc-icon.svg?raw";
-import style from "@styles/components/posts/postCC.module.css";
+
 import { buildCCLink, buildCCName } from "@utils/cc";
 import { createTranslator } from "@utils/i18n";
 
@@ -24,19 +25,19 @@ const licenseLink = buildCCLink(cc);
 const licenseName = buildCCName(cc, t);
 ---
 
-<div class={style.ccBox}>
-    <div class={style.ccContent}>
-        <p class={style.ccTitle}>{title}</p>
-        <p class={style.ccAuthor}>{t("post.author")}{author}</p>
+<div class="stalux-license-box">
+    <div class="stalux-license-content">
+        <p class="stalux-license-title">{title}</p>
+        <p class="stalux-license-author">{t("post.author")}{author}</p>
         {url && (
-    <p class={style.ccUrl}>
+    <p class="stalux-license-url">
         {t("post.articleLink")}
         <a href={url} target="_blank" rel="noopener noreferrer">
             {url}
         </a>
     </p>
 )}
-        <p class={style.ccLicense}>
+        <p class="stalux-license-license">
             {t("post.licensedUnder")}
             <a href={licenseLink} target="_blank" rel="noopener noreferrer">
                 {licenseName}
@@ -44,7 +45,7 @@ const licenseName = buildCCName(cc, t);
         </p>
     </div>
 
-    <div class={style.ccWatermark}>
-        <div class={style.ccIcon} set:html={ccIcon} />
+    <div class="stalux-license-watermark">
+        <div class="stalux-license-icon" set:html={ccIcon} />
     </div>
 </div>

@@ -16,17 +16,17 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
 ---
 
 {showStats && (
-    <p class="site-stats">
+    <p class="stalux-stats-site-stats">
         <span id="vercount_container_site_uv">
             {t("footer.visitors")}
             <span id="vercount_value_site_uv">Loading...</span> {t("footer.visits")}
         </span>
-        <span class="stats-separator">|</span>
+        <span class="stalux-stats-stats-separator">|</span>
         <span id="vercount_container_site_pv">
             {t("footer.totalVisits")}
             <span id="vercount_value_site_pv">Loading...</span> {t("footer.times")}
         </span>
-        <span class="stats-separator">|</span>
+        <span class="stalux-stats-stats-separator">|</span>
         <span id="word-count-container">
             {t("footer.totalWords")}
             <span id="word-count-value">{wordCount ?? "Loading..."}</span> {t("footer.chars")}
@@ -36,7 +36,7 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
 
 {buildtime && (
     <div
-        class="site-build-time"
+        class="stalux-stats-site-build-time"
         data-stalux-buildtime={buildtime}
         data-stalux-runtime-format={t("footer.runtimeFormat")}
     >
@@ -46,24 +46,3 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
         </span>
     </div>
 )}
-
-<style>
-.site-stats {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.stats-separator {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.site-build-time {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-    text-align: center;
-}
-</style>

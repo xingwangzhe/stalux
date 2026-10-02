@@ -25,9 +25,21 @@ function collectFiles(directory: string, root = directory): Array<readonly [stri
     });
 }
 
-export function createRuntimeCacheKey(scriptsDirectory: string, packageJson: string): string {
+export function createRuntimeCacheKey(
+    scriptsDirectory: string,
+    packageJson: string,
+    stylesDirectory?: string,
+): string {
     return hashRuntimeSources([
         ...collectFiles(scriptsDirectory),
+        ...(stylesDirectory
+            ? readdirSync(stylesDirectory)
+                  .filter((name) => /^generated(?:-[a-z]+)?\.css$/u.test(name))
+                  .map((name): readonly [string, string] => [
+                      `styles/${name}`,
+                      readFileSync(path.join(stylesDirectory, name), "utf8"),
+                  ])
+            : []),
         ["package.json", readFileSync(packageJson, "utf8")],
     ]);
 }

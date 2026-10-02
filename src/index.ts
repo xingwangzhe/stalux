@@ -175,15 +175,16 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const runtimeCacheKey = createRuntimeCacheKey(
                     path.join(srcDir, "scripts"),
                     path.resolve(srcDir, "../package.json"),
+                    path.join(srcDir, "styles"),
                 );
 
                 // 1. 注入 Vite 别名 + 组件覆盖插件 + Vue 特性标记（Waline 依赖）
                 updateConfig({
-                    // Keep route CSS on the first-response path. Search UI CSS is
-                    // a separate prefetched asset; respect explicit external CSS.
+                    // Reuse shared theme CSS across routes instead of embedding the full bundle.
+                    // Respect callers that explicitly request inline styles.
                     build: {
                         inlineStylesheets:
-                            config.build.inlineStylesheets === "never" ? "never" : "always",
+                            config.build.inlineStylesheets === "always" ? "always" : "never",
                     },
                     vite: {
                         build: { target: config.vite.build?.target ?? "esnext" },
@@ -207,7 +208,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 });
 
                 // 2. 注入全局 CSS
-                injectScript("page-ssr", `import "${srcDir}/styles/base/init.css";`);
+                injectScript("page-ssr", `import "${srcDir}/styles/generated.css";`);
                 injectScript("page", `import "${srcDir}/scripts/core-runtime.ts";`);
 
                 // 2.5 同步背景 SVG 到用户项目 public/background/

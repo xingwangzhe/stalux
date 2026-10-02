@@ -1,4 +1,6 @@
 ---
+import "../../../styles/generated-tags.css";
+
 interface Props {
     type: string;
     typeKey?: string;
@@ -8,7 +10,7 @@ interface Props {
 const props = Astro.props as Props;
 
 import { getCollection } from "astro:content";
-import styles from "@styles/components/tags/tagHeader.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
@@ -25,9 +27,9 @@ if (typeKey === "category" || typeKey === "categories" || typeKey === "分类") 
 }
 ---
 
-<header class={styles.pageHeader}>
-    <h1 class={styles.pageTitle}>
-        <span class={styles.categoryIcon}>
+<header class="stalux-tag-header">
+    <h1 class="stalux-tag-page-title">
+        <span class="stalux-tag-category-icon">
             <svg
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
@@ -47,8 +49,10 @@ if (typeKey === "category" || typeKey === "categories" || typeKey === "分类") 
         </span>
         {props.type}: {props.name}
     </h1>
-    <p class={styles.pageDescription}>{t("taxonomy.foundPosts", { count: props.count })}</p>
-    <a href={typeUrl} class={styles.backLink} data-astro-prefetch
+    <p class="stalux-tag-page-description">
+        {t("taxonomy.foundPosts", { count: props.count })}
+    </p>
+    <a href={typeUrl} class="stalux-tag-back-link" data-astro-prefetch
         >{t("taxonomy.backToList", { type: props.type })}</a
     >
 </header>

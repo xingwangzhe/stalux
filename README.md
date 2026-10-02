@@ -119,7 +119,7 @@ TypeScript uses ESNext. The theme defaults `vite.build.target` to `"esnext"` to 
 
 ### Initial CSS and search styles
 
-The theme defaults to Astro's `build.inlineStylesheets: "always"`, placing route styles in the HTML to reduce stylesheet requests before the first paint. An explicit consumer setting of `build.inlineStylesheets: "never"` keeps external stylesheets. Inlining increases each HTML response in exchange for a shorter stylesheet request chain on a first visit.
+The theme defaults to Astro's `build.inlineStylesheets: "never"`: hashed shared CSS can be cached across routes, while component styles load on the pages that use them. Normal blocking stylesheets prevent an unstyled first paint. An explicit consumer setting of `build.inlineStylesheets: "always"` restores inline styles at the cost of larger HTML responses.
 
 Pagefind dialog CSS is emitted as a separate hashed static file with a `prefetch` hint. Opening search activates the stylesheet and waits for it before displaying the dialog. It does not block the initial content or depend on JavaScript generating a CSS asset. A `<noscript>` stylesheet fallback is included.
 
@@ -281,3 +281,7 @@ In Astro 7.3, integration `logger.debug()` uses the official `DEBUG/--verbose` c
 Timing is emitted only as logs, never included in generated pages or cache keys. Switching between normal and verbose builds may require one rebuild; repeated builds in the same mode remain deterministic. Consumers running `astro dev --background` can read terminal output with `astro dev logs`.
 
 Keep the TypeScript 6 alias for `astro check`, upgrade Vitest and its coverage provider together, and run `bun run validate` before releasing.
+
+## Style development and output
+
+Stalux precompiles its UnoCSS styles; consuming projects need no UnoCSS dependency or configuration. Shared CSS is a cacheable external stylesheet by default. Article/math, archive, category, tag and quote styles load with their components. Explicit Astro `build.inlineStylesheets: "always"` restores inline output. New utilities in consumer override components require the consumer’s own compiler. See [STYLING.md](./docs/STYLING.md) for maintenance and watch mode.

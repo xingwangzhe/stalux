@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 import Footer from "@components/stalux/layout/footer.astro";
 import Head from "@components/stalux/layout/head.astro";
-import "@styles/shared/view-transitions.css";
 import { getAccentColorStyle } from "@utils/accent-color";
 import {
     getAiDiscoveryData,
@@ -106,19 +105,3 @@ const routeAnimation = getRouteAnimation(routeKind);
         <Footer />
     </body>
 </html>
-
-<style></style>
-
-<style>
-.stalux-ai-prompt {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: pre-wrap;
-    border: 0;
-}
-</style>

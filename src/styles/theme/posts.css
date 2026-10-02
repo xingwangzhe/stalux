@@ -1,0 +1,79 @@
+@layer components {
+    /* postList */
+    .stalux-post-list-container {
+        @apply w-full;
+        height: auto;
+        margin: 5px 0;
+        ul {
+            @apply flex flex-wrap stalux-list-bare;
+            gap: 2rem;
+            margin: 3em;
+        }
+
+        @media (max-width: 768px) {
+            ul {
+                margin: 1rem;
+            }
+        }
+
+        ul > li {
+            @apply min-w-0 m-0;
+            flex: 1 1 min(22rem, 100%);
+        }
+    }
+
+    /* postCard */
+
+    .stalux-card-post-title a {
+        @apply text-inherit no-underline;
+    }
+
+    .stalux-post-card > a:first-child {
+        @apply block w-full min-w-0;
+    }
+
+    .stalux-card-post-cover img {
+        @apply w-full max-w-full h-full object-cover;
+        transition: transform var(--transition-fast) ease;
+    }
+
+    .stalux-post-card:is(:hover, :focus-within) .stalux-card-post-cover img {
+        transform: scale(1.05);
+    }
+    .stalux-post-card:is(:hover, :focus-within) {
+        transform: translateY(-3px);
+        box-shadow: var(--card-box-shadow-hover);
+    }
+    .stalux-card-post-date,
+    .stalux-card-post-updated {
+        @apply inline-flex items-center w-fit;
+        gap: 0.35rem;
+        padding: 0.28rem 0.6rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        line-height: 1.1;
+        color: #e8f2ff;
+    }
+    .stalux-card-post-date {
+        @apply [background:var(--date-bg)] [border:1px_solid_var(--date-border)] [color:#e8f2ff];
+    }
+
+    .stalux-card-post-updated {
+        @apply [background:var(--updated-bg)] [border:1px_solid_var(--updated-border)] [color:#fff7de];
+    }
+
+    .stalux-card-post-tags a {
+        @apply no-underline;
+    }
+    .stalux-card-post-tag:focus,
+    .stalux-card-post-tag:hover {
+        background: var(--tag-bg-hover);
+    }
+    .stalux-card-post-categories a {
+        @apply no-underline;
+    }
+    .stalux-card-post-category:focus,
+    .stalux-card-post-category:hover {
+        background: var(--category-bg-hover);
+    }
+}

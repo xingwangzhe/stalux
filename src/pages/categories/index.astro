@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import CategoriesList from "@components/stalux/categories/categoriesList.astro";
 import Navs from "@components/stalux/layout/navs.astro";
 import Stalux from "@layouts/Stalux.astro";
-import styles from "@styles/pages/categories.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
@@ -18,7 +18,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <h1 class={styles.title}>{t("categories.heading")}</h1>
-    <div class={styles.description}>{t("categories.browseByTopic")}</div>
+    <h1 class="stalux-page-title">{t("categories.heading")}</h1>
+    <div class="stalux-page-description">{t("categories.browseByTopic")}</div>
     <CategoriesList />
 </Stalux>

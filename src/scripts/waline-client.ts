@@ -1,6 +1,6 @@
 import { init, type WalineInitOptions } from "@waline/client";
 import walineCss from "@waline/client/style?inline";
-import staluxWalineCss from "../styles/components/posts/waline.css?inline";
+import staluxWalineCss from "../styles/generated-waline.css?inline";
 
 export function mountWaline(config: Record<string, unknown>, element: HTMLElement): () => void {
     const style = document.createElement("style");

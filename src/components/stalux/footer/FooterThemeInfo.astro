@@ -9,7 +9,7 @@ const showThemeInfoSection = !!(showPoweredBy || showThemeInfo);
 ---
 
 {showThemeInfoSection && (
-    <div class="theme-info">
+    <div class="stalux-theme-info">
         {showPoweredBy && (
             <span>
                 Powered by
@@ -33,30 +33,3 @@ const showThemeInfoSection = !!(showPoweredBy || showThemeInfo);
         )}
     </div>
 )}
-
-<style>
-.theme-info {
-    color: var(--white-70p);
-    font-size: 0.85rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.3em;
-    flex-wrap: wrap;
-}
-
-.theme-info span {
-    margin: 0;
-}
-
-.theme-info a {
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    transition: color 0.3s ease;
-    margin: 0 0.2em;
-}
-
-.theme-info a:hover {
-    color: rgba(255, 255, 255, 1);
-    text-decoration: none;
-}
-</style>

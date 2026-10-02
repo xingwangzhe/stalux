@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.29.8",
+    "version": "1.30.0",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -67,14 +67,14 @@
         "./package.json": "./package.json"
     },
     "scripts": {
-        "dev": "astro dev",
-        "build": "astro build && node scripts/verify-build.ts",
+        "dev": "bun run styles:build && node scripts/dev.ts",
+        "build": "bun run styles:build && astro build && node scripts/verify-build.ts",
         "preview": "astro preview",
         "astro": "astro",
         "init": "node scripts/cli.ts init",
         "node:check": "tsc6 --project tsconfig.node.json",
         "build:cli": "bun build scripts/cli.ts --target=node --outfile .release/cli.mjs",
-        "prepack": "bun run build:cli",
+        "prepack": "bun run styles:build && bun run build:cli",
         "check": "biome check .",
         "check:fix": "biome check --write .",
         "format": "biome format --write .",
@@ -87,10 +87,12 @@
         "test:coverage": "vitest run --coverage",
         "knip": "knip",
         "verify:build": "node scripts/verify-build.ts",
-        "validate": "bun run check && bun run node:check && bun run astro:check && bun run knip && bun run test:coverage && bun run build && bun run build:cli",
+        "validate": "bun run styles:build && bun run check && bun run node:check && bun run astro:check && bun run knip && bun run test:coverage && bun run build && bun run build:cli",
         "prepare": "git config core.hooksPath scripts/git-hooks",
         "dev:debug": "STALUX_DEBUG=1 astro dev --verbose",
-        "build:debug": "STALUX_DEBUG=1 astro build --verbose && node scripts/verify-build.ts"
+        "build:debug": "STALUX_DEBUG=1 astro build --verbose && node scripts/verify-build.ts",
+        "styles:build": "node scripts/build-styles.ts",
+        "styles:watch": "node scripts/build-styles.ts --watch"
     },
     "dependencies": {
         "@astrojs/markdown-satteri": "0.4.2",
@@ -122,10 +124,12 @@
         "@astrojs/check": "0.9.10",
         "@biomejs/biome": "2.5.14",
         "@types/node": "^26.6.2",
+        "@unocss/astro": "^66.10.5",
         "@vitest/coverage-v8": "5.0.1",
         "astro": "^7.3.5",
         "knip": "^6.37.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
+        "unocss": "^66.10.5",
         "vite": "8.3.0",
         "vitest": "5.0.1"
     },

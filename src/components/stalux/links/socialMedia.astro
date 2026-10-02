@@ -2,7 +2,7 @@
 // 按需导入图标 — Vite tree-shake 只打包用到的图标
 
 import { getCollection } from "astro:content";
-import styles from "@styles/components/links/socialLinks.module.css";
+
 import { getMediaLinksData } from "@utils/config-utils";
 import {
     type SimpleIcon,
@@ -35,7 +35,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
 ---
 
 <nav
-    class={styles["social-links"]}
+    class="stalux-social"
     transition:persist-props
     aria-label="Social media"
     data-stalux-social-animate={String(!isPostPage)}

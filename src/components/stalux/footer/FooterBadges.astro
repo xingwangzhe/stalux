@@ -22,7 +22,7 @@ function badgeImg(opts: BadgeOptions) {
     const height = svg.match(/<svg\b[^>]*\bheight="(\d+)"/)?.[1];
     const dimensions = width && height ? ` width="${width}" height="${height}"` : "";
     // Closed badge groups should not initialize every SVG document during first paint.
-    const img = `<img src="${src}" alt="${alt}" class="badge" loading="lazy" decoding="async"${dimensions} />`;
+    const img = `<img src="${src}" alt="${alt}" class="stalux-badge" loading="lazy" decoding="async"${dimensions} />`;
     if (opts.href) {
         return `<a href="${opts.href}" target="_blank" rel="${opts.rel ?? "noopener"}">${img}</a>`;
     }
@@ -31,23 +31,23 @@ function badgeImg(opts: BadgeOptions) {
 ---
 
 {badges && badges.length > 0 && (
-    <div class="badges-wrapper">
+    <div class="stalux-badges-wrapper">
         {badges.map((item: BadgeItem, idx: number) => {
             if (isBadgeGroup(item)) {
                 const groupId = `badge-group-${idx}`;
                 return (
-                    <details class="badge-group" id={groupId}>
-                        <summary class="badge-group-summary">
-                            <span class="badge-group-arrow">&#9654;</span>
-                            <span class="badge-group-title">{item.title}</span>
-                            <span class="badge-group-hint" data-hint="expanded">
+                    <details class="stalux-badge-group badge-group" id={groupId}>
+                        <summary class="stalux-badge-group-summary">
+                            <span class="stalux-badge-group-arrow">&#9654;</span>
+                            <span class="stalux-badge-group-title">{item.title}</span>
+                            <span class="stalux-badge-group-hint" data-hint="expanded">
                                 {t("footer.collapse")}
                             </span>
-                            <span class="badge-group-hint" data-hint="collapsed">
+                            <span class="stalux-badge-group-hint" data-hint="collapsed">
                                 {t("footer.expand")}
                             </span>
                         </summary>
-                        <div class="badge-group-items badges">
+                        <div class="stalux-badge-group-items stalux-badges">
                             {item.items.map((b) => (
                                 <Fragment set:html={badgeImg(b)} />
                             ))}
@@ -59,91 +59,3 @@ function badgeImg(opts: BadgeOptions) {
         })}
     </div>
 )}
-
-<style>
-.badges-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-/* Badge HTML is emitted by set:html, so target it through the scoped wrapper. */
-.badges-wrapper :global(.badge) {
-    width: auto;
-}
-
-.badge-group {
-    width: 100%;
-    border: none;
-}
-
-.badge-group-summary {
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.2rem 0;
-    color: var(--white-70p);
-    font-size: 0.85rem;
-    user-select: none;
-    list-style: none;
-    transition: color 0.2s;
-}
-.badge-group-summary:hover {
-    color: var(--white-70p);
-}
-.badge-group-summary::-webkit-details-marker {
-    display: none;
-}
-
-.badge-group-arrow {
-    font-size: 0.65rem;
-    transition: transform 0.2s;
-    display: inline-block;
-}
-.badge-group[open] .badge-group-arrow {
-    transform: rotate(90deg);
-}
-
-.badge-group-title {
-    color: var(--white-80p);
-}
-
-.badge-group-hint {
-    font-size: 0.7rem;
-    color: var(--white-70p);
-}
-.badge-group[open] .badge-group-hint[data-hint="collapsed"],
-.badge-group:not([open]) .badge-group-hint[data-hint="expanded"] {
-    display: none;
-}
-
-.badge-group-items {
-    padding-top: 0.35rem;
-}
-
-.badges {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.badge {
-    height: 20px;
-    vertical-align: middle;
-}
-
-@media (max-width: 768px) {
-    .badges {
-        gap: 0.3rem;
-    }
-    .badge {
-        height: 18px;
-    }
-}
-</style>

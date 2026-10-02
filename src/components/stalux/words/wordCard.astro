@@ -1,8 +1,9 @@
 ---
+import "../../../styles/generated-prose.css";
+import "../../../styles/generated-words.css";
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
-import styles from "@styles/components/words/wordCard.module.css";
-import "@styles/components/markdown.css";
+
 import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
@@ -17,34 +18,34 @@ const { source, link, sourceDate, date, abbrlink } = entry.data;
 const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
 ---
 
-<article class={styles.card} id={abbrlink ? `word-${abbrlink}` : undefined}>
-    <div class={styles.body} data-pagefind-body>
+<article class="stalux-word-card" id={abbrlink ? `word-${abbrlink}` : undefined}>
+    <div class="stalux-word-body stalux-prose" data-pagefind-body>
         <Content />
     </div>
     {(date || source || sourceDate) && (
-    <footer class={styles.footer}>
+    <footer class="stalux-word-footer">
         {date ? (
-            <time class={styles.date} datetime={machineDate}>
+            <time class="stalux-word-date" datetime={machineDate}>
                 {date}
             </time>
         ) : (
             <span />
         )}
         {(source || sourceDate) && (
-            <div class={styles.sourceMeta}>
-                {sourceDate && <span class={styles.sourceDate}>{sourceDate}</span>}
+            <div class="stalux-word-source-meta">
+                {sourceDate && <span class="stalux-word-source-date">{sourceDate}</span>}
                 {source &&
                     (link ? (
                         <a
                             href={link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            class={styles.sourceLink}
+                            class="stalux-word-source-link"
                         >
                             — {source}
                         </a>
                     ) : (
-                        <span class={styles.sourceText}>— {source}</span>
+                        <span class="stalux-word-source-text">— {source}</span>
                     ))}
             </div>
         )}

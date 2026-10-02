@@ -1,0 +1,79 @@
+@layer components {
+    #stalux-to-archive-archs {
+        margin-top: 2em;
+    }
+    /* textType */
+
+    /* date */
+    #stalux-date-date-time {
+        @apply stalux-stack items-center;
+        margin-top: 2em;
+        @apply stalux-glow;
+        color: var(--white-full);
+        #stalux-date-date {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+        }
+        #stalux-date-time {
+            font-size: 3em;
+        }
+    }
+
+    /* author */
+
+    .stalux-author-figure {
+        @apply stalux-flex-center;
+
+        img {
+            @apply rounded-full;
+            transition: transform 1s ease;
+            box-shadow: 0 0 10px var(--stalux-accent-color);
+        }
+
+        img:hover {
+            transform: rotate(360deg);
+        }
+
+        figcaption {
+            @apply font-bold;
+            margin-left: 1em;
+            font-size: 2.5em;
+            @apply stalux-glow;
+            color: var(--white-full);
+        }
+    }
+
+    .stalux-author-figure-column figcaption {
+        @apply text-center;
+        margin-left: 0;
+        margin-top: 0.5em;
+    }
+    @media (max-width: 768px) {
+        .stalux-author {
+            @apply w-full box-border;
+            margin-top: 2em;
+            padding: 1em 0.5em;
+            max-width: 95vw;
+        }
+        .stalux-author-figure {
+            flex-direction: column !important;
+            gap: 0.5em;
+        }
+        .stalux-author-figure img {
+            width: 64px !important;
+            height: 64px !important;
+            max-width: 20vw;
+            max-height: 20vw;
+        }
+        .stalux-author-figure figcaption {
+            @apply text-center;
+            font-size: 1.5em;
+            margin-left: 0;
+            margin-top: 0.5em;
+            word-break: break-all;
+            max-width: 90vw;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+    }
+}

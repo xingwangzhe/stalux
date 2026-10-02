@@ -14,9 +14,9 @@
 
 /* 评论区标题样式与博客风格一致 */
 .waline-comment-title {
+    @apply text-center;
     margin: 0 0 1.5rem 0;
     font-size: 2rem;
-    text-align: center;
     background: linear-gradient(90deg, var(--white-90p), rgba(var(--waline-accent-rgb), 0.9));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -52,12 +52,12 @@
 
 /* 修复登录后头像向下偏移 — 全局 a::after 下划线动画撑高了 wl-login-nick */
 .wl-login-nick {
+    @apply overflow-hidden;
     display: block !important;
     height: var(--waline-avatar-size, 52px);
-    overflow: hidden;
 }
 .wl-login-nick::after {
-    display: none;
+    @apply hidden;
 }
 
 /* 修复 markdown 全局 img margin 误伤 Waline 头像 */
@@ -65,6 +65,7 @@
     margin: 0 !important;
 }
 .wl-btn {
+    @apply cursor-pointer;
     background: rgba(var(--waline-accent-rgb), 0.6) !important;
     color: var(--white-full) !important;
     border: none !important;
@@ -72,7 +73,6 @@
     transition: all 0.2s ease;
     font-weight: 500;
     padding: 8px 15px;
-    cursor: pointer;
 }
 
 .wl-btn:hover {
@@ -166,12 +166,12 @@
 
 /* 文章评价反应区域 */
 .wl-reaction {
+    @apply text-center;
     background-color: rgba(17, 17, 17, 0.3);
     border-radius: 12px;
     padding: 1rem;
     margin-bottom: 1.5rem;
     border: 1px solid rgba(70, 70, 70, 0.2);
-    text-align: center;
 }
 
 .wl-reaction-title {
@@ -181,17 +181,16 @@
 }
 
 .wl-reaction-list {
-    display: flex;
-    justify-content: center;
+    @apply flex justify-center;
     flex-wrap: wrap;
 }
 
 .wl-reaction-item {
+    @apply cursor-pointer;
     background-color: rgba(30, 30, 30, 0.5) !important;
     border-radius: 8px;
     margin: 5px;
     transition: all 0.3s ease;
-    cursor: pointer;
     border: 1px solid rgba(70, 70, 70, 0.2) !important;
 }
 
@@ -223,12 +222,11 @@
 
 /* 评论计数和排序 */
 .wl-meta-head {
+    @apply flex items-center;
     margin-bottom: 1.2rem;
     border-bottom: 1px solid rgba(70, 70, 70, 0.3);
     padding-bottom: 0.8rem;
-    display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
 .wl-count {
@@ -238,12 +236,12 @@
 }
 
 .wl-sort {
-    display: flex;
+    @apply flex;
     gap: 1rem;
 }
 
 .wl-sort li {
-    cursor: pointer;
+    @apply cursor-pointer;
     transition: all 0.2s ease;
     color: var(--white-70p);
 }
@@ -259,8 +257,8 @@
 
 /* 页码导航 */
 .wl-page {
+    @apply text-center;
     margin-top: 1.2rem;
-    text-align: center;
 }
 
 .wl-page button {
@@ -286,10 +284,10 @@
 
 /* Waline底部版权信息 */
 .wl-power {
+    @apply text-center;
     opacity: 0.6;
     font-size: 0.85rem;
     margin-top: 2rem;
-    text-align: center;
 }
 
 .wl-power a {
@@ -305,7 +303,7 @@
 
 /* 评论为空状态 */
 .wl-empty {
-    text-align: center;
+    @apply text-center;
     padding: 2rem 0;
     color: var(--white-60p);
     font-size: 1.1rem;
@@ -360,11 +358,11 @@
     }
 
     .wl-header {
-        flex-direction: column;
+        @apply flex-col;
     }
 
     .wl-header-item {
-        width: 100%;
+        @apply w-full;
         margin-bottom: 0.5rem;
     }
 
@@ -405,25 +403,23 @@
     }
 
     .wl-card {
+        @apply w-full box-border;
         padding: 0.75rem;
         margin-left: 0;
-        width: 100%;
-        box-sizing: border-box;
     }
 
     /* 小屏幕上的嵌套评论处理 */
     .wl-children {
+        @apply w-full box-border;
         margin-left: 0;
         padding-left: 0;
-        width: 100%;
-        box-sizing: border-box;
     }
 
     .wl-children .wl-card {
+        @apply w-full;
         margin-left: 0;
         border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
         padding-left: 0.6rem;
-        width: 100%;
     }
 
     .wl-children .wl-children .wl-card {
@@ -432,7 +428,7 @@
     }
 
     .wl-meta-head {
-        flex-direction: column;
+        @apply flex-col;
         gap: 0.5rem;
         align-items: flex-start;
     }

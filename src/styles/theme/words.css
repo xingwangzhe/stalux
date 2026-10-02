@@ -1,0 +1,84 @@
+@layer components {
+    /* wordList */
+
+    @media (max-width: 768px) {
+        .stalux-word-list-list {
+            gap: 1rem;
+            margin: 1.5rem auto;
+        }
+
+        .stalux-word-list-item {
+            @apply max-w-full;
+        }
+    }
+
+    /* wordCard */
+
+    .stalux-word-body .expressive-code {
+        @apply max-w-full overflow-x-auto;
+    }
+
+    .stalux-word-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--card-box-shadow-hover);
+    }
+    .stalux-word-card:target,
+    .stalux-word-card[data-glow] {
+        animation: stalux-word-word-glow 2s ease-out;
+        box-shadow:
+            0 0 20px var(--accent-40p),
+            0 0 60px var(--accent-20p),
+            var(--shadow-lg);
+    }
+
+    @keyframes stalux-word-word-glow {
+        0% {
+            box-shadow:
+                0 0 30px var(--accent-50p),
+                0 0 80px var(--accent-30p),
+                var(--shadow-lg);
+            transform: scale(1.02);
+        }
+        100% {
+            box-shadow:
+                0 0 20px var(--accent-40p),
+                0 0 60px var(--accent-20p),
+                var(--shadow-lg);
+            transform: scale(1);
+        }
+    }
+
+    .stalux-word-body h1,
+    .stalux-word-body h2,
+    .stalux-word-body h3,
+    .stalux-word-body h4,
+    .stalux-word-body h5,
+    .stalux-word-body h6 {
+        font-size: 1.1em;
+        margin: 0.5rem 0;
+    }
+
+    .stalux-word-body p {
+        margin: 0.5rem 0;
+    }
+
+    .stalux-word-body blockquote {
+        margin: 0.5rem 0;
+        padding: 0.6rem 1rem;
+        border-left: 3px solid var(--accent-60p);
+        background: var(--white-05p);
+    }
+    .stalux-word-body pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-x: visible;
+    }
+
+    .stalux-word-body code {
+        word-break: break-word;
+    }
+
+    .stalux-word-source-link:hover {
+        color: var(--accent-90p);
+    }
+}

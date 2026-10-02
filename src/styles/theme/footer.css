@@ -1,0 +1,26 @@
+@layer components {
+    /* footer */
+    @media (max-width: 768px) {
+        .stalux-footer {
+            padding: 1.2rem 0;
+            font-size: 0.8rem;
+        }
+
+        .stalux-footer-content {
+            gap: 0.6rem;
+            padding: 0 0.8rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stalux-footer {
+            padding: 1rem 0;
+            font-size: 0.8rem;
+        }
+
+        .stalux-footer-content {
+            gap: 0.6rem;
+            padding: 0 0.8rem;
+        }
+    }
+}

@@ -21,21 +21,6 @@ const copyrightYear =
         : currentYear;
 ---
 
-<small class="copyright">
+<small class="stalux-copyright">
     <span>&copy; {copyrightYear} {props.author || ""}. {t("footer.rightsReserved")}</span>
 </small>
-
-<style>
-.copyright {
-    color: var(--white-70p);
-    font-weight: 500;
-    display: flex;
-    gap: 0.3em;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.copyright span {
-    margin: 0;
-}
-</style>

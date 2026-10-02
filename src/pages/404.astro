@@ -16,8 +16,8 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 >
     <div style="height: 3em;"></div>
     <Navs />
-    <div class="error-container" data-pagefind-ignore>
-        <div class="error-content">
+    <div class="stalux-404-error-container" data-pagefind-ignore>
+        <div class="stalux-404-error-content">
             <h1>404</h1>
             <p>{t("page404.pageNotFound")}</p>
             <p class="agent-recovery">
@@ -29,87 +29,16 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
             </p>
             <p
                 id="countdown"
-                class="countdown-text"
+                class="stalux-404-countdown-text"
                 data-countdown-template={t("page404.countdown", { n: "{n}" })}
             >
                 {t("page404.countdown", { n: 5 })}
             </p>
-            <a href="/" class="home-btn" data-astro-prefetch>{t("page404.backHome")}</a>
+            <a href="/" class="stalux-404-home-btn home-btn" data-astro-prefetch
+                >{t("page404.backHome")}</a
+            >
         </div>
     </div>
 
     <script src="../scripts/countdown.ts"></script>
 </Stalux>
-
-<style>
-.error-container {
-    text-align: center;
-    padding: 2rem;
-    min-height: 60vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.error-content h1 {
-    font-size: 6rem;
-    font-weight: bold;
-    margin: 0;
-    color: var(--white-90p);
-}
-
-.error-content p {
-    font-size: 1.5rem;
-    margin: 1rem 0 2rem 0;
-    color: var(--white-70p);
-}
-
-.countdown-text {
-    font-size: 0.95rem !important;
-    color: var(--white-50p) !important;
-    margin: -0.5rem 0 1.5rem 0 !important;
-}
-
-.agent-recovery {
-    max-width: 42rem;
-    margin: 0 auto 1.5rem !important;
-    font-size: 1rem !important;
-    line-height: 1.7;
-}
-
-.agent-recovery a {
-    color: inherit;
-    text-decoration: underline;
-}
-
-.home-btn {
-    display: inline-block;
-    padding: var(--space-md) var(--space-lg);
-    background: var(--black-20p);
-    color: var(--white-90p);
-    text-decoration: none;
-    border-radius: var(--radius-md);
-    border: var(--border-thin) solid var(--white-20p);
-    transition:
-        background-color var(--transition-normal),
-        transform var(--transition-normal),
-        box-shadow var(--transition-normal);
-    font-size: var(--font-size-base);
-}
-
-.home-btn:hover {
-    background: var(--accent-20p);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--shadow-dark);
-}
-
-@media (max-width: 768px) {
-    .error-content h1 {
-        font-size: 4rem;
-    }
-
-    .error-content p {
-        font-size: 1.2rem;
-    }
-}
-</style>

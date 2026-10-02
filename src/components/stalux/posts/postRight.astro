@@ -1,8 +1,9 @@
 ---
+import "../../../styles/generated-article.css";
 import PostDate from "@components/stalux/common/date.astro";
 import PostTaxonomy from "@components/stalux/posts/PostTaxonomy.astro";
 import PostToc from "@components/stalux/posts/postToc.astro";
-import style from "@styles/components/posts/postSidebar.module.css";
+
 import { getSidebarAnimation } from "@utils/view-transitions";
 
 interface Props {
@@ -15,20 +16,20 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
 ---
 
 <aside
-    class={style.sidebarRight}
+    class="stalux-sidebar-right"
     transition:name="right-sidebar"
     transition:animate={getSidebarAnimation("right")}
 >
-    <div class={style.sidebarContainer}>
+    <div class="stalux-sidebar-container">
         <PostDate />
     </div>
-    <div class={style.sidebarContainer}>
+    <div class="stalux-sidebar-container">
         <PostToc headings={headings} />
     </div>
-    <div class={style.sidebarContainer}>
+    <div class="stalux-sidebar-container">
         <PostTaxonomy kind="tag" items={tags} />
     </div>
-    <div class={style.sidebarContainer}>
+    <div class="stalux-sidebar-container">
         <PostTaxonomy kind="category" items={categories} />
     </div>
 </aside>

@@ -1,0 +1,54 @@
+@layer components {
+    /* categoriesList */
+
+    .stalux-categories > li {
+        content-visibility: auto;
+        contain-intrinsic-block-size: auto 180px;
+        overflow-clip-margin: 30px;
+    }
+
+    @supports not (content-visibility: auto) {
+        .stalux-categories > li {
+            contain-intrinsic-block-size: auto;
+        }
+    }
+
+    /* categoriesCard */
+
+    .stalux-category-card::before {
+        @apply absolute;
+        content: "";
+        inset: 0;
+        background: linear-gradient(
+            120deg,
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0)
+        );
+        transform: translateX(-100%);
+        transition: transform 360ms ease;
+        z-index: 1;
+    }
+
+    .stalux-category-card:hover {
+        transform: translateY(-3px);
+        background-color: var(--white-05p);
+        box-shadow: var(--card-box-shadow-hover);
+    }
+
+    .stalux-category-card:hover::before {
+        transform: translateX(100%);
+    }
+
+    .stalux-category-card:hover .stalux-category-icon {
+        transform: rotate(-15deg) translateY(-3px);
+        background: var(--accent-30p);
+        color: var(--white-90p);
+        box-shadow: 0 3px 8px var(--accent-30p);
+        opacity: 1;
+    }
+
+    .stalux-category-icon svg {
+        @apply w-full h-full;
+    }
+}

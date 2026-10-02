@@ -1,6 +1,7 @@
 ---
+import "../../../styles/generated-links.css";
 import { getCollection } from "astro:content";
-import styles from "@styles/components/links/linkCard.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
@@ -28,8 +29,8 @@ const desc = link.description ?? "";
 const icon = link.icon ?? link.avatar ?? "/favicon.ico";
 ---
 
-<a class={styles.card} href={href} target="_blank" rel="noopener">
-    <div class={styles.avatar}>
+<a class="stalux-link-card" href={href} target="_blank" rel="noopener">
+    <div class="stalux-link-card-avatar">
         <img
             src={icon}
             alt={t("links.iconAlt", { name: title })}
@@ -38,8 +39,8 @@ const icon = link.icon ?? link.avatar ?? "/favicon.ico";
             height="80"
         >
     </div>
-    <div class={styles.content}>
-        <h2 class={styles.title}>{title}</h2>
-        {desc && <p class={styles.description}>{desc}</p>}
+    <div class="stalux-link-card-content">
+        <h2 class="stalux-link-card-title">{title}</h2>
+        {desc && <p class="stalux-link-card-description">{desc}</p>}
     </div>
 </a>

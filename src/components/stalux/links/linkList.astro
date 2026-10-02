@@ -1,7 +1,8 @@
 ---
+import "../../../styles/generated-links.css";
 import { getCollection } from "astro:content";
 import LinkCard from "@components/stalux/links/linkCard.astro";
-import styles from "@styles/components/links/linkList.module.css";
+
 import { getLinksData } from "@utils/config-utils";
 
 const configEntries = await getCollection("config");
@@ -9,9 +10,9 @@ const linksConfig = getLinksData(configEntries);
 const links = linksConfig?.sites ?? [];
 ---
 
-<ul class={styles.list}>
+<ul class="stalux-links">
     {links.map((link) => (
-    <li class={styles.item}>
+    <li class="stalux-link-list-item">
         <LinkCard link={link} />
     </li>
 ))}

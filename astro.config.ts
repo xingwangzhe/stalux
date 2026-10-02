@@ -2,6 +2,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import UnoCSS from "@unocss/astro";
 import { defineConfig } from "astro/config";
 import { parse as parseYaml } from "yaml";
 
@@ -31,6 +32,7 @@ export default defineConfig({
     // sitemap / expressive-code / markdown 插件（math、photoswipe、mermaid、字数统计、特性标记）
     // 均由 stalux 集成打包注入，这里只透传自定义选项。
     integrations: [
+        UnoCSS({ injectReset: false, injectEntry: false }),
         stalux({
             contentDir: "stalux",
             pagefind: true,

@@ -1,6 +1,7 @@
 ---
+import "../../../styles/generated-article.css";
 import { getCollection } from "astro:content";
-import style from "@styles/components/posts/postTaxonomy.module.css";
+
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
@@ -27,8 +28,8 @@ const cfg = {
         empty: t("taxonomy.noTags"),
         containerName: "tags-container",
         contentName: "tags-content",
-        listClass: style.listWrap,
-        itemClass: style.itemPill,
+        listClass: "stalux-post-taxonomy-list-wrap",
+        itemClass: "stalux-post-taxonomy-item-pill",
     },
     category: {
         prefix: "/categories/",
@@ -36,14 +37,18 @@ const cfg = {
         empty: t("taxonomy.noCategories"),
         containerName: "categories-container",
         contentName: "categories-content",
-        listClass: style.listColumn,
-        itemClass: style.itemColumn,
+        listClass: "stalux-post-taxonomy-list-column",
+        itemClass: "stalux-post-taxonomy-item-column",
     },
 }[kind];
 ---
 
-<nav class={style.container} transition:name={cfg.containerName} aria-label={title ?? cfg.heading}>
-    {items.length > 0 && <h3 class={style.title}>{title ?? cfg.heading}</h3>}
+<nav
+    class="stalux-post-taxonomy-container"
+    transition:name={cfg.containerName}
+    aria-label={title ?? cfg.heading}
+>
+    {items.length > 0 && <h3 class="stalux-post-taxonomy-title">{title ?? cfg.heading}</h3>}
     {items.length > 0 ? (
     <div class={cfg.listClass} transition:name={cfg.contentName}>
         {items.map((item) => (
@@ -53,6 +58,6 @@ const cfg = {
         ))}
     </div>
 ) : (
-    <div class={style.empty}>{cfg.empty}</div>
+    <div class="stalux-post-taxonomy-empty">{cfg.empty}</div>
 )}
 </nav>
