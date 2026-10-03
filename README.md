@@ -291,3 +291,5 @@ Keep the TypeScript 6 alias for `astro check`, upgrade Vitest and its coverage p
 ## Style development and output
 
 Stalux precompiles its UnoCSS styles; consuming projects need no UnoCSS dependency or configuration. Shared CSS is a cacheable external stylesheet by default. Article/math, archive, category, tag and quote styles load with their components. Explicit Astro `build.inlineStylesheets: "always"` restores inline output. New utilities in consumer override components require the consumer’s own compiler. See [STYLING.md](./docs/STYLING.md) for maintenance and watch mode.
+
+Wide article pages use 280px sidebars within a layout up to 1920px wide, with 16px outer padding. Sidebars collapse below 1600px. UnoCSS remains the style builder; prose and integration styles use standard CSS, and build checks reject Tailwind variables and uncompiled directives.

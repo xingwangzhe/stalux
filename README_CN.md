@@ -285,3 +285,5 @@ Astro 7.3 的集成 `logger.debug()` 使用官方 `DEBUG/--verbose` 通道，不
 ## 样式开发与输出
 
 Stalux 使用 UnoCSS 在主题内预编译样式，消费项目无需安装或配置 UnoCSS。共享 CSS 默认作为可缓存的外部样式表输出，正文、数学、归档、分类、标签和短句样式随相应组件加载。显式设置 Astro 的 `build.inlineStylesheets: "always"` 可恢复内联输出。自定义组件新增的 UnoCSS utilities 需要消费方自行编译。样式维护位置与开发监听参见 [STYLING.md](./docs/STYLING.md)。
+
+文章页宽屏使用 280px 左右侧栏和最多 1920px 的整体布局；外侧内边距 16px，小于 1600px 时收起两侧栏。样式由 UnoCSS 构建，正文及第三方集成样式使用标准 CSS，发布构建检查不允许 Tailwind 变量或未编译指令。

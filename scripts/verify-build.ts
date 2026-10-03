@@ -174,3 +174,11 @@ assert(
 console.info(
     `[verify-build] ${htmlCount} HTML pages, ${fontCount} fonts, ${assetSources.length} asset sources, SEO and agent output verified`,
 );
+
+for (const file of walk(dist).filter((file) => file.endsWith(".css"))) {
+    const css = readFileSync(file, "utf8");
+    assert(
+        !/--tw-[\w-]+|@apply\b|@tailwind\b|tailwindcss\.(?:com|js)/iu.test(css),
+        `${path.relative(dist, file)} contains legacy Tailwind CSS markers or uncompiled directives`,
+    );
+}

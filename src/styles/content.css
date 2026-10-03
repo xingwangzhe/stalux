@@ -17,7 +17,7 @@
     .stalux-prose h4,
     .stalux-prose h5,
     .stalux-prose h6 {
-        @apply font-semibold;
+        font-weight: 600;
         color: var(--white-full);
         line-height: 1.3;
         margin-top: var(--space-xl);
@@ -25,7 +25,7 @@
     }
 
     .stalux-prose h1 {
-        @apply font-bold;
+        font-weight: 700;
         font-size: 2.6rem;
         line-height: 1.25;
         margin-top: 2.5rem;
@@ -79,12 +79,12 @@
     }
 
     .stalux-prose strong {
-        @apply font-semibold;
+        font-weight: 600;
         color: #ffd966;
     }
 
     .stalux-prose em {
-        @apply italic;
+        font-style: italic;
         color: var(--white-85p);
     }
 
@@ -98,7 +98,7 @@
     }
 
     .stalux-prose mark {
-        @apply text-inherit;
+        color: inherit;
         background-color: rgba(255, 217, 102, 0.25);
         padding: 0.1em 0.2em;
         border-radius: 2px;
@@ -121,7 +121,7 @@
     }
 
     .stalux-prose a {
-        @apply no-underline;
+        text-decoration: none;
         color: var(--accent-80p);
         border-bottom: 2px solid transparent;
         transition:
@@ -154,7 +154,7 @@
     }
 
     .stalux-prose pre {
-        @apply overflow-x-auto;
+        overflow-x: auto;
         background: var(--black-30p);
         color: var(--white-85p);
         padding: 1.2rem 1.5rem;
@@ -169,7 +169,8 @@
     }
 
     .stalux-prose pre code {
-        @apply text-inherit p-0;
+        color: inherit;
+        padding: 0;
         background: none;
         border: none;
         font-size: inherit;
@@ -228,7 +229,7 @@
     }
 
     .stalux-prose blockquote p {
-        @apply m-0;
+        margin: 0;
         line-height: 1.7;
     }
 
@@ -245,7 +246,10 @@
     }
 
     .stalux-prose table {
-        @apply w-full overflow-hidden block overflow-x-auto;
+        width: 100%;
+        overflow: hidden;
+        display: block;
+        overflow-x: auto;
         border-collapse: collapse;
         margin: var(--space-xl) 0;
         box-shadow: var(--shadow-md);
@@ -255,14 +259,15 @@
 
     .stalux-prose th,
     .stalux-prose td {
-        @apply text-left;
+        text-align: left;
         padding: 0.75rem 1rem;
         border-bottom: 1px solid var(--white-10p);
         line-height: 1.6;
     }
 
     .stalux-prose th {
-        @apply font-semibold whitespace-nowrap;
+        font-weight: 600;
+        white-space: nowrap;
         background: var(--accent-30p);
         color: var(--white-full);
         font-size: 0.95em;
@@ -286,7 +291,8 @@
     }
 
     .stalux-prose img {
-        @apply max-w-full block;
+        max-width: 100%;
+        display: block;
         height: auto;
         margin: var(--space-xl) auto;
         border-radius: 8px;
@@ -304,7 +310,8 @@
 
     .stalux-prose embed,
     .stalux-prose video {
-        @apply max-w-full block;
+        max-width: 100%;
+        display: block;
         height: auto;
         margin: var(--space-xl) auto;
         border-radius: 8px;
@@ -342,7 +349,8 @@
         box-sizing: border-box;
     }
     .stalux-prose summary {
-        @apply cursor-pointer font-semibold;
+        cursor: pointer;
+        font-weight: 600;
         color: var(--white-90p);
     }
 
@@ -353,12 +361,12 @@
     }
 
     .stalux-prose figure {
-        @apply text-center;
+        text-align: center;
         margin: var(--space-xl) 0;
     }
 
     .stalux-prose figcaption {
-        @apply italic;
+        font-style: italic;
         font-size: 0.9em;
         color: var(--white-70p);
         margin-top: 0.5rem;

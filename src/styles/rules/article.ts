@@ -1,6 +1,18 @@
 import type { StyleSpec } from "../rule-utils.ts";
 
 export const articleStyles: StyleSpec[] = [
+    [".stalux-sidebar .stalux-author-figure", "m-0", {}],
+    [".stalux-sidebar .stalux-author-figure figcaption", "text-[1.75rem]", {}],
+    [
+        ".stalux-sidebar-right #stalux-date-date-time #stalux-date-date",
+        "text-[1.5rem] whitespace-nowrap",
+        {},
+    ],
+    [
+        ".stalux-sidebar-right #stalux-date-date-time #stalux-date-time",
+        "text-[2.25rem] whitespace-nowrap",
+        {},
+    ],
     [".stalux-random-refresh:hover", "", { color: "var(--accent-60p, #0066cc)" }],
     [".stalux-random-refresh:active", "opacity-[0.7]", {}],
     [".stalux-random-refresh svg", "w-[1em] h-[1em]", {}],
@@ -86,7 +98,7 @@ export const articleStyles: StyleSpec[] = [
     [".stalux-post-taxonomy-item-pill:active", "", { background: "var(--white-05p)" }],
     [
         ":is(.stalux-sidebar, .stalux-sidebar-right)",
-        "flex flex-col sticky h-fit w-full overflow-y-auto top-[20px] max-h-[calc(100vh_-_40px)] gap-lg p-[var(--space-lg)_0]",
+        "flex flex-col sticky h-fit w-full box-border min-w-0 overflow-y-auto top-[20px] max-h-[calc(100vh_-_40px)] gap-lg p-[var(--space-lg)_0]",
         { "scrollbar-width": "none", "-ms-overflow-style": "none" },
     ],
     [":is(.stalux-sidebar, .stalux-sidebar-right)::-webkit-scrollbar", "hidden", {}],
