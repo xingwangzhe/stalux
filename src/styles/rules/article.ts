@@ -187,7 +187,7 @@ export const articleStyles: StyleSpec[] = [
     [
         ".stalux-post-layout",
         "",
-        { "grid-template-columns": "minmax(0, 1fr)", "max-width": "1312px" },
+        { "grid-template-columns": "minmax(0, 1fr)", "max-width": "936px" },
         "@media (max-width: 1599px)",
     ],
     [".stalux-post-page", "p-0", {}, "@media (max-width: 768px)"],

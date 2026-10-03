@@ -8,3 +8,6 @@ timezone: "Asia/Shanghai"
 # canonical: https://stalux.needhelp.icu
 favicon: "/stalux.ico"
 canonical: "https://stalux.needhelp.icu"
+
+weather:
+  enabled: true # Optional visitor IP weather; omitted means disabled

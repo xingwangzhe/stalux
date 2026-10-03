@@ -41,7 +41,11 @@ export function getSiteData(entries: CollectionEntry<"config">[]): SiteData {
     if (!site) throw new Error("Missing site config");
     // Content collection loaders may omit Zod defaults from parsed YAML data.
     // Keep the public default stable for older consumer configs that lack this key.
-    return { ...site, accentColor: site.accentColor ?? "#EAB308" };
+    return {
+        ...site,
+        accentColor: site.accentColor ?? "#EAB308",
+        weather: { enabled: site.weather?.enabled ?? false },
+    };
 }
 
 export function getAuthorData(entries: CollectionEntry<"config">[]): AuthorData {

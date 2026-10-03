@@ -23,6 +23,7 @@ export const siteSchema = z.object({
         .default("#EAB308"),
     seoTitle: z.string().min(1).optional(),
     timezone: z.string().optional().default("Asia/Shanghai"),
+    weather: z.object({ enabled: z.boolean().optional().default(false) }).optional(),
     canonical: z.url("site.canonical must be a valid URL").optional(),
     twitterSite: z.string().optional(),
     noindex: z.boolean().optional().default(false),

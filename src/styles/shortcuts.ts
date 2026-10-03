@@ -152,7 +152,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
             "whitespace-nowrap overflow-hidden max-w-full text-stalux-base [text-overflow:ellipsis] text-ink-90",
         "stalux-post-page": "w-full min-h-screen stalux-stack",
         "stalux-post-layout":
-            "grid w-full box-border [flex:1] [grid-template-columns:280px_minmax(0,_1fr)_280px] gap-6 max-w-[1920px] min-w-0 m-[0_auto] p-[1.5rem_1rem]",
+            "grid w-full box-border [flex:1] [grid-template-columns:280px_minmax(0,_1fr)_280px] gap-6 max-w-[1544px] min-w-0 m-[0_auto] p-[1.5rem_1rem]",
         "stalux-article":
             "w-full min-h-screen stalux-stack box-border [flex:1] stalux-glass [box-shadow:var(--surface-glass-shadow)] rounded-[18px] min-w-0 max-w-full p-[clamp(1rem,_2vw,_2rem)]",
         "stalux-post-article-header":

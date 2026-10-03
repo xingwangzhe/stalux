@@ -1,0 +1,140 @@
+---
+import { getCollection } from "astro:content";
+import { CloudSun } from "@lucide/astro";
+import { getSiteData } from "@utils/config-utils";
+
+const site = getSiteData(await getCollection("config"));
+interface Props {
+    showIp?: boolean;
+}
+const { showIp = false } = Astro.props;
+const zh = (site.lang || "zh-CN").startsWith("zh");
+---
+
+{site.weather?.enabled && (
+    <section
+        class:list={["stalux-weather", { "stalux-weather-footer": showIp }]}
+        data-weather-placement={showIp ? "footer" : "sidebar"}
+        data-stalux-weather
+        data-lang={site.lang || "zh-CN"}
+        aria-label={zh ? "附近城市天气" : "Nearby weather"}
+    >
+        <div class="stalux-weather-heading">
+            <CloudSun size={18} aria-hidden="true" />
+            <span>{zh ? "附近天气" : "Nearby weather"}</span>
+        </div>
+        <p class="stalux-weather-main" data-weather-output role="status">
+            {zh ? "正在获取附近城市天气…" : "Loading nearby weather…"}
+        </p>
+        {showIp && (
+            <p class="stalux-weather-location" data-weather-location>
+                {zh ? "访客 IP 与位置加载中…" : "Loading visitor IP and location…"}
+            </p>
+        )}
+        <p class="stalux-weather-status" data-weather-status></p>
+        <button type="button" data-weather-retry hidden>
+            {zh ? "重试" : "Retry"}
+        </button>
+        <p class="stalux-weather-source">
+            {zh ? "IP 近似位置" : "Approximate IP location"} ·{" "}
+            <a href="https://open-meteo.com/en/licence" target="_blank" rel="noopener noreferrer">
+                Open-Meteo
+            </a>
+        </p>
+        <noscript>
+            <p>{zh ? "启用 JavaScript 后可显示天气。" : "Enable JavaScript to load weather."}</p>
+        </noscript>
+    </section>
+)}
+<script>
+import { registerPageLifecycle } from "../../../scripts/page-runtime";
+import { mountWeather } from "../../../scripts/weather";
+
+registerPageLifecycle("weather", mountWeather);
+</script>
+<style>
+.stalux-weather {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 360px;
+    margin: 1rem auto;
+    padding: 1rem;
+    border: 1px solid var(--white-10p);
+    border-radius: 12px;
+    background: var(--surface-glass);
+    overflow-wrap: anywhere;
+    text-align: left;
+}
+.stalux-weather-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent-90p);
+    font-size: 0.85rem;
+}
+.stalux-weather-main {
+    margin: 0.75rem 0 0.4rem;
+    color: var(--white-95p);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.stalux-weather-location,
+.stalux-weather-status,
+.stalux-weather-source {
+    margin: 0.4rem 0 0;
+    color: var(--white-60p);
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+.stalux-weather-source a {
+    color: inherit;
+}
+.stalux-weather button {
+    margin-top: 0.5rem;
+    color: var(--accent-90p);
+    border: 1px solid var(--white-20p);
+    background: var(--white-05p);
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+}
+.stalux-weather button[hidden] {
+    display: none;
+}
+.stalux-weather-footer {
+    max-width: 100%;
+    width: auto;
+    padding: 0;
+    margin: 0 auto;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    text-align: center;
+    font-size: inherit;
+    line-height: 1.6;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem 0.75rem;
+}
+.stalux-weather-footer .stalux-weather-heading {
+    display: none;
+}
+.stalux-weather-footer .stalux-weather-main {
+    margin: 0;
+    font-size: inherit;
+    color: var(--white-80p);
+}
+.stalux-weather-footer .stalux-weather-location,
+.stalux-weather-footer .stalux-weather-status,
+.stalux-weather-footer .stalux-weather-source {
+    margin: 0;
+    color: var(--white-70p);
+    font-size: 0.8rem;
+}
+@media print {
+    .stalux-weather {
+        display: none;
+    }
+}
+</style>

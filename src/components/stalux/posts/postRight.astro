@@ -1,6 +1,7 @@
 ---
 import "../../../styles/generated-article.css";
 import PostDate from "@components/stalux/common/date.astro";
+import Weather from "@components/stalux/common/Weather.astro";
 import PostTaxonomy from "@components/stalux/posts/PostTaxonomy.astro";
 import PostToc from "@components/stalux/posts/postToc.astro";
 
@@ -22,6 +23,7 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
 >
     <div class="stalux-sidebar-container">
         <PostDate />
+        <Weather />
     </div>
     <div class="stalux-sidebar-container">
         <PostToc headings={headings} />

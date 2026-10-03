@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
+import { parse as parseYaml } from "yaml";
 
 import packageJson from "../package.json" with { type: "json" };
 import { findMissingAssetReferences } from "./verify-build-utils.ts";
@@ -190,5 +191,33 @@ for (const post of postIndex) {
     assert(
         count === (post.desc?.trim() ? 1 : 0),
         `${post.url} must render one summary for a description and none for an empty description`,
+    );
+}
+
+const siteOptions = parseYaml(readFileSync(path.join(root, "stalux/config/site.yml"), "utf8")) as {
+    weather?: { enabled?: boolean };
+};
+for (const [route, html] of [
+    ["home", pages.home],
+    ["post", pages.post],
+] as const) {
+    assert(
+        html.includes("data-stalux-weather") === Boolean(siteOptions.weather?.enabled),
+        `${route} weather visibility must match site.weather.enabled`,
+    );
+}
+
+assert(
+    !pages.home.slice(0, pages.home.indexOf("<footer")).includes("data-stalux-weather"),
+    "Home weather must stay in the footer",
+);
+for (const [route, html, count] of [
+    ["home", pages.home, 1],
+    ["post", pages.post, 2],
+] as const) {
+    assert(
+        (html.match(/<section[^>]*data-stalux-weather/g) ?? []).length ===
+            (siteOptions.weather?.enabled ? count : 0),
+        `${route} must have footer weather, plus sidebar weather only on articles`,
     );
 }

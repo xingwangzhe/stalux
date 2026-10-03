@@ -16,6 +16,7 @@ export default getViteConfig({
                 "src/scripts/page-runtime.ts",
                 "src/scripts/back-to-top.ts",
                 "src/scripts/typewriter.ts",
+                "src/scripts/weather.ts",
                 "src/scripts/logger.ts",
                 "src/utils/diagnostics.ts",
                 "src/scripts/retryable-initializer.ts",

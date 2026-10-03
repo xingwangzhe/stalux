@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import Weather from "@components/stalux/common/Weather.astro";
 import FooterBadges from "@components/stalux/footer/FooterBadges.astro";
 import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
 import FooterCopyright from "@components/stalux/footer/FooterCopyright.astro";
@@ -75,6 +76,8 @@ const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "z
 
         <!-- 站点统计 -->
         <FooterStats wordCount={formattedWordCount} buildtime={footerConfig?.buildtime} />
+
+        <Weather showIp />
 
         <!-- 自定义内容 -->
         {footerConfig?.custom && <Fragment set:html={footerConfig.custom} />}
