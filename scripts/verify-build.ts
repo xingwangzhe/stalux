@@ -182,3 +182,13 @@ for (const file of walk(dist).filter((file) => file.endsWith(".css"))) {
         `${path.relative(dist, file)} contains legacy Tailwind CSS markers or uncompiled directives`,
     );
 }
+
+const postIndex = JSON.parse(read("api/posts.json")) as Array<{ url: string; desc?: string }>;
+for (const post of postIndex) {
+    const html = read(`${post.url.replace(/^\//u, "")}index.html`);
+    const count = (html.match(/<aside[^>]*class="stalux-article-summary"/gu) ?? []).length;
+    assert(
+        count === (post.desc?.trim() ? 1 : 0),
+        `${post.url} must render one summary for a description and none for an empty description`,
+    );
+}

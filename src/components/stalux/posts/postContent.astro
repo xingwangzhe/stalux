@@ -7,9 +7,11 @@ import { getCollection } from "astro:content";
 import { getPromoteData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 import { toMachineDateTime } from "@utils/semantic-time";
+import ArticleSummary from "./ArticleSummary.astro";
 
 interface Props {
     title: string;
+    description?: string;
     transitionName?: string;
     titleTransitionName?: string;
     date?: string;
@@ -101,6 +103,8 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
     </div>
 )}
     </header>
+
+    <ArticleSummary description={props.description} label={t("post.summary")} />
 
     <!-- Article Body -->
     <section class="stalux-post-body stalux-prose" data-pagefind-body>

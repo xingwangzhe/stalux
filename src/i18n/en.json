@@ -24,6 +24,7 @@
         "backHome": "Back to Home"
     },
     "post": {
+        "summary": "In this article",
         "navigation": "Post navigation",
         "publishTime": "Published: ",
         "updateTime": "Updated: ",

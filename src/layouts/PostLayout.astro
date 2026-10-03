@@ -13,6 +13,7 @@ import { buildWalineProps } from "@utils/waline";
 
 interface Props {
     title: string;
+    description?: string;
     postId?: string | number;
     date?: string;
     updated?: string;
@@ -58,6 +59,7 @@ const walineConfig = walineSection?.serverURL
         <!-- Main Content -->
         <PostContent
             title={props.title}
+            description={props.description}
             titleTransitionName={props.postId === undefined ? undefined : getPostTitleTransitionName(props.postId)}
             date={props.date}
             updated={props.updated}

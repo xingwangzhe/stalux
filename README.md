@@ -295,3 +295,5 @@ Stalux precompiles its UnoCSS styles; consuming projects need no UnoCSS dependen
 Wide article pages use 280px sidebars within a layout up to 1920px wide, with 16px outer padding. Sidebars collapse below 1600px. UnoCSS remains the style builder; prose and integration styles use standard CSS, and build checks reject Tailwind variables and uncompiled directives.
 
 The friend links list is up to 1600px wide with 16px horizontal padding. Cards fill their grid columns, with one to five columns depending on the viewport.
+
+Article bodies and summary cards are up to 840px wide. Summaries use the existing post `desc` and are omitted when empty. Markdown blockquotes appear as callout cards without new configuration or syntax.

@@ -168,7 +168,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-post-reading-time": "inline-flex items-center [gap:0.3rem]",
         "stalux-post-meta-row": "flex justify-center [flex-basis:100%]",
         "stalux-post-body":
-            "max-w-full box-border [flex:1] min-w-0 w-[min(1200px,_100%)] m-[0_auto] p-[0_0_2rem] [animation:stalux-post-content-reveal_220ms_ease_360ms_both]",
+            "max-w-full box-border [flex:1] min-w-0 w-[min(840px,_100%)] m-[0_auto] p-[0_0_2rem] [animation:stalux-post-content-reveal_220ms_ease_360ms_both]",
         "stalux-post-source-link-row": "flex justify-center mt-[1.2rem]",
         "stalux-post-source-link":
             "inline-flex items-center no-underline [gap:0.4rem] p-[0.5rem_1.1rem] text-[0.85rem] [font-weight:500] text-ink-full [background:var(--white-10p)] [border-top:1px_solid_var(--white-20p)] [border-right:1px_solid_var(--white-20p)] [border-left:1px_solid_var(--white-20p)] [border-bottom:0] rounded-[var(--radius-full,_999px)] [transition:background_var(--transition-fast),_transform_var(--transition-fast)]",
