@@ -97,6 +97,17 @@ assert(
     "generated Stalux version is out of sync with package.json",
 );
 assert(pages.home.includes("Google Sans Code"), "Astro local code font is missing");
+assert(pages.home.includes("data-stalux-typewriter"), "local typewriter is missing");
+assert(
+    /data-typewriter-text[^>]*aria-hidden="true"[^>]*>[^<]+<\/span>/u.test(pages.home),
+    "typewriter must include a visible static first sentence without JavaScript",
+);
+assert(
+    pages.home.includes("stalux-typewriter-accessible"),
+    "typewriter accessible text is missing",
+);
+assert(!pages.home.includes("<astro-typewriter"), "third-party typewriter remains in output");
+
 assert(pages.home.includes('class="agent-home-summary"'), "agent home summary is missing");
 assert(
     /\.agent-home-summary[^}]*clip:rect\(0,\s*0,\s*0,\s*0\)[^}]*position:absolute/gu.test(

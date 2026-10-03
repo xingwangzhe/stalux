@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 
 import { getTypetextsData } from "@utils/config-utils";
-import Typewriter from "astro-typewriter";
+import Typewriter from "./Typewriter.astro";
 
 const configEntries = await getCollection("config");
 const typetextsConfig = getTypetextsData(configEntries);

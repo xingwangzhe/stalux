@@ -1,0 +1,87 @@
+---
+import { normalizeMessages } from "../../../scripts/typewriter";
+
+interface Props {
+    messages: string[];
+    class?: string;
+}
+const { messages, class: className } = Astro.props;
+const texts = normalizeMessages(messages);
+---
+
+{texts.length > 0 && (
+    <div class={className} data-stalux-typewriter data-messages={JSON.stringify(texts)}>
+        <span class="stalux-typewriter-accessible">{texts.join(", ")}</span>
+        <span class="stalux-typewriter-text" data-typewriter-text aria-hidden="true">
+            {texts[0]}
+        </span>
+    </div>
+)}
+
+<script>
+import { registerPageLifecycle } from "../../../scripts/page-runtime";
+import { mountTypewriters } from "../../../scripts/typewriter";
+
+registerPageLifecycle("typewriter", mountTypewriters);
+</script>
+
+<style>
+.stalux-typewriter-accessible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+.stalux-typewriter-text {
+    overflow-wrap: anywhere;
+}
+.stalux-typewriter-text::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    margin-left: 0.08em;
+    background: currentColor;
+    transform: translateY(0.125em);
+    visibility: hidden;
+}
+[data-typewriter-state="typing"] .stalux-typewriter-text::after,
+[data-typewriter-state="deleting"] .stalux-typewriter-text::after {
+    visibility: visible;
+}
+[data-typewriter-state="holding"] .stalux-typewriter-text::after,
+[data-typewriter-state="waiting"] .stalux-typewriter-text::after {
+    visibility: visible;
+    animation: stalux-cursor-blink 0.8s steps(2, start) infinite;
+}
+@keyframes stalux-cursor-blink {
+    to {
+        visibility: hidden;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .stalux-typewriter-text::after {
+        animation: none;
+        visibility: hidden;
+    }
+}
+@media print {
+    .stalux-typewriter-text {
+        display: none;
+    }
+    .stalux-typewriter-accessible {
+        position: static;
+        width: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+    }
+}
+</style>

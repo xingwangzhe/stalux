@@ -20,7 +20,6 @@
         "@xingwangzhe/tags-cloud": "^1.2.8",
         "astro-expressive-code": "^0.44.2",
         "astro-seo": "^1.2.0",
-        "astro-typewriter": "^1.2.0",
         "badge-maker": "^6.0.0",
         "pagefind": "^1.5.2",
         "parse5": "8.0.1",
@@ -642,8 +641,6 @@
     "astro-expressive-code": ["astro-expressive-code@0.44.2", "https://mirrors.cloud.tencent.com/npm/astro-expressive-code/-/astro-expressive-code-0.44.2.tgz", { "dependencies": { "rehype-expressive-code": "^0.44.2", "url-extras": "^0.1.0" }, "peerDependencies": { "astro": "^4.0.0-beta || ^5.0.0-beta || ^3.3.0 || ^6.0.0-beta || ^7.0.0" } }, "sha512-avop7nZcRwC7quvIxVguhwEZ9Tp6IoTzKUCLwP30Fb7+er+pWQgcysP01dcuzRIJo81kLGg30q/YAI2Yb1Sdzg=="],
 
     "astro-seo": ["astro-seo@1.2.0", "https://mirrors.cloud.tencent.com/npm/astro-seo/-/astro-seo-1.2.0.tgz", {}, "sha512-ZqS2ZLKJ9GZwcONho9W95xkGBWuPpikTsMBzjuq/6CKtKUEgMDbSZkoLwoZsmLVq/p52T4z7JwgjC3AtMg7Trg=="],
-
-    "astro-typewriter": ["astro-typewriter@1.2.0", "https://mirrors.cloud.tencent.com/npm/astro-typewriter/-/astro-typewriter-1.2.0.tgz", { "peerDependencies": { "astro": "^5.0.0 || ^6.0.0" } }, "sha512-ihAzpgiW8BLX4uOlEr2BdXoys5nZHnnKYoDxANyKz8h6uC29sbCB6kF8hScFiG1h25a6274xqeQ0k/lql1d/2Q=="],
 
     "autosize": ["autosize@6.0.1", "https://mirrors.cloud.tencent.com/npm/autosize/-/autosize-6.0.1.tgz", {}, "sha512-f86EjiUKE6Xvczc4ioP1JBlWG7FKrE13qe/DxBCpe8GCipCq2nFw73aO8QEBKHfSbYGDN5eB9jXWKen7tspDqQ=="],
 
