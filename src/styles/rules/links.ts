@@ -1,30 +1,31 @@
 import type { StyleSpec } from "../rule-utils.ts";
 
 export const linksStyles: StyleSpec[] = [
+    [".stalux-link-shell", "w-full min-w-0", {}],
     [".stalux-link-card-content", "", { transition: "transform 200ms ease" }],
     [".stalux-link-shell:hover .stalux-link-card-content", "", { transform: "translateY(-2px)" }],
     [
         ".stalux-links",
         "",
-        { "grid-template-columns": "repeat(5, 1fr)" },
+        { "grid-template-columns": "repeat(5, minmax(0, 1fr))" },
         "@media (min-width: 1400px)",
     ],
     [
         ".stalux-links",
         "",
-        { "grid-template-columns": "repeat(4, 1fr)" },
+        { "grid-template-columns": "repeat(4, minmax(0, 1fr))" },
         "@media (1100px <= width <= 1399px)",
     ],
     [
         ".stalux-links",
         "",
-        { "grid-template-columns": "repeat(3, 1fr)" },
+        { "grid-template-columns": "repeat(3, minmax(0, 1fr))" },
         "@media (768px <= width <= 1099px)",
     ],
     [
         ".stalux-links",
         "gap-[16px]",
-        { "grid-template-columns": "repeat(2, 1fr)" },
+        { "grid-template-columns": "repeat(2, minmax(0, 1fr))" },
         "@media (480px <= width <= 767px)",
     ],
     [

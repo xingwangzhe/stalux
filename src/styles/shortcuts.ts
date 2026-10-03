@@ -100,10 +100,10 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
     },
     links: {
         "stalux-links":
-            "grid p-0 list-none [grid-template-columns:repeat(auto-fill,_minmax(min(180px,_100%),_1fr))] [gap:20px] m-[30px_auto] max-w-[1200px] [justify-items:center]",
-        "stalux-link-list-item": "flex",
+            "grid box-border w-full p-[0_1rem] list-none [grid-template-columns:repeat(auto-fill,_minmax(min(180px,_100%),_1fr))] [gap:20px] m-[30px_auto] max-w-[1600px]",
+        "stalux-link-list-item": "flex min-w-0 w-full",
         "stalux-link-card":
-            "stalux-stack no-underline stalux-glass rounded-[10px] p-[16px] [color:#fff] min-h-[200px] w-[180px] [overflow:visible] [transition:transform_220ms_ease,_background-color_220ms_ease,_border-color_220ms_ease] shadow-stalux",
+            "stalux-stack no-underline stalux-glass rounded-[10px] p-[16px] [color:#fff] min-h-[200px] box-border w-full min-w-0 [overflow:visible] [transition:transform_220ms_ease,_background-color_220ms_ease,_border-color_220ms_ease] shadow-stalux",
         "stalux-link-card-avatar": "flex justify-center mb-[12px]",
         "stalux-link-card-content": "text-center stalux-stack [flex:1]",
     },
