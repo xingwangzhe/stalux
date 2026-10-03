@@ -106,6 +106,19 @@ assert(
 );
 for (const [route, html] of Object.entries(pages)) verifyJsonLd(html, route);
 
+for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
+    const html = readFileSync(file, "utf8");
+    if (!html.includes('class="stalux-root')) continue;
+    assert(
+        (html.match(/data-stalux-back-to-top/g) ?? []).length === 1,
+        `${path.relative(dist, file)} must have exactly one back-to-top button`,
+    );
+    assert(
+        /<button[^>]*data-stalux-back-to-top[^>]*aria-label=[^>]*hidden/u.test(html),
+        `${path.relative(dist, file)} back-to-top button must be accessible and initially hidden`,
+    );
+}
+
 const sitemap = read("sitemap-0.xml");
 assert(
     sitemap.includes("/posts/0035a0ee.md</loc>"),

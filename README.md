@@ -10,6 +10,8 @@
 
 A dark-themed, high-performance Astro blog theme with elegant glassmorphism design, native per-page CJK font subsets, and a focus on content-first reading experience.
 
+All HTML routes include a circular back-to-top button at the bottom right. It appears after scrolling 240px and scrolls smoothly to the top, respecting reduced motion preferences. A 64px right gutter keeps it clear of content; it is hidden when printing. No configuration is required.
+
 ---
 
 ## 🚀 Quick Start

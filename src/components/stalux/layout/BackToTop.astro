@@ -1,0 +1,69 @@
+---
+import { ArrowUp } from "@lucide/astro";
+
+const { lang = "zh-CN" } = Astro.props;
+const label = lang.startsWith("zh") ? "回到顶部" : "Back to top";
+---
+
+<button
+    type="button"
+    class="stalux-back-to-top"
+    data-stalux-back-to-top
+    aria-label={label}
+    title={label}
+    hidden
+>
+    <ArrowUp size={20} aria-hidden="true" />
+</button>
+
+<script>
+import { mountBackToTop } from "../../../scripts/back-to-top";
+import { registerPageLifecycle } from "../../../scripts/page-runtime";
+
+registerPageLifecycle("back-to-top", mountBackToTop);
+</script>
+
+<style is:global>
+/* Reserve a rail outside content, including on narrow screens. */
+.stalux-root {
+    box-sizing: border-box;
+    padding-right: calc(64px + env(safe-area-inset-right, 0px));
+}
+.stalux-back-to-top {
+    position: fixed;
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid var(--stalux-accent-color);
+    border-radius: 50%;
+    color: var(--stalux-accent-color);
+    background: #202020;
+    box-shadow: 0 2px 12px #0006;
+    cursor: pointer;
+    z-index: 20;
+}
+.stalux-back-to-top[hidden] {
+    display: none;
+}
+.stalux-back-to-top:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
+@media (hover: hover) {
+    .stalux-back-to-top:hover {
+        background: #353535;
+    }
+}
+@media print {
+    .stalux-root {
+        padding-right: 0;
+    }
+    .stalux-back-to-top {
+        display: none;
+    }
+}
+</style>
