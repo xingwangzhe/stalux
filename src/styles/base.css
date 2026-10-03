@@ -48,7 +48,7 @@
     }
 
     /* 下划线动画 */
-    a::after {
+    a:not(.a-none):not([class*="card"]):not(.stalux-nav-link)::after {
         content: "";
         position: absolute;
         left: 0;
@@ -61,18 +61,26 @@
         transition: transform 0.25s cubic-bezier(0.25, 0.9, 0.2, 1);
         pointer-events: none;
     }
-
-    a:hover::after,
-    a:focus-visible::after,
-    a:active::after {
+    a:not(.a-none):not([class*="card"]):not(.stalux-nav-link):focus-visible::after,
+    a:not(.a-none):not([class*="card"]):not(.stalux-nav-link):active::after {
         transform: scaleX(1);
     }
+    @media (hover: hover) and (pointer: fine) {
+        a:not(.a-none):not([class*="card"]):not(.stalux-nav-link):hover::after {
+            transform: scaleX(1);
+        }
+    }
 
-    a:hover,
     a:active,
     a:focus-visible {
         text-decoration: none;
         /* 保持颜色不变，避免 hover 时颜色跳变 */
+    }
+    @media (hover: hover) and (pointer: fine) {
+        a:hover {
+            text-decoration: none;
+            /* 保持颜色不变，避免 hover 时颜色跳变 */
+        }
     }
 
     a:focus {
@@ -240,9 +248,10 @@
         border-radius: 4px;
         transition: background 0.3s ease-out;
     }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #5a5a5a;
+    @media (hover: hover) and (pointer: fine) {
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a5a5a;
+        }
     }
 
     ::-webkit-scrollbar-corner {
@@ -283,5 +292,83 @@
         border-top: 1px solid var(--white-10p);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
+    }
+}
+
+@layer components {
+    .stalux-main,
+    .stalux-post-page,
+    .stalux-post-layout > *,
+    .stalux-link-card-content,
+    .stalux-word-list-item,
+    .stalux-word-card {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    .stalux-main {
+        overflow-wrap: anywhere;
+    }
+    .stalux-link-shell {
+        display: block;
+        min-width: 0;
+        max-width: 100%;
+    }
+    .stalux-link-card {
+        box-sizing: border-box;
+        max-width: 100%;
+        width: 100%;
+    }
+    .stalux-category-shell {
+        min-width: 0;
+        width: 100%;
+    }
+    .stalux-author-figure > a {
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    .stalux-author-figure img {
+        display: block;
+    }
+    .stalux-post-card-shell,
+    .stalux-category-shell,
+    .stalux-link-shell {
+        position: relative;
+    }
+    .stalux-post-card,
+    .stalux-category-card,
+    .stalux-link-card,
+    .stalux-word-card {
+        transition:
+            transform 200ms ease,
+            background-color 200ms ease,
+            border-color 200ms ease,
+            box-shadow 200ms ease;
+    }
+    :is(.stalux-post-card-shell, .stalux-category-shell):focus-within > *,
+    .stalux-link-shell:focus-visible > * {
+        box-shadow: var(--card-box-shadow-hover);
+    }
+    :is(button, summary, [role="button"]):focus-visible {
+        outline: 2px solid var(--stalux-accent-color);
+        outline-offset: 3px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .stalux-main *,
+        .stalux-main *::before,
+        .stalux-main *::after {
+            animation: none !important;
+            transition-duration: 0ms !important;
+        }
+        .stalux-post-card,
+        .stalux-category-card,
+        .stalux-link-card,
+        .stalux-link-card-content,
+        .stalux-card-post-cover img,
+        .stalux-category-icon,
+        .stalux-author-figure img,
+        .stalux-link-card-avatar img {
+            transform: none !important;
+        }
     }
 }

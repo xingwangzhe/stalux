@@ -7,7 +7,7 @@ export const wordsStyles: StyleSpec[] = [
     [
         ".stalux-word-card:hover",
         "",
-        { transform: "translateY(-4px)", "box-shadow": "var(--card-box-shadow-hover)" },
+        { background: "var(--white-05p)", "box-shadow": "var(--card-box-shadow-hover)" },
     ],
     [
         ".stalux-word-card:target, .stalux-word-card[data-glow]",

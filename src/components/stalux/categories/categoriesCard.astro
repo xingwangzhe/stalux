@@ -20,35 +20,37 @@ const siteConfig = (configEntries.find((e) => e.id === "site")?.data ?? {}) as R
 const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 ---
 
-<article class="stalux-category-card">
-    <a
-        href={`/categories/${props.category.name}/`}
-        class="stalux-categoryheader a-none"
-        data-astro-prefetch
-    >
-        <div class="stalux-category-icon">
-            <svg
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            >
-                <path
-                    d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
-                ></path>
-            </svg>
-        </div>
-        <div class="stalux-category-content">
-            <h2 class="categoryName">{props.category.name}</h2>
-            <div class="categoryCount">
-                {t("categories.postCount", { n: props.category.count })}
+<div class="stalux-category-shell">
+    <article class="stalux-category-card">
+        <a
+            href={`/categories/${props.category.name}/`}
+            class="stalux-categoryheader a-none"
+            data-astro-prefetch
+        >
+            <div class="stalux-category-icon">
+                <svg
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path
+                        d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                    ></path>
+                </svg>
             </div>
-        </div>
-    </a>
-</article>
+            <div class="stalux-category-content">
+                <h2 class="categoryName">{props.category.name}</h2>
+                <div class="categoryCount">
+                    {t("categories.postCount", { n: props.category.count })}
+                </div>
+            </div>
+        </a>
+    </article>
+</div>

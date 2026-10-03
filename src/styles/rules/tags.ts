@@ -2,6 +2,15 @@ import type { StyleSpec } from "../rule-utils.ts";
 
 export const tagsStyles: StyleSpec[] = [
     [
+        ".stalux-cloud-tag-card:focus-visible",
+        "",
+        {
+            background: "var(--white-05p)",
+            "border-color": "var(--accent-50p)",
+            "box-shadow": "var(--card-box-shadow-hover)",
+        },
+    ],
+    [
         ".stalux-cloud-tag-group",
         "",
         { "contain-intrinsic-block-size": "auto" },
@@ -16,21 +25,21 @@ export const tagsStyles: StyleSpec[] = [
     [".stalux-cloud-canvas", "block", {}, "@media (min-width: 769px)"],
     [
         ".stalux-cloud-tag-card::before",
-        "absolute z-[1]",
+        "absolute z-[1] pointer-events-none",
         {
             content: '""',
             inset: "0",
             background:
                 "linear-gradient( 120deg, rgba(255, 255, 255, 0), var(--white-10p), rgba(255, 255, 255, 0) )",
             transform: "translateX(-100%)",
-            transition: "transform var(--transition-slowest)",
+            transition: "transform 360ms ease",
         },
     ],
     [
         ".stalux-cloud-tag-card:hover",
         "",
         {
-            transform: "translateY(-2px)",
+            background: "var(--white-05p)",
             "border-color": "var(--accent-50p)",
             "box-shadow": "var(--card-box-shadow-hover)",
         },
@@ -85,7 +94,7 @@ export const tagsStyles: StyleSpec[] = [
     [
         ".stalux-tag-header .stalux-tag-back-link",
         "inline-block no-underline text-[0.9rem] text-ink-60",
-        { transition: "color var(--transition-fast) ease" },
+        { transition: "color var(--transition-fast)" },
     ],
     [".stalux-tag-header .stalux-tag-back-link:hover", "", { color: "var(--accent-90p)" }],
 ];

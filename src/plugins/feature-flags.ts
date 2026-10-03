@@ -16,6 +16,7 @@ import type { HastVisitorContext, MdastNode, MdastVisitorContext } from "satteri
  * - 数学公式由 satteri-temml 插件直接输出 MathML，无需额外标记
  */
 import { defineHastPlugin, defineMdastPlugin } from "satteri";
+import { findHtmlImages, updateImageTag } from "../internal/html-images";
 import { logDetail } from "../utils/diagnostics";
 
 declare module "satteri" {
@@ -246,44 +247,25 @@ export function applyImageLoadingPolicy(
 }
 
 export function applyHtmlImageLoadingPolicy(html: string): string {
-    return html.replace(
-        /<section\b(?=[^>]*\bdata-pagefind-body\b)[^>]*>[\s\S]*?<\/section>/gi,
-        (body) => {
-            let imageIndex = 0;
-            return body.replace(/<img\b[^>]*>/gi, (tag) => {
-                const isFirstBodyImage = imageIndex++ === 0;
-                const attributes = new Map<string, string>();
-                for (const match of tag.matchAll(/\s([\w:-]+)(?:="([^"]*)")?/g)) {
-                    const name = match[1];
-                    if (name) attributes.set(name.toLowerCase(), match[2] ?? "");
-                }
-
-                const updates: Record<string, string> = {
-                    decoding: attributes.get("decoding") || "async",
-                    loading: isFirstBodyImage ? "eager" : "lazy",
-                };
-                if (isFirstBodyImage) {
-                    updates.fetchpriority = "high";
-                } else if (attributes.get("fetchpriority") === "high") {
-                    updates.fetchpriority = "auto";
-                }
-
-                let result = tag;
-                for (const [name, value] of Object.entries(updates)) {
-                    const pattern = new RegExp(`\\s${name}(?:="[^"]*")?`, "i");
-                    if (pattern.test(result)) {
-                        result = result.replace(pattern, ` ${name}="${value}"`);
-                    } else {
-                        result = result.replace(
-                            /\s*\/?>$/,
-                            (ending) => ` ${name}="${value}"${ending.trimStart()}`,
-                        );
-                    }
-                }
-                return result;
-            });
-        },
-    );
+    const firstSeen = new Set<number>();
+    const changes = findHtmlImages(html)
+        .filter((image) => image.body !== undefined)
+        .map((image) => {
+            const body = image.body as number;
+            const first = !firstSeen.has(body);
+            firstSeen.add(body);
+            const updates: Record<string, string> = {
+                decoding: image.attributes.get("decoding") || "async",
+                loading: first ? "eager" : "lazy",
+            };
+            if (first) updates.fetchpriority = "high";
+            else if (image.attributes.get("fetchpriority") === "high")
+                updates.fetchpriority = "auto";
+            return { image, tag: updateImageTag(image, updates) };
+        });
+    for (const { image, tag } of changes.reverse())
+        html = html.slice(0, image.start) + tag + html.slice(image.end);
+    return html;
 }
 
 type FeatureFlagsResult = {

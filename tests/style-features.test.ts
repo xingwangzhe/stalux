@@ -63,6 +63,18 @@ describe("precompiled feature styles", () => {
         expect(css).not.toContain(".stalux-cloud-canvas");
     });
 
+    it("keeps pointer-only hover separate from keyboard focus", async () => {
+        const uno = await createGenerator(config);
+        const { css } = await uno.generate(featureStateClasses("article").join(" "), {
+            preflights: false,
+        });
+        expect(css).toContain("(hover: hover) and (pointer: fine)");
+        expect(css).toContain("a.stalux-pagination-link:focus-visible");
+        expect(css).not.toContain(":is(:hover, :focus-visible)");
+        expect(css).toContain("minmax(0, 1fr)");
+        expect(css).not.toContain("260px 1fr 260px");
+    });
+
     it("fails compilation when a selector uses an unknown utility", async () => {
         const uno = await createGenerator({
             ...config,

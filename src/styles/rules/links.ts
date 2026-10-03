@@ -1,6 +1,8 @@
 import type { StyleSpec } from "../rule-utils.ts";
 
 export const linksStyles: StyleSpec[] = [
+    [".stalux-link-card-content", "", { transition: "transform 200ms ease" }],
+    [".stalux-link-shell:hover .stalux-link-card-content", "", { transform: "translateY(-2px)" }],
     [
         ".stalux-links",
         "",
@@ -32,10 +34,9 @@ export const linksStyles: StyleSpec[] = [
         "@media (max-width: 479px)",
     ],
     [
-        ".stalux-link-card:hover",
+        ".stalux-link-shell:hover .stalux-link-card",
         "",
         {
-            transform: "translateY(-3px)",
             background: "var(--white-05p)",
             "box-shadow": "var(--card-box-shadow-hover)",
         },
@@ -50,12 +51,11 @@ export const linksStyles: StyleSpec[] = [
         },
     ],
     [
-        ".stalux-link-card:hover .stalux-link-card-avatar img",
+        ".stalux-link-card-avatar:hover img",
         "",
         {
-            transform: "scale(1.04)",
-            animation: "stalux-link-avatar-spin 700ms ease-in-out 1",
-            "box-shadow": "0 0 20px var(--accent-50p)",
+            animation: "stalux-link-avatar-spin 650ms ease-in-out 1",
+
             "border-color": "var(--accent-85p)",
         },
     ],
@@ -84,7 +84,7 @@ export const linksStyles: StyleSpec[] = [
     [".stalux-link-card-title", "text-[1rem]", {}, "@media (max-width: 480px)"],
     [".stalux-link-card-description", "text-[0.9rem]", {}, "@media (max-width: 480px)"],
     [
-        ".stalux-link-card:hover .stalux-link-card-avatar img",
+        ".stalux-link-card-avatar:hover img",
         "",
         { animation: "none", transform: "none", transition: "none" },
         "@media (prefers-reduced-motion: reduce)",

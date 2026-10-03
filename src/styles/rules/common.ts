@@ -1,6 +1,16 @@
 import type { StyleSpec } from "../rule-utils.ts";
 
 export const commonStyles: StyleSpec[] = [
+    [
+        ".stalux-card-post-tags a:hover .stalux-card-post-tag",
+        "",
+        { background: "var(--tag-bg-hover)" },
+    ],
+    [
+        ".stalux-card-post-categories a:hover .stalux-card-post-category",
+        "",
+        { background: "var(--category-bg-hover)" },
+    ],
     ["#stalux-home-show-post-list", "cursor-pointer mt-[3em] text-[1.5em] stalux-glow", {}],
     [
         ".stalux-home-body",
@@ -30,17 +40,17 @@ export const commonStyles: StyleSpec[] = [
     [
         ".stalux-card-post-cover img",
         "h-full max-w-full w-full object-cover",
-        { transition: "transform var(--transition-fast) ease" },
+        { transition: "transform var(--transition-fast)" },
     ],
     [
-        ".stalux-post-card:is(:hover, :focus-within) .stalux-card-post-cover img",
+        ".stalux-post-card-shell:hover .stalux-post-card .stalux-card-post-cover img",
         "",
-        { transform: "scale(1.05)" },
+        { transform: "scale(1.025)" },
     ],
     [
-        ".stalux-post-card:is(:hover, :focus-within)",
+        ".stalux-post-card-shell:hover .stalux-post-card",
         "",
-        { transform: "translateY(-3px)", "box-shadow": "var(--card-box-shadow-hover)" },
+        { "box-shadow": "var(--card-box-shadow-hover)" },
     ],
     [
         ".stalux-card-post-date, .stalux-card-post-updated",
@@ -63,13 +73,13 @@ export const commonStyles: StyleSpec[] = [
     ],
     [".stalux-card-post-tags a", "no-underline", {}],
     [
-        ".stalux-card-post-tag:focus, .stalux-card-post-tag:hover",
+        ".stalux-card-post-tags a:focus-visible .stalux-card-post-tag",
         "",
         { background: "var(--tag-bg-hover)" },
     ],
     [".stalux-card-post-categories a", "no-underline", {}],
     [
-        ".stalux-card-post-category:focus, .stalux-card-post-category:hover",
+        ".stalux-card-post-categories a:focus-visible .stalux-card-post-category",
         "",
         { background: "var(--category-bg-hover)" },
     ],
@@ -207,9 +217,16 @@ export const commonStyles: StyleSpec[] = [
     [
         ".stalux-author-figure img",
         "rounded-full",
-        { transition: "transform 1s ease", "box-shadow": "0 0 10px var(--stalux-accent-color)" },
+        {
+            transition: "transform 650ms ease-in-out",
+            "box-shadow": "0 0 10px var(--stalux-accent-color)",
+        },
     ],
-    [".stalux-author-figure img:hover", "", { transform: "rotate(360deg)" }],
+    [
+        ".stalux-author-figure > a:hover img",
+        "",
+        { animation: "stalux-link-avatar-spin 650ms ease-in-out 1" },
+    ],
     [
         ".stalux-author-figure figcaption",
         "font-bold ml-[1em] text-[2.5em] stalux-glow text-ink-full",
@@ -267,7 +284,7 @@ export const commonStyles: StyleSpec[] = [
         "",
         {
             background: "var(--accent-20p)",
-            transform: "translateY(-2px)",
+
             "box-shadow": "0 4px 12px var(--shadow-dark)",
         },
     ],

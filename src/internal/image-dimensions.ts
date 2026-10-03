@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { findHtmlImages, updateImageTag } from "./html-images";
 
 export type ImageDimensions = { width: number; height: number };
 
@@ -74,12 +75,11 @@ export function readImageDimensions(data: Buffer): ImageDimensions | undefined {
 export async function addLocalImageDimensions(html: string, outputDir: string): Promise<string> {
     const dimensionsCache = new Map<string, Promise<ImageDimensions | undefined>>();
     const root = path.resolve(outputDir);
-    const tags = [...html.matchAll(/<img\b[^>]*>/gi)];
+    const tags = findHtmlImages(html);
 
-    for (const match of tags) {
-        const tag = match[0];
-        if (!tag || (/\swidth=/i.test(tag) && /\sheight=/i.test(tag))) continue;
-        const src = tag.match(/\ssrc="([^"]+)"/i)?.[1];
+    for (const image of tags.reverse()) {
+        if (image.attributes.has("width") && image.attributes.has("height")) continue;
+        const src = image.attributes.get("src");
         if (!src) continue;
 
         let filePath: string;
@@ -102,21 +102,11 @@ export async function addLocalImageDimensions(html: string, outputDir: string): 
         const size = await dimensions;
         if (!size || size.width <= 0 || size.height <= 0) continue;
 
-        const hasWidth = /\swidth=/i.test(tag);
-        const hasHeight = /\sheight=/i.test(tag);
-        const updated =
-            hasWidth && !hasHeight
-                ? tag.replace(/\s*\/?\s*>$/, (ending) => ` height="${size.height}"${ending}`)
-                : hasHeight && !hasWidth
-                  ? tag.replace(
-                        /\sheight="[^"]*"/i,
-                        ` width="${size.width}" height="${size.height}"`,
-                    )
-                  : tag.replace(
-                        /\s*\/?\s*>$/,
-                        (ending) => ` width="${size.width}" height="${size.height}"${ending}`,
-                    );
-        html = html.replace(tag, updated);
+        const updates: Record<string, string> = {};
+        if (!image.attributes.has("width")) updates.width = String(size.width);
+        if (!image.attributes.has("height")) updates.height = String(size.height);
+        const updated = updateImageTag(image, updates);
+        html = html.slice(0, image.start) + updated + html.slice(image.end);
     }
     return html;
 }

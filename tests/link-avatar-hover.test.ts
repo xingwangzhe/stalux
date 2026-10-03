@@ -5,18 +5,18 @@ const styles = readFileSync(new URL("../src/styles/generated-links.css", import.
 const motion = readFileSync(new URL("../src/styles/generated.css", import.meta.url), "utf8");
 
 describe("compiled link card avatar motion", () => {
-    it("spins the avatar once when the card is hovered", () => {
+    it("spins the avatar once when its stable avatar container is hovered", () => {
         expect(styles).toMatch(
-            /\.stalux-link-card:hover \.stalux-link-card-avatar img\{[^}]*animation:\.7s ease-in-out stalux-link-avatar-spin;/u,
+            /\.stalux-link-card-avatar:hover img\{[^}]*animation:\.65s ease-in-out stalux-link-avatar-spin[;}]/u,
         );
         expect(motion).toMatch(
-            /@keyframes stalux-link-avatar-spin\{0%\{transform:rotate\(0\)scale\(1\.04\)\}to\{transform:rotate\(360deg\)scale\(1\.04\)\}\}/u,
+            /@keyframes stalux-link-avatar-spin\{0%\{transform:rotate\(0\)\}to\{transform:rotate\(360deg\)\}\}/u,
         );
     });
 
     it("disables hover motion for reduced-motion preferences", () => {
         expect(styles).toMatch(
-            /@media\s*\(prefers-reduced-motion:reduce\)\{\.stalux-link-card:hover \.stalux-link-card-avatar img\{transition:none;animation:none;transform:none\}/u,
+            /@media\s*\(prefers-reduced-motion:reduce\) and \(hover:hover\) and \(pointer:fine\)\{\.stalux-link-card-avatar:hover img\{transition:none;animation:none;transform:none\}/u,
         );
     });
 });

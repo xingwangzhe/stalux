@@ -39,7 +39,11 @@
     color: var(--white-90p) !important;
     border: 1px solid rgba(100, 100, 100, 0.3) !important;
     border-radius: 8px;
-    transition: all 0.3s ease;
+    transition:
+        background-color 200ms ease,
+        border-color 200ms ease,
+        box-shadow 200ms ease,
+        color 200ms ease;
 }
 
 /* 输入框焦点状态 */
@@ -70,25 +74,30 @@
     color: var(--white-full) !important;
     border: none !important;
     border-radius: 6px;
-    transition: all 0.2s ease;
+    transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
     font-weight: 500;
     padding: 8px 15px;
 }
-
-.wl-btn:hover {
-    background: rgba(var(--waline-accent-rgb), 0.7) !important;
-    transform: none;
-    box-shadow: none !important;
+@media (hover: hover) and (pointer: fine) {
+    .wl-btn:hover {
+        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        transform: none;
+        box-shadow: none !important;
+    }
 }
 
 .wl-btn.primary {
     background: rgba(var(--waline-accent-rgb), 0.6) !important;
 }
-
-.wl-btn.primary:hover {
-    background: rgba(var(--waline-accent-rgb), 0.7) !important;
-    transform: none;
-    box-shadow: none !important;
+@media (hover: hover) and (pointer: fine) {
+    .wl-btn.primary:hover {
+        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        transform: none;
+        box-shadow: none !important;
+    }
 }
 
 /* 标签文字颜色 */
@@ -104,24 +113,33 @@
     padding: 1.2rem;
     margin-top: 1.2rem;
     border: 1px solid rgba(70, 70, 70, 0.2) !important;
-    transition: all 0.3s ease;
+    transition:
+        background-color 200ms ease,
+        border-color 200ms ease,
+        box-shadow 200ms ease,
+        color 200ms ease;
 }
-
-.wl-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-    border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+@media (hover: hover) and (pointer: fine) {
+    .wl-card:hover {
+        transform: none;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+        border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+    }
 }
 
 /* 修改用户名样式 */
 .wl-nick {
     color: rgba(var(--waline-accent-rgb), 0.95) !important;
     font-weight: 600;
-    transition: all 0.2s ease;
+    transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
 }
-
-.wl-nick:hover {
-    color: rgba(var(--waline-accent-rgb), 1) !important;
+@media (hover: hover) and (pointer: fine) {
+    .wl-nick:hover {
+        color: rgba(var(--waline-accent-rgb), 1) !important;
+    }
 }
 
 /* 评论内容样式 */
@@ -135,12 +153,16 @@
 /* 回复按钮样式 */
 .wl-reply {
     opacity: 0.8;
-    transition: all 0.2s ease;
+    transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
 }
-
-.wl-reply:hover {
-    opacity: 1;
-    text-decoration: none;
+@media (hover: hover) and (pointer: fine) {
+    .wl-reply:hover {
+        opacity: 1;
+        text-decoration: none;
+    }
 }
 
 /* 表情面板样式 */
@@ -156,12 +178,16 @@
 /* 表情按钮样式 */
 .wl-emoji-popup button {
     border-radius: 6px;
-    transition: all 0.2s ease;
+    transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
 }
-
-.wl-emoji-popup button:hover {
-    background-color: rgba(var(--waline-accent-rgb), 0.2);
-    transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+    .wl-emoji-popup button:hover {
+        background-color: rgba(var(--waline-accent-rgb), 0.2);
+        transform: scale(1.05);
+    }
 }
 
 /* 文章评价反应区域 */
@@ -190,15 +216,20 @@
     background-color: rgba(30, 30, 30, 0.5) !important;
     border-radius: 8px;
     margin: 5px;
-    transition: all 0.3s ease;
+    transition:
+        background-color 200ms ease,
+        border-color 200ms ease,
+        box-shadow 200ms ease,
+        color 200ms ease;
     border: 1px solid rgba(70, 70, 70, 0.2) !important;
 }
-
-.wl-reaction-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    background-color: rgba(40, 40, 40, 0.8) !important;
-    border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+@media (hover: hover) and (pointer: fine) {
+    .wl-reaction-item:hover {
+        transform: none;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        background-color: rgba(40, 40, 40, 0.8) !important;
+        border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+    }
 }
 
 .wl-reaction-img {
@@ -208,9 +239,10 @@
 .wl-reaction-img img {
     transition: transform 0.3s ease;
 }
-
-.wl-reaction-item:hover .wl-reaction-img img {
-    transform: scale(1.15);
+@media (hover: hover) and (pointer: fine) {
+    .wl-reaction-item:hover .wl-reaction-img img {
+        transform: scale(1.05);
+    }
 }
 
 .wl-reaction-votes {
@@ -242,12 +274,16 @@
 
 .wl-sort li {
     @apply cursor-pointer;
-    transition: all 0.2s ease;
+    transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
     color: var(--white-70p);
 }
-
-.wl-sort li:hover {
-    color: var(--white-90p);
+@media (hover: hover) and (pointer: fine) {
+    .wl-sort li:hover {
+        color: var(--white-90p);
+    }
 }
 
 .wl-sort li.active {
@@ -268,13 +304,17 @@
     border-radius: 6px;
     margin: 0 5px;
     padding: 5px 10px;
-    transition: all 0.2s ease;
+    transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
 }
-
-.wl-page button:hover:not(:disabled) {
-    background: rgba(var(--waline-accent-rgb), 0.7) !important;
-    color: var(--white-full) !important;
-    transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+    .wl-page button:hover:not(:disabled) {
+        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        color: var(--white-full) !important;
+        transform: none;
+    }
 }
 
 .wl-page button.active {
@@ -293,12 +333,16 @@
 .wl-power a {
     color: rgba(var(--waline-accent-rgb), 0.9);
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition:
+        background-color 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
 }
-
-.wl-power a:hover {
-    color: rgba(var(--waline-accent-rgb), 1);
-    text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+    .wl-power a:hover {
+        color: rgba(var(--waline-accent-rgb), 1);
+        text-decoration: underline;
+    }
 }
 
 /* 评论为空状态 */
@@ -431,5 +475,29 @@
         @apply flex-col;
         gap: 0.5rem;
         align-items: flex-start;
+    }
+}
+
+.waline-comment-container,
+.waline-comment-container *,
+.wl-panel,
+.wl-content {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+@media (hover: none) {
+    .wl-reaction-img img {
+        transform: none;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .waline-comment-container *,
+    .waline-comment-container *::before,
+    .waline-comment-container *::after {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
     }
 }

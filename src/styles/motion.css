@@ -244,10 +244,10 @@
 @layer components {
     @keyframes stalux-link-avatar-spin {
         from {
-            transform: rotate(0deg) scale(1.04);
+            transform: rotate(0deg);
         }
         to {
-            transform: rotate(360deg) scale(1.04);
+            transform: rotate(360deg);
         }
     }
 }

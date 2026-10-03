@@ -1,3 +1,4 @@
+import type { StyleSpec } from "./rule-utils.ts";
 import { selectorRules } from "./rule-utils.ts";
 import { archivesStyles } from "./rules/archives.ts";
 import { articleStyles } from "./rules/article.ts";
@@ -7,14 +8,38 @@ import { linksStyles } from "./rules/links.ts";
 import { tagsStyles } from "./rules/tags.ts";
 import { wordsStyles } from "./rules/words.ts";
 
+function interactionStates(specs: StyleSpec[]): StyleSpec[] {
+    return specs.flatMap(([selector, utilities, differences, parent]) => {
+        if (!selector.includes(":hover") || !selector.includes(":focus"))
+            return [[selector, utilities, differences, parent] as StyleSpec];
+        const hover = selector
+            .replace(/:is\(:hover, :focus-visible\)/g, ":hover")
+            .split(",")
+            .filter((part) => !part.includes(":focus") && !part.includes(":active"))
+            .join(",");
+        const focus = selector
+            .replace(/:is\(:hover, :focus-visible\)/g, ":focus-visible")
+            .split(",")
+            .filter((part) => !part.includes(":hover"))
+            .join(",");
+        return [hover, focus]
+            .filter(Boolean)
+            .map((part) => [part, utilities, differences, parent] as StyleSpec);
+    });
+}
+
 export const styleFeatures = {
-    common: { sources: ["base.css", "motion.css"], suffix: "", styles: commonStyles },
-    article: { sources: [], suffix: "-article", styles: articleStyles },
-    archives: { sources: [], suffix: "-archives", styles: archivesStyles },
-    categories: { sources: [], suffix: "-categories", styles: categoriesStyles },
-    links: { sources: [], suffix: "-links", styles: linksStyles },
-    tags: { sources: [], suffix: "-tags", styles: tagsStyles },
-    words: { sources: [], suffix: "-words", styles: wordsStyles },
+    common: {
+        sources: ["base.css", "motion.css"],
+        suffix: "",
+        styles: interactionStates(commonStyles),
+    },
+    article: { sources: [], suffix: "-article", styles: interactionStates(articleStyles) },
+    archives: { sources: [], suffix: "-archives", styles: interactionStates(archivesStyles) },
+    categories: { sources: [], suffix: "-categories", styles: interactionStates(categoriesStyles) },
+    links: { sources: [], suffix: "-links", styles: interactionStates(linksStyles) },
+    tags: { sources: [], suffix: "-tags", styles: interactionStates(tagsStyles) },
+    words: { sources: [], suffix: "-words", styles: interactionStates(wordsStyles) },
 } as const;
 
 export type StyleFeature = keyof typeof styleFeatures;

@@ -18,7 +18,7 @@ export const categoriesStyles: StyleSpec[] = [
     ],
     [
         ".stalux-category-card::before",
-        "absolute z-[1]",
+        "absolute z-[1] pointer-events-none",
         {
             content: '""',
             inset: "0",
@@ -29,20 +29,24 @@ export const categoriesStyles: StyleSpec[] = [
         },
     ],
     [
-        ".stalux-category-card:hover",
+        ".stalux-category-shell:hover .stalux-category-card",
         "",
         {
-            transform: "translateY(-3px)",
+            transform: "translateY(-2px)",
             "background-color": "var(--white-05p)",
             "box-shadow": "var(--card-box-shadow-hover)",
         },
     ],
-    [".stalux-category-card:hover::before", "", { transform: "translateX(100%)" }],
     [
-        ".stalux-category-card:hover .stalux-category-icon",
+        ".stalux-category-shell:hover .stalux-category-card::before",
+        "",
+        { transform: "translateX(100%)" },
+    ],
+    [
+        ".stalux-category-shell:hover .stalux-category-card .stalux-category-icon",
         "opacity-[1] text-ink-90",
         {
-            transform: "rotate(-15deg) translateY(-3px)",
+            transform: "rotate(-15deg) translateY(-2px)",
             background: "var(--accent-30p)",
             "box-shadow": "0 3px 8px var(--accent-30p)",
         },

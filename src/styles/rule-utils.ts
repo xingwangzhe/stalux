@@ -10,7 +10,13 @@ export function selectorRules(feature: string, specs: StyleSpec[]): Rule[] {
             async ([, index], context) => {
                 const spec = specs[Number(index)];
                 if (!spec) return;
-                const [selector, utilities, differences, parent] = spec;
+                const [selector, utilities, differences, wrapper] = spec;
+                const parent =
+                    selector.includes(":hover") && !selector.includes(":focus")
+                        ? wrapper?.startsWith("@media ")
+                            ? `${wrapper} and (hover: hover) and (pointer: fine)`
+                            : "@media (hover: hover) and (pointer: fine)"
+                        : wrapper;
                 const entries: CSSObject = {};
                 for (const utility of utilities.split(/\s+/).filter(Boolean)) {
                     await expandUtility(utility, context, entries);

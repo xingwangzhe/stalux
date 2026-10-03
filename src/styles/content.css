@@ -125,17 +125,21 @@
         color: var(--accent-80p);
         border-bottom: 2px solid transparent;
         transition:
-            color var(--transition-fast) ease,
-            border-bottom-color var(--transition-fast) ease;
+            color var(--transition-fast),
+            border-bottom-color var(--transition-fast);
         overflow-wrap: break-word;
         word-wrap: break-word;
         word-break: break-word;
     }
-
-    .stalux-prose a:hover,
     .stalux-prose a:focus-visible {
         color: var(--accent-90p);
         border-bottom-color: var(--accent-60p);
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .stalux-prose a:hover {
+            color: var(--accent-90p);
+            border-bottom-color: var(--accent-60p);
+        }
     }
 
     .stalux-prose code {
@@ -271,9 +275,10 @@
     .stalux-prose tr:nth-child(even) td {
         background-color: var(--white-05p);
     }
-
-    .stalux-prose tr:hover td {
-        background-color: var(--black-10p);
+    @media (hover: hover) and (pointer: fine) {
+        .stalux-prose tr:hover td {
+            background-color: var(--black-10p);
+        }
     }
 
     .stalux-prose table code {
@@ -287,16 +292,16 @@
         border-radius: 8px;
         box-shadow: var(--shadow-lg);
         transition:
-            transform var(--transition-normal) ease,
-            box-shadow var(--transition-normal) ease;
+            transform var(--transition-normal),
+            box-shadow var(--transition-normal);
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .stalux-prose img:hover {
+            transform: none;
+            box-shadow: var(--shadow-xl);
+        }
     }
 
-    .stalux-prose img:hover {
-        transform: scale(1.02);
-        box-shadow: var(--shadow-xl);
-    }
-
-    .stalux-prose iframe,
     .stalux-prose embed,
     .stalux-prose video {
         @apply max-w-full block;
@@ -325,13 +330,17 @@
         background-color: var(--white-05p);
         border: 1px solid var(--white-10p);
         border-radius: 6px;
-        transition: border-color var(--transition-fast) ease;
+        transition: border-color var(--transition-fast);
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .stalux-prose details:hover {
+            border-color: var(--white-20p);
+        }
     }
 
-    .stalux-prose details:hover {
-        border-color: var(--white-20p);
+    .stalux-prose canvas {
+        box-sizing: border-box;
     }
-
     .stalux-prose summary {
         @apply cursor-pointer font-semibold;
         color: var(--white-90p);
@@ -467,5 +476,66 @@
         .stalux-prose ol {
             padding-left: 1.5rem;
         }
+    }
+}
+
+@layer components {
+    .stalux-prose,
+    .stalux-prose > *,
+    .stalux-prose div,
+    .stalux-prose .expressive-code,
+    .stalux-prose .expressive-code .frame {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    .stalux-prose {
+        overflow-wrap: anywhere;
+    }
+    .stalux-prose a::after {
+        content: none;
+    }
+    .stalux-prose a {
+        border-bottom: 0;
+        text-decoration: underline;
+        text-decoration-color: var(--accent-50p);
+        text-underline-offset: 0.2em;
+        text-decoration-thickness: 1px;
+    }
+    .stalux-prose a:has(img) {
+        text-decoration: none;
+    }
+    .stalux-prose pre,
+    .stalux-prose table,
+    .stalux-prose .mermaid,
+    .stalux-prose math {
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+    }
+    .stalux-prose pre,
+    .stalux-prose pre code {
+        overflow-wrap: normal;
+        word-break: normal;
+    }
+    .stalux-prose :is(img, video, iframe, embed, svg, canvas) {
+        max-width: 100%;
+    }
+    .stalux-prose :is(img, video, svg, canvas) {
+        height: auto;
+    }
+    .stalux-prose iframe {
+        display: block;
+        margin: var(--space-xl) auto;
+        border-radius: 8px;
+    }
+    .stalux-prose .mermaid svg {
+        max-width: none;
+    }
+    .stalux-prose canvas {
+        box-sizing: border-box;
+    }
+    .stalux-prose summary {
+        overflow-wrap: anywhere;
     }
 }
