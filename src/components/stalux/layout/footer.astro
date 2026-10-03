@@ -5,10 +5,10 @@ import FooterBeian from "@components/stalux/footer/FooterBeian.astro";
 import FooterCopyright from "@components/stalux/footer/FooterCopyright.astro";
 import FooterStats from "@components/stalux/footer/FooterStats.astro";
 import FooterThemeInfo from "@components/stalux/footer/FooterThemeInfo.astro";
-
 import type { BadgeItem, BadgeOptions } from "@utils/badge-generator";
 import { getAuthorData, getFooterData, getSiteData } from "@utils/config-utils";
 import { formatWordCount, getTotalWordCount } from "@utils/word-count-utils";
+import BackToTop from "./BackToTop.astro";
 
 // 获取配置
 const configEntries = await getCollection("config");
@@ -78,5 +78,6 @@ const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "z
 
         <!-- 自定义内容 -->
         {footerConfig?.custom && <Fragment set:html={footerConfig.custom} />}
+        <BackToTop lang={siteConfig.lang || "zh-CN"} />
     </div>
 </footer>

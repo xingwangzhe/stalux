@@ -125,6 +125,10 @@ for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
         `${path.relative(dist, file)} must have exactly one back-to-top button`,
     );
     assert(
+        /<footer\b[^>]*>[\s\S]*?data-stalux-back-to-top[\s\S]*?<\/footer>/u.test(html),
+        `${path.relative(dist, file)} back-to-top button must stay inside the footer`,
+    );
+    assert(
         /<button[^>]*data-stalux-back-to-top[^>]*aria-label=[^>]*hidden/u.test(html),
         `${path.relative(dist, file)} back-to-top button must be accessible and initially hidden`,
     );

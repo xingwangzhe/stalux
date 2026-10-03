@@ -10,7 +10,7 @@
 
 A dark-themed, high-performance Astro blog theme with elegant glassmorphism design, native per-page CJK font subsets, and a focus on content-first reading experience.
 
-All HTML routes include a circular back-to-top button at the bottom right. It appears after scrolling 240px and scrolls smoothly to the top, respecting reduced motion preferences. A 64px right gutter keeps it clear of content; it is hidden when printing. No configuration is required.
+All HTML routes include a circular back-to-top button in the footer. It appears after scrolling 240px and scrolls smoothly to the top, respecting reduced motion preferences. The button stays in the footer layout without covering content or changing the page width and alignment, and is hidden when printing. No configuration is required.
 
 The homepage typewriter is built into Stalux and continues to use the `items` string list in `stalux/config/typetexts.yml`, with no new configuration. Defaults are 100ms per typed grapheme, 33ms per deleted grapheme, a 1500ms hold, and a 500ms pause after deletion. It pauses outside the viewport or in background tabs and cleans up on soft navigation. Reduced motion displays whole messages without a blinking cursor. Without JavaScript, the first message remains visible; screen readers and print receive the complete list.
 
