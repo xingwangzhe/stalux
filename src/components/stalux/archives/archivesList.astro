@@ -68,6 +68,7 @@ const archiveYears = [...archivesByYearMonth.entries()]
             {archiveYear.months.map(({ month, posts: monthPosts }) => (
                 <div
                     class="stalux-archive-month-section"
+                    data-archive-month
                     style={{
                         "--archive-estimate": `${Math.ceil(monthPosts.length / 12) * 12 * 48 + 40}px`,
                     }}
@@ -91,6 +92,7 @@ const archiveYears = [...archivesByYearMonth.entries()]
                                     <a
                                         href={`/posts/${post.data.abbrlink}/`}
                                         class="stalux-archive-post-link"
+                                        data-archive-description={post.data.desc || ""}
                                         data-astro-prefetch="viewport"
                                     >
                                         {post.data.title}
@@ -111,3 +113,19 @@ const archiveYears = [...archivesByYearMonth.entries()]
         <slot name="main" />
     </div>
 </section>
+<div
+    id="stalux-archive-description"
+    class="stalux-archive-description"
+    data-archive-tooltip
+    role="tooltip"
+    hidden
+></div>
+
+<script>
+import { mountArchiveDescriptions } from "../../../scripts/archive-descriptions";
+import { mountArchiveReveal } from "../../../scripts/archive-reveal";
+import { registerPageLifecycle } from "../../../scripts/page-runtime";
+
+registerPageLifecycle("archive-reveal", mountArchiveReveal);
+registerPageLifecycle("archive-descriptions", mountArchiveDescriptions);
+</script>

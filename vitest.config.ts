@@ -15,6 +15,8 @@ export default getViteConfig({
                 "src/internal/satteri-config.ts",
                 "src/scripts/page-runtime.ts",
                 "src/scripts/back-to-top.ts",
+                "src/scripts/archive-reveal.ts",
+                "src/scripts/archive-descriptions.ts",
                 "src/scripts/typewriter.ts",
                 "src/scripts/weather.ts",
                 "src/scripts/logger.ts",

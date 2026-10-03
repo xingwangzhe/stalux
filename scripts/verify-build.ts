@@ -41,11 +41,22 @@ function verifyJsonLd(html: string, route: string): void {
 
 const pages = {
     home: read("index.html"),
+    archives: read("archives/index.html"),
     post: read("posts/a1b2c3d4/index.html"),
     tags: read("tags/index.html"),
     categories: read("categories/index.html"),
     notFound: read("404.html"),
 };
+
+assert(pages.archives.includes("data-archive-month"), "archive month reveal hooks are missing");
+assert(pages.archives.includes("data-archive-description="), "archive descriptions are missing");
+assert(pages.archives.includes('role="tooltip"'), "archive description tooltip is missing");
+assert(
+    /<a[^>]*class="stalux-archive-post-link"[^>]*href=|<a[^>]*href=[^>]*class="stalux-archive-post-link"/u.test(
+        pages.archives,
+    ),
+    "archives must retain static article links",
+);
 
 const searchStyle = pages.home.match(/<link\b[^>]*data-stalux-search-style[^>]*>/u)?.[0];
 assert(searchStyle, "search CSS asset link is missing");

@@ -5,11 +5,11 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
     archives: {
         "stalux-archive-container": "max-w-[1000px] m-[0_auto] p-[var(--space-xl)_var(--space-md)]",
         "stalux-archive-year-section": "relative mb-2xl",
-        "stalux-archive-year-header": "stalux-flex-row mb-6",
+        "stalux-archive-year-header": "stalux-flex-row flex-wrap gap-y-2 mb-5",
         "stalux-archive-year-count":
             "ml-4 text-[0.9rem] p-[0.3rem_0.8rem] bg-[var(--accent-20p)] rounded-4 text-ink-90",
         "stalux-archive-month-section":
-            "relative [content-visibility:auto] [contain-intrinsic-block-size:auto_var(--archive-estimate,_600px)] ml-[calc(-1_*_var(--tl-pad))] pl-[var(--tl-pad)] mb-8",
+            "relative [content-visibility:auto] [contain-intrinsic-block-size:auto_var(--archive-estimate,_600px)] ml-[calc(-1_*_var(--tl-pad))] pl-[var(--tl-pad)] mb-7",
         "stalux-archive-no-posts":
             "text-center w-full p-[3rem_1rem] text-ink-70 text-[1.2rem] bg-[var(--black-10p)] rounded-2",
         "stalux-archive-post-list":
