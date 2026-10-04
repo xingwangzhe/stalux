@@ -35,3 +35,15 @@ Lightning CSS 目标为 Chrome 154、Firefox 157、Safari 26.6；现代 `rgb()`�
 公开规则来源：[enthec/webappanalyzer t.json](https://raw.githubusercontent.com/enthec/webappanalyzer/main/src/technologies/t.json)，抓取日期 2026-10-04，文件 SHA-256 `aa96b868b7ad19eccd6c1337a59e14f4ff692a5bcb531a7a1021a3cfef7ab1e4`。实际产物检查覆盖变量、指令、注释、CDN 引用、私有名称和公开 sourcemap。
 
 已使用独立 Wappalyzer 6.10.66 CLI 引擎和本机 Chrome 扫描本地页面，并替换其 Tailwind 规则为上述公开快照：未识别 Tailwind CSS。这是实际 CLI 扫描，不是商业 Wappalyzer 服务或扩展的最新缓存结果；未来规则变化无法保证。本次发布和线上验证状态以发布后的实际记录为准。
+
+## 发布与线上最终确认
+
+- 主题发布代码提交 `4bb758fa7004e2b495f787a9dacd95564e88f1d6`，annotated tag `v1.35.0` 已推送；[发布工作流](https://github.com/xingwangzhe/stalux/actions/runs/37191827282)成功，1.x 守卫、完整 validate、npm provenance 与 GitHub Release 均完成。
+- npm 官方版本元数据及正式 tarball 均为 HTTP 200，下载文件 SHA-512 与元数据 integrity 一致。发布受理、元数据可见和 tarball 可见分别确认。
+- 正式 myblog 仅更新主题依赖和锁文件，提交 `adc7f07382ab5d1905070a7ff767bfc78ae8676c` 已推送 main。连续两次构建均通过，698 路由、702 HTML、525 字体文件、Pagefind 701 页；二次恢复 1380 项缓存。756 个正式产物扫描私有名称泄漏及缺失资源均为 0。
+- Cloudflare Pages 部署检查成功；真实域名 `https://xingwangzhe.fun/` 已返回 1.35.0。基于线上 HTML 和模块实际引用检查 53 项：9 页面、31 JS、11 CSS 和 2 个字体样本，均 HTTP 200，私有名称及 Tailwind 特征检查通过。云端与本地构建哈希可能不同，线上验收使用实际线上引用。
+- 独立启动的可见系统 Chrome 154 窗口完成线上 16 项验收，全部通过，`pageerror` 为 0：版本、移动菜单开关、搜索结果、软导航、背景切换、主布局、目录与高亮、回顶、真实 Waline 加载、图片锚点与首次点击灯箱、键盘焦点、减少动画、Agent 视觉隐藏。浏览器窗口及标签页保留。
+- Wappalyzer 6.10.66 CLI 引擎结合上述当前公开 Tailwind 规则对实际线上首页扫描，未识别 Tailwind CSS；识别到 Astro、Google Analytics、Partytown、RSS、Open Graph。此结论对应本次引擎、规则和访问时间，不代表商业服务缓存或未来规则。
+- 复用的无头测试会话出现过 Partytown 0.14.5 worker 异常；独立可见 Chrome 的完整复测以及旧版 1.34.0、新版 1.35.0 的部署预览均未复现。本次未修改 analytics-runtime.ts，不把会话重建表述为统计代码修复。
+
+共享主样式 gzip 从 6284 bytes 降至 5390 bytes（下降 14.23%），Brotli 从 5537 降至 4763（下降 13.98%）。逐个变更 CSS 文件的压缩体积均下降，无局部增长。
