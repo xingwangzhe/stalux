@@ -1,3 +1,6 @@
+import { compactStylesPlugin } from "./internal/compact-styles.ts";
+import { modernCssTargets } from "./internal/modern-css.ts";
+import { styleNames } from "./internal/style-names.generated.ts";
 /**
  * Stalux — Astro 博客主题集成入口
  *
@@ -162,6 +165,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 updateConfig,
                 addDevToolbarApp,
                 config,
+                command,
                 logger,
             }) => {
                 const started = performance.now();
@@ -176,6 +180,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     path.join(srcDir, "scripts"),
                     path.resolve(srcDir, "../package.json"),
                     path.join(srcDir, "styles"),
+                    JSON.stringify([styleNames, modernCssTargets]) +
+                        readFileSync(path.join(srcDir, "internal/compact-styles.ts"), "utf8"),
                 );
 
                 // 1. 注入 Vite 别名 + 组件覆盖插件 + Vue 特性标记（Waline 依赖）
@@ -187,14 +193,21 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             config.build.inlineStylesheets === "always" ? "always" : "never",
                     },
                     vite: {
-                        build: { target: config.vite.build?.target ?? "esnext" },
+                        css: { lightningcss: { targets: modernCssTargets } },
+                        build: {
+                            target: config.vite.build?.target ?? "esnext",
+                            cssMinify: "lightningcss",
+                            sourcemap: false,
+                        },
                         resolve: {
                             alias: createViteAliases(srcDir),
                         },
                         plugins: [
+                            ...(command === "build" ? [compactStylesPlugin(srcDir)] : []),
                             staluxComponentsAlias(opt.components, logger.fork("stalux/components")),
                         ],
                         define: {
+                            __STALUX_COMPACT_STYLES__: JSON.stringify(command === "build"),
                             __STALUX_DEBUG__: JSON.stringify(
                                 process.env.STALUX_DEBUG === "1" ||
                                     process.argv.includes("--verbose"),

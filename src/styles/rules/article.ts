@@ -33,7 +33,7 @@ export const articleStyles: StyleSpec[] = [
             background: "transparent",
             color: "var(--foreground-60p, #333)",
             transition: "color 0.2s ease, transform 0.2s ease",
-            "word-break": "break-word",
+            "overflow-wrap": "anywhere",
         },
     ],
     [".stalux-random-list > li > a:hover", "", { background: "var(--white-05p)" }],
@@ -41,7 +41,7 @@ export const articleStyles: StyleSpec[] = [
     [
         ".stalux-random-header",
         "",
-        { "border-bottom-color": "rgba(255, 255, 255, 0.1)" },
+        { "border-bottom-color": "rgb(255 255 255 / 0.1)" },
         "@media (prefers-color-scheme: dark)",
     ],
     [

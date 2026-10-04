@@ -1,3 +1,5 @@
+import { productionStyleName } from "./style-name.ts";
+
 const ACCENT_COLOR_PATTERN = /^#[\da-fA-F]{6}$/;
 
 const ACCENT_OPACITIES = [90, 85, 80, 70, 60, 50, 40, 30, 20] as const;
@@ -12,13 +14,14 @@ export function getAccentColorStyle(accentColor = "#EAB308"): string {
     const red = Number.parseInt(hex.slice(0, 2), 16);
     const green = Number.parseInt(hex.slice(2, 4), 16);
     const blue = Number.parseInt(hex.slice(4, 6), 16);
-    const rgb = `${red}, ${green}, ${blue}`;
+    const rgb = `${red} ${green} ${blue}`;
 
     return [
         `--stalux-accent-color: ${accentColor.toLowerCase()}`,
         `--stalux-accent-rgb: ${rgb}`,
         ...ACCENT_OPACITIES.map(
-            (opacity) => `--accent-${opacity}p: rgba(${rgb}, ${opacity / 100})`,
+            (opacity) =>
+                `${productionStyleName(`--accent-${opacity}p`)}: rgb(${red} ${green} ${blue} / ${opacity / 100})`,
         ),
     ].join("; ");
 }

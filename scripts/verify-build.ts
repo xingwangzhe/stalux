@@ -1,8 +1,9 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
-
 import packageJson from "../package.json" with { type: "json" };
+import { styleArtifactProblems } from "../src/internal/style-artifacts.ts";
+import { styleNames } from "../src/internal/style-names.generated.ts";
 import { findMissingAssetReferences } from "./verify-build-utils.ts";
 
 const root = process.cwd();
@@ -39,6 +40,8 @@ function verifyJsonLd(html: string, route: string): void {
     }
 }
 
+const cssClass = (name: string) => styleNames.classes[name] ?? name;
+
 const pages = {
     home: read("index.html"),
     archives: read("archives/index.html"),
@@ -52,9 +55,10 @@ assert(pages.archives.includes("data-archive-month"), "archive month reveal hook
 assert(pages.archives.includes("data-archive-description="), "archive descriptions are missing");
 assert(pages.archives.includes('role="tooltip"'), "archive description tooltip is missing");
 assert(
-    /<a[^>]*class="stalux-archive-post-link"[^>]*href=|<a[^>]*href=[^>]*class="stalux-archive-post-link"/u.test(
-        pages.archives,
-    ),
+    new RegExp(
+        `<a[^>]*class="${cssClass("stalux-archive-post-link")}"[^>]*href=|<a[^>]*href=[^>]*class="${cssClass("stalux-archive-post-link")}"`,
+        "u",
+    ).test(pages.archives),
     "archives must retain static article links",
 );
 
@@ -69,10 +73,19 @@ const initialStyles = [
     ),
     ...initialStyleLinks.map((match) => read((match[1] ?? "").replace(/^\//u, ""))),
 ].join("\n");
-assert(initialStyles.includes(".stalux-main"), "initial render has no blocking layout stylesheet");
+assert(
+    initialStyles.includes(`.${cssClass("stalux-main")}`),
+    "initial render has no blocking layout stylesheet",
+);
 assert(initialStyleLinks.length > 0, "shared CSS must be a cacheable stylesheet asset");
-assert(!initialStyles.includes(".stalux-cloud-tag-card"), "homepage includes unused tag-cloud CSS");
-assert(!initialStyles.includes(".stalux-prose"), "homepage includes unused article typography CSS");
+assert(
+    !initialStyles.includes(`.${cssClass("stalux-cloud-tag-card")}`),
+    "homepage includes unused tag-cloud CSS",
+);
+assert(
+    !initialStyles.includes(`.${cssClass("stalux-prose")}`),
+    "homepage includes unused article typography CSS",
+);
 assert(searchStyle.includes('rel="prefetch"'), "search CSS must not block the first paint");
 assert(searchStyle.includes('as="style"'), "search CSS must be emitted as a stylesheet asset");
 assert(
@@ -115,23 +128,27 @@ assert(
     "typewriter must include a visible static first sentence without JavaScript",
 );
 assert(
-    pages.home.includes("stalux-typewriter-accessible"),
+    pages.home.includes(cssClass("stalux-typewriter-accessible")),
     "typewriter accessible text is missing",
 );
 assert(!pages.home.includes("<astro-typewriter"), "third-party typewriter remains in output");
 
-assert(pages.home.includes('class="agent-home-summary"'), "agent home summary is missing");
 assert(
-    /\.agent-home-summary[^}]*clip:rect\(0,\s*0,\s*0,\s*0\)[^}]*position:absolute/gu.test(
-        initialStyles,
-    ),
+    pages.home.includes(`class="${cssClass("agent-home-summary")}"`),
+    "agent home summary is missing",
+);
+assert(
+    new RegExp(
+        `\\.${cssClass("agent-home-summary")}[^}]*clip-path:inset\\(50%\\)[^}]*position:absolute`,
+        "u",
+    ).test(initialStyles),
     "agent home summary is not visually hidden",
 );
 for (const [route, html] of Object.entries(pages)) verifyJsonLd(html, route);
 
 for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
     const html = readFileSync(file, "utf8");
-    if (!html.includes('class="stalux-root')) continue;
+    if (!html.includes(`class="${cssClass("stalux-root")}`)) continue;
     assert(
         (html.match(/data-stalux-back-to-top/g) ?? []).length === 1,
         `${path.relative(dist, file)} must have exactly one back-to-top button`,
@@ -167,7 +184,7 @@ const assetContents = new Map(
 );
 assert(
     [...assetContents.values()].some((content) =>
-        content.includes('--font-body:"Noto Sans SC", "Noto Sans CJK SC"'),
+        /--font-body:\s*"Noto Sans SC",\s*"Noto Sans CJK SC"/u.test(content),
     ),
     "body font fallback stack is missing",
 );
@@ -187,18 +204,18 @@ console.info(
     `[verify-build] ${htmlCount} HTML pages, ${fontCount} fonts, ${assetSources.length} asset sources, SEO and agent output verified`,
 );
 
-for (const file of walk(dist).filter((file) => file.endsWith(".css"))) {
-    const css = readFileSync(file, "utf8");
-    assert(
-        !/--tw-[\w-]+|@apply\b|@tailwind\b|tailwindcss\.(?:com|js)/iu.test(css),
-        `${path.relative(dist, file)} contains legacy Tailwind CSS markers or uncompiled directives`,
-    );
+for (const file of files.filter((file) => /\.(?:css|html|js|map)$/u.test(file))) {
+    const problems = styleArtifactProblems(file, readFileSync(file, "utf8"));
+    assert(problems.length === 0, `${path.relative(dist, file)}: ${problems.join("; ")}`);
 }
 
 const postIndex = JSON.parse(read("api/posts.json")) as Array<{ url: string; desc?: string }>;
 for (const post of postIndex) {
     const html = read(`${post.url.replace(/^\//u, "")}index.html`);
-    const count = (html.match(/<aside[^>]*class="stalux-article-summary"/gu) ?? []).length;
+    const count = (
+        html.match(new RegExp(`<aside[^>]*class="${cssClass("stalux-article-summary")}"`, "gu")) ??
+        []
+    ).length;
     assert(
         count === (post.desc?.trim() ? 1 : 0),
         `${post.url} must render one summary for a description and none for an empty description`,

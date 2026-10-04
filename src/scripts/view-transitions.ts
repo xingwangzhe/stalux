@@ -1,4 +1,4 @@
-import { getRouteKind } from "@utils/view-transitions";
+import { getRouteKind } from "@utils/public-routes";
 import { createClientLogger } from "./logger";
 
 const logger = createClientLogger("view-transitions");

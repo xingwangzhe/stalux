@@ -89,11 +89,17 @@ const routeAnimation = getRouteAnimation(routeKind);
 )}
         <div
             class="bg-layer bg-a"
+            data-stalux-background="a"
             style="opacity: 1;"
             transition:persist="stalux-bg-a"
             aria-hidden="true"
         ></div>
-        <div class="bg-layer bg-b" transition:persist="stalux-bg-b" aria-hidden="true"></div>
+        <div
+            class="bg-layer bg-b"
+            data-stalux-background="b"
+            transition:persist="stalux-bg-b"
+            aria-hidden="true"
+        ></div>
         <main
             class="stalux-main"
             data-stalux-route={routeKind}

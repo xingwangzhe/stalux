@@ -15,7 +15,7 @@ export const archivesStyles: StyleSpec[] = [
             "line-height": "1.65",
             "font-size": "0.9rem",
             color: "var(--white-90p)",
-            background: "rgba(24, 24, 27, 0.96)",
+            background: "rgb(24 24 27 / 0.96)",
             border: "1px solid var(--accent-40p)",
             "box-shadow": "var(--shadow-sidebar)",
         },
@@ -77,7 +77,7 @@ export const archivesStyles: StyleSpec[] = [
         "absolute box-border rounded-full w-[var(--dot)] h-[var(--dot)] left-[calc(var(--tl-line)_/_2_-_var(--tl-pad)_-_var(--dot)_/_2)] top-[0.75em] z-[1]",
         {
             content: '""',
-            "background-color": "rgba(255, 255, 255, 0.6)",
+            "background-color": "rgb(255 255 255 / 0.6)",
             transform: "translateY(-50%)",
         },
     ],

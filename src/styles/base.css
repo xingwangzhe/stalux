@@ -14,8 +14,6 @@
         font-family:
             var(--font-body), "Noto Sans SC", "Noto Sans CJK SC", system-ui, -apple-system,
             sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
     }
 
@@ -48,7 +46,7 @@
     }
 
     /* 下划线动画 */
-    a:not(.a-none):not([class*="card"]):not(.stalux-nav-link)::after {
+    a:not(.a-none):not([data-stalux-card]):not(.stalux-nav-link)::after {
         content: "";
         position: absolute;
         left: 0;
@@ -61,12 +59,12 @@
         transition: transform 0.25s cubic-bezier(0.25, 0.9, 0.2, 1);
         pointer-events: none;
     }
-    a:not(.a-none):not([class*="card"]):not(.stalux-nav-link):focus-visible::after,
-    a:not(.a-none):not([class*="card"]):not(.stalux-nav-link):active::after {
+    a:not(.a-none):not([data-stalux-card]):not(.stalux-nav-link):focus-visible::after,
+    a:not(.a-none):not([data-stalux-card]):not(.stalux-nav-link):active::after {
         transform: scaleX(1);
     }
     @media (hover: hover) and (pointer: fine) {
-        a:not(.a-none):not([class*="card"]):not(.stalux-nav-link):hover::after {
+        a:not(.a-none):not([data-stalux-card]):not(.stalux-nav-link):hover::after {
             transform: scaleX(1);
         }
     }
@@ -119,59 +117,59 @@
         --stalux-bg-filter: none;
         --stalux-text-shadow: var(--stalux-accent-color) 0.08rem 0.08rem 0.18rem;
         --stalux-accent-color: #eab308;
-        --stalux-accent-rgb: 234, 179, 8;
+        --stalux-accent-rgb: 234 179 8;
         --surface-glass: var(--black-05p);
         --surface-glass-shadow: var(--shadow-sidebar);
 
         /* 卡片和标签颜色 Token（可在这里统一调整主题色/透明度） */
         --card-bg: var(--surface-glass);
-        --card-border: rgba(255, 255, 255, 0.1);
-        --card-box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-        --card-box-shadow-hover: 0 14px 28px rgba(0, 0, 0, 0.12);
+        --card-border: rgb(255 255 255 / 0.1);
+        --card-box-shadow: 0 10px 24px rgb(0 0 0 / 0.08);
+        --card-box-shadow-hover: 0 14px 28px rgb(0 0 0 / 0.12);
 
-        --tag-bg: rgba(255, 255, 255, 0.12);
-        --tag-bg-hover: rgba(255, 255, 255, 0.18);
-        --category-bg: rgba(255, 255, 255, 0.08);
-        --category-bg-hover: rgba(255, 255, 255, 0.14);
+        --tag-bg: rgb(255 255 255 / 0.12);
+        --tag-bg-hover: rgb(255 255 255 / 0.18);
+        --category-bg: rgb(255 255 255 / 0.08);
+        --category-bg-hover: rgb(255 255 255 / 0.14);
 
-        --date-bg: rgba(66, 160, 255, 0.18);
-        --date-border: rgba(66, 160, 255, 0.25);
-        --updated-bg: rgba(255, 201, 71, 0.2);
-        --updated-border: rgba(255, 201, 71, 0.3);
+        --date-bg: rgb(66 160 255 / 0.18);
+        --date-border: rgb(66 160 255 / 0.25);
+        --updated-bg: rgb(255 201 71 / 0.2);
+        --updated-border: rgb(255 201 71 / 0.3);
 
         /* 常用颜色值 */
         --white-full: #ffffff;
-        --white-95p: rgba(255, 255, 255, 0.95);
-        --white-90p: rgba(255, 255, 255, 0.9);
-        --white-85p: rgba(255, 255, 255, 0.85);
-        --white-80p: rgba(255, 255, 255, 0.9);
-        --white-78p: rgba(255, 255, 255, 0.78);
-        --white-75p: rgba(255, 255, 255, 0.75);
-        --white-70p: rgba(255, 255, 255, 0.86);
-        --white-60p: rgba(255, 255, 255, 0.6);
-        --white-50p: rgba(255, 255, 255, 0.5);
-        --white-30p: rgba(255, 255, 255, 0.3);
-        --white-20p: rgba(255, 255, 255, 0.2);
-        --white-15p: rgba(255, 255, 255, 0.15);
-        --white-10p: rgba(255, 255, 255, 0.1);
-        --white-05p: rgba(255, 255, 255, 0.05);
+        --white-95p: rgb(255 255 255 / 0.95);
+        --white-90p: rgb(255 255 255 / 0.9);
+        --white-85p: rgb(255 255 255 / 0.85);
+        --white-80p: rgb(255 255 255 / 0.9);
+        --white-78p: rgb(255 255 255 / 0.78);
+        --white-75p: rgb(255 255 255 / 0.75);
+        --white-70p: rgb(255 255 255 / 0.86);
+        --white-60p: rgb(255 255 255 / 0.6);
+        --white-50p: rgb(255 255 255 / 0.5);
+        --white-30p: rgb(255 255 255 / 0.3);
+        --white-20p: rgb(255 255 255 / 0.2);
+        --white-15p: rgb(255 255 255 / 0.15);
+        --white-10p: rgb(255 255 255 / 0.1);
+        --white-05p: rgb(255 255 255 / 0.05);
 
-        --black-30p: rgba(0, 0, 0, 0.3);
-        --black-20p: rgba(0, 0, 0, 0.2);
-        --black-15p: rgba(0, 0, 0, 0.15);
-        --black-10p: rgba(0, 0, 0, 0.1);
-        --black-05p: rgba(0, 0, 0, 0.05);
+        --black-30p: rgb(0 0 0 / 0.3);
+        --black-20p: rgb(0 0 0 / 0.2);
+        --black-15p: rgb(0 0 0 / 0.15);
+        --black-10p: rgb(0 0 0 / 0.1);
+        --black-05p: rgb(0 0 0 / 0.05);
 
         /* 强调色变体 */
-        --accent-90p: rgba(var(--stalux-accent-rgb), 0.9);
-        --accent-85p: rgba(var(--stalux-accent-rgb), 0.85);
-        --accent-80p: rgba(var(--stalux-accent-rgb), 0.8);
-        --accent-70p: rgba(var(--stalux-accent-rgb), 0.7);
-        --accent-60p: rgba(var(--stalux-accent-rgb), 0.6);
-        --accent-50p: rgba(var(--stalux-accent-rgb), 0.5);
-        --accent-40p: rgba(var(--stalux-accent-rgb), 0.4);
-        --accent-30p: rgba(var(--stalux-accent-rgb), 0.3);
-        --accent-20p: rgba(var(--stalux-accent-rgb), 0.2);
+        --accent-90p: rgb(var(--stalux-accent-rgb) / 0.9);
+        --accent-85p: rgb(var(--stalux-accent-rgb) / 0.85);
+        --accent-80p: rgb(var(--stalux-accent-rgb) / 0.8);
+        --accent-70p: rgb(var(--stalux-accent-rgb) / 0.7);
+        --accent-60p: rgb(var(--stalux-accent-rgb) / 0.6);
+        --accent-50p: rgb(var(--stalux-accent-rgb) / 0.5);
+        --accent-40p: rgb(var(--stalux-accent-rgb) / 0.4);
+        --accent-30p: rgb(var(--stalux-accent-rgb) / 0.3);
+        --accent-20p: rgb(var(--stalux-accent-rgb) / 0.2);
 
         /* 常用过渡和动画 */
         --transition-fast: 0.18s ease;
@@ -200,19 +198,17 @@
         --radius-full: 9999px;
 
         /* 常用阴影 */
-        --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
-        --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.2);
-        --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.3);
-        --shadow-xl: 0 12px 26px rgba(0, 0, 0, 0.28);
+        --shadow-sm: 0 2px 5px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 6px 16px rgb(0 0 0 / 0.2);
+        --shadow-lg: 0 8px 20px rgb(0 0 0 / 0.3);
+        --shadow-xl: 0 12px 26px rgb(0 0 0 / 0.28);
         --shadow-sidebar:
-            0 16px 20px -12px rgba(0, 0, 0, 0.84),
-            10px 4px 16px -12px rgba(0, 0, 0, 0.58),
-            -10px 4px 16px -12px rgba(0, 0, 0, 0.58);
+            0 16px 20px -12px rgb(0 0 0 / 0.84), 10px 4px 16px -12px rgb(0 0 0 / 0.58),
+            -10px 4px 16px -12px rgb(0 0 0 / 0.58);
         --shadow-raised-hover:
-            0 20px 24px -13px rgba(0, 0, 0, 0.9),
-            12px 5px 18px -13px rgba(0, 0, 0, 0.68),
-            -12px 5px 18px -13px rgba(0, 0, 0, 0.68);
-        --shadow-dark: rgba(0, 0, 0, 0.753);
+            0 20px 24px -13px rgb(0 0 0 / 0.9), 12px 5px 18px -13px rgb(0 0 0 / 0.68),
+            -12px 5px 18px -13px rgb(0 0 0 / 0.68);
+        --shadow-dark: rgb(0 0 0 / 0.753);
 
         /* 语义化颜色 */
         --muted-text: #bbb;
@@ -288,10 +284,9 @@
         padding: var(--space-lg) var(--space-md);
         text-align: center;
         color: var(--muted-text);
-        background: linear-gradient(180deg, rgba(12, 14, 18, 0.18), rgba(12, 14, 18, 0.72));
+        background: linear-gradient(180deg, rgb(12 14 18 / 0.18), rgb(12 14 18 / 0.72));
         border-top: 1px solid var(--white-10p);
         backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
     }
 }
 

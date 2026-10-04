@@ -57,7 +57,7 @@
 
 | 源文件 | 选择器或规则 | 处理 |
 | --- | --- | --- |
-| `src/styles/base.css` | `a:not(.a-none):not([class*="card"]):not(.stalux-nav-link):hover::after {` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
+| `src/styles/base.css` | `a:not(.a-none):not([data-stalux-card]):not(.stalux-nav-link):hover::after {` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
 | `src/styles/base.css` | `a:hover {` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
 | `src/styles/base.css` | `::-webkit-scrollbar-thumb:hover {` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
 | `src/styles/content.css` | `.stalux-prose a:hover {` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
@@ -120,3 +120,13 @@
 ### 构建期图片处理
 
 图片尺寸与加载策略使用 parse5 的真实元素及源码位置，仅替换实际 img 标签。不得对完整 HTML 用正则搜索 img：代码复制按钮的 data-code 和脚本字符串也可能包含图片示例，误改会破坏属性、复制内容和页面布局。源码区间替换保留其余 HTML 原文，图片加载策略覆盖正文嵌套 section。
+
+## 生产名称转换
+
+`styles:build` 先编译 CSS，再生成 `src/internal/style-names.generated.ts`。映射由主题源码决定，不扫描消费项目内容；同一版本实体安装和模板模式一致。不要手改生成映射。开发时使用原名，生产通过 `compact-styles` 的提前 transform 钩子在 Astro 编译之前转换。不要对最终 dist 资源直接改名，否则会破坏资源哈希、脚本选择器和增量路由引用。
+
+新动态名称必须通过 `productionStyleName()` 解析，或改成稳定的 `data-*` 行为钩子。HTML 模板字符串只转换真实样式属性，CSS 经语法树转换；`data-ref` 值不能作为 class 重命名。不要增加 `[class*="..."]` 等依赖名称片段的规则，卡片链接使用 `data-stalux-card`。映射、转换器和 CSS targets 进入 runtime cache key，防止恢复引用旧资源的页面。
+
+自有样式优先使用标准规则；MDN 明确弃用的 `clip` 已由 `clip-path` 替代，旧 `word-break: break-word` / `word-wrap` 被 `overflow-wrap` 替代，颜色使用现代 RGB。仍依赖特定引擎的多行截断和第三方 MathML 适配须在对应浏览器验证，不能直接删除。第三方 class / variables 及公开字体变量不压缩。
+
+指纹检查记录公开 webappanalyzer 规则来源、获取日期和 SHA-256；实际 Wappalyzer CLI 扫描需另记录版本。生产 sourcemap 关闭，文章正文和代码示例不得清理。发布前执行完整 validate、包内容检查、独立消费者连续构建和浏览器软导航验收。

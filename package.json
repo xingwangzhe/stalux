@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.34.0",
+    "version": "1.35.0",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -91,14 +91,16 @@
         "prepare": "git config core.hooksPath scripts/git-hooks",
         "dev:debug": "STALUX_DEBUG=1 astro dev --verbose",
         "build:debug": "STALUX_DEBUG=1 astro build --verbose && node scripts/verify-build.ts",
-        "styles:build": "node scripts/build-styles.ts",
+        "styles:build": "node scripts/build-styles.ts && node scripts/build-style-names.ts",
         "styles:watch": "node scripts/build-styles.ts --watch"
     },
     "dependencies": {
+        "@astrojs/compiler": "2.13.1",
         "@astrojs/markdown-satteri": "0.4.2",
         "@astrojs/partytown": "2.1.8",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.4",
+        "@babel/parser": "7.29.9",
         "@expressive-code/plugin-line-numbers": "^0.44.2",
         "@lucide/astro": "^1.47.0",
         "@mcp-b/webmcp-polyfill": "^5.1.0",
@@ -111,6 +113,8 @@
         "astro-expressive-code": "^0.44.2",
         "astro-seo": "^1.2.0",
         "badge-maker": "^6.0.0",
+        "css-tree": "3.2.1",
+        "magic-string": "0.30.21",
         "pagefind": "^1.5.2",
         "parse5": "8.0.1",
         "photoswipe": "^5.4.4",
@@ -122,6 +126,7 @@
     "devDependencies": {
         "@astrojs/check": "0.9.10",
         "@biomejs/biome": "2.5.14",
+        "@types/css-tree": "^3.2.0",
         "@types/node": "^26.6.2",
         "@unocss/astro": "^66.10.5",
         "@vitest/coverage-v8": "5.0.1",

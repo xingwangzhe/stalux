@@ -40,7 +40,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-404-home-btn":
             "inline-block no-underline p-[var(--space-md)_var(--space-lg)] [background:var(--black-20p)] text-ink-90 rounded-stalux-md [border:var(--border-thin)_solid_var(--white-20p)] [transition:background-color_var(--transition-normal),_transform_var(--transition-normal),_box-shadow_var(--transition-normal)] text-stalux-base",
         "stalux-ai-prompt":
-            "absolute p-0 overflow-hidden w-[1px] h-[1px] m-[-1px] [clip:rect(0,_0,_0,_0)] [white-space:pre-wrap] [border:0]",
+            "absolute p-0 overflow-hidden w-[1px] h-[1px] m-[-1px] [clip-path:inset(50%)] [white-space:pre-wrap] [border:0]",
         "stalux-theme-info": "text-ink-70 text-[0.85rem] [gap:0.3em]",
         "stalux-stats-site-stats": "gap-2 text-[0.9rem]",
         "stalux-stats-stats-separator": "[color:rgba(255,_255,_255,_0.5)]",
@@ -122,7 +122,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
             "font-semibold m-[0_0_var(--space-xs)] text-stalux-base text-ink-90 pb-sm [border-bottom:var(--border-thin)_solid_var(--white-20p)]",
         "stalux-toc-list": "stalux-list-reset stalux-stack gap-sm",
         "stalux-toc-item":
-            "block no-underline p-[var(--space-sm)_var(--space-xs)] text-ink-70 text-stalux-small [border-left:var(--border-thick)_solid_transparent] rounded-[0_var(--radius-sm)_var(--radius-sm)_0] [transition:color_var(--transition-medium),_background-color_var(--transition-medium),_border-left-color_var(--transition-medium),_transform_var(--transition-medium)] leading-[1.4] [word-break:break-word]",
+            "block no-underline p-[var(--space-sm)_var(--space-xs)] text-ink-70 text-stalux-small [border-left:var(--border-thick)_solid_transparent] rounded-[0_var(--radius-sm)_var(--radius-sm)_0] [transition:color_var(--transition-medium),_background-color_var(--transition-medium),_border-left-color_var(--transition-medium),_transform_var(--transition-medium)] leading-[1.4] [overflow-wrap:anywhere]",
         "stalux-toc-empty": "text-ink-60 text-stalux-small",
         "stalux-post-taxonomy-container": "stalux-stack gap-xs",
         "stalux-post-taxonomy-title":
@@ -158,7 +158,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-post-article-header":
             "mb-12 pb-8 [border-bottom:1px_solid_var(--white-10p)] [animation:stalux-post-content-reveal_220ms_ease_360ms_both]",
         "stalux-post-title":
-            "font-bold text-center text-10 text-ink-full m-[0_0_1.5rem] leading-[1.2] [word-break:break-word] stalux-glow",
+            "font-bold text-center text-10 text-ink-full m-[0_0_1.5rem] leading-[1.2] [overflow-wrap:anywhere] stalux-glow",
         "stalux-post-metadata":
             "flex flex-wrap justify-center gap-6 text-[0.95rem] [color:#ffffffb3]",
         "stalux-post-meta-item":

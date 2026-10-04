@@ -29,6 +29,7 @@ export function createRuntimeCacheKey(
     scriptsDirectory: string,
     packageJson: string,
     stylesDirectory?: string,
+    styleMapping?: string,
 ): string {
     return hashRuntimeSources([
         ...collectFiles(scriptsDirectory),
@@ -40,6 +41,7 @@ export function createRuntimeCacheKey(
                       readFileSync(path.join(stylesDirectory, name), "utf8"),
                   ])
             : []),
+        ...(styleMapping ? [["style-names", styleMapping] as const] : []),
         ["package.json", readFileSync(packageJson, "utf8")],
     ]);
 }

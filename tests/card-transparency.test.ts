@@ -7,9 +7,9 @@ describe("card transparency", () => {
     it("uses 5% shared card surfaces and lighter card shadows", () => {
         const tokens = read("../src/styles/base.css");
         expect(tokens).toContain("--surface-glass: var(--black-05p)");
-        expect(tokens).toContain("--black-05p: rgba(0, 0, 0, 0.05)");
-        expect(tokens).toContain("--card-box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08)");
-        expect(tokens).toContain("--card-box-shadow-hover: 0 14px 28px rgba(0, 0, 0, 0.12)");
+        expect(tokens).toContain("--black-05p: rgb(0 0 0 / 0.05)");
+        expect(tokens).toContain("--card-box-shadow: 0 10px 24px rgb(0 0 0 / 0.08)");
+        expect(tokens).toContain("--card-box-shadow-hover: 0 14px 28px rgb(0 0 0 / 0.12)");
     });
 
     it("keeps individual card surfaces at 5% on hover", () => {

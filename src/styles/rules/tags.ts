@@ -30,7 +30,7 @@ export const tagsStyles: StyleSpec[] = [
             content: '""',
             inset: "0",
             background:
-                "linear-gradient( 120deg, rgba(255, 255, 255, 0), var(--white-10p), rgba(255, 255, 255, 0) )",
+                "linear-gradient( 120deg, rgb(255 255 255 / 0), var(--white-10p), rgb(255 255 255 / 0) )",
             transform: "translateX(-100%)",
             transition: "transform 360ms ease",
         },

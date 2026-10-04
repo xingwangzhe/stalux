@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import UnoCSS from "unocss/vite";
 import { build as viteBuild } from "vite";
+import { modernCssTargets } from "../src/internal/modern-css.ts";
 import {
     featureStateClasses,
     nativeFeatures,
@@ -72,7 +73,9 @@ async function compile(
                           : {}),
                 }),
             ],
+            css: { lightningcss: { targets: modernCssTargets } },
             build: {
+                cssTarget: "esnext",
                 write: false,
                 minify: true,
                 cssMinify: "lightningcss",

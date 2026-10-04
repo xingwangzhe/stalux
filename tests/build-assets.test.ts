@@ -15,9 +15,29 @@ describe("generated asset references", () => {
         expect(missing).toEqual(["index.html -> /_astro/pagefind.css"]);
     });
 
+    it("ignores displayed code examples and copy-button data", () => {
+        expect(
+            findMissingAssetReferences(
+                new Map([
+                    [
+                        "post.html",
+                        // biome-ignore lint/suspicious/noTemplateCurlyInString: displayed code keeps its literal interpolation.
+                        '<pre>&lt;img src="/_astro/pattern-${index}.svg"&gt;</pre><button data-code="/_astro/example.js"></button>',
+                    ],
+                ]),
+                new Set(),
+            ),
+        ).toEqual([]);
+    });
+
     it("deduplicates repeated missing references", () => {
         const missing = findMissingAssetReferences(
-            new Map([["index.html", '"/_astro/missing.css" "/_astro/missing.css"']]),
+            new Map([
+                [
+                    "index.html",
+                    '<link href="/_astro/missing.css"><link href="/_astro/missing.css">',
+                ],
+            ]),
             new Set(),
         );
 
@@ -26,7 +46,9 @@ describe("generated asset references", () => {
 
     it("accepts an asset directory prefix when generated files exist below it", () => {
         const missing = findMissingAssetReferences(
-            new Map([["index.html", 'src: url("/_astro/fonts/body.woff2")']]),
+            new Map([
+                ["index.html", '<style>@font-face{src:url("/_astro/fonts/body.woff2")}</style>'],
+            ]),
             new Set(["/_astro/fonts/body.woff2"]),
         );
 

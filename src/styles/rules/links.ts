@@ -66,7 +66,7 @@ export const linksStyles: StyleSpec[] = [
         {
             background: "linear-gradient(90deg, var(--white-95p), var(--accent-90p))",
             "background-clip": "text",
-            "-webkit-text-fill-color": "transparent",
+            color: "transparent",
             "text-overflow": "ellipsis",
         },
     ],

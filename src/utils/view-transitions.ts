@@ -1,4 +1,5 @@
 import { getRouteKind, type RouteKind } from "./public-routes";
+import { productionStyleName } from "./style-name.ts";
 
 export { getRouteKind, type RouteKind };
 
@@ -47,7 +48,7 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
         forwards: {
             old: exitAnimation,
             new: {
-                name: `stalux-${name}`,
+                name: productionStyleName(`stalux-${name}`),
                 duration: "0.22s",
                 easing,
                 fillMode: "both",
@@ -56,7 +57,7 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
         backwards: {
             old: exitAnimation,
             new: {
-                name: `stalux-${backName}`,
+                name: productionStyleName(`stalux-${backName}`),
                 duration: "0.22s",
                 easing,
                 fillMode: "both",
@@ -90,7 +91,7 @@ function createSidebarAnimation(
     backwards: boolean,
 ): TransitionAnimation {
     return {
-        name: `stalux-sidebar-${side}-${backwards ? "back-" : ""}${phase}`,
+        name: productionStyleName(`stalux-sidebar-${side}-${backwards ? "back-" : ""}${phase}`),
         duration: "0.22s",
         easing,
         fillMode: "both",

@@ -32,6 +32,9 @@ describe("runtime cache key", () => {
             const css = path.join(styles, "generated.css");
             writeFileSync(css, ".card{color:red}");
             const initial = createRuntimeCacheKey(scripts, manifest, styles);
+            expect(createRuntimeCacheKey(scripts, manifest, styles, "map-one")).not.toBe(
+                createRuntimeCacheKey(scripts, manifest, styles, "map-two"),
+            );
             writeFileSync(css, ".card{color:red}");
             expect(createRuntimeCacheKey(scripts, manifest, styles)).toBe(initial);
             writeFileSync(css, ".card{color:blue}");

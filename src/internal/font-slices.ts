@@ -1,3 +1,4 @@
+import { styleNames } from "./style-names.generated.ts";
 /**
  * Build-time CJK font subsetting engine.
  *
@@ -128,6 +129,7 @@ type HtmlNode = DefaultTreeAdapterMap["node"];
 const NON_RENDERED_ELEMENTS = new Set(["script", "style", "template", "title"]);
 const VISUALLY_HIDDEN_CLASSES = new Set([
     "agent-home-summary",
+    styleNames.classes["agent-home-summary"] ?? "agent-home-summary",
     "screen-reader-only",
     "sr-only",
     "visually-hidden",

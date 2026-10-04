@@ -38,7 +38,7 @@ export default defineConfig({
         ),
     },
     transformers: [transformerDirectives({ throwOnMissing: true })],
-    content: { filesystem: ["src/{components,layouts,pages,scripts}/**/*.{astro,ts}"] },
+    content: { filesystem: ["src/{components,layouts,pages}/**/*.astro"] },
     outputToCssLayers: { cssLayerName: (layer) => (layer === "default" ? "utilities" : layer) },
     layers: { components: -1, default: 0 },
     rules: [

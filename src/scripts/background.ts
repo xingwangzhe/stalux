@@ -34,7 +34,7 @@ const backgroundImages: string[] = window.__STALUX_BG_URLS__?.length
     : BACKGROUND_URLS;
 
 function getLayerEl(layer: "a" | "b"): HTMLElement | null {
-    return document.querySelector(`.bg-layer.bg-${layer}`);
+    return document.querySelector(`[data-stalux-background="${layer}"]`);
 }
 
 function setLayerOpacity(layer: "a" | "b", opacity: number): void {

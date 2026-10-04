@@ -32,8 +32,8 @@ export const wordsStyles: StyleSpec[] = [
     [
         ".stalux-word-body pre",
         "",
-        { "white-space": "pre-wrap", "word-break": "break-word", "overflow-x": "visible" },
+        { "white-space": "pre-wrap", "overflow-wrap": "anywhere", "overflow-x": "visible" },
     ],
-    [".stalux-word-body code", "", { "word-break": "break-word" }],
+    [".stalux-word-body code", "", { "overflow-wrap": "anywhere" }],
     [".stalux-word-source-link:hover", "", { color: "var(--accent-90p)" }],
 ];

@@ -14,7 +14,8 @@
             "!**/licenses",
             "!**/licenses.txt",
             "!**/.astro",
-            "!public/background"
+            "!public/background",
+            "!src/internal/style-names.generated.ts"
         ]
     },
     "formatter": {

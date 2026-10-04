@@ -17,27 +17,26 @@
     text-align: center;
     margin: 0 0 1.5rem 0;
     font-size: 2rem;
-    background: linear-gradient(90deg, var(--white-90p), rgba(var(--waline-accent-rgb), 0.9));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: linear-gradient(90deg, var(--white-90p), rgb(var(--waline-accent-rgb) / 0.9));
+    color: transparent;
     background-clip: text;
 }
 
 /* Waline根元素自定义 */
 .wl-panel {
-    background-color: rgba(17, 17, 17, 0.3);
+    background-color: rgb(17 17 17 / 0.3);
     border-radius: 12px;
     padding: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgb(255 255 255 / 0.1);
     margin-bottom: 1.5rem;
 }
 
 /* 修改输入框样式 */
 .wl-editor,
 .wl-input {
-    background-color: rgba(17, 17, 17, 0.5) !important;
+    background-color: rgb(17 17 17 / 0.5) !important;
     color: var(--white-90p) !important;
-    border: 1px solid rgba(100, 100, 100, 0.3) !important;
+    border: 1px solid rgb(100 100 100 / 0.3) !important;
     border-radius: 8px;
     transition:
         background-color 200ms ease,
@@ -49,8 +48,8 @@
 /* 输入框焦点状态 */
 .wl-editor:focus,
 .wl-input:focus {
-    border-color: rgba(var(--waline-accent-rgb), 0.5) !important;
-    box-shadow: 0 0 5px rgba(var(--waline-accent-rgb), 0.3) !important;
+    border-color: rgb(var(--waline-accent-rgb) / 0.5) !important;
+    box-shadow: 0 0 5px rgb(var(--waline-accent-rgb) / 0.3) !important;
     outline: none;
 }
 
@@ -70,7 +69,7 @@
 }
 .wl-btn {
     cursor: pointer;
-    background: rgba(var(--waline-accent-rgb), 0.6) !important;
+    background: rgb(var(--waline-accent-rgb) / 0.6) !important;
     color: var(--white-full) !important;
     border: none !important;
     border-radius: 6px;
@@ -83,18 +82,18 @@
 }
 @media (hover: hover) and (pointer: fine) {
     .wl-btn:hover {
-        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        background: rgb(var(--waline-accent-rgb) / 0.7) !important;
         transform: none;
         box-shadow: none !important;
     }
 }
 
 .wl-btn.primary {
-    background: rgba(var(--waline-accent-rgb), 0.6) !important;
+    background: rgb(var(--waline-accent-rgb) / 0.6) !important;
 }
 @media (hover: hover) and (pointer: fine) {
     .wl-btn.primary:hover {
-        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        background: rgb(var(--waline-accent-rgb) / 0.7) !important;
         transform: none;
         box-shadow: none !important;
     }
@@ -108,11 +107,11 @@
 
 /* 评论卡片样式 */
 .wl-card {
-    background-color: rgba(17, 17, 17, 0.05) !important;
+    background-color: rgb(17 17 17 / 0.05) !important;
     border-radius: 12px;
     padding: 1.2rem;
     margin-top: 1.2rem;
-    border: 1px solid rgba(70, 70, 70, 0.2) !important;
+    border: 1px solid rgb(70 70 70 / 0.2) !important;
     transition:
         background-color 200ms ease,
         border-color 200ms ease,
@@ -122,14 +121,14 @@
 @media (hover: hover) and (pointer: fine) {
     .wl-card:hover {
         transform: none;
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-        border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+        box-shadow: 0 10px 24px rgb(0 0 0 / 0.08);
+        border-color: rgb(var(--waline-accent-rgb) / 0.3) !important;
     }
 }
 
 /* 修改用户名样式 */
 .wl-nick {
-    color: rgba(var(--waline-accent-rgb), 0.95) !important;
+    color: rgb(var(--waline-accent-rgb) / 0.95) !important;
     font-weight: 600;
     transition:
         background-color 180ms ease,
@@ -138,7 +137,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
     .wl-nick:hover {
-        color: rgba(var(--waline-accent-rgb), 1) !important;
+        color: rgb(var(--waline-accent-rgb) / 1) !important;
     }
 }
 
@@ -147,7 +146,7 @@
     color: var(--white-90p);
     line-height: 1.7;
     margin: 0.8rem 0;
-    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 /* 回复按钮样式 */
@@ -168,10 +167,10 @@
 /* 表情面板样式 */
 .wl-emoji-popup,
 .wl-gif-popup {
-    background-color: rgba(25, 25, 25, 0.95) !important;
-    border: 1px solid rgba(70, 70, 70, 0.3) !important;
+    background-color: rgb(25 25 25 / 0.95) !important;
+    border: 1px solid rgb(70 70 70 / 0.3) !important;
     border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
     backdrop-filter: blur(10px);
 }
 
@@ -185,7 +184,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
     .wl-emoji-popup button:hover {
-        background-color: rgba(var(--waline-accent-rgb), 0.2);
+        background-color: rgb(var(--waline-accent-rgb) / 0.2);
         transform: scale(1.05);
     }
 }
@@ -193,11 +192,11 @@
 /* 文章评价反应区域 */
 .wl-reaction {
     text-align: center;
-    background-color: rgba(17, 17, 17, 0.3);
+    background-color: rgb(17 17 17 / 0.3);
     border-radius: 12px;
     padding: 1rem;
     margin-bottom: 1.5rem;
-    border: 1px solid rgba(70, 70, 70, 0.2);
+    border: 1px solid rgb(70 70 70 / 0.2);
 }
 
 .wl-reaction-title {
@@ -214,7 +213,7 @@
 
 .wl-reaction-item {
     cursor: pointer;
-    background-color: rgba(30, 30, 30, 0.5) !important;
+    background-color: rgb(30 30 30 / 0.5) !important;
     border-radius: 8px;
     margin: 5px;
     transition:
@@ -222,14 +221,14 @@
         border-color 200ms ease,
         box-shadow 200ms ease,
         color 200ms ease;
-    border: 1px solid rgba(70, 70, 70, 0.2) !important;
+    border: 1px solid rgb(70 70 70 / 0.2) !important;
 }
 @media (hover: hover) and (pointer: fine) {
     .wl-reaction-item:hover {
         transform: none;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        background-color: rgba(40, 40, 40, 0.8) !important;
-        border-color: rgba(var(--waline-accent-rgb), 0.3) !important;
+        box-shadow: 0 5px 10px rgb(0 0 0 / 0.2);
+        background-color: rgb(40 40 40 / 0.8) !important;
+        border-color: rgb(var(--waline-accent-rgb) / 0.3) !important;
     }
 }
 
@@ -249,7 +248,7 @@
 .wl-reaction-votes {
     font-size: 0.8rem;
     padding: 5px 0;
-    background-color: rgba(var(--waline-accent-rgb), 0.7);
+    background-color: rgb(var(--waline-accent-rgb) / 0.7);
     color: var(--white-full);
 }
 
@@ -258,7 +257,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 1.2rem;
-    border-bottom: 1px solid rgba(70, 70, 70, 0.3);
+    border-bottom: 1px solid rgb(70 70 70 / 0.3);
     padding-bottom: 0.8rem;
     justify-content: space-between;
 }
@@ -289,7 +288,7 @@
 }
 
 .wl-sort li.active {
-    color: rgba(var(--waline-accent-rgb), 1);
+    color: rgb(var(--waline-accent-rgb) / 1);
     font-weight: 500;
 }
 
@@ -300,9 +299,9 @@
 }
 
 .wl-page button {
-    background: rgba(30, 30, 30, 0.5) !important;
+    background: rgb(30 30 30 / 0.5) !important;
     color: var(--white-80p) !important;
-    border: 1px solid rgba(70, 70, 70, 0.3) !important;
+    border: 1px solid rgb(70 70 70 / 0.3) !important;
     border-radius: 6px;
     margin: 0 5px;
     padding: 5px 10px;
@@ -313,14 +312,14 @@
 }
 @media (hover: hover) and (pointer: fine) {
     .wl-page button:hover:not(:disabled) {
-        background: rgba(var(--waline-accent-rgb), 0.7) !important;
+        background: rgb(var(--waline-accent-rgb) / 0.7) !important;
         color: var(--white-full) !important;
         transform: none;
     }
 }
 
 .wl-page button.active {
-    background: rgba(var(--waline-accent-rgb), 0.8) !important;
+    background: rgb(var(--waline-accent-rgb) / 0.8) !important;
     color: var(--white-full) !important;
 }
 
@@ -333,7 +332,7 @@
 }
 
 .wl-power a {
-    color: rgba(var(--waline-accent-rgb), 0.9);
+    color: rgb(var(--waline-accent-rgb) / 0.9);
     text-decoration: none;
     transition:
         background-color 180ms ease,
@@ -342,7 +341,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
     .wl-power a:hover {
-        color: rgba(var(--waline-accent-rgb), 1);
+        color: rgb(var(--waline-accent-rgb) / 1);
         text-decoration: underline;
     }
 }
@@ -375,14 +374,14 @@
 
 /* 降低选中文本高亮程度，移除外边框 */
 .waline-comment-container *::selection {
-    background: rgba(var(--waline-accent-rgb), 0.25);
+    background: rgb(var(--waline-accent-rgb) / 0.25);
     color: inherit;
     border: none;
     outline: none;
 }
 
 .waline-comment-container *::-moz-selection {
-    background: rgba(var(--waline-accent-rgb), 0.25);
+    background: rgb(var(--waline-accent-rgb) / 0.25);
     color: inherit;
     border: none;
     outline: none;
@@ -425,7 +424,7 @@
 
     .wl-children .wl-card {
         margin-left: 0;
-        border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
+        border-left: 3px solid rgb(var(--waline-accent-rgb) / 0.4);
         padding-left: 0.8rem;
     }
 }
@@ -466,12 +465,12 @@
     .wl-children .wl-card {
         width: 100%;
         margin-left: 0;
-        border-left: 3px solid rgba(var(--waline-accent-rgb), 0.4);
+        border-left: 3px solid rgb(var(--waline-accent-rgb) / 0.4);
         padding-left: 0.6rem;
     }
 
     .wl-children .wl-children .wl-card {
-        border-left: 3px solid rgba(var(--waline-accent-rgb), 0.3);
+        border-left: 3px solid rgb(var(--waline-accent-rgb) / 0.3);
         padding-left: 0.6rem;
     }
 
