@@ -93,7 +93,7 @@ bun run dev
 - 🗺️ **Sitemap** (bundled; `.md` source endpoints auto-filtered)
 - 🖼️ **PhotoSwipe** image lightbox
 - 📊 **Mermaid** diagrams and flowcharts
-  Uses Merman through `@xingwangzhe/satteri-mermaid@0.8.0`, with the `dark` theme and a transparent canvas by default. The plugin supports 11 theme presets; see the [configuration reference](https://github.com/xingwangzhe/satteri-mermaid/blob/v0.8.0/docs/configuration.md). Rendering failures throw by default.
+  Uses Merman through `@xingwangzhe/satteri-mermaid@0.8.1`, with the `dark` theme and a transparent canvas by default. The plugin supports 11 theme presets; see the [configuration reference](https://github.com/xingwangzhe/satteri-mermaid/blob/v0.8.1/docs/configuration.md). Rendering failures throw by default.
 - 📐 **Math formula rendering** (Temml → MathML)
 - 💬 **Waline** comment system
 - 🤖 **LLM discovery files** (llms.txt / llms-full.txt)

@@ -17,7 +17,7 @@
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "3.16.0",
         "@xingwangzhe/cjk-font-split-native": "0.2.0",
-        "@xingwangzhe/satteri-mermaid": "0.8.0",
+        "@xingwangzhe/satteri-mermaid": "0.8.1",
         "@xingwangzhe/satteri-photoswipe": "^0.2.5",
         "@xingwangzhe/tags-cloud": "^1.2.8",
         "astro-expressive-code": "^0.44.2",
@@ -607,7 +607,7 @@
 
     "@xingwangzhe/cjk-font-split-native": ["@xingwangzhe/cjk-font-split-native@0.2.0", "", { "dependencies": { "parse5": "8.0.1" }, "peerDependencies": { "vite": ">=6" } }, "sha512-rLE8aZxX6NhIlpXzw/PlTlVW/I+mwaXHtVacNXlDFVsAODVh/gMgWvGAmNlN0MTONPqQO6rf2oQu4P3CLliGoA=="],
 
-    "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.8.0", "", { "peerDependencies": { "satteri": ">=0.10.5 <0.11.0" } }, "sha512-adm7/k6HTSaofpY7HVaxWJH0yQd39DWNA9f22cW/qbPytWSOQeC/fI78TU4d3vqV8QP53NIqfFCkEQlJz/+x9w=="],
+    "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.8.1", "", { "peerDependencies": { "satteri": ">=0.10.5 <0.11.0" } }, "sha512-UdSwIvNbGhwc6SF8wAC2zOJ8bFSoJ8fsX6ktaxZtc0yhcfvw20uAiDrFKqVE9SiiLOFG9kws8nBiaktvv8Y3HA=="],
 
     "@xingwangzhe/satteri-photoswipe": ["@xingwangzhe/satteri-photoswipe@0.2.5", "https://mirrors.cloud.tencent.com/npm/@xingwangzhe/satteri-photoswipe/-/satteri-photoswipe-0.2.5.tgz", { "peerDependencies": { "satteri": ">=0.8.0" } }, "sha512-AHDF5NzAn+HDVf+hD/AMmTbce9Zpv9rrjCM+zcgo1azSSMb4xlItK3lAK8vktDw3dMwRacTFSXzKKMiPc/5zMA=="],
 
