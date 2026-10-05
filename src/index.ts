@@ -291,6 +291,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             mermaidHast({
                                 responsive: true,
                                 theme: "dark",
+                                themeVariables: { background: "transparent" },
                                 themeOverrides: { clusterBorder: "#cccccc" },
                             }),
                             seen,

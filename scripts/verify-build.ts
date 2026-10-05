@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
+import { type DefaultTreeAdapterMap, parse } from "parse5";
 import { parse as parseYaml } from "yaml";
 import packageJson from "../package.json" with { type: "json" };
 import { styleArtifactProblems } from "../src/internal/style-artifacts.ts";
@@ -38,6 +39,43 @@ function verifyJsonLd(html: string, route: string): void {
             `${route} JSON-LD has no schema context`,
         );
     }
+}
+
+// Parse the rendered Markdown fixture so a renderer upgrade cannot silently
+// reintroduce a white canvas on the dark theme or drop a diagram.
+const mermaidFixture = parse(read("posts/2cb4f19c/index.html"));
+const mermaidSvgs: DefaultTreeAdapterMap["element"][] = [];
+function collectMermaidSvgs(node: DefaultTreeAdapterMap["node"]): void {
+    if (
+        "tagName" in node &&
+        node.tagName === "svg" &&
+        node.attrs.some((attr) => attr.name === "id" && attr.value.startsWith("satteri-mermaid-"))
+    ) {
+        mermaidSvgs.push(node);
+    }
+    if ("childNodes" in node) for (const child of node.childNodes) collectMermaidSvgs(child);
+}
+collectMermaidSvgs(mermaidFixture);
+assert(mermaidSvgs.length === 5, "Markdown fixture must contain five native Mermaid SVGs");
+const mermaidIds = new Set<string>();
+for (const svg of mermaidSvgs) {
+    const attr = (name: string) =>
+        svg.attrs.find((item) => item.name.toLowerCase() === name)?.value ?? "";
+    const id = attr("id");
+    assert(!mermaidIds.has(id), "Mermaid SVG root IDs must be distinct");
+    mermaidIds.add(id);
+    const bounds = attr("viewbox").split(/\s+/u).map(Number);
+    assert(
+        bounds.length === 4 &&
+            bounds.every(Number.isFinite) &&
+            (bounds[2] ?? 0) > 0 &&
+            (bounds[3] ?? 0) > 0,
+        "Mermaid SVG viewBox must have finite positive dimensions",
+    );
+    assert(
+        /background-color:\s*transparent(?:;|$)/u.test(attr("style")),
+        "Default dark Mermaid diagrams must retain a transparent canvas",
+    );
 }
 
 const cssClass = (name: string) => styleNames.classes[name] ?? name;

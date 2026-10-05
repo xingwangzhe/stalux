@@ -93,6 +93,7 @@ bun run dev
 - 🗺️ **Sitemap**（内置打包，文章 `.md` 原文可收录，过滤其它页面的 Markdown 镜像端点）
 - 🖼️ **PhotoSwipe** 图片灯箱
 - 📊 **Mermaid** 图表和流程图
+  通过 `@xingwangzhe/satteri-mermaid@0.8.0` 使用 Merman，默认 `dark` 主题和透明画布。插件支持 11 个主题预设，完整选项见 [配置说明](https://github.com/xingwangzhe/satteri-mermaid/blob/v0.8.0/docs/configuration.zh-CN.md)。默认渲染失败会抛错。
 - 📐 **数学公式渲染**（Temml → MathML）
 - 💬 **Waline** 评论系统
 - 🤖 **LLM 发现文件**（llms.txt / llms-full.txt）
