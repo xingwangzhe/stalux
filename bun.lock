@@ -16,7 +16,7 @@
         "@mcp-b/webmcp-polyfill": "^5.1.0",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.16.0",
-        "@xingwangzhe/cjk-font-split-native": "^0.4.6",
+        "@xingwangzhe/cjk-font-split-native": "^0.4.10",
         "@xingwangzhe/satteri-mermaid": "^0.8.1",
         "@xingwangzhe/satteri-photoswipe": "^0.2.6",
         "@xingwangzhe/tags-cloud": "^1.2.9",
@@ -605,7 +605,7 @@
 
     "@webc.site/math": ["@webc.site/math@0.1.41", "", {}, "sha512-Tev02lqJLaEO+MNMq74lWpzuNZT/8bp2rSSzyDJR/u2ovh1jI3bW5HVveGILVKK+7Owf48KaUG9pd35BNf9mrw=="],
 
-    "@xingwangzhe/cjk-font-split-native": ["@xingwangzhe/cjk-font-split-native@0.4.6", "", { "dependencies": { "parse5": "^8.0.1" }, "peerDependencies": { "vite": ">=6" } }, "sha512-FkcT1Zl8L3T9iZ9rcVAzwI29IwOzlm4x2BgDM9k4w6ZI6De9/cV27wiPU1sQ7R+kENdgp1xAWGzHXbbfMhtq9g=="],
+    "@xingwangzhe/cjk-font-split-native": ["@xingwangzhe/cjk-font-split-native@0.4.10", "", { "dependencies": { "parse5": "^8.0.1" }, "peerDependencies": { "vite": ">=6" } }, "sha512-50FvRcuTpqWXORy0PvjoDVzUVu4ruYhb1ivEUm6DS7L2fZ4sEoSDtV99rXkDMt/LwKn4dwKFQY+sREbz51l5pA=="],
 
     "@xingwangzhe/satteri-mermaid": ["@xingwangzhe/satteri-mermaid@0.8.1", "", { "peerDependencies": { "satteri": ">=0.10.5 <0.11.0" } }, "sha512-UdSwIvNbGhwc6SF8wAC2zOJ8bFSoJ8fsX6ktaxZtc0yhcfvw20uAiDrFKqVE9SiiLOFG9kws8nBiaktvv8Y3HA=="],
 
