@@ -123,6 +123,21 @@ function syncBackgroundSvgs(srcDir: string): { copied: number; skipped: number }
     return { copied, skipped };
 }
 
+/** Sync packaged math fonts and licensing notices; Astro does not merge integration public directories. */
+function syncFontAssets(srcDir: string): void {
+    const source = path.join(srcDir, "../public/fonts");
+    if (!existsSync(source)) return;
+    const destination = path.resolve(process.cwd(), "public/fonts");
+    mkdirSync(destination, { recursive: true });
+    for (const name of readdirSync(source)) {
+        if (!/\.(?:woff2|txt)$/u.test(name)) continue;
+        const from = path.join(source, name);
+        const to = path.join(destination, name);
+        if (existsSync(to) && readFileSync(from).equals(readFileSync(to))) continue;
+        copyFileSync(from, to);
+    }
+}
+
 // ---------------------------------------------------------------------------
 // 集成入口
 // ---------------------------------------------------------------------------
@@ -230,6 +245,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // 破坏增量构建依赖图 hash）。Astro 不会合并集成的 public 目录，这里显式同步一次。
                 // 判别式：内容一致跳过（幂等），内容不同才覆盖，用户新增文件保留。
                 try {
+                    syncFontAssets(srcDir);
                     const { copied, skipped } = syncBackgroundSvgs(srcDir);
                     if (copied > 0) {
                         assetsLogger.info(`同步背景 SVG ${copied} 个（跳过 ${skipped} 个不变）`);

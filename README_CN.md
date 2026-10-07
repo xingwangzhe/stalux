@@ -310,3 +310,5 @@ Stalux 使用 UnoCSS 在主题内预编译样式，消费项目无需安装或�
 主题自有规则使用原生 CSS nesting、现代 `rgb(... / alpha)`、`overflow-wrap: anywhere` 和 `clip-path: inset(50%)`；输出使用 Lightning CSS 的现代浏览器目标，去除已不需要的旧兼容展开。多行截断和第三方 MathML 等仍有实际浏览器需求的适配保留，不能以删除必要规则来换取体积数字。生产 sourcemap 默认关闭，避免公开原名称映射。
 
 构建会检查 CSS、HTML 和 JavaScript 中的未压缩私有名称、Tailwind 指纹及资源引用。文章正文与代码示例不属于指纹清理对象。Wappalyzer 的检测规则及缓存会变化；构建检查通过与某个检测器版本的实际扫描结果分别报告。
+
+主题代码使用 MIT；字体保留各自许可。LXGW WenKai 与 Google Sans Code 使用 OFL 1.1；Latin Modern Math 使用 GUST Font License。数学辅助字体 Stalux Math Aux 从 KaTeX 的 OFL 字体独立重建，不使用含 FontCreator 非商用元数据的 Temml 字体。花体字母轮廓保持一致；撇号使用 OFL 来源并保持原边界、宽度和重复间距，曲线略有不同。字体与许可全文会同步到消费项目的 `public/fonts/`；旧版本留下的 `Temml.woff2` 已不再被引用，可删除。生成脚本和源文件位于 `scripts/build-math-font.py` 与 `scripts/font-sources/`。

@@ -3,14 +3,14 @@
  * 仅作用于 <math> 元素，不影响全局字体。
  *
  * Latin Modern Math 基于 GUST Font License (LPPL equivalent)
- * Temml.woff2 是 KaTeX_Script-Regular 的克隆，用于 \mathscr{} 和 Chromium prime 对齐
+ * StaluxMathAux.woff2 从 OFL KaTeX 字体独立重建，用于 \mathscr{} 和 Chromium prime 对齐
  */
 
 /* ===== @font-face 声明 ===== */
 
 @font-face {
-    font-family: "Temml", serif;
-    src: url("/fonts/Temml.woff2") format("woff2");
+    font-family: "Stalux Math Aux", serif;
+    src: url("/fonts/StaluxMathAux.woff2") format("woff2");
     font-weight: normal;
     font-style: normal;
 }
@@ -50,7 +50,7 @@ math.tml-display {
 }
 
 *.mathscr {
-    font-family: "Temml", serif;
+    font-family: "Stalux Math Aux", serif;
 }
 
 /* Cramped superscripts in WebKit */
@@ -127,7 +127,7 @@ mover > :first-child {
 @supports (not (-moz-appearance: none)) {
     /* prime vertical alignment */
     mo.tml-prime {
-        font-family: Temml, serif;
+        font-family: "Stalux Math Aux", serif;
     }
     /* Italic correction on superscripts */
     .tml-sml-pad {

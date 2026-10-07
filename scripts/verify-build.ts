@@ -287,3 +287,29 @@ for (const [route, html, count] of [
         `${route} must have footer weather, plus sidebar weather only on articles`,
     );
 }
+
+// Fonts are separately licensed; their notices must survive the production build.
+assert(
+    readFileSync(path.join(dist, "fonts/StaluxMathAux.woff2")).subarray(0, 4).toString() === "wOF2",
+    "Missing rebuilt math auxiliary font",
+);
+for (const filename of [
+    "StaluxMathAux-OFL.txt",
+    "LXGW-WenKai-OFL.txt",
+    "Google-Sans-Code-OFL.txt",
+]) {
+    assert(
+        read(`fonts/${filename}`).includes("SIL OPEN FONT LICENSE"),
+        `Missing full font license: ${filename}`,
+    );
+}
+assert(
+    read("fonts/GUST-FONT-LICENSE.txt").includes("LaTeX Project Public License"),
+    "Missing Latin Modern license",
+);
+for (const file of files.filter((file) => file.endsWith(".css"))) {
+    assert(
+        !readFileSync(file, "utf8").includes("/fonts/Temml.woff2"),
+        "Legacy math font must not be referenced",
+    );
+}

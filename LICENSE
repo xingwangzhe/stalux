@@ -19,3 +19,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Scope: this MIT license applies to Stalux code. Bundled third-party fonts
+retain their respective licenses; see public/fonts/*-OFL.txt,
+public/fonts/GUST-FONT-LICENSE.txt and public/fonts/LPPL-1.3c.txt.
