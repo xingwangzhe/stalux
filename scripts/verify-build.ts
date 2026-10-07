@@ -313,3 +313,9 @@ for (const file of files.filter((file) => file.endsWith(".css"))) {
         "Legacy math font must not be referenced",
     );
 }
+
+const mathCss = readFileSync(path.join(root, "src/styles/math.css"), "utf8");
+assert(
+    /@font-face\s*\{\s*font-family:\s*"Stalux Math Aux";/u.test(mathCss),
+    "Math font-face requires a single family name",
+);

@@ -9,7 +9,7 @@
 /* ===== @font-face 声明 ===== */
 
 @font-face {
-    font-family: "Stalux Math Aux", serif;
+    font-family: "Stalux Math Aux";
     src: url("/fonts/StaluxMathAux.woff2") format("woff2");
     font-weight: normal;
     font-style: normal;
