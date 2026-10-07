@@ -312,3 +312,20 @@ Stalux 使用 UnoCSS 在主题内预编译样式，消费项目无需安装或�
 构建会检查 CSS、HTML 和 JavaScript 中的未压缩私有名称、Tailwind 指纹及资源引用。文章正文与代码示例不属于指纹清理对象。Wappalyzer 的检测规则及缓存会变化；构建检查通过与某个检测器版本的实际扫描结果分别报告。
 
 主题代码使用 MIT；字体保留各自许可。LXGW WenKai 与 Google Sans Code 使用 OFL 1.1；Latin Modern Math 使用 GUST Font License。数学辅助字体 Stalux Math Aux 从 KaTeX 的 OFL 字体独立重建，不使用含 FontCreator 非商用元数据的 Temml 字体。花体字母轮廓保持一致；撇号使用 OFL 来源并保持原边界、宽度和重复间距，曲线略有不同。字体与许可全文会同步到消费项目的 `public/fonts/`；旧版本留下的 `Temml.woff2` 已不再被引用，可删除。生成脚本和源文件位于 `scripts/build-math-font.py` 与 `scripts/font-sources/`。
+
+## LICENSES 与许可范围
+
+主题代码采用 **MIT**，根 [LICENSE](LICENSE) 保持标准许可全文，以便 GitHub 识别。内置字体保留自己的许可，不会因主题使用 MIT 而变成 MIT。独立许可文件及适用范围如下：
+
+| 组件 / Component | 许可 / License | 全文 / Full text |
+| --- | --- | --- |
+| Stalux 主题代码 | MIT | [LICENSE-MIT.txt](LICENSES/LICENSE-MIT.txt) |
+| LXGW WenKai | OFL-1.1，含保留名称与网页字体额外许可 | [LXGW-WenKai-OFL.txt](public/fonts/LXGW-WenKai-OFL.txt) |
+| Google Sans Code | OFL-1.1 | [Google-Sans-Code-OFL.txt](public/fonts/Google-Sans-Code-OFL.txt) |
+| Stalux Math Aux（由 KaTeX OFL 字体数据重建） | OFL-1.1，独立名称 | [StaluxMathAux-OFL.txt](public/fonts/StaluxMathAux-OFL.txt) |
+| Latin Modern Math | GUST Font License / LPPL-1.3c | [LICENSE-GUST.txt](LICENSES/LICENSE-GUST.txt) |
+| LPPL 1.3c 完整正文 | LPPL-1.3c | [LICENSE-LPPL-1.3c.txt](LICENSES/LICENSE-LPPL-1.3c.txt) |
+| OFL 1.1 标准正文 | OFL-1.1 | [LICENSE-OFL-1.1.txt](LICENSES/LICENSE-OFL-1.1.txt) |
+| 字体版权、保留名称与修改声明汇总 | 按各字体原许可 | [LICENSE-FONT-NOTICES.txt](LICENSES/LICENSE-FONT-NOTICES.txt) |
+
+`LICENSES/` 和 `public/fonts/` 许可全文随 npm 包分发；构建时字体声明同步到消费项目 `public/fonts/`，使线上 WOFF2 文件与许可一并可访问。原生分片依赖的独立声明见 [cjk-font-split-native LICENSES](https://github.com/xingwangzhe/cjk-font-split-native#licenses-与许可范围) 及其 npm 包内 `THIRD_PARTY_LICENSES.txt`。GitHub 主许可显示用于识别主题代码；字体与其他第三方组件必须按此表分别判断。

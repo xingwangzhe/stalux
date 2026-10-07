@@ -316,3 +316,20 @@ Stable `data-*` hooks, article anchors, public font properties (`--font-body`, `
 Theme CSS uses native nesting, modern RGB syntax, `overflow-wrap: anywhere` and clipped one-pixel accessible content with `clip-path`. Lightning CSS targets modern browser engines instead of generating obsolete compatibility expansions. Necessary multiline-clamping and third-party MathML browser adaptations remain. Production source maps are disabled to avoid exposing the original names. Build assertions check semantic CSS/HTML/JS surfaces and resource integrity without modifying article text or code examples; detector results always identify the rule or scanner version used.
 
 Theme code is MIT; fonts retain their own licenses. LXGW WenKai and Google Sans Code use OFL 1.1; Latin Modern Math uses the GUST Font License. Stalux Math Aux is independently rebuilt from KaTeX's OFL font data, replacing the Temml font with conflicting FontCreator noncommercial metadata. Script-letter outlines are unchanged; primes use an OFL source with matching bounds, advances and repetition spacing, with slightly different curves. Fonts and full licenses are synchronized to the consumer's `public/fonts/`; the old unused `Temml.woff2` can be removed. See `scripts/build-math-font.py` and `scripts/font-sources/` for reproducible inputs.
+
+## LICENSES and scope
+
+Theme code is **MIT**; the root [LICENSE](LICENSE) contains the standard text for GitHub detection. Bundled fonts retain their own licenses and are not relicensed as MIT. Independent license texts and their scopes are listed below:
+
+| 组件 / Component | 许可 / License | 全文 / Full text |
+| --- | --- | --- |
+| Stalux theme code | MIT | [LICENSE-MIT.txt](LICENSES/LICENSE-MIT.txt) |
+| LXGW WenKai | OFL-1.1, reserved names and additional web-font permission | [LXGW-WenKai-OFL.txt](public/fonts/LXGW-WenKai-OFL.txt) |
+| Google Sans Code | OFL-1.1 | [Google-Sans-Code-OFL.txt](public/fonts/Google-Sans-Code-OFL.txt) |
+| Stalux Math Aux, rebuilt from KaTeX OFL font data | OFL-1.1, independently named | [StaluxMathAux-OFL.txt](public/fonts/StaluxMathAux-OFL.txt) |
+| Latin Modern Math | GUST Font License / LPPL-1.3c | [LICENSE-GUST.txt](LICENSES/LICENSE-GUST.txt) |
+| Full LPPL 1.3c text | LPPL-1.3c | [LICENSE-LPPL-1.3c.txt](LICENSES/LICENSE-LPPL-1.3c.txt) |
+| Standard OFL 1.1 text | OFL-1.1 | [LICENSE-OFL-1.1.txt](LICENSES/LICENSE-OFL-1.1.txt) |
+| Font copyrights, reserved names and modification notices | Each font’s original license | [LICENSE-FONT-NOTICES.txt](LICENSES/LICENSE-FONT-NOTICES.txt) |
+
+The npm package includes `LICENSES/` and font-specific texts in `public/fonts/`; builds synchronize font notices to the consumer’s public font directory alongside the served WOFF2 files. Native subsetting dependencies retain their [separate license inventory](https://github.com/xingwangzhe/cjk-font-split-native/blob/main/README.en.md#licenses-and-scope) and packaged `THIRD_PARTY_LICENSES.txt`. GitHub’s primary-license display identifies theme code; fonts and other third-party components retain the scopes listed above.
