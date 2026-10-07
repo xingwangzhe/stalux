@@ -57,57 +57,65 @@ const archiveYears = [...archivesByYearMonth.entries()]
     <div class="stalux-archive-page-header">
         <div class="stalux-archive-timeline-container">
             {archiveYears.length > 0 ? (
-    archiveYears.map((archiveYear) => (
-        <div class="stalux-archive-year-section" data-year={String(archiveYear.year)}>
-            <div class="stalux-archive-year-header">
-                <h2 class="stalux-archive-year-title">{archiveYear.year}</h2>
-                <div class="stalux-archive-year-count">
-                    {t("archives.postCount", { n: archiveYear.count })}
-                </div>
-            </div>
-            {archiveYear.months.map(({ month, posts: monthPosts }) => (
-                <div
-                    class="stalux-archive-month-section"
-                    data-archive-month
-                    style={{
-                        "--archive-estimate": `${Math.ceil(monthPosts.length / 12) * 12 * 48 + 40}px`,
-                    }}
-                >
-                    <h3 class="stalux-archive-month-title">{t("archives.month", { n: month })}</h3>
-                    {Array.from({ length: Math.ceil(monthPosts.length / 12) }, (_, index) =>
-                        monthPosts.slice(index * 12, (index + 1) * 12),
-                    ).map((group) => (
-                        <ul
-                            class="stalux-archive-post-list"
-                            style={{ "--archive-group-estimate": `${group.length * 48}px` }}
-                        >
-                            {group.map((post) => (
-                                <li class="stalux-archive-post-item">
-                                    <time
-                                        class="stalux-archive-post-date"
-                                        datetime={post.data.date}
+                archiveYears.map((archiveYear) => (
+                    <div class="stalux-archive-year-section" data-year={String(archiveYear.year)}>
+                        <div class="stalux-archive-year-header">
+                            <h2 class="stalux-archive-year-title">{archiveYear.year}</h2>
+                            <div class="stalux-archive-year-count">
+                                {t("archives.postCount", { n: archiveYear.count })}
+                            </div>
+                        </div>
+                        {archiveYear.months.map(({ month, posts: monthPosts }) => (
+                            <div
+                                class="stalux-archive-month-section"
+                                data-archive-month
+                                style={{
+                                    "--archive-estimate": `${Math.ceil(monthPosts.length / 12) * 12 * 48 + 40}px`,
+                                }}
+                            >
+                                <h3 class="stalux-archive-month-title">
+                                    {t("archives.month", { n: month })}
+                                </h3>
+                                {Array.from(
+                                    { length: Math.ceil(monthPosts.length / 12) },
+                                    (_, index) => monthPosts.slice(index * 12, (index + 1) * 12),
+                                ).map((group) => (
+                                    <ul
+                                        class="stalux-archive-post-list"
+                                        style={{
+                                            "--archive-group-estimate": `${group.length * 48}px`,
+                                        }}
                                     >
-                                        {format(parseDate(post.data.date), "yyyy-MM-dd")}
-                                    </time>
-                                    <a
-                                        href={`/posts/${post.data.abbrlink}/`}
-                                        class="stalux-archive-post-link"
-                                        data-archive-description={post.data.desc || ""}
-                                        data-astro-prefetch="viewport"
-                                    >
-                                        {post.data.title}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    ))}
-                </div>
-            ))}
-        </div>
-    ))
-) : (
-    <div class="stalux-archive-no-posts">{t("archives.noPosts")}</div>
-)}
+                                        {group.map((post) => (
+                                            <li class="stalux-archive-post-item">
+                                                <time
+                                                    class="stalux-archive-post-date"
+                                                    datetime={post.data.date}
+                                                >
+                                                    {format(
+                                                        parseDate(post.data.date),
+                                                        "yyyy-MM-dd",
+                                                    )}
+                                                </time>
+                                                <a
+                                                    href={`/posts/${post.data.abbrlink}/`}
+                                                    class="stalux-archive-post-link"
+                                                    data-archive-description={post.data.desc || ""}
+                                                    data-astro-prefetch="viewport"
+                                                >
+                                                    {post.data.title}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                ))
+            ) : (
+                <div class="stalux-archive-no-posts">{t("archives.noPosts")}</div>
+            )}
         </div>
 
         <slot name="main" />

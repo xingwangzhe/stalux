@@ -23,32 +23,32 @@ const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
         <Content />
     </div>
     {(date || source || sourceDate) && (
-    <footer class="stalux-word-footer">
-        {date ? (
-            <time class="stalux-word-date" datetime={machineDate}>
-                {date}
-            </time>
-        ) : (
-            <span />
-        )}
-        {(source || sourceDate) && (
-            <div class="stalux-word-source-meta">
-                {sourceDate && <span class="stalux-word-source-date">{sourceDate}</span>}
-                {source &&
-                    (link ? (
-                        <a
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="stalux-word-source-link"
-                        >
-                            — {source}
-                        </a>
-                    ) : (
-                        <span class="stalux-word-source-text">— {source}</span>
-                    ))}
-            </div>
-        )}
-    </footer>
-)}
+        <footer class="stalux-word-footer">
+            {date ? (
+                <time class="stalux-word-date" datetime={machineDate}>
+                    {date}
+                </time>
+            ) : (
+                <span />
+            )}
+            {(source || sourceDate) && (
+                <div class="stalux-word-source-meta">
+                    {sourceDate && <span class="stalux-word-source-date">{sourceDate}</span>}
+                    {source &&
+                        (link ? (
+                            <a
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="stalux-word-source-link"
+                            >
+                                — {source}
+                            </a>
+                        ) : (
+                            <span class="stalux-word-source-text">— {source}</span>
+                        ))}
+                </div>
+            )}
+        </footer>
+    )}
 </article>

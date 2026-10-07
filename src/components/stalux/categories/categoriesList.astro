@@ -9,8 +9,8 @@ const categoryList = await getCategoryCountList(Astro.logger);
 
 <ul class="stalux-categories">
     {categoryList.map((category) => (
-    <li>
-        <CategoriesCard category={category} />
-    </li>
-))}
+        <li>
+            <CategoriesCard category={category} />
+        </li>
+    ))}
 </ul>

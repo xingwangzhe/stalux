@@ -52,9 +52,9 @@ const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
         openGraph={seo.openGraph}
         twitter={seo.twitter}
         extend={{
-    link: seo.links,
-    meta: seo.meta,
-}}
+            link: seo.links,
+            meta: seo.meta,
+        }}
     />
     <!-- 代码字体由 Astro Fonts API 注入；正文按页面生成 native CJK 子集。 -->
     <Font cssVariable="--font-code" />

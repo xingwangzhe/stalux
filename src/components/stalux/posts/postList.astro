@@ -14,9 +14,9 @@ const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.d
 <div data-stalux="postlist" class="stalux-post-list-container">
     <ul class="post-list">
         {posts.map((post, index) => (
-    <li>
-        <PostCard post={post} priority={index === 0} />
-    </li>
-))}
+            <li>
+                <PostCard post={post} priority={index === 0} />
+            </li>
+        ))}
     </ul>
 </div>

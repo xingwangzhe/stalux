@@ -23,25 +23,25 @@ const description = post.data.desc || "";
 <article class="stalux-post-card-shell block h-full text-inherit no-underline">
     <div class="stalux-post-card stalux-u-flex stalux-u-flex-col stalux-u-w-full stalux-u-min-w-0">
         {post.data.cover && (
-    <a
-        href={`/posts/${post.data.abbrlink}/`}
-        class="a-none"
-        data-astro-prefetch="viewport"
-        aria-label={post.data.title}
-    >
-        <div class="stalux-card-post-cover stalux-u-w-full stalux-u-min-w-0">
-            <img
-                src={post.data.cover}
-                alt={post.data.title}
-                loading={priority ? "eager" : "lazy"}
-                decoding="async"
-                fetchpriority={priority ? "high" : "auto"}
-                width="640"
-                height="360"
-            />
-        </div>
-    </a>
-)}
+            <a
+                href={`/posts/${post.data.abbrlink}/`}
+                class="a-none"
+                data-astro-prefetch="viewport"
+                aria-label={post.data.title}
+            >
+                <div class="stalux-card-post-cover stalux-u-w-full stalux-u-min-w-0">
+                    <img
+                        src={post.data.cover}
+                        alt={post.data.title}
+                        loading={priority ? "eager" : "lazy"}
+                        decoding="async"
+                        fetchpriority={priority ? "high" : "auto"}
+                        width="640"
+                        height="360"
+                    />
+                </div>
+            </a>
+        )}
         <h2
             class="stalux-card-post-title"
             transition:name={priority ? getPostTitleTransitionName(post.data.abbrlink) : undefined}
@@ -52,21 +52,27 @@ const description = post.data.desc || "";
         </h2>
         <div class="stalux-card-time stalux-u-items-center stalux-u-flex-wrap">
             {post.data.date && (
-    <time
-        class="stalux-card-post-date"
-        datetime={timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date}
-    >
-        {post.data.date}
-    </time>
-)}
+                <time
+                    class="stalux-card-post-date"
+                    datetime={
+                        timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date
+                    }
+                >
+                    {post.data.date}
+                </time>
+            )}
             {post.data.updated && (
-    <time
-        class="stalux-card-post-updated"
-        datetime={timezone ? toMachineDateTime(post.data.updated, timezone) : post.data.updated}
-    >
-        {post.data.updated}
-    </time>
-)}
+                <time
+                    class="stalux-card-post-updated"
+                    datetime={
+                        timezone
+                            ? toMachineDateTime(post.data.updated, timezone)
+                            : post.data.updated
+                    }
+                >
+                    {post.data.updated}
+                </time>
+            )}
         </div>
         <div class="stalux-card-post-description stalux-u-min-w-0">{description}</div>
         <div class="stalux-card-post-meta stalux-u-flex stalux-u-flex-col">
@@ -74,19 +80,19 @@ const description = post.data.desc || "";
                 class="stalux-card-post-tags stalux-u-flex stalux-u-items-center stalux-u-flex-wrap"
             >
                 {post.data.tags?.map((tag) => (
-    <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
-        <span class="stalux-card-post-tag">{tag}</span>
-    </a>
-))}
+                    <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
+                        <span class="stalux-card-post-tag">{tag}</span>
+                    </a>
+                ))}
             </div>
             <div
                 class="stalux-card-post-categories stalux-u-flex stalux-u-items-center stalux-u-flex-wrap"
             >
                 {post.data.categories?.map((category) => (
-    <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
-        <span class="stalux-card-post-category">{category}</span>
-    </a>
-))}
+                    <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
+                        <span class="stalux-card-post-category">{category}</span>
+                    </a>
+                ))}
             </div>
         </div>
         <a

@@ -28,7 +28,11 @@ const props = Astro.props as Props;
 
 <Stalux
     title={`${t("taxonomy.tag")}: ${props.tag} | ${siteConfig.title}`}
-    description={t("taxonomy.browseTag", { title: siteConfig.title, tag: props.tag, count: props.count })}
+    description={t("taxonomy.browseTag", {
+        title: siteConfig.title,
+        tag: props.tag,
+        count: props.count,
+    })}
     noindex={props.count < 3}
 >
     <div style="height: 3em;"></div>

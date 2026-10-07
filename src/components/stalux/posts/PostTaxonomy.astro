@@ -50,14 +50,18 @@ const cfg = {
 >
     {items.length > 0 && <h3 class="stalux-post-taxonomy-title">{title ?? cfg.heading}</h3>}
     {items.length > 0 ? (
-    <div class={cfg.listClass} transition:name={cfg.contentName}>
-        {items.map((item) => (
-            <a href={`${cfg.prefix}${item}/`} class={`${cfg.itemClass} a-none`} data-astro-prefetch>
-                {item}
-            </a>
-        ))}
-    </div>
-) : (
-    <div class="stalux-post-taxonomy-empty">{cfg.empty}</div>
-)}
+        <div class={cfg.listClass} transition:name={cfg.contentName}>
+            {items.map((item) => (
+                <a
+                    href={`${cfg.prefix}${item}/`}
+                    class={`${cfg.itemClass} a-none`}
+                    data-astro-prefetch
+                >
+                    {item}
+                </a>
+            ))}
+        </div>
+    ) : (
+        <div class="stalux-post-taxonomy-empty">{cfg.empty}</div>
+    )}
 </nav>

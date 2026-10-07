@@ -21,24 +21,24 @@ const sorted = [...entries].sort((a, b) => {
 
 <ul class="stalux-word-list-list">
     {sorted.map((entry) => {
-    const hash = entry.data.abbrlink ? `#word-${entry.data.abbrlink}` : undefined;
-    return (
-        <li class="stalux-word-list-item">
-            {hash ? (
-                <a
-                    href={hash}
-                    class="a-none"
-                    data-word-hash={hash}
-                    aria-label={`Jump to ${entry.data.abbrlink}`}
-                >
+        const hash = entry.data.abbrlink ? `#word-${entry.data.abbrlink}` : undefined;
+        return (
+            <li class="stalux-word-list-item">
+                {hash ? (
+                    <a
+                        href={hash}
+                        class="a-none"
+                        data-word-hash={hash}
+                        aria-label={`Jump to ${entry.data.abbrlink}`}
+                    >
+                        <WordCard entry={entry} timezone={timezone} />
+                    </a>
+                ) : (
                     <WordCard entry={entry} timezone={timezone} />
-                </a>
-            ) : (
-                <WordCard entry={entry} timezone={timezone} />
-            )}
-        </li>
-    );
-})}
+                )}
+            </li>
+        );
+    })}
 </ul>
 
 <script src="../../../scripts/word-list.ts"></script>

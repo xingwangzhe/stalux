@@ -36,22 +36,22 @@ const tocItems = headings
 >
     <h3 class="stalux-toc-title">{title}</h3>
     {tocItems.length > 0 ? (
-    <ul class="stalux-toc-list" transition:name="toc-content">
-        {tocItems.map((heading) => (
-            <li>
-                <a
-                    class={`stalux-toc-item ${({ 1: "stalux-toc-depth-1", 2: "stalux-toc-depth-2", 3: "stalux-toc-depth-3", 4: "stalux-toc-depth-4", 5: "stalux-toc-depth-5", 6: "stalux-toc-depth-6" } as Record<number, string>)[heading.depth] || ""} a-none`}
-                    href={`#${heading.slug}`}
-                    data-toc-link
-                >
-                    {heading.text}
-                </a>
-            </li>
-        ))}
-    </ul>
-) : (
-    <div class="stalux-toc-empty">{t("taxonomy.noToc")}</div>
-)}
+        <ul class="stalux-toc-list" transition:name="toc-content">
+            {tocItems.map((heading) => (
+                <li>
+                    <a
+                        class={`stalux-toc-item ${({ 1: "stalux-toc-depth-1", 2: "stalux-toc-depth-2", 3: "stalux-toc-depth-3", 4: "stalux-toc-depth-4", 5: "stalux-toc-depth-5", 6: "stalux-toc-depth-6" } as Record<number, string>)[heading.depth] || ""} a-none`}
+                        href={`#${heading.slug}`}
+                        data-toc-link
+                    >
+                        {heading.text}
+                    </a>
+                </li>
+            ))}
+        </ul>
+    ) : (
+        <div class="stalux-toc-empty">{t("taxonomy.noToc")}</div>
+    )}
 </nav>
 
 <script src="../../../scripts/toc-scrollspy.ts"></script>

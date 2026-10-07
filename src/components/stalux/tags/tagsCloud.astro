@@ -24,26 +24,26 @@ const tagLinks = tagList.map((t) => ({
 <!-- 移动端：SSR 卡片 -->
 <div class="stalux-cloud-cards" id="tags-cards">
     {tagList.length > 0 ? (
-    tagGroups.map((group) => (
-        <div class="stalux-cloud-tag-group">
-            {group.map(({ name, count }) => (
-                <a
-                    href={`/tags/${name}/`}
-                    class="stalux-cloud-tag-card"
-                    data-stalux-card
-                    data-stalux-tag-card
-                    data-count={count}
-                    data-astro-prefetch
-                >
-                    <span class="stalux-cloud-tag-name">{name}</span>
-                    <span class="stalux-cloud-tag-count">{count}</span>
-                </a>
-            ))}
-        </div>
-    ))
-) : (
-    <div class="stalux-cloud-no-tags">{t("tags.noTags")}</div>
-)}
+        tagGroups.map((group) => (
+            <div class="stalux-cloud-tag-group">
+                {group.map(({ name, count }) => (
+                    <a
+                        href={`/tags/${name}/`}
+                        class="stalux-cloud-tag-card"
+                        data-stalux-card
+                        data-stalux-tag-card
+                        data-count={count}
+                        data-astro-prefetch
+                    >
+                        <span class="stalux-cloud-tag-name">{name}</span>
+                        <span class="stalux-cloud-tag-count">{count}</span>
+                    </a>
+                ))}
+            </div>
+        ))
+    ) : (
+        <div class="stalux-cloud-no-tags">{t("tags.noTags")}</div>
+    )}
 </div>
 
 <!-- 桌面端：Canvas 标签云 -->
