@@ -116,6 +116,10 @@ The subset CSS uses an exact per-character `unicode-range` and `font-display: sw
 
 The persistent BLAKE3 cache key includes font bytes, face index, normalized character set, and algorithm version. Cache files live under `node_modules/.astro/` and are reused across pages and incremental builds. Font inputs are read locally; builds do not fetch fonts from the network.
 
+Multi-page builds reuse prepared font data and hashing state through `FontSubsetter`, with up to four native worker tasks for cold subsets. Font containers are decoded/extracted to SFNT before reusable HarfBuzz preprocessing preserves original outlines; Google Brotli encodes WOFF2 at quality 8. Image dimensions, image loading hints, linked CSS text, and font character extraction share one HTML parse. Shared image dimensions and CSS-generated text are also reused within each build, and image-tag edits are assembled in a single pass.
+
+Processed pages are cached under `node_modules/.astro/stalux-page-output/`. The cache checks source HTML and page paths, referenced local CSS/image content, font inputs, and processing code. Changed inputs, missing font files, and corrupt records trigger reprocessing. Unchanged pages restore their processed output; Pagefind still rebuilds the full search index on every build. Preserve `node_modules/.astro/` to reuse caches across builds; removing it safely rebuilds them.
+
 ### Visibility-aware loading and updates
 
 The desktop tag cloud loads dynamically near the viewport. Switching to mobile, leaving the viewport or hiding the document destroys it and stops animation scheduling; becoming visible recreates it. Tag clicks use Astro client navigation. Clocks and the footer runtime update only while visible, and the date changes only on a new day. Comments load within half a viewport (capped at 400px). Tag groups, archive months and category cards retain static HTML while deferring offscreen rendering.

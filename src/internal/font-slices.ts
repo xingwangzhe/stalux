@@ -18,7 +18,7 @@ import { styleNames } from "./style-names.generated.ts";
 import { existsSync, readdirSync, readFileSync, unlinkSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { subsetFont } from "@xingwangzhe/cjk-font-split-native";
+import { FontSubsetter } from "@xingwangzhe/cjk-font-split-native";
 import type { AstroIntegrationLogger } from "astro";
 import { type DefaultTreeAdapterMap, parse } from "parse5";
 
@@ -45,6 +45,8 @@ const PAGE_SLICE_OUT_DIR = "node_modules/.astro/stalux-page-fonts";
  * ~10 glyphs per page and makes digit rendering unconditional.
  */
 export const RESERVED_GLYPHS = "0123456789";
+
+const preparedFonts = new WeakMap<Buffer, FontSubsetter>();
 
 // ---------------------------------------------------------------------------
 // Types
@@ -164,10 +166,12 @@ export function readLinkedStylesheetText(
     pagePath: string,
     outputDir: string,
     cache = new Map<string, string>(),
+    document = parse(html),
+    dependencies?: Set<string>,
 ): string {
     const root = resolve(outputDir);
     const links: string[] = [];
-    collectStylesheetLinks(parse(html), links);
+    collectStylesheetLinks(document, links);
     const content: string[] = [];
     for (const href of links) {
         if (/^(?:[a-z][a-z\d+.-]*:|\/\/|data:)/iu.test(href)) continue;
@@ -180,14 +184,15 @@ export function readLinkedStylesheetText(
             continue;
         }
         if (cssPath !== root && !cssPath.startsWith(`${root}${sep}`)) continue;
+        dependencies?.add(cssPath);
         if (!cache.has(cssPath)) {
             try {
-                cache.set(cssPath, readFileSync(cssPath, "utf8"));
+                cache.set(cssPath, cssGeneratedText(readFileSync(cssPath, "utf8")));
             } catch {
                 cache.set(cssPath, "");
             }
         }
-        content.push(cssGeneratedText(cache.get(cssPath) ?? ""));
+        content.push(cache.get(cssPath) ?? "");
     }
     return content.join(" ");
 }
@@ -256,8 +261,40 @@ export function writePageFontSubset(
     publicUrlPrefix = "/_astro/fonts/",
     linkedStylesheetText = "",
     extraChars = "",
+    document = parse(html),
 ): PageFontSubset | undefined {
-    const document = parse(html);
+    const input = preparePageFont(html, fontBuffer, linkedStylesheetText, extraChars, document);
+    if (!input) return undefined;
+    return renderPageFont(
+        html,
+        publicUrlPrefix,
+        input.chars,
+        input.prepared.subset(input.chars.join(""), cacheDir),
+    );
+}
+
+export async function writePageFontSubsetAsync(
+    html: string,
+    fontBuffer: Buffer,
+    cacheDir: string,
+    publicUrlPrefix = "/_astro/fonts/",
+    linkedStylesheetText = "",
+    extraChars = "",
+    document = parse(html),
+): Promise<PageFontSubset | undefined> {
+    const input = preparePageFont(html, fontBuffer, linkedStylesheetText, extraChars, document);
+    if (!input) return undefined;
+    const result = await input.prepared.subsetAsync(input.chars.join(""), cacheDir);
+    return renderPageFont(html, publicUrlPrefix, input.chars, result);
+}
+
+function preparePageFont(
+    html: string,
+    fontBuffer: Buffer,
+    linkedStylesheetText: string,
+    extraChars: string,
+    document: DefaultTreeAdapterMap["document"],
+) {
     const body = findBody(document);
     if (!body) return undefined;
 
@@ -274,7 +311,20 @@ export function writePageFontSubset(
     );
     if (chars.length === 0) return undefined;
 
-    const result = subsetFont(fontBuffer, chars.join(""), cacheDir);
+    let prepared = preparedFonts.get(fontBuffer);
+    if (!prepared) {
+        prepared = new FontSubsetter(fontBuffer);
+        preparedFonts.set(fontBuffer, prepared);
+    }
+    return { chars, prepared };
+}
+
+function renderPageFont(
+    html: string,
+    publicUrlPrefix: string,
+    chars: string[],
+    result: { hash: string; path: string; cacheHit: boolean },
+): PageFontSubset {
     const filename = `page-${result.hash}.woff2`;
 
     const rel = `${publicUrlPrefix}${filename}`;

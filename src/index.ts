@@ -19,6 +19,7 @@ import {
     readdirSync,
     readFileSync,
 } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import partytown from "@astrojs/partytown";
@@ -30,6 +31,7 @@ import { fontProviders } from "astro/config";
 // pagefind 是 ESM-only 包，需要在模块顶层导入
 // 因为 astro:build:done 钩子中 Vite module runner 已关闭，无法动态 import
 import { createIndex as pagefindCreateIndex } from "pagefind";
+import { parse } from "parse5";
 import { parse as parseYaml } from "yaml";
 import type { StaluxOptions } from "./config";
 import { expressiveCode } from "./expressive-code";
@@ -38,10 +40,12 @@ import {
     clearPageFontSubsets,
     readLinkedStylesheetText,
     resolveFontInputs,
-    writePageFontSubset,
+    writePageFontSubsetAsync,
 } from "./internal/font-slices";
-import { addLocalImageDimensions } from "./internal/image-dimensions";
+import { findHtmlImages } from "./internal/html-images";
+import { addLocalImageDimensions, type ImageDimensions } from "./internal/image-dimensions";
 import { createInjectedRoutes } from "./internal/injected-routes";
+import { createPageOutputCache } from "./internal/page-output-cache";
 import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
 import {
     appendUniquePlugin,
@@ -49,11 +53,7 @@ import {
     prepareSatteriProcessor,
 } from "./internal/satteri-config";
 import { createViteAliases } from "./internal/vite-aliases";
-import {
-    applyHtmlImageLoadingPolicy,
-    featureFlagsHast,
-    featureFlagsMdast,
-} from "./plugins/feature-flags";
+import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { temml } from "./plugins/satteri-temml";
 import { describeError } from "./utils/diagnostics";
 
@@ -386,53 +386,127 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // Astro's Markdown image transform drops arbitrary lazy-loading hints
                 // added during HAST processing. Reapply the policy to emitted HTML.
                 const htmlFiles = await fs.readdir(outDir, { recursive: true });
+                const sourceDir = fileURLToPath(new URL(".", import.meta.url));
+                const resolveModule = createRequire(import.meta.url).resolve;
+                const parserEntry = resolveModule("parse5");
+                const nativeEntry = resolveModule("@xingwangzhe/cjk-font-split-native");
+                const outputCache = await createPageOutputCache(
+                    path.resolve("node_modules/.astro/stalux-page-output"),
+                    [
+                        ...[
+                            "index.ts",
+                            "internal/font-slices.ts",
+                            "internal/image-dimensions.ts",
+                            "internal/html-images.ts",
+                            "internal/page-output-cache.ts",
+                            "internal/style-names.generated.ts",
+                            "plugins/feature-flags.ts",
+                            "../package.json",
+                        ].map((entry) => path.join(sourceDir, entry)),
+                        path.join(path.dirname(nativeEntry), "package.json"),
+                        path.resolve(path.dirname(parserEntry), "../package.json"),
+                    ],
+                    pageFontData?.fontBuffer,
+                    htmlFiles
+                        .filter((entry) => /\.(?:css|png|jpe?g|gif|webp)$/iu.test(entry))
+                        .map((entry) => path.join(outDir, entry)),
+                );
+                let cacheHits = 0;
                 let optimizedImagePages = 0;
                 let pageFontPages = 0;
                 if (pageFontData) await fs.mkdir(pageFontData.outputDir, { recursive: true });
                 if (pageFontData) await fs.mkdir(pageFontData.cacheDir, { recursive: true });
                 const referencedPageFonts = new Set<string>();
                 const linkedCssTextCache = new Map<string, string>();
-                for (const entry of htmlFiles) {
-                    if (typeof entry !== "string" || !entry.endsWith(".html")) continue;
+                const dimensionsCache = new Map<string, Promise<ImageDimensions | undefined>>();
+                const pageEntries = htmlFiles.filter((entry) => entry.endsWith(".html"));
+                const processPage = async (entry: string) => {
                     const output = path.join(outDir, entry);
                     const before = await fs.readFile(output, "utf8");
                     const withoutPageFont = before.replace(
                         /<style data-stalux-page-font>[\s\S]*?<\/style>/gi,
                         "",
                     );
-                    const withImageDimensions = await addLocalImageDimensions(
-                        withoutPageFont,
-                        outDir,
-                    );
-                    let after = applyHtmlImageLoadingPolicy(withImageDimensions);
+                    const cached = await outputCache.get(entry, withoutPageFont);
+                    if (cached) {
+                        if (cached.font && pageFontData) {
+                            if (!referencedPageFonts.has(cached.font.filename)) {
+                                copyFileSync(
+                                    cached.font.sourcePath,
+                                    path.join(pageFontData.outputDir, cached.font.filename),
+                                );
+                            }
+                            referencedPageFonts.add(cached.font.filename);
+                            pageFontPages++;
+                        }
+                        if (cached.html !== before) {
+                            await fs.writeFile(output, cached.html);
+                            optimizedImagePages++;
+                        }
+                        cacheHits++;
+                        return;
+                    }
+                    let cachedFont: { filename: string; sourcePath: string } | undefined;
+                    const dependencies = new Set<string>();
+                    const document = parse(withoutPageFont, { sourceCodeLocationInfo: true });
+                    const images = findHtmlImages(withoutPageFont, document);
+                    let after = await addLocalImageDimensions(withoutPageFont, outDir, {
+                        images,
+                        cache: dimensionsCache,
+                        loadingPolicy: true,
+                        dependencies,
+                    });
                     if (pageFontData) {
                         const linkedStylesheetText = readLinkedStylesheetText(
                             after,
                             output,
                             outDir,
                             linkedCssTextCache,
+                            document,
+                            dependencies,
                         );
-                        const pageFont = writePageFontSubset(
+                        const pageFont = await writePageFontSubsetAsync(
                             after,
                             pageFontData.fontBuffer,
                             pageFontData.cacheDir,
                             "/_astro/fonts/",
                             linkedStylesheetText,
+                            "",
+                            document,
                         );
                         if (pageFont) {
                             after = pageFont.html;
                             pageFontPages++;
+                            cachedFont = {
+                                filename: pageFont.filename,
+                                sourcePath: pageFont.sourcePath,
+                            };
+                            if (!referencedPageFonts.has(pageFont.filename)) {
+                                copyFileSync(
+                                    pageFont.sourcePath,
+                                    path.join(pageFontData.outputDir, pageFont.filename),
+                                );
+                            }
                             referencedPageFonts.add(pageFont.filename);
-                            copyFileSync(
-                                pageFont.sourcePath,
-                                path.join(pageFontData.outputDir, pageFont.filename),
-                            );
                         }
                     }
                     if (after !== before) {
                         await fs.writeFile(output, after);
                         optimizedImagePages++;
                     }
+                    await outputCache.set(
+                        entry,
+                        withoutPageFont,
+                        {
+                            html: after,
+                            font: cachedFont,
+                        },
+                        [...dependencies],
+                    );
+                };
+                // Bound I/O concurrency without retaining the entire site's HTML in memory.
+                for (let offset = 0; offset < pageEntries.length; offset += 4) {
+                    await Promise.all(pageEntries.slice(offset, offset + 4).map(processPage));
                 }
                 if (pageFontData) {
                     clearPageFontSubsets(pageFontData.outputDir, referencedPageFonts);
@@ -441,11 +515,15 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 logger.info(
                     `generated page-specific body font subsets for ${pageFontPages} HTML pages`,
                 );
+                logger.info(
+                    `HTML postprocessing ${(performance.now() - started).toFixed(1)}ms; cache ${cacheHits}/${htmlFiles.filter((entry) => entry.endsWith(".html")).length}`,
+                );
 
                 // 后处理：Pagefind 搜索索引。启用时任何失败都必须让构建失败，
                 // 避免发布一个页面正常但搜索已损坏的产物。
                 if (opt.pagefind) {
                     logger.info("Running Pagefind indexer...");
+                    const pagefindStarted = performance.now();
 
                     try {
                         const { index, errors } = await pagefindCreateIndex();
@@ -466,7 +544,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         });
 
                         logger.info(
-                            `indexed ${page_count} pages → ${outputPath} (${(performance.now() - started).toFixed(1)}ms)`,
+                            `indexed ${page_count} pages → ${outputPath} (${(performance.now() - pagefindStarted).toFixed(1)}ms)`,
                         );
                     } catch (error) {
                         logger.error(`Pagefind indexing failed: ${describeError(error)}`);

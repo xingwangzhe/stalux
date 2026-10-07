@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { findHtmlImages, updateImageTag } from "./html-images";
+import { findHtmlImages, type HtmlImage, imageLoadingUpdates, updateImageTag } from "./html-images";
 
 export type ImageDimensions = { width: number; height: number };
 
@@ -72,41 +72,68 @@ export function readImageDimensions(data: Buffer): ImageDimensions | undefined {
 }
 
 /** Add width/height to same-origin emitted images so their space is reserved before download. */
-export async function addLocalImageDimensions(html: string, outputDir: string): Promise<string> {
-    const dimensionsCache = new Map<string, Promise<ImageDimensions | undefined>>();
+export async function addLocalImageDimensions(
+    html: string,
+    outputDir: string,
+    options: {
+        images?: HtmlImage[];
+        cache?: Map<string, Promise<ImageDimensions | undefined>>;
+        loadingPolicy?: boolean;
+        dependencies?: Set<string>;
+    } = {},
+): Promise<string> {
+    const dimensionsCache =
+        options.cache ?? new Map<string, Promise<ImageDimensions | undefined>>();
     const root = path.resolve(outputDir);
-    const tags = findHtmlImages(html);
-
-    for (const image of tags.reverse()) {
-        if (image.attributes.has("width") && image.attributes.has("height")) continue;
+    const images = options.images ?? findHtmlImages(html);
+    const loading = options.loadingPolicy ? imageLoadingUpdates(images) : new Map();
+    const replacements: Array<{ start: number; end: number; tag: string }> = [];
+    for (const image of images) {
+        const updates: Record<string, string> = { ...loading.get(image) };
         const src = image.attributes.get("src");
-        if (!src) continue;
-
-        let filePath: string;
-        try {
-            const url = new URL(src, "https://stalux.invalid");
-            if (url.origin !== "https://stalux.invalid") continue;
-            filePath = path.resolve(root, `.${decodeURIComponent(url.pathname)}`);
-        } catch {
-            continue;
+        if (src && !(image.attributes.has("width") && image.attributes.has("height"))) {
+            let filePath: string | undefined;
+            try {
+                const url = new URL(src, "https://stalux.invalid");
+                if (url.origin === "https://stalux.invalid") {
+                    const candidate = path.resolve(root, `.${decodeURIComponent(url.pathname)}`);
+                    if (candidate === root || candidate.startsWith(`${root}${path.sep}`))
+                        filePath = candidate;
+                }
+            } catch {
+                // Invalid image URLs still receive the loading policy.
+            }
+            if (filePath) {
+                options.dependencies?.add(filePath);
+                let dimensions = dimensionsCache.get(filePath);
+                if (!dimensions) {
+                    dimensions = readFile(filePath)
+                        .then(readImageDimensions)
+                        .catch(() => undefined);
+                    dimensionsCache.set(filePath, dimensions);
+                }
+                const size = await dimensions;
+                if (size && size.width > 0 && size.height > 0) {
+                    if (!image.attributes.has("width")) updates.width = String(size.width);
+                    if (!image.attributes.has("height")) updates.height = String(size.height);
+                }
+            }
         }
-        if (filePath !== root && !filePath.startsWith(`${root}${path.sep}`)) continue;
-
-        let dimensions = dimensionsCache.get(filePath);
-        if (!dimensions) {
-            dimensions = readFile(filePath)
-                .then(readImageDimensions)
-                .catch(() => undefined);
-            dimensionsCache.set(filePath, dimensions);
+        if (Object.keys(updates).length) {
+            replacements.push({
+                start: image.start,
+                end: image.end,
+                tag: updateImageTag(image, updates),
+            });
         }
-        const size = await dimensions;
-        if (!size || size.width <= 0 || size.height <= 0) continue;
-
-        const updates: Record<string, string> = {};
-        if (!image.attributes.has("width")) updates.width = String(size.width);
-        if (!image.attributes.has("height")) updates.height = String(size.height);
-        const updated = updateImageTag(image, updates);
-        html = html.slice(0, image.start) + updated + html.slice(image.end);
     }
-    return html;
+    if (!replacements.length) return html;
+    const parts: string[] = [];
+    let offset = 0;
+    for (const replacement of replacements) {
+        parts.push(html.slice(offset, replacement.start), replacement.tag);
+        offset = replacement.end;
+    }
+    parts.push(html.slice(offset));
+    return parts.join("");
 }

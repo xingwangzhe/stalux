@@ -18,9 +18,26 @@ import {
     RESERVED_GLYPHS,
     readLinkedStylesheetText,
     writePageFontSubset,
+    writePageFontSubsetAsync,
 } from "../src/internal/font-slices";
 
 describe("page-specific font subsets", () => {
+    it("preserves synchronous output when the async native worker processes pages", async () => {
+        const root = mkdtempSync(join(tmpdir(), "stalux-async-font-"));
+        try {
+            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf");
+            const html = "<html><head></head><body>中文 café 123</body></html>";
+            const expected = writePageFontSubset(html, font, join(root, "sync"));
+            const actual = await writePageFontSubsetAsync(html, font, join(root, "async"));
+            if (!actual || !expected) throw new Error("Missing page font output");
+            expect(actual.html).toBe(expected.html);
+            expect(actual?.filename).toBe(expected?.filename);
+            expect(readFileSync(actual.sourcePath)).toEqual(readFileSync(expected.sourcePath));
+        } finally {
+            rmSync(root, { recursive: true, force: true });
+        }
+    });
+
     it("subsets all visible body scripts and symbols, excluding metadata and hidden content", async () => {
         const root = mkdtempSync(join(tmpdir(), "stalux-page-font-"));
         const cacheDir = join(root, "cache");

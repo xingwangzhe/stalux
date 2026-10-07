@@ -10,7 +10,10 @@ export interface HtmlImage {
 }
 
 /** Source ranges preserve scripts and code-copy attributes byte-for-byte. */
-export function findHtmlImages(html: string): HtmlImage[] {
+export function findHtmlImages(
+    html: string,
+    document = parse(html, { sourceCodeLocationInfo: true }),
+): HtmlImage[] {
     const images: HtmlImage[] = [];
     function visit(node: DefaultTreeAdapterMap["node"], body?: number) {
         if ("tagName" in node) {
@@ -35,8 +38,26 @@ export function findHtmlImages(html: string): HtmlImage[] {
         }
         if ("childNodes" in node) for (const child of node.childNodes) visit(child, body);
     }
-    visit(parse(html, { sourceCodeLocationInfo: true }));
+    visit(document);
     return images.sort((left, right) => left.start - right.start);
+}
+
+export function imageLoadingUpdates(images: HtmlImage[]): Map<HtmlImage, Record<string, string>> {
+    const firstSeen = new Set<number>();
+    const changes = new Map<HtmlImage, Record<string, string>>();
+    for (const image of images) {
+        if (image.body === undefined) continue;
+        const first = !firstSeen.has(image.body);
+        firstSeen.add(image.body);
+        const updates: Record<string, string> = {
+            decoding: image.attributes.get("decoding") || "async",
+            loading: first ? "eager" : "lazy",
+        };
+        if (first) updates.fetchpriority = "high";
+        else if (image.attributes.get("fetchpriority") === "high") updates.fetchpriority = "auto";
+        changes.set(image, updates);
+    }
+    return changes;
 }
 
 export function updateImageTag(image: HtmlImage, updates: Record<string, string>): string {

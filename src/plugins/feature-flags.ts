@@ -16,7 +16,7 @@ import type { HastVisitorContext, MdastNode, MdastVisitorContext } from "satteri
  * - 数学公式由 satteri-temml 插件直接输出 MathML，无需额外标记
  */
 import { defineHastPlugin, defineMdastPlugin } from "satteri";
-import { findHtmlImages, updateImageTag } from "../internal/html-images";
+import { findHtmlImages, imageLoadingUpdates, updateImageTag } from "../internal/html-images";
 import { logDetail } from "../utils/diagnostics";
 
 declare module "satteri" {
@@ -247,22 +247,10 @@ export function applyImageLoadingPolicy(
 }
 
 export function applyHtmlImageLoadingPolicy(html: string): string {
-    const firstSeen = new Set<number>();
-    const changes = findHtmlImages(html)
-        .filter((image) => image.body !== undefined)
-        .map((image) => {
-            const body = image.body as number;
-            const first = !firstSeen.has(body);
-            firstSeen.add(body);
-            const updates: Record<string, string> = {
-                decoding: image.attributes.get("decoding") || "async",
-                loading: first ? "eager" : "lazy",
-            };
-            if (first) updates.fetchpriority = "high";
-            else if (image.attributes.get("fetchpriority") === "high")
-                updates.fetchpriority = "auto";
-            return { image, tag: updateImageTag(image, updates) };
-        });
+    const changes = [...imageLoadingUpdates(findHtmlImages(html))].map(([image, updates]) => ({
+        image,
+        tag: updateImageTag(image, updates),
+    }));
     for (const { image, tag } of changes.reverse())
         html = html.slice(0, image.start) + tag + html.slice(image.end);
     return html;

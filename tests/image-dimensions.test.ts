@@ -2,7 +2,9 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { findHtmlImages } from "../src/internal/html-images";
 import { addLocalImageDimensions, readImageDimensions } from "../src/internal/image-dimensions";
+import { applyHtmlImageLoadingPolicy } from "../src/plugins/feature-flags";
 
 describe("image dimensions", () => {
     it("reads PNG and WebP intrinsic sizes", () => {
@@ -46,6 +48,29 @@ describe("image dimensions", () => {
             expect(html).toContain('<img src="https://example.com/remote.png">');
         } finally {
             await rm(outputDir, { recursive: true, force: true });
+        }
+    });
+
+    it("combines dimensions and loading policy without changing image semantics", async () => {
+        const root = await mkdtemp(path.join(os.tmpdir(), "stalux-combined-images-"));
+        try {
+            const png = Buffer.alloc(24);
+            Buffer.from("89504e470d0a1a0a", "hex").copy(png);
+            png.writeUInt32BE(640, 16);
+            png.writeUInt32BE(360, 20);
+            await writeFile(path.join(root, "local.png"), png);
+            const html =
+                '<html><body><section data-pagefind-body><img src="/local.png"><img src="/local.png" width="123" fetchpriority="high"><img src="https://example.com/a.png"><img src="http://["></section><img src="/local.png"></body></html>';
+            const expected = applyHtmlImageLoadingPolicy(await addLocalImageDimensions(html, root));
+            const combined = await addLocalImageDimensions(html, root, {
+                images: findHtmlImages(html),
+                loadingPolicy: true,
+            });
+            const attributes = (value: string) =>
+                findHtmlImages(value).map((image) => image.attributes);
+            expect(attributes(combined)).toEqual(attributes(expected));
+        } finally {
+            await rm(root, { recursive: true, force: true });
         }
     });
 });
