@@ -128,7 +128,7 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     const meta = [
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { name: "color-scheme", content: "dark" },
-        { name: "generator", content: `Stalux ${version}` },
+        { name: "generator", content: "Stalux" },
         { name: "theme", content: "Stalux" },
         { name: "stalux-version", content: version },
         ...(!noindex

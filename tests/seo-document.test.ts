@@ -41,6 +41,7 @@ describe("SEO document", () => {
         expect(document.canonical).toBe("https://example.com/");
         expect(document.noindex).toBe(false);
         expect(document.nofollow).toBe(false);
+        expect(document.meta).toContainEqual({ name: "generator", content: "Stalux" });
         expect(document.meta).toContainEqual({ name: "stalux-version", content: "9.8.7" });
         expect(document.links).toContainEqual({
             rel: "alternate",
