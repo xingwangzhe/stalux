@@ -1,10 +1,9 @@
 import path from "node:path";
 import { parse as parseAstro } from "@astrojs/compiler";
-import { parseExpression, parse as parseScript } from "@babel/parser";
 import { generate, ident, parse, walk } from "css-tree";
 import MagicString from "magic-string";
 import { parseFragment } from "parse5";
-import type { Plugin } from "vite";
+import { type Plugin, parseSync } from "vite";
 import { styleNameIn } from "./style-name-lookup.ts";
 import { styleNames } from "./style-names.generated.ts";
 
@@ -162,11 +161,16 @@ function visitSyntax(
 
 /** Parse source literals; never rewrite generated bundles or consumer modules. */
 export function compactScript(code: string, names: Names = styleNames, expression = false): string {
-    const ast = expression
-        ? parseExpression(code, { plugins: ["typescript"] })
-        : parseScript(code, { sourceType: "module", plugins: ["typescript"] });
-    const output = new MagicString(code);
-    visitSyntax(ast, (node) => {
+    // Reuse Vite's public Oxc parser. Parentheses make Astro attribute values
+    // expressions (including object literals) while preserving source offsets.
+    const source = expression ? `(${code})` : code;
+    const { program, errors } = parseSync("stalux-theme.ts", source, {
+        lang: "ts",
+        sourceType: "module",
+    });
+    if (errors.length) throw new SyntaxError(errors.map((error) => error.message).join("\n"));
+    const output = new MagicString(source);
+    visitSyntax(program, (node) => {
         if (
             node.type === "ImportDeclaration" ||
             node.type === "ImportExpression" ||
@@ -174,7 +178,7 @@ export function compactScript(code: string, names: Names = styleNames, expressio
         )
             return false;
         if (
-            node.type === "StringLiteral" &&
+            node.type === "Literal" &&
             typeof node.value === "string" &&
             typeof node.start === "number" &&
             typeof node.end === "number"
@@ -192,11 +196,12 @@ export function compactScript(code: string, names: Names = styleNames, expressio
             const segments = node.quasis as Array<{
                 start: number;
                 end: number;
+                tail: boolean;
                 value: { raw: string };
             }>;
             const bodyStart = node.start + 1;
             const expressions = node.expressions as Array<{ start: number; end: number }>;
-            const masked = new MagicString(code.slice(bodyStart, node.end - 1));
+            const masked = new MagicString(source.slice(bodyStart, node.end - 1));
             for (const expr of expressions)
                 masked.overwrite(
                     expr.start - 2 - bodyStart,
@@ -215,11 +220,17 @@ export function compactScript(code: string, names: Names = styleNames, expressio
                 for (const segment of segments) {
                     const next = compactTokens(segment.value.raw, names);
                     if (next !== segment.value.raw)
-                        output.overwrite(segment.start, segment.end, next);
+                        // ESTree/Oxc ranges include ` or } at the start and
+                        // ${ or ` at the end; rewrite only the quasi's text.
+                        output.overwrite(
+                            segment.start + 1,
+                            segment.end - (segment.tail ? 1 : 2),
+                            next,
+                        );
                 }
         }
     });
-    return output.toString();
+    return expression ? output.toString().slice(1, -1) : output.toString();
 }
 
 export async function compactAstro(code: string, names: Names = styleNames): Promise<string> {

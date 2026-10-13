@@ -61,6 +61,22 @@ describe("production style compaction", () => {
         expect(inline).toContain("--s0:var(--s1)");
     });
 
+    it("preserves Oxc template delimiters and Unicode offsets in scripts and expressions", () => {
+        const source =
+            // biome-ignore lint/suspicious/noTemplateCurlyInString: source fixture preserves interpolation syntax.
+            'const label = "中文 😀"; const selector = `.stalux-main ${ready ? "a-none" : ""} --nav-scale`;';
+        const result = compactScript(source, names);
+        expect(result).toBe(
+            // biome-ignore lint/suspicious/noTemplateCurlyInString: assert literal source interpolation.
+            'const label = "中文 😀"; const selector = `.s0 ${ready ? "s1" : ""} --s1`;',
+        );
+        expect(compactScript(result, names)).toBe(result);
+        expect(compactScript('{"--nav-scale": `var(--space-md)`}', names, true)).toBe(
+            '{"--s1": `var(--s0)`}',
+        );
+        expect(() => compactScript('const selector = "unterminated')).toThrow(SyntaxError);
+    });
+
     it("preserves Unicode source positions, class:list expressions and user data attributes", async () => {
         const source =
             '---\nconst active = "stalux-main";\n---\n<!-- 中文注释 😀 -->\n<div class="stalux-main user-class" class:list={["a-none", {"stalux-main": ready}]} style={{"--nav-scale": value}} data-ref="stalux-main"><style>.stalux-main{color:red}</style><script>document.querySelector(".stalux-main")</script></div>';
