@@ -47,8 +47,8 @@ function addToTaxonomy<T extends IndexablePost>(
     map: Map<string, MutableTaxonomyBucket<T>>,
     post: T,
     names: string[] | undefined,
+    timestamp: number,
 ): void {
-    const timestamp = toTimestamp(post.data.updated ?? post.data.date);
     for (const name of new Set(names ?? [])) {
         const existing = map.get(name);
         if (existing) {
@@ -94,8 +94,16 @@ function finalizeTaxonomy<T extends IndexablePost>(
 export function buildPostContentIndex<T extends IndexablePost>(
     sourcePosts: readonly T[],
 ): PostContentIndex<T> {
+    const times = new Map<T, { date: number; updated: number }>();
+    for (const post of sourcePosts) {
+        const date = toTimestamp(post.data.date);
+        times.set(post, {
+            date,
+            updated: post.data.updated == null ? date : toTimestamp(post.data.updated),
+        });
+    }
     const posts = sourcePosts.toSorted(
-        (left, right) => toTimestamp(right.data.date) - toTimestamp(left.data.date),
+        (left, right) => (times.get(right)?.date ?? 0) - (times.get(left)?.date ?? 0),
     );
     const byAbbrlink = new Map<string, T>();
     const tags = new Map<string, MutableTaxonomyBucket<T>>();
@@ -108,8 +116,9 @@ export function buildPostContentIndex<T extends IndexablePost>(
             throw new Error(`Duplicate post abbrlink: ${abbrlink}`);
         }
         byAbbrlink.set(abbrlink, post);
-        addToTaxonomy(tags, post, post.data.tags);
-        addToTaxonomy(categories, post, post.data.categories);
+        const timestamp = times.get(post)?.updated ?? 0;
+        addToTaxonomy(tags, post, post.data.tags, timestamp);
+        addToTaxonomy(categories, post, post.data.categories, timestamp);
         neighbors.set(abbrlink, {
             previous: posts[index + 1],
             next: index > 0 ? posts[index - 1] : undefined,

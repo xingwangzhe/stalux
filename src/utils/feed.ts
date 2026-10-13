@@ -32,43 +32,44 @@ export async function buildFeedItems(
     updatedTag: string,
     logger?: AstroRuntimeLogger,
 ): Promise<FeedItem[]> {
+    const timestamps = new Map(
+        posts.map((post) => [post, toTimestamp(post.data.updated || post.data.date)]),
+    );
     const sortedPosts = posts.toSorted((a, b) => {
         // Newest first: compare post dates, use the greater of updated/date
-        const aTime = toTimestamp(a.data.updated || a.data.date);
-        const bTime = toTimestamp(b.data.updated || b.data.date);
+        const aTime = timestamps.get(a) ?? 0;
+        const bTime = timestamps.get(b) ?? 0;
         return bTime - aTime;
     });
 
     const descriptions = await getPostDescriptions(logger);
     logDetail(logger, "feed", `rendering ${sortedPosts.length} entries; format=${updatedTag}`);
-    return Promise.all(
-        sortedPosts.map(async (post) => {
-            const cached = descriptions.get(String(post.data.abbrlink));
+    return sortedPosts.map((post) => {
+        const cached = descriptions.get(String(post.data.abbrlink));
 
-            let customData = "";
-            if (post.data.updated) {
-                const parsed = parseDate(post.data.updated);
-                if (isValid(parsed)) {
-                    const updatedIso = formatInTimeZone(
-                        parsed,
-                        stalux.timezone,
-                        "yyyy-MM-dd'T'HH:mm:ssXXX",
-                    );
-                    customData += `<${updatedTag}>${updatedIso}</${updatedTag}>`;
-                }
+        let customData = "";
+        if (post.data.updated) {
+            const parsed = parseDate(post.data.updated);
+            if (isValid(parsed)) {
+                const updatedIso = formatInTimeZone(
+                    parsed,
+                    stalux.timezone,
+                    "yyyy-MM-dd'T'HH:mm:ssXXX",
+                );
+                customData += `<${updatedTag}>${updatedIso}</${updatedTag}>`;
             }
-            if (post.data.cc) {
-                customData += `<rights>${post.data.cc}</rights>`;
-            }
+        }
+        if (post.data.cc) {
+            customData += `<rights>${post.data.cc}</rights>`;
+        }
 
-            return {
-                title: post.data.title,
-                pubDate: new Date(toMachineDateTime(post.data.date, stalux.timezone)),
-                description: cached?.desc || post.data.desc || "",
-                link: `/posts/${post.data.abbrlink}/`,
-                categories: post.data.categories || [],
-                customData,
-            };
-        }),
-    );
+        return {
+            title: post.data.title,
+            pubDate: new Date(toMachineDateTime(post.data.date, stalux.timezone)),
+            description: cached?.desc || post.data.desc || "",
+            link: `/posts/${post.data.abbrlink}/`,
+            categories: post.data.categories || [],
+            customData,
+        };
+    });
 }

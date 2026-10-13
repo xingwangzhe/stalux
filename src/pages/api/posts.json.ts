@@ -1,5 +1,5 @@
 import { getCollection } from "astro:content";
-import { analyzeFeatureFlags } from "@plugins/feature-flags";
+import { getPostDescriptions } from "@utils/word-count-utils";
 import type { APIRoute } from "astro";
 
 export const prerender = true;
@@ -13,19 +13,18 @@ export const prerender = true;
 export const GET: APIRoute = async ({ logger }) => {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
 
-    const payload = await Promise.all(
-        posts.map(async (post) => ({
-            title: post.data.title,
-            abbrlink: String(post.data.abbrlink),
-            date: post.data.date ?? undefined,
-            updated: post.data.updated ?? undefined,
-            tags: post.data.tags ?? [],
-            categories: post.data.categories ?? [],
-            desc: post.data.desc ?? "",
-            wordCount: (await analyzeFeatureFlags(post.body, logger)).wordCount,
-            url: `/posts/${post.data.abbrlink}/`,
-        })),
-    );
+    const descriptions = await getPostDescriptions(logger);
+    const payload = posts.map((post) => ({
+        title: post.data.title,
+        abbrlink: String(post.data.abbrlink),
+        date: post.data.date ?? undefined,
+        updated: post.data.updated ?? undefined,
+        tags: post.data.tags ?? [],
+        categories: post.data.categories ?? [],
+        desc: post.data.desc ?? "",
+        wordCount: descriptions.get(String(post.data.abbrlink))?.wordCount ?? 0,
+        url: `/posts/${post.data.abbrlink}/`,
+    }));
 
     return new Response(JSON.stringify(payload), {
         status: 200,

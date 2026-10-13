@@ -201,19 +201,27 @@ export function compactScript(code: string, names: Names = styleNames, expressio
             }>;
             const bodyStart = node.start + 1;
             const expressions = node.expressions as Array<{ start: number; end: number }>;
-            const masked = new MagicString(source.slice(bodyStart, node.end - 1));
-            for (const expr of expressions)
-                masked.overwrite(
-                    expr.start - 2 - bodyStart,
-                    expr.end + 1 - bodyStart,
-                    "x".repeat(expr.end - expr.start + 3),
-                );
-            const html = masked.toString();
-            if (html.includes("<")) {
+            if (segments.some((segment) => segment.value.raw.includes("<"))) {
+                const masked = new MagicString(source.slice(bodyStart, node.end - 1));
+                for (const expr of expressions)
+                    masked.overwrite(
+                        expr.start - 2 - bodyStart,
+                        expr.end + 1 - bodyStart,
+                        "x".repeat(expr.end - expr.start + 3),
+                    );
+                const html = masked.toString();
                 for (const edit of markupEdits(html, names)) {
                     const start = bodyStart + edit.start;
                     const end = bodyStart + edit.end;
-                    if (!expressions.some((expr) => start < expr.end + 1 && end > expr.start - 2))
+                    let low = 0;
+                    let high = expressions.length;
+                    while (low < high) {
+                        const middle = (low + high) >>> 1;
+                        if ((expressions[middle]?.end ?? 0) + 1 <= start) low = middle + 1;
+                        else high = middle;
+                    }
+                    const expressionAtEdit = expressions[low];
+                    if (!expressionAtEdit || end <= expressionAtEdit.start - 2)
                         output.overwrite(start, end, edit.text);
                 }
             } else
@@ -233,11 +241,44 @@ export function compactScript(code: string, names: Names = styleNames, expressio
     return expression ? output.toString().slice(1, -1) : output.toString();
 }
 
+/** Map requested UTF-8 byte offsets to UTF-16 without repeatedly decoding prefixes. */
+export function mapUtf8Offsets(code: string, locations: Iterable<number>): Map<number, number> {
+    const requested = [...locations].sort((a, b) => a - b);
+    const offsets = new Map<number, number>();
+    let index = 0;
+    let bytes = 0;
+    let units = 0;
+    for (const char of code) {
+        const point = char.codePointAt(0) as number;
+        const width = point <= 0x7f ? 1 : point <= 0x7ff ? 2 : point <= 0xffff ? 3 : 4;
+        while (index < requested.length && (requested[index] as number) < bytes + width) {
+            const offset = requested[index++] as number;
+            offsets.set(offset, units + (offset > bytes ? 1 : 0));
+        }
+        bytes += width;
+        units += char.length;
+    }
+    while (index < requested.length) offsets.set(requested[index++] as number, units);
+    return offsets;
+}
+
 export async function compactAstro(code: string, names: Names = styleNames): Promise<string> {
     const { ast } = await parseAstro(code);
     const output = new MagicString(code);
-    const sourceBytes = Buffer.from(code);
-    const offsetOf = (offset: number) => sourceBytes.subarray(0, offset).toString("utf8").length;
+    // Collect only requested locations: O(source + locations log locations),
+    // O(locations) storage instead of decoding every source prefix again.
+    const locations = new Set<number>([0]);
+    function collectLocations(node: typeof ast | (typeof ast.children)[number]) {
+        if (node.position?.start) locations.add(node.position.start.offset);
+        if (node.position?.end) locations.add(node.position.end.offset);
+        if ("attributes" in node)
+            for (const attr of node.attributes)
+                if (attr.position?.start) locations.add(attr.position.start.offset);
+        if ("children" in node) for (const child of node.children) collectLocations(child);
+    }
+    collectLocations(ast);
+    const offsets = mapUtf8Offsets(code, locations);
+    const offsetOf = (offset: number) => offsets.get(offset) ?? 0;
     function visit(node: typeof ast | (typeof ast.children)[number]) {
         if (node.type === "frontmatter") {
             const start = offsetOf(node.position?.start.offset ?? 0) + 3;
@@ -250,7 +291,8 @@ export async function compactAstro(code: string, names: Names = styleNames): Pro
                 if (offset === undefined || attr.kind === "empty" || attr.kind === "spread")
                     continue;
                 const equals = code.indexOf("=", offset + attr.name.length);
-                const start = equals + 1 + (code.slice(equals + 1).match(/^\s*/u)?.[0].length ?? 0);
+                let start = equals + 1;
+                while (start < code.length && /\s/u.test(code[start] as string)) start++;
                 if (
                     attr.kind === "expression" &&
                     (attr.name === "class" ||

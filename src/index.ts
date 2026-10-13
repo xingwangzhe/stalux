@@ -1,3 +1,4 @@
+import { forEachBounded } from "./internal/bounded-tasks.ts";
 import { compactStylesPlugin } from "./internal/compact-styles.ts";
 import { modernCssTargets } from "./internal/modern-css.ts";
 import { styleNames } from "./internal/style-names.generated.ts";
@@ -521,9 +522,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     );
                 };
                 // Bound I/O concurrency without retaining the entire site's HTML in memory.
-                for (let offset = 0; offset < pageEntries.length; offset += 4) {
-                    await Promise.all(pageEntries.slice(offset, offset + 4).map(processPage));
-                }
+                await forEachBounded(pageEntries, 4, processPage);
                 if (pageFontData) {
                     clearPageFontSubsets(pageFontData.outputDir, referencedPageFonts);
                 }

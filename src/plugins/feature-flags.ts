@@ -290,7 +290,14 @@ export function analyzeFeatureFlags(
     }
     logDetail(logger, "markdown-analysis", "cache miss; analyzing feature flags");
 
-    const resultPromise = analyzeFeatureFlagsUncached(content);
+    if (import.meta.env.DEV && analysisCache.size >= 128) {
+        const oldest = analysisCache.keys().next().value;
+        if (oldest !== undefined) analysisCache.delete(oldest);
+    }
+    const resultPromise = analyzeFeatureFlagsUncached(content).catch((error: unknown) => {
+        if (analysisCache.get(content) === resultPromise) analysisCache.delete(content);
+        throw error;
+    });
     analysisCache.set(content, resultPromise);
     return resultPromise;
 }

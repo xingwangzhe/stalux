@@ -18,6 +18,31 @@ export const toTimestamp = (v: unknown): number => parseDate(v).getTime();
 
 const pad2 = (n: number): string => String(n).padStart(2, "0");
 
+// Bounded across user-supplied zones; invalid zones still throw before caching.
+const timezoneFormatters = new Map<string, Intl.DateTimeFormat>();
+function getTimezoneFormatter(timeZone: string): Intl.DateTimeFormat {
+    let formatter = timezoneFormatters.get(timeZone);
+    if (!formatter) {
+        formatter = new Intl.DateTimeFormat("en-US", {
+            timeZone,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hourCycle: "h23",
+            timeZoneName: "longOffset",
+        });
+        if (timezoneFormatters.size >= 16) {
+            const oldest = timezoneFormatters.keys().next().value;
+            if (oldest !== undefined) timezoneFormatters.delete(oldest);
+        }
+        timezoneFormatters.set(timeZone, formatter);
+    }
+    return formatter;
+}
+
 /**
  * 轻量 format：仅覆盖本项目实际用到的 token。
  * 支持：yyyy MM dd HH mm ss
@@ -51,17 +76,7 @@ export function formatInTimeZone(
     const d = date instanceof Date ? date : new Date(date);
     if (Number.isNaN(d.getTime())) return "";
 
-    const parts = new Intl.DateTimeFormat("en-US", {
-        timeZone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hourCycle: "h23",
-        timeZoneName: "longOffset",
-    }).formatToParts(d);
+    const parts = getTimezoneFormatter(timeZone).formatToParts(d);
 
     const get = (type: Intl.DateTimeFormatPartTypes): string =>
         parts.find((p) => p.type === type)?.value ?? "";

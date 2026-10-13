@@ -44,6 +44,19 @@ describe("generated asset references", () => {
         expect(missing).toEqual(["index.html -> /_astro/missing.css"]);
     });
 
+    it("does not accept a directory with merely a matching name prefix", () => {
+        const missing = findMissingAssetReferences(
+            new Map([
+                [
+                    "index.html",
+                    '<link href="/_astro/font"><link href="/_astro/fonts/deep/body.woff2">',
+                ],
+            ]),
+            new Set(["/_astro/fonts/deep/body.woff2"]),
+        );
+        expect(missing).toEqual(["index.html -> /_astro/font"]);
+    });
+
     it("accepts an asset directory prefix when generated files exist below it", () => {
         const missing = findMissingAssetReferences(
             new Map([

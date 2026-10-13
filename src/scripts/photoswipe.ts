@@ -7,9 +7,10 @@ const logger = createClientLogger("photoswipe");
 
 const GALLERY_SELECTOR = "a.pswp-gallery-item";
 
-async function enrichPhotoSwipeData(container: Element): Promise<void> {
+async function enrichPhotoSwipeData(container: Element, signal: AbortSignal): Promise<void> {
     const links = container.querySelectorAll<HTMLAnchorElement>(GALLERY_SELECTOR);
     for (const link of links) {
+        if (signal.aborted) return;
         const image = link.querySelector<HTMLImageElement>("img");
         if (!image) continue;
 
@@ -21,12 +22,18 @@ async function enrichPhotoSwipeData(container: Element): Promise<void> {
 
         const temporaryImage = new Image();
         temporaryImage.src = image.currentSrc || image.src;
+        const cancel = () => temporaryImage.removeAttribute("src");
+        signal.addEventListener("abort", cancel, { once: true });
         try {
             await temporaryImage.decode();
         } catch {
+            if (signal.aborted) return;
             logger.debug("image dimensions unavailable; skipping enrichment");
             continue;
+        } finally {
+            signal.removeEventListener("abort", cancel);
         }
+        if (signal.aborted) return;
         link.dataset.pswpWidth = String(temporaryImage.naturalWidth);
         link.dataset.pswpHeight = String(temporaryImage.naturalHeight);
     }
@@ -41,6 +48,7 @@ registerPageLifecycle("photoswipe", () => {
     const controller = new AbortController();
     let lightbox: import("photoswipe/lightbox").default | undefined;
     let initialized = false;
+    let disposed = false;
 
     const initialize = async () => {
         logger.debug("loading lightbox modules");
@@ -48,8 +56,8 @@ registerPageLifecycle("photoswipe", () => {
             import("photoswipe/lightbox"),
             import("photoswipe"),
         ]);
-
-        void enrichPhotoSwipeData(container);
+        if (disposed) return;
+        void enrichPhotoSwipeData(container, controller.signal);
         lightbox = new PhotoSwipeLightbox({
             gallery: container,
             children: GALLERY_SELECTOR,
@@ -77,6 +85,7 @@ registerPageLifecycle("photoswipe", () => {
 
         void ensureInitialized()
             .then(() => {
+                if (disposed) return;
                 initialized = true;
                 logger.debug(`opening image index=${clickedIndex}`);
                 lightbox?.loadAndOpen(clickedIndex, undefined, initialPoint);
@@ -92,6 +101,7 @@ registerPageLifecycle("photoswipe", () => {
     });
 
     return () => {
+        disposed = true;
         controller.abort();
         lightbox?.destroy();
         lightbox = undefined;

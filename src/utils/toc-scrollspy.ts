@@ -25,6 +25,8 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
     let pending = false;
     let frameId = 0;
     let sidebarHovered = false;
+    const headingOrder = new Map(headings.map((heading, index) => [heading, index]));
+    const visibleHeadings = new Set<HTMLElement>();
     const controller = new AbortController();
 
     // 鼠标悬停在侧边栏上时跳过自动滚动，避免跟用户手动操作冲突
@@ -61,7 +63,12 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
     };
 
     const observer = new IntersectionObserver(
-        () => {
+        (entries) => {
+            for (const entry of entries) {
+                const heading = entry.target as HTMLElement;
+                if (entry.isIntersecting) visibleHeadings.add(heading);
+                else visibleHeadings.delete(heading);
+            }
             // 用 rAF 合并同一帧内的多次回调，避免频繁触发布局计算
             if (pending) return;
             pending = true;
@@ -70,11 +77,17 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
                 pending = false;
 
                 // 找到视口上方 35% 区域内最靠上的标题
-                let current =
-                    headings.find((h) => {
-                        const rect = h.getBoundingClientRect();
-                        return rect.top < window.innerHeight * 0.35 && rect.bottom > 0;
-                    }) ?? null;
+                let current: HTMLElement | null = null;
+                let currentOrder = headings.length;
+                for (const heading of visibleHeadings) {
+                    const order = headingOrder.get(heading) ?? headings.length;
+                    if (order >= currentOrder) continue;
+                    const rect = heading.getBoundingClientRect();
+                    if (rect.top < window.innerHeight * 0.35 && rect.bottom > 0) {
+                        current = heading;
+                        currentOrder = order;
+                    }
+                }
 
                 // 兜底：滚动到文章底部时，取最后一个仍在视口上方或已经越过顶部的标题
                 current ??=
@@ -111,6 +124,7 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
     return () => {
         controller.abort();
         observer.disconnect();
+        visibleHeadings.clear();
         if (frameId) cancelAnimationFrame(frameId);
         activeLink?.classList.remove(activeClass);
     };

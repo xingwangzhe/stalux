@@ -37,14 +37,19 @@ export function findMissingAssetReferences(
     existingAssets: ReadonlySet<string>,
 ): string[] {
     const missing = new Set<string>();
-    const assets = [...existingAssets];
+    const directories = new Set<string>();
+    for (const asset of existingAssets) {
+        let slash = asset.lastIndexOf("/");
+        while (slash > 0) {
+            directories.add(asset.slice(0, slash));
+            slash = asset.lastIndexOf("/", slash - 1);
+        }
+    }
     for (const [source, contents] of sources) {
         for (const fragment of resourceFragments(source, contents))
             for (const match of fragment.matchAll(assetReferencePattern)) {
                 const reference = match[0];
-                const exists =
-                    existingAssets.has(reference) ||
-                    assets.some((asset) => asset.startsWith(`${reference}/`));
+                const exists = existingAssets.has(reference) || directories.has(reference);
                 if (!exists) missing.add(`${source} -> ${reference}`);
             }
     }

@@ -209,22 +209,31 @@ function findBody(node: HtmlNode): HtmlNode | undefined {
 }
 
 function isHiddenElement(attrs: Array<{ name: string; value: string }>): boolean {
-    const attributes = new Map(attrs.map(({ name, value }) => [name, value]));
-    if (attributes.has("hidden") || attributes.has("inert")) return true;
-
-    const classes = (attributes.get("class") ?? "").split(/\s+/u);
+    let className = "";
+    let style = "";
+    for (const attr of attrs) {
+        if (attr.name === "hidden" || attr.name === "inert") return true;
+        if (attr.name === "class") className = attr.value;
+        if (attr.name === "style") style = attr.value;
+    }
+    const classes = className.split(/\s+/u);
     if (classes.some((name) => VISUALLY_HIDDEN_CLASSES.has(name))) return true;
 
-    const style = attributes.get("style") ?? "";
     return /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*hidden|content-visibility\s*:\s*hidden)\s*(?:;|$)/iu.test(
         style,
     );
 }
 
 /** Collect renderable body text nodes, including content inside collapsed controls. */
-function collectBodyText(node: HtmlNode, output: string[]): void {
+const CONTROL_CHARACTER = /\p{C}/u;
+function addGlyphs(text: string, output: Set<string>): void {
+    for (const char of text)
+        if (!output.has(char) && !CONTROL_CHARACTER.test(char)) output.add(char);
+}
+
+function collectBodyText(node: HtmlNode, output: Set<string>): void {
     if (node.nodeName === "#text" && "value" in node) {
-        output.push(node.value);
+        addGlyphs(node.value, output);
         return;
     }
 
@@ -240,9 +249,10 @@ function collectBodyText(node: HtmlNode, output: string[]): void {
 }
 
 function formatUnicodeRange(chars: string[]): string {
-    const points = chars.map((char) => char.codePointAt(0) as number).sort((a, b) => a - b);
     const ranges: Array<[number, number]> = [];
-    for (const point of points) {
+    // preparePageFont already sorts the unique glyphs by code point.
+    for (const char of chars) {
+        const point = char.codePointAt(0) as number;
         const last = ranges.at(-1);
         if (last && point === last[1] + 1) last[1] = point;
         else ranges.push([point, point]);
@@ -298,15 +308,14 @@ function preparePageFont(
     const body = findBody(document);
     if (!body) return undefined;
 
-    const bodyText: string[] = [
-        ...[...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi)].map(([, css]) =>
-            cssGeneratedText(css ?? ""),
-        ),
-        linkedStylesheetText,
-    ];
-    collectBodyText(body, bodyText);
-    const glyphSource = `${RESERVED_GLYPHS}${extraChars}${bodyText.join("")}`;
-    const chars = [...new Set([...glyphSource].filter((char) => !/\p{C}/u.test(char)))].sort(
+    const glyphs = new Set<string>();
+    addGlyphs(RESERVED_GLYPHS, glyphs);
+    addGlyphs(extraChars, glyphs);
+    addGlyphs(linkedStylesheetText, glyphs);
+    for (const [, css] of html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi))
+        addGlyphs(cssGeneratedText(css ?? ""), glyphs);
+    collectBodyText(body, glyphs);
+    const chars = [...glyphs].sort(
         (a, b) => (a.codePointAt(0) as number) - (b.codePointAt(0) as number),
     );
     if (chars.length === 0) return undefined;

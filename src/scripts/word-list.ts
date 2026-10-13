@@ -14,10 +14,16 @@ function scrollToWord(hash: string): void {
 registerPageLifecycle("word-list", () => {
     if (!document.querySelector("[data-word-hash]")) return;
     const controller = new AbortController();
+    let firstFrame = 0;
+    let secondFrame = 0;
 
     if (location.hash.startsWith("#word-")) {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => scrollToWord(location.hash));
+        firstFrame = requestAnimationFrame(() => {
+            firstFrame = 0;
+            secondFrame = requestAnimationFrame(() => {
+                secondFrame = 0;
+                scrollToWord(location.hash);
+            });
         });
     }
 
@@ -35,5 +41,9 @@ registerPageLifecycle("word-list", () => {
         { signal: controller.signal },
     );
 
-    return () => controller.abort();
+    return () => {
+        controller.abort();
+        if (firstFrame) cancelAnimationFrame(firstFrame);
+        if (secondFrame) cancelAnimationFrame(secondFrame);
+    };
 });

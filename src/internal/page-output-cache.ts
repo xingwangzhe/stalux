@@ -24,9 +24,19 @@ export async function createPageOutputCache(
     }
     const namespace = path.join(directory, hash.digest("hex"));
     await fs.mkdir(namespace, { recursive: true });
-    const assetDigests = new Map<string, string>();
-    for (const asset of assets) assetDigests.set(asset, digest(await fs.readFile(asset)));
-    const key = (entry: string, html: string) => digest(`${entry}\0${html}`);
+    const knownAssets = new Set(assets);
+    const assetDigests = new Map<string, Promise<string | null>>();
+    const assetDigest = (asset: string): Promise<string | null> => {
+        if (!knownAssets.has(asset)) return Promise.resolve(null);
+        let pending = assetDigests.get(asset);
+        if (!pending) {
+            pending = fs.readFile(asset).then(digest, () => null);
+            assetDigests.set(asset, pending);
+        }
+        return pending;
+    };
+    const key = (entry: string, html: string) =>
+        createHash("sha256").update(entry).update("\0").update(html).digest("hex");
     return {
         async get(entry: string, html: string): Promise<CachedPageOutput | undefined> {
             try {
@@ -37,7 +47,7 @@ export async function createPageOutputCache(
                     return undefined;
                 if (!Array.isArray(record.assets)) return undefined;
                 for (const [asset, expected] of record.assets) {
-                    if ((assetDigests.get(asset) ?? null) !== expected) return undefined;
+                    if ((await assetDigest(asset)) !== expected) return undefined;
                 }
                 if (record.font) {
                     if (
@@ -66,10 +76,9 @@ export async function createPageOutputCache(
                 JSON.stringify({
                     ...output,
                     digest: digest(output.html),
-                    assets: referencedAssets.map((asset) => [
-                        asset,
-                        assetDigests.get(asset) ?? null,
-                    ]),
+                    assets: await Promise.all(
+                        referencedAssets.map(async (asset) => [asset, await assetDigest(asset)]),
+                    ),
                 }),
             );
             await fs.rename(temporary, target);

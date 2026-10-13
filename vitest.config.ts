@@ -12,6 +12,9 @@ export default getViteConfig({
             include: [
                 "scripts/verify-build-utils.ts",
                 "src/internal/runtime-cache-key.ts",
+                "src/internal/bounded-tasks.ts",
+                "src/utils/post-lookup.ts",
+                "src/utils/word-count-utils.ts",
                 "src/internal/satteri-config.ts",
                 "src/scripts/page-runtime.ts",
                 "src/scripts/back-to-top.ts",

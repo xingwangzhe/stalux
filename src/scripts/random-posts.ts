@@ -5,21 +5,23 @@ const logger = createClientLogger("random-posts");
 
 const sleep = (ms: number, signal: AbortSignal) =>
     new Promise<void>((resolve) => {
-        const timer = window.setTimeout(resolve, ms);
-        signal.addEventListener(
-            "abort",
-            () => {
-                window.clearTimeout(timer);
-                resolve();
-            },
-            { once: true },
-        );
+        const finish = () => {
+            signal.removeEventListener("abort", aborted);
+            resolve();
+        };
+        const timer = window.setTimeout(finish, ms);
+        const aborted = () => {
+            window.clearTimeout(timer);
+            finish();
+        };
+        if (signal.aborted) aborted();
+        else signal.addEventListener("abort", aborted, { once: true });
     });
 
 function shuffle<T extends object>(items: T[]): T[] {
     const result = [...items];
+    const bytes = new Uint32Array(1);
     for (let i = result.length - 1; i > 0; i -= 1) {
-        const bytes = new Uint32Array(1);
         const j = (crypto.getRandomValues(bytes)[0] ?? 0) % (i + 1);
         const current = result[i];
         const target = result[j];

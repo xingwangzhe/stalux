@@ -1,26 +1,15 @@
 import type { AstroRuntimeLogger } from "astro";
 import { getPostContentIndex, type PostEntry } from "./content-index";
 
-/**
- * 统计 posts 中每个分类键出现的次数。
- * @param posts 文章集合
- * @param keyFn 从单篇文章取出若干分类键（如标签、分类）
- * @param defaultValue 文章没有任何分类键时的兜底分类名（可选）
- */
-function countBy(
-    posts: PostEntry[],
-    keyFn: (post: PostEntry) => string[] | undefined,
-    defaultValue?: string,
-): Array<{ name: string; count: number }> {
-    const counts = new Map<string, number>();
+/** Count the existing uncategorized fallback without building a second taxonomy map. */
+function countUncategorized(posts: PostEntry[]): number {
+    let count = 0;
     for (const post of posts) {
-        const keys = keyFn(post) ?? [];
-        const names = keys.length > 0 ? keys : defaultValue ? [defaultValue] : [];
-        for (const name of names) {
-            counts.set(name, (counts.get(name) ?? 0) + 1);
-        }
+        const names = post.data.categories ?? [];
+        if (!names.length) count++;
+        else for (const name of names) if (name === "uncategorized") count++;
     }
-    return [...counts].map(([name, count]) => ({ name, count }));
+    return count;
 }
 
 /**
@@ -42,9 +31,7 @@ export async function getCategoryCountList(logger?: AstroRuntimeLogger) {
         name,
         count: categoryPosts.length,
     }));
-    const uncategorized = countBy(posts, (post) => post.data.categories, "uncategorized").find(
-        ({ name }) => name === "uncategorized",
-    );
-    if (uncategorized) counts.push(uncategorized);
+    const uncategorized = countUncategorized(posts);
+    if (uncategorized) counts.push({ name: "uncategorized", count: uncategorized });
     return counts;
 }

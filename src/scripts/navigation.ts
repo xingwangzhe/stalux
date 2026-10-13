@@ -10,7 +10,7 @@ interface SearchDialog extends HTMLElement {
     close?: () => void;
 }
 
-async function openSearchDialog(): Promise<void> {
+async function openSearchDialog(signal: AbortSignal): Promise<void> {
     logger.debug("loading search UI");
     await Promise.all([
         import("@pagefind/component-ui"),
@@ -18,6 +18,7 @@ async function openSearchDialog(): Promise<void> {
             document.querySelector<HTMLLinkElement>("link[data-stalux-search-style]"),
         ),
     ]);
+    if (signal.aborted) return;
     const dialog = document.querySelector<SearchDialog>("pagefind-modal#search");
     await upgradeAndOpenSearchDialog(
         {
@@ -25,6 +26,7 @@ async function openSearchDialog(): Promise<void> {
             upgrade: (element) => customElements.upgrade(element),
         },
         dialog,
+        signal,
     );
 }
 
@@ -105,7 +107,7 @@ registerPageLifecycle("navigation", () => {
             event.preventDefault();
             closeNav();
             try {
-                await openSearchDialog();
+                await openSearchDialog(controller.signal);
                 logger.debug("search dialog opened");
             } catch (error) {
                 logger.error("search dialog failed to open; next click can retry", error);

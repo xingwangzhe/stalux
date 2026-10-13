@@ -1,3 +1,4 @@
+import { createPostLookup } from "../utils/post-lookup";
 import { createClientLogger } from "./logger";
 
 /**
@@ -136,6 +137,16 @@ interface PostMeta {
 }
 
 let postsMetaPromise: Promise<PostMeta[] | null> | null = null;
+const postLookups = new WeakMap<PostMeta[], ReturnType<typeof createPostLookup<PostMeta>>>();
+
+function lookupFor(list: PostMeta[]) {
+    let lookup = postLookups.get(list);
+    if (!lookup) {
+        lookup = createPostLookup(list);
+        postLookups.set(list, lookup);
+    }
+    return lookup;
+}
 
 /** 加载文章元信息索引（惰性 + 缓存） */
 function loadPostsMeta(): Promise<PostMeta[] | null> {
@@ -149,16 +160,12 @@ function loadPostsMeta(): Promise<PostMeta[] | null> {
 
 /** 按 abbrlink 精确查找 */
 function findById(list: PostMeta[], id: string): PostMeta | undefined {
-    return list.find((p) => p.abbrlink === id);
+    return lookupFor(list).findById(id);
 }
 
 /** 按标题/标签关键词模糊查找（取第一条） */
 function findByKeyword(list: PostMeta[], keyword: string): PostMeta | undefined {
-    const kw = keyword.toLowerCase();
-    return (
-        list.find((p) => p.title.toLowerCase().includes(kw)) ??
-        list.find((p) => (p.tags ?? []).some((t) => t.toLowerCase().includes(kw)))
-    );
+    return lookupFor(list).findByKeyword(keyword);
 }
 
 /** 简化为输出用的元信息视图 */

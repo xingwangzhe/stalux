@@ -6,6 +6,7 @@ import {
     compactCss,
     compactScript,
     compactStylesPlugin,
+    mapUtf8Offsets,
 } from "../src/internal/compact-styles.ts";
 import { styleArtifactProblems } from "../src/internal/style-artifacts.ts";
 import { styleNames } from "../src/internal/style-names.generated.ts";
@@ -17,6 +18,24 @@ const names = {
 };
 
 describe("production style compaction", () => {
+    it("matches UTF-8 prefix decoding at every byte boundary, including partial characters", () => {
+        const source = "ASCII 中文 é 😀 \ud800 end";
+        const bytes = Buffer.from(source);
+        const positions = Array.from({ length: bytes.length + 1 }, (_, index) => index).reverse();
+        const offsets = mapUtf8Offsets(source, positions);
+        for (const offset of positions)
+            expect(offsets.get(offset)).toBe(bytes.subarray(0, offset).toString("utf8").length);
+    });
+
+    it("maps many UTF-8 locations after mixed-width characters without touching text", async () => {
+        const fragment = '<!-- 中文 😀 é -->\n<p class="stalux-main">中文 😀 é</p>\n';
+        const source = `---\nconst value = "a-none";\n---\n${fragment.repeat(64)}`;
+        const result = await compactAstro(source, names);
+        expect(result.match(/class="s0"/gu)).toHaveLength(64);
+        expect(result.match(/中文 😀 é/gu)).toHaveLength(128);
+        expect(result).toContain('const value = "s1"');
+        expect(await compactAstro(result, names)).toBe(result);
+    });
     it("renames CSS tokens, escaped classes, selectors, variables and animation references", () => {
         const result = compactCss(
             '.stalux-main:is(:hover,:focus-visible),.hover\\:wide{--nav-scale:var(--space-md,2px);animation:stalux-enter 1s;content:"stalux-main"}@keyframes stalux-enter{to{opacity:1}}.pswp{color:red}',

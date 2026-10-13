@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.35.11",
+    "version": "1.35.12",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -94,7 +94,9 @@
         "dev:debug": "STALUX_DEBUG=1 astro dev --verbose",
         "build:debug": "STALUX_DEBUG=1 astro build --verbose && node scripts/verify-build.ts",
         "styles:build": "node scripts/build-styles.ts && node scripts/build-style-names.ts",
-        "styles:watch": "node scripts/build-styles.ts --watch"
+        "styles:watch": "node scripts/build-styles.ts --watch",
+        "benchmark:performance": "node scripts/benchmark-performance.ts",
+        "benchmark:builds": "python3 scripts/benchmark-builds.py"
     },
     "dependencies": {
         "@astrojs/compiler": "^4.0.0",

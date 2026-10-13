@@ -28,6 +28,11 @@ function post(id: string, overrides: Partial<TestPost["data"]> = {}): TestPost {
 }
 
 describe("post content index", () => {
+    it("preserves stable order for tied dates without mutating input", () => {
+        const posts = [post("one"), post("two"), post("three")];
+        expect(buildPostContentIndex(posts).posts).toEqual(posts);
+        expect(posts.map(({ id }) => id)).toEqual(["one", "two", "three"]);
+    });
     it("handles an empty collection", () => {
         const index = buildPostContentIndex<TestPost>([]);
         expect(index.posts).toEqual([]);

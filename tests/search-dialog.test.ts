@@ -49,6 +49,20 @@ describe("Pagefind search dialog", () => {
         expect(registry.upgrade).toHaveBeenCalledWith(dialog);
     });
 
+    it("ignores an element definition that finishes after leaving the page", async () => {
+        const controller = new AbortController();
+        const dialog = { open: vi.fn() };
+        const registry = {
+            whenDefined: async () => {
+                controller.abort();
+            },
+            upgrade: vi.fn(),
+        };
+        await upgradeAndOpenSearchDialog(registry, dialog, controller.signal);
+        expect(registry.upgrade).not.toHaveBeenCalled();
+        expect(dialog.open).not.toHaveBeenCalled();
+    });
+
     it("does not try to upgrade or open a dialog that is no longer in the page", async () => {
         const registry = {
             whenDefined: vi.fn(async () => undefined),

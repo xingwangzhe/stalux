@@ -7,65 +7,69 @@
 import { getCollection } from "astro:content";
 import { analyzeFeatureFlags } from "@plugins/feature-flags";
 import type { AstroRuntimeLogger } from "astro";
+import { forEachBounded } from "../internal/bounded-tasks";
 import { logDetail, logFailure } from "./diagnostics";
 
 // ---------------------------------------------------------------------------
 // 模块级缓存（整个构建周期只计算一次）
 // ---------------------------------------------------------------------------
 
-let _cachedTotal: number | null = null;
+interface PostStatistics {
+    total: number;
+    descriptions: Map<string, { desc: string; wordCount: number }>;
+}
 
-/**
- * 获取所有已发布文章的总字数（从 body 估算）。
- * 结果会被缓存，同一构建周期内重复调用不会重新计算。
- */
-export async function getTotalWordCount(logger?: AstroRuntimeLogger): Promise<number> {
-    if (_cachedTotal !== null) {
-        logDetail(logger, "word-count", "total cache hit");
-        return _cachedTotal;
+let statisticsPromise: Promise<PostStatistics> | undefined;
+
+function loadStatistics(logger?: AstroRuntimeLogger): Promise<PostStatistics> {
+    if (!statisticsPromise) {
+        statisticsPromise = (async () => {
+            const posts = await getCollection("posts", ({ data }) => !data.draft);
+            const results = new Array<{ id: string; desc: string; wordCount: number }>(
+                posts.length,
+            );
+            await forEachBounded(
+                posts.map((post, index) => ({ post, index })),
+                4,
+                async ({ post, index }) => {
+                    results[index] = {
+                        id: String(post.data.abbrlink ?? post.id),
+                        desc: post.data.desc || "",
+                        wordCount: (await analyzeFeatureFlags(post.body, logger)).wordCount,
+                    };
+                },
+            );
+            const descriptions = new Map<string, { desc: string; wordCount: number }>();
+            let total = 0;
+            for (const result of results) {
+                total += result.wordCount;
+                descriptions.set(result.id, { desc: result.desc, wordCount: result.wordCount });
+            }
+            logDetail(logger, "word-count", `analyzed ${posts.length} posts`);
+            return { total, descriptions };
+        })().catch((error: unknown) => {
+            statisticsPromise = undefined;
+            throw error;
+        });
     }
-    logDetail(logger, "word-count", "total cache miss");
+    return statisticsPromise;
+}
+
+/** Shared in-flight statistics prevent concurrent pages from repeating collection work. */
+export async function getTotalWordCount(logger?: AstroRuntimeLogger): Promise<number> {
     try {
-        const posts = await getCollection("posts", ({ data }) => !data.draft);
-        const results = await Promise.all(
-            posts.map((post) => analyzeFeatureFlags(post.body, logger)),
-        );
-        _cachedTotal = results.reduce((sum, result) => sum + result.wordCount, 0);
-        logDetail(logger, "word-count", `analyzed ${posts.length} posts`);
-        return _cachedTotal;
+        return (await loadStatistics(logger)).total;
     } catch (error) {
         logFailure(logger, "word-count", "total calculation failed; returning zero", error);
         return 0;
     }
 }
 
-let _cachedDescriptions: Map<string, { desc: string; wordCount: number }> | null = null;
-
-/**
- * 获取所有已发布文章的描述和字数缓存，供 RSS/Atom/LLMs feed 共享。
- * - desc   ：直接从 frontmatter 读取（post.data.desc）
- * - wordCount：从 Sätteri AST 分析 post.body
- */
+/** Keep collection insertion order and frontmatter descriptions unchanged. */
 export async function getPostDescriptions(
     logger?: AstroRuntimeLogger,
 ): Promise<Map<string, { desc: string; wordCount: number }>> {
-    if (_cachedDescriptions !== null) {
-        logDetail(logger, "word-count", "description cache hit");
-        return _cachedDescriptions;
-    }
-    logDetail(logger, "word-count", "description cache miss");
-    const posts = await getCollection("posts", ({ data }) => !data.draft);
-    const results = await Promise.all(
-        posts.map(async (post) => ({
-            id: String(post.data.abbrlink ?? post.id),
-            desc: post.data.desc || "",
-            wordCount: (await analyzeFeatureFlags(post.body, logger)).wordCount,
-        })),
-    );
-    _cachedDescriptions = new Map(
-        results.map((r) => [r.id, { desc: r.desc, wordCount: r.wordCount }]),
-    );
-    return _cachedDescriptions;
+    return (await loadStatistics(logger)).descriptions;
 }
 
 export function formatWordCount(count: number, lang?: string): string {

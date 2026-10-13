@@ -34,9 +34,10 @@ export async function ensureSearchStyles(link: HTMLLinkElement | null): Promise<
 export async function upgradeAndOpenSearchDialog<ElementType extends SearchDialogLike>(
     registry: CustomElementRegistryLike<ElementType>,
     dialog: ElementType | null,
+    signal?: AbortSignal,
 ): Promise<void> {
     await registry.whenDefined("pagefind-modal");
-    if (!dialog) return;
+    if (!dialog || signal?.aborted) return;
     registry.upgrade(dialog);
     dialog.open?.();
 }
