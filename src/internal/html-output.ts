@@ -23,7 +23,10 @@ export function createHtmlMutationEmitter(
             if (node.tagName === "template") return;
             if (node.tagName === "head") head = node;
             const location = node.sourceCodeLocation;
-            if ((node.tagName === "img" || node.tagName === "style") && location) {
+            if (
+                (node.tagName === "img" || node.tagName === "style" || node.tagName === "link") &&
+                location
+            ) {
                 snapshots.push({
                     node,
                     start: location.startOffset,
@@ -65,7 +68,10 @@ export function createHtmlMutationEmitter(
             if (changed) edits.push({ start, end, value: serializeOuter(node) });
         }
         const inserted = head?.childNodes.filter(
-            (node) => "tagName" in node && node.tagName === "style" && !node.sourceCodeLocation,
+            (node) =>
+                "tagName" in node &&
+                (node.tagName === "style" || node.tagName === "link") &&
+                !node.sourceCodeLocation,
         );
         if (inserted?.length) {
             const position = head?.sourceCodeLocation?.endTag?.startOffset;

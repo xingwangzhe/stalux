@@ -12,6 +12,11 @@ const texts = normalizeMessages(messages);
 {texts.length > 0 && (
     <div class={className} data-stalux-typewriter data-messages={JSON.stringify(texts)}>
         <span class="stalux-typewriter-accessible">{texts.join(", ")}</span>
+        <span class="stalux-typewriter-reserve" aria-hidden="true">
+            {texts.map((text) => (
+                <span>{text}</span>
+            ))}
+        </span>
         <span class="stalux-typewriter-text" data-typewriter-text aria-hidden="true">
             {texts[0]}
         </span>
@@ -37,8 +42,33 @@ registerPageLifecycle("typewriter", mountTypewriters);
     white-space: nowrap;
     border: 0;
 }
+[data-stalux-typewriter] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    line-height: 1.25;
+}
+.stalux-typewriter-reserve,
 .stalux-typewriter-text {
+    grid-area: 1 / 1;
+    width: 100%;
+    min-width: 0;
+    align-self: center;
     overflow-wrap: anywhere;
+}
+.stalux-typewriter-text {
+    align-self: stretch;
+}
+.stalux-typewriter-reserve {
+    display: grid;
+    visibility: hidden;
+    pointer-events: none;
+    user-select: none;
+}
+.stalux-typewriter-reserve > span {
+    grid-area: 1 / 1;
+}
+.stalux-typewriter-reserve > span::after {
+    content: "\00a0";
 }
 .stalux-typewriter-text::after {
     content: "";
@@ -71,7 +101,8 @@ registerPageLifecycle("typewriter", mountTypewriters);
     }
 }
 @media print {
-    .stalux-typewriter-text {
+    .stalux-typewriter-text,
+    .stalux-typewriter-reserve {
         display: none;
     }
     .stalux-typewriter-accessible {

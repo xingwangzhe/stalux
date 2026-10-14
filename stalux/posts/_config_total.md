@@ -26,8 +26,8 @@ stalux/config/
 ├── links.yml         # Friend links: title, description, sites list
 ├── footer.yml        # Footer: buildtime, copyright, theme, beian, badges, custom HTML
 ├── comment.yml       # Comment system (Waline): enabled toggle + waline config
-├── promote.yml       # LLM promote hidden text + export_md toggle
-└── ai-discovery.yml  # AI discovery files (llms.txt, ai.txt, etc.): conformance level & overrides
+├── promote.yml       # Visually clipped public agent context + export_md toggle
+└── ai-discovery.yml  # AI discovery (llms.txt, llms-full.txt) and browser WebMCP toggle
 ```
 
 The schema definitions are in `src/schemas/config.ts`, using `z.discriminatedUnion("id")` to join them into a single `config` collection.

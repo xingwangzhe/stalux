@@ -7,14 +7,14 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 16:00:00"
-updated: "2026-01-26 00:00:00"
-desc: This article is rewritten according to the current schema (see src/content.config.ts), listing the frontmatter requirements and examples for posts, about, and words. Avoid using project-internal relative links to ensure no broken links when published to the site.
+updated: "2026-10-14 14:00:00"
+desc: This article is rewritten according to the current schema (see src/schemas/collections.ts), listing the frontmatter requirements and examples for posts, about, and words. Avoid using project-internal relative links to ensure no broken links when published to the site.
 abbrlink: f31dae4f
 ---
 
 ## Overview
 
-This article is rewritten according to the current schema (see src/content.config.ts), listing the frontmatter requirements and examples for posts, about, and words. Avoid using project-internal relative links to ensure no broken links when published to the site.
+This article is rewritten according to the current schema (see src/schemas/collections.ts), listing the frontmatter requirements and examples for posts, about, and words. Avoid using project-internal relative links to ensure no broken links when published to the site.
 
 ## posts/\*.md frontmatter
 
@@ -23,22 +23,25 @@ Loader: base is `stalux/posts/`, pattern `*.md`/`*.mdx`.
 Required fields:
 
 - `title`: Post title.
+- `desc`: Non-empty post summary, used by metadata, previews and agent tools.
 - `abbrlink`: Permanent link, supports strings or numbers (numbers are automatically converted to strings). It is recommended to manually set this to keep URLs stable.
 - `date`: Publish time, **string type**, recommended format `YYYY-MM-DD HH:mm:ss`, must be wrapped in double quotes to prevent YAML from automatically converting it to a Date object.
 
 Optional fields:
 
 - `updated`: Update date, **string type**, same format as `date`, also needs double quotes. If not provided, the update time will not be displayed.
-- `draft`: Boolean, default false; when true, can be used for local draft control.
+- `draft`: Boolean, default false; drafts are excluded from published pages, indexes and Markdown exports.
 - `tags`: Tag array; a string or single string will be preprocessed into an array.
 - `categories`: Category array; a string or single string will be preprocessed into an array.
 - `cc`: Copyright license, default `CC-BY-NC-SA-4.0`.
+- `cover`: Optional image URL.
 
 Example:
 
 ```markdown
 ---
 title: Astro Getting Started Guide
+desc: A practical guide to starting an Astro blog.
 abbrlink: astro-guide
 date: "2025-05-10 09:30:00"
 updated: "2025-05-12 18:00:00"
@@ -116,7 +119,7 @@ Field in `stalux/config/promote.yml`:
 
 - `export_md`: Boolean, default `false`. Markdown export is opt-in: only a strict `true` generates `.md` routes for the home page, posts, about, words, links, archives, categories, and tags.
 
-Published article endpoints serve the raw Markdown source with `Content-Type: text/markdown`. The source is read directly from the original `.md` file when available, falling back to a reconstruction from frontmatter + body data. List and taxonomy endpoints render Markdown summaries.
+Published article endpoints use `Content-Type: text/markdown`. Frontmatter is serialized from the collection metadata through a YAML Document AST; the Markdown body is preserved and a copyright footer is appended. This is a content-equivalent export, not a byte-for-byte copy of the source file. List and taxonomy endpoints render Markdown summaries.
 
 Example:
 
@@ -131,7 +134,7 @@ Note:
 - When disabled or omitted, no `.md` export files are generated.
 - Only non-draft articles get post `.md` endpoints.
 - When `promote.export_md` is `true`, published post `.md` endpoints are included in the sitemap. Other Markdown mirrors remain excluded by default.
-- Useful for readers who want to view or reuse the raw source.
+- Browser WebMCP reads this export when available, or falls back to Pagefind indexed plain text when export is disabled. Disabling both sources prevents full article reads.
 
 ## Writing and Validation
 

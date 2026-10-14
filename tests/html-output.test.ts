@@ -30,9 +30,22 @@ describe("AST mutation output", () => {
         if (loading) loading.value = "eager";
         image.node.attrs.push({ name: "width", value: "20" });
         addStyle(document);
+        const head = document.childNodes
+            .flatMap((n) => ("childNodes" in n ? n.childNodes : []))
+            .find((n) => "tagName" in n && n.tagName === "head");
+        if (!head || !("childNodes" in head)) throw new Error("No head");
+        defaultTreeAdapter.appendChild(
+            head,
+            defaultTreeAdapter.createElement("link", html.NS.HTML, [
+                { name: "data-stalux-page-font-preload", value: "" },
+                { name: "href", value: "/font.woff2" },
+            ]),
+        );
         const output = emit();
         expect(output).toContain(untouched);
-        expect(output).toContain('<style data-stalux-page-font="">new-font-css</style></head>');
+        expect(output).toContain(
+            '<style data-stalux-page-font="">new-font-css</style><link data-stalux-page-font-preload="" href="/font.woff2"></head>',
+        );
         expect(output).not.toContain("data-stalux-page-font>old");
         expect(output).toContain("<style>.keep{color:red}</style>");
         expect(output).toContain('loading="eager" width="20"');

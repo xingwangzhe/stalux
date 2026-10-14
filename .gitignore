@@ -42,6 +42,7 @@ coverage/
 .playwright-mcp/
 docs/*
 !docs/STYLING.md
+!docs/RUNTIME.md
 
 # build-generated font subsets (rebuilt each build by integration)
 public/fonts/common-*.woff2

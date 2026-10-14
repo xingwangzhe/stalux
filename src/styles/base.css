@@ -15,6 +15,13 @@
             var(--font-body), "Noto Sans SC", "Noto Sans CJK SC", system-ui, -apple-system,
             sans-serif;
         text-rendering: optimizeLegibility;
+        /* Keep line boxes stable while the page font replaces the system fallback. */
+        line-height: 1.25;
+    }
+
+    /* Reserve the classic scrollbar before content height changes across routes. */
+    html {
+        scrollbar-gutter: stable;
     }
 
     html[data-clarity-id] {

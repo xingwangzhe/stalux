@@ -390,6 +390,15 @@ function renderPageFont(
         const style = defaultTreeAdapter.createElement("style", htmlNamespaces.NS.HTML, [
             { name: "data-stalux-page-font", value: "" },
         ]);
+        const preload = defaultTreeAdapter.createElement("link", htmlNamespaces.NS.HTML, [
+            { name: "rel", value: "preload" },
+            { name: "as", value: "font" },
+            { name: "type", value: "font/woff2" },
+            { name: "crossorigin", value: "anonymous" },
+            { name: "href", value: rel },
+            { name: "data-stalux-page-font-preload", value: "" },
+        ]);
+        defaultTreeAdapter.appendChild(head, preload);
         defaultTreeAdapter.insertText(style, css);
         defaultTreeAdapter.appendChild(head, style);
     }
@@ -416,6 +425,19 @@ function styleText(style: DefaultTreeAdapterMap["element"]): string {
 
 /** Remove previously generated styles by AST identity, never by matching HTML strings. */
 export function removePageFontStyles(document: DefaultTreeAdapterMap["document"]): void {
+    function removePreloads(node: HtmlNode): void {
+        if ("tagName" in node && node.tagName === "template") return;
+        if (
+            "tagName" in node &&
+            node.tagName === "link" &&
+            node.attrs.some((attr) => attr.name === "data-stalux-page-font-preload")
+        ) {
+            defaultTreeAdapter.detachNode(node);
+            return;
+        }
+        if ("childNodes" in node) for (const child of [...node.childNodes]) removePreloads(child);
+    }
+    removePreloads(document);
     for (const style of collectInlineStyles(document)) {
         if (style.attrs.some((attribute) => attribute.name === "data-stalux-page-font"))
             defaultTreeAdapter.detachNode(style);

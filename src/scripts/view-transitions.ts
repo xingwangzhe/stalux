@@ -1,5 +1,6 @@
 import { getRouteKind } from "@utils/public-routes";
 import { createClientLogger } from "./logger";
+import { prepareNavigationFont } from "./navigation-font";
 
 const logger = createClientLogger("view-transitions");
 
@@ -19,6 +20,9 @@ interface NavigationEvent {
     from: URL;
     to: URL;
     direction: string;
+    loader: () => Promise<void>;
+    newDocument: Document;
+    signal: AbortSignal;
 }
 
 function setNavigationState(event: NavigationEvent): void {
@@ -35,7 +39,14 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
     transitionWindow.__STALUX_VT_LISTENER__ = true;
 
     document.addEventListener("astro:before-preparation", (event) => {
-        setNavigationState(event as NavigationEvent);
+        const navigation = event as unknown as NavigationEvent;
+        setNavigationState(navigation);
+        const loader = navigation.loader;
+        navigation.loader = async () => {
+            await loader();
+            if (!event.defaultPrevented)
+                await prepareNavigationFont(navigation.newDocument, navigation.signal);
+        };
     });
 
     document.addEventListener("astro:after-swap", () => {

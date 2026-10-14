@@ -211,8 +211,16 @@ export const commonStyles: StyleSpec[] = [
     [".stalux-footer-content", "gap-[0.6rem] p-[0_0.8rem]", {}, "@media (max-width: 480px)"],
     ["#stalux-to-archive-archs", "mt-[2em]", {}],
     ["#stalux-date-date-time", "flex flex-col items-center mt-[2em] stalux-glow text-ink-full", {}],
-    ["#stalux-date-date-time #stalux-date-date", "text-[2em] mb-[0.5em]", {}],
-    ["#stalux-date-date-time #stalux-date-time", "text-[3em]", {}],
+    [
+        "#stalux-date-date-time #stalux-date-date",
+        "text-[2em] mb-[0.5em]",
+        { "line-height": "1.25", "min-height": "1.25em" },
+    ],
+    [
+        "#stalux-date-date-time #stalux-date-time",
+        "text-[3em]",
+        { "line-height": "1.25", "min-height": "1.25em", "font-variant-numeric": "tabular-nums" },
+    ],
     [".stalux-author-figure", "flex items-center justify-center", {}],
     [
         ".stalux-author-figure img",

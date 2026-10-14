@@ -93,7 +93,7 @@ bun run dev
 - 🗺️ **Sitemap** (bundled; `.md` source endpoints auto-filtered)
 - 🖼️ **PhotoSwipe** image lightbox
 - 📊 **Mermaid** diagrams and flowcharts
-  Uses Merman through `@xingwangzhe/satteri-mermaid@0.8.1`, with the `dark` theme and a transparent canvas by default. The plugin supports 11 theme presets; see the [configuration reference](https://github.com/xingwangzhe/satteri-mermaid/blob/v0.8.1/docs/configuration.md). Rendering failures throw by default.
+  Uses Merman through `@xingwangzhe/satteri-mermaid@0.8.2`, with the `dark` theme and a transparent canvas by default. The plugin supports 11 theme presets; see the [configuration reference](https://github.com/xingwangzhe/satteri-mermaid/blob/v0.8.2/docs/configuration.md). Rendering failures throw by default.
 - 📐 **Math formula rendering** (Temml → MathML)
 - 💬 **Waline** comment system
 - 🤖 **LLM discovery files** (llms.txt / llms-full.txt)
@@ -112,11 +112,11 @@ Stalux ships with LXGW WenKai and a variable code font (Google Sans Code). Durin
 
 Arabic digits `0-9` are always reserved in every subset (`RESERVED_GLYPHS`), even on pages without any visible number. Digits produced at runtime by client scripts — clocks, counters, dates, injected values — never appear in the built HTML, so reserving them keeps numbers from falling back to a system font. Callers can append more characters through the optional `extraChars` argument of `writePageFontSubset`.
 
-The subset CSS uses an exact per-character `unicode-range` and `font-display: swap`, so visible text and the downloaded glyphs stay aligned. The variable code font continues to use Astro's local Fonts API.
+The subset CSS uses an exact per-character `unicode-range` and `font-display: swap`, so visible text and the downloaded glyphs stay aligned. The variable code font continues to use Astro's local Fonts API. A same-origin font preload in the HTML head discovers the body subset early; consumers need no manual font links.
 
 The persistent BLAKE3 cache key includes font bytes, face index, normalized character set, and algorithm version. Cache files live under `node_modules/.astro/` and are reused across pages and incremental builds. Font inputs are read locally; builds do not fetch fonts from the network.
 
-Multi-page builds reuse prepared font data and hashing state through `FontSubsetter`, with up to four native worker tasks for cold subsets. Font containers are decoded/extracted to SFNT before reusable HarfBuzz preprocessing preserves original outlines; Google Brotli encodes WOFF2 at quality 8. Image dimensions, image loading hints, linked CSS text, and font character extraction share one HTML parse. Shared image dimensions and CSS-generated text are also reused within each build, and image-tag edits are assembled in a single pass.
+Multi-page builds reuse prepared font data and hashing state through `FontSubsetter`, with up to four native worker tasks for cold subsets. Font containers are decoded/extracted to SFNT before reusable HarfBuzz preprocessing preserves original outlines; Google Brotli encodes WOFF2 at quality 8. Image dimensions, image loading hints, linked CSS text, and font character extraction share one HTML parse. Shared image dimensions and CSS-generated text are also reused within each build, image and font nodes are mutated on the same parse5 AST, then changed nodes are emitted once using source locations. Untouched scripts, comments, templates and subtrees retain their original source.
 
 Local image dimensions use `image-size`, including SVG and AVIF support. Normal file reads inspect at most 512 KiB; a JPEG compatibility fallback may read the full file when the size marker is first or beyond that window. Explicit dimensions and remote images are preserved. Referenced assets are hashed as streams, and content changes at the same URL invalidate the page cache regardless of image extension.
 
@@ -270,6 +270,14 @@ jobTitle: Software Engineer # Optional; emitted as JSON-LD Person.jobTitle
 This is a build-time metadata field. It does not create a contact endpoint or expose private information; only publish a role that is already intended to be public.
 
 
+## Loading and navigation stability
+
+The root reserves scrollbar space and uses explicit line height. The homepage typewriter reserves the maximum wrapped height of its complete messages and keeps the text origin fixed; clocks reserve line boxes and use tabular digits. Existing typing, cursor and route animations remain enabled. No additional configuration is required.
+
+A wrapper around Astro ClientRouter's `astro:before-preparation` loader warms the destination body font before the DOM swap without installing it on the old page. It waits at most one second; failures, timeout and superseding navigation do not block the route. Initial loads on slow networks may still show the system fallback. Content authors must reserve dimensions for remote images and third-party embeds. Reduced-motion and print behavior remain supported.
+
+See [style maintenance](docs/STYLING.md) and [lifecycle and static interfaces](docs/RUNTIME.md). Astro development documentation is available through the [official MCP endpoint](https://mcp.docs.astro.build/mcp); `.codex/config.toml`, `.mcp.json` and `AGENTS.md` record the project setup. This development MCP is separate from the blog's browser WebMCP tools.
+
 ## Development diagnostics
 
 Stalux routes integration, content-loader and rendering diagnostics through Astro's official logger. Normal mode keeps summaries, warnings and errors. Verbose mode adds configuration/routes, component overrides, font cache, Markdown analysis/cache, content statistics, feeds, asset sync and Pagefind stages.
@@ -302,7 +310,7 @@ Keep the TypeScript 6 alias for `astro check`, upgrade Vitest and its coverage p
 
 Stalux precompiles its UnoCSS styles; consuming projects need no UnoCSS dependency or configuration. Shared CSS is a cacheable external stylesheet by default. Article/math, archive, category, tag and quote styles load with their components. Explicit Astro `build.inlineStylesheets: "always"` restores inline output. New utilities in consumer override components require the consumer’s own compiler. See [STYLING.md](./docs/STYLING.md) for maintenance and watch mode.
 
-Wide article pages use 280px sidebars within a layout up to 1920px wide, with 16px outer padding. Sidebars collapse below 1600px. UnoCSS remains the style builder; prose and integration styles use standard CSS, and build checks reject Tailwind variables and uncompiled directives.
+Wide article pages use 280px sidebars within a layout up to 1544px wide, with 16px outer padding. Sidebars collapse below 1600px. UnoCSS remains the style builder; prose and integration styles use standard CSS, and build checks reject Tailwind variables and uncompiled directives.
 
 The friend links list is up to 1600px wide with 16px horizontal padding. Cards fill their grid columns, with one to five columns depending on the viewport.
 

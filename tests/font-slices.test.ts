@@ -50,6 +50,11 @@ describe("page-specific font subsets", () => {
             );
             expect(output).not.toContain('data-stalux-page-font="">old');
             expect(output).toContain("LXGW WenKai-Page Subset");
+            expect(output).toContain(
+                `href="/_astro/fonts/${result?.filename}" data-stalux-page-font-preload`,
+            );
+            removePageFontStyles(document);
+            expect(serialize(document)).not.toContain("data-stalux-page-font-preload");
         } finally {
             rmSync(root, { recursive: true, force: true });
         }

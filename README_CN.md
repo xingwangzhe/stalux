@@ -30,7 +30,7 @@ bunx stalux init                    # 生成 stalux/ 内容目录
 需要 Node.js 26 或更高版本。然后配置 `astro.config.ts`。所有插件都由 Stalux 集成默认打包注入，**无需手动配置**：
 
 - **Markdown**：Mermaid（MDAST 识别 + HAST/SVG 渲染）、数学公式（Temml → MathML）、字数统计/特性标记、PhotoSwipe 图片灯箱，全部自动注入默认的 `satteri()` processor（math / frontmatter / gfm / 智能标点默认开启）。
-- **Sitemap**：自动打包 `@astrojs/sitemap`（默认收录文章 `/posts/*.md` 原文端点，过滤其它页面的 Markdown 镜像端点）。
+- **Sitemap**：自动打包 `@astrojs/sitemap`（`promote.export_md: true` 时收录已发布文章 `/posts/*.md` 导出端点，默认过滤其它页面的 Markdown 镜像端点）。
 - **Expressive Code**：自动打包，默认启用代码块行号。
 
 ```ts
@@ -93,7 +93,7 @@ bun run dev
 - 🗺️ **Sitemap**（内置打包，文章 `.md` 原文可收录，过滤其它页面的 Markdown 镜像端点）
 - 🖼️ **PhotoSwipe** 图片灯箱
 - 📊 **Mermaid** 图表和流程图
-  通过 `@xingwangzhe/satteri-mermaid@0.8.1` 使用 Merman，默认 `dark` 主题和透明画布。插件支持 11 个主题预设，完整选项见 [配置说明](https://github.com/xingwangzhe/satteri-mermaid/blob/v0.8.1/docs/configuration.zh-CN.md)。默认渲染失败会抛错。
+  通过 `@xingwangzhe/satteri-mermaid@0.8.2` 使用 Merman，默认 `dark` 主题和透明画布。插件支持 11 个主题预设，完整选项见 [配置说明](https://github.com/xingwangzhe/satteri-mermaid/blob/v0.8.2/docs/configuration.zh-CN.md)。默认渲染失败会抛错。
 - 📐 **数学公式渲染**（Temml → MathML）
 - 💬 **Waline** 评论系统
 - 🤖 **LLM 发现文件**（llms.txt / llms-full.txt）
@@ -112,11 +112,11 @@ Stalux 内置中文字体 LXGW WenKai 和可变代码字体 Google Sans Code。�
 
 每个子集都会无条件保留阿拉伯数字 `0-9`（`RESERVED_GLYPHS`），即使页面里没有任何可见数字。时钟、计数、日期、脚本注入的值等在运行时生成的数字不会出现在构建产物 HTML 中，预留它们可避免数字回退到系统字体。调用方可通过 `writePageFontSubset` 的可选参数 `extraChars` 追加更多预留字符。
 
-子集 CSS 使用精确到字符的 `unicode-range` 和 `font-display: swap`，让可见文本与下载字形对应。代码可变字体仍通过 Astro 官方 local Fonts API 注入。
+子集 CSS 使用精确到字符的 `unicode-range` 和 `font-display: swap`，让可见文本与下载字形对应。代码可变字体仍通过 Astro 官方 local Fonts API 注入。 正文字体子集在 HTML head 中使用同源 `preload`，无需消费方手写字体链接。
 
 持久 BLAKE3 缓存键包含字体内容、face index、规范化字符集和算法版本；缓存保存在 `node_modules/.astro/`，可跨页面和增量构建复用。字体输入从本地读取，构建不会联网下载字体。
 
-多页面构建通过 `FontSubsetter` 复用已准备的字体和哈希状态，冷缓存时最多同时运行四个原生分片任务，避免每页重复读取、复制和哈希完整字体。字体输入先解码/提取为 SFNT，再复用 HarfBuzz 预处理结构，保留原始轮廓；WOFF2 使用 Google Brotli，质量仍为 8。图片尺寸、加载策略、关联 CSS 文本和字体字符提取共享一次 HTML 解析；共用图片尺寸与 CSS 生成文本也在同一次构建内复用，图片标签修改一次拼接完成。
+多页面构建通过 `FontSubsetter` 复用已准备的字体和哈希状态，冷缓存时最多同时运行四个原生分片任务，避免每页重复读取、复制和哈希完整字体。字体输入先解码/提取为 SFNT，再复用 HarfBuzz 预处理结构，保留原始轮廓；WOFF2 使用 Google Brotli，质量仍为 8。图片尺寸、加载策略、关联 CSS 文本和字体字符提取共享一次 HTML 解析；共用图片尺寸与 CSS 生成文本也在同一次构建内复用，在同一棵 parse5 AST 上修改图片与字体节点，最后按源码位置统一输出一次；脚本、注释、模板和未改子树保留原文。
 
 本地图片尺寸使用 `image-size` 探测，增加 SVG、AVIF 等格式支持。常规文件最多读取 512 KiB；JPEG 尺寸标记位于文件开头或超出该窗口时，兼容兜底可能读取完整文件。已有尺寸属性和远程图片保持原样。被引用资产使用流式摘要，同 URL 内容变化会使页面缓存失效，不再按图片扩展名限制。
 
@@ -265,6 +265,14 @@ jobTitle: Software Engineer # 可选；输出为 JSON-LD Person.jobTitle
 这是构建期元数据配置，不会创建联系 API，也不会暴露私密信息；只应填写本来就准备公开的职业称谓。
 
 
+## 页面加载与软导航
+
+根页面使用稳定滚动条空间和明确行高，避免字体换入或页面高度变化引起布局跳位。首页打字区域按完整文案预留最大换行高度，文本起点固定；时钟预留行高并使用等宽数字。文字、光标和页面过渡动画仍然保留，无需新增配置。
+
+切页通过 Astro ClientRouter 的 `astro:before-preparation` 包装原 loader，提前加载目标页的正文字体，再进行 DOM swap。等待最多 1 秒；字体失败、超时或导航取消不会阻断页面切换，也不会提前替换旧页字体。慢网络下首次加载仍可能出现系统字体回退；第三方内容和没有尺寸的远程图片仍需内容作者自行预留空间。减少动态效果和打印规则保持生效。
+
+维护细节见 [样式维护](docs/STYLING.md) 和 [生命周期与静态接口](docs/RUNTIME.md)。开发 Astro API 时可使用 [官方文档 MCP](https://mcp.docs.astro.build/mcp)；项目连接配置见 `.codex/config.toml`、`.mcp.json` 和 `AGENTS.md`。该开发 MCP 与博客前端 WebMCP 是不同接口。
+
 ## 开发诊断日志
 
 Stalux 使用 Astro 官方 logger 输出集成、内容加载和页面生成日志。普通模式保留初始化摘要、警告和错误；详细模式记录配置与路由注入、组件覆盖、字体分片缓存、Markdown 分析缓存、内容统计、feed、资源同步和 Pagefind 阶段信息。
@@ -297,7 +305,7 @@ Astro 7.3 的集成 `logger.debug()` 使用官方 `DEBUG/--verbose` 通道，不
 
 Stalux 使用 UnoCSS 在主题内预编译样式，消费项目无需安装或配置 UnoCSS。共享 CSS 默认作为可缓存的外部样式表输出，正文、数学、归档、分类、标签和短句样式随相应组件加载。显式设置 Astro 的 `build.inlineStylesheets: "always"` 可恢复内联输出。自定义组件新增的 UnoCSS utilities 需要消费方自行编译。样式维护位置与开发监听参见 [STYLING.md](./docs/STYLING.md)。
 
-文章页宽屏使用 280px 左右侧栏和最多 1920px 的整体布局；外侧内边距 16px，小于 1600px 时收起两侧栏。样式由 UnoCSS 构建，正文及第三方集成样式使用标准 CSS，发布构建检查不允许 Tailwind 变量或未编译指令。
+文章页宽屏使用 280px 左右侧栏和最多 1544px 的整体布局；外侧内边距 16px，小于 1600px 时收起两侧栏。样式由 UnoCSS 构建，正文及第三方集成样式使用标准 CSS，发布构建检查不允许 Tailwind 变量或未编译指令。
 
 友情链接列表最大宽度为 1600px，左右内边距各 16px；卡片填满网格列，随屏幕宽度使用一至五列布局。
 
