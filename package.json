@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.35.12",
+    "version": "1.35.13",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -117,6 +117,7 @@
         "astro-seo": "^1.2.0",
         "badge-maker": "^6.0.0",
         "css-tree": "^3.2.1",
+        "image-size": "^2.0.4",
         "magic-string": "^1.4.3",
         "pagefind": "^1.5.2",
         "parse5": "^8.0.1",

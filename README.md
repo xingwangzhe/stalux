@@ -118,6 +118,8 @@ The persistent BLAKE3 cache key includes font bytes, face index, normalized char
 
 Multi-page builds reuse prepared font data and hashing state through `FontSubsetter`, with up to four native worker tasks for cold subsets. Font containers are decoded/extracted to SFNT before reusable HarfBuzz preprocessing preserves original outlines; Google Brotli encodes WOFF2 at quality 8. Image dimensions, image loading hints, linked CSS text, and font character extraction share one HTML parse. Shared image dimensions and CSS-generated text are also reused within each build, and image-tag edits are assembled in a single pass.
 
+Local image dimensions use `image-size`, including SVG and AVIF support. Normal file reads inspect at most 512 KiB; a JPEG compatibility fallback may read the full file when the size marker is first or beyond that window. Explicit dimensions and remote images are preserved. Referenced assets are hashed as streams, and content changes at the same URL invalidate the page cache regardless of image extension.
+
 Processed pages are cached under `node_modules/.astro/stalux-page-output/`. The cache checks source HTML and page paths, referenced local CSS/image content, font inputs, and processing code. Changed inputs, missing font files, and corrupt records trigger reprocessing. Unchanged pages restore their processed output; Pagefind still rebuilds the full search index on every build. Preserve `node_modules/.astro/` to reuse caches across builds; removing it safely rebuilds them.
 
 ### Visibility-aware loading and updates

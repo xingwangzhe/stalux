@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { promises as fs } from "node:fs";
+import { createReadStream, promises as fs } from "node:fs";
 import path from "node:path";
 
 export interface CachedPageOutput {
@@ -30,7 +30,15 @@ export async function createPageOutputCache(
         if (!knownAssets.has(asset)) return Promise.resolve(null);
         let pending = assetDigests.get(asset);
         if (!pending) {
-            pending = fs.readFile(asset).then(digest, () => null);
+            pending = (async () => {
+                try {
+                    const hash = createHash("sha256");
+                    for await (const chunk of createReadStream(asset)) hash.update(chunk);
+                    return hash.digest("hex");
+                } catch {
+                    return null;
+                }
+            })();
             assetDigests.set(asset, pending);
         }
         return pending;

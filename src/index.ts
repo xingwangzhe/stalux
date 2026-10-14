@@ -406,6 +406,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const sourceDir = fileURLToPath(new URL(".", import.meta.url));
                 const resolveModule = createRequire(import.meta.url).resolve;
                 const parserEntry = resolveModule("parse5");
+                const imageSizeEntry = resolveModule("image-size");
                 const nativeEntry = resolveModule("@xingwangzhe/cjk-font-split-native");
                 const outputCache = await createPageOutputCache(
                     path.resolve("node_modules/.astro/stalux-page-output"),
@@ -422,11 +423,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         ].map((entry) => path.join(sourceDir, entry)),
                         path.join(path.dirname(nativeEntry), "package.json"),
                         path.resolve(path.dirname(parserEntry), "../package.json"),
+                        path.resolve(path.dirname(imageSizeEntry), "../../package.json"),
                     ],
                     pageFontData?.fontBuffer,
-                    htmlFiles
-                        .filter((entry) => /\.(?:css|png|jpe?g|gif|webp)$/iu.test(entry))
-                        .map((entry) => path.join(outDir, entry)),
+                    // Track referenced files regardless of extension, including SVG/AVIF.
+                    htmlFiles.map((entry) => path.join(outDir, entry)),
                 );
                 let cacheHits = 0;
                 let optimizedImagePages = 0;

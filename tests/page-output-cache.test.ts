@@ -5,27 +5,33 @@ import { describe, expect, it } from "vitest";
 import { createPageOutputCache } from "../src/internal/page-output-cache";
 
 describe("rendered page output cache", () => {
-    it("invalidates only pages that depend on changed assets, including previously missing ones", async () => {
-        const root = await mkdtemp(path.join(tmpdir(), "stalux-cache-assets-"));
-        try {
-            const image = path.join(root, "image.webp");
-            const missing = path.join(root, "missing.css");
-            await writeFile(image, "first image");
-            const directory = path.join(root, "cache");
-            const first = await createPageOutputCache(directory, [], undefined, [image]);
-            await first.set("dependent.html", "source", { html: "processed" }, [image]);
-            await first.set("unrelated.html", "source", { html: "unrelated" });
-            await first.set("missing.html", "source", { html: "missing" }, [missing]);
-            await writeFile(image, "changed image");
-            await writeFile(missing, "newly added stylesheet");
-            const next = await createPageOutputCache(directory, [], undefined, [image, missing]);
-            expect(await next.get("dependent.html", "source")).toBeUndefined();
-            expect(await next.get("missing.html", "source")).toBeUndefined();
-            expect(await next.get("unrelated.html", "source")).toEqual({ html: "unrelated" });
-        } finally {
-            await rm(root, { recursive: true, force: true });
-        }
-    });
+    it.each(["webp", "svg", "avif"])(
+        "invalidates changed %s assets, including previously missing ones",
+        async (extension) => {
+            const root = await mkdtemp(path.join(tmpdir(), "stalux-cache-assets-"));
+            try {
+                const image = path.join(root, `image.${extension}`);
+                const missing = path.join(root, "missing.css");
+                await writeFile(image, "first image");
+                const directory = path.join(root, "cache");
+                const first = await createPageOutputCache(directory, [], undefined, [image]);
+                await first.set("dependent.html", "source", { html: "processed" }, [image]);
+                await first.set("unrelated.html", "source", { html: "unrelated" });
+                await first.set("missing.html", "source", { html: "missing" }, [missing]);
+                await writeFile(image, "changed image");
+                await writeFile(missing, "newly added stylesheet");
+                const next = await createPageOutputCache(directory, [], undefined, [
+                    image,
+                    missing,
+                ]);
+                expect(await next.get("dependent.html", "source")).toBeUndefined();
+                expect(await next.get("missing.html", "source")).toBeUndefined();
+                expect(await next.get("unrelated.html", "source")).toEqual({ html: "unrelated" });
+            } finally {
+                await rm(root, { recursive: true, force: true });
+            }
+        },
+    );
     it("reuses output across builds and invalidates changed HTML, CSS, images, code, or fonts", async () => {
         const root = await mkdtemp(path.join(tmpdir(), "stalux-output-cache-"));
         try {
