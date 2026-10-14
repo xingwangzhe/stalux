@@ -1,48 +1,12 @@
 import { type CollectionEntry, getCollection } from "astro:content";
+import { getRuntimeCacheKey } from "@internal/runtime-cache-key";
 import { type ConfigMap, isMarkdownExportEnabled, loadConfig } from "@utils/ai-discovery";
 import { buildCCLink, buildCCName } from "@utils/cc";
 import { createTranslator } from "@utils/i18n";
+import { reconstructMarkdown } from "@utils/post-markdown";
 import type { APIRoute, GetStaticPaths } from "astro";
 
 export const prerender = true;
-
-function reconstructMarkdown(post: CollectionEntry<"posts">): string {
-    const d = post.data;
-    const lines: string[] = ["---"];
-
-    lines.push(`title: ${yamlScalar(d.title)}`);
-    if (d.tags?.length)
-        lines.push(`tags:\n${d.tags.map((t) => `    - ${yamlScalar(t)}`).join("\n")}`);
-    if (d.categories?.length)
-        lines.push(`categories:\n${d.categories.map((c) => `    - ${yamlScalar(c)}`).join("\n")}`);
-    lines.push(`date: ${yamlScalar(d.date)}`);
-    if (d.updated) lines.push(`updated: ${yamlScalar(d.updated)}`);
-    lines.push(`desc: ${yamlScalar(d.desc)}`);
-    lines.push(`abbrlink: ${yamlScalar(String(d.abbrlink))}`);
-    if (d.draft) lines.push(`draft: true`);
-    if (d.cc && d.cc !== "CC-BY-NC-SA-4.0") lines.push(`cc: ${yamlScalar(d.cc)}`);
-    if (d.cover) lines.push(`cover: ${yamlScalar(d.cover)}`);
-
-    lines.push("---", "");
-    const body = typeof post.body === "string" ? post.body : "";
-    return lines.join("\n") + body + (body.endsWith("\n") ? "" : "\n");
-}
-
-function yamlScalar(value: string): string {
-    if (
-        value === "" ||
-        /[:#{}[\],&*?|>!%@`]/.test(value) ||
-        value.includes("\n") ||
-        value.startsWith(" ") ||
-        value.endsWith(" ") ||
-        value === "true" ||
-        value === "false" ||
-        value === "null"
-    ) {
-        return JSON.stringify(value);
-    }
-    return value;
-}
 
 /** 生成 Markdown 格式的版权脚注 */
 function generateCCFooter(post: CollectionEntry<"posts">, config: ConfigMap): string {
@@ -75,7 +39,7 @@ export const getStaticPaths = (async () => {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     return posts.map((post) => ({
         params: { post: String(post.data.abbrlink) },
-        cacheKey: post.data.updated ?? post.data.date,
+        cacheKey: `${post.data.updated ?? post.data.date}|${getRuntimeCacheKey()}`,
         props: { post },
     }));
 }) satisfies GetStaticPaths;
@@ -88,7 +52,7 @@ export const GET: APIRoute = async ({ props }) => {
 
     // 内容集合已经提供解析后的 frontmatter 和正文，导出一份内容等价的 Markdown。
     // 不读取 post.filePath，避免把页面端点绑定到 Node 文件系统。
-    let markdown = reconstructMarkdown(post);
+    let markdown = reconstructMarkdown(post.data, post.body);
 
     // 追加版权脚注（不修改内容源文件）
     const footer = generateCCFooter(post, config);

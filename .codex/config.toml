@@ -1,0 +1,4 @@
+# Astro official documentation MCP (Streamable HTTP).
+# https://docs.astro.build/en/guides/build-with-ai/
+[mcp_servers.astro-docs]
+url = "https://mcp.docs.astro.build/mcp"

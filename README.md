@@ -216,9 +216,7 @@ Full documentation and live demo: **[stalux.needhelp.icu](https://stalux.needhel
 
 ## 🤝 WebMCP / AI Agents
 
-Stalux ships built-in WebMCP tools that let AI agents (browsers with
-`document.modelContext`, e.g. Chrome's built-in Gemini or the [Ask nekuda](https://chromewebstore.google.com/detail/ask-nekuda/amochnnbmnkjjlblolhpddkokhnalkjp)
-extension) interact with your blog directly — **no backend required**.
+Stalux exposes page-local WebMCP tools to compatible browser agents or extensions. All data comes from static build artifacts, so **no backend is required**. This is not an HTTP `/mcp` server that a desktop MCP client can connect to directly: ordinary static hosting cannot process MCP JSON-RPC POST requests. See the [WebMCP community-group draft](https://webmachinelearning.github.io/webmcp/).
 
 When a WebMCP-aware browser opens your site, these read-only tools are registered:
 
@@ -229,17 +227,22 @@ When a WebMCP-aware browser opens your site, these read-only tools are registere
 | `stalux_current_post` | Metadata of the post currently being viewed                             | `/api/posts.json`       |
 | `stalux_random_post`  | Pick a random post's metadata                                           | `/api/posts.json`       |
 | `stalux_search_posts` | Full-text search across posts                                           | Pagefind `/pagefind/`   |
-| `stalux_read_post`    | Fetch a post's normalized Markdown                                      | `/posts/{abbrlink}.md`  |
+| `stalux_read_post`    | Read Markdown in chunks, or indexed plain text when not exported         | Markdown / Pagefind    |
 | `stalux_site_info`    | Site title, URL, description + pointers to `llms.txt` / `llms-full.txt` | `site.yml` (build-time) |
 
-All tools are `readOnlyHint: true` — they never modify any state.
+All tools are `readOnlyHint: true` — they do not write site data or initiate navigation.
+
+`stalux_search_posts` merges title, tag, category and description matches from the published metadata with body hits from the [Pagefind JavaScript API](https://pagefind.app/docs/api/), using `meta.title` and `plain_excerpt`. Results include `abbrlink` and absolute URL, are deduplicated, and prioritize title matches, with up to 10 posts per call. If the full-text index is unavailable, available metadata matches are labeled `source: "metadata"`, `fullText: false`; no metadata matches yields an index-unavailable error instead of pretending the full-text search succeeded with zero hits. Highlighted HTML is not returned as the tool excerpt. Failed metadata and Pagefind module loads remain retryable.
+
+`stalux_read_post` accepts `id`, `offset` (default 0), and `maxChars` (default and maximum 50000). Offsets use UTF-16 units and never split surrogate pairs. With `promote.export_md` enabled, the result has `format: "text/markdown"` and `markdown`. If exports are disabled or the Markdown file is unavailable, it reads Pagefind using the exact `post` filter and returns `format: "text/plain"` and `content`; Markdown syntax and non-indexed content are not preserved by this fallback. Continue with `nextOffset` until it is `null`; `totalChars` and `truncated` describe the range. Disabling both Markdown exports and Pagefind returns `CONTENT_UNAVAILABLE`.
+
+Tools initialize the polyfill and register on `astro:page-load`, then unregister and stop the outgoing batch on `astro:before-swap`. Requests only read static resources; search terms are not sent to an external search service, no model is called, and no telemetry is added. The article filter ID and Markdown export flag are public HTML attributes used to select available sources. JSON, Markdown and OpenAPI exports are static files and do not advertise dynamic quotas or fixed `RateLimit-*` balances.
 
 **Enabling / disabling:** the tools follow the `conformance` setting in
 `stalux/config/ai-discovery.yml`. Set it to `disabled` to stop registering
 tools; `essential` / `recommended` / `complete` all enable them.
 
-**Browser support:** WebMCP is a W3C community-group draft (Chrome 149 Origin
-Trial). On browsers without a native `modelContext`, Stalux loads the
+**Browser support:** WebMCP is a community-group draft; native support depends on browser and version. On browsers without a native `modelContext`, Stalux loads the
 [`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill)
 so agents still work; the polyfill becomes a no-op once native support lands.
 

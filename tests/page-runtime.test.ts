@@ -67,6 +67,30 @@ describe("page runtime", () => {
         unregister();
         expect(mount).not.toHaveBeenCalled();
     });
+
+    it("does not mount twice when page-load overtakes a queued late mount", () => {
+        const target = new RuntimeTarget();
+        target.readyState = "complete";
+        const { value, queued } = environment(target);
+        const mount = vi.fn();
+        registerPageLifecycle("late-race", mount, value);
+        target.dispatchEvent(new Event("astro:page-load"));
+        queued[0]?.();
+        expect(mount).toHaveBeenCalledOnce();
+    });
+
+    it("does not mount outgoing DOM when a swap overtakes a queued late mount", () => {
+        const target = new RuntimeTarget();
+        target.readyState = "complete";
+        const { value, queued } = environment(target);
+        const mount = vi.fn();
+        registerPageLifecycle("late-swap", mount, value);
+        target.dispatchEvent(new Event("astro:before-swap"));
+        queued[0]?.();
+        expect(mount).not.toHaveBeenCalled();
+        target.dispatchEvent(new Event("astro:page-load"));
+        expect(mount).toHaveBeenCalledOnce();
+    });
     it("reports mount failures once and preserves the thrown error", () => {
         const target = new RuntimeTarget();
         target.readyState = "complete";
@@ -96,7 +120,7 @@ describe("page runtime", () => {
         const error = new Error("cleanup failure");
         const output = vi.spyOn(console, "error").mockImplementation(() => undefined);
         try {
-            registerPageLifecycle(
+            const unregister = registerPageLifecycle(
                 "broken-cleanup",
                 () => () => {
                     throw error;
@@ -104,9 +128,13 @@ describe("page runtime", () => {
                 value,
             );
             queued[0]?.();
-            expect(() => queued[0]?.()).toThrow(error);
+            expect(unregister).toThrow(error);
             expect(output).toHaveBeenCalledOnce();
-            expect(() => queued[0]?.()).not.toThrow();
+            expect(unregister).not.toThrow();
+            const mount = vi.fn();
+            registerPageLifecycle("broken-cleanup", mount, value);
+            target.dispatchEvent(new Event("astro:page-load"));
+            expect(mount).toHaveBeenCalledOnce();
         } finally {
             output.mockRestore();
         }

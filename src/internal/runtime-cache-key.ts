@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 declare const __STALUX_RUNTIME_CACHE_KEY__: string;
@@ -17,10 +17,15 @@ export function hashRuntimeSources(sources: ReadonlyArray<readonly [string, stri
     return hash.digest("hex").slice(0, 16);
 }
 
-function collectFiles(directory: string, root = directory): Array<readonly [string, string]> {
+function collectFiles(
+    directory: string,
+    root = directory,
+    include = (_name: string) => true,
+): Array<readonly [string, string]> {
     return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
         const target = path.join(directory, entry.name);
-        if (entry.isDirectory()) return collectFiles(target, root);
+        if (entry.isDirectory()) return collectFiles(target, root, include);
+        if (!include(entry.name)) return [];
         return [[path.relative(root, target), readFileSync(target, "utf8")] as const];
     });
 }
@@ -30,9 +35,15 @@ export function createRuntimeCacheKey(
     packageJson: string,
     stylesDirectory?: string,
     styleMapping?: string,
+    configDirectory?: string,
 ): string {
     return hashRuntimeSources([
         ...collectFiles(scriptsDirectory),
+        ...(configDirectory && existsSync(configDirectory)
+            ? collectFiles(configDirectory, configDirectory, (name) => /\.ya?ml$/iu.test(name)).map(
+                  ([name, contents]) => [`config/${name}`, contents] as const,
+              )
+            : []),
         ...(stylesDirectory
             ? readdirSync(stylesDirectory)
                   .filter((name) => /^generated(?:-[a-z]+)?\.css$/u.test(name))

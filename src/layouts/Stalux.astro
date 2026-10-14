@@ -36,7 +36,7 @@ const aiConfig = getAiDiscoveryData(configEntries);
 const htmlLang = siteConfig.lang || "zh-CN";
 
 // 背景 SVG 以静态 URL 硬编码在 background.ts（纯客户端），
-// 集成在 config:setup 时把 SVG 复制到用户项目 public/background/。
+// 集成在 config:done 时把 SVG 复制到用户项目最终的 publicDir/background/。
 // SSR 不渲染背景图，默认露出 .bg-layer 的灰墙底色（--stalux-bg-color），
 // 客户端运行时随机选图；不经过 import.meta.glob 资源管线，
 // 保证增量构建依赖图 hash 稳定。
@@ -77,6 +77,8 @@ const routeAnimation = getRouteAnimation(routeKind);
         data-stalux-site-url={siteConfig.url}
         data-stalux-site-description={siteConfig.description}
         data-stalux-site-lang={siteConfig.lang}
+        data-stalux-markdown-export={String(promoteConfig?.export_md === true)}
+        data-stalux-webmcp-enabled={String(aiConfig?.conformance !== "disabled")}
         data-stalux-ga-id={headConfig?.googleAnalyticsId}
         data-stalux-clarity-id={headConfig?.bingClarityId}
         data-stalux-umami-id={headConfig?.umami?.id}

@@ -6,6 +6,33 @@ import { describe, expect, it } from "vitest";
 import { createRuntimeCacheKey, hashRuntimeSources } from "../src/internal/runtime-cache-key";
 
 describe("runtime cache key", () => {
+    it("invalidates restored HTML and Markdown when theme YAML configuration changes", () => {
+        const root = mkdtempSync(path.join(tmpdir(), "stalux-config-cache-"));
+        try {
+            const scripts = path.join(root, "scripts");
+            const config = path.join(root, "config");
+            const manifest = path.join(root, "package.json");
+            mkdirSync(scripts);
+            mkdirSync(config);
+            writeFileSync(manifest, '{"version":"1.35.13"}');
+            writeFileSync(path.join(scripts, "runtime.ts"), "export {};");
+            const file = path.join(config, "promote.yml");
+            const key = () =>
+                createRuntimeCacheKey(scripts, manifest, undefined, undefined, config);
+            const empty = key();
+            writeFileSync(file, "export_md: true\n");
+            const enabled = key();
+            expect(enabled).not.toBe(empty);
+            writeFileSync(file, "export_md: true\n");
+            expect(key()).toBe(enabled);
+            writeFileSync(path.join(config, "notes.txt"), "ignored");
+            expect(key()).toBe(enabled);
+            writeFileSync(file, "export_md: false\n");
+            expect(key()).not.toBe(enabled);
+        } finally {
+            rmSync(root, { recursive: true, force: true });
+        }
+    });
     it("is independent of filesystem traversal order", () => {
         const sources = [
             ["navigation.ts", "navigation"] as const,

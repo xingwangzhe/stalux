@@ -20,7 +20,13 @@ import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { FontSubsetter } from "@xingwangzhe/cjk-font-split-native";
 import type { AstroIntegrationLogger } from "astro";
-import { type DefaultTreeAdapterMap, parse } from "parse5";
+import {
+    type DefaultTreeAdapterMap,
+    defaultTreeAdapter,
+    html as htmlNamespaces,
+    parse,
+    serialize,
+} from "parse5";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -273,14 +279,15 @@ export function writePageFontSubset(
     extraChars = "",
     document = parse(html),
 ): PageFontSubset | undefined {
-    const input = preparePageFont(html, fontBuffer, linkedStylesheetText, extraChars, document);
+    const input = preparePageFont(fontBuffer, linkedStylesheetText, extraChars, document);
     if (!input) return undefined;
-    return renderPageFont(
-        html,
+    const result = renderPageFont(
+        document,
         publicUrlPrefix,
         input.chars,
         input.prepared.subset(input.chars.join(""), cacheDir),
     );
+    return { ...result, html: serialize(document) };
 }
 
 export async function writePageFontSubsetAsync(
@@ -292,14 +299,16 @@ export async function writePageFontSubsetAsync(
     extraChars = "",
     document = parse(html),
 ): Promise<PageFontSubset | undefined> {
-    const input = preparePageFont(html, fontBuffer, linkedStylesheetText, extraChars, document);
+    const input = preparePageFont(fontBuffer, linkedStylesheetText, extraChars, document);
     if (!input) return undefined;
     const result = await input.prepared.subsetAsync(input.chars.join(""), cacheDir);
-    return renderPageFont(html, publicUrlPrefix, input.chars, result);
+    return {
+        ...renderPageFont(document, publicUrlPrefix, input.chars, result),
+        html: serialize(document),
+    };
 }
 
 function preparePageFont(
-    html: string,
     fontBuffer: Buffer,
     linkedStylesheetText: string,
     extraChars: string,
@@ -312,8 +321,8 @@ function preparePageFont(
     addGlyphs(RESERVED_GLYPHS, glyphs);
     addGlyphs(extraChars, glyphs);
     addGlyphs(linkedStylesheetText, glyphs);
-    for (const [, css] of html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi))
-        addGlyphs(cssGeneratedText(css ?? ""), glyphs);
+    for (const style of collectInlineStyles(document))
+        addGlyphs(cssGeneratedText(styleText(style)), glyphs);
     collectBodyText(body, glyphs);
     const chars = [...glyphs].sort(
         (a, b) => (a.codePointAt(0) as number) - (b.codePointAt(0) as number),
@@ -329,44 +338,107 @@ function preparePageFont(
 }
 
 function renderPageFont(
-    html: string,
+    document: DefaultTreeAdapterMap["document"],
     publicUrlPrefix: string,
     chars: string[],
     result: { hash: string; path: string; cacheHit: boolean },
-): PageFontSubset {
+): Omit<PageFontSubset, "html"> {
     const filename = `page-${result.hash}.woff2`;
 
     const rel = `${publicUrlPrefix}${filename}`;
     // Keep Astro's broad unicode-range font out of the fallback stack; otherwise
     // a character outside this page's subset would download multiple 300 KB slices.
-    const originalFontStack = html.match(/--font-body:\s*([^;}]+)/u)?.[1]?.trim();
+    const styles = collectInlineStyles(document);
+    const originalFontStack = styles
+        .map(styleText)
+        .map((css) => css.match(/--font-body:\s*([^;}]+)/u)?.[1]?.trim())
+        .find(Boolean);
     const fallbackStack =
         originalFontStack || '"Noto Sans SC","Noto Sans CJK SC",system-ui,sans-serif';
-    const originalCodeStack = html.match(/--font-code:\s*([^;}]+)/u)?.[1]?.trim();
+    const originalCodeStack = styles
+        .map(styleText)
+        .map((css) => css.match(/--font-code:\s*([^;}]+)/u)?.[1]?.trim())
+        .find(Boolean);
     const codeStack = originalCodeStack
         ? `${originalCodeStack},"LXGW WenKai-Page Subset"`
         : `"LXGW WenKai-Page Subset",${fallbackStack}`;
     // The source font is regular; advertise a weight range so browsers synthesize
     // bold weights from these same glyphs instead of falling back to system CJK.
     const css = `@font-face{font-family:"LXGW WenKai-Page Subset";src:url("${rel}") format("woff2");font-style:normal;font-weight:100 900;font-display:swap;unicode-range:${formatUnicodeRange(chars)}}:root{--font-body:"LXGW WenKai-Page Subset",${fallbackStack};--font-code:${codeStack}}body{font-family:var(--font-body),${fallbackStack}}`;
-    const withoutBroadBodyFonts = html.replace(
-        /@font-face\{[^}]*font-family:"LXGW WenKai-[^"]+"[^}]*\}/g,
-        (face) => {
-            const unicodeRange = face.match(/unicode-range:([^;}]+)/i)?.[1] ?? "";
-            const hasCjkRange = unicodeRange.split(",").some((range) => {
-                const start = range.match(/U\+([\da-f]+)/i)?.[1];
-                if (!start) return false;
-                const codePoint = Number.parseInt(start, 16);
-                return codePoint >= 0x4e00 && codePoint <= 0x9fff;
-            });
-            return hasCjkRange ? "" : face;
-        },
-    );
-    const outputHtml = withoutBroadBodyFonts.replace(
-        /<\/head\s*>/i,
-        `<style data-stalux-page-font>${css}</style></head>`,
-    );
-    return { html: outputHtml, filename, sourcePath: result.path, cacheHit: result.cacheHit };
+    for (const style of styles) {
+        for (const node of style.childNodes) {
+            if (node.nodeName !== "#text" || !("value" in node)) continue;
+            node.value = node.value.replace(
+                /@font-face\{[^}]*font-family:"LXGW WenKai-[^"]+"[^}]*\}/g,
+                (face) => {
+                    const unicodeRange = face.match(/unicode-range:([^;}]+)/i)?.[1] ?? "";
+                    const hasCjkRange = unicodeRange.split(",").some((range) => {
+                        const start = range.match(/U\+([\da-f]+)/i)?.[1];
+                        if (!start) return false;
+                        const point = Number.parseInt(start, 16);
+                        return point >= 0x4e00 && point <= 0x9fff;
+                    });
+                    return hasCjkRange ? "" : face;
+                },
+            );
+        }
+    }
+    const head = document.childNodes
+        .flatMap((node) => ("childNodes" in node ? node.childNodes : []))
+        .find((node) => "tagName" in node && node.tagName === "head");
+    if (head && "childNodes" in head) {
+        const style = defaultTreeAdapter.createElement("style", htmlNamespaces.NS.HTML, [
+            { name: "data-stalux-page-font", value: "" },
+        ]);
+        defaultTreeAdapter.insertText(style, css);
+        defaultTreeAdapter.appendChild(head, style);
+    }
+    return { filename, sourcePath: result.path, cacheHit: result.cacheHit };
+}
+
+/** Styles are selected structurally, so examples in scripts/comments/templates are untouched. */
+function collectInlineStyles(document: HtmlNode): DefaultTreeAdapterMap["element"][] {
+    const styles: DefaultTreeAdapterMap["element"][] = [];
+    function visit(node: HtmlNode) {
+        if ("tagName" in node) {
+            if (node.tagName === "template") return;
+            if (node.tagName === "style") styles.push(node);
+        }
+        if ("childNodes" in node) for (const child of node.childNodes) visit(child);
+    }
+    visit(document);
+    return styles;
+}
+
+function styleText(style: DefaultTreeAdapterMap["element"]): string {
+    return style.childNodes.map((node) => ("value" in node ? node.value : "")).join("");
+}
+
+/** Remove previously generated styles by AST identity, never by matching HTML strings. */
+export function removePageFontStyles(document: DefaultTreeAdapterMap["document"]): void {
+    for (const style of collectInlineStyles(document)) {
+        if (style.attrs.some((attribute) => attribute.name === "data-stalux-page-font"))
+            defaultTreeAdapter.detachNode(style);
+    }
+}
+
+/** Subset and inject into the caller's AST without serializing an intermediate page. */
+export async function writePageFontSubsetIntoDocumentAsync(
+    document: DefaultTreeAdapterMap["document"],
+    fontBuffer: Buffer,
+    cacheDir: string,
+    publicUrlPrefix = "/_astro/fonts/",
+    linkedStylesheetText = "",
+): Promise<Omit<PageFontSubset, "html"> | undefined> {
+    const input = preparePageFont(fontBuffer, linkedStylesheetText, "", document);
+    if (!input) return undefined;
+    const result = await input.prepared.subsetAsync(input.chars.join(""), cacheDir);
+    const rendered = renderPageFont(document, publicUrlPrefix, input.chars, result);
+    return {
+        filename: rendered.filename,
+        sourcePath: rendered.sourcePath,
+        cacheHit: rendered.cacheHit,
+    };
 }
 
 /** Remove stale page subsets so deploy artifacts only contain the current build's referenced files. */

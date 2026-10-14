@@ -7,40 +7,6 @@ const responseSchema = {
     items: { type: "object", additionalProperties: true },
 };
 
-const problemSchema = {
-    type: "object",
-    required: ["type", "title", "status", "code", "detail"],
-    properties: {
-        type: { type: "string", format: "uri", description: "Stable problem type URI." },
-        title: { type: "string" },
-        status: { type: "integer", minimum: 400, maximum: 599 },
-        code: { type: "string", description: "Machine-readable error code." },
-        detail: { type: "string" },
-        resolution: { type: "string" },
-    },
-};
-
-const rateLimitHeaders = {
-    "RateLimit-Limit": {
-        description: "Maximum requests in the advertised window.",
-        schema: { type: "integer" },
-    },
-    "RateLimit-Remaining": {
-        description: "Remaining requests in the advertised window.",
-        schema: { type: "integer" },
-    },
-    "RateLimit-Reset": {
-        description: "Seconds until the advertised window resets.",
-        schema: { type: "integer" },
-    },
-};
-
-const problemResponse = (description: string, status: number) => ({
-    description,
-    content: { "application/problem+json": { schema: problemSchema } },
-    headers: status === 429 ? { "Retry-After": { schema: { type: "integer" } } } : undefined,
-});
-
 export const GET: APIRoute = async ({ site }) => {
     const server = site?.toString().replace(/\/$/, "") || "";
     const document = {
@@ -68,10 +34,7 @@ export const GET: APIRoute = async ({ site }) => {
                         "200": {
                             description: "Published post metadata",
                             content: { "application/json": { schema: responseSchema } },
-                            headers: rateLimitHeaders,
                         },
-                        "400": problemResponse("Invalid request.", 400),
-                        "429": problemResponse("Rate limit exceeded.", 429),
                     },
                 },
             },
@@ -85,10 +48,7 @@ export const GET: APIRoute = async ({ site }) => {
                         "200": {
                             description: "Published post identifiers",
                             content: { "application/json": { schema: responseSchema } },
-                            headers: rateLimitHeaders,
                         },
-                        "400": problemResponse("Invalid request.", 400),
-                        "429": problemResponse("Rate limit exceeded.", 429),
                     },
                 },
             },
@@ -97,7 +57,8 @@ export const GET: APIRoute = async ({ site }) => {
                     tags: ["Posts"],
                     operationId: "readPostMarkdown",
                     summary: "Read one post as Markdown",
-                    description: "Returns the normalized Markdown source for a published post.",
+                    description:
+                        "Returns normalized Markdown when promote.export_md is enabled. Otherwise this file is absent; HTTP errors and their body format are controlled by the static host.",
                     parameters: [
                         {
                             name: "abbrlink",
@@ -112,8 +73,6 @@ export const GET: APIRoute = async ({ site }) => {
                             description: "Markdown post content",
                             content: { "text/markdown": { schema: { type: "string" } } },
                         },
-                        "404": problemResponse("Post not found.", 404),
-                        "429": problemResponse("Rate limit exceeded.", 429),
                     },
                 },
             },
@@ -124,7 +83,7 @@ export const GET: APIRoute = async ({ site }) => {
             deprecation:
                 "Breaking changes are announced in the documentation and a Deprecation/Sunset response header may be added before removal.",
             rateLimits:
-                "Static exports publish RateLimit-* documentation headers but cannot enforce a dynamic quota or emit Retry-After without a server runtime.",
+                "These files are static. Stalux does not enforce per-client quotas or generate dynamic rate-limit/error responses; any hosting limits belong to the deployment provider.",
         },
     };
 

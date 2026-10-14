@@ -1,5 +1,42 @@
 # Stalux development instructions
 
+## Astro 官方文档 MCP（优先使用）
+
+涉及 Astro API、集成钩子、构建阶段或 ClientRouter 生命周期时，优先查询 **Astro 官方文档 MCP**，再结合本项目安装版本的源码核对行为。不能仅因当前会话工具列表没有 Astro，就判断官方没有 MCP。
+
+- 官方服务：<https://mcp.docs.astro.build/mcp>；传输方式：**Streamable HTTP**（不是旧 SSE transport）。
+- 官方说明：<https://docs.astro.build/en/guides/build-with-ai/>；服务源码：<https://github.com/withastro/docs-mcp>。
+- 工具名：`search_astro_docs`；参数：`{"query":"要查询的 Astro 问题"}`。工具前缀由客户端生成，以实际 `tools/list` 为准。
+- Codex 项目配置已保存在 `.codex/config.toml`；支持通用 HTTP MCP 配置的客户端可参考 `.mcp.json`。这是开发工具配置，不是博客前端的 WebMCP，也不需要新增 npm 依赖。
+- Codex 只在受信任项目中加载项目配置；新配置可能需要重新加载 MCP 或开启新会话才能出现在工具列表。使用 `codex mcp get astro-docs` 核对是否加载，不能把“配置已保存”等同于“当前会话已连接”。配置格式见 <https://developers.openai.com/codex/mcp/>。
+- 调用失败时记录具体连接错误，再临时使用官方网页或 Context7；不要静默替代官方 MCP。只发送文档问题，不上传项目源码、凭据或用户内容。
+
+2026-10-14 已直接通过官方端点完成 `initialize`、`tools/list` 和 `tools/call` 检查，服务返回 `Astro Docs server`，并提供 `search_astro_docs`。生命周期查询成功返回 Integration API、ClientRouter 生命周期和 `publicDir` 的官方文档条目。HTTP 响应使用 `text/event-stream` 是 Streamable HTTP 的合法响应格式，不代表应配置旧 `/sse` 端点。
+
+### 主题生命周期职责
+
+| 阶段 | Stalux 职责 |
+| --- | --- |
+| `astro:config:setup` | 更新配置、注入路由与脚本、注册 Markdown 插件和 Astro Fonts 配置。此处的 `config` 不能当成所有集成都执行后的最终配置。 |
+| `astro:config:done` | 使用最终 `publicDir` 同步主题背景和数学字体，使用最终 `outDir` 确定正文字体输出位置。资源同步早于开发服务器和生产构建的资源管线，保留不变文件与用户自定义资源。 |
+| `astro:build:done` | 处理已经生成的 HTML、图片尺寸、逐页字体、页面缓存及 Pagefind 索引。 |
+| `astro:page-load` | 通过 `src/scripts/page-runtime.ts` 挂载当前 DOM 的交互；WebMCP 也在此注册当前页工具。晚加载的补偿微任务不能覆盖已经发生的导航事件。 |
+| `astro:before-swap` | 清理页面交互、注销 WebMCP 工具并中止旧页注册批次；等待中的注册完成或失败后不能继续注册后续工具。 |
+
+背景跨页淡入淡出、View Transition 路由属性和统计服务属于跨页生命周期；不得机械地在每次换页时销毁持久状态。清理异常仍需释放共享页面运行时的监听器和注册键。50 次模拟事件的回归测试用于验证工具注册数量与注销，不等同于真实浏览器的 50 次导航内存测量。
+
+### Markdown / HTML AST 边界
+
+生产 HTML 后处理在页面缓存未命中时只解析一棵 parse5 AST，在同一棵树上修改图片属性、移除旧字体样式、读取内联 CSS 和正文字符、插入字体样式。最后通过 `src/internal/html-output.ts` 按 AST 源码位置只序列化变更节点、统一输出一次，保留未改子树的源码；缓存命中时不解析。不要在这些阶段反复拼接整页 HTML，也不要用正则匹配 HTML 标签。脚本、注释、模板中的标签示例不能当成真实元素处理。已有字符串兼容入口可保留，但生产管线应调用 AST 入口。
+
+Markdown 特性统计继续复用 Sätteri MDAST/HAST 插件。Markdown 导出复用内容集合的已解析元数据，用 YAML `Document` AST 序列化 frontmatter；正文原样输出，不为导出再解析、重排 Markdown。浏览器交互的实时 DOM 与构建期 AST 是不同职责。
+
+### 静态博客 WebMCP 与增量缓存
+
+页面工具只读取静态 JSON、Markdown 和 Pagefind。Pagefind 的标题是 `meta.title`；摘要使用 `plain_excerpt`。文章页的 `post` 过滤绑定 `data-stalux-post-id`，可用 `search(null, { filters: { post: id } })` 精确读取已索引纯文本。Markdown 未导出时不得把 HTML 404/SPA 回退当成 Markdown；分段输出必须返回格式、总长度、截断标记及续读偏移。部分元信息搜索必须明确 `fullText: false`。不得给静态端点伪造动态限流余量或不存在的 HTTP 错误协议。
+
+主题 YAML 配置必须进入共享 `runtime-cache-key`，文章 HTML、分类/标签页及文章 Markdown 端点复用此键。只按文章日期恢复会忽略 `promote.export_md`、AI 工具启停、版权和站点配置变动。配置变动验收必须检查恢复页面里的实际开关；不能用清空真实项目缓存掩盖失效缺陷。
+
 ## 版本线与发布禁令（最高优先级）
 
 Stalux 的软件著作权登记版本属于 **1.x.x**。此项目必须长期保持 **1.x 大版本**，发布版本只允许 `1.<minor>.<patch>`；这是项目的硬性产品约束，优先于通常的 SemVer 主版本升级建议。

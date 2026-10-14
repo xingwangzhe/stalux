@@ -55,6 +55,7 @@ export function registerPageLifecycle(
     logger.debug("lifecycle registered");
 
     let active = true;
+    let pageGeneration = 0;
     const registration: RuntimeRegistration = {
         unregister: () => undefined,
     };
@@ -72,6 +73,7 @@ export function registerPageLifecycle(
     };
     const mountPage = () => {
         if (!active) return;
+        pageGeneration++;
         disposePage();
         const started = performance.now();
         logger.debug("mount started");
@@ -86,7 +88,10 @@ export function registerPageLifecycle(
         }
     };
     const handlePageLoad = () => mountPage();
-    const handleBeforeSwap = () => disposePage();
+    const handleBeforeSwap = () => {
+        pageGeneration++;
+        disposePage();
+    };
 
     target.addEventListener("astro:page-load", handlePageLoad);
     target.addEventListener("astro:before-swap", handleBeforeSwap);
@@ -94,15 +99,24 @@ export function registerPageLifecycle(
     registration.unregister = () => {
         if (!active) return;
         active = false;
-        disposePage();
-        target.removeEventListener("astro:page-load", handlePageLoad);
-        target.removeEventListener("astro:before-swap", handleBeforeSwap);
-        registry.delete(key);
+        try {
+            disposePage();
+        } finally {
+            target.removeEventListener("astro:page-load", handlePageLoad);
+            target.removeEventListener("astro:before-swap", handleBeforeSwap);
+            registry.delete(key);
+        }
     };
     registry.set(key, registration);
 
     // Late-loaded modules can miss Astro's initial page-load event.
-    if (target.readyState === "complete") queueTask(mountPage);
+    if (target.readyState === "complete") {
+        const scheduledGeneration = pageGeneration;
+        queueTask(() => {
+            // A real page-load or swap supersedes this late-module fallback.
+            if (pageGeneration === scheduledGeneration) mountPage();
+        });
+    }
 
     return registration.unregister;
 }

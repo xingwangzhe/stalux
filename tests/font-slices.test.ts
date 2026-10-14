@@ -10,6 +10,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { parse, serialize } from "parse5";
 
 import { describe, expect, it } from "vitest";
 
@@ -17,11 +18,42 @@ import {
     clearPageFontSubsets,
     RESERVED_GLYPHS,
     readLinkedStylesheetText,
+    removePageFontStyles,
     writePageFontSubset,
     writePageFontSubsetAsync,
+    writePageFontSubsetIntoDocumentAsync,
 } from "../src/internal/font-slices";
 
 describe("page-specific font subsets", () => {
+    it("mutates only real AST styles and emits no intermediate HTML", async () => {
+        const root = mkdtempSync(join(tmpdir(), "stalux-ast-font-"));
+        try {
+            const example =
+                '<style data-stalux-page-font>@font-face{font-family:"LXGW WenKai-example";unicode-range:U+4E00-9FFF}</style>';
+            const script = `const example = ${JSON.stringify(example)};`;
+            const document = parse(
+                `<html><head><style data-stalux-page-font>old</style><script>${script}</script></head><body><p>中文 123</p><template>${example}</template><!--${example}--></body></html>`,
+            );
+            removePageFontStyles(document);
+            const result = await writePageFontSubsetIntoDocumentAsync(
+                document,
+                readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf"),
+                root,
+            );
+            expect(result).toBeDefined();
+            expect(result).not.toHaveProperty("html");
+            const output = serialize(document);
+            expect(output).toContain(`<script>${script}</script>`);
+            expect(output).toContain(`<!--${example}-->`);
+            expect(output).toContain(
+                '<template><style data-stalux-page-font="">@font-face{font-family:"LXGW WenKai-example";unicode-range:U+4E00-9FFF}</style></template>',
+            );
+            expect(output).not.toContain('data-stalux-page-font="">old');
+            expect(output).toContain("LXGW WenKai-Page Subset");
+        } finally {
+            rmSync(root, { recursive: true, force: true });
+        }
+    });
     it("preserves synchronous output when the async native worker processes pages", async () => {
         const root = mkdtempSync(join(tmpdir(), "stalux-async-font-"));
         try {

@@ -72,22 +72,20 @@ async function readLocalImageDimensions(filename: string): Promise<ImageDimensio
 }
 
 /** Add width/height to same-origin emitted images so their space is reserved before download. */
-export async function addLocalImageDimensions(
-    html: string,
+async function resolveImageUpdates(
+    images: HtmlImage[],
     outputDir: string,
     options: {
-        images?: HtmlImage[];
         cache?: Map<string, Promise<ImageDimensions | undefined>>;
         loadingPolicy?: boolean;
         dependencies?: Set<string>;
     } = {},
-): Promise<string> {
+): Promise<Map<HtmlImage, Record<string, string>>> {
     const dimensionsCache =
         options.cache ?? new Map<string, Promise<ImageDimensions | undefined>>();
     const root = path.resolve(outputDir);
-    const images = options.images ?? findHtmlImages(html);
     const loading = options.loadingPolicy ? imageLoadingUpdates(images) : new Map();
-    const replacements: Array<{ start: number; end: number; tag: string }> = [];
+    const changes = new Map<HtmlImage, Record<string, string>>();
     for (const image of images) {
         const updates: Record<string, string> = { ...loading.get(image) };
         const src = image.attributes.get("src");
@@ -117,14 +115,43 @@ export async function addLocalImageDimensions(
                 }
             }
         }
-        if (Object.keys(updates).length) {
-            replacements.push({
-                start: image.start,
-                end: image.end,
-                tag: updateImageTag(image, updates),
-            });
+        if (Object.keys(updates).length) changes.set(image, updates);
+    }
+    return changes;
+}
+
+/** Mutate image attributes in the shared build AST; the caller serializes once. */
+export async function updateLocalImageDimensions(
+    images: HtmlImage[],
+    outputDir: string,
+    options: Parameters<typeof resolveImageUpdates>[2] = {},
+): Promise<void> {
+    const changes = await resolveImageUpdates(images, outputDir, options);
+    for (const [image, updates] of changes) {
+        for (const [name, value] of Object.entries(updates)) {
+            const attribute = image.node.attrs.find((attribute) => attribute.name === name);
+            if (attribute) attribute.value = value;
+            else image.node.attrs.push({ name, value });
         }
     }
+}
+
+/** Compatibility string API; the production pipeline uses AST mutations above. */
+export async function addLocalImageDimensions(
+    html: string,
+    outputDir: string,
+    options: Parameters<typeof resolveImageUpdates>[2] & { images?: HtmlImage[] } = {},
+): Promise<string> {
+    const changes = await resolveImageUpdates(
+        options.images ?? findHtmlImages(html),
+        outputDir,
+        options,
+    );
+    const replacements = [...changes].map(([image, updates]) => ({
+        start: image.start,
+        end: image.end,
+        tag: updateImageTag(image, updates),
+    }));
     if (!replacements.length) return html;
     const parts: string[] = [];
     let offset = 0;

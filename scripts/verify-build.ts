@@ -247,9 +247,43 @@ for (const file of files.filter((file) => /\.(?:css|html|js|map)$/u.test(file)))
     assert(problems.length === 0, `${path.relative(dist, file)}: ${problems.join("; ")}`);
 }
 
-const postIndex = JSON.parse(read("api/posts.json")) as Array<{ url: string; desc?: string }>;
+const openApi = JSON.parse(read("openapi.json"));
+for (const endpoint of Object.values(openApi.paths) as Array<{
+    get: { responses: Record<string, unknown> };
+}>) {
+    assert(
+        !endpoint.get.responses["429"] && !endpoint.get.responses["400"],
+        "Static OpenAPI must not advertise dynamic quota/input errors",
+    );
+}
+assert(
+    !JSON.stringify(openApi.paths).includes("RateLimit-"),
+    "Static endpoints must not advertise fabricated rate-limit headers",
+);
+
+const postIndex = JSON.parse(read("api/posts.json")) as Array<{
+    abbrlink: string;
+    url: string;
+    desc?: string;
+}>;
 for (const post of postIndex) {
     const html = read(`${post.url.replace(/^\//u, "")}index.html`);
+    let filterFound = false;
+    function checkArticleFilter(node: DefaultTreeAdapterMap["node"]): void {
+        if ("tagName" in node && node.tagName === "section") {
+            const attributes = new Map(
+                node.attrs.map((attribute) => [attribute.name, attribute.value]),
+            );
+            if (attributes.has("data-pagefind-body")) {
+                filterFound =
+                    attributes.get("data-stalux-post-id") === post.abbrlink &&
+                    attributes.get("data-pagefind-filter") === "post[data-stalux-post-id]";
+            }
+        }
+        if ("childNodes" in node) for (const child of node.childNodes) checkArticleFilter(child);
+    }
+    checkArticleFilter(parse(html));
+    assert(filterFound, `${post.url} is missing the exact Pagefind article filter`);
     const count = (
         html.match(new RegExp(`<aside[^>]*class="${cssClass("stalux-article-summary")}"`, "gu")) ??
         []

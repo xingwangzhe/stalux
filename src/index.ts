@@ -12,14 +12,7 @@ import { styleNames } from "./internal/style-names.generated.ts";
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
-import {
-    copyFileSync,
-    existsSync,
-    promises as fs,
-    mkdirSync,
-    readdirSync,
-    readFileSync,
-} from "node:fs";
+import { copyFileSync, existsSync, promises as fs, readdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -40,13 +33,16 @@ import { staluxComponentsAlias } from "./internal/components-plugin";
 import {
     clearPageFontSubsets,
     readLinkedStylesheetText,
+    removePageFontStyles,
     resolveFontInputs,
-    writePageFontSubsetAsync,
+    writePageFontSubsetIntoDocumentAsync,
 } from "./internal/font-slices";
 import { findHtmlImages } from "./internal/html-images";
-import { addLocalImageDimensions, type ImageDimensions } from "./internal/image-dimensions";
+import { createHtmlMutationEmitter } from "./internal/html-output";
+import { type ImageDimensions, updateLocalImageDimensions } from "./internal/image-dimensions";
 import { createInjectedRoutes } from "./internal/injected-routes";
 import { createPageOutputCache } from "./internal/page-output-cache";
+import { syncBackgroundSvgs, syncFontAssets } from "./internal/public-assets";
 import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
 import {
     appendUniquePlugin,
@@ -83,60 +79,6 @@ function buildFontsConfig(codeNormal: string, codeItalic?: string) {
             },
         },
     ];
-}
-
-// ---------------------------------------------------------------------------
-// 背景 SVG 判别式同步
-// ---------------------------------------------------------------------------
-
-/**
- * 把主题包的 public/background/*.svg 同步到用户项目 public/background/。
- *
- * 判别式（非无条件覆盖）：
- * - 同名文件：内容一致则跳过（幂等）；内容不同才覆盖（主题更新了 SVG）
- * - 用户新增的文件：保留，不删除（避免误删用户自定义背景）
- * - 不做整目录 force 复制
- */
-function syncBackgroundSvgs(srcDir: string): { copied: number; skipped: number } {
-    const srcBg = path.join(srcDir, "../public/background");
-    if (!existsSync(srcBg)) return { copied: 0, skipped: 0 };
-
-    const destBg = path.resolve(process.cwd(), "public", "background");
-    mkdirSync(destBg, { recursive: true });
-
-    let copied = 0;
-    let skipped = 0;
-    for (const name of readdirSync(srcBg)) {
-        if (!name.endsWith(".svg")) continue;
-        const srcFile = path.join(srcBg, name);
-        const destFile = path.join(destBg, name);
-        if (existsSync(destFile)) {
-            const srcBuf = readFileSync(srcFile);
-            const destBuf = readFileSync(destFile);
-            if (srcBuf.equals(destBuf)) {
-                skipped++; // 内容一致，跳过
-                continue;
-            }
-        }
-        copyFileSync(srcFile, destFile);
-        copied++;
-    }
-    return { copied, skipped };
-}
-
-/** Sync packaged math fonts and licensing notices; Astro does not merge integration public directories. */
-function syncFontAssets(srcDir: string): void {
-    const source = path.join(srcDir, "../public/fonts");
-    if (!existsSync(source)) return;
-    const destination = path.resolve(process.cwd(), "public/fonts");
-    mkdirSync(destination, { recursive: true });
-    for (const name of readdirSync(source)) {
-        if (!/\.(?:woff2|txt)$/u.test(name)) continue;
-        const from = path.join(source, name);
-        const to = path.join(destination, name);
-        if (existsSync(to) && readFileSync(from).equals(readFileSync(to))) continue;
-        copyFileSync(from, to);
-    }
 }
 
 // ---------------------------------------------------------------------------
@@ -186,7 +128,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             }) => {
                 const started = performance.now();
                 const configLogger = logger.fork("stalux/config");
-                const assetsLogger = logger.fork("stalux/assets");
                 const routesLogger = logger.fork("stalux/routes");
                 const markdownLogger = logger.fork("stalux/markdown");
                 const fontsLogger = logger.fork("stalux/fonts");
@@ -198,6 +139,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     path.join(srcDir, "styles"),
                     JSON.stringify([styleNames, modernCssTargets]) +
                         readFileSync(path.join(srcDir, "internal/compact-styles.ts"), "utf8"),
+                    path.resolve(fileURLToPath(config.root), opt.contentDir ?? "stalux", "config"),
                 );
 
                 // 1. 注入 Vite 别名 + 组件覆盖插件 + Vue 特性标记（Waline 依赖）
@@ -239,23 +181,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // 2. 注入全局 CSS
                 injectScript("page-ssr", `import "${srcDir}/styles/generated.css";`);
                 injectScript("page", `import "${srcDir}/scripts/core-runtime.ts";`);
-
-                // 2.5 同步背景 SVG 到用户项目 public/background/
-                // 纯客户端引入：SVG 以静态 URL（/background/pattern-*.svg）被 background.ts 硬编码引用，
-                // 不经过 Astro 资源管线（import.meta.glob 会打上每次构建随机的 __ASTRO_ASSET_IMAGE__ 占位符，
-                // 破坏增量构建依赖图 hash）。Astro 不会合并集成的 public 目录，这里显式同步一次。
-                // 判别式：内容一致跳过（幂等），内容不同才覆盖，用户新增文件保留。
-                try {
-                    syncFontAssets(srcDir);
-                    const { copied, skipped } = syncBackgroundSvgs(srcDir);
-                    if (copied > 0) {
-                        assetsLogger.info(`同步背景 SVG ${copied} 个（跳过 ${skipped} 个不变）`);
-                    } else if (skipped > 0) {
-                        assetsLogger.debug(`背景 SVG 无变化（跳过 ${skipped} 个）`);
-                    }
-                } catch (error) {
-                    assetsLogger.warn(`同步背景 SVG 失败: ${describeError(error)}`);
-                }
 
                 // 3. 注入所有页面路由（仅插件模式，源码模式下使用文件路由）
                 if (isPluginMode) {
@@ -393,6 +318,32 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 configLogger.info(`initialized in ${(performance.now() - started).toFixed(1)}ms`);
             },
 
+            // Read final paths after every integration has finished updating configuration.
+            // Public assets must exist before Astro creates its Vite server/build asset pipeline.
+            "astro:config:done": ({ config, logger }) => {
+                const srcDir = fileURLToPath(new URL(".", import.meta.url));
+                const publicDir = fileURLToPath(config.publicDir);
+                const assetsLogger = logger.fork("stalux/assets");
+                if (pageFontData) {
+                    pageFontData.outputDir = path.join(
+                        fileURLToPath(config.outDir),
+                        "_astro",
+                        "fonts",
+                    );
+                }
+                try {
+                    syncFontAssets(srcDir, publicDir);
+                    const { copied, skipped } = syncBackgroundSvgs(srcDir, publicDir);
+                    if (copied > 0) {
+                        assetsLogger.info(`同步背景 SVG ${copied} 个（跳过 ${skipped} 个不变）`);
+                    } else if (skipped > 0) {
+                        assetsLogger.debug(`背景 SVG 无变化（跳过 ${skipped} 个）`);
+                    }
+                } catch (error) {
+                    assetsLogger.warn(`同步主题静态资源失败: ${describeError(error)}`);
+                }
+            },
+
             "astro:build:done": async ({ dir, logger: rootLogger }) => {
                 const logger = rootLogger.fork("stalux/build");
                 const started = performance.now();
@@ -416,6 +367,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             "internal/font-slices.ts",
                             "internal/image-dimensions.ts",
                             "internal/html-images.ts",
+                            "internal/html-output.ts",
                             "internal/page-output-cache.ts",
                             "internal/style-names.generated.ts",
                             "plugins/feature-flags.ts",
@@ -441,11 +393,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const processPage = async (entry: string) => {
                     const output = path.join(outDir, entry);
                     const before = await fs.readFile(output, "utf8");
-                    const withoutPageFont = before.replace(
-                        /<style data-stalux-page-font>[\s\S]*?<\/style>/gi,
-                        "",
-                    );
-                    const cached = await outputCache.get(entry, withoutPageFont);
+                    const cached = await outputCache.get(entry, before);
                     if (cached) {
                         if (cached.font && pageFontData) {
                             if (!referencedPageFonts.has(cached.font.filename)) {
@@ -466,34 +414,32 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     }
                     let cachedFont: { filename: string; sourcePath: string } | undefined;
                     const dependencies = new Set<string>();
-                    const document = parse(withoutPageFont, { sourceCodeLocationInfo: true });
-                    const images = findHtmlImages(withoutPageFont, document);
-                    let after = await addLocalImageDimensions(withoutPageFont, outDir, {
-                        images,
+                    const document = parse(before, { sourceCodeLocationInfo: true });
+                    const emitHtml = createHtmlMutationEmitter(before, document);
+                    removePageFontStyles(document);
+                    const images = findHtmlImages(before, document);
+                    await updateLocalImageDimensions(images, outDir, {
                         cache: dimensionsCache,
                         loadingPolicy: true,
                         dependencies,
                     });
                     if (pageFontData) {
                         const linkedStylesheetText = readLinkedStylesheetText(
-                            after,
+                            "",
                             output,
                             outDir,
                             linkedCssTextCache,
                             document,
                             dependencies,
                         );
-                        const pageFont = await writePageFontSubsetAsync(
-                            after,
+                        const pageFont = await writePageFontSubsetIntoDocumentAsync(
+                            document,
                             pageFontData.fontBuffer,
                             pageFontData.cacheDir,
                             "/_astro/fonts/",
                             linkedStylesheetText,
-                            "",
-                            document,
                         );
                         if (pageFont) {
-                            after = pageFont.html;
                             pageFontPages++;
                             cachedFont = {
                                 filename: pageFont.filename,
@@ -508,13 +454,14 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             referencedPageFonts.add(pageFont.filename);
                         }
                     }
+                    const after = emitHtml();
                     if (after !== before) {
                         await fs.writeFile(output, after);
                         optimizedImagePages++;
                     }
                     await outputCache.set(
                         entry,
-                        withoutPageFont,
+                        before,
                         {
                             html: after,
                             font: cachedFont,

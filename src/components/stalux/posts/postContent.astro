@@ -10,6 +10,7 @@ import { toMachineDateTime } from "@utils/semantic-time";
 import ArticleSummary from "./ArticleSummary.astro";
 
 interface Props {
+    postId?: string | number;
     title: string;
     description?: string;
     transitionName?: string;
@@ -107,7 +108,12 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
     <ArticleSummary description={props.description} label={t("post.summary")} />
 
     <!-- Article Body -->
-    <section class="stalux-post-body stalux-prose" data-pagefind-body>
+    <section
+        class="stalux-post-body stalux-prose"
+        data-pagefind-body
+        data-stalux-post-id={props.postId === undefined ? undefined : String(props.postId)}
+        data-pagefind-filter={props.postId === undefined ? undefined : "post[data-stalux-post-id]"}
+    >
         <slot />
     </section>
 </article>

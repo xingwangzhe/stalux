@@ -1,4 +1,5 @@
-import { getCollection } from "astro:content";
+import { getPostContentIndex } from "@utils/content-index";
+import { sitePath } from "@utils/site-path";
 import { getPostDescriptions } from "@utils/word-count-utils";
 import type { APIRoute } from "astro";
 
@@ -11,7 +12,7 @@ export const prerender = true;
  * 是 stalux_get_post / stalux_random_post 等 WebMCP 工具的廉价数据源。
  */
 export const GET: APIRoute = async ({ logger }) => {
-    const posts = await getCollection("posts", ({ data }) => !data.draft);
+    const { posts } = await getPostContentIndex();
 
     const descriptions = await getPostDescriptions(logger);
     const payload = posts.map((post) => ({
@@ -23,7 +24,7 @@ export const GET: APIRoute = async ({ logger }) => {
         categories: post.data.categories ?? [],
         desc: post.data.desc ?? "",
         wordCount: descriptions.get(String(post.data.abbrlink))?.wordCount ?? 0,
-        url: `/posts/${post.data.abbrlink}/`,
+        url: sitePath(`posts/${encodeURIComponent(String(post.data.abbrlink))}/`),
     }));
 
     return new Response(JSON.stringify(payload), {
@@ -31,9 +32,6 @@ export const GET: APIRoute = async ({ logger }) => {
         headers: {
             "Content-Type": "application/json; charset=utf-8",
             "Cache-Control": "public, max-age=0, must-revalidate",
-            "RateLimit-Limit": "60",
-            "RateLimit-Remaining": "59",
-            "RateLimit-Reset": "60",
         },
     });
 };

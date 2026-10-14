@@ -1,6 +1,3 @@
-import { createPostLookup } from "../utils/post-lookup";
-import { createClientLogger } from "./logger";
-
 /**
  * Stalux WebMCP 工具注册（纯前端，零后端）
  *
@@ -20,8 +17,13 @@ import { createClientLogger } from "./logger";
  */
 // 浏览器无原生 document.modelContext 时由 polyfill 兜底安装；
 // 有原生实现或已存在 WebMCP-aware 扩展时，polyfill 检测到后自动 no-op。
-// 放在模块顶部 import，保证其副作用在下方注册逻辑执行前完成。
-import "@mcp-b/webmcp-polyfill";
+// ESM entry exports an initializer; importing it alone does not install the API.
+import { initializeWebMCPPolyfill } from "@mcp-b/webmcp-polyfill";
+import { createPostLookup } from "../utils/post-lookup";
+import { sitePath } from "../utils/site-path";
+import { createClientLogger } from "./logger";
+import { registerPageLifecycle } from "./page-runtime";
+import { loadPagefind } from "./pagefind-api";
 
 const logger = createClientLogger("webmcp");
 
@@ -46,7 +48,10 @@ interface WebMCPTool {
         readOnlyHint?: boolean;
         untrustedContentHint?: boolean;
     };
-    execute: (input: Record<string, unknown>) => Promise<unknown>;
+    execute: (
+        input: Record<string, unknown>,
+        options?: { signal?: AbortSignal },
+    ) => Promise<unknown>;
 }
 
 interface ModelContext {
@@ -88,33 +93,15 @@ function err(
 }
 
 async function fetchJSON(url: string): Promise<unknown> {
-    const r = await fetch(url, { headers: { Accept: "application/json" } });
+    const r = await fetch(url, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(15000),
+    });
     if (!r.ok) {
         logger.debug(`JSON request failed; status=${r.status}`);
         return null;
     }
     return r.json();
-}
-
-/** 动态加载 Pagefind 全文索引（仅首次调用，结果跨调用缓存） */
-let pagefindLoadPromise: Promise<{ search: (q: string) => Promise<unknown> } | null> | null = null;
-async function loadPagefind(): Promise<{ search: (q: string) => Promise<unknown> } | null> {
-    logger.debug(pagefindLoadPromise ? "Pagefind module cache hit" : "loading Pagefind module");
-    if (!pagefindLoadPromise) {
-        pagefindLoadPromise = (async () => {
-            try {
-                // 用完整 URL 构造，让 Vite 在 dev（vite:import-analysis）与 build 都不解析该路径；
-                // pagefind 索引是构建期产物，运行时从站点根加载。
-                const url = new URL("/pagefind/pagefind.js", location.origin).href;
-                const mod = await import(/* @vite-ignore */ url);
-                return mod.default ?? mod;
-            } catch {
-                logger.warn("Pagefind index unavailable; search requires a production index");
-                return null;
-            }
-        })();
-    }
-    return pagefindLoadPromise;
 }
 
 const MAX_LIST_PAGE_SIZE = 50;
@@ -151,9 +138,35 @@ function lookupFor(list: PostMeta[]) {
 /** 加载文章元信息索引（惰性 + 缓存） */
 function loadPostsMeta(): Promise<PostMeta[] | null> {
     if (!postsMetaPromise) {
-        postsMetaPromise = fetchJSON("/api/posts.json").then((data) =>
-            Array.isArray(data) ? (data as PostMeta[]) : null,
-        );
+        const attempt = fetchJSON(sitePath("api/posts.json"))
+            .then((data) => {
+                if (
+                    !Array.isArray(data) ||
+                    !data.every(
+                        (post) =>
+                            post &&
+                            typeof post.title === "string" &&
+                            typeof post.abbrlink === "string" &&
+                            typeof post.url === "string" &&
+                            (post.desc === undefined || typeof post.desc === "string") &&
+                            (!post.categories ||
+                                (Array.isArray(post.categories) &&
+                                    post.categories.every(
+                                        (category: unknown) => typeof category === "string",
+                                    ))) &&
+                            (!post.tags ||
+                                (Array.isArray(post.tags) &&
+                                    post.tags.every((tag: unknown) => typeof tag === "string"))),
+                    )
+                )
+                    return null;
+                return data as PostMeta[];
+            })
+            .catch(() => null);
+        postsMetaPromise = attempt;
+        void attempt.then((result) => {
+            if (!result && postsMetaPromise === attempt) postsMetaPromise = null;
+        });
     }
     return postsMetaPromise;
 }
@@ -178,15 +191,43 @@ function briefMeta(p: PostMeta): Record<string, unknown> {
         categories: p.categories ?? [],
         desc: p.desc ?? undefined,
         wordCount: p.wordCount ?? undefined,
-        url: p.url,
+        url: new URL(p.url, location.origin).href,
     };
 }
 
 /** 从当前 URL 解析 abbrlink（/posts/{abbrlink}/ 或 /posts/{abbrlink}.md） */
 function currentAbbrlinkFromPath(): string | null {
-    const match = location.pathname.match(/^\/posts\/([^/]+?)(?:\.md)?\/?$/);
-    const encoded = match?.[1];
-    return encoded ? decodeURIComponent(encoded) : null;
+    return postIdFromUrl(location.href);
+}
+
+function postIdFromUrl(value: string): string | null {
+    try {
+        const url = new URL(value, location.origin);
+        if (url.origin !== location.origin) return null;
+        const prefix = sitePath("posts/");
+        if (!url.pathname.startsWith(prefix)) return null;
+        const suffix = url.pathname.slice(prefix.length);
+        const path = suffix.endsWith("/") ? suffix.slice(0, -1) : suffix.replace(/\.md$/, "");
+        if (!path || path.includes("/")) return null;
+        return decodeURIComponent(path);
+    } catch {
+        return null;
+    }
+}
+
+function integerInput(
+    value: unknown,
+    fallback: number,
+    minimum: number,
+    maximum = Number.MAX_SAFE_INTEGER,
+): number | undefined {
+    if (value === undefined) return fallback;
+    return typeof value === "number" &&
+        Number.isSafeInteger(value) &&
+        value >= minimum &&
+        value <= maximum
+        ? value
+        : undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -201,11 +242,11 @@ function listPostsTool(): WebMCPTool {
             "分页列出博客的全部已发布文章，返回标题、永久链接（abbrlink）、日期、分类、标签、摘要与文章页 URL。" +
                 "需要浏览全站文章、确认某篇文章的 abbrlink 时使用；不返回正文，" +
                 "只要某篇元信息用 stalux_get_post，读正文请用 stalux_read_post。" +
-                "pageSize 建议设 50 一次拿完，减少翻页；页码越界时会自动返回最后一页（clamped 标记）。",
+                "pageSize 可设 50 减少翻页，按 totalPages 继续分页；页码越界时会自动返回最后一页（clamped 标记）。",
             "Paginated list of all published posts, returning title, permanent link (abbrlink), date, categories, tags, description and post page URL. " +
                 "Use it to browse the whole blog or find a post's abbrlink; it does not return body content — " +
                 "use stalux_get_post for one post's metadata, or stalux_read_post for the full body. " +
-                "Prefer pageSize 50 to fetch everything in one call; out-of-range pages clamp to the last page (clamped flag).",
+                "Use pageSize 50 to reduce calls and follow totalPages to continue; out-of-range pages clamp to the last page (clamped flag).",
         ),
         annotations: { readOnlyHint: true, untrustedContentHint: false },
         inputSchema: {
@@ -231,11 +272,16 @@ function listPostsTool(): WebMCPTool {
             additionalProperties: false,
         },
         execute: async (input) => {
-            const page = Math.max(1, Number(input.page) || 1);
-            const pageSize = Math.min(
-                MAX_LIST_PAGE_SIZE,
-                Math.max(1, Number(input.pageSize) || 10),
-            );
+            const page = integerInput(input.page, 1, 1);
+            const pageSize = integerInput(input.pageSize, 10, 1, MAX_LIST_PAGE_SIZE);
+            if (page === undefined || pageSize === undefined)
+                return err(
+                    "BAD_INPUT",
+                    pick(
+                        "页码和每页条数必须是有效整数",
+                        "Page and pageSize must be valid integers",
+                    ),
+                );
             const list = await loadPostsMeta();
             if (!list)
                 return err(
@@ -286,8 +332,8 @@ function getPostTool(): WebMCPTool {
             additionalProperties: false,
         },
         execute: async (input) => {
-            const id = String(input.id ?? "").trim();
-            if (!id) {
+            const id = typeof input.id === "string" ? input.id.trim() : "";
+            if (!id || id.length > 512) {
                 return err(
                     "BAD_INPUT",
                     pick(
@@ -379,9 +425,11 @@ function searchPostsTool(): WebMCPTool {
         title: pick("搜索博客文章", "Search blog posts"),
         description: pick(
             "用关键词搜索博客文章的标题、标签、分类与正文全文，返回命中文章的标题、链接与摘要片段。" +
+                "全文索引不可用时仅返回元信息匹配，并标记 fullText: false；不把索引故障当成全文无匹配。" +
                 "适合「博客里写过 X 吗」「帮我找一下关于 Y 的文章」这类问题；" +
                 "定位到具体文章后再用 stalux_read_post 读正文、stalux_get_post 取元信息。",
             "Search the full text of all posts (title, tags, categories, body) by keyword, returning matching posts with title, URL and excerpt snippets. " +
+                "If Pagefind is unavailable, metadata-only matches are marked fullText: false; index failures are not treated as an empty full-text result. " +
                 "Ideal for questions like 'has the blog covered X?' or 'find posts about Y'; " +
                 "once a post is located, use stalux_read_post for the body or stalux_get_post for metadata.",
         ),
@@ -404,48 +452,98 @@ function searchPostsTool(): WebMCPTool {
             required: ["keyword"],
             additionalProperties: false,
         },
-        execute: async (input) => {
-            const keyword = String(input.keyword ?? "").trim();
-            if (!keyword)
-                return err("BAD_INPUT", pick("请提供搜索关键词", "Provide a search keyword"));
-            const limit = Math.min(MAX_SEARCH_RESULTS, Math.max(1, Number(input.limit) || 10));
+        execute: async (input, options) => {
+            const keyword = typeof input.keyword === "string" ? input.keyword.trim() : "";
+            const limit = integerInput(input.limit, 10, 1, MAX_SEARCH_RESULTS);
+            if (!keyword || keyword.length > 256 || limit === undefined)
+                return err("BAD_INPUT", pick("搜索参数无效", "Invalid search parameters"));
+            const list = await loadPostsMeta();
+            if (!list)
+                return err("INDEX_UNAVAILABLE", pick("文章索引不可用", "Post index unavailable"));
+            const metadataMatches = lookupFor(list)
+                .findMatches(keyword, limit)
+                .map((post) => ({
+                    abbrlink: post.abbrlink,
+                    title: post.title,
+                    url: new URL(post.url, location.origin).href,
+                    excerpt: (post.desc ?? "").slice(0, 240),
+                }));
+            const fallback = (code: string) =>
+                metadataMatches.length
+                    ? {
+                          ok: true,
+                          keyword,
+                          count: metadataMatches.length,
+                          posts: metadataMatches,
+                          source: "metadata",
+                          fullText: false,
+                          notice: pick(
+                              "全文索引不可用，仅返回标题、标签、分类和摘要匹配",
+                              "Full-text index unavailable; returning title, tag, category and description matches only",
+                          ),
+                      }
+                    : err(
+                          code,
+                          pick(
+                              "全文索引不可用，且元信息没有匹配项",
+                              "Full-text index unavailable and no metadata matches",
+                          ),
+                      );
             const pagefind = await loadPagefind();
-            if (!pagefind) {
-                return err(
-                    "INDEX_UNAVAILABLE",
-                    pick("全文搜索索引不可用", "Full-text search index unavailable"),
-                );
-            }
-            const res = (await pagefind.search(keyword)) as {
-                results?: Array<{ data: () => Promise<unknown> }>;
-            };
-            if (!res || !Array.isArray(res.results)) {
-                return err(
-                    "SEARCH_FAILED",
-                    pick("搜索失败，请重试", "Search failed, please retry"),
-                );
-            }
-            const items = await Promise.all(
-                res.results.slice(0, limit).map(async (r) => {
-                    try {
-                        const data = (await r.data()) as {
-                            url?: string;
-                            title?: string;
-                            excerpt?: string;
-                        };
-                        return {
-                            url: data?.url ?? "",
-                            title: data?.title ?? "",
-                            excerpt: (data?.excerpt ?? "").slice(0, 240),
-                        };
-                    } catch {
-                        logger.warn("search result data unavailable; skipping result");
-                        return null;
+            options?.signal?.throwIfAborted();
+            if (!pagefind) return fallback("INDEX_UNAVAILABLE");
+            try {
+                const result = await pagefind.search(keyword);
+                if (!result || !Array.isArray(result.results)) return fallback("SEARCH_FAILED");
+                const posts: Record<string, unknown>[] = [...metadataMatches];
+                const seen = new Set(metadataMatches.map((post) => post.abbrlink));
+                for (
+                    let offset = 0;
+                    offset < result.results.length && posts.length < limit;
+                    offset += MAX_SEARCH_RESULTS
+                ) {
+                    options?.signal?.throwIfAborted();
+                    const batch = await Promise.all(
+                        result.results
+                            .slice(offset, offset + MAX_SEARCH_RESULTS)
+                            .map(async (entry) => {
+                                try {
+                                    return await entry.data();
+                                } catch {
+                                    return null;
+                                }
+                            }),
+                    );
+                    for (const data of batch) {
+                        if (!data) continue;
+                        const id = postIdFromUrl(data.url);
+                        const post = id ? findById(list, id) : undefined;
+                        if (!post || seen.has(post.abbrlink)) continue;
+                        seen.add(post.abbrlink);
+                        posts.push({
+                            abbrlink: post.abbrlink,
+                            url: new URL(data.url, location.origin).href,
+                            title:
+                                typeof data.meta?.title === "string" && data.meta.title
+                                    ? data.meta.title
+                                    : post.title,
+                            excerpt: (data.plain_excerpt ?? post.desc ?? "").slice(0, 240),
+                        });
+                        if (posts.length >= limit) break;
                     }
-                }),
-            );
-            const posts = items.filter((x): x is NonNullable<typeof x> => x !== null);
-            return { ok: true, keyword, count: posts.length, posts };
+                }
+                return {
+                    ok: true,
+                    keyword,
+                    count: posts.length,
+                    posts,
+                    source: "pagefind+metadata",
+                    fullText: true,
+                };
+            } catch {
+                if (options?.signal?.aborted) throw options.signal.reason;
+                return fallback("SEARCH_FAILED");
+            }
         },
     };
 }
@@ -453,19 +551,32 @@ function searchPostsTool(): WebMCPTool {
 function readPostTool(): WebMCPTool {
     return {
         name: "stalux_read_post",
-        title: pick("读取文章 Markdown", "Read post Markdown"),
+        title: pick("读取文章内容", "Read post content"),
         description: pick(
-            "按 abbrlink（文章永久链接 ID）读取一篇博客文章的 Markdown 全文，包含规范化 frontmatter、正文与版权脚注。" +
-                "需要文章完整内容、引用或摘要时使用；只要元信息用 stalux_get_post（更便宜）。" +
+            "按 abbrlink 读取文章。开启 Markdown 导出时返回规范化 Markdown，否则从 Pagefind 返回已索引纯文本（不含 Markdown 语法）。" +
+                "format 标明格式；truncated 为 true 时用 nextOffset 续读，直到 nextOffset 为 null。只要元信息用 stalux_get_post（更便宜）。" +
                 "获取 abbrlink 可先用 stalux_list_posts 或 stalux_search_posts。",
-            "Read the full Markdown of a post by abbrlink (permanent link ID), including normalized frontmatter, body and copyright footer. " +
-                "Use it for full content, quotes or summarization; for metadata only, stalux_get_post is cheaper. " +
+            "Read a post by abbrlink: normalized Markdown when exports are enabled, otherwise indexed plain text from Pagefind without Markdown syntax. " +
+                "Check format; when truncated, continue with nextOffset until null. For metadata only, stalux_get_post is cheaper. " +
                 "To get an abbrlink, first use stalux_list_posts or stalux_search_posts.",
         ),
         annotations: { readOnlyHint: true, untrustedContentHint: false },
         inputSchema: {
             type: "object",
             properties: {
+                offset: {
+                    type: "integer",
+                    minimum: 0,
+                    default: 0,
+                    description: "UTF-16 content offset; continue with nextOffset",
+                },
+                maxChars: {
+                    type: "integer",
+                    minimum: 1,
+                    maximum: 50000,
+                    default: 50000,
+                    description: "Maximum UTF-16 units returned; a surrogate pair is never split",
+                },
                 id: {
                     type: "string",
                     description: pick(
@@ -477,22 +588,122 @@ function readPostTool(): WebMCPTool {
             required: ["id"],
             additionalProperties: false,
         },
-        execute: async (input) => {
-            const id = String(input.id ?? "").trim();
-            if (!id)
-                return err("BAD_INPUT", pick("请提供文章 abbrlink", "Provide a post abbrlink"));
-            const url = `/posts/${encodeURIComponent(id)}.md`;
-            const r = await fetch(url, { headers: { Accept: "text/markdown" } });
-            if (r.status === 404)
-                return err("NOT_FOUND", pick("未找到文章: ", "Post not found: ") + id);
-            if (!r.ok) {
+        execute: async (input, options) => {
+            const id = typeof input.id === "string" ? input.id.trim() : "";
+            const offset = integerInput(input.offset, 0, 0);
+            const maxChars = integerInput(input.maxChars, 50000, 1, 50000);
+            if (!id || id.length > 512 || offset === undefined || maxChars === undefined)
                 return err(
-                    "FETCH_FAILED",
-                    pick("无法获取文章 Markdown：", "Failed to fetch post Markdown: ") + url,
+                    "BAD_INPUT",
+                    pick(
+                        "请提供有效的文章 ID 和读取范围",
+                        "Provide a valid post ID and content range",
+                    ),
                 );
+            const list = await loadPostsMeta();
+            if (!list)
+                return err("INDEX_UNAVAILABLE", pick("文章索引不可用", "Post index unavailable"));
+            const post = findById(list, id);
+            if (!post) return err("NOT_FOUND", pick("未找到文章: ", "Post not found: ") + id);
+            const url = new URL(sitePath(`posts/${encodeURIComponent(id)}.md`), location.origin)
+                .href;
+            let content: string | undefined;
+            let format = "text/markdown";
+            let source = url;
+            if (document.body?.dataset.staluxMarkdownExport !== "false") {
+                try {
+                    const signal = options?.signal
+                        ? AbortSignal.any([options.signal, AbortSignal.timeout(15000)])
+                        : AbortSignal.timeout(15000);
+                    const response = await fetch(url, {
+                        headers: { Accept: "text/markdown" },
+                        signal,
+                    });
+                    if (response.ok && !response.headers.get("Content-Type")?.includes("text/html"))
+                        content = await response.text();
+                } catch {
+                    if (options?.signal?.aborted) throw options.signal.reason;
+                }
             }
-            const markdown = await r.text();
-            return { ok: true, url, markdown: markdown.slice(0, 50000) };
+            if (content === undefined) {
+                const pagefind = await loadPagefind();
+                if (!pagefind)
+                    return err(
+                        "CONTENT_UNAVAILABLE",
+                        pick(
+                            "Markdown 和静态搜索正文均不可用",
+                            "Neither Markdown nor indexed content is available",
+                        ),
+                    );
+                try {
+                    const result = await pagefind.search(null, { filters: { post: id } });
+                    for (const entry of result.results) {
+                        const data = await entry.data();
+                        if (postIdFromUrl(data.url) === id && typeof data.content === "string") {
+                            content = data.content;
+                            format = "text/plain";
+                            source = new URL(data.url, location.origin).href;
+                            break;
+                        }
+                    }
+                } catch {
+                    return err(
+                        "CONTENT_UNAVAILABLE",
+                        pick(
+                            "读取静态搜索正文失败，请重试",
+                            "Unable to read indexed content; retry",
+                        ),
+                    );
+                }
+            }
+            if (content === undefined)
+                return err(
+                    "CONTENT_UNAVAILABLE",
+                    pick(
+                        "该文章没有可读取的静态正文",
+                        "No static content is available for this post",
+                    ),
+                );
+            if (
+                offset > content.length ||
+                (offset > 0 &&
+                    /[\uDC00-\uDFFF]/u.test(content.charAt(offset)) &&
+                    /[\uD800-\uDBFF]/u.test(content.charAt(offset - 1)))
+            )
+                return err(
+                    "BAD_INPUT",
+                    pick(
+                        "读取偏移超出正文范围或切开 Unicode 字符",
+                        "Offset is outside the content or splits a Unicode character",
+                    ),
+                );
+            let end = Math.min(content.length, offset + maxChars);
+            if (
+                end < content.length &&
+                /[\uD800-\uDBFF]/u.test(content.charAt(end - 1)) &&
+                /[\uDC00-\uDFFF]/u.test(content.charAt(end))
+            )
+                end--;
+            if (end === offset && end < content.length)
+                return err(
+                    "BAD_INPUT",
+                    pick(
+                        "maxChars 太小，无法容纳当前 Unicode 字符",
+                        "maxChars is too small for this Unicode character",
+                    ),
+                );
+            const chunk = content.slice(offset, end);
+            return {
+                ok: true,
+                abbrlink: id,
+                url: source,
+                format,
+                ...(format === "text/markdown" ? { markdown: chunk } : { content: chunk }),
+                offset,
+                totalChars: content.length,
+                truncated: end < content.length,
+                nextOffset: end < content.length ? end : null,
+            };
         },
     };
 }
@@ -525,15 +736,17 @@ function siteInfoTool(): WebMCPTool {
                 url: info.url ?? "",
                 description: info.description ?? "",
                 lang: info.lang ?? "",
-                llms: `${info.url ?? ""}/llms.txt`,
-                llmsFull: `${info.url ?? ""}/llms-full.txt`,
+                llms: new URL(sitePath("llms.txt"), location.origin).href,
+                llmsFull: new URL(sitePath("llms-full.txt"), location.origin).href,
+                markdownExport: document.body?.dataset.staluxMarkdownExport === "true",
+                transport: "WebMCP",
             };
         },
     };
 }
 
 function buildTools(): WebMCPTool[] {
-    return [
+    const tools: WebMCPTool[] = [
         listPostsTool(),
         getPostTool(),
         currentPostTool(),
@@ -542,16 +755,46 @@ function buildTools(): WebMCPTool[] {
         readPostTool(),
         siteInfoTool(),
     ];
+    return tools.map((tool) => {
+        const execute = tool.execute;
+        return {
+            ...tool,
+            execute: async (input: Record<string, unknown>, options?: { signal?: AbortSignal }) => {
+                if (!input || typeof input !== "object" || Array.isArray(input))
+                    return err("BAD_INPUT", pick("参数必须是对象", "Input must be an object"));
+                const properties =
+                    (tool.inputSchema as { properties?: Record<string, unknown> })?.properties ??
+                    {};
+                if (Object.keys(input).some((key) => !Object.hasOwn(properties, key)))
+                    return err("BAD_INPUT", pick("包含未知参数", "Unknown input property"));
+                if (options?.signal?.aborted) throw options.signal.reason;
+                try {
+                    const result = await execute(input, options);
+                    options?.signal?.throwIfAborted();
+                    return result;
+                } catch (error) {
+                    if (options?.signal?.aborted) throw options.signal.reason;
+                    logger.error("tool execution failed", error);
+                    return err(
+                        "FETCH_FAILED",
+                        pick(
+                            "读取静态博客资源失败，请重试",
+                            "Unable to read static blog resources; retry",
+                        ),
+                    );
+                }
+            },
+        };
+    });
 }
 
 // ---------------------------------------------------------------------------
 // 注册逻辑
 // ---------------------------------------------------------------------------
 
-/** 当前注册批次使用的 AbortController，软导航时先 abort 注销再重注册 */
-let activeController: AbortController | null = null;
-
-async function registerTools(): Promise<{ registered: string[]; reason?: string }> {
+async function registerTools(
+    signal: AbortSignal,
+): Promise<{ registered: string[]; reason?: string }> {
     const doc = document as DocumentWithModelContext;
     const ctx = doc.modelContext;
     if (!ctx || typeof ctx.registerTool !== "function") {
@@ -559,25 +802,28 @@ async function registerTools(): Promise<{ registered: string[]; reason?: string 
         return { registered: [], reason: "unsupported" };
     }
 
-    // 注销上一轮注册（View Transitions 软导航后 modelContext 可能已重置）
-    if (activeController) {
-        try {
-            activeController.abort();
-        } catch {
-            logger.debug("previous registration cleanup unavailable");
-        }
-    }
-    const controller = new AbortController();
-    activeController = controller;
-
     const tools = buildTools();
     const registered: string[] = [];
     // 逐个注册：单个失败不中断其余工具
     for (const tool of tools) {
+        if (signal.aborted) break;
         try {
-            await ctx.registerTool(tool, { signal: controller.signal });
+            await ctx.registerTool(
+                {
+                    ...tool,
+                    execute: (input, executionOptions) =>
+                        tool.execute(input, {
+                            signal: executionOptions?.signal
+                                ? AbortSignal.any([signal, executionOptions.signal])
+                                : signal,
+                        }),
+                },
+                { signal },
+            );
+            if (signal.aborted) break;
             registered.push(tool.name);
         } catch (e) {
+            if (signal.aborted) break;
             logger.error(`tool registration failed: ${tool.name}`, e);
         }
     }
@@ -588,18 +834,21 @@ async function registerTools(): Promise<{ registered: string[]; reason?: string 
 // 挂载与自动注册
 // ---------------------------------------------------------------------------
 
-if (typeof document !== "undefined") {
-    // 首屏加载 + View Transitions 软导航都执行（soft navigation 时页面状态会重建）
-    document.addEventListener("astro:page-load", () => {
-        void registerTools()
-            .then((r) => {
-                if (r.reason === "unsupported") return; // 无 WebMCP 环境，静默跳过
-                if (r.registered.length) {
-                    logger.debug(
-                        `已注册 ${r.registered.length} 个工具: ${r.registered.join(", ")}`,
-                    );
-                }
-            })
-            .catch((error: unknown) => logger.error("registration batch failed", error));
-    });
-}
+registerPageLifecycle("webmcp", () => {
+    // Astro can hoist processed scripts from conditional template branches.
+    if (document.body?.dataset.staluxWebmcpEnabled === "false") return;
+    initializeWebMCPPolyfill();
+    const controller = new AbortController();
+    void registerTools(controller.signal)
+        .then((r) => {
+            if (controller.signal.aborted || r.reason === "unsupported") return;
+            if (r.registered.length) {
+                logger.debug(`已注册 ${r.registered.length} 个工具: ${r.registered.join(", ")}`);
+            }
+        })
+        .catch((error: unknown) => {
+            if (!controller.signal.aborted) logger.error("registration batch failed", error);
+        });
+    // Abort also unregisters tools already installed by this page's batch.
+    return () => controller.abort();
+});

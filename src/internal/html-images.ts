@@ -1,6 +1,7 @@
 import { type DefaultTreeAdapterMap, parse } from "parse5";
 
 export interface HtmlImage {
+    node: DefaultTreeAdapterMap["element"];
     start: number;
     end: number;
     tag: string;
@@ -27,6 +28,7 @@ export function findHtmlImages(
             if (node.tagName === "img" && location?.startTag) {
                 const { startOffset: start, endOffset: end } = location.startTag;
                 images.push({
+                    node,
                     start,
                     end,
                     tag: html.slice(start, end),

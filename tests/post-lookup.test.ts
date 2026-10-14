@@ -2,6 +2,18 @@ import { describe, expect, it } from "vitest";
 import { createPostLookup } from "../src/utils/post-lookup";
 
 describe("post metadata lookup", () => {
+    it("finds bounded title/tag/category/description matches with title priority", () => {
+        const posts = [
+            { abbrlink: "tag", title: "Other", tags: ["LINUX"] },
+            { abbrlink: "title", title: "Linux notes" },
+            { abbrlink: "category", title: "Desktop", categories: ["Linux"] },
+            { abbrlink: "description", title: "Setup", desc: "Install Linux" },
+        ];
+        const lookup = createPostLookup(posts);
+        expect(lookup.findMatches("LiNuX", 2)).toEqual([posts[1], posts[0]]);
+        expect(lookup.findMatches("linux", 10)).toEqual([posts[1], posts[0], posts[2], posts[3]]);
+        expect(lookup.findMatches("missing", 10)).toEqual([]);
+    });
     it("preserves strict IDs, first duplicates, and title priority over earlier tag matches", () => {
         const posts = [
             { abbrlink: "1", title: "First", tags: ["LINUX", "中文"] },
