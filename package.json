@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.35.13",
+    "version": "1.35.14",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -70,7 +70,7 @@
     },
     "scripts": {
         "dev": "bun run styles:build && node scripts/dev.ts",
-        "build": "bun run styles:build && astro build && node scripts/verify-build.ts",
+        "build": "bun run styles:build && astro build --timings && node scripts/verify-build.ts",
         "preview": "astro preview",
         "astro": "astro",
         "init": "node scripts/cli.ts init",
@@ -92,7 +92,7 @@
         "validate": "bun run styles:build && bun run check && bun run node:check && bun run astro:check && bun run knip && bun run test:coverage && bun run build && bun run build:cli",
         "prepare": "git config core.hooksPath scripts/git-hooks",
         "dev:debug": "STALUX_DEBUG=1 astro dev --verbose",
-        "build:debug": "STALUX_DEBUG=1 astro build --verbose && node scripts/verify-build.ts",
+        "build:debug": "STALUX_DEBUG=1 astro build --timings --verbose && node scripts/verify-build.ts",
         "styles:build": "node scripts/build-styles.ts && node scripts/build-style-names.ts",
         "styles:watch": "node scripts/build-styles.ts --watch",
         "benchmark:performance": "node scripts/benchmark-performance.ts",
@@ -134,7 +134,7 @@
         "@types/node": "^26.6.5",
         "@unocss/astro": "^66.11.0",
         "@vitest/coverage-v8": "^5.0.4",
-        "astro": "^7.3.8",
+        "astro": "^7.4.0",
         "knip": "^6.41.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
         "unocss": "^66.11.0",
@@ -142,6 +142,6 @@
         "vitest": "^5.0.4"
     },
     "peerDependencies": {
-        "astro": "^7.3.5"
+        "astro": "^7.4.0"
     }
 }

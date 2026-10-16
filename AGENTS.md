@@ -39,6 +39,21 @@ Markdown 特性统计继续复用 Sätteri MDAST/HAST 插件。Markdown 导出�
 
 主题 YAML 配置必须进入共享 `runtime-cache-key`，文章 HTML、分类/标签页及文章 Markdown 端点复用此键。只按文章日期恢复会忽略 `promote.export_md`、AI 工具启停、版权和站点配置变动。配置变动验收必须检查恢复页面里的实际开关；不能用清空真实项目缓存掩盖失效缺陷。
 
+## Astro 7.4 开发与构建
+
+官方依据：[Astro 7.4 发布说明](https://astro.build/blog/astro-740/)。Stalux 的 Astro 开发依赖与 peer 依赖最低要求统一为 `^7.4.0`；安装依赖仍使用 Bun，刚发布版本使用官方 registry。
+
+| 能力 / 变更 | 开发时如何使用 / 注意事项 |
+| --- | --- |
+| 构建耗时报告 | `astro build --timings` 展示构建阶段、Vite 插件、Markdown/高亮、页面渲染、图片和集成耗时。Stalux 的 `bun run build` 与 `bun run build:debug` 默认带此参数；独立诊断用 `bun run astro build --timings`。保留完整命令总耗时，样式构建和产物验证也有成本。 |
+| 并行预渲染（实验性） | `experimental.parallelPrerender: true` 默认使用可用 CPU 核心数减一的 worker；可用 `{ workers: 4 }` 限制数量。每个 worker 按 `build.concurrency` 并发，增加内存占用；可与 `incrementalBuild` 配合。先看 timings，再对比总耗时、峰值内存、restored 和产物完整性，不默认开启。适配器提供自定义预渲染时不生效，官方 `@astrojs/cloudflare` 属于此情况。 |
+| 图片服务分离 | `image.service` 可分别配置 `build` 与 `runtime`；`build` 也用于开发。集成读取服务时先判断 `'runtime' in service`，不能假定总有 `service.entrypoint`。单服务配置继续有效，静态博客无需为此改成 SSR。 |
+| 自定义预渲染兼容 | 包装 `setPrerenderer()` 时透传 `getStaticPaths()` / `render()` 的 metadata，避免图片漏生成。旧的纯数组 / 纯 Response 返回形式已废弃；使用 `@astrojs/cloudflare` 或 `@astrojs/markdoc` 时同步检查适配版本。 |
+| 字体诊断 | 内置 font provider 支持警告不受支持的字重、样式、子集和格式。自定义 provider 的 `getFontProperties()` 在 Astro 7 可选、Astro 8 将必需；`init()` 上下文新增带临时失败重试的 `fetch()`。Stalux 使用本地 provider，升级后检查字体警告与产物。 |
+| 自定义入口 404 | 自行组合 `astro/hono` 或 `astro/fetch` handler 时，在 `pages()` 前加 `notFound()`；一体化 `astro()` 已包含该行为。普通静态博客无需添加运行时入口。 |
+| 静态跳转页（实验性） | 开启 `experimental.redirectPage` 后创建 `src/pages/3xx.astro`，接收 `from/to/status/delay` props；必须输出指向 `to` 的 meta refresh。按需渲染页面的 HTTP 重定向不受影响。 |
+| Node.js 与输出目录 | Astro 最低支持版本提高到 Node.js 22.22.0，检查本机和 CI；Stalux 自身的 `engines.node >=26` 要求仍然适用。集成调整输出目录时使用 Vite 各环境最终解析的 `outDir`；自定义预渲染器可读取 `outputDirectories`。 |
+
 ## 版本线与发布禁令（最高优先级）
 
 Stalux 的软件著作权登记版本属于 **1.x.x**。此项目必须长期保持 **1.x 大版本**，发布版本只允许 `1.<minor>.<patch>`；这是项目的硬性产品约束，优先于通常的 SemVer 主版本升级建议。
