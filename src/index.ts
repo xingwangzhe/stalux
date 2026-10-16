@@ -41,6 +41,7 @@ import { findHtmlImages } from "./internal/html-images";
 import { createHtmlMutationEmitter } from "./internal/html-output";
 import { type ImageDimensions, updateLocalImageDimensions } from "./internal/image-dimensions";
 import { createInjectedRoutes } from "./internal/injected-routes";
+import { markdownPropagationPlugin } from "./internal/markdown-propagation";
 import { createPageOutputCache } from "./internal/page-output-cache";
 import { syncBackgroundSvgs, syncFontAssets } from "./internal/public-assets";
 import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
@@ -161,7 +162,9 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             alias: createViteAliases(srcDir),
                         },
                         plugins: [
-                            ...(command === "build" ? [compactStylesPlugin(srcDir)] : []),
+                            ...(command === "build"
+                                ? [markdownPropagationPlugin(), compactStylesPlugin(srcDir)]
+                                : []),
                             staluxComponentsAlias(opt.components, logger.fork("stalux/components")),
                         ],
                         define: {

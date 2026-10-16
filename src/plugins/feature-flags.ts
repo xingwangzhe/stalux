@@ -267,6 +267,9 @@ const analysisCache = new Map<string, Promise<FeatureFlagsResult>>();
 
 function getFeatureFlagsProcessor() {
     processorPromise ??= createSatteriMarkdownProcessor({
+        // Statistics consume AST metadata only. Highlighting every code block here
+        // duplicates Expressive Code work and repeats in each prerender worker.
+        syntaxHighlight: false,
         mdastPlugins: [featureFlagsMdast],
         hastPlugins: [featureFlagsHast],
         features: { math: true },

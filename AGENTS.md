@@ -31,6 +31,12 @@
 
 生产 HTML 后处理在页面缓存未命中时只解析一棵 parse5 AST，在同一棵树上修改图片属性、移除旧字体样式、读取内联 CSS 和正文字符、插入字体样式。最后通过 `src/internal/html-output.ts` 按 AST 源码位置只序列化变更节点、统一输出一次，保留未改子树的源码；缓存命中时不解析。不要在这些阶段反复拼接整页 HTML，也不要用正则匹配 HTML 标签。脚本、注释、模板中的标签示例不能当成真实元素处理。已有字符串兼容入口可保留，但生产管线应调用 AST 入口。
 
+构建期 `markdownPropagationPlugin()` 仅为空载入 `.md/.markdown?astroPropagatedAssets` 转发模块；Astro 后续内容资源传播 transform 会生成实际导入。不得跳过真实 Markdown 内容模块、直接导入、文件页面或 MDX。此优化依赖 Astro 7 的内部转发标记，升级 Astro 时必须核对对应 transform 仍完全忽略输入，并对比代码高亮、图片、样式、搜索和导出产物。仅对已核对的 Astro 7.4.0 启用；其他版本自动回退正常管线，不扩大匹配范围。
+
+构建性能对照使用独立消费项目副本与 `scripts/benchmark-builds.py --node <Node 26 原生二进制绝对路径>`；临时目录可能被 Vite Plus 的默认运行时切换到其他 Node 版本。基线与候选必须固定相同 Node/Bun、worker 数量、内容和缓存场景，报告完整命令 wall time 与峰值 RSS，不能把不同运行时或冷/热缓存差异当成优化收益。
+
+字数和阅读时间的独立 AST 分析器必须设置 `syntaxHighlight: false`。它只消费统计 metadata，不能为统计加载 Shiki 语法或高亮每个代码块；文章页面仍由 Expressive Code 正常高亮。并行预渲染的每个 worker 有独立模块缓存，不能把“模块级缓存一次”误认为“整个构建进程树只计算一次”。
+
 Markdown 特性统计继续复用 Sätteri MDAST/HAST 插件。Markdown 导出复用内容集合的已解析元数据，用 YAML `Document` AST 序列化 frontmatter；正文原样输出，不为导出再解析、重排 Markdown。浏览器交互的实时 DOM 与构建期 AST 是不同职责。
 
 ### 静态博客 WebMCP 与增量缓存
