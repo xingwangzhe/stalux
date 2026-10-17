@@ -57,6 +57,7 @@ import { searchStylePlugin } from "./internal/search-style";
 import { createViteAliases } from "./internal/vite-aliases";
 import { webMcpMutationsPlugin } from "./internal/webmcp-mutations";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
+import { imageCaptions } from "./plugins/image-captions";
 import { temml } from "./plugins/satteri-temml";
 import { describeError } from "./utils/diagnostics";
 
@@ -225,7 +226,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // 消费方即使完全不配置 processor，这里也会对默认 processor 的 options 做幂等合并：
                 //   - features：默认开启 math / frontmatter / gfm / smartPunctuation（用户显式 false 则尊重）
                 //   - mdastPlugins：mermaidMdast + temml（数学公式）+ featureFlagsMdast（字数统计）
-                //   - hastPlugins：photoswipe（图片灯箱）+ mermaidHast + featureFlagsHast
+                //   - hastPlugins：photoswipe（图片灯箱）+ imageCaptions（图注）+ mermaidHast + featureFlagsHast
                 // 去重是必须的：重复注册 Mermaid 或 featureFlagsMdast 会导致渲染异常或字数统计翻倍。
                 try {
                     const processorOptions = prepareSatteriProcessor(config.markdown?.processor);
@@ -249,9 +250,10 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             seen,
                         );
                         appendUniquePlugin(processorOptions.hastPlugins, photoswipe(), seen);
+                        appendUniquePlugin(processorOptions.hastPlugins, imageCaptions, seen);
                         appendUniquePlugin(processorOptions.hastPlugins, featureFlagsHast, seen);
                         markdownLogger.debug(
-                            "injected satteri plugins (mermaid/temml/photoswipe/feature-flags)",
+                            "injected satteri plugins (mermaid/temml/photoswipe/image-captions/feature-flags)",
                         );
                     } else {
                         markdownLogger.warn(

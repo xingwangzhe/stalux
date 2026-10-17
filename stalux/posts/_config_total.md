@@ -48,7 +48,7 @@ Since **v1.24.0**, the Stalux integration bundles the plugins that previously re
 | Plugin                                | Default behavior                                             | Disable / customize                                                                        |
 | ------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | `@astrojs/sitemap`                    | Bundled; published post `.md` endpoints are included when `promote.export_md: true`; other `.md` endpoints remain filtered | `sitemap: false`, or pass options (a custom `filter` also applies) |
-| Expressive Code                       | Bundled, **line numbers enabled**                            | `expressiveCode: false`, or pass options (themes, frames, styles)                          |
+| Expressive Code                       | Bundled, **line numbers enabled**, fixed `dark-plus` dark theme                            | `expressiveCode: false`, or pass options (themes, frames, styles)                          |
 | Math (Temml → MathML)                 | `features.math` enabled on the default `satteri()` processor | Set `markdown.processor: satteri({ features: { math: false } })` in `astro.config.mjs`     |
 | GFM / frontmatter / smart punctuation | Enabled by default on the `satteri()` processor              | Explicit `false` for the same feature key opts out                                         |
 | Mermaid                               | MDAST detection + HAST/SVG rendering                         | n/a — always injected                                                                      |

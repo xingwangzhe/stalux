@@ -53,7 +53,8 @@ export default defineConfig({
                 },
             },
             expressiveCode: {
-                themes: ["dark-plus", "github-light"],
+                themes: ["dark-plus"],
+                themeCssSelector: false,
                 styleOverrides: {
                     borderRadius: "0.5rem",
                     codeFontFamily:
@@ -63,7 +64,7 @@ export default defineConfig({
                     },
                 },
                 // 性能优化选项
-                useDarkModeMediaQuery: true,
+                useDarkModeMediaQuery: false,
                 minSyntaxHighlightingColorContrast: 5.5,
                 defaultProps: {
                     wrap: true,

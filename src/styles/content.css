@@ -371,6 +371,14 @@
         margin-top: 0.5rem;
     }
 
+    .stalux-prose figure[data-stalux-image] > figcaption {
+        font-style: normal;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        color: var(--muted-text);
+        overflow-wrap: anywhere;
+    }
+
     .stalux-prose .footnotes {
         font-size: 0.88em;
         color: var(--white-75p);

@@ -243,7 +243,9 @@ export default defineConfig({
         stalux({
             expressiveCode: {
                 // Configure syntax highlighting
-                themes: ["dark-plus", "github-light"],
+                themes: ["dark-plus"],
+                useDarkModeMediaQuery: false,
+                themeCssSelector: false,
                 shiki: {
                     // You can pass other plugin options here
                 },
@@ -279,6 +281,7 @@ export default defineConfig({
 Notes:
 
 - **Line numbers are enabled by default** — the Stalux integration bundles `@expressive-code/plugin-line-numbers`; any `plugins` you pass are appended after it.
+- Code blocks default to the single `dark-plus` dark theme, with `useDarkModeMediaQuery: false` and `themeCssSelector: false`. System light mode does not change the code colors. These options can be explicitly overridden; they only affect generated styles and add no telemetry.
 - Pass `expressiveCode: false` to disable Expressive Code entirely.
 - If you need a standalone Expressive Code integration, you can still import `expressiveCode` from `@xingwangzhe/stalux` (or `@xingwangzhe/stalux/expressive-code`).
 

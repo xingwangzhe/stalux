@@ -14,6 +14,10 @@
 
 首页打字效果由 Stalux 自有组件提供，继续使用 `stalux/config/typetexts.yml` 的 `items` 字符串列表，无需新增配置。默认输入 100ms/字素、删除 33ms/字素，完整文字停留 1500ms、清空后等待 500ms。组件在视口外或后台暂停，支持软导航清理；减少动画时整句轮播且隐藏光标。禁用 JavaScript 时显示首句，屏幕阅读器和打印输出完整列表。
 
+独占段落的图片 `![图片说明](url)` 会在构建期通过 satteri HAST 自动生成 `figure` 和 `figcaption`，在图片下方显示居中的灰色小字；保留图片 alt 和 PhotoSwipe 灯箱，无需配置或浏览器脚本。空描述、行内图片、同段多图及已有 figure 不重复生成图注。说明按纯文本输出，特殊字符自动转义。
+
+代码块默认固定为 `dark-plus` 暗色主题，不跟随系统明暗偏好，也不生成主题切换选择器。需要自定义时，可通过 `expressiveCode` 显式覆盖 `themes`、`useDarkModeMediaQuery` 和 `themeCssSelector`。此行为仅改变构建生成的代码样式，不增加遥测。
+
 ---
 
 ## 🚀 快速开始
@@ -57,7 +61,7 @@ integrations: [
     stalux({
         contentDir: "stalux",
         sitemap: { filter: (page) => page.startsWith("https://example.com/posts/") },
-        expressiveCode: { themes: ["dark-plus", "github-light"] },
+        expressiveCode: { themes: ["dark-plus"], useDarkModeMediaQuery: false },
     }),
 ];
 ```

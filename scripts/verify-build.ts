@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
+import { generate, parse as parseCss, walk as walkCss } from "css-tree";
 import { type DefaultTreeAdapterMap, parse } from "parse5";
 import { parse as parseYaml } from "yaml";
 import packageJson from "../package.json" with { type: "json" };
@@ -128,6 +129,26 @@ assert(
     /<head[\s\S]*?href="[^"<>]*\/ec\.[^"<>]+\.css"[\s\S]*?<\/head>/u.test(pages.post),
     "code fixture has no prepared EC stylesheet",
 );
+
+// The source template locks code blocks to dark-plus, including on light systems.
+let darkCodeBackgrounds = 0;
+for (const file of readdirSync(path.join(dist, "_astro")).filter((name) =>
+    /^ec\..*\.css$/u.test(name),
+)) {
+    walkCss(parseCss(read(`_astro/${file}`)), (node) => {
+        if (node.type === "Declaration" && node.property === "--ec-codeBg") {
+            assert(generate(node.value) === "#1e1e1e", "code background must stay dark-plus");
+            darkCodeBackgrounds++;
+        }
+        if (node.type === "Atrule" && node.name === "media" && node.prelude) {
+            assert(
+                !generate(node.prelude).includes("prefers-color-scheme"),
+                "code styles must not switch with the system color scheme",
+            );
+        }
+    });
+}
+assert(darkCodeBackgrounds > 0, "dark code theme is missing from generated CSS");
 
 const searchStyle = pages.home.match(/<link\b[^>]*data-stalux-search-style[^>]*>/u)?.[0];
 assert(searchStyle, "search CSS asset link is missing");

@@ -26,7 +26,13 @@ export type ExpressiveCodeOptions = NonNullable<Parameters<typeof expressiveCode
  */
 export function expressiveCode(options: ExpressiveCodeOptions = {}) {
     const plugins = [pluginLineNumbers(), ...(options.plugins ?? []), codeContainmentPlugin()];
-    return expressiveCodeBase({ ...options, plugins });
+    return expressiveCodeBase({
+        themes: ["dark-plus"],
+        useDarkModeMediaQuery: false,
+        themeCssSelector: false,
+        ...options,
+        plugins,
+    });
 }
 
 /** @alias Public default-import form of the named integration export. */

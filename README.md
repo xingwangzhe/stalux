@@ -14,6 +14,10 @@ All HTML routes include a circular back-to-top button in the footer. It appears 
 
 The homepage typewriter is built into Stalux and continues to use the `items` string list in `stalux/config/typetexts.yml`, with no new configuration. Defaults are 100ms per typed grapheme, 33ms per deleted grapheme, a 1500ms hold, and a 500ms pause after deletion. It pauses outside the viewport or in background tabs and cleans up on soft navigation. Reduced motion displays whole messages without a blinking cursor. Without JavaScript, the first message remains visible; screen readers and print receive the complete list.
 
+Standalone images written as `![Image description](url)` receive a `figure` and `figcaption` through a build-time satteri HAST plugin. Captions appear as small, centered gray text below the image, preserving image alt text and the PhotoSwipe lightbox. No configuration or browser script is required. Empty descriptions, inline images, multiple images in one paragraph, and existing figures are left unchanged. Captions are plain text with automatic escaping.
+
+Code blocks default to the single `dark-plus` theme, with system color-scheme switching and theme selectors disabled. To opt into another theme or switching behavior, explicitly override `themes`, `useDarkModeMediaQuery`, and `themeCssSelector` through `expressiveCode`. This only changes generated code styles and adds no telemetry.
+
 ---
 
 ## 🚀 Quick Start
@@ -57,7 +61,7 @@ integrations: [
     stalux({
         contentDir: "stalux",
         sitemap: { filter: (page) => page.startsWith("https://example.com/posts/") },
-        expressiveCode: { themes: ["dark-plus", "github-light"] },
+        expressiveCode: { themes: ["dark-plus"], useDarkModeMediaQuery: false },
     }),
 ];
 ```

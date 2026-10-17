@@ -66,7 +66,7 @@ export interface StaluxOptions {
     sitemap?: boolean | SitemapOptions;
 
     /**
-     * 是否自动打包 Expressive Code（默认 true，带代码块行号插件）。
+     * 是否自动打包 Expressive Code（默认 true，带代码块行号插件，固定 dark-plus 暗色主题）。
      * 传 false 关闭；传对象自定义主题/样式等选项。
      */
     expressiveCode?: boolean | ExpressiveCodeOptions;
