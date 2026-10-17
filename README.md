@@ -183,13 +183,11 @@ id: head
 bingClarityId: "YOUR_CLARITY_PROJECT_ID"
 ```
 
-> The Partytown migration in this branch is an unpublished candidate. Representative route measurements show lower TBT, but LCP regresses on the homepage and category page, so performance validation is incomplete. The following describes the candidate implementation.
-
-`stalux()` includes Partytown. The Google Analytics, Clarity, and Umami scripts run in a Web Worker without an additional consumer integration. Page tracking follows `astro:page-load`; browsers with `Element.moveBefore()` preserve the worker during navigation. Vercount loads asynchronously in the main window, avoiding worker startup and DOM bridge delays for visible counters. It runs once after each `astro:page-load` to bind incoming page counters and use the current URL and first-party visitor cookie.
+Google Analytics, Clarity, and Umami use low-priority native asynchronous scripts. Each SDK loads once per session, and failures do not block reading or navigation. Vercount rebinds visible counters after each `astro:page-load`. GA sends explicit pageviews. Umami disables automatic pageviews while retaining click tracking, capturing each page's URL, title, and referrer before the SDK resolves so rapid navigation cannot mix visits. An existing legacy Partytown session performs one full reload when it encounters the new runtime to prevent duplicate listeners and tracking.
 
 For Google Analytics, turn off **Page changes based on browser history events** under **Admin → Data streams → Enhanced measurement → Page views → Advanced settings**. Stalux sets `send_page_view: false` and sends the URL and title for each navigation explicitly. GA's history tracking must also be disabled in the property to prevent duplicate soft-navigation pageviews. Other enhanced measurement options can remain enabled. See [Google's pageview documentation](https://developers.google.com/analytics/devguides/collection/ga4/views).
 
-`bingClarityId` is the historical Stalux field name for a Microsoft Clarity Project ID. Get the ID from the Clarity project under **Settings → Setup → Get tracking code**. Stalux loads the tracking code through Partytown and keeps one loader in browsers that support preserving the worker. Do not install the same project again through `anyhead`, a tag manager, or another plugin.
+`bingClarityId` is the historical Stalux field name for a Microsoft Clarity Project ID. Get the ID from the Clarity project under **Settings → Setup → Get tracking code**. Stalux loads the tracking code asynchronously and preserves one loader across soft navigation. The SDK handles history navigation itself. Do not install the same project again through `anyhead`, a tag manager, or another plugin.
 
 The Project ID is a public browser identifier. Never put a Clarity Data Export API token in this YAML or in client-side code. If the site uses a strict CSP, consent banner, or CMP, configure those host-site policies and signals separately; this theme does not make legal compliance decisions for the site.
 

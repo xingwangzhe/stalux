@@ -24,7 +24,10 @@ export function createHtmlMutationEmitter(
             if (node.tagName === "head") head = node;
             const location = node.sourceCodeLocation;
             if (
-                (node.tagName === "img" || node.tagName === "style" || node.tagName === "link") &&
+                (node.tagName === "img" ||
+                    node.tagName === "style" ||
+                    node.tagName === "link" ||
+                    node.tagName === "svg") &&
                 location
             ) {
                 snapshots.push({

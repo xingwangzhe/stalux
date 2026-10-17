@@ -10,7 +10,7 @@
  * - SSR 只渲染灰墙底色（--stalux-bg-color），不渲染任何背景图，构建产物确定。
  * - 首次加载与 VT 软导航每次都会随机选一张背景：astro:page-load 在
  *   window load（首访）与 swap 完成后、过渡动画期间（软导航）触发，
- *   此时设置背景，过渡动画中旧图淡出、新图淡入，自然 crossfade 无跳变。
+ *   先低优先级解码目标背景，等待内容过渡完成后再淡入，不与内容快照争抢绘制。
  */
 import { createClientLogger } from "./logger";
 
@@ -57,13 +57,9 @@ function pickBackgroundIndex(previous: number): number {
     return index;
 }
 
-function crossfadeBackground(): void {
-    if (backgroundImages.length === 0) return;
-
+function crossfadeBackground(index: number): void {
     const activeLayer = getActiveLayer();
     const nextLayer: "a" | "b" = activeLayer === "a" ? "b" : "a";
-    const previousIndex = Number(document.body.dataset.staluxBgIndex ?? -1);
-    const index = pickBackgroundIndex(previousIndex);
     const next = getLayerEl(nextLayer);
     if (!next || !backgroundImages[index]) {
         logger.debug("background layer unavailable; skipped");
@@ -78,17 +74,49 @@ function crossfadeBackground(): void {
     document.body.dataset.staluxBgLayer = nextLayer;
 }
 
-function initializeBackground(): void {
-    const active = getLayerEl(getActiveLayer());
-    if (active?.style.backgroundImage) return;
-    crossfadeBackground();
+let generation = 0;
+let prepared: Promise<number | undefined> | undefined;
+let transitionFinished: Promise<unknown> = Promise.resolve();
+
+function prepareBackground(): Promise<number | undefined> {
+    const previousIndex = Number(document.body.dataset.staluxBgIndex ?? -1);
+    const index = pickBackgroundIndex(previousIndex);
+    const image = new Image();
+    image.decoding = "async";
+    image.fetchPriority = "low";
+    image.src = backgroundImages[index] ?? "";
+    return image.decode().then(
+        () => index,
+        () => undefined,
+    );
 }
 
-// before-swap 在 View Transition 的快照之后、DOM 替换之前触发；背景层使用
-// transition:persist 保留，因此可以在页面内容交换期间完成双层 crossfade。
-// 非 VT 浏览器也会触发该生命周期，fallback 同样保持平滑。
+function initializeBackground(): void {
+    const active = getLayerEl(getActiveLayer());
+    if (!prepared && active?.style.backgroundImage) return;
+    const current = generation;
+    const ready = prepared ?? prepareBackground();
+    prepared = undefined;
+    // Decode off the navigation path, and keep the full-screen background repaint
+    // out of the content's View Transition. A superseded navigation never commits.
+    void Promise.all([ready, transitionFinished]).then(([index]) => {
+        if (current === generation && index !== undefined) crossfadeBackground(index);
+    });
+}
+
+// 背景层跨页保留；before-swap 只记录过渡完成信号，不阻塞或修改内容快照。
+// page-load 再提交已解码的背景，非 VT 浏览器也采用同一清理/去重流程。
 if (!(window as Window & { __STALUX_BG_LISTENER__?: boolean }).__STALUX_BG_LISTENER__) {
     (window as Window & { __STALUX_BG_LISTENER__?: boolean }).__STALUX_BG_LISTENER__ = true;
-    document.addEventListener("astro:before-swap", crossfadeBackground);
+    document.addEventListener("astro:before-preparation", () => {
+        generation++;
+        const connection = (navigator as Navigator & { connection?: { saveData?: boolean } })
+            .connection;
+        prepared = connection?.saveData ? undefined : prepareBackground();
+    });
+    document.addEventListener("astro:before-swap", (event) => {
+        const transition = (event as Event & { viewTransition?: ViewTransition }).viewTransition;
+        transitionFinished = transition?.finished.catch(() => undefined) ?? Promise.resolve();
+    });
     document.addEventListener("astro:page-load", initializeBackground);
 }

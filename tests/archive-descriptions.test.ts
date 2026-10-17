@@ -12,11 +12,15 @@ function setup() {
         hidden = true;
         textContent = "";
         id = "archive-tooltip";
-        style = { left: "", top: "" };
+        style = { left: "", top: "", maxHeight: "" };
         offsetWidth = 320;
         offsetHeight = 100;
         parent?: FakeElement;
         isLink = false;
+        focusVisible = true;
+        matches() {
+            return this.focusVisible;
+        }
         contains(node: FakeElement): boolean {
             return node === this || (node.parent ? this.contains(node.parent) : false);
         }
@@ -91,7 +95,7 @@ describe("archive description preview", () => {
                 390,
                 844,
             ),
-        ).toEqual({ left: 16, top: 728 });
+        ).toEqual({ left: 16, top: 672 });
     });
 
     it("shows pure text for hover and focus, restoring previous accessibility descriptions", () => {
@@ -101,7 +105,7 @@ describe("archive description preview", () => {
         emit("pointerover");
         expect(tooltip.hidden).toBe(false);
         expect(tooltip.textContent).toBe("A <b>plain text</b> description");
-        expect(tooltip.style).toEqual({ left: "212px", top: "100px" });
+        expect(tooltip.style).toMatchObject({ left: "212px", top: "100px" });
         expect(link.getAttribute("aria-describedby")).toBe("existing archive-tooltip");
         emit("pointerover");
         expect(link.getAttribute("aria-describedby")).toBe("existing archive-tooltip");
@@ -111,6 +115,32 @@ describe("archive description preview", () => {
         dispose?.();
         expect(other.getAttribute("aria-describedby")).toBeNull();
         expect(tooltip.hidden).toBe(true);
+    });
+
+    it("keeps previews away from the title even in a short mobile viewport", () => {
+        const anchor = { left: 30, right: 360, top: 140, bottom: 180 };
+        const position = getArchiveDescriptionPosition(anchor, 320, 300, 390, 360);
+        const visibleHeight = Math.min(300, position.maxHeight ?? 300);
+        expect(
+            position.top >= anchor.bottom + 8 || position.top + visibleHeight <= anchor.top - 8,
+        ).toBe(true);
+        expect(position.top + visibleHeight).toBeLessThanOrEqual(344);
+    });
+
+    it("lets pointer focus navigate directly while keeping keyboard previews", () => {
+        const { hover, link, tooltip, emit } = setup();
+        hover.matches = false;
+        link.focusVisible = false;
+        const dispose = mountArchiveDescriptions();
+        emit("pointerover");
+        emit("focusin");
+        expect(tooltip.hidden).toBe(true);
+        link.focusVisible = true;
+        emit("focusin");
+        expect(tooltip.hidden).toBe(false);
+        emit("click");
+        expect(tooltip.hidden).toBe(true);
+        dispose?.();
     });
 
     it("lets the pointer cross into the tooltip and closes after leaving", () => {
@@ -202,7 +232,7 @@ describe("archive description preview", () => {
         });
         doc.dispatchEvent(new Event("astro:page-load"));
         doc.dispatchEvent(new Event("astro:page-load"));
-        expect(remove).toHaveBeenCalledTimes(4);
+        expect(remove).toHaveBeenCalledTimes(5);
         emit("focusin");
         emit("focusout");
         expect(vi.getTimerCount()).toBe(1);

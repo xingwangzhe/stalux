@@ -12,13 +12,24 @@ export function getArchiveDescriptionPosition(
     height: number,
     viewportWidth: number,
     viewportHeight: number,
-) {
+): { left: number; top: number; maxHeight?: number } {
     const fitsRight = anchor.right + 12 + width <= viewportWidth - 16;
     const left = fitsRight ? anchor.right + 12 : anchor.left;
-    const top = fitsRight ? anchor.top : anchor.bottom + 8;
+    let top = fitsRight ? anchor.top : anchor.bottom + 8;
+    let maxHeight: number | undefined;
+    if (!fitsRight && top + height > viewportHeight - 16) {
+        const above = Math.max(0, anchor.top - 24);
+        const below = Math.max(0, viewportHeight - anchor.bottom - 24);
+        const useBelow = below >= above;
+        const available = useBelow ? below : above;
+        const visibleHeight = Math.min(height, available);
+        top = useBelow ? anchor.bottom + 8 : anchor.top - visibleHeight - 8;
+        if (visibleHeight < height) maxHeight = visibleHeight;
+    }
     return {
         left: Math.max(16, Math.min(left, viewportWidth - width - 16)),
-        top: Math.max(16, Math.min(top, viewportHeight - height - 16)),
+        top: Math.max(16, fitsRight ? Math.min(top, viewportHeight - height - 16) : top),
+        ...(maxHeight === undefined ? {} : { maxHeight }),
     };
 }
 
@@ -71,7 +82,8 @@ export function mountArchiveDescriptions() {
             tooltip.showPopover();
             popoverOpen = true;
         }
-        const { left, top } = getArchiveDescriptionPosition(
+        tooltip.style.maxHeight = "";
+        const { left, top, maxHeight } = getArchiveDescriptionPosition(
             link.getBoundingClientRect(),
             tooltip.offsetWidth,
             tooltip.offsetHeight,
@@ -80,6 +92,7 @@ export function mountArchiveDescriptions() {
         );
         tooltip.style.left = `${left}px`;
         tooltip.style.top = `${top}px`;
+        if (maxHeight !== undefined) tooltip.style.maxHeight = `${maxHeight}px`;
     };
     const linkFrom = (target: EventTarget | null) =>
         target instanceof Element
@@ -88,6 +101,9 @@ export function mountArchiveDescriptions() {
     const enter = (event: Event) => {
         if (event.type === "pointerover" && !hover.matches) return;
         const link = linkFrom(event.target);
+        // Touch/mouse focus must not put a top-layer popover under the pending click.
+        // Keyboard focus still exposes the same accessible preview.
+        if (event.type === "focusin" && !link?.matches(":focus-visible")) return;
         if (link && root.contains(link)) show(link);
     };
     const leave = (event: Event) => {
@@ -102,6 +118,9 @@ export function mountArchiveDescriptions() {
     const handleEscape = (event: KeyboardEvent) => {
         if (event.key === "Escape") hide();
     };
+    const navigate = (event: Event) => {
+        if (linkFrom(event.target)) hide();
+    };
     const scroll = (event: Event) => {
         if (event.target instanceof Node && tooltip.contains(event.target)) return;
         hide();
@@ -113,6 +132,7 @@ export function mountArchiveDescriptions() {
     root.addEventListener("pointerout", leave);
     root.addEventListener("focusin", enter);
     root.addEventListener("focusout", leave);
+    root.addEventListener("click", navigate, true);
     tooltip.addEventListener("pointerenter", clearClose);
     tooltip.addEventListener("pointerleave", hide);
     document.addEventListener("keydown", handleEscape);
@@ -127,6 +147,7 @@ export function mountArchiveDescriptions() {
         root.removeEventListener("pointerout", leave);
         root.removeEventListener("focusin", enter);
         root.removeEventListener("focusout", leave);
+        root.removeEventListener("click", navigate, true);
         tooltip.removeEventListener("pointerenter", clearClose);
         tooltip.removeEventListener("pointerleave", hide);
         document.removeEventListener("keydown", handleEscape);

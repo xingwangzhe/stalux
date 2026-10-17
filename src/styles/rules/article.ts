@@ -254,7 +254,8 @@ export const articleStyles: StyleSpec[] = [
     [
         ".stalux-post-page-stats",
         "text-[0.85rem] mt-[0.8rem] pt-[0.6rem]",
-        {},
+        // Reserve the fallback-font and pending-counter layout without fixing/clipping its height.
+        { "min-block-size": "calc(3lh + 0.8rem + 1px)" },
         "@media (max-width: 768px)",
     ],
     [

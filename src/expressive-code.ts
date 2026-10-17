@@ -16,6 +16,7 @@
  */
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import expressiveCodeBase from "astro-expressive-code";
+import { codeContainmentPlugin } from "./internal/offscreen-layout";
 
 export type ExpressiveCodeOptions = NonNullable<Parameters<typeof expressiveCodeBase>[0]>;
 
@@ -24,7 +25,7 @@ export type ExpressiveCodeOptions = NonNullable<Parameters<typeof expressiveCode
  * @param options - 透传 astro-expressive-code 的选项；用户传入的 plugins 会追加在行号插件之后
  */
 export function expressiveCode(options: ExpressiveCodeOptions = {}) {
-    const plugins = [pluginLineNumbers(), ...(options.plugins ?? [])];
+    const plugins = [pluginLineNumbers(), ...(options.plugins ?? []), codeContainmentPlugin()];
     return expressiveCodeBase({ ...options, plugins });
 }
 

@@ -1,124 +1,139 @@
-/**
- * Keep analytics trackers in Partytown. This small main-thread bridge owns the
- * Astro navigation lifecycle and tells the worker about each completed page.
- */
+/** Async native SDKs keep live DOM events out of worker proxies during Astro swaps. */
+
+import { createClientLogger } from "./logger";
+
+const logger = createClientLogger("analytics");
+
 declare global {
     interface Window {
         __staluxAnalyticsRuntime?: {
             installed?: boolean;
+            native?: boolean;
+            revision?: number;
+            scripts?: Map<string, Promise<void>>;
             googleId?: string;
             googleInitialized?: boolean;
             clarityId?: string;
-            umamiKey?: string;
             previousPage?: string;
         };
     }
 }
 
+type AnalyticsHost = Window & {
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+    clarity?: ((...args: unknown[]) => void) & { q: unknown[] };
+    umami?: { track: (payload: Record<string, unknown>) => unknown };
+};
+const host = window as AnalyticsHost;
 window.__staluxAnalyticsRuntime ??= {};
 const state = window.__staluxAnalyticsRuntime;
+state.scripts ??= new Map();
 
-function appendWorkerInline(code: string): void {
+/** Never await analytics in a router callback; failed loads can retry on a later page. */
+function loadTrackerScript(src: string, attributes: Record<string, string> = {}): Promise<void> {
+    const existing = state.scripts?.get(src);
+    if (existing) return existing;
     const script = document.createElement("script");
-    script.type = "text/partytown";
-    script.textContent = code;
-    document.head.appendChild(script);
-    window.dispatchEvent(new CustomEvent("ptupdate"));
-}
-
-function appendWorkerScript(src: string, attributes: Record<string, string> = {}): void {
-    const script = document.createElement("script");
-    script.type = "text/partytown";
+    script.async = true;
+    script.fetchPriority = "low";
     script.src = src;
     for (const [name, value] of Object.entries(attributes)) script.setAttribute(name, value);
-    document.head.appendChild(script);
-    window.dispatchEvent(new CustomEvent("ptupdate"));
+    const loaded = new Promise<void>((resolve, reject) => {
+        const finish = (error?: Error) => {
+            clearTimeout(timer);
+            script.onload = null;
+            script.onerror = null;
+            if (error) {
+                script.remove();
+                reject(error);
+            } else resolve();
+        };
+        const timer = setTimeout(() => finish(new Error("Analytics SDK load timed out")), 15_000);
+        script.onload = () => finish();
+        script.onerror = () => finish(new Error("Analytics SDK load failed"));
+        document.head.appendChild(script);
+    });
+    state.scripts?.set(src, loaded);
+    void loaded.catch(() => {
+        if (state.scripts?.get(src) === loaded) state.scripts.delete(src);
+    });
+    return loaded;
 }
 
 function initializeTrackers(): void {
     const config = document.body?.dataset;
     if (!config) return;
-
     if (config.staluxGaId) {
+        if (state.googleId !== config.staluxGaId) state.googleInitialized = false;
         state.googleId = config.staluxGaId;
+        host.dataLayer ??= [];
+        host.gtag ??= function (..._args: unknown[]) {
+            // biome-ignore lint/complexity/noArguments: Match the official gtag queue format.
+            host.dataLayer?.push(arguments);
+        };
+        if (!state.googleInitialized) {
+            state.googleInitialized = true;
+            host.gtag("js", new Date());
+            host.gtag("config", state.googleId, { send_page_view: false });
+        }
+        void loadTrackerScript(
+            `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(state.googleId)}`,
+            { "data-stalux-google": "true" },
+        ).catch(() => logger.debug("Google SDK unavailable; queued events retained"));
     }
-
     if (config.staluxClarityId && state.clarityId !== config.staluxClarityId) {
-        state.clarityId = config.staluxClarityId;
-        appendWorkerInline(`
-            window.clarity = window.clarity || function () {
-                (window.clarity.q = window.clarity.q || []).push(arguments);
-            };
-            window.clarity.q = window.clarity.q || [];
-        `);
-        appendWorkerScript(`https://www.clarity.ms/tag/${encodeURIComponent(state.clarityId)}`, {
+        host.clarity ??= Object.assign(
+            function (..._args: unknown[]) {
+                // biome-ignore lint/complexity/noArguments: Match the official Clarity queue format.
+                host.clarity?.q.push(arguments);
+            },
+            { q: [] as unknown[] },
+        );
+        const id = config.staluxClarityId;
+        state.clarityId = id;
+        void loadTrackerScript(`https://www.clarity.ms/tag/${encodeURIComponent(id)}`, {
             "data-stalux-clarity": "true",
-        });
-    }
-
-    if (
-        config.staluxUmamiId &&
-        config.staluxUmamiUrl &&
-        state.umamiKey !== `${config.staluxUmamiId}\n${config.staluxUmamiUrl}`
-    ) {
-        state.umamiKey = `${config.staluxUmamiId}\n${config.staluxUmamiUrl}`;
-        appendWorkerScript(config.staluxUmamiUrl, {
-            "data-stalux-umami": "true",
-            "data-website-id": config.staluxUmamiId,
-            "data-auto-pageview": "false",
+        }).catch(() => {
+            if (state.clarityId === id) state.clarityId = undefined;
+            logger.debug("Clarity SDK unavailable; a later navigation can retry");
         });
     }
 }
 
 function trackGooglePage(): void {
     if (!state.googleId) return;
-    const page = {
+    host.gtag?.("event", "page_view", {
         page_location: window.location.href,
         page_path: window.location.pathname + window.location.search,
         page_title: document.title,
-    };
-    const initialize = !state.googleInitialized;
-    state.googleInitialized = true;
-    appendWorkerInline(`
-        // Partytown 0.14 serializes HTMLCollection as its worker NodeList.
-        // GA user-data detection checks instanceof HTMLCollection before sending page_view.
-        window.HTMLCollection = window.HTMLCollection || window.NodeList;
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = function () { window.dataLayer.push(arguments); };
-        ${initialize ? `window.gtag("js", new Date());window.gtag("config", ${JSON.stringify(state.googleId)}, { send_page_view: false });` : ""}
-        window.gtag("event", "page_view", ${JSON.stringify(page)});
-    `);
-    if (initialize)
-        appendWorkerScript(
-            `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(state.googleId)}`,
-            { "data-stalux-google": "true" },
-        );
+    });
 }
 
 function trackUmamiPage(): void {
-    const id = document.body?.dataset.staluxUmamiId;
-    if (!id || !state.umamiKey) return;
-    const payload = JSON.stringify({
-        website: id,
+    const config = document.body?.dataset;
+    if (!config?.staluxUmamiId || !config.staluxUmamiUrl) return;
+    // Snapshot now: a slow SDK must not attribute every queued visit to the last URL.
+    const payload = {
+        website: config.staluxUmamiId,
         url: window.location.href,
         title: document.title,
         hostname: window.location.hostname,
         screen: `${window.screen.width}x${window.screen.height}`,
         language: navigator.language,
         referrer: state.previousPage ?? document.referrer,
-    });
-    appendWorkerInline(`
-        (function send(attempt) {
-            if (window.umami?.track) window.umami.track(${payload});
-            else if (attempt < 50) setTimeout(() => send(attempt + 1), 100);
-        })(0);
-    `);
+    };
+    void loadTrackerScript(config.staluxUmamiUrl, {
+        "data-stalux-umami": "true",
+        "data-website-id": config.staluxUmamiId,
+        // Keep SDK click/performance features; only pageviews belong to Astro's lifecycle.
+        "data-auto-pageview": "false",
+    })
+        .then(() => host.umami?.track(payload))
+        .catch(() => logger.debug("Umami SDK unavailable; navigation remains usable"));
 }
 
 function trackVercountPage(): void {
-    // Visible counters need the current window's URL, cookie and DOM nodes.
-    // Avoid worker startup and synchronous DOM bridges; bind fresh nodes once
-    // per completed Astro navigation using the small upstream async script.
     document.querySelector("script[data-stalux-vercount]")?.remove();
     const script = document.createElement("script");
     script.async = true;
@@ -127,36 +142,14 @@ function trackVercountPage(): void {
     document.head.appendChild(script);
 }
 
-if (!state.installed) {
+if (state.installed && (!state.native || state.revision !== 2)) {
+    // An open tab can cross a deployment boundary. Its old anonymous worker
+    // listeners cannot be detached safely; reload once to install the new runtime.
+    window.location.reload();
+} else if (!state.installed) {
+    state.native = true;
+    state.revision = 2;
     state.installed = true;
-    let sandbox: HTMLIFrameElement | undefined;
-    // Moving an iframe with append() reloads its browsing context. Park it outside
-    // the replaced body with moveBefore(), which preserves the running worker.
-    // Capture runs before @astrojs/partytown's iframe recreation handler.
-    document.addEventListener(
-        "astro:before-swap",
-        () => {
-            const frame = document.body.querySelector<HTMLIFrameElement>(
-                'iframe[src*="~partytown/"]',
-            );
-            if (frame && typeof document.documentElement.moveBefore === "function") {
-                sandbox = frame;
-                document.documentElement.moveBefore(frame, null);
-            } else if (!window.crossOriginIsolated) {
-                // Atomics mode has no sandbox iframe and keeps its worker alive.
-                state.googleInitialized = false;
-                state.clarityId = undefined;
-                state.umamiKey = undefined;
-            }
-        },
-        true,
-    );
-    document.addEventListener("astro:after-swap", () => {
-        if (sandbox) {
-            document.body.moveBefore(sandbox, null);
-            sandbox = undefined;
-        }
-    });
     document.addEventListener("astro:page-load", () => {
         initializeTrackers();
         trackGooglePage();
@@ -165,5 +158,3 @@ if (!state.installed) {
         state.previousPage = window.location.href;
     });
 }
-
-export {};

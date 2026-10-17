@@ -2,13 +2,13 @@
 import { Font } from "astro:assets";
 import { getCollection } from "astro:content";
 import { ClientRouter } from "astro:transitions";
+// Emit a stable asset even while the search component JavaScript stays lazy.
+// The closed search dialog does not need to block the page's first paint.
+import pagefindStyles from "virtual:stalux-search-style";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
 import Umami from "@components/stalux/analytics/umami.astro";
 import VerCount from "@components/stalux/common/verCount.astro";
-// Emit a stable asset even while the search component JavaScript stays lazy.
-// The closed search dialog does not need to block the page's first paint.
-import pagefindStyles from "@pagefind/component-ui/css?url";
 import {
     getAuthorData,
     getHeadData,

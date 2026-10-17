@@ -231,17 +231,6 @@
 }
 
 @layer components {
-    @keyframes stalux-post-content-reveal {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-}
-
-@layer components {
     @keyframes stalux-link-avatar-spin {
         from {
             transform: rotate(0deg);

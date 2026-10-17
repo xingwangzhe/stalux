@@ -1,5 +1,10 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { prepareNavigationFont } from "../src/scripts/navigation-font";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+let prepareNavigationFont: typeof import("../src/scripts/navigation-font").prepareNavigationFont;
+beforeEach(async () => {
+    vi.resetModules();
+    ({ prepareNavigationFont } = await import("../src/scripts/navigation-font"));
+});
 
 const nextPage = (href: string | null) =>
     ({
@@ -59,12 +64,48 @@ describe("navigation font preparation", () => {
         ).resolves.toBeUndefined();
         mockFace(() => new Promise(() => {}));
         const timed = prepareNavigationFont(nextPage("/font.woff2"), new AbortController().signal);
-        await vi.advanceTimersByTimeAsync(1000);
+        await vi.advanceTimersByTimeAsync(150);
         await expect(timed).resolves.toBeUndefined();
         const controller = new AbortController();
         const aborted = prepareNavigationFont(nextPage("/font.woff2"), controller.signal);
         controller.abort();
         await expect(aborted).resolves.toBeUndefined();
         expect(vi.getTimerCount()).toBe(0);
+    });
+
+    it("shares pending loads and revisits without installing or reloading a face", async () => {
+        vi.useFakeTimers();
+        const load = vi.fn(() => new Promise(() => {}));
+        const face = mockFace(load);
+        const first = prepareNavigationFont(
+            nextPage("/shared.woff2"),
+            new AbortController().signal,
+        );
+        const second = prepareNavigationFont(
+            nextPage("/shared.woff2"),
+            new AbortController().signal,
+        );
+        await vi.advanceTimersByTimeAsync(150);
+        await Promise.all([first, second]);
+        expect(face).toHaveBeenCalledOnce();
+        expect(load).toHaveBeenCalledOnce();
+    });
+
+    it("evicts old faces, retries failures and tolerates malformed URLs", async () => {
+        const load = vi
+            .fn()
+            .mockRejectedValueOnce(new Error("offline"))
+            .mockResolvedValue(undefined);
+        const face = mockFace(load);
+        const signal = new AbortController().signal;
+        await prepareNavigationFont(nextPage("http://[invalid"), signal);
+        expect(face).not.toHaveBeenCalled();
+        await prepareNavigationFont(nextPage("/retry.woff2"), signal);
+        await prepareNavigationFont(nextPage("/retry.woff2"), signal);
+        expect(load).toHaveBeenCalledTimes(2);
+        for (let index = 0; index < 16; index++)
+            await prepareNavigationFont(nextPage(`/page-${index}.woff2`), signal);
+        await prepareNavigationFont(nextPage("/retry.woff2"), signal);
+        expect(load).toHaveBeenCalledTimes(19);
     });
 });

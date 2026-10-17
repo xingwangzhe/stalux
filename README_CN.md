@@ -183,13 +183,11 @@ id: head
 bingClarityId: "YOUR_CLARITY_PROJECT_ID"
 ```
 
-> 当前分支的 Partytown 迁移是未发布候选。典型路由测试中 TBT 下降，但首页和分类页的 LCP 存在回退，尚未完成性能验收。以下说明描述候选实现。
-
-`stalux()` 内置 Partytown：Google Analytics、Clarity 和 Umami 的第三方脚本在 Web Worker 中执行，消费项目无需额外添加 Partytown 集成。主题通过 `astro:page-load` 发送页面统计，并在支持 `Element.moveBefore()` 的浏览器中保留导航期间的 worker。Vercount 在主窗口异步加载，避免可见计数等待 worker 启动和跨线程 DOM 通信；每次 `astro:page-load` 后执行一次，重新绑定新页面计数节点，并读取当前 URL 和本站访客 Cookie。
+Google Analytics、Clarity 和 Umami 使用低优先级的原生异步脚本，每个 SDK 在会话中只加载一次，加载失败不会阻塞正文或站内导航。Vercount 在每次 `astro:page-load` 后重新绑定计数节点。GA 显式发送每页 pageview；Umami 关闭 SDK 自动 pageview，保留点击事件采集，并在异步加载前记录各页 URL、标题和 referrer，避免快速导航时串页。已有旧版 Partytown 会话首次遇到新运行时会整页刷新一次，避免旧监听器重复上报。
 
 使用 Google Analytics 时，请在 **管理 → 数据流 → 增强型衡量 → 网页浏览量 → 高级设置** 关闭“根据浏览器历史记录事件判断的页面更改”。主题已设置 `send_page_view: false` 并显式发送每次导航的 URL 和标题；GA 的历史自动统计需要在后台单独关闭，否则软导航会重复计数。其他增强型衡量选项可以保留。参见 [Google 页面浏览量文档](https://developers.google.com/analytics/devguides/collection/ga4/views)。
 
-`bingClarityId` 是 Stalux 沿用的字段名，实际对应 Microsoft Clarity Project ID。登录 Clarity 后，在项目 **Settings → Setup → Get tracking code** 中获取对应 ID。Stalux 会通过 Partytown 加载 tracking code，并在支持保留 worker 的浏览器中保持单个 loader。不要再通过 `anyhead`、Tag Manager 或其他插件重复接入同一个项目。
+`bingClarityId` 是 Stalux 沿用的字段名，实际对应 Microsoft Clarity Project ID。登录 Clarity 后，在项目 **Settings → Setup → Get tracking code** 中获取对应 ID。Stalux 异步加载 tracking code，并在软导航期间保持单个 loader，由 SDK 自行处理历史导航。不要再通过 `anyhead`、Tag Manager 或其他插件重复接入同一个项目。
 
 Project ID 是公开的浏览器标识；不要把 Clarity Data Export API token 写入这个 YAML 或任何前端代码。如果站点使用严格 CSP、Cookie 横幅或 CMP，请由宿主站点自行配置相应策略和同意信号；主题不替站点判断法律合规。
 

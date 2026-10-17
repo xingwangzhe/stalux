@@ -1,3 +1,4 @@
+/// <reference path="./env.d.ts" />
 import { forEachBounded } from "./internal/bounded-tasks.ts";
 import { compactStylesPlugin } from "./internal/compact-styles.ts";
 import { modernCssTargets } from "./internal/modern-css.ts";
@@ -16,7 +17,6 @@ import { copyFileSync, existsSync, promises as fs, readdirSync, readFileSync } f
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import { mermaidHast, mermaidMdast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
@@ -39,10 +39,13 @@ import {
 } from "./internal/font-slices";
 import { findHtmlImages } from "./internal/html-images";
 import { createHtmlMutationEmitter } from "./internal/html-output";
+import { promoteCodeStyles } from "./internal/html-styles";
 import { type ImageDimensions, updateLocalImageDimensions } from "./internal/image-dimensions";
 import { createInjectedRoutes } from "./internal/injected-routes";
 import { markdownPropagationPlugin } from "./internal/markdown-propagation";
+import { containMermaidSvgs } from "./internal/offscreen-layout";
 import { createPageOutputCache } from "./internal/page-output-cache";
+import { isPluginProject } from "./internal/project-mode";
 import { syncBackgroundSvgs, syncFontAssets } from "./internal/public-assets";
 import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
 import {
@@ -50,7 +53,9 @@ import {
     collectPluginNames,
     prepareSatteriProcessor,
 } from "./internal/satteri-config";
+import { searchStylePlugin } from "./internal/search-style";
 import { createViteAliases } from "./internal/vite-aliases";
+import { webMcpMutationsPlugin } from "./internal/webmcp-mutations";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { temml } from "./plugins/satteri-temml";
 import { describeError } from "./utils/diagnostics";
@@ -110,9 +115,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
         ...options,
     };
 
-    // 探测是否为插件模式（通过 npm 安装）vs 源码开发模式
-    // 安装在 node_modules 中时，页面的文件路由不可用，需要通过 injectRoute 注入
-    const isPluginMode = import.meta.url.includes("node_modules");
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
 
     const coreIntegration: AstroIntegration = {
@@ -128,6 +130,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 logger,
             }) => {
                 const started = performance.now();
+                const isPluginMode = isPluginProject(config.root, new URL("../", import.meta.url));
                 const configLogger = logger.fork("stalux/config");
                 const routesLogger = logger.fork("stalux/routes");
                 const markdownLogger = logger.fork("stalux/markdown");
@@ -139,7 +142,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     path.resolve(srcDir, "../package.json"),
                     path.join(srcDir, "styles"),
                     JSON.stringify([styleNames, modernCssTargets]) +
-                        readFileSync(path.join(srcDir, "internal/compact-styles.ts"), "utf8"),
+                        readFileSync(path.join(srcDir, "internal/compact-styles.ts"), "utf8") +
+                        readFileSync(path.join(srcDir, "internal/offscreen-layout.ts"), "utf8"),
                     path.resolve(fileURLToPath(config.root), opt.contentDir ?? "stalux", "config"),
                 );
 
@@ -152,6 +156,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             config.build.inlineStylesheets === "always" ? "always" : "never",
                     },
                     vite: {
+                        optimizeDeps: { exclude: ["@mcp-b/webmcp-polyfill"] },
                         css: { lightningcss: { targets: modernCssTargets } },
                         build: {
                             target: config.vite.build?.target ?? "esnext",
@@ -162,6 +167,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             alias: createViteAliases(srcDir),
                         },
                         plugins: [
+                            searchStylePlugin(command === "dev", config.base),
+                            webMcpMutationsPlugin(),
                             ...(command === "build"
                                 ? [markdownPropagationPlugin(), compactStylesPlugin(srcDir)]
                                 : []),
@@ -371,6 +378,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             "internal/image-dimensions.ts",
                             "internal/html-images.ts",
                             "internal/html-output.ts",
+                            "internal/html-styles.ts",
+                            "internal/offscreen-layout.ts",
                             "internal/page-output-cache.ts",
                             "internal/style-names.generated.ts",
                             "plugins/feature-flags.ts",
@@ -419,6 +428,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     const dependencies = new Set<string>();
                     const document = parse(before, { sourceCodeLocationInfo: true });
                     const emitHtml = createHtmlMutationEmitter(before, document);
+                    promoteCodeStyles(document);
+                    containMermaidSvgs(document);
                     removePageFontStyles(document);
                     const images = findHtmlImages(before, document);
                     await updateLocalImageDimensions(images, outDir, {
@@ -524,13 +535,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     };
 
     // 打包内置集成：Astro 的 integrations 配置支持嵌套数组并自动展平（schema 里 val.flat(Infinity)），
-    // 因此这里返回 [coreIntegration, partytown, sitemap, expressiveCode]，让消费方一行 `integrations: [stalux()]` 即可完成配置。
-    const bundled: AstroIntegration[] = [
-        coreIntegration,
-        partytown({
-            config: { forward: ["dataLayer.push", "gtag"], mainWindowAccessors: ["CSS"] },
-        }),
-    ];
+    // 因此这里返回 [coreIntegration, sitemap, expressiveCode]，让消费方一行 `integrations: [stalux()]` 即可完成配置。
+    const bundled: AstroIntegration[] = [coreIntegration];
 
     if (opt.sitemap !== false) {
         const userSitemap = opt.sitemap === true ? undefined : opt.sitemap;

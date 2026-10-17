@@ -1,5 +1,17 @@
 # Stalux development instructions
 
+## 云平台操作：CLI 优先（用户明确要求）
+
+查询 CI/CD、部署状态、构建日志、项目配置和其他云平台信息时，默认使用 CLI，不主动打开网页控制台。
+
+| 平台 | 首选工具 | 执行规则 |
+| --- | --- | --- |
+| Cloudflare | `cf` CLI | 本工作区默认使用 `cf`；项目存在 Wrangler 配置时按项目约定使用 Wrangler。命令发现先用匿名任务描述执行 `cf cli search`，再查匹配命令的帮助和 schema。 |
+| 腾讯云 / EdgeOne | `tccli`（腾讯云 CLI，用户称 tccl） | 优先查询 `tccli` 已支持的只读 API；EdgeOne Makers/Pages 接口若不在当前 `tccli` SDK 中，先核对命令能力，再使用已登录的 `edgeone` CLI 或其官方只读 API，不因 CLI 没有直接子命令就转向网页。 |
+| 网页控制台 | 用户明确要求或同意后使用 | 不自行转向网页控制台。CLI/API 确实受限时，先说明具体限制，由用户决定是否使用网页；获准后默认系统浏览器，任务结束不关闭标签页。 |
+
+凭据只从现有 CLI 登录状态或本地配置读取，不打印 token、SecretId、SecretKey，不写入 AGENTS.md、源码、日志或提交。CI 耗时须核对同一 commit，区分平台构建阶段、排队/安装/发布和整条部署流水线，不能用 GitHub 检查结果回传时间代替真实构建时间。
+
 ## Astro 官方文档 MCP（优先使用）
 
 涉及 Astro API、集成钩子、构建阶段或 ClientRouter 生命周期时，优先查询 **Astro 官方文档 MCP**，再结合本项目安装版本的源码核对行为。不能仅因当前会话工具列表没有 Astro，就判断官方没有 MCP。
@@ -23,9 +35,9 @@
 | `astro:page-load` | 通过 `src/scripts/page-runtime.ts` 挂载当前 DOM 的交互；WebMCP 也在此注册当前页工具。晚加载的补偿微任务不能覆盖已经发生的导航事件。 |
 | `astro:before-swap` | 清理页面交互、注销 WebMCP 工具并中止旧页注册批次；等待中的注册完成或失败后不能继续注册后续工具。 |
 
-页面字体由构建期 AST 写入同源 `preload`；软导航在 `astro:before-preparation` 包装原 loader，准备目标页字体后再进入 swap，最多等待 1 秒，失败和取消不阻断导航。不得在旧页尚可见时安装目标页 FontFace，也不得无限等待字体。打字区域通过重叠的完整文案预留最大换行高度，时钟行高和滚动条空间必须稳定。
+页面字体由构建期 AST 写入同源 `preload`；软导航在 `astro:before-preparation` 包装原 loader，为目标页字体最多预留 150 毫秒，再进入 swap；会话内最多保留 16 个独立 FontFace，复用进行中或已完成的载入，失败可重试，取消不阻断导航。不得在旧页尚可见时安装目标页 FontFace，也不得无限等待字体。打字区域通过重叠的完整文案预留最大换行高度，时钟行高和滚动条空间必须稳定。
 
-背景跨页淡入淡出、View Transition 路由属性和统计服务属于跨页生命周期；不得机械地在每次换页时销毁持久状态。清理异常仍需释放共享页面运行时的监听器和注册键。50 次模拟事件的回归测试用于验证工具注册数量与注销，不等同于真实浏览器的 50 次导航内存测量。
+背景在 before-preparation 低优先级预解码，page-load 后等待内容 View Transition 完成再淡入；过期导航的解码结果不得提交。根 html 必须有稳定深色底色，不能仅依赖异步 SVG。文章标题和正文直接可读，不再叠加延迟 360ms 的内容入场动画。背景跨页淡入淡出、View Transition 路由属性和统计服务属于跨页生命周期；不得机械地在每次换页时销毁持久状态。清理异常仍需释放共享页面运行时的监听器和注册键。50 次模拟事件的回归测试用于验证工具注册数量与注销，不等同于真实浏览器的 50 次导航内存测量。
 
 ### Markdown / HTML AST 边界
 
@@ -139,3 +151,34 @@ cat /tmp/indexnow-response
 ### 验证
 
 发布后分别检查文章 URL、canonical、robots、sitemap、IndexNow 响应和 Search Console 状态。把“submitted/accepted”“Google request submitted”和“indexed”作为三个不同状态记录。
+
+## 运行时消费方验收
+
+改运行时先链接 Stalux 到独立 myblog 副本进行 dev 测试，再安装实体打包内容构建两次并测试 preview。插件模式按项目真实根目录判断，不按导入路径是否包含 node_modules 判断。副本放在与主题有共同工作区父目录的位置；Astro 7.4 在跨 /tmp 与 /home 的外部组件样式虚拟路径上可能误解析。集成钩子、Vite 插件改动后显式重启 dev；普通源码热更新不能证明钩子已重载。
+
+Pagefind CSS 的虚拟模块只在 dev 返回已允许访问的文件 URL，避免 CSS ?url 被 Astro 当作模块脚本请求；生产仍走 Vite 正常的哈希资源管线。dev 默认不生成 Pagefind 索引，验收搜索结果时可把同内容快照的生产 pagefind 目录复制到副本 public/pagefind，不能因此改真实项目。
+
+WebMCP polyfill 5.1.0 的声明式观察器优化只过滤不影响工具定义的文本/样式变化；表单、外置控件和标签、slot、开放 shadow tree 的变化仍需同步。源码匹配失败或版本变化时使用原实现。必须在真实浏览器验证表单新增、属性修改、移除与 shadow tree，不得只验证七个程序式工具。
+
+手机和桌面分别测冷/热加载与站内点击。Lighthouse 首屏分数不能代表软导航 INP；记录 HTML/样式准备、字体等待、swap、内容可见和过渡结束的独立时间，布局变化同时报告包含近期输入的原始位移。每条主要路线至少 20 次，Lighthouse 至少三次；真实连续导航至少 50 次，内存和监听器在相同页面、相同稳定等待后比较。不要把首次加载模块造成的增长当成持续泄漏，也不要把强制 GC 导致的第三方弱引用异常隐藏。
+
+本轮命令、固定页面与原始报告保存在工作区 work/runtime-20261017/；Node 固定为 26.12.0。官方 Astro Docs MCP 本轮规划阶段返回 HTTP 403 / Error 1010，生命周期依据官方文档和安装的 Astro 7.4.0 源码核对。
+
+统计 SDK 使用浏览器原生异步脚本和低网络优先级；不再通过 Partytown 转发 DOM 事件。GA 保留配置队列与每次 page-load 的单次手动 pageview；Umami 使用 data-auto-pageview=false，保留 SDK 的点击事件能力，并在 SDK 加载前捕获每页 URL/title/referrer，不能把排队访问全部归到最后一页。SDK 加载/发送失败不得拒绝路由流程，失败加载允许后续页面重试。已打开的旧 worker 会话首次遇到新运行时会整页刷新一次，防止旧匿名监听器与新实现重复上报。
+
+归档预览只能在桌面悬停或键盘 focus-visible 时出现；触屏/鼠标 focusin 不得吞掉导航点击。浮层优先右侧，窄屏下应避开标题并按可用空间限制高度；链接点击立即收起浮层。验收必须覆盖靠近视口底部的标题首次触屏点击，不能只测页面中间位置。
+
+正式导航计时禁用持续截图、DOM 快照与样式轮询；重型 CDP 轨迹单独录制。首次目标访问与字体预热单列，再采集 20 次有效热导航。记录原生 preview 的 no-cache 与已核对线上 immutable 哈希资源策略之间的差别，不把缓存策略差异冒充源码优化。布局位移按每次导航和标准会话窗口分析，不能把整个多页测试累计的 layout-shift 值当成单页 CLS。
+
+归档列表的月份和文章分组使用真实流布局，不嵌套 content-visibility:auto 与固定估算高度。长标题和手机换行使估算失真，进入视口或返回归档时会产生明显位移；若以后重新引入跳过布局，须在真实内容中覆盖跨月份滚动、返回归档和 CLS，不可只看首屏分数。
+
+生产后处理必须将 Expressive Code 正文里的外部样式引用移到 head（跳过 noscript/template 示例），让 Astro 路由在 swap 前预载代码 CSS。仅隐藏正文的延迟动画会掩盖首次软导航的无样式代码闪现，不能替代关键样式准备；冷缓存进入第一篇代码文章也须检查位移。
+
+
+代码密集文章只对已确认不换行的 Expressive Code 行容器使用 `content-visibility:auto`，以实际 `.ec-line` 数量乘继承 `1lh` 保留精确块高度；自定义高度/containment 或 wrap 模式必须跳过。Mermaid 仅处理带有效 viewBox 的真实生成 SVG，以精确 aspect-ratio 保留尺寸，不能给普通图标加估算高度。打印必须强制展开，延后绘制后仍要检查横向滚动、完整复制和键盘 tabindex；读取 scrollWidth 前先确认容器已经绘制，不要为了检测溢出强制展开所有屏外代码。生产缓存键必须包含此处理源码，不能恢复缺少优化标记的旧 HTML。
+
+Clarity 的历史导航由原生 SDK 自行处理，主题不跨帧调用 stop/start 暂停录制。0.8.72-beta 的异步压缩上传在 stop 后仍读取已清空元数据，拉长停止窗口会暴露 null.sequence 异常；不要用这项微优化换取短期分数。真实 SDK 必须继续加载和发送；每次发布检查首次进入加多次切换的 GA/Umami 页面事件数量与实际 URL，并确认 Clarity 继续采集。
+
+本轮复测脚本与参数保存在 `../work/runtime-20261017/`。使用显式 Node 26 路径，通过 `powerprofilesctl launch --profile performance --reason 'Stalux runtime audit' --appid stalux-runtime sh run-final.sh` 临时固定电源档位；脚本结束自动释放。单独运行 `node audit.mjs <label> <preview-or-cache-proxy-url> 20`、`node stress.mjs <label> <preview-url>`（手机加 `DEVICE=mobile`）与 `python3 lighthouse-run.py <label> <preview-url>`；每次运行前记录源码、包和内容快照，不复用不同候选的 JSON。审计网络拦截会关闭 Playwright HTTP cache，不得将阻断服务后的时延与正常热缓存结果直接比较。
+
+手机文章的阅读时长、字数与访问计数区域需保留能容纳 fallback 字体和计数加载状态的最小高度，允许内容继续扩展。不能只隐藏计数器或延迟显示正文来避免位移；验收需覆盖首次字体替换及 Vercount 从 Loading/隐藏到真实值的过程，并检查正文起点的移动。

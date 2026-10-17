@@ -22,6 +22,8 @@
     /* Reserve the classic scrollbar before content height changes across routes. */
     html {
         scrollbar-gutter: stable;
+        /* Paint a stable dark canvas before the optional background image decodes. */
+        background-color: var(--stalux-bg-color, #202020);
     }
 
     html[data-clarity-id] {
@@ -372,5 +374,13 @@
         .stalux-link-card-avatar img {
             transform: none !important;
         }
+    }
+}
+
+@media print {
+    [data-stalux-offscreen-code],
+    [data-stalux-offscreen-svg] {
+        content-visibility: visible !important;
+        contain-intrinsic-block-size: none !important;
     }
 }

@@ -118,4 +118,10 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
     </section>
 </article>
 
-<script src="../../../scripts/photoswipe.ts"></script>
+<script>
+import "../../../scripts/photoswipe";
+import { mountCodeAccessibility } from "../../../scripts/code-accessibility";
+import { registerPageLifecycle } from "../../../scripts/page-runtime";
+
+registerPageLifecycle("code-accessibility", mountCodeAccessibility);
+</script>

@@ -100,6 +100,35 @@ assert(
     "archives must retain static article links",
 );
 
+// A cold soft navigation must prepare EC CSS before exposing code blocks.
+function verifyCodeStylePlacement(
+    node: DefaultTreeAdapterMap["node"],
+    inHead = false,
+    inCode = false,
+): void {
+    if ("tagName" in node) {
+        if (node.tagName === "template" || node.tagName === "noscript") return;
+        inHead ||= node.tagName === "head";
+        inCode ||= (node.attrs.find((a) => a.name === "class")?.value.split(/\s+/u) ?? []).includes(
+            "expressive-code",
+        );
+        if (
+            inCode &&
+            node.tagName === "link" &&
+            node.attrs.some((a) => a.name === "rel" && a.value === "stylesheet")
+        ) {
+            assert(inHead, "code stylesheet must be prepared in head before soft navigation swap");
+        }
+    }
+    if ("childNodes" in node)
+        for (const child of node.childNodes) verifyCodeStylePlacement(child, inHead, inCode);
+}
+verifyCodeStylePlacement(parse(pages.post));
+assert(
+    /<head[\s\S]*?href="[^"<>]*\/ec\.[^"<>]+\.css"[\s\S]*?<\/head>/u.test(pages.post),
+    "code fixture has no prepared EC stylesheet",
+);
+
 const searchStyle = pages.home.match(/<link\b[^>]*data-stalux-search-style[^>]*>/u)?.[0];
 assert(searchStyle, "search CSS asset link is missing");
 const initialStyleLinks = [
@@ -126,6 +155,23 @@ assert(
 );
 assert(searchStyle.includes('rel="prefetch"'), "search CSS must not block the first paint");
 assert(searchStyle.includes('as="style"'), "search CSS must be emitted as a stylesheet asset");
+const eagerStyles = new Set<string>();
+let deferredSearchHref: string | undefined;
+function collectSearchLinks(node: DefaultTreeAdapterMap["node"]): void {
+    if ("tagName" in node && node.tagName === "noscript") return;
+    if ("tagName" in node && node.tagName === "link") {
+        const attributes = new Map(node.attrs.map(({ name, value }) => [name, value]));
+        const href = attributes.get("href");
+        if (attributes.has("data-stalux-search-style")) deferredSearchHref = href;
+        if (href && attributes.get("rel") === "stylesheet") eagerStyles.add(href);
+    }
+    if ("childNodes" in node) for (const child of node.childNodes) collectSearchLinks(child);
+}
+collectSearchLinks(parse(pages.home));
+assert(
+    deferredSearchHref && !eagerStyles.has(deferredSearchHref),
+    "closed search UI must not also inject its deferred CSS as a blocking stylesheet",
+);
 assert(
     /<noscript><link[^>]+rel="stylesheet"/u.test(pages.home),
     "search CSS needs a no-script fallback",

@@ -9,11 +9,11 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-archive-year-count":
             "ml-4 text-[0.9rem] p-[0.3rem_0.8rem] bg-[var(--accent-20p)] rounded-4 text-ink-90",
         "stalux-archive-month-section":
-            "relative [content-visibility:auto] [contain-intrinsic-block-size:auto_var(--archive-estimate,_600px)] ml-[calc(-1_*_var(--tl-pad))] pl-[var(--tl-pad)] mb-7",
+            "relative ml-[calc(-1_*_var(--tl-pad))] pl-[var(--tl-pad)] mb-7",
         "stalux-archive-no-posts":
             "text-center w-full p-[3rem_1rem] text-ink-70 text-[1.2rem] bg-[var(--black-10p)] rounded-2",
         "stalux-archive-post-list":
-            "list-none [content-visibility:auto] [contain-intrinsic-block-size:auto_var(--archive-group-estimate,_576px)] p-[0_0_0_var(--tl-pad)] m-[0_0_0_calc(-1_*_var(--tl-pad))]",
+            "list-none p-[0_0_0_var(--tl-pad)] m-[0_0_0_calc(-1_*_var(--tl-pad))]",
         "stalux-archive-post-date": "text-ink-60 text-[0.85rem] min-w-[90px]",
         "stalux-archive-post-link": "no-underline",
         "stalux-archives-archives-container": "max-w-[1000px] m-[0_auto] p-[2rem_1rem]",
@@ -155,8 +155,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
             "grid w-full box-border [flex:1] [grid-template-columns:280px_minmax(0,_1fr)_280px] gap-6 max-w-[1544px] min-w-0 m-[0_auto] p-[1.5rem_1rem]",
         "stalux-article":
             "w-full min-h-screen stalux-stack box-border [flex:1] stalux-glass [box-shadow:var(--surface-glass-shadow)] rounded-[18px] min-w-0 max-w-full p-[clamp(1rem,_2vw,_2rem)]",
-        "stalux-post-article-header":
-            "mb-12 pb-8 [border-bottom:1px_solid_var(--white-10p)] [animation:stalux-post-content-reveal_220ms_ease_360ms_both]",
+        "stalux-post-article-header": "mb-12 pb-8 [border-bottom:1px_solid_var(--white-10p)]",
         "stalux-post-title":
             "font-bold text-center text-10 text-ink-full m-[0_0_1.5rem] leading-[1.2] [overflow-wrap:anywhere] stalux-glow",
         "stalux-post-metadata":
@@ -168,12 +167,11 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-post-reading-time": "inline-flex items-center [gap:0.3rem]",
         "stalux-post-meta-row": "flex justify-center [flex-basis:100%]",
         "stalux-post-body":
-            "max-w-full box-border [flex:1] min-w-0 w-[min(840px,_100%)] m-[0_auto] p-[0_0_2rem] [animation:stalux-post-content-reveal_220ms_ease_360ms_both]",
+            "max-w-full box-border [flex:1] min-w-0 w-[min(840px,_100%)] m-[0_auto] p-[0_0_2rem]",
         "stalux-post-source-link-row": "flex justify-center mt-[1.2rem]",
         "stalux-post-source-link":
             "inline-flex items-center no-underline [gap:0.4rem] p-[0.5rem_1.1rem] text-[0.85rem] [font-weight:500] text-ink-full [background:var(--white-10p)] [border-top:1px_solid_var(--white-20p)] [border-right:1px_solid_var(--white-20p)] [border-left:1px_solid_var(--white-20p)] [border-bottom:0] rounded-[var(--radius-full,_999px)] [transition:background_var(--transition-fast),_transform_var(--transition-fast)]",
-        "stalux-post-article-footer":
-            "mt-12 pt-8 [border-top:1px_solid_var(--white-10p)] [animation:stalux-post-content-reveal_220ms_ease_360ms_both]",
+        "stalux-post-article-footer": "mt-12 pt-8 [border-top:1px_solid_var(--white-10p)]",
         "stalux-post-footer-content": "stalux-stack gap-lg",
         "stalux-license-box":
             "relative overflow-hidden bg-[var(--black-10p)] p-lg rounded-stalux-md [border:var(--border-thin)_solid_var(--white-20p)] max-w-[80%] m-[var(--space-lg)_auto]",
