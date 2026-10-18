@@ -34,7 +34,7 @@ bunx stalux init                    # 生成 stalux/ 内容目录
 需要 Node.js 26 或更高版本。然后配置 `astro.config.ts`。所有插件都由 Stalux 集成默认打包注入，**无需手动配置**：
 
 - **Markdown**：Mermaid（MDAST 识别 + HAST/SVG 渲染）、数学公式（Temml → MathML）、字数统计/特性标记、PhotoSwipe 图片灯箱，全部自动注入默认的 `satteri()` processor（math / frontmatter / gfm / 智能标点默认开启）。
-- **Sitemap**：自动打包 `@astrojs/sitemap`（`promote.export_md: true` 时收录已发布文章 `/posts/*.md` 导出端点，默认过滤其它页面的 Markdown 镜像端点）。
+- **Sitemap**：构建完成后自动生成 `/sitemap.xml`（单文件时复制 `sitemap-0.xml`，多文件时复制索引以保留完整 URL）。自动打包 `@astrojs/sitemap`（`promote.export_md: true` 时收录已发布文章 `/posts/*.md` 导出端点，默认过滤其它页面的 Markdown 镜像端点）。
 - **Expressive Code**：自动打包，默认启用代码块行号。
 
 ```ts

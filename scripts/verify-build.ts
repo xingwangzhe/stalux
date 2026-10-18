@@ -269,6 +269,7 @@ for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
 }
 
 const sitemap = read("sitemap-0.xml");
+assert(read("sitemap.xml") === sitemap, "sitemap.xml must match the single sitemap output");
 assert(
     sitemap.includes("/posts/0035a0ee.md</loc>"),
     "sitemap is missing the generated Markdown post endpoint",

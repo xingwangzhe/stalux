@@ -602,6 +602,26 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 customPages,
                 filter,
             }),
+            {
+                name: "stalux/sitemap-alias",
+                hooks: {
+                    // Run after @astrojs/sitemap has written its output.
+                    "astro:build:done": async ({ dir, logger }) => {
+                        const base = userSitemap?.filenameBase ?? "sitemap";
+                        const source = new URL(`${base}-0.xml`, dir);
+                        if (!existsSync(source)) return;
+                        // Keep every URL discoverable when a site uses multiple chunks.
+                        const index = new URL(`${base}-index.xml`, dir);
+                        const indexXml = await fs.readFile(index, "utf8");
+                        const hasMultipleSitemaps = (indexXml.match(/<sitemap>/g)?.length ?? 0) > 1;
+                        await fs.copyFile(
+                            hasMultipleSitemaps ? index : source,
+                            new URL("sitemap.xml", dir),
+                        );
+                        logger.info("Generated sitemap.xml");
+                    },
+                },
+            },
         );
     }
 
