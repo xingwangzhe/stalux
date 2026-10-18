@@ -16,7 +16,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 // 为客户端脚本准备配置对象：先给默认配置，再用实际传入的 props 覆盖。
 // 这样避免把同一组字段在 Props 接口、解构默认值、init 调用里各写一遍。
 const walineConfig = {
-    path: typeof window !== "undefined" ? window.location.pathname : "",
+    path: Astro.url.pathname,
     title: "",
     serverURL: "",
     lang: (siteConfig.lang as string) || "zh-CN",
@@ -57,6 +57,12 @@ const walineConfig = {
     >
         <h2 class="waline-comment-title">{t("comment.title")}</h2>
         <div id="waline-comment" class="waline-comment" data-nosnippet />
+        <p data-waline-feedback role="status" hidden>
+            {t("comment.loadError")}
+        </p>
+        <button type="button" class="waline-retry" data-waline-retry hidden>
+            {t("comment.retry")}
+        </button>
         <div class="comments-seo-notice" style="display:none">
             {t("comment.disclaimer")}
         </div>

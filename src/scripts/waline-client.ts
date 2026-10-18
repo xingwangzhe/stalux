@@ -12,12 +12,23 @@ export function mountWaline(config: Record<string, unknown>, element: HTMLElemen
         ...config,
         el: element,
         serverURL: config.serverURL,
-        path: typeof config.path === "string" ? config.path : window.location.pathname,
+        path:
+            typeof config.path === "string" && config.path.trim()
+                ? config.path
+                : window.location.pathname,
     } as WalineInitOptions;
-    const instance = init(options);
-
-    return () => {
-        instance?.destroy();
+    try {
+        const instance = init(options);
+        if (!instance || instance.el !== element) throw new Error("Waline mount failed");
+        return () => {
+            try {
+                instance.destroy();
+            } finally {
+                style.remove();
+            }
+        };
+    } catch (error) {
         style.remove();
-    };
+        throw error;
+    }
 }

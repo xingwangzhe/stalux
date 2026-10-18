@@ -67,7 +67,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-nav-item": "shrink-0 text-[1.3em] mr-[1em] ml-[1em] stalux-glow",
         "stalux-nav-text": "whitespace-nowrap text-ink-full",
         "stalux-nav-toggle":
-            "hidden text-inherit cursor-pointer [background:none] [border:none] p-3 z-[1001] min-w-[48px] min-h-[48px]",
+            "hidden text-inherit cursor-pointer [background:none] [border:none] p-3 z-[998] min-w-[48px] min-h-[48px]",
         "stalux-nav-overlay":
             "hidden fixed h-full pointer-events-none top-0 left-0 [background:rgba(0,_0,_0,_0.6)] z-[999] opacity-0 [transition:opacity_0.3s_ease]",
         "stalux-page-title": "stalux-glow mt-[1.5em] text-[2.5em]",
@@ -203,10 +203,10 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-word-list-list": "stalux-stack items-center p-0 list-none gap-6 m-[2rem_auto]",
         "stalux-word-list-item": "w-full flex max-w-[900px]",
         "stalux-word-card":
-            "w-full box-border stalux-stack stalux-glass rounded-[var(--radius-lg,_12px)] p-6 shadow-stalux [transition:transform_var(--transition-normal),_box-shadow_var(--transition-normal)] gap-3",
-        "stalux-word-body": "text-ink-80 leading-[1.7] text-[1.05rem]",
+            "relative w-full min-w-0 box-border stalux-stack stalux-glass rounded-[var(--radius-lg,_12px)] p-[1.75rem_2rem] shadow-stalux [transition:border-color_var(--transition-normal),_box-shadow_var(--transition-normal)] gap-4",
+        "stalux-word-body": "relative min-w-0 text-ink-90 leading-[1.9] text-[1.1rem]",
         "stalux-word-footer":
-            "flex justify-between items-center mt-auto pt-3 [border-top:1px_solid_var(--white-10p)] gap-4 text-[0.9rem] text-ink-60",
+            "flex flex-wrap justify-between items-center mt-auto pt-4 [border-top:1px_solid_var(--white-10p)] gap-3 text-[0.85rem] text-ink-70",
         "stalux-word-date": "[font-variant-numeric:tabular-nums] text-ink-50",
         "stalux-word-source-meta": "stalux-flex-row flex-wrap gap-2 justify-end",
         "stalux-word-source-date": "italic text-ink-50",

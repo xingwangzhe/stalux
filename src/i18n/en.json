@@ -81,7 +81,9 @@
     },
     "comment": {
         "title": "Comments",
-        "disclaimer": "Comments are user-generated and do not reflect the views of this site."
+        "disclaimer": "Comments are user-generated and do not reflect the views of this site.",
+        "loadError": "Comment resources failed to load. Please try again.",
+        "retry": "Reload page"
     },
     "randomPost": {
         "title": "Random Post",

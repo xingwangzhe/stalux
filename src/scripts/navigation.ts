@@ -31,6 +31,7 @@ async function openSearchDialog(signal: AbortSignal): Promise<void> {
 }
 
 registerPageLifecycle("navigation", () => {
+    const siteNav = document.querySelector<HTMLElement>("[data-ref='stalux-site-nav']");
     const navList = document.querySelector<HTMLElement>("[data-ref='stalux-nav-list']");
     const navToggle = document.querySelector<HTMLElement>("[data-ref='stalux-nav-toggle']");
     const navOverlay = document.querySelector<HTMLElement>("[data-ref='stalux-nav-overlay']");
@@ -45,13 +46,27 @@ registerPageLifecycle("navigation", () => {
     let needsScale = true;
     const mobileNav = window.matchMedia("(max-width: 600px)");
 
+    const updateNavSurface = () => {
+        siteNav?.toggleAttribute("data-scrolled", window.scrollY > 24);
+        navToggle?.toggleAttribute("data-scrolled", window.scrollY > 24);
+    };
+    window.addEventListener("scroll", updateNavSurface, {
+        passive: true,
+        signal: controller.signal,
+    });
+    updateNavSurface();
+
     const closeNav = () => {
         navList.removeAttribute("data-state");
+        navToggle?.removeAttribute("data-state");
+        navToggle?.setAttribute("aria-expanded", "false");
         navOverlay?.removeAttribute("data-state");
         document.body.style.overflow = "";
     };
     const openNav = () => {
         navList.dataset.state = "open";
+        navToggle?.setAttribute("data-state", "open");
+        navToggle?.setAttribute("aria-expanded", "true");
         navOverlay?.setAttribute("data-state", "show");
         document.body.style.overflow = "hidden";
     };
@@ -60,6 +75,8 @@ registerPageLifecycle("navigation", () => {
         // Read layout before writing styles or attributes. Scrolling does not
         // change item sizes, so only resize events need to recalculate scale.
         const { clientWidth, scrollWidth, scrollLeft } = navList;
+        const navOffset = !mobileNav.matches && siteNav ? siteNav.offsetHeight + 16 : 0;
+        document.documentElement.style.setProperty("--stalux-nav-offset", `${navOffset}px`);
         let nextScale = lastScale;
         if (needsScale) {
             needsScale = false;
@@ -97,6 +114,8 @@ registerPageLifecycle("navigation", () => {
         if (!frameId) frameId = requestAnimationFrame(updateButtons);
     };
     const scheduleResize = () => {
+        if (!mobileNav.matches) closeNav();
+        updateNavSurface();
         needsScale = true;
         scheduleUpdate();
     };
@@ -153,5 +172,6 @@ registerPageLifecycle("navigation", () => {
         resizeObserver.disconnect();
         if (frameId) cancelAnimationFrame(frameId);
         closeNav();
+        document.documentElement.style.removeProperty("--stalux-nav-offset");
     };
 });

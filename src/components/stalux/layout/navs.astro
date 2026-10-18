@@ -15,13 +15,15 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const navs = navsConfig?.items ?? [];
 ---
 
-<nav aria-label={t("nav.main")}>
+<nav class="stalux-site-nav" data-ref="stalux-site-nav" aria-label={t("nav.main")}>
     <!-- 汉堡菜单按钮 (仅窄屏显示) -->
     <button
         type="button"
         data-ref="stalux-nav-toggle"
         class="stalux-nav-toggle"
         aria-label={t("nav.menu")}
+        aria-expanded="false"
+        aria-controls="stalux-mobile-navigation"
     >
         {MenuIcon && <MenuIcon size={20} stroke-width={2} class="nav-icon" />}
     </button>
@@ -44,6 +46,7 @@ const navs = navsConfig?.items ?? [];
         </button>
 
         <ul
+            id="stalux-mobile-navigation"
             data-ref="stalux-nav-list"
             class="stalux-nav-list stalux-u-flex stalux-u-items-center stalux-u-justify-center stalux-u-flex-wrap stalux-u-w-full stalux-u-min-w-0"
         >

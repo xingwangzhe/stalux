@@ -81,7 +81,9 @@
     },
     "comment": {
         "title": "留言评论",
-        "disclaimer": "评论区内容由用户生成，不代表网站观点"
+        "disclaimer": "评论区内容由用户生成，不代表网站观点",
+        "loadError": "评论资源加载失败，请重试。",
+        "retry": "重新加载页面"
     },
     "randomPost": {
         "title": "随机文章",

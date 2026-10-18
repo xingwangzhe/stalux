@@ -4,6 +4,7 @@ import "../../../styles/generated-words.css";
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
 
+import { Quote } from "@lucide/astro";
 import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
@@ -19,12 +20,22 @@ const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
 ---
 
 <article class="stalux-word-card" id={abbrlink ? `word-${abbrlink}` : undefined}>
+    <Quote class="stalux-word-mark" size={28} stroke-width={1.4} aria-hidden="true" />
     <div class="stalux-word-body stalux-prose" data-pagefind-body>
         <Content />
     </div>
-    {(date || source || sourceDate) && (
+    {(date || source || sourceDate || abbrlink) && (
         <footer class="stalux-word-footer">
-            {date ? (
+            {abbrlink ? (
+                <a
+                    href={`#word-${abbrlink}`}
+                    class="stalux-word-permalink a-none"
+                    data-word-hash={`#word-${abbrlink}`}
+                    aria-label={`Jump to ${abbrlink}`}
+                >
+                    {date ? <time datetime={machineDate}>{date}</time> : "#"}
+                </a>
+            ) : date ? (
                 <time class="stalux-word-date" datetime={machineDate}>
                     {date}
                 </time>

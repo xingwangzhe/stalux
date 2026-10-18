@@ -98,7 +98,7 @@ export const articleStyles: StyleSpec[] = [
     [".stalux-post-taxonomy-item-pill:active", "", { background: "var(--white-05p)" }],
     [
         ":is(.stalux-sidebar, .stalux-sidebar-right)",
-        "flex flex-col sticky h-fit w-full box-border min-w-0 overflow-y-auto top-[20px] max-h-[calc(100vh_-_40px)] gap-lg p-[var(--space-lg)_0]",
+        "flex flex-col sticky h-fit w-full box-border min-w-0 overflow-y-auto top-[var(--stalux-nav-offset,_20px)] max-h-[calc(100vh_-_var(--stalux-nav-offset,_20px)_-_20px)] gap-lg p-[var(--space-lg)_0]",
         { "scrollbar-width": "none", "-ms-overflow-style": "none" },
     ],
     [":is(.stalux-sidebar, .stalux-sidebar-right)::-webkit-scrollbar", "hidden", {}],

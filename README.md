@@ -88,6 +88,10 @@ bun run dev
 
 ---
 
+Desktop navigation sticks to the top of the viewport and gains a frosted glass background after scrolling past 24px, returning to transparent at the top. The mobile menu button gains the same glass surface while scrolling and stays hidden while its drawer is open. Quote dates provide permalink navigation while content and source links remain independently accessible.
+
+Waline loads near the viewport, destroys its instance before Astro swaps the page, and mounts a fresh instance on the next page. A reload-page button recovers from comment resource loading failures, including cached module failures. Comments and inputs use system fonts, with system monospace for code, so user-generated text does not inherit the build-time LXGW WenKai page subset. No additional configuration is required.
+
 ## ✨ Features
 
 - 🌙 **Dark mode** with elegant glassmorphism design

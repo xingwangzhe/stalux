@@ -29,11 +29,19 @@ registerPageLifecycle("waline", () => {
         return;
     }
 
+    const retry = container.querySelector<HTMLButtonElement>("[data-waline-retry]");
+    const feedback = container.querySelector<HTMLElement>("[data-waline-feedback]");
+    let loading = false;
     let disposed = false;
     let destroy: (() => void) | undefined;
     let observer: IntersectionObserver | undefined;
 
     const load = () => {
+        if (disposed || loading || destroy) return;
+        loading = true;
+        container.setAttribute("aria-busy", "true");
+        if (retry) retry.hidden = true;
+        if (feedback) feedback.hidden = true;
         observer?.disconnect();
         observer = undefined;
         void import("./waline-client")
@@ -43,11 +51,20 @@ registerPageLifecycle("waline", () => {
                 logger.debug("comment widget initialized near viewport");
             })
             .catch((error) => {
+                if (disposed) return;
+                if (retry) retry.hidden = false;
+                if (feedback) feedback.hidden = false;
                 logger.warn(
                     `comment assets failed to load (${error instanceof Error ? error.name : "unknown error"})`,
                 );
+            })
+            .finally(() => {
+                loading = false;
+                if (!disposed) container.removeAttribute("aria-busy");
             });
     };
+    const reloadPage = () => window.location.reload();
+    retry?.addEventListener("click", reloadPage);
 
     if ("IntersectionObserver" in window) {
         observer = new IntersectionObserver(
@@ -64,6 +81,7 @@ registerPageLifecycle("waline", () => {
     return () => {
         disposed = true;
         observer?.disconnect();
+        retry?.removeEventListener("click", reloadPage);
         destroy?.();
     };
 });
