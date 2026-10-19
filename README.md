@@ -18,6 +18,8 @@ Standalone images written as `![Image description](url)` receive a `figure` and 
 
 Code blocks default to the single `dark-plus` theme, with system color-scheme switching and theme selectors disabled. To opt into another theme or switching behavior, explicitly override `themes`, `useDarkModeMediaQuery`, and `themeCssSelector` through `expressiveCode`. This only changes generated code styles and adds no telemetry.
 
+Route changes automatically show a 2px accent-colored progress bar at the top of the viewport, with no configuration. Its length follows actual milestones, with slow visual growth toward a bounded ceiling while waiting: loading begins, document/font preparation finishes, the DOM swaps, and page scripts finish; completion waits for the visual transition as well. It only reaches the end when loading and the transition both complete, and does not represent download/time percentages. It handles superseded or canceled navigation, history traversal, and reduced motion without additional requests or telemetry.
+
 ---
 
 ## 🚀 Quick Start

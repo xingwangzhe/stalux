@@ -1,0 +1,55 @@
+<div
+    data-stalux-navigation-progress
+    aria-hidden="true"
+    transition:persist="stalux-navigation-progress"
+    transition:name="stalux-navigation-progress"
+    transition:animate="none"
+></div>
+
+<style is:global>
+[data-stalux-navigation-progress] {
+    position: fixed;
+    inset: 0 0 auto;
+    height: 2px;
+    z-index: 2147483647;
+    pointer-events: none;
+    background: var(--stalux-accent-color, #eab308);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    transition:
+        transform 450ms ease-out,
+        opacity 120ms ease-out;
+}
+[data-stalux-navigation-progress][data-stage] {
+    opacity: 1;
+}
+[data-stalux-navigation-progress][data-stage="complete"] {
+    transition:
+        transform 160ms ease-out,
+        opacity 120ms ease-out;
+}
+[data-stalux-navigation-progress]:not([data-stage]) {
+    transition: opacity 120ms ease-out;
+}
+::view-transition-group(stalux-navigation-progress) {
+    z-index: 2147483647;
+}
+::view-transition-old(stalux-navigation-progress) {
+    display: none;
+}
+::view-transition-new(stalux-navigation-progress) {
+    animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-stalux-navigation-progress],
+    [data-stalux-navigation-progress][data-stage] {
+        transition: none;
+    }
+}
+@media print {
+    [data-stalux-navigation-progress] {
+        display: none;
+    }
+}
+</style>

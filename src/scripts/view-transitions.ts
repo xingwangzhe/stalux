@@ -1,6 +1,7 @@
 import { getRouteKind } from "@utils/public-routes";
 import { createClientLogger } from "./logger";
 import { prepareNavigationFont } from "./navigation-font";
+import { installNavigationProgress } from "./navigation-progress";
 
 const logger = createClientLogger("view-transitions");
 
@@ -103,6 +104,9 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
         delete document.documentElement.dataset.staluxVtTo;
         delete document.documentElement.dataset.staluxVtDirection;
     });
+
+    // Register after the font wrapper so prepared includes its bounded wait.
+    installNavigationProgress();
 }
 
 setRouteState(window.location.pathname);
