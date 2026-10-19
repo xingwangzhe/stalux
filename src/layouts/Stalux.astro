@@ -117,10 +117,8 @@ const routeAnimation = getRouteAnimation(routeKind);
         <main
             class="stalux-main"
             data-stalux-route={routeKind}
-            transition:name={routeKind === "article" ? "stalux-article-page" : "stalux-page"}
-            transition:animate={routeKind === "home" || routeKind === "article"
-                ? "none"
-                : routeAnimation}
+            transition:name="stalux-page"
+            transition:animate={routeAnimation}
         >
             <slot />
         </main>

@@ -139,6 +139,26 @@ describe("native analytics navigation", () => {
         expect(scripts.find((script) => script.src.includes("stats.example"))).not.toBe(failed);
     });
 
+    it("refreshes a previous native runtime so persisted navigation listeners receive fixes", async () => {
+        const { host, scripts, page } = environment();
+        Object.assign(host, {
+            __staluxAnalyticsRuntime: { installed: true, native: true, revision: 2 },
+        });
+        await import("../src/scripts/analytics-runtime");
+        expect(host.location.reload).toHaveBeenCalledOnce();
+        page();
+        expect(scripts).toHaveLength(0);
+    });
+
+    it("reuses the current native runtime without a reload loop", async () => {
+        const { host } = environment();
+        Object.assign(host, {
+            __staluxAnalyticsRuntime: { installed: true, native: true, revision: 3 },
+        });
+        await import("../src/scripts/analytics-runtime");
+        expect(host.location.reload).not.toHaveBeenCalled();
+    });
+
     it("reloads an already-open legacy worker session once rather than double-tracking", async () => {
         const { host, scripts, page } = environment({ staluxGaId: "G-TEST" });
         Object.assign(host, { __staluxAnalyticsRuntime: { installed: true } });

@@ -19,6 +19,13 @@
         line-height: 1.25;
     }
 
+    /* Sticky elements are bounded by the body. A one-viewport body height
+       lets overflowing content scroll its header out of the viewport. */
+    body {
+        height: auto;
+        min-height: 100%;
+    }
+
     /* Reserve the classic scrollbar before content height changes across routes. */
     html {
         scrollbar-gutter: stable;

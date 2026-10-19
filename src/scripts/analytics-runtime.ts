@@ -142,13 +142,14 @@ function trackVercountPage(): void {
     document.head.appendChild(script);
 }
 
-if (state.installed && (!state.native || state.revision !== 2)) {
+if (state.installed && (!state.native || state.revision !== 3)) {
+    // Revision 3 also replaces the shared navigation/motion listeners.
     // An open tab can cross a deployment boundary. Its old anonymous worker
     // listeners cannot be detached safely; reload once to install the new runtime.
     window.location.reload();
 } else if (!state.installed) {
     state.native = true;
-    state.revision = 2;
+    state.revision = 3;
     state.installed = true;
     document.addEventListener("astro:page-load", () => {
         initializeTrackers();

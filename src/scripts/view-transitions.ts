@@ -24,73 +24,62 @@ interface NavigationEvent {
     loader: () => Promise<void>;
     newDocument: Document;
     signal: AbortSignal;
+    viewTransition?: ViewTransition;
 }
 
-const ARTICLE_TEXT_BLOCK_LIMIT = 10;
-const ARTICLE_TEXT_BLOCK_TAGS = new Set(["H2", "H3", "P", "BLOCKQUOTE"]);
-
-function setArticleTextTransitions(root: ParentNode, enabled: boolean): void {
-    const bodies = root.querySelectorAll<HTMLElement>(".stalux-post-body");
-
-    for (const body of bodies) {
-        for (const oldBlock of body.querySelectorAll<HTMLElement>(
-            ":scope > [data-stalux-article-text-transition]",
-        )) {
-            oldBlock.style.removeProperty("view-transition-name");
-            delete oldBlock.dataset.staluxArticleTextTransition;
-        }
-
-        if (!enabled) continue;
-
-        const tagIndexes = new Map<string, number>();
-        let namedBlocks = 0;
-        for (const block of body.children) {
-            if (!ARTICLE_TEXT_BLOCK_TAGS.has(block.tagName)) continue;
-            const tag = block.tagName.toLowerCase();
-            const index = tagIndexes.get(tag) ?? 0;
-            tagIndexes.set(tag, index + 1);
-            block.setAttribute("data-stalux-article-text-transition", "");
-            (block as HTMLElement).style.setProperty(
-                "view-transition-name",
-                `stalux-article-text-${tag}-${index}`,
-            );
-            namedBlocks += 1;
-            if (namedBlocks >= ARTICLE_TEXT_BLOCK_LIMIT) break;
-        }
-    }
-}
-
-function setNavigationState(event: NavigationEvent): void {
+function setNavigationState(event: NavigationEvent, html = document.documentElement): void {
     const from = getRouteKind(new URL(event.from, window.location.href).pathname);
     const to = getRouteKind(new URL(event.to, window.location.href).pathname);
-    const html = document.documentElement;
     html.dataset.staluxVtFrom = from;
     html.dataset.staluxVtTo = to;
     html.dataset.staluxVtDirection = event.direction;
+}
+
+function clearNavigationState(): void {
+    delete document.documentElement.dataset.staluxVtFrom;
+    delete document.documentElement.dataset.staluxVtTo;
+    delete document.documentElement.dataset.staluxVtDirection;
 }
 
 const transitionWindow = window as TransitionWindow;
 if (!transitionWindow.__STALUX_VT_LISTENER__) {
     transitionWindow.__STALUX_VT_LISTENER__ = true;
 
+    let generation = 0;
     document.addEventListener("astro:before-preparation", (event) => {
         const navigation = event as unknown as NavigationEvent;
+        const current = ++generation;
         setNavigationState(navigation);
+        navigation.signal.addEventListener(
+            "abort",
+            () => {
+                if (current === generation) clearNavigationState();
+            },
+            { once: true },
+        );
+        queueMicrotask(() => {
+            if (event.defaultPrevented && current === generation) clearNavigationState();
+        });
         const loader = navigation.loader;
         navigation.loader = async () => {
             await loader();
             if (!event.defaultPrevented) {
-                const fromRoute = getRouteKind(
-                    new URL(navigation.from, window.location.href).pathname,
-                );
-                const toRoute = getRouteKind(new URL(navigation.to, window.location.href).pathname);
-                if (fromRoute === "article") {
-                    setArticleTextTransitions(document, toRoute === "article");
-                }
-                setArticleTextTransitions(navigation.newDocument, toRoute === "article");
                 await prepareNavigationFont(navigation.newDocument, navigation.signal);
             }
         };
+    });
+
+    document.addEventListener("astro:before-swap", (event) => {
+        const navigation = event as unknown as NavigationEvent;
+        if (navigation.signal.aborted) return;
+        const current = generation;
+        // Astro replaces the root attributes during swap. Carry motion state into
+        // the new document and keep it until the last animation actually settles.
+        setNavigationState(navigation, navigation.newDocument.documentElement);
+        const finish = () => {
+            if (current === generation) clearNavigationState();
+        };
+        void navigation.viewTransition?.finished.then(finish, finish);
     });
 
     document.addEventListener("astro:after-swap", () => {
@@ -99,10 +88,6 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
 
     document.addEventListener("astro:page-load", () => {
         setRouteState(window.location.pathname);
-        setArticleTextTransitions(document, getRouteKind(window.location.pathname) === "article");
-        delete document.documentElement.dataset.staluxVtFrom;
-        delete document.documentElement.dataset.staluxVtTo;
-        delete document.documentElement.dataset.staluxVtDirection;
     });
 
     // Register after the font wrapper so prepared includes its bounded wait.
@@ -110,4 +95,3 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
 }
 
 setRouteState(window.location.pathname);
-setArticleTextTransitions(document, getRouteKind(window.location.pathname) === "article");

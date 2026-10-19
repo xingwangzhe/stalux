@@ -173,6 +173,33 @@
     }
 }
 
+/* One content snapshot per route. Nested titles, cards, sidebars and long
+   article blocks otherwise become dozens of individually rasterized surfaces.
+   Components used outside the shared shell retain their own transition metadata. */
+.stalux-main * {
+    view-transition-name: none !important;
+}
+
+@keyframes stalux-route-fade-out {
+    to {
+        opacity: 0;
+    }
+}
+@keyframes stalux-route-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+::view-transition-old(stalux-page) {
+    animation: stalux-route-fade-out 100ms ease-out both !important;
+}
+::view-transition-new(stalux-page) {
+    animation: stalux-route-fade-in 160ms ease-out both !important;
+}
+
 ::view-transition-group(stalux-page) {
     z-index: 1;
 }
