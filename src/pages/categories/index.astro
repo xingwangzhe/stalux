@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import CategoriesList from "@components/stalux/categories/categoriesList.astro";
-import Navs from "@components/stalux/layout/navs.astro";
+import PageHeading from "@components/stalux/layout/PageHeading.astro";
 import Stalux from "@layouts/Stalux.astro";
 
 import { getSiteData } from "@utils/config-utils";
@@ -16,9 +16,6 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
     title={`${t("categories.title")} | ${siteConfig.title}`}
     description={t("categories.description", { title: siteConfig.title })}
 >
-    <div style="height: 3em;"></div>
-    <Navs />
-    <h1 class="stalux-page-title stalux-u-text-center">{t("categories.heading")}</h1>
-    <div class="stalux-page-description stalux-u-text-center">{t("categories.browseByTopic")}</div>
+    <PageHeading heading={t("categories.heading")} description={t("categories.browseByTopic")} />
     <CategoriesList />
 </Stalux>

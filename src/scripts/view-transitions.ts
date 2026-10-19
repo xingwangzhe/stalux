@@ -25,6 +25,40 @@ interface NavigationEvent {
     signal: AbortSignal;
 }
 
+const ARTICLE_TEXT_BLOCK_LIMIT = 10;
+const ARTICLE_TEXT_BLOCK_TAGS = new Set(["H2", "H3", "P", "BLOCKQUOTE"]);
+
+function setArticleTextTransitions(root: ParentNode, enabled: boolean): void {
+    const bodies = root.querySelectorAll<HTMLElement>(".stalux-post-body");
+
+    for (const body of bodies) {
+        for (const oldBlock of body.querySelectorAll<HTMLElement>(
+            ":scope > [data-stalux-article-text-transition]",
+        )) {
+            oldBlock.style.removeProperty("view-transition-name");
+            delete oldBlock.dataset.staluxArticleTextTransition;
+        }
+
+        if (!enabled) continue;
+
+        const tagIndexes = new Map<string, number>();
+        let namedBlocks = 0;
+        for (const block of body.children) {
+            if (!ARTICLE_TEXT_BLOCK_TAGS.has(block.tagName)) continue;
+            const tag = block.tagName.toLowerCase();
+            const index = tagIndexes.get(tag) ?? 0;
+            tagIndexes.set(tag, index + 1);
+            block.setAttribute("data-stalux-article-text-transition", "");
+            (block as HTMLElement).style.setProperty(
+                "view-transition-name",
+                `stalux-article-text-${tag}-${index}`,
+            );
+            namedBlocks += 1;
+            if (namedBlocks >= ARTICLE_TEXT_BLOCK_LIMIT) break;
+        }
+    }
+}
+
 function setNavigationState(event: NavigationEvent): void {
     const from = getRouteKind(new URL(event.from, window.location.href).pathname);
     const to = getRouteKind(new URL(event.to, window.location.href).pathname);
@@ -44,8 +78,17 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
         const loader = navigation.loader;
         navigation.loader = async () => {
             await loader();
-            if (!event.defaultPrevented)
+            if (!event.defaultPrevented) {
+                const fromRoute = getRouteKind(
+                    new URL(navigation.from, window.location.href).pathname,
+                );
+                const toRoute = getRouteKind(new URL(navigation.to, window.location.href).pathname);
+                if (fromRoute === "article") {
+                    setArticleTextTransitions(document, toRoute === "article");
+                }
+                setArticleTextTransitions(navigation.newDocument, toRoute === "article");
                 await prepareNavigationFont(navigation.newDocument, navigation.signal);
+            }
         };
     });
 
@@ -55,6 +98,7 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
 
     document.addEventListener("astro:page-load", () => {
         setRouteState(window.location.pathname);
+        setArticleTextTransitions(document, getRouteKind(window.location.pathname) === "article");
         delete document.documentElement.dataset.staluxVtFrom;
         delete document.documentElement.dataset.staluxVtTo;
         delete document.documentElement.dataset.staluxVtDirection;
@@ -62,3 +106,4 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
 }
 
 setRouteState(window.location.pathname);
+setArticleTextTransitions(document, getRouteKind(window.location.pathname) === "article");

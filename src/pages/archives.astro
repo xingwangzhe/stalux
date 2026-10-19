@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import ArchivesList from "@components/stalux/archives/archivesList.astro";
-import Navs from "@components/stalux/layout/navs.astro";
+import PageHeading from "@components/stalux/layout/PageHeading.astro";
 import Stalux from "@layouts/Stalux.astro";
 
 import { getSiteData } from "@utils/config-utils";
@@ -17,11 +17,9 @@ const posts = await getCollection("posts", ({ data }) => !data.draft);
     title={`${t("archives.title")} | ${siteConfig.title}`}
     description={t("archives.description", { title: siteConfig.title })}
 >
-    <div style="height: 3em;"></div>
-    <Navs />
-    <h1 class="stalux-page-title stalux-u-text-center">{t("archives.heading")}</h1>
-    <div class="stalux-page-description stalux-u-text-center">
-        {t("archives.desc", { n: posts.length })}
-    </div>
+    <PageHeading
+        heading={t("archives.heading")}
+        description={t("archives.desc", { n: posts.length })}
+    />
     <ArchivesList posts={posts} />
 </Stalux>

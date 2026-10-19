@@ -72,9 +72,9 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
             "hidden fixed h-full pointer-events-none top-0 left-0 [background:rgba(0,_0,_0,_0.6)] z-[999] opacity-0 [transition:opacity_0.3s_ease]",
         "stalux-page-title": "stalux-glow mt-[1.5em] text-[2.5em]",
         "stalux-page-description": "mb-[1.5em] text-[1.2em] text-ink-60",
-        "stalux-home-body": "min-h-screen relative pb-3xl",
+        "stalux-home-body":
+            "min-h-[calc(100vh_-_var(--stalux-site-header-height))] relative pb-3xl",
         "stalux-home-title": "text-[4em] mt-[1.5em] stalux-glow text-ink-full",
-        "stalux-home-navs": "max-w-full [order:-1]",
         "stalux-card-post-title": "m-0 leading-[1.35] [overflow-wrap:anywhere]",
         "stalux-card-post-description": "text-ink-70 leading-[1.6] [overflow-wrap:anywhere]",
         "stalux-post-card":

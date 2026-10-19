@@ -1,6 +1,5 @@
 ---
 import { getCollection, render } from "astro:content";
-import Navs from "@components/stalux/layout/navs.astro";
 import PostCC from "@components/stalux/posts/postCC.astro";
 import PostContent from "@components/stalux/posts/postContent.astro";
 import WalineComment from "@components/stalux/posts/WalineComment.astro";
@@ -30,12 +29,12 @@ const author = authorConfig.name;
     description={aboutPage.data.description}
 >
     <div style="height: 3em;"></div>
-    <Navs />
-    <div style="height: 3em;"></div>
     <div style="max-width: 900px; margin: 2rem auto; padding: 0 1rem;">
         <PostContent
             title={aboutPage.data.title}
             transitionName="about-content"
+            titleTransitionName="stalux-about-title"
+            transitionScope="about"
             date={undefined}
             updated={undefined}
         >
@@ -45,6 +44,7 @@ const author = authorConfig.name;
                 author={author}
                 url={Astro.url.href}
                 cc="CC-BY-NC-SA-4.0"
+                transitionName="stalux-about-license"
             />
             {commentEnabled && walineConfig?.serverURL && (
                 <WalineComment

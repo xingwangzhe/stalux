@@ -9,6 +9,10 @@ const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 ---
 
-<div id={"stalux-to-archive-archs"}>
+<div
+    id={"stalux-to-archive-archs"}
+    transition:name="stalux-home-archive-link"
+    transition:animate="slide"
+>
     <a href="/archives" data-astro-prefetch>{t("archives.viewAll")}</a>
 </div>

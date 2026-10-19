@@ -21,17 +21,33 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
     transition:name="right-sidebar"
     transition:animate={getSidebarAnimation("right")}
 >
-    <div class="stalux-sidebar-container">
+    <div
+        class="stalux-sidebar-container"
+        transition:name="stalux-article-right-date"
+        transition:animate="none"
+    >
         <PostDate />
         <Weather />
     </div>
-    <div class="stalux-sidebar-container">
+    <div
+        class="stalux-sidebar-container"
+        transition:name="stalux-article-right-toc"
+        transition:animate="none"
+    >
         <PostToc headings={headings} />
     </div>
-    <div class="stalux-sidebar-container">
+    <div
+        class="stalux-sidebar-container"
+        transition:name="stalux-article-right-tags"
+        transition:animate="none"
+    >
         <PostTaxonomy kind="tag" items={tags} />
     </div>
-    <div class="stalux-sidebar-container">
+    <div
+        class="stalux-sidebar-container"
+        transition:name="stalux-article-right-categories"
+        transition:animate="none"
+    >
         <PostTaxonomy kind="category" items={categories} />
     </div>
 </aside>

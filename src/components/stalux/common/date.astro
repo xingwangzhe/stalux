@@ -1,7 +1,14 @@
 ---
+const isHomePage = Astro.url.pathname === "/";
 ---
 
-<div id={"stalux-date-date-time"} class="date-time" transition:persist-props>
+<div
+    id={"stalux-date-date-time"}
+    class="date-time"
+    transition:persist-props
+    transition:name={isHomePage ? "stalux-home-date-time" : undefined}
+    transition:animate={isHomePage ? "fade" : undefined}
+>
     <time id={"stalux-date-date"} data-ref="date" datetime=""></time>
     <time id={"stalux-date-time"} data-ref="time" datetime=""></time>
 </div>

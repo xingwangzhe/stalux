@@ -32,10 +32,14 @@ import { expressiveCode } from "./expressive-code";
 import { staluxComponentsAlias } from "./internal/components-plugin";
 import {
     clearPageFontSubsets,
+    collectSharedFontGlyphs,
+    createSharedFontGlyphs,
     readLinkedStylesheetText,
     removePageFontStyles,
     resolveFontInputs,
+    sharedFontCacheKey,
     writePageFontSubsetIntoDocumentAsync,
+    writeSharedFontSubsetsAsync,
 } from "./internal/font-slices";
 import { findHtmlImages } from "./internal/html-images";
 import { createHtmlMutationEmitter } from "./internal/html-output";
@@ -61,7 +65,7 @@ import { imageCaptions } from "./plugins/image-captions";
 import { temml } from "./plugins/satteri-temml";
 import { describeError } from "./utils/diagnostics";
 
-// 代码字体通过 Astro Fonts API 注入；正文字体由 native N-API 按页面生成子集。
+// 代码字体通过 Astro Fonts API 注入；正文字体由 native N-API 生成共享壳层与页面子集。
 function buildFontsConfig(codeNormal: string, codeItalic?: string) {
     return [
         {
@@ -308,7 +312,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     }
                 }
 
-                // 7. 字体：解析本地字体输入；正文字体由 native N-API 在 build:done 阶段逐页生成。
+                // 7. 字体：解析本地字体输入；壳层共享子集与页面正文字形在 build:done 阶段生成。
                 try {
                     const sliced = await resolveFontInputs(process.cwd(), fontsLogger);
                     if (sliced) {
@@ -371,6 +375,26 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const parserEntry = resolveModule("parse5");
                 const imageSizeEntry = resolveModule("image-size");
                 const nativeEntry = resolveModule("@xingwangzhe/cjk-font-split-native");
+                const pageEntries = htmlFiles.filter((entry) => entry.endsWith(".html"));
+                let sharedFonts: Awaited<ReturnType<typeof writeSharedFontSubsetsAsync>> = [];
+                let sharedFontKey = "";
+                if (pageFontData) {
+                    const sharedGlyphs = createSharedFontGlyphs();
+                    await fs.mkdir(pageFontData.outputDir, { recursive: true });
+                    await fs.mkdir(pageFontData.cacheDir, { recursive: true });
+                    // The common shell is static across soft navigations; scan once, then
+                    // reuse each component's content-addressed subset on every route.
+                    await forEachBounded(pageEntries, 4, async (entry) => {
+                        const html = await fs.readFile(path.join(outDir, entry), "utf8");
+                        collectSharedFontGlyphs(parse(html), sharedGlyphs);
+                    });
+                    sharedFonts = await writeSharedFontSubsetsAsync(
+                        pageFontData.fontBuffer,
+                        sharedGlyphs,
+                        pageFontData.cacheDir,
+                    );
+                    sharedFontKey = sharedFontCacheKey(sharedFonts);
+                }
                 const outputCache = await createPageOutputCache(
                     path.resolve("node_modules/.astro/stalux-page-output"),
                     [
@@ -394,16 +418,24 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     pageFontData?.fontBuffer,
                     // Track referenced files regardless of extension, including SVG/AVIF.
                     htmlFiles.map((entry) => path.join(outDir, entry)),
+                    sharedFontKey,
                 );
                 let cacheHits = 0;
                 let optimizedImagePages = 0;
                 let pageFontPages = 0;
+                let pageFontSubsetCacheHits = 0;
                 if (pageFontData) await fs.mkdir(pageFontData.outputDir, { recursive: true });
                 if (pageFontData) await fs.mkdir(pageFontData.cacheDir, { recursive: true });
                 const referencedPageFonts = new Set<string>();
+                for (const sharedFont of sharedFonts) {
+                    copyFileSync(
+                        sharedFont.sourcePath,
+                        path.join(pageFontData?.outputDir ?? outDir, sharedFont.filename),
+                    );
+                    referencedPageFonts.add(sharedFont.filename);
+                }
                 const linkedCssTextCache = new Map<string, string>();
                 const dimensionsCache = new Map<string, Promise<ImageDimensions | undefined>>();
-                const pageEntries = htmlFiles.filter((entry) => entry.endsWith(".html"));
                 const processPage = async (entry: string) => {
                     const output = path.join(outDir, entry);
                     const before = await fs.readFile(output, "utf8");
@@ -454,9 +486,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             pageFontData.cacheDir,
                             "/_astro/fonts/",
                             linkedStylesheetText,
+                            sharedFonts,
                         );
                         if (pageFont) {
                             pageFontPages++;
+                            if (pageFont.cacheHit) pageFontSubsetCacheHits++;
                             cachedFont = {
                                 filename: pageFont.filename,
                                 sourcePath: pageFont.sourcePath,
@@ -492,8 +526,17 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 }
                 logger.info(`applied image loading hints to ${optimizedImagePages} HTML pages`);
                 logger.info(
-                    `generated page-specific body font subsets for ${pageFontPages} HTML pages`,
+                    `generated page-specific body font subsets for ${pageFontPages} HTML pages (subset cache ${pageFontSubsetCacheHits}/${pageFontPages})`,
                 );
+                if (sharedFonts.length > 0) {
+                    const sharedSummary = sharedFonts
+                        .map(
+                            ({ group, chars, cacheHit }) =>
+                                `${group} ${chars.length} glyphs${cacheHit ? " (cached)" : ""}`,
+                        )
+                        .join(", ");
+                    logger.info(`generated shared shell font subsets (${sharedSummary})`);
+                }
                 logger.info(
                     `HTML postprocessing ${(performance.now() - started).toFixed(1)}ms; cache ${cacheHits}/${htmlFiles.filter((entry) => entry.endsWith(".html")).length}`,
                 );

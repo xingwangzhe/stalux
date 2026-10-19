@@ -24,8 +24,6 @@ export const commonStyles: StyleSpec[] = [
         { "word-break": "break-all" },
         "@media (max-width: 768px)",
     ],
-    [".stalux-home-navs", "flex-col items-center gap-[0.5em]", {}, "@media (max-width: 768px)"],
-    [".stalux-home-navs nav", "w-full", {}, "@media (max-width: 768px)"],
     ["#stalux-home-show-post-list", "mt-[2em] text-[1.1em]", {}, "@media (max-width: 768px)"],
     [".stalux-post-list-container", "w-full h-[auto] m-[5px_0]", {}],
     [
@@ -143,14 +141,13 @@ export const commonStyles: StyleSpec[] = [
     [
         "html",
         "",
-        { "scroll-padding-top": "var(--stalux-nav-offset, 12rem)" },
-        "@media (min-width: 601px)",
+        { "scroll-padding-top": "var(--stalux-nav-offset, var(--stalux-site-header-height))" },
     ],
+    ["html", "", { "--stalux-site-header-height": "4rem" }, "@media (max-width: 600px)"],
     [
-        ".stalux-site-nav, .stalux-home-navs",
-        "",
-        { position: "sticky", top: "0", "z-index": "990" },
-        "@media (min-width: 601px)",
+        ".stalux-site-header",
+        "sticky top-0 z-[990] flex items-center justify-center w-full",
+        { "min-height": "var(--stalux-site-header-height)", isolation: "isolate" },
     ],
     [
         ".stalux-site-nav",

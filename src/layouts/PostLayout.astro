@@ -52,7 +52,11 @@ const walineConfig = walineSection?.serverURL
 ---
 
 <div class="stalux-post-page">
-    <div class="stalux-post-layout">
+    <div
+        class="stalux-post-layout"
+        transition:name="stalux-article-layout"
+        transition:animate="none"
+    >
         <!-- Left Sidebar -->
         <PostLeft author={author} authorAvatar={props.authorAvatar} />
 
@@ -71,7 +75,13 @@ const walineConfig = walineSection?.serverURL
             hasImage={props.hasImage}
         >
             <slot />
-            <PostCC title={props.title} author={author} url={Astro.url.href} cc={props.cc} />
+            <PostCC
+                title={props.title}
+                author={author}
+                url={Astro.url.href}
+                cc={props.cc}
+                transitionName="stalux-article-license"
+            />
             <PostNavigation prev={props.prev} next={props.next} />
             {commentEnabled && walineConfig?.serverURL && (
                 <WalineComment

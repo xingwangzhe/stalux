@@ -15,6 +15,7 @@ interface Props {
     description?: string;
     transitionName?: string;
     titleTransitionName?: string;
+    transitionScope?: "article" | "about";
     date?: string;
     updated?: string;
     readingMinutes?: number;
@@ -23,6 +24,7 @@ interface Props {
 }
 
 const props = Astro.props as Props;
+const transitionPrefix = props.transitionScope === "about" ? "stalux-about" : "stalux-article";
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const promoteConfig = getPromoteData(configEntries);
@@ -39,14 +41,23 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
 <article
     class="stalux-article"
     data-stalux-gallery={props.hasImage ? "true" : undefined}
-    transition:name={props.transitionName}
+    transition:name={props.transitionName ?? "stalux-article-container"}
+    transition:animate="none"
 >
     <!-- Article Header -->
-    <header class="stalux-post-article-header">
+    <header
+        class="stalux-post-article-header"
+        transition:name={`${transitionPrefix}-header`}
+        transition:animate="fade"
+    >
         <h1 class="stalux-post-title" transition:name={props.titleTransitionName}>
             {props.title}
         </h1>
-        <div class="stalux-post-metadata">
+        <div
+            class="stalux-post-metadata"
+            transition:name={`${transitionPrefix}-metadata`}
+            transition:animate="none"
+        >
             {props.date && (
                 <time
                     class="stalux-post-meta-item"
@@ -67,30 +78,32 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
                 </time>
             )}
         </div>
-        {(
-            <div class="stalux-post-page-stats">
-                {(props.readingMinutes ?? 0) > 0 && (
-                    <span class="stalux-post-reading-time">
-                        {t("post.readingTime")}
-                        {props.readingMinutes && props.readingMinutes > 0
-                            ? props.readingMinutes < 1
-                                ? t("common.lessThanOneMinute")
-                                : t("common.minute", { n: props.readingMinutes })
-                            : ""}
-                    </span>
-                )}
-                {(props.wordCount ?? 0) > 0 && (
-                    <span class="wordCount">
-                        {t("post.wordCount")}
-                        {props.wordCount}
-                    </span>
-                )}
-                <span id="vercount_container_page_pv">
-                    {t("post.viewCount")}
-                    <span id="vercount_value_page_pv">Loading...</span>
+        <div
+            class="stalux-post-page-stats"
+            transition:name={`${transitionPrefix}-stats`}
+            transition:animate="none"
+        >
+            {(props.readingMinutes ?? 0) > 0 && (
+                <span class="stalux-post-reading-time">
+                    {t("post.readingTime")}
+                    {props.readingMinutes && props.readingMinutes > 0
+                        ? props.readingMinutes < 1
+                            ? t("common.lessThanOneMinute")
+                            : t("common.minute", { n: props.readingMinutes })
+                        : ""}
                 </span>
-            </div>
-        )}
+            )}
+            {(props.wordCount ?? 0) > 0 && (
+                <span class="wordCount">
+                    {t("post.wordCount")}
+                    {props.wordCount}
+                </span>
+            )}
+            <span id="vercount_container_page_pv">
+                {t("post.viewCount")}
+                <span id="vercount_value_page_pv">Loading...</span>
+            </span>
+        </div>
         {exportMd && (
             <div class="stalux-post-source-link-row">
                 <a
@@ -105,7 +118,11 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
         )}
     </header>
 
-    <ArticleSummary description={props.description} label={t("post.summary")} />
+    <ArticleSummary
+        description={props.description}
+        label={t("post.summary")}
+        transitionName={`${transitionPrefix}-summary`}
+    />
 
     <!-- Article Body -->
     <section
@@ -113,6 +130,8 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
         data-pagefind-body
         data-stalux-post-id={props.postId === undefined ? undefined : String(props.postId)}
         data-pagefind-filter={props.postId === undefined ? undefined : "post[data-stalux-post-id]"}
+        transition:name={`${transitionPrefix}-body`}
+        transition:animate="none"
     >
         <slot />
     </section>

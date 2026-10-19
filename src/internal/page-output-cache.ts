@@ -15,9 +15,11 @@ export async function createPageOutputCache(
     dependencies: readonly string[],
     font?: Buffer,
     assets: readonly string[] = [],
+    contentKey = "",
 ) {
-    const hash = createHash("sha256").update("stalux-page-output-v1\0");
+    const hash = createHash("sha256").update("stalux-page-output-v2\0");
     if (font) hash.update(font);
+    if (contentKey) hash.update("\0content-key\0").update(contentKey);
     for (const dependency of [...dependencies].sort()) {
         hash.update(dependency).update("\0");
         hash.update(await fs.readFile(dependency)).update("\0");

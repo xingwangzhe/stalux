@@ -12,11 +12,25 @@ import { getSidebarAnimation } from "@utils/view-transitions";
     transition:name="left-sidebar"
     transition:animate={getSidebarAnimation("left")}
 >
-    <PostAuthor />
-    <div class="stalux-sidebar-container">
+    <div
+        class="stalux-sidebar-container"
+        transition:name="stalux-article-left-author"
+        transition:animate="fade"
+    >
+        <PostAuthor />
+    </div>
+    <div
+        class="stalux-sidebar-container"
+        transition:name="stalux-article-left-social"
+        transition:animate="fade"
+    >
         <SocialMedia />
     </div>
-    <div class="stalux-sidebar-container">
+    <div
+        class="stalux-sidebar-container"
+        transition:name="stalux-article-left-random"
+        transition:animate="fade"
+    >
         <RandomPost />
     </div>
 </aside>

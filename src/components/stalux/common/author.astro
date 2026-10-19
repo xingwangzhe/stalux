@@ -20,6 +20,8 @@ const navigationHref = isHomePage ? "/about" : "/";
 <article
     class="stalux-author stalux-u-flex stalux-u-justify-center stalux-u-flex-col"
     transition:persist-props
+    transition:name={isHomePage ? "stalux-home-author" : undefined}
+    transition:animate={isHomePage ? "fade" : undefined}
 >
     <figure
         class={`stalux-author-figure ${props.iscolum ? "stalux-author-figure-column stalux-u-flex-col" : ""}`}

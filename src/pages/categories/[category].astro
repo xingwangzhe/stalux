@@ -1,6 +1,5 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import Navs from "@components/stalux/layout/navs.astro";
 import PostList from "@components/stalux/posts/postList.astro";
 import TagHeader from "@components/stalux/tags/tagHeader.astro";
 import Stalux from "@layouts/Stalux.astro";
@@ -33,8 +32,6 @@ const props = Astro.props as Props;
         count: props.count,
     })}
 >
-    <div style="height: 3em;"></div>
-    <Navs />
     <TagHeader type={t("taxonomy.category")} name={props.category} count={props.count} />
     <PostList posts={props.posts} />
 </Stalux>

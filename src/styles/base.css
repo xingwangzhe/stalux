@@ -112,18 +112,19 @@
         color: white;
     }
 
-    /* 主内容至少撑满视口高度
- * - 内容不足视口时：min-height 让 main = 100vh，页脚紧跟在视口下方
+    /* 主内容至少撑满顶栏下方的视口高度
+ * - 内容不足视口时：main 扣除顶栏高度后仍填满可视区域
  * - 内容超过视口时：main 自然撑高，页脚在内容末尾
  * 不使用 flex，避免 flex-basis 限制导致内容溢出 main */
     .stalux-main {
-        min-height: 100vh;
+        min-height: calc(100vh - var(--stalux-site-header-height, 3rem));
     }
 
     /* 默认 stalux 背景的 CSS 变量（非动态默认值） */
     :root {
         --stalux-bg-color: #202020;
         --stalux-bg-filter: none;
+        --stalux-site-header-height: 3.75rem;
         --stalux-text-shadow: var(--stalux-accent-color) 0.08rem 0.08rem 0.18rem;
         --stalux-accent-color: #eab308;
         --stalux-accent-rgb: 234 179 8;

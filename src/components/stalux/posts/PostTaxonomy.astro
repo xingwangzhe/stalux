@@ -46,11 +46,12 @@ const cfg = {
 <nav
     class="stalux-post-taxonomy-container"
     transition:name={cfg.containerName}
+    transition:animate="none"
     aria-label={title ?? cfg.heading}
 >
-    {items.length > 0 && <h3 class="stalux-post-taxonomy-title">{title ?? cfg.heading}</h3>}
+    <h3 class="stalux-post-taxonomy-title">{title ?? cfg.heading}</h3>
     {items.length > 0 ? (
-        <div class={cfg.listClass} transition:name={cfg.contentName}>
+        <div class={cfg.listClass} transition:name={cfg.contentName} transition:animate="fade">
             {items.map((item) => (
                 <a
                     href={`${cfg.prefix}${item}/`}
@@ -62,6 +63,12 @@ const cfg = {
             ))}
         </div>
     ) : (
-        <div class="stalux-post-taxonomy-empty">{cfg.empty}</div>
+        <div
+            class="stalux-post-taxonomy-empty"
+            transition:name={cfg.contentName}
+            transition:animate="fade"
+        >
+            {cfg.empty}
+        </div>
     )}
 </nav>

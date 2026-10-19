@@ -32,6 +32,7 @@ async function openSearchDialog(signal: AbortSignal): Promise<void> {
 
 registerPageLifecycle("navigation", () => {
     const siteNav = document.querySelector<HTMLElement>("[data-ref='stalux-site-nav']");
+    const siteHeader = document.querySelector<HTMLElement>(".stalux-site-header");
     const navList = document.querySelector<HTMLElement>("[data-ref='stalux-nav-list']");
     const navToggle = document.querySelector<HTMLElement>("[data-ref='stalux-nav-toggle']");
     const navOverlay = document.querySelector<HTMLElement>("[data-ref='stalux-nav-overlay']");
@@ -75,7 +76,19 @@ registerPageLifecycle("navigation", () => {
         // Read layout before writing styles or attributes. Scrolling does not
         // change item sizes, so only resize events need to recalculate scale.
         const { clientWidth, scrollWidth, scrollLeft } = navList;
-        const navOffset = !mobileNav.matches && siteNav ? siteNav.offsetHeight + 16 : 0;
+        const headerHeight = siteHeader?.offsetHeight ?? 0;
+        const headerHeightValue = `${headerHeight}px`;
+        if (
+            siteHeader &&
+            document.documentElement.style.getPropertyValue("--stalux-site-header-height") !==
+                headerHeightValue
+        ) {
+            document.documentElement.style.setProperty(
+                "--stalux-site-header-height",
+                headerHeightValue,
+            );
+        }
+        const navOffset = headerHeight + 16;
         document.documentElement.style.setProperty("--stalux-nav-offset", `${navOffset}px`);
         let nextScale = lastScale;
         if (needsScale) {
@@ -163,6 +176,7 @@ registerPageLifecycle("navigation", () => {
 
     const resizeObserver = new ResizeObserver(scheduleResize);
     resizeObserver.observe(navList);
+    if (siteHeader) resizeObserver.observe(siteHeader);
     if (navList.parentElement) resizeObserver.observe(navList.parentElement);
     scheduleUpdate();
 
@@ -173,5 +187,6 @@ registerPageLifecycle("navigation", () => {
         if (frameId) cancelAnimationFrame(frameId);
         closeNav();
         document.documentElement.style.removeProperty("--stalux-nav-offset");
+        document.documentElement.style.removeProperty("--stalux-site-header-height");
     };
 });

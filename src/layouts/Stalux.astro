@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Footer from "@components/stalux/layout/footer.astro";
 import Head from "@components/stalux/layout/head.astro";
+import Navs from "@components/stalux/layout/navs.astro";
 import { getAccentColorStyle } from "@utils/accent-color";
 import {
     getAiDiscoveryData,
@@ -84,6 +85,15 @@ const routeAnimation = getRouteAnimation(routeKind);
         data-stalux-umami-id={headConfig?.umami?.id}
         data-stalux-umami-url={headConfig?.umami?.url}
     >
+        <header
+            class="stalux-site-header"
+            data-stalux-font-group="header"
+            transition:name="stalux-site-header"
+            transition:animate="none"
+            transition:persist="stalux-site-header"
+        >
+            <Navs />
+        </header>
         {llmPromote && (
             <section class="stalux-ai-prompt" data-stalux-ai-prompt aria-label="AI site context">
                 <p>{llmPromote}</p>
@@ -105,8 +115,10 @@ const routeAnimation = getRouteAnimation(routeKind);
         <main
             class="stalux-main"
             data-stalux-route={routeKind}
-            transition:name="stalux-page"
-            transition:animate={routeAnimation}
+            transition:name={routeKind === "article" ? "stalux-article-page" : "stalux-page"}
+            transition:animate={routeKind === "home" || routeKind === "article"
+                ? "none"
+                : routeAnimation}
         >
             <slot />
         </main>

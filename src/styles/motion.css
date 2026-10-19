@@ -177,6 +177,35 @@
     z-index: 1;
 }
 
+::view-transition-group(stalux-article-page) {
+    z-index: 1;
+    animation: none;
+}
+
+::view-transition-old(stalux-article-page),
+::view-transition-new(stalux-article-page) {
+    animation: none;
+}
+
+/* Article-to-article hops keep both sidebars in place; their smaller cards
+   and content groups carry the visual change instead of sliding the columns. */
+html[data-stalux-vt-from="article"][data-stalux-vt-to="article"]::view-transition-group(
+    left-sidebar
+),
+html[data-stalux-vt-from="article"][data-stalux-vt-to="article"]::view-transition-group(
+    right-sidebar
+),
+html[data-stalux-vt-from="article"][data-stalux-vt-to="article"]::view-transition-old(left-sidebar),
+html[data-stalux-vt-from="article"][data-stalux-vt-to="article"]::view-transition-new(left-sidebar),
+html[data-stalux-vt-from="article"][data-stalux-vt-to="article"]::view-transition-old(
+    right-sidebar
+),
+html[data-stalux-vt-from="article"][data-stalux-vt-to="article"]::view-transition-new(
+    right-sidebar
+) {
+    animation: none !important;
+}
+
 ::view-transition-old(stalux-page),
 ::view-transition-new(stalux-page) {
     transform-origin: center top;
@@ -185,6 +214,37 @@
 ::view-transition-group(*) {
     animation-duration: 240ms;
     animation-timing-function: cubic-bezier(0.22, 0.72, 0.22, 1);
+}
+
+/* Persisted headers can keep a route-scoped Astro attribute after a swap. Use
+   the stable persist marker for the shared transition name across routes. */
+[data-astro-transition-persist="stalux-site-header"] {
+    view-transition-name: stalux-site-header;
+}
+
+/* Keep the shared header stationary while the route content animates below it. */
+::view-transition-group(stalux-site-header) {
+    z-index: 990;
+    animation: none;
+}
+
+::view-transition-old(stalux-site-header),
+::view-transition-new(stalux-site-header) {
+    animation: none;
+}
+
+/* Keep the shared footer stationary while the route content animates above it. */
+[data-astro-transition-persist="stalux-site-footer"] {
+    view-transition-name: stalux-site-footer;
+}
+
+::view-transition-group(stalux-site-footer) {
+    animation: none;
+}
+
+::view-transition-old(stalux-site-footer),
+::view-transition-new(stalux-site-footer) {
+    animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

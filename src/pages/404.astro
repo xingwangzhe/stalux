@@ -1,6 +1,5 @@
 ---
 import { getCollection } from "astro:content";
-import Navs from "@components/stalux/layout/navs.astro";
 import Stalux from "@layouts/Stalux.astro";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
@@ -14,8 +13,6 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
     title={`${t("page404.title")} | ${siteConfig.title}`}
     description={t("page404.description")}
 >
-    <div style="height: 3em;"></div>
-    <Navs />
     <div
         class="stalux-404-error-container stalux-u-flex stalux-u-items-center stalux-u-justify-center stalux-u-text-center"
         data-pagefind-ignore

@@ -1,6 +1,5 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
-import Navs from "@components/stalux/layout/navs.astro";
 import { getRuntimeCacheKey } from "@internal/runtime-cache-key";
 import PostLayout from "@layouts/PostLayout.astro";
 import Stalux from "@layouts/Stalux.astro";
@@ -64,8 +63,6 @@ export async function getStaticPaths() {
     categories={props.post.data.categories}
     author={authorConfig.name}
 >
-    <div style="height:3em"></div>
-    <Navs />
     <div style="height:3em"></div>
     <PostLayout
         title={props.post.data.title}
