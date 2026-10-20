@@ -2,6 +2,7 @@ import type {
     TransitionBeforePreparationEvent,
     TransitionBeforeSwapEvent,
 } from "astro:transitions/client";
+import { prepareRouteMotion } from "./route-motion";
 
 type Stage = "loading" | "prepared" | "swapped" | "loaded" | "complete";
 interface Navigation {
@@ -125,7 +126,7 @@ export function installNavigationProgress(): void {
             complete(navigation);
         };
         // Skipped/rejected animations must not leave a completed navigation stuck.
-        void swap.viewTransition.finished.then(finished, finished);
+        void prepareRouteMotion(swap).finished.then(finished);
     });
     document.addEventListener("astro:after-swap", () => {
         if (!active || swapping !== active || active.signal.aborted) return;

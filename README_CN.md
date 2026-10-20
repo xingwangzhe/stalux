@@ -20,7 +20,7 @@
 
 路由切换时，视口顶部自动显示 2px 强调色进度条，无需配置。条长由真实阶段推动，并在等待时向当前阶段上限缓慢增长：开始加载、文档与字体准备结束、DOM 替换、页面脚本加载结束，最后等待视图过渡结束后完成并淡出；只有真实加载和过渡都结束才走满，不表示下载或剩余时间百分比。支持连续导航、取消、前进后退及减少动态效果设置，不增加网络请求或遥测。
 
-顶栏使用 sticky 随页面保持在视口顶部，长页面的 body 随内容撑高。路由过渡采用单个正文快照的短淡入淡出，顶栏保持静止；正文中的标题、侧栏和段落不再分别创建快照，减少移动设备上的光栅化和合成负担。页面内容、灯箱、搜索、评论和统计保持原有功能。
+顶栏使用 sticky 随页面保持在视口顶部，长页面的 body 随内容撑高。路由切换由原生 Web Animations API 对新正文做 100ms 短淡入，持久顶栏和页脚保持静止；关闭整页 View Transition 快照与几何插值，Astro 继续处理文档准备、历史记录、滚动恢复和脚本。进度条与背景等待正文动画真实结束；减少动态效果或浏览器已提供历史手势动画时跳过额外动画。导航栏的布局读取合并到一帧，持久顶栏的尺寸在换页时复用，减少移动设备上的样式重算、光栅化和合成负担。页面内容、灯箱、搜索、评论和统计保持原有功能。
 
 ---
 
@@ -195,11 +195,11 @@ id: head
 bingClarityId: "YOUR_CLARITY_PROJECT_ID"
 ```
 
-Google Analytics、Clarity 和 Umami 使用低优先级的原生异步脚本，每个 SDK 在会话中只加载一次，加载失败不会阻塞正文或站内导航。Vercount 在每次 `astro:page-load` 后重新绑定计数节点。GA 显式发送每页 pageview；Umami 关闭 SDK 自动 pageview，保留点击事件采集，并在异步加载前记录各页 URL、标题和 referrer，避免快速导航时串页。已有旧版 Partytown 会话首次遇到新运行时会整页刷新一次，避免旧监听器重复上报。
+Google Analytics、Clarity 和 Umami 使用低优先级的原生异步脚本，每个 SDK 在会话中只加载一次，加载失败不会阻塞正文或站内导航。Vercount 在每次 `astro:page-load` 后重新绑定计数节点。GA 记录每页 URL、标题和 referrer，等原生切换解除绘制抑制、正文动画已安装并让出绘制后，在独立后台任务中按访问顺序发送 pageview；任务饥饿时有界补发，页面隐藏或退出前立即清空队列。SDK 仍在主线程工作，这项调度只减少路由首帧上的同步阻塞。Umami 关闭 SDK 自动 pageview，保留点击事件采集，并在异步加载前保存各页信息，避免快速导航时串页。已有旧运行时或 Partytown 会话首次遇到新运行时会整页刷新一次，避免旧监听器重复上报。
 
 使用 Google Analytics 时，请在 **管理 → 数据流 → 增强型衡量 → 网页浏览量 → 高级设置** 关闭“根据浏览器历史记录事件判断的页面更改”。主题已设置 `send_page_view: false` 并显式发送每次导航的 URL 和标题；GA 的历史自动统计需要在后台单独关闭，否则软导航会重复计数。其他增强型衡量选项可以保留。参见 [Google 页面浏览量文档](https://developers.google.com/analytics/devguides/collection/ga4/views)。
 
-`bingClarityId` 是 Stalux 沿用的字段名，实际对应 Microsoft Clarity Project ID。登录 Clarity 后，在项目 **Settings → Setup → Get tracking code** 中获取对应 ID。Stalux 异步加载 tracking code，并在软导航期间保持单个 loader，由 SDK 自行处理历史导航。不要再通过 `anyhead`、Tag Manager 或其他插件重复接入同一个项目。
+`bingClarityId` 是 Stalux 沿用的字段名，实际对应 Microsoft Clarity Project ID。登录 Clarity 后，在项目 **Settings → Setup → Get tracking code** 中获取对应 ID。Stalux 内置官方 `@microsoft/clarity` npm 依赖，在浏览器动态导入并调用 `Clarity.init()`，软导航期间只初始化一次，由 SDK 自行处理历史导航。myblog 等消费项目只需配置 ID 和升级主题，无需另装或手工引入 Clarity。主题监控官方 tag 的加载失败并允许后续页面重试；tag 加载完成与录制核心、收集请求成功分别验证。官方 npm 包仍使用托管录制引擎，不会自动把 DOM 采集移到 Worker。不要再通过 `anyhead`、Tag Manager 或其他插件重复接入同一个项目。
 
 Project ID 是公开的浏览器标识；不要把 Clarity Data Export API token 写入这个 YAML 或任何前端代码。如果站点使用严格 CSP、Cookie 横幅或 CMP，请由宿主站点自行配置相应策略和同意信号；主题不替站点判断法律合规。
 

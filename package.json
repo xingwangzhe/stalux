@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.39.0",
+    "version": "1.39.1",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -107,6 +107,7 @@
         "@expressive-code/plugin-line-numbers": "^0.44.2",
         "@lucide/astro": "^1.56.0",
         "@mcp-b/webmcp-polyfill": "^5.1.0",
+        "@microsoft/clarity": "1.0.2",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.16.1",
         "@xingwangzhe/cjk-font-split-native": "^0.4.10",

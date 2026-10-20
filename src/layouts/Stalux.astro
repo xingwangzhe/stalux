@@ -12,7 +12,7 @@ import {
     getPromoteData,
     getSiteData,
 } from "@utils/config-utils";
-import { getRouteAnimation, getRouteKind } from "@utils/view-transitions";
+import { getRouteKind } from "@utils/view-transitions";
 
 const props = Astro.props as Props;
 
@@ -49,11 +49,14 @@ const llmPromote = llmPromoteRaw
     ?.replace(/\{title\}/g, siteConfig.title)
     ?.replace(/\{cc\}/g, "CC-BY-NC-SA-4.0");
 const routeKind = getRouteKind(Astro.url.pathname);
-const routeAnimation = getRouteAnimation(routeKind);
 ---
 
 <!doctype html>
-<html lang={htmlLang} style={getAccentColorStyle(siteConfig.accentColor)}>
+<html
+    lang={htmlLang}
+    style={getAccentColorStyle(siteConfig.accentColor)}
+    data-stalux-route={routeKind}
+>
     <Head
         title={props.title}
         description={props.description}
@@ -118,7 +121,7 @@ const routeAnimation = getRouteAnimation(routeKind);
             class="stalux-main"
             data-stalux-route={routeKind}
             transition:name="stalux-page"
-            transition:animate={routeAnimation}
+            transition:animate="none"
         >
             <slot />
         </main>

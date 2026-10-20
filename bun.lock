@@ -12,6 +12,7 @@
         "@expressive-code/plugin-line-numbers": "^0.44.2",
         "@lucide/astro": "^1.56.0",
         "@mcp-b/webmcp-polyfill": "^5.1.0",
+        "@microsoft/clarity": "1.0.2",
         "@pagefind/component-ui": "^1.5.2",
         "@waline/client": "^3.16.1",
         "@xingwangzhe/cjk-font-split-native": "^0.4.10",
@@ -259,6 +260,8 @@
     "@mcp-b/webmcp-polyfill": ["@mcp-b/webmcp-polyfill@5.1.0", "https://mirrors.cloud.tencent.com/npm/@mcp-b/webmcp-polyfill/-/webmcp-polyfill-5.1.0.tgz", { "dependencies": { "@mcp-b/webmcp-types": "5.1.0", "@standard-schema/spec": "^1.1.0" } }, "sha512-KL09hniFssPY8HBO3qzurWPqm+1JYRwV3wx6x2XSySgo+6BL1XHGsHGIoAO7U9zzigv7TA5keNBoZ+3P1jq18g=="],
 
     "@mcp-b/webmcp-types": ["@mcp-b/webmcp-types@5.1.0", "https://mirrors.cloud.tencent.com/npm/@mcp-b/webmcp-types/-/webmcp-types-5.1.0.tgz", { "dependencies": { "@modelcontextprotocol/server": "2.0.0" } }, "sha512-twOKDUr7al60K890HvRcNvoHSfQ2rnGeKJiQs6eUr+Leg+LQ6K+yz3F4K70jykMK1a09ZIgYb3Oc7mAypuKPig=="],
+
+    "@microsoft/clarity": ["@microsoft/clarity@1.0.2", "", {}, "sha512-9EZYROFpJxEGmQpHvUFqvD3ZJ7QQSqnibYSWmS+1xusoZfG1QQ1/Al9yVBBc11DWMbJrs1pe1hLT273it/skJg=="],
 
     "@modelcontextprotocol/core": ["@modelcontextprotocol/core@2.0.0", "https://mirrors.cloud.tencent.com/npm/@modelcontextprotocol/core/-/core-2.0.0.tgz", { "dependencies": { "zod": "^4.2.0" } }, "sha512-pJCEwGG7Lfr/+PQp9ZTwKXNeO5wzbfKL7H3MYpCorM4oFBoQrdjnBgEoqG+RjhsvS1FKrDbKux+M1HhlnGWqcA=="],
 

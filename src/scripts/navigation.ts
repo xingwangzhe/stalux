@@ -43,26 +43,19 @@ registerPageLifecycle("navigation", () => {
     const controller = new AbortController();
     const listenerOptions = { signal: controller.signal };
     let frameId = 0;
-    let lastScale = "1";
+    let lastScale = navList.style.getPropertyValue("--nav-scale") || "1";
+    let needsButtons = true;
+    let needsSurface = true;
+    let needsResize = false;
     let needsScale = true;
     const mobileNav = window.matchMedia("(max-width: 600px)");
-
-    const updateNavSurface = () => {
-        siteNav?.toggleAttribute("data-scrolled", window.scrollY > 24);
-        navToggle?.toggleAttribute("data-scrolled", window.scrollY > 24);
-    };
-    window.addEventListener("scroll", updateNavSurface, {
-        passive: true,
-        signal: controller.signal,
-    });
-    updateNavSurface();
 
     const closeNav = () => {
         navList.removeAttribute("data-state");
         navToggle?.removeAttribute("data-state");
         navToggle?.setAttribute("aria-expanded", "false");
         navOverlay?.removeAttribute("data-state");
-        document.body.style.overflow = "";
+        if (document.body.style.overflow) document.body.style.overflow = "";
     };
     const openNav = () => {
         navList.dataset.state = "open";
@@ -73,26 +66,17 @@ registerPageLifecycle("navigation", () => {
     };
     const updateButtons = () => {
         frameId = 0;
-        // Read layout before writing styles or attributes. Scrolling does not
-        // change item sizes, so only resize events need to recalculate scale.
-        const { clientWidth, scrollWidth, scrollLeft } = navList;
-        const headerHeight = siteHeader?.offsetHeight ?? 0;
-        const headerHeightValue = `${headerHeight}px`;
-        if (
-            siteHeader &&
-            document.documentElement.style.getPropertyValue("--stalux-site-header-height") !==
-                headerHeightValue
-        ) {
-            document.documentElement.style.setProperty(
-                "--stalux-site-header-height",
-                headerHeightValue,
-            );
-        }
-        const navOffset = headerHeight + 16;
-        document.documentElement.style.setProperty("--stalux-nav-offset", `${navOffset}px`);
+        // Collect every layout read before changing attributes or inherited
+        // root variables. Even scrollY can force style calculation after a swap.
+        const scrolled = needsSurface ? window.scrollY > 24 : undefined;
+        const shouldCloseNav = needsResize && !mobileNav.matches;
+        const updateOverflow = needsButtons;
+        const clientWidth = updateOverflow ? navList.clientWidth : 0;
+        const scrollWidth = updateOverflow ? navList.scrollWidth : 0;
+        const scrollLeft = updateOverflow ? navList.scrollLeft : 0;
+        const headerHeight = updateOverflow ? (siteHeader?.offsetHeight ?? 0) : 0;
         let nextScale = lastScale;
         if (needsScale) {
-            needsScale = false;
             if (mobileNav.matches) {
                 nextScale = "1";
             } else {
@@ -112,25 +96,60 @@ registerPageLifecycle("navigation", () => {
                 );
             }
         }
+        needsButtons = false;
+        needsSurface = false;
+        needsResize = false;
+        needsScale = false;
+
+        if (updateOverflow) {
+            const rootStyle = document.documentElement.style;
+            const headerHeightValue = `${headerHeight}px`;
+            if (
+                siteHeader &&
+                rootStyle.getPropertyValue("--stalux-site-header-height") !== headerHeightValue
+            ) {
+                rootStyle.setProperty("--stalux-site-header-height", headerHeightValue);
+            }
+            const navOffsetValue = `${headerHeight + 16}px`;
+            if (rootStyle.getPropertyValue("--stalux-nav-offset") !== navOffsetValue) {
+                rootStyle.setProperty("--stalux-nav-offset", navOffsetValue);
+            }
+        }
         if (nextScale !== lastScale) {
             navList.style.setProperty("--nav-scale", nextScale);
             lastScale = nextScale;
         }
-        const hasOverflow = scrollWidth > clientWidth;
-        buttonLeft.toggleAttribute("data-visible", hasOverflow && scrollLeft > 1);
-        buttonRight.toggleAttribute(
-            "data-visible",
-            hasOverflow && scrollLeft + clientWidth < scrollWidth - 1,
-        );
+        if (scrolled !== undefined) {
+            siteNav?.toggleAttribute("data-scrolled", scrolled);
+            navToggle?.toggleAttribute("data-scrolled", scrolled);
+        }
+        if (updateOverflow) {
+            const hasOverflow = scrollWidth > clientWidth;
+            buttonLeft.toggleAttribute("data-visible", hasOverflow && scrollLeft > 1);
+            buttonRight.toggleAttribute(
+                "data-visible",
+                hasOverflow && scrollLeft + clientWidth < scrollWidth - 1,
+            );
+        }
+        if (shouldCloseNav) closeNav();
     };
-    const scheduleUpdate = () => {
+    const scheduleFrame = () => {
         if (!frameId) frameId = requestAnimationFrame(updateButtons);
     };
+    const scheduleUpdate = () => {
+        needsButtons = true;
+        scheduleFrame();
+    };
+    const scheduleSurface = () => {
+        needsSurface = true;
+        scheduleFrame();
+    };
     const scheduleResize = () => {
-        if (!mobileNav.matches) closeNav();
-        updateNavSurface();
+        needsButtons = true;
+        needsSurface = true;
+        needsResize = true;
         needsScale = true;
-        scheduleUpdate();
+        scheduleFrame();
     };
 
     document.querySelector("[data-ref='stalux-search-btn']")?.addEventListener(
@@ -167,6 +186,10 @@ registerPageLifecycle("navigation", () => {
         passive: true,
         signal: controller.signal,
     });
+    window.addEventListener("scroll", scheduleSurface, {
+        passive: true,
+        signal: controller.signal,
+    });
     window.addEventListener("resize", scheduleResize, {
         passive: true,
         signal: controller.signal,
@@ -186,7 +209,7 @@ registerPageLifecycle("navigation", () => {
         resizeObserver.disconnect();
         if (frameId) cancelAnimationFrame(frameId);
         closeNav();
-        document.documentElement.style.removeProperty("--stalux-nav-offset");
-        document.documentElement.style.removeProperty("--stalux-site-header-height");
+        // Keep --stalux-nav-offset and --stalux-site-header-height for the
+        // persisted header, avoiding inherited-style invalidation per page.
     };
 });

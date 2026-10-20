@@ -143,11 +143,11 @@ export const commonStyles: StyleSpec[] = [
         "",
         { "scroll-padding-top": "var(--stalux-nav-offset, var(--stalux-site-header-height))" },
     ],
-    ["html", "", { "--stalux-site-header-height": "4rem" }, "@media (max-width: 600px)"],
+    ["html", "", { "--stalux-site-header-min-height": "4rem" }, "@media (max-width: 600px)"],
     [
         ".stalux-site-header",
         "sticky top-0 z-[990] flex items-center justify-center w-full",
-        { "min-height": "var(--stalux-site-header-height)", isolation: "isolate" },
+        { "min-height": "var(--stalux-site-header-min-height)", isolation: "isolate" },
     ],
     [
         ".stalux-site-nav",

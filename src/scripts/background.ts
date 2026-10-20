@@ -13,6 +13,7 @@
  *   先低优先级解码目标背景，等待内容过渡完成后再淡入，不与内容快照争抢绘制。
  */
 import { createClientLogger } from "./logger";
+import { prepareRouteMotion, type RouteMotionEvent } from "./route-motion";
 
 const logger = createClientLogger("background");
 
@@ -115,8 +116,7 @@ if (!(window as Window & { __STALUX_BG_LISTENER__?: boolean }).__STALUX_BG_LISTE
         prepared = connection?.saveData ? undefined : prepareBackground();
     });
     document.addEventListener("astro:before-swap", (event) => {
-        const transition = (event as Event & { viewTransition?: ViewTransition }).viewTransition;
-        transitionFinished = transition?.finished.catch(() => undefined) ?? Promise.resolve();
+        transitionFinished = prepareRouteMotion(event as RouteMotionEvent).finished;
     });
     document.addEventListener("astro:page-load", initializeBackground);
 }

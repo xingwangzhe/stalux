@@ -131,7 +131,8 @@
     :root {
         --stalux-bg-color: #202020;
         --stalux-bg-filter: none;
-        --stalux-site-header-height: 3.75rem;
+        --stalux-site-header-min-height: 3.75rem;
+        --stalux-site-header-height: var(--stalux-site-header-min-height);
         --stalux-text-shadow: var(--stalux-accent-color) 0.08rem 0.08rem 0.18rem;
         --stalux-accent-color: #eab308;
         --stalux-accent-rgb: 234 179 8;

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { installNavigationProgress } from "../src/scripts/navigation-progress";
+import { prepareRouteMotion, type RouteMotionEvent } from "../src/scripts/route-motion";
 
 let doc: EventTarget;
 let win: EventTarget;
@@ -25,9 +26,13 @@ function start(loader = async () => {}) {
     return { controller, event };
 }
 function swap(signal: AbortSignal, finished: Promise<void>) {
-    fire("astro:before-swap", { signal, viewTransition: { finished } });
+    const event = fire("astro:before-swap", { signal, viewTransition: { finished } });
+    prepareRouteMotion(event as RouteMotionEvent).start(null);
     fire("astro:after-swap");
 }
+const settle = async () => {
+    for (let tick = 0; tick < 8; tick++) await Promise.resolve();
+};
 beforeEach(() => {
     vi.useFakeTimers();
     doc = new EventTarget();
@@ -60,7 +65,7 @@ describe("stage-based navigation progress", () => {
         fire("astro:page-load");
         expect(bar.dataset.stage).toBe("loaded");
         animation.resolve();
-        await Promise.resolve();
+        await settle();
         expect(bar.dataset.stage).toBe("complete");
         await vi.advanceTimersByTimeAsync(250);
         expect(bar.dataset.stage).toBeUndefined();
@@ -70,7 +75,7 @@ describe("stage-based navigation progress", () => {
         const { event, controller } = start();
         await event.loader();
         swap(controller.signal, Promise.reject(new Error("skipped")));
-        await Promise.resolve();
+        await settle();
         expect(bar.dataset.stage).toBe("swapped");
         fire("astro:page-load");
         expect(bar.dataset.stage).toBe("complete");
@@ -92,7 +97,7 @@ describe("stage-based navigation progress", () => {
         expect(bar.dataset.stage).toBe("loading");
         await second.event.loader();
         swap(second.controller.signal, Promise.resolve());
-        await Promise.resolve();
+        await settle();
         fire("astro:page-load");
         expect(bar.dataset.stage).toBe("complete");
         const third = start();
@@ -113,11 +118,33 @@ describe("stage-based navigation progress", () => {
         expect(bar.dataset.stage).toBeUndefined();
         const canceled = start();
         canceled.event.preventDefault();
-        await Promise.resolve();
+        await settle();
         expect(bar.dataset.stage).toBeUndefined();
         start();
         win.dispatchEvent(new Event("pagehide"));
         expect(bar.dataset.stage).toBeUndefined();
         expect(vi.getTimerCount()).toBe(0);
+    });
+    it("waits for shared content WAAPI after the empty native transition has finished", async () => {
+        const { event, controller } = start();
+        await event.loader();
+        const content = deferred();
+        const swapEvent = fire("astro:before-swap", {
+            signal: controller.signal,
+            viewTransition: { ready: Promise.resolve(), finished: Promise.resolve() },
+        });
+        const cancel = vi.fn();
+        const main = {
+            animate: vi.fn(() => ({ finished: content.promise, cancel })),
+        } as unknown as HTMLElement;
+        prepareRouteMotion(swapEvent as RouteMotionEvent).start(main);
+        fire("astro:after-swap");
+        fire("astro:page-load");
+        await settle();
+        expect(bar.dataset.stage).toBe("loaded");
+        content.resolve();
+        await settle();
+        expect(bar.dataset.stage).toBe("complete");
+        expect(cancel).toHaveBeenCalledOnce();
     });
 });
