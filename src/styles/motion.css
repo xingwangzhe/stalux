@@ -34,49 +34,28 @@
    带轻微 scale 从 0.985 拉回 1，配合 1.2px blur 再还原。
    forwards (direction = "forward" | "push"): 旧内容向左滑出，新内容从右滑入
    backwards (direction = "back" | "traverse"): 镜像方向
-   持久壳层（header、footer、背景、sentinel、back-to-top 按钮）设
-   view-transition-name: none 保留 DOM、不参与原生动画；标题/侧边栏/
-   卡片标题用局部 transition:animate 独立配置，与 root 伪元素分层。
-   方向值（forward | back）由 view-transitions.ts 写入 CSS 变量
-   --stalux-vt-old / --stalux-vt-new，伪元素继承后用 animation-name 切换。
+   持久壳层（header、背景、sentinel、back-to-top 按钮）设
+   view-transition-name: none 不生成快照、原地即时更新；<main>（stalux-page）
+   及其内部命名元素（标题/侧边栏/文章容器等）保留各自的 VT 组，
+   由方向伪元素规则 + 局部 transition:animate 分层驱动。
    ========================================================= */
 
-/* 标题 / 卡片标题交叉淡入 + 轻微缩放：让列表→详情的同名元素有“形态连续感” */
-@keyframes stalux-vt-title-swap-old {
-    to {
-        opacity: 0;
-        transform: scale(0.94);
-        filter: blur(2px);
-    }
-}
+/* 主内容 View Transition 动画（方向感知：前进/回退镜像）。
+   方向机制：Astro 路由器在 startViewTransition 之前给 <html> 写
+   data-astro-transition="forward|back"（router.js:369），整个动画期间保留，
+   直到 viewTransition.finished 才移除（router.js:423）。::view-transition-*
+   伪元素树的 originating element 就是 <html>，因此 html[attr]::view-transition-old(x)
+   可以按方向匹配（popstate 时 router.js:470 按 history index 给出真实方向）。
+   ⚠ 约束 1：伪元素规则必须写成**直接引用 keyframes 的完整 animation shorthand** ——
+   var() fallback 字符串（`var(--x, keyframesName)`）不会被 Rolldown tree-shake
+   静态追踪，fallback 里的 keyframes 名会被判为"未引用"而裁掉。
+   ⚠ 约束 2：::view-transition-old/new() 参数里只能放自定义 transition-name 或 *，
+   不能放属性选择器（legacy 实验语法，lightningcss minify 不支持）。
+   ⚠ 约束 3：任意祖先元素（body/div 等）做 originating element 不成立；
+   只有 <html> 复合选择器有效。 */
 
-@keyframes stalux-vt-title-swap-new {
-    from {
-        opacity: 0;
-        transform: scale(1.05);
-        filter: blur(2px);
-    }
-    70% {
-        transform: scale(0.98);
-        filter: blur(0px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-        filter: blur(0px);
-    }
-}
-
-/* 主内容 View Transition 动画。
-   ⚠ 约束 1：::view-transition-old() / ::view-transition-new() 属于独立 UA 伪元素树，
-   与 <html> 之间**没有祖先选择器关系**。
-   ⚠ 约束 2：CSS 变量 fallback 字符串（`var(--x, keyframesName)`）不会被 Rolldown
-   tree-shake 静态追踪 —— fallback 里的 keyframes 名会被判断为"没被引用"而裁掉。
-   所以伪元素规则必须写成**直接引用 keyframes 的完整 animation shorthand**。
-   ⚠ 约束 3：方向切换暂时放弃（祖先选择器命不中伪元素），backward 暂不镜像。
-   后续可用 WAAPI 运行时覆盖伪元素 keyframes 实现方向切换。 */
-
-@keyframes stalux-vt-old-route {
+/* forward：进入下一层 —— 旧页向左滑出，新页自右滑入并 scale+blur 收敛 */
+@keyframes stalux-vt-old-fwd {
     0% {
         opacity: 1;
         transform: translate3d(0, 0, 0);
@@ -90,7 +69,7 @@
     }
 }
 
-@keyframes stalux-vt-new-route {
+@keyframes stalux-vt-new-fwd {
     0% {
         opacity: 0;
         transform: translate3d(6%, 0, 0) scale(0.985);
@@ -108,25 +87,53 @@
     }
 }
 
-::view-transition-old(stalux-page) {
-    animation: stalux-vt-old-route 380ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+/* back：返回上一层 —— 镜像：旧页向右滑出，新页自左滑入 */
+@keyframes stalux-vt-old-back {
+    0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+    45% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(6%, 0, 0);
+    }
 }
 
-::view-transition-new(stalux-page) {
-    animation: stalux-vt-new-route 460ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+@keyframes stalux-vt-new-back {
+    0% {
+        opacity: 0;
+        transform: translate3d(-6%, 0, 0) scale(0.985);
+        filter: blur(1.2px);
+    }
+    60% {
+        opacity: 0.9;
+        transform: translate3d(0.8%, 0, 0) scale(1);
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        filter: blur(0px);
+    }
 }
 
-/* 标题交叉淡入：列表→详情 / 详情→详情 之间同名标题共享 transition:name 时
-   用一套独立动画（比 root 更快、更有“形态感”）。
-   注意：::view-transition-old/new 伪元素里不能放属性选择器（MDN 明确只接受
-   自定义 transition-name 字符串和 * 通配；属性选择器属于 legacy 浏览器实验
-   语法，lightningcss minify 不支持）。 */
-::view-transition-old(stalux-post-title) {
-    animation: stalux-vt-title-swap-old 260ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+html[data-astro-transition="forward"]::view-transition-old(stalux-page) {
+    animation: stalux-vt-old-fwd 380ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
 }
 
-::view-transition-new(stalux-post-title) {
-    animation: stalux-vt-title-swap-new 320ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+html[data-astro-transition="forward"]::view-transition-new(stalux-page) {
+    animation: stalux-vt-new-fwd 460ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+}
+
+html[data-astro-transition="back"]::view-transition-old(stalux-page) {
+    animation: stalux-vt-old-back 380ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+}
+
+html[data-astro-transition="back"]::view-transition-new(stalux-page) {
+    animation: stalux-vt-new-back 460ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
 }
 
 /* 侧边栏 — 独立于 root：沿内容方向做 12px 平移 + 淡入淡出，
@@ -152,10 +159,12 @@
 /* 持久壳层：header、背景、sentinel、back-to-top 按钮不参与 View Transition 伪元素；
    直接设 view-transition-name: none 让浏览器为它们各自做即时更新。
    这避免了原生快照把大体积 header 或整张背景图塞进 pseudo-element 树、
-   也与 view-transitions.ts 里的 .scrollY 优化保持一致 — 不强制 UI 同步。 */
+   也与 view-transitions.ts 里的 .scrollY 优化保持一致 — 不强制 UI 同步。
+   ⚠ 注意：html 也必须压制 —— 压掉 root 组后整页快照不存在，
+   只有 stalux-page 与内部命名元素生成各自组，避免整页 fade 叠加。
+   ⚠ 不要把 .stalux-main / .stalux-main * 加进来：那会连 stalux-page 组
+   一起压掉，方向伪元素规则将全部失配（1.39.4 曾因此动画全死、路由瞬时切换）。 */
 html,
-.stalux-main,
-.stalux-main *,
 [data-astro-transition-persist],
 [data-stalux-site-header],
 [data-stalux-site-header] *,

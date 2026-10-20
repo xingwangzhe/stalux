@@ -353,12 +353,12 @@ export const styleNames: { classes: Record<string, string>; variables: Record<st
         "stalux-social-stalux-social-arrive": "kf",
         "stalux-taxonomy-enter": "kg",
         "stalux-taxonomy-enter-back": "kh",
-        "stalux-vt-new-route": "ki",
-        "stalux-vt-old-route": "kj",
-        "stalux-vt-side-in": "kk",
-        "stalux-vt-side-out": "kl",
-        "stalux-vt-title-swap-new": "km",
-        "stalux-vt-title-swap-old": "kn",
+        "stalux-vt-new-back": "ki",
+        "stalux-vt-new-fwd": "kj",
+        "stalux-vt-old-back": "kk",
+        "stalux-vt-old-fwd": "kl",
+        "stalux-vt-side-in": "km",
+        "stalux-vt-side-out": "kn",
         "stalux-word-word-glow": "ko"
     }
 };
