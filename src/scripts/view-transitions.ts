@@ -94,15 +94,19 @@ function preserveHeaderMetrics(nextDocument: Document): void {
 const transitionWindow = window as TransitionWindow;
 if (!transitionWindow.__STALUX_VT_LISTENER__) {
     transitionWindow.__STALUX_VT_LISTENER__ = true;
+    let pendingNavigation = 0;
+    let swappedNavigation = 0;
 
     // A current-page link is not a page replacement. Intercept before Astro's
     // delegated handler, but keep propagation for menu cleanup and click tracking.
+    // During preparation, Astro must receive it to cancel an incoming route.
     // Hash changes, explicit reloads, downloads and modified/new-tab clicks keep
     // their native behavior.
     document.addEventListener(
         "click",
         (event) => {
             if (
+                pendingNavigation !== 0 ||
                 event.defaultPrevented ||
                 event.button !== 0 ||
                 event.metaKey ||
@@ -148,6 +152,12 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
     document.addEventListener("astro:before-preparation", (event) => {
         const navigation = event as unknown as NavigationEvent;
         const current = ++generation;
+        pendingNavigation = current;
+        const cancelPreparation = () => {
+            if (current !== generation) return;
+            pendingNavigation = 0;
+            clearNavigationState();
+        };
         motion?.cancel();
         // Only the incoming heading animates. Drop any prior marker without
         // measuring/capturing a hidden outgoing title or flushing its layout.
@@ -166,25 +176,21 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
         });
         pendingBrowserMotion = false;
         setNavigationState(navigation, preset);
-        navigation.signal.addEventListener(
-            "abort",
-            () => {
-                if (current === generation) clearNavigationState();
-            },
-            { once: true },
-        );
+        navigation.signal.addEventListener("abort", cancelPreparation, { once: true });
+        if (navigation.signal.aborted) cancelPreparation();
         queueMicrotask(() => {
-            if (event.defaultPrevented && current === generation) clearNavigationState();
+            if (event.defaultPrevented) cancelPreparation();
         });
         const loader = navigation.loader;
         navigation.loader = async () => {
             try {
                 await loader();
-                if (!event.defaultPrevented) {
+                if (event.defaultPrevented) cancelPreparation();
+                else {
                     await prepareNavigationFont(navigation.newDocument, navigation.signal);
                 }
             } catch (error) {
-                if (current === generation) clearNavigationState();
+                cancelPreparation();
                 throw error;
             }
         };
@@ -194,6 +200,7 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
         const navigation = event as unknown as NavigationEvent;
         if (navigation.signal.aborted) return;
         const current = generation;
+        swappedNavigation = current;
         preserveHeaderMetrics(navigation.newDocument);
         // Astro replaces the root attributes during swap. Carry state into the
         // new document; CSS keyframes read these data-* attributes to pick their
@@ -219,6 +226,8 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
     });
 
     document.addEventListener("astro:page-load", () => {
+        // A previous route's scripts can finish while a newer loader is pending.
+        if (swappedNavigation === generation) pendingNavigation = 0;
         setRouteState(window.location.pathname);
     });
 

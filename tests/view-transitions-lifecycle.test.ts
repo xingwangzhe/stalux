@@ -18,6 +18,26 @@ let documentMock: EventTarget & {
 function fire(type: string, values = {}) {
     documentMock.dispatchEvent(Object.assign(new Event(type), values));
 }
+function clickCurrentPage() {
+    class Link {
+        href = window.location.href;
+        relList = { contains: () => false };
+        closest() {
+            return this;
+        }
+        hasAttribute() {
+            return false;
+        }
+        getAttribute() {
+            return null;
+        }
+    }
+    vi.stubGlobal("Element", Link);
+    const event = Object.assign(new Event("click", { cancelable: true }), { button: 0 });
+    Object.defineProperty(event, "target", { value: new Link() });
+    documentMock.dispatchEvent(event);
+    return event;
+}
 async function settle() {
     for (let tick = 0; tick < 8; tick++) await Promise.resolve();
 }
@@ -118,6 +138,84 @@ describe("route motion state across Astro root swaps", () => {
         documentMock.dispatchEvent(event);
         expect(event.defaultPrevented).toBe(prevented);
         expect(tracking).toHaveBeenCalledOnce();
+    });
+
+    it.each(["page-load", "abort", "prevented", "loader-error", "loader-prevented"])(
+        "lets the current-page click cancel an incoming route and restores its guard after %s",
+        async (outcome) => {
+            const controller = new AbortController();
+            const nav = navigation();
+            nav.signal = controller.signal;
+            const preparation = Object.assign(
+                new Event("astro:before-preparation", { cancelable: true }),
+                nav,
+            );
+            if (outcome === "loader-error") {
+                preparation.loader = async () => {
+                    throw new Error("offline");
+                };
+            } else if (outcome === "loader-prevented") {
+                preparation.loader = async () => {
+                    await Promise.resolve();
+                    preparation.preventDefault();
+                };
+            }
+            documentMock.dispatchEvent(preparation);
+            expect(clickCurrentPage().defaultPrevented).toBe(false);
+
+            if (outcome === "page-load") {
+                fire("astro:before-swap", nav);
+                window.location.href = nav.to.href;
+                documentMock.documentElement = nav.newDocument.documentElement;
+                fire("astro:after-swap");
+                // The new DOM is installed, but its scripts have not finished.
+                expect(clickCurrentPage().defaultPrevented).toBe(false);
+                fire("astro:page-load");
+                nav.finish();
+            } else if (outcome === "abort") controller.abort();
+            else if (outcome === "prevented") preparation.preventDefault();
+            else if (outcome === "loader-error") {
+                await expect(preparation.loader()).rejects.toThrow("offline");
+            } else await preparation.loader();
+
+            await settle();
+            expect(clickCurrentPage().defaultPrevented).toBe(true);
+        },
+    );
+
+    it("does not let an old page-load clear a newer preparation", () => {
+        const first = navigation();
+        fire("astro:before-preparation", first);
+        fire("astro:before-swap", first);
+        const second = navigation();
+        second.to = new URL("https://example.com/tags/");
+        fire("astro:before-preparation", second);
+        fire("astro:page-load");
+        expect(clickCurrentPage().defaultPrevented).toBe(false);
+    });
+
+    it("does not let an obsolete loader failure or abort clear a newer preparation", async () => {
+        const controller = new AbortController();
+        const first = navigation();
+        first.signal = controller.signal;
+        first.loader = async () => {
+            throw new Error("old offline");
+        };
+        const preparation = Object.assign(new Event("astro:before-preparation"), first);
+        documentMock.dispatchEvent(preparation);
+        fire("astro:before-preparation", navigation());
+        controller.abort();
+        await expect(preparation.loader()).rejects.toThrow("old offline");
+        expect(clickCurrentPage().defaultPrevented).toBe(false);
+    });
+
+    it("does not keep the guard disabled for an already-aborted preparation", () => {
+        const nav = navigation();
+        const controller = new AbortController();
+        controller.abort();
+        nav.signal = controller.signal;
+        fire("astro:before-preparation", nav);
+        expect(clickCurrentPage().defaultPrevented).toBe(true);
     });
 
     it("does not rewrite server-rendered route attributes on after-swap and page-load", () => {
