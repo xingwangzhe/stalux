@@ -1,4 +1,5 @@
 import { getRouteKind } from "@utils/public-routes";
+import { installBackToTop } from "./back-to-top";
 import { createClientLogger } from "./logger";
 import { prepareNavigationFont } from "./navigation-font";
 import { installNavigationProgress } from "./navigation-progress";
@@ -133,6 +134,9 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
 
     // Register after the font wrapper so prepared includes its bounded wait.
     installNavigationProgress();
+    // Footer button and scroll sentinel persist across soft navigations, so the
+    // BackToTop observer is installed once per document.
+    installBackToTop();
 }
 
 setRouteState(window.location.pathname);

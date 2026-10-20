@@ -183,6 +183,19 @@ html,
     view-transition-name: none !important;
 }
 
+/* BackToTop visibility sentinel: lives in document coordinates and is observed
+   by an IntersectionObserver, so route swaps never force a synchronous scroll
+   read inside the native transition's update callback. */
+[data-stalux-scroll-sentinel] {
+    position: absolute;
+    top: 240px;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
     ::view-transition-group(*),
     ::view-transition-old(*),

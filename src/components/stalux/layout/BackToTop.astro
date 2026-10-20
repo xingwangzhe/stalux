@@ -16,13 +16,6 @@ const label = lang.startsWith("zh") ? "回到顶部" : "Back to top";
     <ArrowUp size={20} aria-hidden="true" />
 </button>
 
-<script>
-import { mountBackToTop } from "../../../scripts/back-to-top";
-import { registerPageLifecycle } from "../../../scripts/page-runtime";
-
-registerPageLifecycle("back-to-top", mountBackToTop);
-</script>
-
 <style is:global>
 .stalux-back-to-top {
     position: static;

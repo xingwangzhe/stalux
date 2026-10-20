@@ -99,6 +99,11 @@ const routeKind = getRouteKind(Astro.url.pathname);
         >
             <Navs />
         </header>
+        <div
+            data-stalux-scroll-sentinel
+            transition:persist="stalux-scroll-sentinel"
+            aria-hidden="true"
+        ></div>
         {llmPromote && (
             <section class="stalux-ai-prompt" data-stalux-ai-prompt aria-label="AI site context">
                 <p>{llmPromote}</p>
