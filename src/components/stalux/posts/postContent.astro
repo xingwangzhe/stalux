@@ -50,7 +50,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
         transition:name={`${transitionPrefix}-header`}
         transition:animate="fade"
     >
-        <h1 class="stalux-post-title" transition:name={props.titleTransitionName}>
+        <h1 class="stalux-post-title" data-stalux-motion-focus>
             {props.title}
         </h1>
         <div

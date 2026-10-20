@@ -120,7 +120,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
             transition:persist="stalux-bg-b"
             aria-hidden="true"
         ></div>
-        <main class="stalux-main" data-stalux-route={routeKind} transition:name="stalux-page">
+        <main class="stalux-main" data-stalux-route={routeKind}>
             <slot />
         </main>
         <Footer />

@@ -28,156 +28,280 @@
     animation-delay: 0.35s;
 }
 
-/* =========================================================
-   View Transitions：主内容 slide + 淡入 + 新内容 scale+blur 到清晰，
-   与 Astro 默认的纯淡入淡出不同 — 旧内容沿方向快速滑出，新内容对向滑入
-   带轻微 scale 从 0.985 拉回 1，配合 1.2px blur 再还原。
-   forwards (direction = "forward" | "push"): 旧内容向左滑出，新内容从右滑入
-   backwards (direction = "back" | "traverse"): 镜像方向
-   持久壳层（header、背景、sentinel、back-to-top 按钮）设
-   view-transition-name: none 不生成快照、原地即时更新；<main>（stalux-page）
-   及其内部命名元素（标题/侧边栏/文章容器等）保留各自的 VT 组，
-   由方向伪元素规则 + 局部 transition:animate 分层驱动。
-   ========================================================= */
-
-/* 主内容 View Transition 动画（方向感知：前进/回退镜像）。
-   方向机制：Astro 路由器在 startViewTransition 之前给 <html> 写
-   data-astro-transition="forward|back"（router.js:369），整个动画期间保留，
-   直到 viewTransition.finished 才移除（router.js:423）。::view-transition-*
-   伪元素树的 originating element 就是 <html>，因此 html[attr]::view-transition-old(x)
-   可以按方向匹配（popstate 时 router.js:470 按 history index 给出真实方向）。
-   ⚠ 约束 1：伪元素规则必须写成**直接引用 keyframes 的完整 animation shorthand** ——
-   var() fallback 字符串（`var(--x, keyframesName)`）不会被 Rolldown tree-shake
-   静态追踪，fallback 里的 keyframes 名会被判为"未引用"而裁掉。
-   ⚠ 约束 2：::view-transition-old/new() 参数里只能放自定义 transition-name 或 *，
-   不能放属性选择器（legacy 实验语法，lightningcss minify 不支持）。
-   ⚠ 约束 3：任意祖先元素（body/div 等）做 originating element 不成立；
-   只有 <html> 复合选择器有效。 */
-
-/* forward：进入下一层 —— 旧页向左滑出，新页自右滑入并 scale+blur 收敛 */
-@keyframes stalux-vt-old-fwd {
-    0% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-    }
-    45% {
-        opacity: 0.5;
-    }
-    100% {
-        opacity: 0;
-        transform: translate3d(-6%, 0, 0);
-    }
-}
-
-@keyframes stalux-vt-new-fwd {
-    0% {
-        opacity: 0;
-        transform: translate3d(6%, 0, 0) scale(0.985);
-        filter: blur(1.2px);
-    }
-    60% {
-        opacity: 0.9;
-        transform: translate3d(-0.8%, 0, 0) scale(1);
-        filter: blur(0px);
-    }
-    100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-        filter: blur(0px);
-    }
-}
-
-/* back：返回上一层 —— 镜像：旧页向右滑出，新页自左滑入 */
-@keyframes stalux-vt-old-back {
-    0% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-    }
-    45% {
-        opacity: 0.5;
-    }
-    100% {
-        opacity: 0;
-        transform: translate3d(6%, 0, 0);
-    }
-}
-
-@keyframes stalux-vt-new-back {
-    0% {
-        opacity: 0;
-        transform: translate3d(-6%, 0, 0) scale(0.985);
-        filter: blur(1.2px);
-    }
-    60% {
-        opacity: 0.9;
-        transform: translate3d(0.8%, 0, 0) scale(1);
-        filter: blur(0px);
-    }
-    100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-        filter: blur(0px);
-    }
-}
-
-html[data-astro-transition="forward"]::view-transition-old(stalux-page) {
-    animation: stalux-vt-old-fwd 380ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
-}
-
-html[data-astro-transition="forward"]::view-transition-new(stalux-page) {
-    animation: stalux-vt-new-fwd 460ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
-}
-
-html[data-astro-transition="back"]::view-transition-old(stalux-page) {
-    animation: stalux-vt-old-back 380ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
-}
-
-html[data-astro-transition="back"]::view-transition-new(stalux-page) {
-    animation: stalux-vt-new-back 460ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
-}
-
-/* 侧边栏 — 独立于 root：沿内容方向做 12px 平移 + 淡入淡出，
-   让文章详情页左右栏与主内容分层出现。 */
-@keyframes stalux-vt-side-out {
-    to {
-        opacity: 0;
-        transform: translate3d(var(--stalux-side-out-x, -14px), 0, 0);
-    }
-}
-
-@keyframes stalux-vt-side-in {
-    from {
-        opacity: 0;
-        transform: translate3d(var(--stalux-side-in-x, 14px), 0, 0);
-    }
-    to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-    }
-}
-
-/* 持久壳层：header、背景、sentinel、back-to-top 按钮不参与 View Transition 伪元素；
-   直接设 view-transition-name: none 让浏览器为它们各自做即时更新。
-   这避免了原生快照把大体积 header 或整张背景图塞进 pseudo-element 树、
-   也与 view-transitions.ts 里的 .scrollY 优化保持一致 — 不强制 UI 同步。
-   ⚠ 注意：html 也必须压制 —— 压掉 root 组后整页快照不存在，
-   只有 stalux-page 与内部命名元素生成各自组，避免整页 fade 叠加。
-   ⚠ 不要把 .stalux-main / .stalux-main * 加进来：那会连 stalux-page 组
-   一起压掉，方向伪元素规则将全部失配（1.39.4 曾因此动画全死、路由瞬时切换）。 */
+/* Route motion captures one visible heading, never a long main/article.
+   The router owns data-stalux-vt-preset and confirms visibility once per DOM.
+   Keep literal keyframe references: production CSS removes unreferenced frames. */
 html,
 [data-astro-transition-persist],
-[data-stalux-site-header],
-[data-stalux-site-header] *,
+.stalux-main,
+.stalux-main *,
 .bg-layer,
 .bg-layer *,
 [data-stalux-scroll-sentinel],
-[data-stalux-scroll-sentinel] *,
-[data-stalux-back-to-top],
-[data-stalux-back-to-top] * {
+[data-stalux-back-to-top] {
     view-transition-name: none !important;
 }
 
-/* BackToTop visibility sentinel */
+html[data-stalux-vt-preset]
+    .stalux-main
+    [data-stalux-motion-focus][data-stalux-motion-visible="true"] {
+    view-transition-name: stalux-focus !important;
+}
+
+html[data-stalux-vt-preset="none"]
+    .stalux-main
+    [data-stalux-motion-focus][data-stalux-motion-visible="true"] {
+    view-transition-name: none !important;
+}
+
+/* Different headings must not interpolate width, height, position or text size.
+   Old content stays readable until swap; only the small new heading animates. */
+::view-transition-group(stalux-focus) {
+    animation: none;
+}
+
+::view-transition-image-pair(stalux-focus) {
+    isolation: auto;
+}
+
+::view-transition-old(stalux-focus) {
+    display: none;
+    animation: none;
+}
+
+::view-transition-new(stalux-focus) {
+    mix-blend-mode: normal;
+    animation: stalux-focus-fade 120ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html[data-stalux-vt-preset="enter"]::view-transition-new(stalux-focus) {
+    animation: stalux-focus-enter 160ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html[data-stalux-vt-preset="up"]::view-transition-new(stalux-focus) {
+    animation: stalux-focus-up 140ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html[data-stalux-vt-preset="taxonomy"]::view-transition-new(stalux-focus) {
+    animation: stalux-focus-fade 140ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html[data-stalux-vt-preset="previous"]::view-transition-new(stalux-focus) {
+    animation: stalux-focus-previous 160ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html[data-stalux-vt-preset="next"]::view-transition-new(stalux-focus) {
+    animation: stalux-focus-next 160ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html[data-stalux-vt-preset="home"]::view-transition-new(stalux-focus) {
+    animation: stalux-focus-home 180ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html[data-stalux-vt-preset="restore"]::view-transition-new(stalux-focus) {
+    animation: stalux-focus-restore 100ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html[data-stalux-vt-preset="error"]::view-transition-new(stalux-focus) {
+    animation: stalux-focus-fade 100ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes stalux-focus-fade {
+    from {
+        opacity: 0.86;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes stalux-focus-enter {
+    from {
+        opacity: 0.86;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes stalux-focus-up {
+    from {
+        opacity: 0.9;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes stalux-focus-previous {
+    from {
+        opacity: 0.9;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes stalux-focus-next {
+    from {
+        opacity: 0.9;
+        transform: translateX(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes stalux-focus-home {
+    from {
+        opacity: 0.9;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes stalux-focus-restore {
+    from {
+        opacity: 0.96;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Public transition helpers retain their names as opacity-only compatibility
+   frames. Theme layouts no longer use them to move large content/sidebars. */
+@keyframes stalux-page-exit {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-page-enter {
+    from {
+        opacity: 0.9;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-page-enter-back {
+    from {
+        opacity: 0.96;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-taxonomy-enter {
+    from {
+        opacity: 0.9;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-taxonomy-enter-back {
+    from {
+        opacity: 0.96;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-article-enter {
+    from {
+        opacity: 0.9;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-article-enter-back {
+    from {
+        opacity: 0.96;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-sidebar-left-in {
+    from {
+        opacity: 0.96;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-sidebar-left-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-sidebar-left-back-in {
+    from {
+        opacity: 0.96;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-sidebar-left-back-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-sidebar-right-in {
+    from {
+        opacity: 0.96;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-sidebar-right-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-sidebar-right-back-in {
+    from {
+        opacity: 0.96;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-sidebar-right-back-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 [data-stalux-scroll-sentinel] {
     position: absolute;
     top: 240px;
@@ -188,136 +312,27 @@ html,
     pointer-events: none;
 }
 
-/* =========================================================
-   下面保留的是 Astro transition:animate 用的 web 动画 keyframes，
-   供 getSidebarAnimation("left"|"right") 和分类/文章页内局部
-   transition:animate 消费；与 View Transition 伪元素层互不冲突。
-   ========================================================= */
-
-@keyframes stalux-taxonomy-enter {
-    from {
-        opacity: 0;
-        transform: translateX(12px);
+/* Small screens get the same deterministic timing with no spatial motion. */
+@media (max-width: 768px) {
+    html[data-stalux-vt-preset]::view-transition-new(stalux-focus) {
+        animation: stalux-focus-fade 120ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+    html[data-stalux-vt-preset="restore"]::view-transition-new(stalux-focus) {
+        animation: stalux-focus-restore 100ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
     }
 }
 
-@keyframes stalux-taxonomy-enter-back {
-    from {
-        opacity: 0;
-        transform: translateX(-12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-article-enter {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-article-enter-back {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-sidebar-left-in {
-    from {
-        opacity: 0;
-        transform: translateX(-14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-sidebar-left-out {
-    to {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-}
-
-@keyframes stalux-sidebar-left-back-in {
-    from {
-        opacity: 0;
-        transform: translateX(14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-sidebar-left-back-out {
-    to {
-        opacity: 0;
-        transform: translateX(10px);
-    }
-}
-
-@keyframes stalux-sidebar-right-in {
-    from {
-        opacity: 0;
-        transform: translateX(14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-sidebar-right-out {
-    to {
-        opacity: 0;
-        transform: translateX(10px);
-    }
-}
-
-@keyframes stalux-sidebar-right-back-in {
-    from {
-        opacity: 0;
-        transform: translateX(-14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-sidebar-right-back-out {
-    to {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-}
-
-/* prefers-reduced-motion：关闭 View Transition 伪元素上的所有动画，
-   但保留伪元素本身（浏览器会直接从 old 切到 new，视觉等价于无动画的软导航） */
 @media (prefers-reduced-motion: reduce) {
+    html[data-stalux-vt-preset]
+        .stalux-main
+        [data-stalux-motion-focus][data-stalux-motion-visible="true"] {
+        view-transition-name: none !important;
+    }
+
     ::view-transition-group(*),
     ::view-transition-old(*),
     ::view-transition-new(*) {
-        animation-duration: 1ms !important;
-        animation-delay: 0ms !important;
+        animation: none !important;
         filter: none !important;
         transform: none !important;
     }

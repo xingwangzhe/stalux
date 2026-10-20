@@ -35,10 +35,10 @@ export type RouteAnimation = {
     };
 };
 
-const easing = "cubic-bezier(0.22, 0.72, 0.22, 1)";
+const easing = "cubic-bezier(0.2, 0.7, 0.2, 1)";
 const exitAnimation: TransitionAnimation = {
     name: "stalux-page-exit",
-    duration: "0.14s",
+    duration: "0.1s",
     easing,
     fillMode: "both",
 };
@@ -49,7 +49,7 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
             old: exitAnimation,
             new: {
                 name: productionStyleName(`stalux-${name}`),
-                duration: "0.22s",
+                duration: "0.16s",
                 easing,
                 fillMode: "both",
             },
@@ -58,7 +58,7 @@ function createRouteAnimation(name: string, backName = `${name}-back`): RouteAni
             old: exitAnimation,
             new: {
                 name: productionStyleName(`stalux-${backName}`),
-                duration: "0.22s",
+                duration: "0.16s",
                 easing,
                 fillMode: "both",
             },
@@ -92,7 +92,7 @@ function createSidebarAnimation(
 ): TransitionAnimation {
     return {
         name: productionStyleName(`stalux-sidebar-${side}-${backwards ? "back-" : ""}${phase}`),
-        duration: "0.22s",
+        duration: "0.16s",
         easing,
         fillMode: "both",
     };

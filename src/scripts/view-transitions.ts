@@ -1,7 +1,9 @@
 import { getRouteKind } from "@utils/public-routes";
+import { getRouteMotionPreset, type RouteMotionPreset } from "@utils/route-motion-policy";
 import { installBackToTop } from "./back-to-top";
 import { createClientLogger } from "./logger";
 import { prepareNavigationFont } from "./navigation-font";
+import { prepareRouteMotion, type RouteMotion } from "./route-motion";
 
 const logger = createClientLogger("view-transitions");
 
@@ -29,14 +31,20 @@ interface NavigationEvent {
     newDocument: Document;
     signal: AbortSignal;
     viewTransition?: ViewTransition;
+    sourceElement?: Element;
 }
 
-function setNavigationState(event: NavigationEvent, html = document.documentElement): void {
+function setNavigationState(
+    event: NavigationEvent,
+    preset: RouteMotionPreset,
+    html = document.documentElement,
+): void {
     const from = getRouteKind(new URL(event.from, window.location.href).pathname);
     const to = getRouteKind(new URL(event.to, window.location.href).pathname);
     html.dataset.staluxVtFrom = from;
     html.dataset.staluxVtTo = to;
     html.dataset.staluxVtDirection = event.direction;
+    html.dataset.staluxVtPreset = preset;
 }
 
 function clearNavigationState(): void {
@@ -44,6 +52,30 @@ function clearNavigationState(): void {
     delete html.dataset.staluxVtFrom;
     delete html.dataset.staluxVtTo;
     delete html.dataset.staluxVtDirection;
+    delete html.dataset.staluxVtPreset;
+    clearFocusVisibility();
+}
+
+function clearFocusVisibility(): void {
+    document
+        .querySelector("[data-stalux-motion-focus]")
+        ?.removeAttribute?.("data-stalux-motion-visible");
+}
+
+/** At most one bounded title is considered, never an entire article or list. */
+function updateFocusVisibility(): void {
+    const focus = document.querySelector<HTMLElement>("[data-stalux-motion-focus]");
+    if (!focus || typeof focus.getBoundingClientRect !== "function") return;
+    const rect = focus.getBoundingClientRect();
+    const visible =
+        rect.width > 0 &&
+        rect.height > 0 &&
+        rect.height <= window.innerHeight / 2 &&
+        rect.bottom > 0 &&
+        rect.top < window.innerHeight &&
+        rect.right > 0 &&
+        rect.left < window.innerWidth;
+    focus.dataset.staluxMotionVisible = String(visible);
 }
 
 function preserveHeaderMetrics(nextDocument: Document): void {
@@ -63,10 +95,47 @@ const transitionWindow = window as TransitionWindow;
 if (!transitionWindow.__STALUX_VT_LISTENER__) {
     transitionWindow.__STALUX_VT_LISTENER__ = true;
 
+    // A current-page link is not a page replacement. Intercept before Astro's
+    // delegated handler, but keep propagation for menu cleanup and click tracking.
+    // Hash changes, explicit reloads, downloads and modified/new-tab clicks keep
+    // their native behavior.
+    document.addEventListener(
+        "click",
+        (event) => {
+            if (
+                event.defaultPrevented ||
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+            )
+                return;
+            const anchor =
+                event.target instanceof Element
+                    ? event.target.closest<HTMLAnchorElement>("a[href]")
+                    : null;
+            if (
+                !anchor ||
+                anchor.href !== window.location.href ||
+                anchor.href.includes("#") ||
+                anchor.hasAttribute("download") ||
+                anchor.hasAttribute("data-astro-reload") ||
+                anchor.relList.contains("external")
+            )
+                return;
+            const target =
+                anchor.getAttribute("target") ??
+                document.querySelector("base[target]")?.getAttribute("target");
+            if (!target || target === "_self") event.preventDefault();
+        },
+        { capture: true },
+    );
+
     let generation = 0;
     let pendingBrowserMotion = false;
-    let _browserMotion = false;
-    let _routeMotionActive = false;
+    let preset: RouteMotionPreset = "none";
+    let motion: RouteMotion | undefined;
     window.addEventListener(
         "popstate",
         (event) => {
@@ -79,10 +148,24 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
     document.addEventListener("astro:before-preparation", (event) => {
         const navigation = event as unknown as NavigationEvent;
         const current = ++generation;
-        _routeMotionActive = false;
-        _browserMotion = pendingBrowserMotion && navigation.navigationType === "traverse";
+        motion?.cancel();
+        // Only the incoming heading animates. Drop any prior marker without
+        // measuring/capturing a hidden outgoing title or flushing its layout.
+        clearFocusVisibility();
+        preset = getRouteMotionPreset({
+            from: new URL(navigation.from, window.location.href),
+            to: new URL(navigation.to, window.location.href),
+            navigationType: navigation.navigationType,
+            intent:
+                navigation.sourceElement
+                    ?.closest("[data-stalux-motion]")
+                    ?.getAttribute("data-stalux-motion") ?? undefined,
+            reducedMotion: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+            browserMotion: pendingBrowserMotion && navigation.navigationType === "traverse",
+            hidden: document.hidden,
+        });
         pendingBrowserMotion = false;
-        setNavigationState(navigation);
+        setNavigationState(navigation, preset);
         navigation.signal.addEventListener(
             "abort",
             () => {
@@ -95,9 +178,14 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
         });
         const loader = navigation.loader;
         navigation.loader = async () => {
-            await loader();
-            if (!event.defaultPrevented) {
-                await prepareNavigationFont(navigation.newDocument, navigation.signal);
+            try {
+                await loader();
+                if (!event.defaultPrevented) {
+                    await prepareNavigationFont(navigation.newDocument, navigation.signal);
+                }
+            } catch (error) {
+                if (current === generation) clearNavigationState();
+                throw error;
             }
         };
     });
@@ -107,28 +195,27 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
         if (navigation.signal.aborted) return;
         const current = generation;
         preserveHeaderMetrics(navigation.newDocument);
-        _routeMotionActive = true;
         // Astro replaces the root attributes during swap. Carry state into the
         // new document; CSS keyframes read these data-* attributes to pick their
         // own direction rather than letting Astro's default `fade` pair apply.
-        setNavigationState(navigation, navigation.newDocument.documentElement);
+        setNavigationState(navigation, preset, navigation.newDocument.documentElement);
+        // This release uses CSS/native VT only. Settle the existing installation
+        // gate without starting a second WAAPI effect; analytics/background keep
+        // the same shared ready/finished semantics and their existing listeners.
+        motion = prepareRouteMotion(navigation);
+        motion.start(null, { skip: true });
         const finish = () => {
             if (current === generation) clearNavigationState();
         };
-        // ViewTransition.ready fires when pseudo-elements are painted out; we
-        // use it as the handoff boundary so our WAAPI for new content starts
-        // *after* the native swap has painted its snapshot.
-        const native = navigation.viewTransition;
-        Promise.resolve(native?.ready)
-            .then(
-                () => undefined,
-                () => undefined,
-            )
-            .then(finish);
+        // Native ready starts the animation. Keep selectors until it finishes,
+        // including fallback/skip and abort; an older navigation cannot clear a
+        // newer one's state.
+        void motion.finished.then(finish, finish);
     });
 
     document.addEventListener("astro:after-swap", () => {
         setRouteState(window.location.pathname);
+        if (preset !== "none") updateFocusVisibility();
     });
 
     document.addEventListener("astro:page-load", () => {

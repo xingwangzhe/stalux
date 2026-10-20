@@ -24,6 +24,7 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
             {props.prev ? (
                 <a
                     href={props.prev.url}
+                    data-stalux-motion="previous"
                     class="stalux-pagination-link stalux-pagination-prev-post"
                     rel="prev"
                     data-astro-prefetch
@@ -77,6 +78,7 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
             {props.next ? (
                 <a
                     href={props.next.url}
+                    data-stalux-motion="next"
                     class="stalux-pagination-link stalux-pagination-next-post"
                     rel="next"
                     data-astro-prefetch
