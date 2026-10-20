@@ -28,34 +28,162 @@
     animation-delay: 0.35s;
 }
 
-/* Keep route motion on the page shell; named child elements handle continuity. */
-@keyframes stalux-page-exit {
+/* =========================================================
+   View Transitions：主内容 slide + 淡入 + 新内容 scale+blur 到清晰，
+   与 Astro 默认的纯淡入淡出不同 — 旧内容沿方向快速滑出，新内容对向滑入
+   带轻微 scale 从 0.985 拉回 1，配合 1.2px blur 再还原。
+   forwards (direction = "forward" | "push"): 旧内容向左滑出，新内容从右滑入
+   backwards (direction = "back" | "traverse"): 镜像方向
+   持久壳层（header、footer、背景、sentinel、back-to-top 按钮）设
+   view-transition-name: none 保留 DOM、不参与原生动画；标题/侧边栏/
+   卡片标题用局部 transition:animate 独立配置，与 root 伪元素分层。
+   方向值（forward | back）由 view-transitions.ts 写入 CSS 变量
+   --stalux-vt-old / --stalux-vt-new，伪元素继承后用 animation-name 切换。
+   ========================================================= */
+
+/* 标题 / 卡片标题交叉淡入 + 轻微缩放：让列表→详情的同名元素有“形态连续感” */
+@keyframes stalux-vt-title-swap-old {
     to {
         opacity: 0;
+        transform: scale(0.94);
+        filter: blur(2px);
     }
 }
 
-@keyframes stalux-page-enter {
+@keyframes stalux-vt-title-swap-new {
     from {
         opacity: 0;
-        transform: translateY(9px);
+        transform: scale(1.05);
+        filter: blur(2px);
+    }
+    70% {
+        transform: scale(0.98);
+        filter: blur(0px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: scale(1);
+        filter: blur(0px);
     }
 }
 
-@keyframes stalux-page-enter-back {
+/* 主内容 View Transition 动画。
+   ⚠ 约束 1：::view-transition-old() / ::view-transition-new() 属于独立 UA 伪元素树，
+   与 <html> 之间**没有祖先选择器关系**。
+   ⚠ 约束 2：CSS 变量 fallback 字符串（`var(--x, keyframesName)`）不会被 Rolldown
+   tree-shake 静态追踪 —— fallback 里的 keyframes 名会被判断为"没被引用"而裁掉。
+   所以伪元素规则必须写成**直接引用 keyframes 的完整 animation shorthand**。
+   ⚠ 约束 3：方向切换暂时放弃（祖先选择器命不中伪元素），backward 暂不镜像。
+   后续可用 WAAPI 运行时覆盖伪元素 keyframes 实现方向切换。 */
+
+@keyframes stalux-vt-old-route {
+    0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+    45% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(-6%, 0, 0);
+    }
+}
+
+@keyframes stalux-vt-new-route {
+    0% {
+        opacity: 0;
+        transform: translate3d(6%, 0, 0) scale(0.985);
+        filter: blur(1.2px);
+    }
+    60% {
+        opacity: 0.9;
+        transform: translate3d(-0.8%, 0, 0) scale(1);
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        filter: blur(0px);
+    }
+}
+
+::view-transition-old(stalux-page) {
+    animation: stalux-vt-old-route 380ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+}
+
+::view-transition-new(stalux-page) {
+    animation: stalux-vt-new-route 460ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+}
+
+/* 标题交叉淡入：列表→详情 / 详情→详情 之间同名标题共享 transition:name 时
+   用一套独立动画（比 root 更快、更有“形态感”）。
+   注意：::view-transition-old/new 伪元素里不能放属性选择器（MDN 明确只接受
+   自定义 transition-name 字符串和 * 通配；属性选择器属于 legacy 浏览器实验
+   语法，lightningcss minify 不支持）。 */
+::view-transition-old(stalux-post-title) {
+    animation: stalux-vt-title-swap-old 260ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+}
+
+::view-transition-new(stalux-post-title) {
+    animation: stalux-vt-title-swap-new 320ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+}
+
+/* 侧边栏 — 独立于 root：沿内容方向做 12px 平移 + 淡入淡出，
+   让文章详情页左右栏与主内容分层出现。 */
+@keyframes stalux-vt-side-out {
+    to {
+        opacity: 0;
+        transform: translate3d(var(--stalux-side-out-x, -14px), 0, 0);
+    }
+}
+
+@keyframes stalux-vt-side-in {
     from {
         opacity: 0;
-        transform: translateY(-9px);
+        transform: translate3d(var(--stalux-side-in-x, 14px), 0, 0);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
     }
 }
+
+/* 持久壳层：header、背景、sentinel、back-to-top 按钮不参与 View Transition 伪元素；
+   直接设 view-transition-name: none 让浏览器为它们各自做即时更新。
+   这避免了原生快照把大体积 header 或整张背景图塞进 pseudo-element 树、
+   也与 view-transitions.ts 里的 .scrollY 优化保持一致 — 不强制 UI 同步。 */
+html,
+.stalux-main,
+.stalux-main *,
+[data-astro-transition-persist],
+[data-stalux-site-header],
+[data-stalux-site-header] *,
+.bg-layer,
+.bg-layer *,
+[data-stalux-scroll-sentinel],
+[data-stalux-scroll-sentinel] *,
+[data-stalux-back-to-top],
+[data-stalux-back-to-top] * {
+    view-transition-name: none !important;
+}
+
+/* BackToTop visibility sentinel */
+[data-stalux-scroll-sentinel] {
+    position: absolute;
+    top: 240px;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* =========================================================
+   下面保留的是 Astro transition:animate 用的 web 动画 keyframes，
+   供 getSidebarAnimation("left"|"right") 和分类/文章页内局部
+   transition:animate 消费；与 View Transition 伪元素层互不冲突。
+   ========================================================= */
 
 @keyframes stalux-taxonomy-enter {
     from {
@@ -173,35 +301,16 @@
     }
 }
 
-/* The native router keeps document/history semantics; content motion uses a
-   short Web Animations API effect instead of page-sized snapshot surfaces.
-   Persisted shell elements remain live and stationary during the swap. */
-html,
-.stalux-main,
-.stalux-main *,
-[data-astro-transition-persist] {
-    view-transition-name: none !important;
-}
-
-/* BackToTop visibility sentinel: lives in document coordinates and is observed
-   by an IntersectionObserver, so route swaps never force a synchronous scroll
-   read inside the native transition's update callback. */
-[data-stalux-scroll-sentinel] {
-    position: absolute;
-    top: 240px;
-    left: 0;
-    width: 1px;
-    height: 1px;
-    visibility: hidden;
-    pointer-events: none;
-}
-
+/* prefers-reduced-motion：关闭 View Transition 伪元素上的所有动画，
+   但保留伪元素本身（浏览器会直接从 old 切到 new，视觉等价于无动画的软导航） */
 @media (prefers-reduced-motion: reduce) {
     ::view-transition-group(*),
     ::view-transition-old(*),
     ::view-transition-new(*) {
         animation-duration: 1ms !important;
         animation-delay: 0ms !important;
+        filter: none !important;
+        transform: none !important;
     }
 
     .stalux-main,

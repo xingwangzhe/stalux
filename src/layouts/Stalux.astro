@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 import Footer from "@components/stalux/layout/footer.astro";
 import Head from "@components/stalux/layout/head.astro";
-import NavigationProgress from "@components/stalux/layout/navigationProgress.astro";
 import Navs from "@components/stalux/layout/navs.astro";
 import { getAccentColorStyle } from "@utils/accent-color";
 import {
@@ -89,7 +88,6 @@ const routeKind = getRouteKind(Astro.url.pathname);
         data-stalux-umami-id={headConfig?.umami?.id}
         data-stalux-umami-url={headConfig?.umami?.url}
     >
-        <NavigationProgress />
         <header
             class="stalux-site-header"
             data-stalux-font-group="header"
@@ -122,12 +120,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
             transition:persist="stalux-bg-b"
             aria-hidden="true"
         ></div>
-        <main
-            class="stalux-main"
-            data-stalux-route={routeKind}
-            transition:name="stalux-page"
-            transition:animate="none"
-        >
+        <main class="stalux-main" data-stalux-route={routeKind} transition:name="stalux-page">
             <slot />
         </main>
         <Footer />

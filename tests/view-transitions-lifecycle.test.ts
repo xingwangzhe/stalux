@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../src/scripts/navigation-font", () => ({ prepareNavigationFont: vi.fn() }));
-vi.mock("../src/scripts/navigation-progress", () => ({ installNavigationProgress: vi.fn() }));
 const root = () => {
     const properties = new Map<string, string>();
     return {
@@ -24,6 +23,7 @@ async function settle() {
 }
 function navigation() {
     let finish!: () => void;
+    const ready = Promise.resolve();
     const finished = new Promise<void>((resolve) => {
         finish = resolve;
     });
@@ -39,7 +39,7 @@ function navigation() {
             querySelector: (_selector: string): unknown => null,
             querySelectorAll: () => [],
         },
-        viewTransition: { finished },
+        viewTransition: { ready, finished },
         finish,
     };
 }
@@ -84,7 +84,7 @@ describe("route motion state across Astro root swaps", () => {
         expect(main.setAttribute).not.toHaveBeenCalled();
     });
 
-    it("survives the root swap and page-load until the animation finishes", async () => {
+    it("survives the root swap and page-load until the native transition finishes", async () => {
         const nav = navigation();
         fire("astro:before-preparation", nav);
         fire("astro:before-swap", nav);
@@ -97,7 +97,7 @@ describe("route motion state across Astro root swaps", () => {
         await settle();
         expect(documentMock.documentElement.dataset.staluxVtFrom).toBeUndefined();
     });
-    it("does not let an obsolete animation clear the next navigation's state", async () => {
+    it("does not let an obsolete navigation clear the next one's state", async () => {
         const first = navigation();
         fire("astro:before-preparation", first);
         fire("astro:before-swap", first);
@@ -137,52 +137,24 @@ describe("route motion state across Astro root swaps", () => {
         ).toBe("");
     });
 
-    it("keeps route state until the real content animation ends after the native transition", async () => {
-        let finishAnimation = () => {};
-        const finished = new Promise<void>((resolve) => {
-            finishAnimation = resolve;
-        });
-        const main = {
-            getAttribute: () => "article",
-            setAttribute: vi.fn(),
-            animate: vi.fn(() => ({ finished, cancel: vi.fn() })),
-        };
-        documentMock.querySelector = (selector) =>
-            selector === "main[data-stalux-route]" ? main : null;
+    it("aborts on an already-aborted navigation and skips state + header preservation", () => {
         const nav = navigation();
-        fire("astro:before-preparation", nav);
+        nav.signal = new AbortController().signal;
+        Object.defineProperty(nav.signal, "aborted", { value: true, configurable: true });
+        documentMock.querySelector = () => ({ getPropertyValue: () => "" });
         fire("astro:before-swap", nav);
-        documentMock.documentElement = nav.newDocument.documentElement;
-        fire("astro:after-swap");
-        nav.finish();
-        await settle();
-        expect(documentMock.documentElement.dataset.staluxVtTo).toBe("article");
-        finishAnimation();
-        await settle();
-        expect(documentMock.documentElement.dataset.staluxVtTo).toBeUndefined();
+        expect(nav.newDocument.documentElement.dataset.staluxVtFrom).toBeUndefined();
+        expect(nav.newDocument.documentElement.dataset.staluxVtTo).toBeUndefined();
+        expect(
+            nav.newDocument.documentElement.style.getPropertyValue("--stalux-site-header-height"),
+        ).toBe("");
     });
 
-    it("skips extra animation for a browser history gesture without suppressing the next click", () => {
-        const main = {
-            getAttribute: () => "article",
-            setAttribute: vi.fn(),
-            animate: vi.fn(() => ({ finished: Promise.resolve(), cancel: vi.fn() })),
-        };
-        documentMock.querySelector = (selector) =>
-            selector === "main[data-stalux-route]" ? main : null;
-        window.dispatchEvent(Object.assign(new Event("popstate"), { hasUAVisualTransition: true }));
-        const back = navigation();
-        back.navigationType = "traverse";
-        fire("astro:before-preparation", back);
-        fire("astro:before-swap", back);
-        fire("astro:after-swap");
-        expect(main.animate).not.toHaveBeenCalled();
-        // A browser event without an Astro traversal must not suppress a later click.
-        window.dispatchEvent(Object.assign(new Event("popstate"), { hasUAVisualTransition: true }));
-        const click = navigation();
-        fire("astro:before-preparation", click);
-        fire("astro:before-swap", click);
-        fire("astro:after-swap");
-        expect(main.animate).toHaveBeenCalledOnce();
+    it("allows CSS ::view-transition-old/new to pick direction from data-stalux-vt-direction", () => {
+        const nav = navigation();
+        nav.direction = "backward";
+        fire("astro:before-preparation", nav);
+        fire("astro:before-swap", nav);
+        expect(nav.newDocument.documentElement.dataset.staluxVtDirection).toBe("backward");
     });
 });
