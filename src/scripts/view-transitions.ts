@@ -53,29 +53,7 @@ function clearNavigationState(): void {
     delete html.dataset.staluxVtTo;
     delete html.dataset.staluxVtDirection;
     delete html.dataset.staluxVtPreset;
-    clearFocusVisibility();
-}
-
-function clearFocusVisibility(): void {
-    document
-        .querySelector("[data-stalux-motion-focus]")
-        ?.removeAttribute?.("data-stalux-motion-visible");
-}
-
-/** At most one bounded title is considered, never an entire article or list. */
-function updateFocusVisibility(): void {
-    const focus = document.querySelector<HTMLElement>("[data-stalux-motion-focus]");
-    if (!focus || typeof focus.getBoundingClientRect !== "function") return;
-    const rect = focus.getBoundingClientRect();
-    const visible =
-        rect.width > 0 &&
-        rect.height > 0 &&
-        rect.height <= window.innerHeight / 2 &&
-        rect.bottom > 0 &&
-        rect.top < window.innerHeight &&
-        rect.right > 0 &&
-        rect.left < window.innerWidth;
-    focus.dataset.staluxMotionVisible = String(visible);
+    delete html.dataset.staluxVtPhase;
 }
 
 function preserveHeaderMetrics(nextDocument: Document): void {
@@ -159,9 +137,9 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
             clearNavigationState();
         };
         motion?.cancel();
-        // Only the incoming heading animates. Drop any prior marker without
-        // measuring/capturing a hidden outgoing title or flushing its layout.
-        clearFocusVisibility();
+        clearNavigationState();
+        // CSS moves only explicitly marked content, never the root or sidebars.
+        // Long article geometry does not need to be measured or captured.
         preset = getRouteMotionPreset({
             from: new URL(navigation.from, window.location.href),
             to: new URL(navigation.to, window.location.href),
@@ -206,11 +184,29 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
         // new document; CSS keyframes read these data-* attributes to pick their
         // own direction rather than letting Astro's default `fade` pair apply.
         setNavigationState(navigation, preset, navigation.newDocument.documentElement);
+        if (preset !== "none") {
+            navigation.newDocument.documentElement.dataset.staluxVtPhase = "prepared";
+        }
         // This release uses CSS/native VT only. Settle the existing installation
         // gate without starting a second WAAPI effect; analytics/background keep
         // the same shared ready/finished semantics and their existing listeners.
         motion = prepareRouteMotion(navigation);
         motion.start(null, { skip: true });
+        // Preparing the incoming content paused prevents a one-frame flash at
+        // its final position. Release it with the heading's native animation;
+        // page scripts and Astro's scroll restoration keep their normal order.
+        void Promise.resolve(navigation.viewTransition?.ready).then(
+            () => {
+                if (
+                    current === generation &&
+                    !navigation.signal.aborted &&
+                    document.documentElement.dataset.staluxVtPhase === "prepared"
+                ) {
+                    document.documentElement.dataset.staluxVtPhase = "running";
+                }
+            },
+            () => {},
+        );
         const finish = () => {
             if (current === generation) clearNavigationState();
         };
@@ -222,7 +218,6 @@ if (!transitionWindow.__STALUX_VT_LISTENER__) {
 
     document.addEventListener("astro:after-swap", () => {
         setRouteState(window.location.pathname);
-        if (preset !== "none") updateFocusVisibility();
     });
 
     document.addEventListener("astro:page-load", () => {

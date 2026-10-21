@@ -345,20 +345,31 @@ describe("route motion state across Astro root swaps", () => {
         expect(nav.newDocument.documentElement.dataset.staluxVtPreset).toBe("none");
     });
 
-    it("does not move a restored offscreen title into view or capture it", () => {
+    it("restores a deep history entry without measuring layout or writing scroll", () => {
         const nav = navigation();
         nav.navigationType = "traverse";
-        Object.assign(window, { innerWidth: 390, innerHeight: 844 });
+        nav.to = new URL("https://example.com/archives/");
+        const scrollTo = vi.fn();
+        const scrollBy = vi.fn();
+        const scrollWrite = vi.fn();
+        Object.assign(window, { innerWidth: 390, innerHeight: 844, scrollTo, scrollBy });
+        Object.defineProperty(window, "scrollY", {
+            configurable: true,
+            get: () => 5000,
+            set: scrollWrite,
+        });
         const focus = {
             dataset: {} as Record<string, string>,
-            getBoundingClientRect: () => ({
+            setAttribute: vi.fn(),
+            removeAttribute: vi.fn(),
+            getBoundingClientRect: vi.fn(() => ({
                 width: 300,
                 height: 50,
                 top: -500,
                 bottom: -450,
                 left: 0,
                 right: 300,
-            }),
+            })),
         };
         documentMock.querySelector = (selector) =>
             selector === "[data-stalux-motion-focus]" ? focus : null;
@@ -366,18 +377,25 @@ describe("route motion state across Astro root swaps", () => {
         fire("astro:before-swap", nav);
         documentMock.documentElement = nav.newDocument.documentElement;
         fire("astro:after-swap");
-        expect(focus.dataset.staluxMotionVisible).toBe("false");
+        expect(focus.getBoundingClientRect).not.toHaveBeenCalled();
+        expect(focus.setAttribute).not.toHaveBeenCalled();
+        expect(focus.removeAttribute).not.toHaveBeenCalled();
+        expect(focus.dataset.staluxMotionVisible).toBeUndefined();
+        expect(scrollTo).not.toHaveBeenCalled();
+        expect(scrollBy).not.toHaveBeenCalled();
+        expect(scrollWrite).not.toHaveBeenCalled();
+        expect(window.scrollY).toBe(5000);
         expect(documentMock.documentElement.dataset.staluxVtPreset).toBe("restore");
     });
 
-    it("measures only the incoming title after swap and drops stale outgoing capture", () => {
+    it("does not measure or name a visible title in addition to the viewport capture", () => {
         const nav = navigation();
         Object.assign(window, { innerWidth: 390, innerHeight: 844 });
         const focus = {
-            dataset: { staluxMotionVisible: "true" } as Record<string, string>,
-            removeAttribute: () => {
-                delete focus.dataset.staluxMotionVisible;
-            },
+            dataset: {} as Record<string, string>,
+            setAttribute: vi.fn(),
+            removeAttribute: vi.fn(),
+            style: { setProperty: vi.fn() },
             getBoundingClientRect: vi.fn(() => ({
                 width: 300,
                 height: 50,
@@ -395,8 +413,11 @@ describe("route motion state across Astro root swaps", () => {
         fire("astro:before-swap", nav);
         documentMock.documentElement = nav.newDocument.documentElement;
         fire("astro:after-swap");
-        expect(focus.getBoundingClientRect).toHaveBeenCalledOnce();
-        expect(focus.dataset.staluxMotionVisible).toBe("true");
+        expect(focus.getBoundingClientRect).not.toHaveBeenCalled();
+        expect(focus.setAttribute).not.toHaveBeenCalled();
+        expect(focus.removeAttribute).not.toHaveBeenCalled();
+        expect(focus.style.setProperty).not.toHaveBeenCalled();
+        expect(focus.dataset.staluxMotionVisible).toBeUndefined();
     });
 
     it("cleans preparation state when the preserved loader fails", async () => {

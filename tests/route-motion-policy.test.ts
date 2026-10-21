@@ -18,7 +18,9 @@ const paths = [
 ];
 const presets = [
     "none",
-    "fade",
+    "glide",
+    "article",
+    "panel",
     "enter",
     "up",
     "taxonomy",
@@ -61,14 +63,19 @@ describe("route motion intent, independent of navigation and scrolling", () => {
         ["/archives/", "/posts/a/", "enter"],
         ["/posts/a/", "/archives/", "up"],
         ["/posts/a/", "/", "home"],
-        ["/", "/about/", "enter"],
+        ["/", "/about/", "panel"],
+        ["/", "/links/", "panel"],
+        ["/", "/words/", "panel"],
         ["/tags/a/", "/categories/a/", "taxonomy"],
         ["/tags/a/", "/tags/b/", "taxonomy"],
         ["/categories/a/", "/categories/", "up"],
-        ["/posts/a/", "/posts/b/", "fade"],
-        ["/about/", "/words/", "fade"],
+        ["/posts/a/", "/posts/b/", "article"],
+        ["/about/", "/words/", "panel"],
+        ["/posts/a/", "/about/", "panel"],
+        ["/categories/", "/links/", "panel"],
+        ["/links/", "/archives/", "glide"],
         ["/about/", "/404", "error"],
-        ["/404", "/archives/", "fade"],
+        ["/404", "/archives/", "glide"],
         ["/standalone.html", "/posts/a/", "none"],
         ["/posts/a/", "/standalone.html", "none"],
     ])("%s → %s uses %s", (from, to, preset) => {
@@ -93,7 +100,7 @@ describe("route motion intent, independent of navigation and scrolling", () => {
         const context = { from: url("/posts/a/"), to: url("/posts/b/"), intent: "next" };
         for (const key of ["hidden", "reducedMotion", "browserMotion"] as const)
             expect(getRouteMotionPreset({ ...context, [key]: true })).toBe("none");
-        expect(getRouteMotionPreset({ ...context, navigationType: "replace" })).toBe("fade");
+        expect(getRouteMotionPreset({ ...context, navigationType: "replace" })).toBe("glide");
         expect(getRouteMotionPreset({ ...context, to: new URL("https://external.example/") })).toBe(
             "none",
         );
@@ -105,7 +112,7 @@ describe("route motion intent, independent of navigation and scrolling", () => {
                 from: url("/archives/?filter=a"),
                 to: url("/archives/?filter=b"),
             }),
-        ).toBe("fade");
+        ).toBe("glide");
         expect(getRouteMotionPreset({ from: url("/posts/a"), to: url("/posts/a/") })).toBe("none");
     });
 });

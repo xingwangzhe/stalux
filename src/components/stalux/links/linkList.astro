@@ -10,7 +10,7 @@ const linksConfig = getLinksData(configEntries);
 const links = linksConfig?.sites ?? [];
 ---
 
-<ul class="stalux-links">
+<ul class="stalux-links" data-stalux-motion-content>
     {links.map((link) => (
         <li class="stalux-link-list-item">
             <LinkCard link={link} />

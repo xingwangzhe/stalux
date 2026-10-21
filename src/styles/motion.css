@@ -28,9 +28,8 @@
     animation-delay: 0.35s;
 }
 
-/* Route motion captures one visible heading, never a long main/article.
-   The router owns data-stalux-vt-preset and confirms visibility once per DOM.
-   Keep literal keyframe references: production CSS removes unreferenced frames. */
+/* Only a bounded heading is captured by native VT. Long article/list content
+   stays in the live DOM; sidebars, navigation, footer and backgrounds stay put. */
 html,
 [data-astro-transition-persist],
 .stalux-main,
@@ -42,143 +41,162 @@ html,
     view-transition-name: none !important;
 }
 
-html[data-stalux-vt-preset]
-    .stalux-main
-    [data-stalux-motion-focus][data-stalux-motion-visible="true"] {
+html[data-stalux-vt-preset] {
+    --stalux-vt-duration: 160ms;
+    --stalux-vt-distance: clamp(28px, 4vw, 40px);
+    --stalux-vt-tilt: 8deg;
+    --stalux-vt-x: var(--stalux-vt-distance);
+    --stalux-vt-y: 0px;
+    --stalux-vt-rx: 0deg;
+    --stalux-vt-ry: 0deg;
+    --stalux-vt-rz: -0.35deg;
+    --stalux-vt-scale: 1;
+}
+
+html[data-stalux-vt-preset]:not([data-stalux-vt-preset="none"]) [data-stalux-motion-focus] {
     view-transition-name: stalux-focus !important;
 }
 
-html[data-stalux-vt-preset="none"]
-    .stalux-main
-    [data-stalux-motion-focus][data-stalux-motion-visible="true"] {
-    view-transition-name: none !important;
+::view-transition {
+    pointer-events: none;
 }
-
-/* Different headings must not interpolate width, height, position or text size.
-   Old content stays readable until swap; only the small new heading animates. */
 ::view-transition-group(stalux-focus) {
-    animation: none;
+    animation: none !important;
 }
-
-::view-transition-image-pair(stalux-focus) {
-    isolation: auto;
-}
-
 ::view-transition-old(stalux-focus) {
     display: none;
-    animation: none;
+    animation: none !important;
 }
-
 ::view-transition-new(stalux-focus) {
     mix-blend-mode: normal;
-    animation: stalux-focus-fade 120ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    transform-origin: 50% 50%;
+    backface-visibility: hidden;
+    animation: stalux-content-in var(--stalux-vt-duration, 160ms) cubic-bezier(0.22, 0.7, 0.2, 1)
+        both paused;
 }
 
-html[data-stalux-vt-preset="enter"]::view-transition-new(stalux-focus) {
-    animation: stalux-focus-enter 160ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+/* The incoming document starts paused, before it can be painted. Native ready
+   releases both the small heading and live content in the same style update. */
+html[data-stalux-vt-phase="prepared"] [data-stalux-motion-content],
+html[data-stalux-vt-phase="running"] [data-stalux-motion-content] {
+    transform-origin: 50% min(42vh, 400px);
+    backface-visibility: hidden;
+    animation: stalux-content-in var(--stalux-vt-duration, 160ms) cubic-bezier(0.22, 0.7, 0.2, 1)
+        both paused;
+}
+html[data-stalux-vt-phase="running"] [data-stalux-motion-content],
+html[data-stalux-vt-phase="running"]::view-transition-new(stalux-focus) {
+    animation-play-state: running;
+}
+html[data-stalux-vt-phase] .stalux-article {
+    /* Clip a sliding paragraph at its reading card, without a scroll container. */
+    overflow: clip;
+}
+[data-stalux-home-content] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
-html[data-stalux-vt-preset="up"]::view-transition-new(stalux-focus) {
-    animation: stalux-focus-up 140ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+/* Reading follows a horizontal page sequence; prev/next articles are siblings
+   in that sequence, so they keep a lateral glide. Vertical travel is reserved
+   for hierarchical moves (list -> detail, back up to the archive). A slower
+   260ms window keeps the longer sibling travel legible instead of abrupt. */
+html[data-stalux-vt-preset="enter"] {
+    --stalux-vt-x: calc(var(--stalux-vt-distance) * 1.25);
+    --stalux-vt-rz: 0deg;
+}
+html[data-stalux-vt-preset="article"] {
+    --stalux-vt-duration: 260ms;
+    --stalux-vt-distance: clamp(36px, 5vw, 56px);
+    --stalux-vt-x: calc(var(--stalux-vt-distance) * 1.25);
+    --stalux-vt-rz: 0deg;
+}
+html[data-stalux-vt-preset="next"] {
+    --stalux-vt-duration: 260ms;
+    --stalux-vt-distance: clamp(36px, 5vw, 56px);
+    --stalux-vt-x: calc(var(--stalux-vt-distance) * 1.5);
+    --stalux-vt-rz: 0deg;
+}
+html[data-stalux-vt-preset="previous"] {
+    --stalux-vt-duration: 260ms;
+    --stalux-vt-distance: clamp(36px, 5vw, 56px);
+    --stalux-vt-x: calc(var(--stalux-vt-distance) * -1.5);
+    --stalux-vt-rz: 0deg;
+}
+html[data-stalux-vt-preset="up"] {
+    --stalux-vt-duration: 140ms;
+    --stalux-vt-x: calc(var(--stalux-vt-distance) * -0.75);
+    --stalux-vt-y: -10px;
+    --stalux-vt-rz: 0deg;
+}
+html[data-stalux-vt-preset="taxonomy"] {
+    --stalux-vt-duration: 140ms;
+    --stalux-vt-x: 0px;
+    --stalux-vt-y: 18px;
+    --stalux-vt-rx: calc(var(--stalux-vt-tilt) * -0.5);
+    --stalux-vt-rz: 0deg;
+}
+html[data-stalux-vt-preset="panel"] {
+    --stalux-vt-x: calc(var(--stalux-vt-distance) * 0.6);
+    --stalux-vt-ry: calc(var(--stalux-vt-tilt) * -1);
+    --stalux-vt-rz: 0deg;
+}
+html[data-stalux-vt-preset="panel"][data-stalux-vt-to="links"] {
+    --stalux-vt-x: 0px;
+    --stalux-vt-y: 12px;
+    --stalux-vt-rx: calc(var(--stalux-vt-tilt) * 0.75);
+    --stalux-vt-ry: 0deg;
+}
+html[data-stalux-vt-preset="panel"][data-stalux-vt-to="words"] {
+    --stalux-vt-x: 0px;
+    --stalux-vt-y: 16px;
+    --stalux-vt-ry: 0deg;
+    --stalux-vt-rz: -1deg;
+}
+html[data-stalux-vt-preset="home"] {
+    --stalux-vt-duration: 180ms;
+    --stalux-vt-x: 0px;
+    --stalux-vt-y: 20px;
+    --stalux-vt-rx: calc(var(--stalux-vt-tilt) * -0.625);
+    --stalux-vt-rz: 0deg;
+    --stalux-vt-scale: 0.985;
+}
+/* History restores the actual reading position. Small mirrored translation
+   signals direction without re-playing the page-entry tilt at a deep scroll. */
+html[data-stalux-vt-preset="restore"] {
+    --stalux-vt-duration: 100ms;
+    --stalux-vt-x: 12px;
+    --stalux-vt-rz: 0deg;
+}
+html[data-stalux-vt-preset="restore"][data-stalux-vt-direction="back"],
+html[data-stalux-vt-preset="restore"][data-stalux-vt-direction="backward"] {
+    --stalux-vt-x: -12px;
+}
+html[data-stalux-vt-preset="error"] {
+    --stalux-vt-duration: 120ms;
+    --stalux-vt-x: 0px;
+    --stalux-vt-y: 12px;
+    --stalux-vt-rz: -0.7deg;
 }
 
-html[data-stalux-vt-preset="taxonomy"]::view-transition-new(stalux-focus) {
-    animation: stalux-focus-fade 140ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-html[data-stalux-vt-preset="previous"]::view-transition-new(stalux-focus) {
-    animation: stalux-focus-previous 160ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-html[data-stalux-vt-preset="next"]::view-transition-new(stalux-focus) {
-    animation: stalux-focus-next 160ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-html[data-stalux-vt-preset="home"]::view-transition-new(stalux-focus) {
-    animation: stalux-focus-home 180ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-html[data-stalux-vt-preset="restore"]::view-transition-new(stalux-focus) {
-    animation: stalux-focus-restore 100ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-html[data-stalux-vt-preset="error"]::view-transition-new(stalux-focus) {
-    animation: stalux-focus-fade 100ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-@keyframes stalux-focus-fade {
+@keyframes stalux-content-in {
     from {
-        opacity: 0.86;
+        opacity: 0.25;
+        transform: perspective(1200px) translate3d(var(--stalux-vt-x), var(--stalux-vt-y), 0)
+            rotateX(var(--stalux-vt-rx)) rotateY(var(--stalux-vt-ry)) rotateZ(var(--stalux-vt-rz))
+            scale(var(--stalux-vt-scale));
+    }
+    55% {
+        opacity: 1;
     }
     to {
         opacity: 1;
+        transform: perspective(1200px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg)
+            rotateZ(0deg) scale(1);
     }
 }
-
-@keyframes stalux-focus-enter {
-    from {
-        opacity: 0.86;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-focus-up {
-    from {
-        opacity: 0.9;
-        transform: translateY(-4px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-focus-previous {
-    from {
-        opacity: 0.9;
-        transform: translateX(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-focus-next {
-    from {
-        opacity: 0.9;
-        transform: translateX(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes stalux-focus-home {
-    from {
-        opacity: 0.9;
-        transform: translateY(4px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes stalux-focus-restore {
-    from {
-        opacity: 0.96;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
 /* Public transition helpers retain their names as opacity-only compatibility
    frames. Theme layouts no longer use them to move large content/sidebars. */
 @keyframes stalux-page-exit {
@@ -312,20 +330,24 @@ html[data-stalux-vt-preset="error"]::view-transition-new(stalux-focus) {
     pointer-events: none;
 }
 
-/* Small screens get the same deterministic timing with no spatial motion. */
+/* Phone routes keep direction and depth with smaller travel/angles. */
 @media (max-width: 768px) {
-    html[data-stalux-vt-preset]::view-transition-new(stalux-focus) {
-        animation: stalux-focus-fade 120ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    html[data-stalux-vt-preset]:not([data-stalux-vt-preset="none"]) {
+        --stalux-vt-distance: 20px;
+        --stalux-vt-tilt: 4deg;
     }
-    html[data-stalux-vt-preset="restore"]::view-transition-new(stalux-focus) {
-        animation: stalux-focus-restore 100ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    html[data-stalux-vt-preset="restore"] {
+        --stalux-vt-x: 8px;
+    }
+    html[data-stalux-vt-preset="restore"][data-stalux-vt-direction="back"],
+    html[data-stalux-vt-preset="restore"][data-stalux-vt-direction="backward"] {
+        --stalux-vt-x: -8px;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    html[data-stalux-vt-preset]
-        .stalux-main
-        [data-stalux-motion-focus][data-stalux-motion-visible="true"] {
+    html[data-stalux-vt-preset],
+    html[data-stalux-vt-preset] [data-astro-transition-persist] {
         view-transition-name: none !important;
     }
 

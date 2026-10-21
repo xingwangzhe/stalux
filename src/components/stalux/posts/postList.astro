@@ -11,7 +11,7 @@ const props = Astro.props as Props;
 const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
 ---
 
-<div data-stalux="postlist" class="stalux-post-list-container">
+<div data-stalux="postlist" class="stalux-post-list-container" data-stalux-motion-content>
     <ul class="post-list">
         {posts.map((post, index) => (
             <li>

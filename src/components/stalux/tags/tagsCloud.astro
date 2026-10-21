@@ -22,7 +22,7 @@ const tagLinks = tagList.map((t) => ({
 ---
 
 <!-- 移动端：SSR 卡片 -->
-<div class="stalux-cloud-cards" id="tags-cards">
+<div class="stalux-cloud-cards" id="tags-cards" data-stalux-motion-content>
     {tagList.length > 0 ? (
         tagGroups.map((group) => (
             <div class="stalux-cloud-tag-group">
@@ -47,7 +47,11 @@ const tagLinks = tagList.map((t) => ({
 </div>
 
 <!-- 桌面端：Canvas 标签云 -->
-<div class="stalux-cloud-canvas-frame" style={{ "--cloud-density": cloudDensity }}>
+<div
+    class="stalux-cloud-canvas-frame"
+    style={{ "--cloud-density": cloudDensity }}
+    data-stalux-motion-content
+>
     <div class="stalux-cloud-canvas" id="tags-canvas" data-tags={JSON.stringify(tagLinks)}></div>
 </div>
 

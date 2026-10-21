@@ -127,6 +127,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
     <!-- Article Body -->
     <section
         class="stalux-post-body stalux-prose"
+        data-stalux-motion-content
         data-pagefind-body
         data-stalux-post-id={props.postId === undefined ? undefined : String(props.postId)}
         data-pagefind-filter={props.postId === undefined ? undefined : "post[data-stalux-post-id]"}

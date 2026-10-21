@@ -2,7 +2,9 @@ import { getRouteKind, normalizePublicPath } from "./public-routes";
 
 export type RouteMotionPreset =
     | "none"
-    | "fade"
+    | "glide"
+    | "article"
+    | "panel"
     | "enter"
     | "up"
     | "taxonomy"
@@ -42,14 +44,17 @@ export function getRouteMotionPreset(context: MotionContext): RouteMotionPreset 
     // Both directions restore an existing history entry. A push to a parent
     // route is not a history traversal, and an article's previous/next is not back.
     if (context.navigationType === "traverse") return "restore";
-    if (context.navigationType === "replace") return "fade";
+    if (context.navigationType === "replace") return "glide";
     if (target === "not-found") return "error";
-    if (source === "not-found") return "fade";
+    if (source === "not-found") return "glide";
     if (target === "home") return "home";
     if (source === "article" && target === "article") {
-        return context.intent === "previous" || context.intent === "next" ? context.intent : "fade";
+        return context.intent === "previous" || context.intent === "next"
+            ? context.intent
+            : "article";
     }
     if (target === "article") return "enter";
+    if (target === "about" || target === "links" || target === "words") return "panel";
     if (target === "tags-detail" || target === "categories-detail") return "taxonomy";
     if (
         (source === "article" &&
@@ -59,5 +64,5 @@ export function getRouteMotionPreset(context: MotionContext): RouteMotionPreset 
     ) {
         return "up";
     }
-    return source === "home" ? "enter" : "fade";
+    return source === "home" ? "enter" : "glide";
 }
