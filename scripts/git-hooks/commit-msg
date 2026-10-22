@@ -1,0 +1,13 @@
+#!/bin/sh
+# commit-msg hook: append a Signed-off-by trailer to every commit if missing.
+#
+# Same behavior as the user's global hook at ~/.git-hooks/commit-msg. It has to be
+# duplicated here because setting core.hooksPath (done by the "prepare" script) makes
+# Git read hooks from this directory only, silently bypassing the global directory.
+# Keep the two files in sync.
+
+SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\(.*>\).*$/Signed-off-by: \1/p')
+
+if [ -n "$SOB" ] && ! grep -qs "^$SOB$" "$1"; then
+    printf '\n%s\n' "$SOB" >> "$1"
+fi
