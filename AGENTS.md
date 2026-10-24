@@ -5,7 +5,8 @@
 **无时区的日期串必须按站点时区解析，禁止裸 `new Date(日期字符串)`。**
 
 - 事故：frontmatter `date: "2026-10-24 12:55:00"`（无时区）被 `parseDate`→`new Date()` 按**构建机器本地时区**解析；EdgeOne 构建机是 UTC → RSS pubDate、`atom:updated`、页面 `<time datetime>`、og/JSON-LD、`api/posts.json` 全体 +8h。本机对照实验定案：同源码 `TZ=UTC` 构建的 rss.xml 与线上一字不差，`TZ=Asia/Shanghai` 正确。站点配置的 `timezone` 只用于格式化，不参与解析——这就是当时的漏洞。
-- 修复（1.41.2）：`dayjs.ts` 新增 `parseDate(v, timeZone?)` / `parseDateInZone()` / `zonedCalendarParts()`，无时区串按站点时区挂钟解析（DST 边界迭代收敛）；`getSiteData()` 给 `timezone` 加了运行时兜底（与 schema 默认一致，沿用 1.29.1 accentColor 模式）；`semantic-time.ts`、`feed.ts`、`archivesList.astro`（归档分组改站点时区日历）、`head.astro`（og/JSON-LD）、`api/posts.json` 全部接入。**排序用途的 `toTimestamp` 调用（ai-discovery、content-index 内部）可不含时区：同一批 naive 串统一平移不改变相对顺序，但新代码一律建议传。**
+- 修复（1.41.2–1.41.4）：`dayjs.ts` 新增 `parseDate(v, timeZone?)` / `parseDateInZone()` / `zonedCalendarParts()`，无时区串按站点时区挂钟解析（DST 迭代收敛）；`getSiteData()` 给 `timezone` 加了运行时兜底（与 schema 默认一致，沿用 1.29.1 accentColor 模式）；`semantic-time.ts`、`feed.ts`、`archivesList.astro`（归档分组改站点时区日历）、`head.astro`（og/JSON-LD）、`api/posts.json`、footer buildtime 全部接入站点时区。**排序用途的 `toTimestamp` 调用（ai-discovery、content-index 内部）可不含时区：同一批 naive 串统一平移不改变相对顺序，但新代码一律建议传。**
+- **日期格式硬规则（1.41.4，schema 层强制）**：`PADDED_DATETIME_PATTERN`（`src/schemas/collections.ts`）要求月/日/时/分/秒**必须补零**，posts 与 words 的 `date`/`updated` 不合规直接构建失败。原因：未补零（`2026-6-9 9:11:00`）绕过站点时区解析器，静默回退 `new Date()` 按构建机器时区解释——myblog 双 TZ 对照实测抓到 4 篇此类旧文 RSS 仍差 8h。**禁止放宽该正则去"兼容"未补零写法；正确做法是修内容文件。** words 的 `sourceDate` 是自由文本（"1950"、"春秋"），不套此规则。允许的合法形式：补零的 `YYYY-MM-DD HH:mm:ss`（推荐）、日期-only `YYYY-MM-DD`、ISO 8601 带显式时区偏移。
 - 三层回归闸门，改日期逻辑必跑：
   1. 单测 `tests/dayjs-timezone.test.ts`（期望值全部用 `Date.UTC` 表达，机器时区无关；`TZ=UTC bun run test:run tests/dayjs-timezone.test.ts` 必须同样全绿）；
   2. `verify-build.ts` 时区一致性闸门：RSS/Atom 前 3 个 item 的 pubDate 必须 == frontmatter 墙钟按站点时区解析的时刻 == 文章页 `<time datetime>`（CI 在 UTC 机器上跑，天然暴露回归）；

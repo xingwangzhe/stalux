@@ -50,15 +50,33 @@ export interface CollectionPaths {
 // 文章 Schema
 // ---------------------------------------------------------------------------
 
+/**
+ * 日期字段的严格格式：月/日/时/分/秒**必须补零**。
+ *
+ * 允许：`2025-07-04`、`"2025-07-04 18:44:32"`、`2025-05-10T12:00:00+08:00`。
+ * 拒绝：`2026-6-9 9:11:00` 这类未补零写法——站点时区解析器（dayjs.ts
+ * NAIVE_DATE_PATTERN）只认补零形式，未补零会静默回退到 new Date() 按
+ * **构建机器本地时区**解释，导致 RSS/页面时间整体平移（2026-10-24 事故）。
+ * 因此在 schema 层直接拒绝，让构建尽快失败，而不是产出错误时间。
+ */
+export const PADDED_DATETIME_PATTERN =
+    /^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:?\d{2})?)?$/;
+
+const datetimeField = (label: string) =>
+    z
+        .string({ error: `${label} must be a string` })
+        .regex(
+            PADDED_DATETIME_PATTERN,
+            `${label} 月/日/时/分/秒必须补零，如 "2025-07-04 18:44:32"（拒绝 2026-6-9 9:11:00 这类未补零写法）`,
+        );
+
 const postSchema = z.object({
     title: z.string().min(1, "title is required"),
     abbrlink: z.union([z.string(), z.number().transform((num) => num.toString())], {
         error: "abbrlink must be a string or number",
     }),
-    date: z
-        .string({ error: "date must be a string" })
-        .min(1, "date is required, format: YYYY-MM-DD HH:mm:ss"),
-    updated: z.string().optional(),
+    date: datetimeField("date"),
+    updated: datetimeField("updated").optional(),
     draft: z.boolean().optional().default(false),
     tags: z.preprocess(
         (val) => (typeof val === "string" ? [val] : val),
@@ -136,9 +154,10 @@ export function defineCollections(paths: CollectionPaths = {}) {
         schema: z.object({
             source: z.string().optional(),
             link: z.url("words.link must be a valid URL").optional(),
+            // sourceDate 是自由文本（如 "1950"、"春秋"），不是机器时间，不做格式约束
             sourceDate: z.string().optional(),
-            date: z.string().optional(),
-            updated: z.string().optional(),
+            date: datetimeField("date").optional(),
+            updated: datetimeField("updated").optional(),
             draft: z.boolean().optional().default(false),
             title: z.string().optional(),
             abbrlink: z.string().optional(),

@@ -114,7 +114,7 @@ Optional frontmatter: `source`, `link`, `sourceDate`, `date`, `updated`, `draft`
 | Guideline    | Detail                                                                |
 | ------------ | --------------------------------------------------------------------- |
 | Delimiter    | Wrap frontmatter between `---`                                        |
-| Date format  | ISO 8601 with timezone offset recommended; naive values such as `"2026-10-24 12:55:00"` are parsed in the site `timezone` (from `site.yml`) since 1.41.2, so build machines in any timezone produce identical RSS/Atom/JSON-LD times |
+| Date format  | **Zero-padding is mandatory and enforced by the schema since 1.41.4**: `2026-6-9 9:11:00` fails the build; write `2026-06-09 09:11:00`. Allowed: `"YYYY-MM-DD HH:mm:ss"` (recommended), date-only `YYYY-MM-DD`, or ISO 8601 with an explicit timezone offset. Naive (no-offset) values are parsed in the site `timezone` from `site.yml`, so build machines in any timezone produce identical RSS/Atom/JSON-LD times |
 | Permalinks   | Choose stable custom `abbrlink` values (independent of title changes) |
 | Descriptions | Must be meaningful for SEO and social share cards                     |
 
