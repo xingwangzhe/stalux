@@ -13,8 +13,8 @@ interface Props {
 const { entries, timezone } = Astro.props;
 
 const sorted = [...entries].sort((a, b) => {
-    const ta = toTimestamp(a.data.date || a.id);
-    const tb = toTimestamp(b.data.date || b.id);
+    const ta = toTimestamp(a.data.date || a.id, timezone);
+    const tb = toTimestamp(b.data.date || b.id, timezone);
     return tb - ta;
 });
 ---

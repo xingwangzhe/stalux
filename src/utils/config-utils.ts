@@ -44,6 +44,8 @@ export function getSiteData(entries: CollectionEntry<"config">[]): SiteData {
     return {
         ...site,
         accentColor: site.accentColor ?? "#EAB308",
+        // 时间解析全部依赖站点时区（feed/semantic-time/archives），缺省值必须与 schema 默认一致
+        timezone: site.timezone ?? "Asia/Shanghai",
         weather: { enabled: site.weather?.enabled ?? false },
     };
 }

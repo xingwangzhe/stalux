@@ -15,6 +15,10 @@ jobs:
         name: Validate
         runs-on: ubuntu-latest
         timeout-minutes: 20
+        env:
+            # 时区闸门：CI 固定按 UTC 运行。日期解析若回退到“构建机器本地时区”
+            # （2026-10-24 RSS +8h 事故的根因），verify-build 的时区一致性检查会在此失败。
+            TZ: UTC
 
         steps:
             - name: Checkout

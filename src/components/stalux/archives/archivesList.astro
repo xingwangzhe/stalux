@@ -3,7 +3,7 @@ import "../../../styles/generated-archives.css";
 import { type CollectionEntry, getCollection } from "astro:content";
 
 import { getSiteData } from "@utils/config-utils";
-import { format, parseDate, toTimestamp } from "@utils/dayjs";
+import { formatInTimeZone, parseDate, toTimestamp, zonedCalendarParts } from "@utils/dayjs";
 import { createTranslator } from "@utils/i18n";
 
 interface Props {
@@ -16,13 +16,15 @@ const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.d
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
+// 归档按“站点时区的日历”分组：无时区的 date 串按站点时区解析，
+// 分组也按站点时区取年月，构建机器时区（UTC CI）不再影响归档归属。
+const timezone = siteConfig.timezone || "Asia/Shanghai";
 const archivesByYearMonth = new Map<number, Map<number, CollectionEntry<"posts">[]>>();
 
 posts.forEach((post) => {
     if (!post.data.date) return;
-    const date = parseDate(post.data.date);
-    const year = date.getUTCFullYear();
-    const month = date.getUTCMonth() + 1;
+    const date = parseDate(post.data.date, timezone);
+    const { year, month } = zonedCalendarParts(date, timezone);
     const months = archivesByYearMonth.get(year) ?? new Map();
     const monthPosts = months.get(month) ?? [];
     monthPosts.push(post);
@@ -32,7 +34,7 @@ posts.forEach((post) => {
 
 // 每个 post 只解析一次时间，供排序比较器复用，避免比较器里反复 new Date()
 const tsCache = new Map<CollectionEntry<"posts">, number>(
-    posts.map((p) => [p, toTimestamp(p.data.date || 0)]),
+    posts.map((p) => [p, toTimestamp(p.data.date || 0, timezone)]),
 );
 
 // 对每个月内的文章按 date 字段降序排序（用缓存时间戳做纯数字比较）
@@ -81,8 +83,9 @@ const archiveYears = [...archivesByYearMonth.entries()]
                                                     class="stalux-archive-post-date"
                                                     datetime={post.data.date}
                                                 >
-                                                    {format(
-                                                        parseDate(post.data.date),
+                                                    {formatInTimeZone(
+                                                        parseDate(post.data.date, timezone),
+                                                        timezone,
                                                         "yyyy-MM-dd",
                                                     )}
                                                 </time>

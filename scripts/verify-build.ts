@@ -6,6 +6,7 @@ import { parse as parseYaml } from "yaml";
 import packageJson from "../package.json" with { type: "json" };
 import { styleArtifactProblems } from "../src/internal/style-artifacts.ts";
 import { styleNames } from "../src/internal/style-names.generated.ts";
+import { parseDateInZone } from "../src/utils/dayjs.ts";
 import { findMissingAssetReferences } from "./verify-build-utils.ts";
 
 const root = process.cwd();
@@ -279,6 +280,56 @@ assert(
     "sitemap contains a non-canonical Markdown page endpoint",
 );
 assert(!sitemap.includes("<lastmod>"), "sitemap contains synthetic build-time lastmod values");
+
+// ---- 时区一致性闸门（2026-10-24 事故回归） ----------------------------------
+// 无时区的 frontmatter 日期必须按站点时区解析：RSS pubDate、文章页 <time datetime>
+// 必须与“frontmatter 墙钟 + 站点时区”表示同一时刻。GitHub Actions 构建机是 UTC，
+// 任何一处回退到构建机器本地时区解析都会在这里失败。
+const feedSiteOptions = parseYaml(
+    readFileSync(path.join(root, "stalux/config/site.yml"), "utf8"),
+) as { timezone?: string };
+const feedTimezone = feedSiteOptions.timezone || "Asia/Shanghai";
+
+function findPostSourceBySlug(slug: string): string {
+    const postsDir = path.join(root, "stalux/posts");
+    for (const entry of readdirSync(postsDir)) {
+        if (!entry.endsWith(".md")) continue;
+        const content = readFileSync(path.join(postsDir, entry), "utf8");
+        if (content.match(/^abbrlink:\s*"?([^\s"]+)"?\s*$/mu)?.[1] === slug) return content;
+    }
+    return "";
+}
+
+function collectPageDatetimeInstants(html: string): number[] {
+    return [...html.matchAll(/datetime="([^"]+)"/gu)]
+        .map((match) => Date.parse(match[1] ?? ""))
+        .filter(Number.isFinite);
+}
+
+for (const feedPath of ["rss.xml", "atom.xml"]) {
+    const feed = read(feedPath);
+    const feedItems = [...feed.matchAll(/<item>([\s\S]*?)<\/item>/gu)].slice(0, 3);
+    assert(feedItems.length > 0, `${feedPath} has no items`);
+    for (const feedItem of feedItems) {
+        const link = feedItem[1]?.match(/<link>([^<]+)<\/link>/)?.[1] ?? "";
+        const pubDate = feedItem[1]?.match(/<pubDate>([^<]+)<\/pubDate>/)?.[1] ?? "";
+        assert(Boolean(link && pubDate), `${feedPath} item lacks link or pubDate`);
+        const slug = link.match(/\/posts\/(.+?)\/?$/u)?.[1] ?? "";
+        const source = findPostSourceBySlug(slug);
+        assert(source, `${feedPath}: no frontmatter source found for ${slug}`);
+        const naiveDate = source.match(/^date:\s*"?([^"\n]+)"?\s*$/mu)?.[1]?.trim() ?? "";
+        assert(Boolean(naiveDate), `${slug} frontmatter has no date`);
+        const expectedInstant = parseDateInZone(naiveDate, feedTimezone).getTime();
+        assert(
+            Date.parse(pubDate) === expectedInstant,
+            `${feedPath}: ${slug} pubDate "${pubDate}" must equal frontmatter "${naiveDate}" interpreted in ${feedTimezone}`,
+        );
+        assert(
+            collectPageDatetimeInstants(read(`posts/${slug}/index.html`)).includes(expectedInstant),
+            `${feedPath}: ${slug} article page datetime must include publish instant ${new Date(expectedInstant).toISOString()}`,
+        );
+    }
+}
 
 const files = walk(dist);
 const htmlCount = files.filter((file) => file.endsWith(".html")).length;

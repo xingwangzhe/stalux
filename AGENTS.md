@@ -1,5 +1,17 @@
 # Stalux development instructions
 
+## ⚠️ 时区红线（最高优先级，2026-10-24 全站 +8h 事故）
+
+**无时区的日期串必须按站点时区解析，禁止裸 `new Date(日期字符串)`。**
+
+- 事故：frontmatter `date: "2026-10-24 12:55:00"`（无时区）被 `parseDate`→`new Date()` 按**构建机器本地时区**解析；EdgeOne 构建机是 UTC → RSS pubDate、`atom:updated`、页面 `<time datetime>`、og/JSON-LD、`api/posts.json` 全体 +8h。本机对照实验定案：同源码 `TZ=UTC` 构建的 rss.xml 与线上一字不差，`TZ=Asia/Shanghai` 正确。站点配置的 `timezone` 只用于格式化，不参与解析——这就是当时的漏洞。
+- 修复（1.41.2）：`dayjs.ts` 新增 `parseDate(v, timeZone?)` / `parseDateInZone()` / `zonedCalendarParts()`，无时区串按站点时区挂钟解析（DST 边界迭代收敛）；`getSiteData()` 给 `timezone` 加了运行时兜底（与 schema 默认一致，沿用 1.29.1 accentColor 模式）；`semantic-time.ts`、`feed.ts`、`archivesList.astro`（归档分组改站点时区日历）、`head.astro`（og/JSON-LD）、`api/posts.json` 全部接入。**排序用途的 `toTimestamp` 调用（ai-discovery、content-index 内部）可不含时区：同一批 naive 串统一平移不改变相对顺序，但新代码一律建议传。**
+- 三层回归闸门，改日期逻辑必跑：
+  1. 单测 `tests/dayjs-timezone.test.ts`（期望值全部用 `Date.UTC` 表达，机器时区无关；`TZ=UTC bun run test:run tests/dayjs-timezone.test.ts` 必须同样全绿）；
+  2. `verify-build.ts` 时区一致性闸门：RSS/Atom 前 3 个 item 的 pubDate 必须 == frontmatter 墙钟按站点时区解析的时刻 == 文章页 `<time datetime>`（CI 在 UTC 机器上跑，天然暴露回归）；
+  3. 发版前双 TZ 对照：`TZ=UTC` 与 `TZ=Asia/Shanghai` 各构建一次，`dist/rss.xml` 必须逐字节一致（先删 `node_modules/.astro`，**增量缓存会跨 TZ 污染 HTML**——实测热缓存下换 TZ 构建会出现"页面用旧时区解析值、RSS 用新值"的自相矛盾产物）。
+- 今后新增任何消费日期的代码，必须传站点时区给 `parseDate`/`toTimestamp`/`formatInTimeZone`，并补对应单测；review 时凡见 `new Date(` 包着字符串字面量/模板串的都要警惕。
+
 ## 云平台操作：CLI 优先（用户明确要求）
 
 查询 CI/CD、部署状态、构建日志、项目配置和其他云平台信息时，默认使用 CLI，不主动打开网页控制台。

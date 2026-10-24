@@ -16,6 +16,7 @@ import {
     getPromoteData,
     getSiteData,
 } from "@utils/config-utils";
+import { toMachineDateTime } from "@utils/semantic-time";
 import { buildSeoDocument, type SeoPageInput } from "@utils/seo-document";
 import { SEO } from "astro-seo";
 import packageJson from "../../../../package.json";
@@ -27,11 +28,22 @@ const headConfig = getHeadData(configEntries);
 const promoteConfig = getPromoteData(configEntries);
 const mediaLinksConfig = getMediaLinksData(configEntries);
 
+// og:article:published_time 与 JSON-LD datePublished 必须带站点时区偏移。
+// 裸的 frontmatter 串（"2026-10-24 12:55:00"）会被消费方按自己的时区解释，
+// 统一在这里转换为带偏移的机器时间，与 RSS pubDate、页面 <time> 保持一致。
+const seoTimezone = siteConfig.timezone || "Asia/Shanghai";
+const rawPage = Astro.props as SeoPageInput;
 const seo = buildSeoDocument({
     site: siteConfig,
     author: authorConfig,
     mediaLinks: mediaLinksConfig?.items.map((item) => item.link) ?? [],
-    page: Astro.props as SeoPageInput,
+    page: {
+        ...rawPage,
+        date: rawPage.date ? toMachineDateTime(rawPage.date, seoTimezone) : rawPage.date,
+        updated: rawPage.updated
+            ? toMachineDateTime(rawPage.updated, seoTimezone)
+            : rawPage.updated,
+    },
     pathname: Astro.url.pathname,
     protocol: Astro.url.protocol,
     exportMarkdown: Boolean(promoteConfig?.export_md),

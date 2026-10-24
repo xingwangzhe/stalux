@@ -33,7 +33,10 @@ export async function buildFeedItems(
     logger?: AstroRuntimeLogger,
 ): Promise<FeedItem[]> {
     const timestamps = new Map(
-        posts.map((post) => [post, toTimestamp(post.data.updated || post.data.date)]),
+        posts.map((post) => [
+            post,
+            toTimestamp(post.data.updated || post.data.date, stalux.timezone),
+        ]),
     );
     const sortedPosts = posts.toSorted((a, b) => {
         // Newest first: compare post dates, use the greater of updated/date
@@ -49,7 +52,7 @@ export async function buildFeedItems(
 
         let customData = "";
         if (post.data.updated) {
-            const parsed = parseDate(post.data.updated);
+            const parsed = parseDate(post.data.updated, stalux.timezone);
             if (isValid(parsed)) {
                 const updatedIso = formatInTimeZone(
                     parsed,

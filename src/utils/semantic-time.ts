@@ -7,5 +7,6 @@ import { formatInTimeZone, parseDate } from "@utils/dayjs";
  * @returns 带时区的 ISO 8601 格式字符串
  */
 export function toMachineDateTime(dateStr: string, timezone: string): string {
-    return formatInTimeZone(parseDate(dateStr), timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+    // 关键：无时区的原始串必须按站点时区解析，不能按构建机器本地时区
+    return formatInTimeZone(parseDate(dateStr, timezone), timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
 }

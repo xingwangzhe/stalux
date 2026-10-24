@@ -22,7 +22,7 @@ title: Stalux Blog Theme # Site title
 url: https://stalux.needhelp.icu # Site URL (used for canonical, RSS, OpenGraph)
 description: "Blog theme Stalux ..." # Site description (SEO, OpenGraph)
 accentColor: "#EAB308" # Optional shared theme and Waline accent; six-digit HEX
-timezone: "Asia/Shanghai" # IANA timezone for date formatting
+timezone: "Asia/Shanghai" # IANA timezone; used for both formatting and parsing naive frontmatter dates (1.41.2+)
 favicon: "/stalux.ico" # Favicon path
 canonical: "https://stalux.needhelp.icu" # Canonical URL (optional, falls back to url)
 # twitterSite:                        # Twitter/X site handle (optional)
@@ -114,7 +114,7 @@ Optional frontmatter: `source`, `link`, `sourceDate`, `date`, `updated`, `draft`
 | Guideline    | Detail                                                                |
 | ------------ | --------------------------------------------------------------------- |
 | Delimiter    | Wrap frontmatter between `---`                                        |
-| Date format  | ISO 8601 with timezone offset recommended                             |
+| Date format  | ISO 8601 with timezone offset recommended; naive values such as `"2026-10-24 12:55:00"` are parsed in the site `timezone` (from `site.yml`) since 1.41.2, so build machines in any timezone produce identical RSS/Atom/JSON-LD times |
 | Permalinks   | Choose stable custom `abbrlink` values (independent of title changes) |
 | Descriptions | Must be meaningful for SEO and social share cards                     |
 

@@ -3,9 +3,18 @@
  * 保留旧 dayjs 封装导出名，方便现有调用方继续使用。
  */
 
-/** 解析日期字符串，返回 Date 对象 */
-export const parseDate = (v: unknown): Date => {
+/**
+ * 解析日期字符串，返回 Date 对象。
+ * @param v 原始值（Date/时间戳/时间串）
+ * @param timeZone 站点 IANA 时区。传入时，不带时区的日期串按该时区挂钟时间解析，
+ *   保证任意构建机器（UTC 的 CI、东八区的本机）产出完全一致的时间戳。
+ */
+export const parseDate = (v: unknown, timeZone?: string): Date => {
     if (v == null || v === 0 || v === "") return new Date(0);
+    if (typeof v === "string") {
+        const trimmed = v.trim();
+        if (timeZone && NAIVE_DATE_PATTERN.test(trimmed)) return parseDateInZone(trimmed, timeZone);
+    }
     const d = new Date(v as string | number | Date);
     return Number.isNaN(d.getTime()) ? new Date(0) : d;
 };
@@ -14,7 +23,65 @@ export const parseDate = (v: unknown): Date => {
 export const isValid = (d: Date): boolean => !Number.isNaN(d.getTime());
 
 /** 获取时间戳（用于排序比较） */
-export const toTimestamp = (v: unknown): number => parseDate(v).getTime();
+export const toTimestamp = (v: unknown, timeZone?: string): number =>
+    parseDate(v, timeZone).getTime();
+
+/**
+ * 不含时区信息的日期串（frontmatter 里的 "2026-10-24 12:55:00"）。
+ * 这类串必须按站点时区解析，绝不能交给 new Date()——它会按
+ * **构建机器的本地时区** 解释，EdgeOne/CI 这类 UTC 构建机会让
+ * RSS pubDate、页面 datetime 全体平移 8 小时（2026-10-24 事故）。
+ */
+const NAIVE_DATE_PATTERN =
+    /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?$/;
+
+/** 用共享的 formatter 计算目标时区在给定时刻的 UTC 偏移（毫秒，东八区为 +28800000） */
+function zoneOffsetMs(date: Date, timeZone: string): number {
+    const parts = getTimezoneFormatter(timeZone).formatToParts(date);
+    const get = (type: Intl.DateTimeFormatPartTypes): number =>
+        Number(parts.find((part) => part.type === type)?.value ?? "0");
+    const asUtc = Date.UTC(
+        get("year"),
+        get("month") - 1,
+        get("day"),
+        get("hour"),
+        get("minute"),
+        get("second"),
+    );
+    return asUtc - date.getTime();
+}
+
+/**
+ * 把不含时区的日期串按指定 IANA 时区的挂钟时间解析为 Date。
+ * 做法是先按 UTC 解释，再用目标时区偏移折算；迭代两次以收敛 DST 边界
+ * （南半球夏令时附近的“不存在时间”取近似值，与主流库行为一致）。
+ */
+export function parseDateInZone(naive: string, timeZone: string): Date {
+    const match = naive.trim().match(NAIVE_DATE_PATTERN);
+    if (!match) return new Date(0);
+    const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
+    const hour = Number(match[4] ?? 0);
+    const minute = Number(match[5] ?? 0);
+    const second = Number(match[6] ?? 0);
+    const millisecond = Number((match[7] ?? "0").padEnd(3, "0"));
+    const wallClockAsUtc = Date.UTC(year, month - 1, day, hour, minute, second, millisecond);
+    let timestamp = wallClockAsUtc;
+    for (let iteration = 0; iteration < 2; iteration++) {
+        timestamp = wallClockAsUtc - zoneOffsetMs(new Date(timestamp), timeZone);
+    }
+    return new Date(timestamp);
+}
+
+/** 读取目标时区下的日历字段（归档按月分组等场景需要“站点时区的日历”，而非 UTC 日历） */
+export function zonedCalendarParts(
+    date: Date,
+    timeZone: string,
+): { year: number; month: number; day: number } {
+    const parts = getTimezoneFormatter(timeZone).formatToParts(date);
+    const get = (type: Intl.DateTimeFormatPartTypes): number =>
+        Number(parts.find((part) => part.type === type)?.value ?? "0");
+    return { year: get("year"), month: get("month"), day: get("day") };
+}
 
 const pad2 = (n: number): string => String(n).padStart(2, "0");
 
