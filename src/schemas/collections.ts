@@ -70,6 +70,15 @@ const datetimeField = (label: string) =>
             `${label} 月/日/时/分/秒必须补零，如 "2025-07-04 18:44:32"（拒绝 2026-6-9 9:11:00 这类未补零写法）`,
         );
 
+/** words 的日期字段：允许空串（模板预留），非空时必须补零 */
+const paddedOrEmpty = (label: string) =>
+    z
+        .string()
+        .refine(
+            (value) => value === "" || PADDED_DATETIME_PATTERN.test(value),
+            `${label} 为空或月/日/时/分/秒必须补零，如 "2025-07-04 18:44:32"`,
+        );
+
 const postSchema = z.object({
     title: z.string().min(1, "title is required"),
     abbrlink: z.union([z.string(), z.number().transform((num) => num.toString())], {
@@ -156,8 +165,9 @@ export function defineCollections(paths: CollectionPaths = {}) {
             link: z.url("words.link must be a valid URL").optional(),
             // sourceDate 是自由文本（如 "1950"、"春秋"），不是机器时间，不做格式约束
             sourceDate: z.string().optional(),
-            date: datetimeField("date").optional(),
-            updated: datetimeField("updated").optional(),
+            // words 允许空串（_template.md 预留字段），非空时必须补零
+            date: paddedOrEmpty("date").optional(),
+            updated: paddedOrEmpty("updated").optional(),
             draft: z.boolean().optional().default(false),
             title: z.string().optional(),
             abbrlink: z.string().optional(),
