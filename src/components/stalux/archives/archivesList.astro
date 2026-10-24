@@ -5,6 +5,7 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import { getSiteData } from "@utils/config-utils";
 import { formatInTimeZone, parseDate, toTimestamp, zonedCalendarParts } from "@utils/dayjs";
 import { createTranslator } from "@utils/i18n";
+import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
     posts?: CollectionEntry<"posts">[];
@@ -81,7 +82,10 @@ const archiveYears = [...archivesByYearMonth.entries()]
                                             <li class="stalux-archive-post-item">
                                                 <time
                                                     class="stalux-archive-post-date"
-                                                    datetime={post.data.date}
+                                                    datetime={toMachineDateTime(
+                                                        post.data.date,
+                                                        timezone,
+                                                    )}
                                                 >
                                                     {formatInTimeZone(
                                                         parseDate(post.data.date, timezone),

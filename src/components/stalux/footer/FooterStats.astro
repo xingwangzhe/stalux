@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
+import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
     showStats?: boolean;
@@ -13,6 +14,11 @@ const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const { showStats = true, wordCount, buildtime } = Astro.props;
+// buildtime 会被浏览器端 new Date(dataset) 解析：裸串会按访客本地时区解释，
+// 不同时区访客算出的运行时长不同。这里统一转成带站点时区偏移的机器时间。
+const machineBuildtime = buildtime
+    ? toMachineDateTime(buildtime, siteConfig.timezone || "Asia/Shanghai")
+    : undefined;
 ---
 
 {showStats && (
@@ -34,10 +40,10 @@ const { showStats = true, wordCount, buildtime } = Astro.props;
     </p>
 )}
 
-{buildtime && (
+{machineBuildtime && (
     <div
         class="stalux-stats-site-build-time stalux-u-text-center"
-        data-stalux-buildtime={buildtime}
+        data-stalux-buildtime={machineBuildtime}
         data-stalux-runtime-format={t("footer.runtimeFormat")}
     >
         <span>
