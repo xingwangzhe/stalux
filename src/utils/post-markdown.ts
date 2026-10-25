@@ -11,6 +11,7 @@ interface MarkdownPostData {
     draft?: boolean;
     cc?: string;
     cover?: string;
+    "og:image"?: string;
 }
 
 /** Serialize the collection's parsed metadata as YAML AST; preserve the original Markdown body. */
@@ -26,6 +27,7 @@ export function reconstructMarkdown(data: MarkdownPostData, body = ""): string {
         ...(data.draft ? { draft: true } : {}),
         ...(data.cc && data.cc !== "CC-BY-NC-SA-4.0" ? { cc: data.cc } : {}),
         ...(data.cover ? { cover: data.cover } : {}),
+        ...(data["og:image"] ? { "og:image": data["og:image"] } : {}),
     });
     return `---\n${frontmatter.toString({ lineWidth: 0 })}---\n${body}${body.endsWith("\n") ? "" : "\n"}`;
 }

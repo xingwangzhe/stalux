@@ -96,6 +96,7 @@ categories: [Frontend]
 cc: CC-BY-NC-SA-4.0
 draft: false
 cover: /images/cover.jpg
+og:image: /images/custom-social-card.png # Optional: overrides the generated sharing card
 ---
 
 Post body...

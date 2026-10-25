@@ -68,6 +68,15 @@ const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
             meta: seo.meta,
         }}
     />
+    {seo.fallbackImage && (
+        <>
+            <meta property="og:image" content={seo.fallbackImage} />
+            <meta property="og:image:type" content="image/png" />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta property="og:image:alt" content={seo.openGraph.basic.title} />
+        </>
+    )}
     <!-- 代码字体由 Astro Fonts API 注入；正文按页面生成 native CJK 子集。 -->
     <Font cssVariable="--font-code" />
     <link rel="prefetch" as="style" href={pagefindStyles} data-stalux-search-style>

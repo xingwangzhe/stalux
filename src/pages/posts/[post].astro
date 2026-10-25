@@ -1,11 +1,13 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
 import { getRuntimeCacheKey } from "@internal/runtime-cache-key";
+import { createSocialCardData } from "@internal/social-card-data";
 import PostLayout from "@layouts/PostLayout.astro";
 import Stalux from "@layouts/Stalux.astro";
 import { analyzeFeatureFlags } from "@plugins/feature-flags";
 import { getAuthorData, getSiteData } from "@utils/config-utils";
 import { getPostContentIndex } from "@utils/content-index";
+import { resolvePostSocialImage } from "@utils/social-image";
 
 interface Props {
     post: CollectionEntry<"posts">;
@@ -33,6 +35,7 @@ export async function getStaticPaths() {
             post.data.updated ?? post.data.date,
             prevPost ? (prevPost.data.updated ?? prevPost.data.date) : "",
             nextPost ? (nextPost.data.updated ?? nextPost.data.date) : "",
+            JSON.stringify(post.data),
             getRuntimeCacheKey(),
         ].join("|");
         return {
@@ -56,6 +59,11 @@ export async function getStaticPaths() {
     title={`${props.post.data.title} | ${siteConfig.title}`}
     description={autoDesc}
     cover={props.post.data.cover}
+    socialImage={resolvePostSocialImage(
+        props.post.data["og:image"],
+        createSocialCardData(props.post.data, siteConfig, authorConfig),
+        import.meta.env.BASE_URL,
+    )}
     isArticle={true}
     date={props.post.data.date}
     updated={props.post.data.updated}

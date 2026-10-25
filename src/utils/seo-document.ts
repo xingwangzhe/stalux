@@ -1,8 +1,8 @@
 import type { AuthorData, SiteData } from "@schemas/config";
 import type { SEOProps } from "astro-seo";
-
 import { langToOpenGraphLocale } from "./i18n";
 import { getMarkdownPath, getRouteKind, normalizePublicPath } from "./public-routes";
+import type { SocialImage } from "./social-image";
 
 export type TwitterCardType = "summary" | "summary_large_image";
 
@@ -10,6 +10,7 @@ export interface SeoPageInput {
     title: string;
     description: string;
     cover?: string;
+    socialImage?: SocialImage;
     isArticle?: boolean;
     date?: string;
     updated?: string;
@@ -41,6 +42,7 @@ export interface SeoDocument {
     links: NonNullable<NonNullable<SEOProps["extend"]>["link"]>;
     meta: NonNullable<NonNullable<SEOProps["extend"]>["meta"]>;
     schema: Record<string, unknown>;
+    fallbackImage?: string;
 }
 
 function normalizeSiteUrl(value: string): string {
@@ -70,7 +72,11 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     const noindex = Boolean(site.noindex) || notFound || Boolean(page.noindex);
     const nofollow = Boolean(site.nofollow) || notFound;
     const favicon = site.favicon;
-    const image = absoluteUrl(page.cover ?? author.avatar, siteUrl, input.protocol);
+    const image = absoluteUrl(
+        page.socialImage?.url ?? page.cover ?? author.avatar,
+        siteUrl,
+        input.protocol,
+    );
     const isArticle = page.isArticle ?? false;
     const isCollection = routeKind.endsWith("-index") || routeKind.endsWith("-detail");
 
@@ -86,7 +92,13 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
             locale: langToOpenGraphLocale(site.lang),
             siteName,
         },
-        image: { url: image, alt: contentTitle },
+        image: {
+            url: image,
+            alt: contentTitle,
+            ...(page.socialImage?.width ? { width: page.socialImage.width } : {}),
+            ...(page.socialImage?.height ? { height: page.socialImage.height } : {}),
+            ...(page.socialImage?.type ? { type: page.socialImage.type } : {}),
+        },
     };
     if (isArticle) {
         openGraph.article = {
@@ -99,7 +111,9 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     }
 
     const twitter = {
-        card: (page.cover ? "summary_large_image" : "summary") as TwitterCardType,
+        card: (page.socialImage?.url || page.cover
+            ? "summary_large_image"
+            : "summary") as TwitterCardType,
         title: contentTitle,
         description: page.description,
         image,
@@ -268,5 +282,8 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
         links,
         meta,
         schema,
+        ...(page.socialImage?.fallbackUrl
+            ? { fallbackImage: absoluteUrl(page.socialImage.fallbackUrl, siteUrl, input.protocol) }
+            : {}),
     };
 }

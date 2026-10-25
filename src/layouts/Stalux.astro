@@ -11,6 +11,7 @@ import {
     getPromoteData,
     getSiteData,
 } from "@utils/config-utils";
+import type { SocialImage } from "@utils/social-image";
 import { getRouteKind } from "@utils/view-transitions";
 
 const props = Astro.props as Props;
@@ -19,6 +20,7 @@ interface Props {
     title: string;
     description: string;
     cover?: string;
+    socialImage?: SocialImage;
     isArticle?: boolean;
     date?: string;
     updated?: string;
@@ -60,6 +62,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
         title={props.title}
         description={props.description}
         cover={props.cover}
+        socialImage={props.socialImage}
         isArticle={props.isArticle}
         date={props.date}
         updated={props.updated}

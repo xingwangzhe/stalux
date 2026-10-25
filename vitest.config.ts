@@ -34,6 +34,9 @@ export default getViteConfig({
                 "src/utils/content-index.ts",
                 "src/utils/public-routes.ts",
                 "src/utils/seo-document.ts",
+                "src/utils/social-image.ts",
+                "src/internal/social-card-data.ts",
+                "src/internal/social-card-renderer.ts",
             ],
             thresholds: {
                 branches: 80,

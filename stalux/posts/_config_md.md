@@ -34,7 +34,8 @@ Optional fields:
 - `tags`: Tag array; a string or single string will be preprocessed into an array.
 - `categories`: Category array; a string or single string will be preprocessed into an array.
 - `cc`: Copyright license, default `CC-BY-NC-SA-4.0`.
-- `cover`: Optional image URL.
+- `cover`: Optional article-list image; also used as artwork in an automatically generated social sharing card.
+- `og:image`: Optional explicit social sharing image URL or site-root path. Takes priority over `cover`; omit or leave empty for an automatic 1200×630 WebP. Invalid or unavailable covers fall back to a title card. Static OG, Twitter and BlogPosting metadata share the same image.
 
 Example:
 
@@ -64,6 +65,20 @@ Writing tips:
 - `abbrlink` can be a string (e.g., `"astro-guide"`) or a number (e.g., `123456`); numbers are automatically converted to strings.
 - `tags`/`categories` support a single string or an array; they are automatically converted to arrays internally.
 - If `cc` is not provided, the default value `CC-BY-NC-SA-4.0` is used; if no copyright notice is needed, it can be set to an empty string.
+
+
+### Article social sharing cards
+
+Image priority is **explicit `og:image` → a card with a valid `cover` → an automatic title card**. The article list continues to use `cover`. An explicit `og:image` is used as-is and accepts HTTP(S), protocol-relative URLs, or site-root paths; PNG/JPEG at 1200×630 is recommended. Omit it or leave it empty to generate a card automatically. Existing posts need no changes.
+
+```yaml title="Article sharing images"
+cover: /images/article-cover.webp
+og:image: /images/custom-social-card.png
+```
+
+`@takumi-rs/core` renders a static 1200×630 WebP at `/og/<metadata-hash>.webp` using the bundled LXGW WenKai font. Cards include the title, summary, site identity, author, category, accent color and date in the site timezone. No renderer JavaScript is sent to the browser. Static `og:image`, `twitter:image` and BlogPosting `image` use the same absolute URL; generated images also declare dimensions and MIME type. Articles use `summary_large_image`. A second `og:image` points to a PNG fallback; platforms choose which format they can read. WebP quality is 86; AVIF is not the default.
+
+Local covers are read from the final `publicDir`. Remote covers are requested by the build machine, with an 8-second timeout and an 8 MiB limit (remote bytes are cached for 24 hours); unreadable or undecodable artwork emits a warning and falls back to a title card. No remote image-generation service is used. WebP and PNG outputs are cached in `stalux-social-cards/` under Astro's cache directory and copied into each build output. Explicit sharing images are fetched by social platforms, so they must be publicly accessible images. Platforms maintain their own preview caches and may not refresh an existing share immediately after deployment.
 
 ## about/\*.md frontmatter
 

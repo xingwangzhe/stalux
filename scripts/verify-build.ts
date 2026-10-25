@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { generate, parse as parseCss, walk as walkCss } from "css-tree";
+import { imageSize } from "image-size";
 import { type DefaultTreeAdapterMap, parse } from "parse5";
 import { parse as parseYaml } from "yaml";
 import packageJson from "../package.json" with { type: "json" };
@@ -387,6 +388,51 @@ const postIndex = JSON.parse(read("api/posts.json")) as Array<{
 }>;
 for (const post of postIndex) {
     const html = read(`${post.url.replace(/^\//u, "")}index.html`);
+    const socialMeta = new Map<string, string>();
+    function collectSocialMeta(node: DefaultTreeAdapterMap["node"]): void {
+        if ("tagName" in node && node.tagName === "meta") {
+            const attrs = new Map(node.attrs.map((attr) => [attr.name, attr.value]));
+            const name = attrs.get("property") ?? attrs.get("name");
+            if (name && attrs.has("content") && !socialMeta.has(name))
+                socialMeta.set(name, attrs.get("content") ?? "");
+        }
+        if ("childNodes" in node) for (const child of node.childNodes) collectSocialMeta(child);
+    }
+    collectSocialMeta(parse(html));
+    const sharingImage = socialMeta.get("og:image");
+    assert(
+        sharingImage && /^https?:\/\//u.test(sharingImage),
+        `${post.url} needs an absolute sharing image`,
+    );
+    assert(
+        socialMeta.get("twitter:image") === sharingImage,
+        `${post.url} OG and Twitter images disagree`,
+    );
+    assert(
+        socialMeta.get("twitter:card") === "summary_large_image",
+        `${post.url} needs a large sharing card`,
+    );
+    const imagePath = new URL(sharingImage).pathname;
+    if (/^\/og\/[a-f0-9]{20}\.webp$/u.test(imagePath)) {
+        const bytes = readFileSync(path.join(dist, imagePath));
+        const dimensions = imageSize(bytes);
+        const fallback = imageSize(
+            readFileSync(path.join(dist, imagePath.replace(/\.webp$/u, ".png"))),
+        );
+        assert(
+            fallback.type === "png" && fallback.width === 1200 && fallback.height === 630,
+            `${post.url} needs a PNG fallback`,
+        );
+        assert(
+            dimensions.type === "webp" && dimensions.width === 1200 && dimensions.height === 630,
+            `${post.url} sharing card must be a real 1200×630 WebP`,
+        );
+        assert(
+            socialMeta.get("og:image:width") === "1200" &&
+                socialMeta.get("og:image:height") === "630",
+            `${post.url} sharing image dimensions are missing`,
+        );
+    }
     let filterFound = false;
     function checkArticleFilter(node: DefaultTreeAdapterMap["node"]): void {
         if ("tagName" in node && node.tagName === "section") {

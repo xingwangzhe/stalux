@@ -120,6 +120,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
         ...options,
     };
 
+    const socialCardPaths = { publicDir: "", cacheDir: "", base: "/", fontPath: "" };
+
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
 
     const coreIntegration: AstroIntegration = {
@@ -166,12 +168,24 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         build: {
                             target: config.vite.build?.target ?? "esnext",
                             cssMinify: "lightningcss",
-                            sourcemap: false,
+                            // 默认不产出 sourcemap；消费方显式开启时（如 SONDA=1 做体积分析）尊重其设置
+                            sourcemap: config.vite.build?.sourcemap ?? false,
                         },
                         resolve: {
                             alias: createViteAliases(srcDir),
                         },
                         plugins: [
+                            {
+                                name: "stalux:social-card-paths",
+                                resolveId: (id) =>
+                                    id === "virtual:stalux-social-card-paths"
+                                        ? `\0${id}`
+                                        : undefined,
+                                load: (id) =>
+                                    id === "\0virtual:stalux-social-card-paths"
+                                        ? `export default ${JSON.stringify(socialCardPaths)}`
+                                        : undefined,
+                            },
                             searchStylePlugin(command === "dev", config.base),
                             webMcpMutationsPlugin(),
                             ...(command === "build"
@@ -339,6 +353,12 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             "astro:config:done": ({ config, logger }) => {
                 const srcDir = fileURLToPath(new URL(".", import.meta.url));
                 const publicDir = fileURLToPath(config.publicDir);
+                Object.assign(socialCardPaths, {
+                    publicDir,
+                    cacheDir: fileURLToPath(new URL("stalux-social-cards/", config.cacheDir)),
+                    base: config.base,
+                    fontPath: path.join(srcDir, "assets/fonts/LXGWWenKai-Regular.ttf"),
+                });
                 const assetsLogger = logger.fork("stalux/assets");
                 if (pageFontData) {
                     pageFontData.outputDir = path.join(

@@ -57,7 +57,7 @@ describe("public route catalog", () => {
 
     it("creates every plugin route from the package base", () => {
         const routes = createInjectedRoutes(new URL("file:///tmp/stalux/src/"));
-        expect(routes).toHaveLength(28);
+        expect(routes).toHaveLength(29);
         expect(routes).toContainEqual({
             pattern: "/tags/index.md",
             entrypoint: "/tmp/stalux/src/pages/tags/index.md.ts",

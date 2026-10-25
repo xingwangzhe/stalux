@@ -19,6 +19,7 @@ import { defineCollection } from "astro:content";
 import { glob, type Loader } from "astro/loaders";
 import { z } from "astro/zod";
 
+import { isSocialImageUrl } from "../utils/social-image";
 import { configSchema } from "./config";
 
 /** Preserve glob's name, watch behavior and incremental store; only trace the load boundary. */
@@ -98,6 +99,14 @@ const postSchema = z.object({
     desc: z.string({ error: "desc must be a string" }).min(1, "desc is required"),
     cc: z.string().optional().default("CC-BY-NC-SA-4.0"),
     cover: z.string().optional(),
+    "og:image": z
+        .string()
+        .trim()
+        .refine(
+            (value) => value === "" || isSocialImageUrl(value),
+            "og:image must be an HTTP(S) URL or site-root image path",
+        )
+        .optional(),
 });
 
 // ---------------------------------------------------------------------------

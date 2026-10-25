@@ -3,6 +3,9 @@ dist/
 .release/
 src/content/*
 
+# sonda bundle analysis reports (SONDA=1 bun run build)
+.sonda/
+
 # generated types
 .astro/
 

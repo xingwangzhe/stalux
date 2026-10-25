@@ -353,3 +353,23 @@ Stalux 使用 UnoCSS 在主题内预编译样式，消费项目无需安装或�
 | 字体版权、保留名称与修改声明汇总 | 按各字体原许可 | [LICENSE-FONT-NOTICES.txt](LICENSES/LICENSE-FONT-NOTICES.txt) |
 
 `LICENSES/` 和 `public/fonts/` 许可全文随 npm 包分发；构建时字体声明同步到消费项目 `public/fonts/`，使线上 WOFF2 文件与许可一并可访问。原生分片依赖的独立声明见 [cjk-font-split-native LICENSES](https://github.com/xingwangzhe/cjk-font-split-native#licenses-与许可范围) 及其 npm 包内 `THIRD_PARTY_LICENSES.txt`。GitHub 主许可显示用于识别主题代码；字体与其他第三方组件必须按此表分别判断。
+
+
+### 文章社交分享卡片
+
+文章分享图按以下优先级选择，`cover` 仍用于站内文章列表：
+
+| 优先级 | 文章字段 | 分享行为 |
+| --- | --- | --- |
+| 1 | `og:image` | 非空时直接使用指定图片，不加工；支持 HTTP(S)、协议相对 URL 和站点根路径，建议 PNG/JPEG、1200×630 |
+| 2 | `cover` | Takumi 将有效封面放入带标题、摘要和站点信息的 1200×630 WebP 卡片 |
+| 3 | 无封面或封面不可用 | 自动生成中文标题卡片，不再用头像充当文章分享封面 |
+
+```yaml title="文章分享图配置"
+cover: /images/article-cover.webp
+og:image: /images/custom-social-card.png
+```
+
+`og:image` 可省略或留空；不需要修改已有文章。生成图位于 `/og/<元数据哈希>.webp`，静态 HTML 的 `og:image`、`twitter:image` 和 BlogPosting `image` 指向同一绝对地址；自动卡片附带尺寸和 MIME 类型，文章使用 `summary_large_image`。随后追加 PNG 格式的第二张 `og:image` 供平台选择，WebP 质量为 86；平台是否使用回退图取决于各自实现，AVIF 不作为默认格式。摘要、站点名称、作者、域名、分类、站点强调色和按站点时区显示的日期来自已有数据，无需新增站点配置。
+
+图片由 `@takumi-rs/core` 在构建期本地渲染，使用主题自带的 LXGW WenKai 字体，不向浏览器增加渲染器 JS，也不调用远程制图服务。本地封面从最终 `publicDir` 读取；远程封面会从构建机请求原 URL，单次请求最长 8 秒、最多 8 MiB，远程图片字节缓存 24 小时；不可读或无法解码时警告并回退标题卡片。构建 WebP / PNG 缓存保存在 Astro 缓存目录的 `stalux-social-cards/` 下，仍会将图片写入本次静态输出。显式指定的图片由社交平台自行抓取，不在构建时转码；请确保公开可访问且内容为图片。社交平台有自己的预览缓存，页面部署成功不代表已有分享卡片立即刷新。
