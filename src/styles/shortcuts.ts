@@ -203,16 +203,16 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-word-list-list": "stalux-stack items-center p-0 list-none gap-6 m-[2rem_auto]",
         "stalux-word-list-item": "w-full flex max-w-[900px]",
         "stalux-word-card":
-            "relative w-full min-w-0 box-border stalux-stack stalux-glass rounded-[var(--radius-lg,_12px)] p-[1.75rem_2rem] shadow-stalux [transition:border-color_var(--transition-normal),_box-shadow_var(--transition-normal)] gap-4",
+            "relative w-full min-w-0 box-border stalux-stack stalux-glass rounded-[var(--radius-lg,_12px)] p-[2rem_2rem_1.25rem] shadow-stalux [transition:border-color_var(--transition-normal),_box-shadow_var(--transition-normal)] gap-6",
         "stalux-word-body": "relative min-w-0 text-ink-90 leading-[1.9] text-[1.1rem]",
         "stalux-word-footer":
             "flex flex-wrap justify-between items-center mt-auto pt-4 [border-top:1px_solid_var(--white-10p)] gap-3 text-[0.85rem] text-ink-70",
         "stalux-word-date": "[font-variant-numeric:tabular-nums] text-ink-50",
         "stalux-word-source-meta": "stalux-flex-row flex-wrap gap-2 justify-end",
-        "stalux-word-source-date": "italic text-ink-50",
-        "stalux-word-source-text": "italic",
+        "stalux-word-source-date": "text-ink-70",
+        "stalux-word-source-text": "text-ink-90",
         "stalux-word-source-link":
-            "underline italic text-[var(--accent-80p)] [text-decoration-color:var(--accent-50p)] [text-underline-offset:0.15em] [transition:color_var(--transition-fast)]",
+            "underline text-[var(--accent-90p)] [text-decoration-color:var(--accent-50p)] [text-underline-offset:0.15em] [transition:color_var(--transition-fast)]",
     },
 };
 

@@ -5,12 +5,42 @@ export const wordsStyles: StyleSpec[] = [
         ".stalux-word-card",
         "",
         {
-            "border-top": "2px solid var(--accent-50p)",
+            "border-left": "2px solid var(--accent-50p)",
+            background:
+                "linear-gradient(135deg, rgb(var(--stalux-accent-rgb) / 0.06), transparent 55%), rgb(18 20 24 / 0.92)",
             "overflow-wrap": "anywhere",
             "scroll-margin-top": "6rem",
         },
     ],
-    [".stalux-word-mark", "", { color: "var(--accent-80p)", flex: "none" }],
+    [
+        ".stalux-word-mark",
+        "",
+        {
+            color: "var(--accent-60p)",
+            position: "absolute",
+            top: "1.5rem",
+            right: "1.5rem",
+            opacity: "0.45",
+            "pointer-events": "none",
+        },
+    ],
+    [".stalux-word-body", "", { "padding-right": "2.5rem" }],
+    [
+        ".stalux-word-footer",
+        "",
+        {
+            padding: "0.75rem 0 0",
+            background: "none",
+            "backdrop-filter": "none",
+            "text-align": "left",
+        },
+    ],
+    [".stalux-word-source-meta", "", { "text-align": "right" }],
+    [
+        ".stalux-word-source-link",
+        "",
+        { "min-height": "44px", display: "inline-flex", "align-items": "center" },
+    ],
     [
         ".stalux-word-permalink",
         "",
