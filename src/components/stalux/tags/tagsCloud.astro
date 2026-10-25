@@ -22,7 +22,7 @@ const tagLinks = tagList.map((t) => ({
 ---
 
 <!-- 移动端：SSR 卡片 -->
-<div class="stalux-cloud-cards" id="tags-cards" data-stalux-motion-content>
+<div class="stalux-cloud-cards" id="tags-cards" data-stalux-tag-cards data-stalux-motion-content>
     {tagList.length > 0 ? (
         tagGroups.map((group) => (
             <div class="stalux-cloud-tag-group">
@@ -32,6 +32,7 @@ const tagLinks = tagList.map((t) => ({
                         class="stalux-cloud-tag-card"
                         data-stalux-card
                         data-stalux-tag-card
+                        data-stalux-control="tag-card"
                         data-count={count}
                         data-astro-prefetch
                     >
@@ -49,6 +50,7 @@ const tagLinks = tagList.map((t) => ({
 <!-- 桌面端：Canvas 标签云 -->
 <div
     class="stalux-cloud-canvas-frame"
+    data-stalux-tag-canvas
     style={{ "--cloud-density": cloudDensity }}
     data-stalux-motion-content
 >

@@ -7,8 +7,8 @@
     }
 }
 
-/* Swup's JS plugin animates one visible heading through route-motion.ts.
-   There is no full-page snapshot, waiting body, stagger or native VT layer. */
+/* Swup animates one bounded introductory region through route-motion.ts.
+   Long documents stay visible; the shell is never part of an outgoing layer. */
 [data-stalux-home-content] {
     display: flex;
     flex-direction: column;
@@ -194,28 +194,4 @@
             transform: rotate(360deg);
         }
     }
-}
-
-@layer components {
-    @keyframes stalux-word-word-glow {
-        0% {
-            box-shadow:
-                0 0 30px var(--accent-50p),
-                0 0 80px var(--accent-30p),
-                var(--shadow-lg);
-            transform: scale(1.02);
-        }
-        100% {
-            box-shadow:
-                0 0 20px var(--accent-40p),
-                0 0 60px var(--accent-20p),
-                var(--shadow-lg);
-            transform: scale(1);
-        }
-    }
-}
-
-/* Hide only the new content between DOM replacement and its first motion frame. */
-html[data-stalux-motion-pending] main[data-stalux-route] {
-    opacity: 0;
 }

@@ -19,7 +19,11 @@ const { source, link, sourceDate, date, abbrlink } = entry.data;
 const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
 ---
 
-<article class="stalux-word-card" id={abbrlink ? `word-${abbrlink}` : undefined}>
+<article
+    data-stalux-module="word"
+    class="stalux-word-card"
+    id={abbrlink ? `word-${abbrlink}` : undefined}
+>
     <Quote class="stalux-word-mark" size={28} stroke-width={1.4} aria-hidden="true" />
     <div class="stalux-word-body stalux-prose" data-pagefind-body>
         <Content />

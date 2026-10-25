@@ -19,7 +19,11 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 ---
 
 {(props.prev || props.next) && (
-    <nav class="stalux-pagination" aria-label={t("post.navigation")}>
+    <nav
+        data-stalux-module="post-navigation"
+        class="stalux-pagination"
+        aria-label={t("post.navigation")}
+    >
         <div class="stalux-pagination-inner">
             {props.prev ? (
                 <a

@@ -35,16 +35,18 @@ function parseTags(value: string | undefined): LinkTag[] {
     }
 }
 
-registerPageLifecycle("tags-cloud", () => {
+export function mountTagsCloud(): (() => void) | undefined {
     const container = document.getElementById("tags-canvas");
     if (!container) return;
     const desktop = window.matchMedia("(min-width: 769px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const controller = new AbortController();
     let cloud: import("@xingwangzhe/tags-cloud").TagCloud | undefined;
     let visible = false;
     let loading = false;
     let disposed = false;
-    const active = () => !disposed && desktop.matches && visible && !document.hidden;
+    const active = () =>
+        !disposed && desktop.matches && !reducedMotion.matches && visible && !document.hidden;
     const update = async () => {
         if (!active()) {
             // destroy also cancels the library's rAF; pause() only skips drawing.
@@ -94,6 +96,7 @@ registerPageLifecycle("tags-cloud", () => {
     );
     observer.observe(container);
     desktop.addEventListener("change", update, { signal: controller.signal });
+    reducedMotion.addEventListener("change", update, { signal: controller.signal });
     document.addEventListener("visibilitychange", update, { signal: controller.signal });
     return () => {
         disposed = true;
@@ -101,4 +104,6 @@ registerPageLifecycle("tags-cloud", () => {
         observer.disconnect();
         cloud?.destroy();
     };
-});
+}
+
+registerPageLifecycle("tags-cloud", mountTagsCloud);

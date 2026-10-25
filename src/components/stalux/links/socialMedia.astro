@@ -40,6 +40,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
             return (
                 <li class="social_icon">
                     <a
+                        data-stalux-control="social"
                         href={item.link}
                         target="_blank"
                         aria-label={item.icon}

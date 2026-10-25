@@ -1,0 +1,174 @@
+/* Module cues share a short, non-spring response. No hidden pre-animation state. */
+:root {
+    --stalux-motion-fast: 140ms;
+    --stalux-motion-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-stalux-control] {
+    transition:
+        color var(--stalux-motion-fast) ease,
+        background-color var(--stalux-motion-fast) ease,
+        border-color var(--stalux-motion-fast) ease,
+        transform var(--stalux-motion-fast) var(--stalux-motion-ease);
+}
+[data-stalux-control]:focus-visible,
+[data-stalux-control]:has(:focus-visible) {
+    outline: 2px solid var(--stalux-accent-color);
+    outline-offset: 4px;
+}
+[data-stalux-control="button"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+}
+[data-stalux-control="avatar"] img {
+    transition: transform 180ms var(--stalux-motion-ease);
+}
+[data-stalux-control="social"] {
+    transition:
+        color 140ms ease,
+        transform 140ms var(--stalux-motion-ease);
+}
+[data-stalux-control="link-card"] img {
+    animation: none;
+    transition:
+        transform 180ms var(--stalux-motion-ease),
+        border-color 140ms ease;
+}
+[data-stalux-module="footer"] a,
+[data-stalux-back-to-top] {
+    transition:
+        color 140ms ease,
+        background-color 140ms ease,
+        opacity 140ms ease;
+}
+[data-stalux-module="badge-group"][open] > div {
+    animation: stalux-module-fade 140ms ease-out;
+}
+pagefind-modal#search dialog[open] {
+    animation: stalux-module-arrive 160ms var(--stalux-motion-ease) !important;
+}
+pagefind-modal dialog::backdrop {
+    background: rgb(0 0 0 / 0.65) !important;
+    animation: stalux-module-backdrop 140ms ease-out !important;
+}
+@keyframes stalux-module-arrive {
+    from {
+        opacity: 0.88;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes stalux-module-fade {
+    from {
+        opacity: 0.88;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes stalux-module-backdrop {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@media (hover: hover) and (pointer: fine) {
+    [data-stalux-control="button"]:hover,
+    [data-stalux-control="social"]:hover,
+    [data-stalux-control="tag-card"]:hover {
+        transform: translateY(-2px);
+    }
+    [data-stalux-control="avatar"]:hover img,
+    [data-stalux-control="link-card"]:hover img {
+        animation: none;
+        transform: rotate(3deg);
+    }
+}
+[data-stalux-control]:active {
+    transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-stalux-control],
+    [data-stalux-control] *,
+    [data-stalux-module],
+    [data-stalux-module] *,
+    [data-ref="stalux-nav-list"],
+    [data-ref="stalux-nav-overlay"],
+    pagefind-modal#search dialog[open],
+    pagefind-modal#search dialog::backdrop {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+    [data-stalux-control]:is(:hover, :active),
+    [data-stalux-control]:hover img {
+        transform: none !important;
+    }
+    [data-stalux-tag-cards] {
+        display: block;
+    }
+    [data-stalux-tag-canvas] {
+        display: none;
+    }
+}
+@media print {
+    [data-stalux-module],
+    [data-stalux-control],
+    pagefind-modal dialog {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+/* A location marker fades over the surface without repainting text shadows. */
+[data-stalux-module="word"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--accent-20p);
+    opacity: 0;
+    pointer-events: none;
+}
+[data-stalux-module="word"]:is(:target, [data-glow])::after {
+    animation: stalux-module-locate 1200ms ease-out;
+}
+@keyframes stalux-module-locate {
+    from {
+        opacity: 0.4;
+    }
+    to {
+        opacity: 0;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-stalux-module="word"]::after {
+        animation: none !important;
+    }
+}
+
+@media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
+    pagefind-modal#search dialog[open] {
+        animation: stalux-module-fade 120ms ease-out !important;
+    }
+}
+[data-stalux-weather][data-weather-state="ready"] [data-weather-output] {
+    animation: stalux-module-fade 140ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-stalux-weather] [data-weather-output] {
+        animation: none !important;
+    }
+}
+
+@media print {
+    [data-stalux-module="word"]::after {
+        animation: none !important;
+    }
+}

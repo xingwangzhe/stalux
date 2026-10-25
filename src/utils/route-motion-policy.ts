@@ -55,7 +55,11 @@ export function getRouteMotionPreset(context: MotionContext): RouteMotionPreset 
     }
     if (target === "article") return "enter";
     if (target === "about" || target === "links" || target === "words") return "panel";
-    if (target === "tags-detail" || target === "categories-detail") return "taxonomy";
+    if (target === "tags-detail" || target === "categories-detail") {
+        if (source === target) return "taxonomy";
+        if (source === "tags-detail" || source === "categories-detail") return "glide";
+        return "enter";
+    }
     if (
         (source === "article" &&
             (target === "archive" || target === "tags-index" || target === "categories-index")) ||

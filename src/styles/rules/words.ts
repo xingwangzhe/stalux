@@ -77,9 +77,7 @@ export const wordsStyles: StyleSpec[] = [
         ".stalux-word-card:target, .stalux-word-card[data-glow]",
         "",
         {
-            animation: "stalux-word-word-glow 2s ease-out",
-            "box-shadow":
-                "0 0 20px var(--accent-40p), 0 0 60px var(--accent-20p), var(--shadow-lg)",
+            "border-color": "var(--accent-90p)",
         },
     ],
     [

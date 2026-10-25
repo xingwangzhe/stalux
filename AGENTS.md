@@ -1,5 +1,27 @@
 # Stalux development instructions
 
+## 网页测试与验收只使用 build 后的 preview（用户明确要求，2026-10-25）
+
+**网页功能、视觉、模块动效、视图过渡、滚动与性能测试一律针对生产构建产物运行 preview。禁止用 dev 服务器测试或验收，也不得把 dev 截图、导航结果或性能数据作为通过及发版依据。**
+
+- dev 仅可用于编辑开发，不承担测试。需要浏览器验证时，先完成该份代码的生产 build，再启动 preview，并记录构建源码、主题版本/实体包、配置、产物目录与 preview 地址。
+- 主题改动在独立 myblog 副本中验收；生产验收使用实体主题包，不使用源码软链接。先生成样式、更新副本实体包，再构建该副本并测试其 preview。开发副本与真实 myblog 分离。
+- 代码或样式确有新修改时，必须针对修改后的产物做必要的 build + preview 首次验证；不能继续测试旧产物，也不能退回 dev 代替。单纯 bump 版本或消费项目依赖升级，复用同轮已通过的 preview 验证，不重新构建或重复测试。
+- 单元测试、格式检查、类型检查仍使用项目既有工具；此处禁止的是用 dev 服务进行网页测试，不要求把 Vitest 等检查改造成浏览器测试。
+- Swup 改动必须先查阅官方 v4 文档并核对本项目安装版本源码，重点确认 hooks 顺序、JS 动画 Promise、取消导航、Head/Scroll 插件与 native View Transition 的实际行为。先形成可验证的生命周期设计，再实现；不得仅凭旧记忆或猜测修改。
+- 性能时序与截图采集分轮；记录桌面/手机、冷/热缓存、CPU/网络条件。统计、评论保留真实配置，网络失败和 SDK 问题单列，不能关功能刷分；没有测到稳定流畅就不能宣称通过。
+- 本节优先于下文任何旧的“dev 验证”“dev 模式检查”条款。默认升级/推送流程仍生效：已有有效 preview 结果直接复用，推送后不自动增加 CI、部署或线上检查。
+
+## 默认升级与推送流程（用户明确要求，2026-10-25）
+
+**默认不做二次构建或重复测试；版本升级完成后，直接提交并推送。推送成功即完成当前升级/推送任务。**
+
+- 单纯 bump 版本或升级消费项目依赖时，完成版本文件、依赖和锁文件更新后直接提交推送，不额外运行本地构建、测试、`validate`，也不重新创建副本复测。
+- 同一轮功能开发已有有效验证结果时直接复用，不因发版、切换目录或升级真实 myblog 再重复构建测试。实际代码修改的必要首次验证仍按任务范围执行。
+- 推送后默认停止，不继续查询 CI、npm 分发、平台部署状态或线上 HTTP，不自动增加截图、性能压测或上线验收。用户明确要求这些检查时，再执行指定内容。
+- 提交前只做必要的轻量检查（变更范围、版本与锁文件、`git diff --check`），按文件选择性提交。保留现有 Git hooks 和 CI 配置，不为省略复测擅自禁用或绕过钩子；代理不额外手动重复执行它们的检查。
+- **本节优先于下文旧有的“升级前验证副本”“每次发版双时区构建”“构建两次”“发布后检查线上”等默认流程条款。** 下文专项验收细节在用户明确要求相应验收时适用；日期解析规范、版本线约束和已知失败必须如实处理的要求继续保留。
+
 ## ⚠️ 时区红线（最高优先级，2026-10-24 全站 +8h 事故）
 
 **无时区的日期串必须按站点时区解析，禁止裸 `new Date(日期字符串)`。**
@@ -10,7 +32,7 @@
 - 三层回归闸门，改日期逻辑必跑：
   1. 单测 `tests/dayjs-timezone.test.ts`（期望值全部用 `Date.UTC` 表达，机器时区无关；`TZ=UTC bun run test:run tests/dayjs-timezone.test.ts` 必须同样全绿）；
   2. `verify-build.ts` 时区一致性闸门：RSS/Atom 前 3 个 item 的 pubDate 必须 == frontmatter 墙钟按站点时区解析的时刻 == 文章页 `<time datetime>`（CI 在 UTC 机器上跑，天然暴露回归）；
-  3. 发版前双 TZ 对照：`TZ=UTC` 与 `TZ=Asia/Shanghai` 各构建一次，`dist/rss.xml` 必须逐字节一致（先删 `node_modules/.astro`，**增量缓存会跨 TZ 污染 HTML**——实测热缓存下换 TZ 构建会出现"页面用旧时区解析值、RSS 用新值"的自相矛盾产物）。
+  3. 用户明确要求时执行双 TZ 对照（单纯发版不自动重跑）：`TZ=UTC` 与 `TZ=Asia/Shanghai` 各构建一次，`dist/rss.xml` 必须逐字节一致（先删 `node_modules/.astro`，**增量缓存会跨 TZ 污染 HTML**——实测热缓存下换 TZ 构建会出现"页面用旧时区解析值、RSS 用新值"的自相矛盾产物）。
 - 今后新增任何消费日期的代码，必须传站点时区给 `parseDate`/`toTimestamp`/`formatInTimeZone`，并补对应单测；review 时凡见 `new Date(` 包着字符串字面量/模板串的都要警惕。
 
 ## 云平台操作：CLI 优先（用户明确要求）
@@ -92,7 +114,7 @@ Stalux 的软件著作权登记版本属于 **1.x.x**。此项目必须长期保
 - **严禁发布、打 tag、提交或推送任何 `2.x.x` 版本**，包括 `2.0.0`。即使改动包含破坏性 API，也必须留在 `1.x.x` 版本线内处理；不得以 SemVer 规范为由 bump 到 2。
 - 修改 `package.json` 的 `version`、创建 release tag 或触发 npm 发布前，先确认版本严格匹配 `^1\.\d+\.\d+$`，并确认 tag 严格为对应的 `v1.x.x`。不确定时停止发布操作，不能自行升级主版本。
 - 版本只能在 1.x 内递增，例如 `1.27.1 → 1.27.2` 或 `1.27.1 → 1.28.0`。npm `latest` dist-tag 也必须始终指向 1.x 稳定版。
-- 发布前必须确认 GitHub workflow 对 `2.x.x` 有明确失败守卫，而不只是检查 tag 与 `package.json` 相等；CI 检查通过后才可推送 `v1.x.x` tag。
+- 发布前必须确认 GitHub workflow 对 `2.x.x` 有明确失败守卫，而不只是检查 tag 与 `package.json` 相等；版本守卫继续由 CI 执行；本地不为等待 CI 再延长推送任务，tag 仍必须严格保持 `v1.x.x`。
 - 仓库历史中曾误发 `2.0.0`，该版本已在 npm 标记为废弃。不要重新发布 2.x，也不要移除该版本的废弃提示；后续发布以当前 1.x 最新稳定版本为基线。
 
 如果发现工作区、tag、workflow dispatch 参数或拟议变更会产生 `2.x.x`，必须阻止发布并报告原因，不能尝试通过强推、覆盖 tag 或改 dist-tag 绕过此约束。
@@ -104,8 +126,8 @@ Any new or changed user-facing configuration field must be handled as one change
 1. Update the Zod schema and all runtime consumers.
 2. Search every relevant Markdown document (`README.md`, `README_CN.md`, and `stalux/posts/*_config*.md`) and document the field, default/optional behavior, output surface, and privacy implications.
 3. Add or update a focused build assertion for the generated public artifact. For JSON-LD/config changes, parse the generated HTML or JSON rather than relying only on TypeScript compilation.
-4. Run `bun run check:fix`, `bun run validate`, and `bun pm pack --dry-run`.
-5. Bump the package version, commit the implementation and docs together, push the branch and annotated tag, wait for CI/npm visibility, then upgrade `myblog` and run two builds.
+4. During implementation, run the necessary initial checks (`bun run check:fix`, `bun run validate`, and `bun pm pack --dry-run`) once; reuse current valid results for a version-only release instead of repeating them.
+5. Bump the package version, commit the implementation and docs together, and push the branch and annotated tag. Stop after a successful push; wait for CI/npm visibility, upgrade another repository, or perform additional builds only when the user explicitly requests that work.
 
 Do not add a configuration field only to satisfy a third-party score. It must have a real Stalux runtime consumer, documented semantics, and a safe static-site behavior. Do not document dynamic API, rate-limit enforcement, MCP, authentication, or other capabilities that a static deployment cannot actually provide.
 
@@ -115,9 +137,9 @@ Astro's YAML content collection loader may omit Zod `.default()` values from `en
 
 **Incident: 1.29.0 `site.accentColor`.** The schema declared `#EAB308`, but production myblog's `site.yml` omitted the field and Astro rendered `undefined`; its first build failed on `/404` with `Invalid Stalux accent color "undefined". Expected #RRGGBB.`. Fixed in 1.29.1 by normalizing the site config in `getSiteData()` and adding a `#EAB308` fallback in `getAccentColorStyle()`. Regression coverage asserts the helper's missing-value fallback. An isolated myblog clone with the unmodified config then built 696 pages, indexed 698 Pagefind pages, and generated a sitemap index. Keep the production consumer untouched until the clone passes.
 
-### Version-release visual regression gate (mandatory)
+### Homepage visual regression gate for requested validation
 
-Every version update must explicitly check the homepage for the Agent-discovery content regression fixed in v1.25.5:
+When the user explicitly requests homepage or release validation, check the Agent-discovery content regression fixed in v1.25.5. Routine version bumps reuse completed validation and do not trigger another build or visual check:
 
 1. The Agent summary must remain present in the SSG-generated static HTML artifact so crawlers can read it. This is build-time output, not runtime SSR.
 2. The same summary must be visually hidden with the approved clipped/one-pixel technique and must not enter normal layout flow.
@@ -190,7 +212,7 @@ WebMCP polyfill 5.1.0 的声明式观察器优化只过滤不影响工具定义�
 
 代码密集文章只对已确认不换行的 Expressive Code 行容器使用 `content-visibility:auto`，以实际 `.ec-line` 数量乘继承 `1lh` 保留精确块高度；自定义高度/containment 或 wrap 模式必须跳过。Mermaid 仅处理带有效 viewBox 的真实生成 SVG，以精确 aspect-ratio 保留尺寸，不能给普通图标加估算高度。打印必须强制展开，延后绘制后仍要检查横向滚动、完整复制和键盘 tabindex；读取 scrollWidth 前先确认容器已经绘制，不要为了检测溢出强制展开所有屏外代码。生产缓存键必须包含此处理源码，不能恢复缺少优化标记的旧 HTML。
 
-Clarity 的历史导航由原生 SDK 自行处理，主题不跨帧调用 stop/start 暂停录制。0.8.72-beta 的异步压缩上传在 stop 后仍读取已清空元数据，拉长停止窗口会暴露 null.sequence 异常；不要用这项微优化换取短期分数。真实 SDK 必须继续加载和发送；每次发布检查首次进入加多次切换的 GA/Umami 页面事件数量与实际 URL，并确认 Clarity 继续采集。
+Clarity 的历史导航由原生 SDK 自行处理，主题不跨帧调用 stop/start 暂停录制。0.8.72-beta 的异步压缩上传在 stop 后仍读取已清空元数据，拉长停止窗口会暴露 null.sequence 异常；不要用这项微优化换取短期分数。真实 SDK 必须继续加载和发送；用户明确要求统计专项验收时，检查首次进入加多次切换的 GA/Umami 页面事件数量与实际 URL，并确认 Clarity 继续采集。
 
 本轮复测脚本与参数保存在 `../work/runtime-20261017/`。使用显式 Node 26 路径，通过 `powerprofilesctl launch --profile performance --reason 'Stalux runtime audit' --appid stalux-runtime sh run-final.sh` 临时固定电源档位；脚本结束自动释放。单独运行 `node audit.mjs <label> <preview-or-cache-proxy-url> 20`、`node stress.mjs <label> <preview-url>`（手机加 `DEVICE=mobile`）与 `python3 lighthouse-run.py <label> <preview-url>`；每次运行前记录源码、包和内容快照，不复用不同候选的 JSON。审计网络拦截会关闭 Playwright HTTP cache，不得将阻断服务后的时延与正常热缓存结果直接比较。
 

@@ -29,7 +29,13 @@ const desc = link.description ?? "";
 const icon = link.icon ?? link.avatar ?? "/favicon.ico";
 ---
 
-<a class="stalux-link-shell a-none" href={href} target="_blank" rel="noopener">
+<a
+    data-stalux-control="link-card"
+    class="stalux-link-shell a-none"
+    href={href}
+    target="_blank"
+    rel="noopener"
+>
     <div class="stalux-link-card">
         <div class="stalux-link-card-avatar">
             <img

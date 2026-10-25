@@ -1,163 +1,162 @@
-import { afterEach, expect, it, vi } from "vitest";
-import type { RouteMotionEvent } from "../src/scripts/route-motion";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
+let documentMock: EventTarget & {
+    readyState: string;
+    body: { dataset: Record<string, string> };
+    querySelector: (selector: string) => unknown;
+};
+let layers: {
+    a: {
+        isConnected: boolean;
+        style: { opacity: string; backgroundImage: string; backgroundSize?: string };
+    };
+    b: {
+        isConnected: boolean;
+        style: { opacity: string; backgroundImage: string; backgroundSize?: string };
+    };
+};
+let decodes: Array<{ resolve: () => void; reject: () => void }>;
+let images: Array<{ decoding?: string; fetchPriority?: string; src?: string }>;
+let saveData: boolean;
+const settle = async () => {
+    for (let tick = 0; tick < 6; tick++) await Promise.resolve();
+};
+beforeEach(() => {
+    vi.resetModules();
+    saveData = false;
+    decodes = [];
+    images = [];
+    layers = {
+        a: { isConnected: true, style: { opacity: "1", backgroundImage: "" } },
+        b: { isConnected: true, style: { opacity: "0", backgroundImage: "" } },
+    };
+    documentMock = Object.assign(new EventTarget(), {
+        readyState: "interactive",
+        body: { dataset: { staluxBgIndex: "0", staluxBgLayer: "a" } },
+        querySelector: (selector: string) => (selector.includes('"a"') ? layers.a : layers.b),
+    });
+    vi.stubGlobal("window", { __STALUX_BG_URLS__: ["/background/custom.svg"] });
+    vi.stubGlobal("document", documentMock);
+    vi.stubGlobal("navigator", {
+        connection: {
+            get saveData() {
+                return saveData;
+            },
+        },
+    });
+    vi.stubGlobal(
+        "Image",
+        class {
+            decoding = "";
+            fetchPriority = "";
+            src = "";
+            constructor() {
+                images.push(this);
+            }
+            decode() {
+                return new Promise<void>((resolve, reject) =>
+                    decodes.push({
+                        resolve,
+                        reject: () => reject(new Error("decode failed")),
+                    }),
+                );
+            }
+        },
+    );
+});
 afterEach(() => {
     vi.unstubAllGlobals();
     vi.resetModules();
 });
-
-it("decodes before fading, waits for content motion and ignores superseded preparations", async () => {
-    const document = Object.assign(new EventTarget(), {
-        body: { dataset: { staluxBgIndex: "0" } },
-        querySelector: (selector: string) => (selector.includes('"a"') ? layers.a : layers.b),
-    });
-    const layers = {
-        a: { style: { opacity: "1", backgroundImage: "url(old.svg)" } },
-        b: { style: { opacity: "0", backgroundImage: "" } },
-    };
-    const decode: Array<() => void> = [];
-    vi.stubGlobal("window", {
-        __STALUX_BG_URLS__: ["/background/one.svg"],
-        innerWidth: 1440,
-        innerHeight: 900,
-        matchMedia: () => ({ matches: false }),
-    });
-    vi.stubGlobal("document", document);
-    vi.stubGlobal("navigator", { connection: {} });
-    vi.stubGlobal(
-        "Image",
-        class {
-            decode() {
-                return new Promise<void>((resolve) => decode.push(resolve));
-            }
-        },
-    );
-    const { prepareRouteMotion } = await import("../src/scripts/route-motion");
+it("starts one low-priority custom decode as soon as the document is parsed", async () => {
     await import("../src/scripts/background");
-    let finish = () => {};
-    const finished = new Promise<void>((resolve) => {
-        finish = resolve;
+    expect(images).toHaveLength(1);
+    expect(images[0]).toMatchObject({
+        src: "/background/custom.svg",
+        decoding: "async",
+        fetchPriority: "low",
     });
-    document.dispatchEvent(new Event("astro:before-preparation"));
-    const firstSwap = Object.assign(new Event("astro:before-swap"), {
-        viewTransition: { finished },
-    });
-    document.dispatchEvent(firstSwap);
-    prepareRouteMotion(firstSwap).start(null);
-    document.dispatchEvent(new Event("astro:page-load"));
-    decode[0]?.();
-    await Promise.resolve();
-    expect(layers.b.style.opacity).toBe("0");
-    document.dispatchEvent(new Event("astro:before-preparation"));
-    finish();
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(layers.b.style.opacity).toBe("0");
-    const secondSwap = new Event("astro:before-swap");
-    document.dispatchEvent(secondSwap);
-    prepareRouteMotion(secondSwap as RouteMotionEvent).start(null);
-    document.dispatchEvent(new Event("astro:page-load"));
-    decode[1]?.();
-    for (let tick = 0; tick < 10; tick++) await Promise.resolve();
+    expect(layers.b.style.backgroundImage).toBe("");
+    documentMock.dispatchEvent(new Event("astro:page-load"));
+    expect(images).toHaveLength(1);
+    decodes[0]?.resolve();
+    await settle();
+    expect(layers.b.style.backgroundImage).toBe("url('/background/custom.svg')");
     expect(layers.b.style.opacity).toBe("1");
     expect(layers.a.style.opacity).toBe("0");
-    expect(layers.b.style.backgroundImage).toBe("url('/background/one.svg')");
 });
-
-it("keeps decoded backgrounds out of the shared heading animation", async () => {
-    const layers = {
-        a: { style: { opacity: "1", backgroundImage: "url(old.svg)" } },
-        b: { style: { opacity: "0", backgroundImage: "" } },
-    };
-    const document = Object.assign(new EventTarget(), {
-        body: { dataset: { staluxBgIndex: "0" } },
-        querySelector: (selector: string) => (selector.includes('"a"') ? layers.a : layers.b),
-    });
-    vi.stubGlobal("window", {
-        __STALUX_BG_URLS__: ["/background/one.svg"],
-        innerWidth: 1440,
-        innerHeight: 900,
-        matchMedia: () => ({ matches: false }),
-    });
-    vi.stubGlobal("document", document);
-    vi.stubGlobal("navigator", { connection: {} });
-    vi.stubGlobal(
-        "Image",
-        class {
-            decode() {
-                return Promise.resolve();
-            }
-        },
-    );
-    const { prepareRouteMotion } = await import("../src/scripts/route-motion");
+it("does not decode or change the background across fifty soft visits", async () => {
     await import("../src/scripts/background");
-    let finishContent = () => {};
-    const content = new Promise<void>((resolve) => {
-        finishContent = resolve;
-    });
-    document.dispatchEvent(new Event("astro:before-preparation"));
-    const swap = Object.assign(new Event("astro:before-swap"), {
-        signal: new AbortController().signal,
-    });
-    document.dispatchEvent(swap);
-    const cancel = vi.fn();
-    const animate = vi.fn(() => ({ finished: content, cancel }));
-    prepareRouteMotion(swap).start({
-        animate,
-        isConnected: true,
-        hasAttribute: (name: string) => name === "data-stalux-motion-focus",
-        getBoundingClientRect: () => ({
-            width: 300,
-            height: 50,
-            top: 100,
-            bottom: 150,
-            left: 0,
-            right: 300,
-        }),
-    } as unknown as HTMLElement);
-    document.dispatchEvent(new Event("astro:page-load"));
-    for (let tick = 0; tick < 10; tick++) await Promise.resolve();
-    expect(animate).toHaveBeenCalledOnce();
-    expect(cancel).not.toHaveBeenCalled();
-    expect(layers.b.style.opacity).toBe("0");
-    finishContent();
-    for (let tick = 0; tick < 10; tick++) await Promise.resolve();
-    expect(cancel).toHaveBeenCalledOnce();
-    expect(layers.b.style.opacity).toBe("1");
+    decodes[0]?.resolve();
+    await settle();
+    const original = JSON.stringify(layers);
+    for (let visit = 0; visit < 50; visit++)
+        for (const type of ["astro:before-preparation", "astro:before-swap", "astro:page-load"])
+            documentMock.dispatchEvent(new Event(type));
+    await settle();
+    expect(images).toHaveLength(1);
+    expect(JSON.stringify(layers)).toBe(original);
 });
-
-it("commits one background for a first load that outlives window.load", async () => {
-    const layers = {
-        a: { style: { opacity: "1", backgroundImage: "" } },
-        b: { style: { opacity: "0", backgroundImage: "" } },
-    };
-    const document = Object.assign(new EventTarget(), {
-        // 子资源卡住时 readyState 停在 interactive，window.load 上的 page-load 迟到。
-        readyState: "interactive",
-        body: { dataset: { staluxBgIndex: "0" } },
-        querySelector: (selector: string) => (selector.includes('"a"') ? layers.a : layers.b),
-    });
-    const decode: Array<() => void> = [];
-    vi.stubGlobal("window", { __STALUX_BG_URLS__: ["/background/one.svg", "/background/two.svg"] });
-    vi.stubGlobal("document", document);
-    vi.stubGlobal("navigator", { connection: {} });
-    vi.stubGlobal(
-        "Image",
-        class {
-            decode() {
-                return new Promise<void>((resolve) => decode.push(resolve));
-            }
-        },
-    );
+it("does not duplicate installation or let late page-load events start another image", async () => {
+    const module = await import("../src/scripts/background");
+    module.installSessionBackground();
+    module.installSessionBackground();
+    documentMock.dispatchEvent(new Event("astro:page-load"));
+    expect(images).toHaveLength(1);
+    decodes[0]?.resolve();
+    await settle();
+    module.installSessionBackground();
+    expect(images).toHaveLength(1);
+});
+it("waits for DOM parsing but not window.load", async () => {
+    documentMock.readyState = "loading";
     await import("../src/scripts/background");
-    expect(decode).toHaveLength(1);
-
-    // 迟到的 page-load 属于同一页，不能再解码并淡入第二张。
-    document.dispatchEvent(new Event("astro:page-load"));
-    expect(decode).toHaveLength(1);
-
-    decode[0]?.();
-    for (let tick = 0; tick < 10; tick++) await Promise.resolve();
-    expect(layers.b.style.opacity).toBe("1");
-    expect(layers.a.style.opacity).toBe("0");
+    expect(images).toHaveLength(0);
+    documentMock.readyState = "interactive";
+    documentMock.dispatchEvent(new Event("DOMContentLoaded"));
+    expect(images).toHaveLength(1);
+    documentMock.dispatchEvent(new Event("DOMContentLoaded"));
+    expect(images).toHaveLength(1);
+});
+it("keeps the dark fallback when saveData is requested or decoding fails", async () => {
+    saveData = true;
+    await import("../src/scripts/background");
+    expect(images).toHaveLength(0);
+    expect(layers.a.style.opacity).toBe("1");
+    vi.resetModules();
+    vi.stubGlobal("window", { __STALUX_BG_URLS__: ["/background/custom.svg"] });
+    saveData = false;
+    await import("../src/scripts/background");
+    decodes[0]?.reject();
+    await settle();
+    expect(layers.a.style.opacity).toBe("1");
+    expect(layers.b.style.backgroundImage).toBe("");
+});
+it("does not mutate detached background shells after a late decode", async () => {
+    await import("../src/scripts/background");
+    layers.a.isConnected = false;
+    layers.b.isConnected = false;
+    decodes[0]?.resolve();
+    await settle();
+    expect(layers.b.style.backgroundImage).toBe("");
+});
+it("uses raster companions with the original ratio-only SVG contain sizing", async () => {
+    vi.stubGlobal("window", {});
+    await import("../src/scripts/background");
+    expect(images[0]?.src).toMatch(/^\/background\/pattern-\d+\.min\.webp$/u);
+    decodes[0]?.resolve();
+    await settle();
+    expect(layers.b.style.backgroundSize).toBe("contain");
+});
+it("keeps custom-image sizing unchanged", async () => {
+    await import("../src/scripts/background");
+    decodes[0]?.resolve();
+    await settle();
+    expect(layers.b.style.backgroundSize).toBeUndefined();
+});
+it("is harmless during an SSR import without window or document", async () => {
+    vi.stubGlobal("window", undefined);
+    vi.stubGlobal("document", undefined);
+    await expect(import("../src/scripts/background")).resolves.toBeDefined();
+    expect(images).toHaveLength(0);
 });

@@ -46,6 +46,7 @@ coverage/
 docs/*
 !docs/STYLING.md
 !docs/RUNTIME.md
+!docs/MOTION.md
 
 # build-generated font subsets (rebuilt each build by integration)
 public/fonts/common-*.woff2

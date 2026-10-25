@@ -12,6 +12,7 @@ export interface RouteMotionEvent {
 
 export interface RouteMotionOptions {
     skip?: boolean;
+    /** Use a bounded introductory region around the marked heading. */
     content?: boolean;
     preset?: RouteMotionPreset;
     browserMotion?: boolean;
@@ -62,20 +63,41 @@ function completion() {
     return { promise, resolve };
 }
 
-/** A deep history restore must not scroll to or animate an off-screen title. */
-function isVisibleHeading(heading: HTMLElement): boolean {
-    if (!heading.isConnected || !heading.hasAttribute("data-stalux-motion-focus")) return false;
-    const rect = heading.getBoundingClientRect();
-    return (
-        rect.width > 0 &&
-        rect.height > 0 &&
-        rect.height <= Math.min(320, window.innerHeight / 2) &&
-        rect.top < window.innerHeight &&
-        rect.bottom > 0 &&
-        rect.left < window.innerWidth &&
-        rect.right > 0
-    );
+/** A route transition never captures a long article, list, or off-screen heading. */
+export function getRouteMotionTarget(focus: HTMLElement | null): HTMLElement | null {
+    if (!focus?.isConnected || !focus.hasAttribute("data-stalux-motion-focus")) return null;
+    const visible = (element: HTMLElement, maxHeight: number) => {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.width > 0 &&
+            rect.height > 0 &&
+            rect.height <= maxHeight &&
+            rect.top < window.innerHeight &&
+            rect.bottom > 0 &&
+            rect.left < window.innerWidth &&
+            rect.right > 0
+        );
+    };
+    if (!visible(focus, Math.min(320, window.innerHeight / 2))) return null;
+    const region = focus.closest?.<HTMLElement>("[data-stalux-motion-region]");
+    return region?.isConnected && visible(region, Math.min(420, window.innerHeight * 0.6))
+        ? region
+        : focus;
 }
+
+const regionMotions: Record<Exclude<RouteMotionPreset, "none">, HeadingMotion> = {
+    glide: { opacity: 0.72, duration: 160 },
+    article: { opacity: 0.72, duration: 180, y: 4 },
+    enter: { opacity: 0.72, duration: 180, y: 6 },
+    up: { opacity: 0.8, duration: 160, y: -4 },
+    taxonomy: { opacity: 0.72, duration: 160, x: 6 },
+    previous: { opacity: 0.76, duration: 180, x: -8 },
+    next: { opacity: 0.76, duration: 180, x: 8 },
+    panel: { opacity: 0.76, duration: 160, y: 4 },
+    home: { opacity: 0.76, duration: 180, y: 4 },
+    restore: { opacity: 1, duration: 0 },
+    error: { opacity: 0.85, duration: 100 },
+};
 
 /** Share Swup's actual content animation with background and analytics consumers. */
 export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
@@ -130,35 +152,33 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
             try {
                 const preset = options?.preset ?? "glide";
                 const mobile = window.matchMedia?.("(max-width: 768px)").matches;
+                const target = getRouteMotionTarget(heading);
                 if (
-                    !heading ||
+                    !target ||
                     preset === "none" ||
                     (options?.content && preset === "restore") ||
                     options?.skip ||
                     options?.browserMotion ||
                     document.hidden ||
                     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ||
-                    typeof heading.animate !== "function" ||
-                    !(options?.content ? heading.isConnected : isVisibleHeading(heading)) ||
+                    typeof target.animate !== "function" ||
                     (mobile && preset === "restore")
                 ) {
                     animationDone.resolve();
                     return;
                 }
-                const spec = options?.content
-                    ? { opacity: 0, duration: mobile ? 180 : 220, y: mobile ? 8 : 16 }
-                    : headingMotions[preset];
+                const spec = options?.content ? regionMotions[preset] : headingMotions[preset];
                 const keyframes: PropertyIndexedKeyframes = { opacity: [spec.opacity, 1] };
-                // Content uses a short vertical entry on both breakpoints. Legacy
-                // heading cues retain their motionless phone fallback.
-                if ((options?.content || !mobile) && (spec.x || spec.y)) {
+                // Phones use a pure fade. Explicit previous/next alone imply a
+                // lateral reading direction; history never replays the entry.
+                if (!mobile && (spec.x || spec.y)) {
                     keyframes.transform = [
                         `translate3d(${spec.x ?? 0}px, ${spec.y ?? 0}px, 0)`,
                         "translate3d(0px, 0px, 0)",
                     ];
                 }
-                animation = heading.animate(keyframes, {
-                    duration: options?.content ? spec.duration : mobile ? 80 : spec.duration,
+                animation = target.animate(keyframes, {
+                    duration: mobile ? (options?.content ? 120 : 80) : spec.duration,
                     easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
                     fill: "both",
                 });

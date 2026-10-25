@@ -7,7 +7,7 @@ interface Props {
 const { heading, description } = Astro.props;
 ---
 
-<>
+<div data-stalux-motion-region>
     <h1 class="stalux-page-title stalux-u-text-center" data-stalux-motion-focus>
         {heading}
     </h1>
@@ -16,4 +16,4 @@ const { heading, description } = Astro.props;
             {description}
         </div>
     )}
-</>
+</div>

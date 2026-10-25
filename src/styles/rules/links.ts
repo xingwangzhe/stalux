@@ -55,7 +55,7 @@ export const linksStyles: StyleSpec[] = [
         ".stalux-link-card-avatar:hover img",
         "",
         {
-            animation: "stalux-link-avatar-spin 650ms ease-in-out 1",
+            transform: "rotate(3deg)",
 
             "border-color": "var(--accent-85p)",
         },

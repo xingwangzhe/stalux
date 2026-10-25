@@ -289,24 +289,35 @@ describe("shared route motion", () => {
     });
 });
 
-describe("content entry motion", () => {
-    it.each([false, true])("animates one content surface on phone=%s", async (phone) => {
+describe("bounded region entry motion", () => {
+    it.each([false, true])("animates a bounded surface on phone=%s", async (phone) => {
         vi.stubGlobal("window", {
-            matchMedia: (query: string) => ({ matches: phone && query === "(max-width: 768px)" }),
+            innerWidth: phone ? 390 : 1440,
+            innerHeight: 844,
+            matchMedia: (q: string) => ({ matches: phone && q === "(max-width: 768px)" }),
         });
-        const content = animation({ height: 8000 });
+        const content = animation();
         const motion = prepareRouteMotion({});
-        motion.start(content.main, { content: true, preset: "article" });
+        motion.start(content.main, { content: true, preset: "enter" });
         expect(content.animate).toHaveBeenCalledWith(
-            {
-                opacity: [0, 1],
-                transform: [`translate3d(0px, ${phone ? 8 : 16}px, 0)`, "translate3d(0px, 0px, 0)"],
-            },
-            expect.objectContaining({ duration: phone ? 180 : 220 }),
+            phone
+                ? { opacity: [0.72, 1] }
+                : {
+                      opacity: [0.72, 1],
+                      transform: ["translate3d(0px, 6px, 0)", "translate3d(0px, 0px, 0)"],
+                  },
+            expect.objectContaining({ duration: phone ? 120 : 180 }),
         );
         content.done.resolve();
         await motion.finished;
         expect(content.cancel).toHaveBeenCalledOnce();
+    });
+    it("never animates a full-height article even when requested as content", async () => {
+        const content = animation({ height: 8000 });
+        const motion = prepareRouteMotion({});
+        motion.start(content.main, { content: true, preset: "enter" });
+        await motion.finished;
+        expect(content.animate).not.toHaveBeenCalled();
     });
     it("preserves history reading position without a content entry", async () => {
         const content = animation();
@@ -315,4 +326,19 @@ describe("content entry motion", () => {
         await motion.finished;
         expect(content.animate).not.toHaveBeenCalled();
     });
+    it.each([100, 1000])(
+        "uses an intro region of height %s only within its visual budget",
+        async (height) => {
+            const focus = animation();
+            const region = animation({ height, bottom: 100 + height });
+            Object.assign(focus.main, { closest: () => region.main });
+            const motion = prepareRouteMotion({});
+            motion.start(focus.main, { content: true, preset: "article" });
+            expect(region.animate).toHaveBeenCalledTimes(height === 100 ? 1 : 0);
+            expect(focus.animate).toHaveBeenCalledTimes(height === 100 ? 0 : 1);
+            focus.done.resolve();
+            region.done.resolve();
+            await motion.finished;
+        },
+    );
 });

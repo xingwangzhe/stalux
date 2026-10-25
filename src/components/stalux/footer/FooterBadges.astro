@@ -36,7 +36,11 @@ function badgeImg(opts: BadgeOptions) {
             if (isBadgeGroup(item)) {
                 const groupId = `badge-group-${idx}`;
                 return (
-                    <details class="stalux-badge-group stalux-u-w-full badge-group" id={groupId}>
+                    <details
+                        data-stalux-module="badge-group"
+                        class="stalux-badge-group stalux-u-w-full badge-group"
+                        id={groupId}
+                    >
                         <summary class="stalux-badge-group-summary stalux-u-flex stalux-u-items-center stalux-u-justify-center">
                             <span class="stalux-badge-group-arrow">&#9654;</span>
                             <span class="stalux-badge-group-title">{item.title}</span>

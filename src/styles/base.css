@@ -272,7 +272,7 @@
         background: #2a2a2a;
     }
 
-    /* 背景层 - 双层随机背景，在路由切换时交叉淡入淡出 */
+    /* 持久背景层：完整文档首次解码后淡显，软导航保持原图。 */
     .bg-layer {
         position: fixed;
         inset: 0;
@@ -284,7 +284,7 @@
         filter: var(--stalux-bg-filter, none);
         pointer-events: none;
         opacity: 0;
-        transition: opacity 650ms ease-in-out;
+        transition: opacity 200ms ease-out;
         /* 禁止浏览器强制色彩模式（高对比度/暗黑模式）调整背景图颜色 */
         forced-color-adjust: none;
         /* 关键：防止 Safari/WebKit 在暗色模式下自动调整 SVG 背景图颜色 */

@@ -21,7 +21,7 @@ const navigationHref = isHomePage ? "/about" : "/";
     <figure
         class={`stalux-author-figure ${props.iscolum ? "stalux-author-figure-column stalux-u-flex-col" : ""}`}
     >
-        <a href={navigationHref} class="a-none" data-astro-prefetch>
+        <a data-stalux-control="avatar" href={navigationHref} class="a-none" data-astro-prefetch>
             <Image src={authorConfig.avatar} alt={authorConfig.name} width={100} height={100} />
         </a>
         <figcaption>{authorConfig.name}</figcaption>

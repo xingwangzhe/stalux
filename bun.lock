@@ -49,6 +49,7 @@
         "@vitest/coverage-v8": "^5.0.4",
         "astro": "^7.4.2",
         "knip": "^6.41.0",
+        "sharp": "0.35.5",
         "sonda": "^0.14.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
         "unocss": "^66.11.0",

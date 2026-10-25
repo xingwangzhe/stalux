@@ -43,6 +43,10 @@ describe("theme public assets after config resolution", () => {
         expect(readFileSync(path.join(publicDir, "background/custom.svg"), "utf8")).toBe("custom");
         expect(() => statSync(path.join(publicDir, "fonts/ignore.ttf"))).toThrow();
         expect(() => statSync(path.join(publicDir, "background/ignore.txt"))).toThrow();
+        writeFileSync(path.join(source, "../public/background/theme.webp"), "raster");
+        expect(syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 1, skipped: 1 });
+        expect(readFileSync(path.join(publicDir, "background/theme.webp"), "utf8")).toBe("raster");
+        expect(syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 0, skipped: 2 });
         syncFontAssets(source, publicDir);
         expect(syncBackgroundSvgs(path.join(root, "missing/src"), publicDir)).toEqual({
             copied: 0,

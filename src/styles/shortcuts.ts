@@ -38,7 +38,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-footer-content": "[gap:0.8rem] max-w-[1200px] m-[0_auto] p-[0_1rem]",
         "stalux-404-error-container": "p-8 min-h-[60vh]",
         "stalux-404-home-btn":
-            "inline-block no-underline p-[var(--space-md)_var(--space-lg)] [background:var(--black-20p)] text-ink-90 rounded-stalux-md [border:var(--border-thin)_solid_var(--white-20p)] [transition:background-color_var(--transition-normal),_transform_var(--transition-normal),_box-shadow_var(--transition-normal)] text-stalux-base",
+            "inline-block no-underline p-[var(--space-md)_var(--space-lg)] [background:var(--black-20p)] text-ink-90 rounded-stalux-md [border:var(--border-thin)_solid_var(--white-20p)] [transition:background-color_var(--transition-normal),_transform_var(--transition-normal)] text-stalux-base",
         "stalux-ai-prompt":
             "absolute p-0 overflow-hidden w-[1px] h-[1px] m-[-1px] [clip-path:inset(50%)] [white-space:pre-wrap] [border:0]",
         "stalux-theme-info": "text-ink-70 text-[0.85rem] [gap:0.3em]",
@@ -137,7 +137,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
             "text-center text-ink-50 text-stalux-small p-[var(--space-md)_0]",
         "stalux-sidebar-right": "[scroll-padding-bottom:8rem]",
         "stalux-sidebar-container":
-            "stalux-stack stalux-glass [box-shadow:var(--surface-glass-shadow)] rounded-[14px] p-md [transition:box-shadow_220ms_ease,_background-color_220ms_ease]",
+            "stalux-stack stalux-glass [box-shadow:var(--surface-glass-shadow)] rounded-[14px] p-md [transition:background-color_160ms_ease]",
         "stalux-pagination":
             "w-full m-[var(--space-lg)_0] [border-top:var(--border-thin)_solid_var(--white-20p)] [border-bottom:var(--border-thin)_solid_var(--white-20p)] pt-lg pb-lg",
         "stalux-pagination-inner": "flex justify-between gap-md",

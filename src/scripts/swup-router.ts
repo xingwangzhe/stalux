@@ -125,12 +125,15 @@ export function installSwupRouter(): Swup {
                         in: async (_done, { visit }) => {
                             const context = contexts.get(visit);
                             if (!context?.motion) return;
-                            context.motion.start(document.querySelector<HTMLElement>(MAIN), {
-                                preset: context.preset,
-                                content: true,
-                                browserMotion: context.browserMotion,
-                                skip: context.controller.signal.aborted,
-                            });
+                            context.motion.start(
+                                document.querySelector<HTMLElement>("[data-stalux-motion-focus]"),
+                                {
+                                    preset: context.preset,
+                                    content: true,
+                                    browserMotion: context.browserMotion,
+                                    skip: context.controller.signal.aborted,
+                                },
+                            );
                             await context.motion.finished;
                         },
                     },
@@ -251,7 +254,7 @@ export function installSwupRouter(): Swup {
         // Keep the old page readable until HTML, styles and fonts are ready.
         if (context.navigationType !== "traverse" && context.preset !== "none") {
             context.releaseOutgoing = await animateRouteOut(
-                document.querySelector<HTMLElement>(MAIN),
+                document.querySelector<HTMLElement>("[data-stalux-motion-focus]"),
                 context.controller.signal,
             );
             if (context.controller.signal.aborted || visit !== swup.visit) {
@@ -266,8 +269,6 @@ export function installSwupRouter(): Swup {
         html.dataset.staluxVtPreset = context.preset;
         context.motion = prepareRouteMotion(dispatchNavigation("astro:before-swap", context, next));
         if (context.controller.signal.aborted) return;
-        if (context.navigationType !== "traverse" && context.preset !== "none")
-            html.dataset.staluxMotionPending = "";
         await replace(visit, args);
         context.releaseOutgoing?.();
         if (context.controller.signal.aborted) return;
@@ -327,7 +328,7 @@ export function installSwupRouter(): Swup {
         const context = contexts.get(visit);
         if (!context || context !== activeContext || visit !== swup.visit) return;
         delete document.documentElement.dataset.staluxMotionPending;
-        context?.motion?.start(document.querySelector<HTMLElement>(MAIN), {
+        context?.motion?.start(document.querySelector<HTMLElement>("[data-stalux-motion-focus]"), {
             preset: context.preset,
             content: true,
             skip: !visit.animation.animate || context.controller.signal.aborted,

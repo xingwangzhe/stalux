@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.43.1",
+    "version": "1.44.0",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -98,7 +98,8 @@
         "styles:watch": "node scripts/build-styles.ts --watch",
         "benchmark:performance": "node scripts/benchmark-performance.ts",
         "benchmark:builds": "python3 scripts/benchmark-builds.py",
-        "analyze": "SONDA=1 bun run build"
+        "analyze": "SONDA=1 bun run build",
+        "backgrounds:build": "bun run scripts/build-backgrounds.ts"
     },
     "dependencies": {
         "@astrojs/compiler": "^4.0.0",
@@ -145,6 +146,7 @@
         "@vitest/coverage-v8": "^5.0.4",
         "astro": "^7.4.2",
         "knip": "^6.41.0",
+        "sharp": "0.35.5",
         "sonda": "^0.14.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
         "unocss": "^66.11.0",

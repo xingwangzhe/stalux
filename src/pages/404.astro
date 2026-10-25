@@ -17,7 +17,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
         class="stalux-404-error-container stalux-u-flex stalux-u-items-center stalux-u-justify-center stalux-u-text-center"
         data-pagefind-ignore
     >
-        <div class="stalux-404-error-content">
+        <div class="stalux-404-error-content" data-stalux-motion-region>
             <h1 data-stalux-motion-focus>404</h1>
             <p data-stalux-motion-content>{t("page404.pageNotFound")}</p>
             <p class="agent-recovery" data-stalux-motion-content>
@@ -38,6 +38,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
             <a
                 href="/"
                 class="stalux-404-home-btn home-btn"
+                data-stalux-control="button"
                 data-astro-prefetch
                 data-stalux-motion-content
                 >{t("page404.backHome")}</a

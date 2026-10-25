@@ -36,8 +36,7 @@
     margin-bottom: 1rem;
     padding: 2rem;
     border-radius: 12px;
-    animation: fadeInUpComment 0.35s ease-out both;
-    animation-delay: 0.08s;
+    /* The bounded module observer owns the one local entry cue. */
 }
 
 /* 评论区标题样式与博客风格一致 */
@@ -69,7 +68,6 @@
     transition:
         background-color 200ms ease,
         border-color 200ms ease,
-        box-shadow 200ms ease,
         color 200ms ease;
 }
 
@@ -143,7 +141,6 @@
     transition:
         background-color 200ms ease,
         border-color 200ms ease,
-        box-shadow 200ms ease,
         color 200ms ease;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -247,7 +244,6 @@
     transition:
         background-color 200ms ease,
         border-color 200ms ease,
-        box-shadow 200ms ease,
         color 200ms ease;
     border: 1px solid rgb(70 70 70 / 0.2) !important;
 }
@@ -386,18 +382,6 @@
 .wl-text-number {
     font-size: 0.9rem;
     color: var(--white-60p);
-}
-
-/* 添加动画效果 */
-@keyframes fadeInUpComment {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* 降低选中文本高亮程度，移除外边框 */

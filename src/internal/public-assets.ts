@@ -2,11 +2,11 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from "
 import path from "node:path";
 
 // ---------------------------------------------------------------------------
-// 背景 SVG 判别式同步
+// 背景资源判别式同步
 // ---------------------------------------------------------------------------
 
 /**
- * 把主题包的 public/background/*.svg 同步到用户项目 public/background/。
+ * 把主题包的 public/background/ SVG 原图及 WebP 同步到用户 public/background/。
  *
  * 判别式（非无条件覆盖）：
  * - 同名文件：内容一致则跳过（幂等）；内容不同才覆盖（主题更新了 SVG）
@@ -26,7 +26,7 @@ export function syncBackgroundSvgs(
     let copied = 0;
     let skipped = 0;
     for (const name of readdirSync(srcBg)) {
-        if (!name.endsWith(".svg")) continue;
+        if (!/\.(?:svg|webp)$/u.test(name)) continue;
         const srcFile = path.join(srcBg, name);
         const destFile = path.join(destBg, name);
         if (existsSync(destFile)) {

@@ -154,7 +154,7 @@ export const commonStyles: StyleSpec[] = [
         "",
         {
             "border-radius": "0 0 16px 16px",
-            transition: "background-color 180ms ease, box-shadow 180ms ease",
+            transition: "background-color 180ms ease",
             isolation: "isolate",
         },
         "@media (min-width: 601px)",
@@ -272,15 +272,11 @@ export const commonStyles: StyleSpec[] = [
         ".stalux-author-figure img",
         "rounded-full",
         {
-            transition: "transform 650ms ease-in-out",
+            transition: "transform 180ms ease-out",
             "box-shadow": "0 0 10px var(--stalux-accent-color)",
         },
     ],
-    [
-        ".stalux-author-figure > a:hover img",
-        "",
-        { animation: "stalux-link-avatar-spin 650ms ease-in-out 1" },
-    ],
+    [".stalux-author-figure > a:hover img", "", { transform: "rotate(3deg)" }],
     [
         ".stalux-author-figure figcaption",
         "font-bold ml-[1em] text-[2.5em] stalux-glow text-ink-full",

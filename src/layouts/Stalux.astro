@@ -1,4 +1,5 @@
 ---
+import "../styles/module-motion.css";
 import { getCollection } from "astro:content";
 import Footer from "@components/stalux/layout/footer.astro";
 import Head from "@components/stalux/layout/head.astro";
@@ -41,7 +42,7 @@ const htmlLang = siteConfig.lang || "zh-CN";
 // 背景 SVG 以静态 URL 硬编码在 background.ts（纯客户端），
 // 集成在 config:done 时把 SVG 复制到用户项目最终的 publicDir/background/。
 // SSR 不渲染背景图，默认露出 .bg-layer 的灰墙底色（--stalux-bg-color），
-// 客户端运行时随机选图；不经过 import.meta.glob 资源管线，
+// 每个完整文档首次客户端随机选图，同一 Swup 会话复用；不经过 import.meta.glob 资源管线，
 // 保证增量构建依赖图 hash 稳定。
 const llmPromoteRaw = promoteConfig?.llm_promote ?? "";
 const llmPromote = llmPromoteRaw
@@ -73,6 +74,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
     />
     <script>
     import "../scripts/background.ts";
+    import "../scripts/module-motion.ts";
     import "../scripts/view-transitions.ts";
     </script>
     {aiConfig?.conformance !== "disabled" && <script>import "../scripts/webmcp.ts";</script>}

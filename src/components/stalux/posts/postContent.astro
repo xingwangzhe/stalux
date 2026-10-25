@@ -40,7 +40,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
 
 <article class="stalux-article" data-stalux-gallery={props.hasImage ? "true" : undefined}>
     <!-- Article Header -->
-    <header class="stalux-post-article-header">
+    <header class="stalux-post-article-header" data-stalux-motion-region>
         <h1 class="stalux-post-title" data-stalux-motion-focus>
             {props.title}
         </h1>
