@@ -38,26 +38,13 @@ const exportMd = Boolean(promoteConfig?.export_md) && !isAboutPage;
 const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "";
 ---
 
-<article
-    class="stalux-article"
-    data-stalux-gallery={props.hasImage ? "true" : undefined}
-    transition:name={props.transitionName ?? "stalux-article-container"}
-    transition:animate="none"
->
+<article class="stalux-article" data-stalux-gallery={props.hasImage ? "true" : undefined}>
     <!-- Article Header -->
-    <header
-        class="stalux-post-article-header"
-        transition:name={`${transitionPrefix}-header`}
-        transition:animate="fade"
-    >
+    <header class="stalux-post-article-header">
         <h1 class="stalux-post-title" data-stalux-motion-focus>
             {props.title}
         </h1>
-        <div
-            class="stalux-post-metadata"
-            transition:name={`${transitionPrefix}-metadata`}
-            transition:animate="none"
-        >
+        <div class="stalux-post-metadata">
             {props.date && (
                 <time
                     class="stalux-post-meta-item"
@@ -78,11 +65,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
                 </time>
             )}
         </div>
-        <div
-            class="stalux-post-page-stats"
-            transition:name={`${transitionPrefix}-stats`}
-            transition:animate="none"
-        >
+        <div class="stalux-post-page-stats">
             {(props.readingMinutes ?? 0) > 0 && (
                 <span class="stalux-post-reading-time">
                     {t("post.readingTime")}
@@ -131,8 +114,6 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
         data-pagefind-body
         data-stalux-post-id={props.postId === undefined ? undefined : String(props.postId)}
         data-pagefind-filter={props.postId === undefined ? undefined : "post[data-stalux-post-id]"}
-        transition:name={`${transitionPrefix}-body`}
-        transition:animate="none"
     >
         <slot />
     </section>

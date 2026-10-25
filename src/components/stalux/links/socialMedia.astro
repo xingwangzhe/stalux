@@ -17,8 +17,6 @@ import {
 const configEntries = await getCollection("config");
 const mediaLinksSection = getMediaLinksData(configEntries);
 const mediaLinks = mediaLinksSection?.items ?? [];
-const isPostPage = Astro.url.pathname.startsWith("/posts/");
-const isHomePage = Astro.url.pathname === "/";
 
 // 静态图标映射表：新增图标时只需添加对应的 simple-icons 导入和映射
 const iconMap: Record<string, SimpleIcon> = {
@@ -35,14 +33,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
 }
 ---
 
-<nav
-    class="stalux-social"
-    transition:persist-props
-    transition:name={isHomePage ? "stalux-home-social" : undefined}
-    transition:animate={isHomePage ? "fade" : undefined}
-    aria-label="Social media"
-    data-stalux-social-animate={String(!isPostPage)}
->
+<nav class="stalux-social" aria-label="Social media">
     <ul>
         {mediaLinks.map((item) => {
             const icon = item.icon ? getIconByTitle(item.icon) : undefined;

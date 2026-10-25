@@ -5,8 +5,6 @@ import Weather from "@components/stalux/common/Weather.astro";
 import PostTaxonomy from "@components/stalux/posts/PostTaxonomy.astro";
 import PostToc from "@components/stalux/posts/postToc.astro";
 
-import { getSidebarAnimation } from "@utils/view-transitions";
-
 interface Props {
     headings?: Array<{ depth: number; slug: string; text: string }>;
     tags?: string[];
@@ -16,38 +14,18 @@ interface Props {
 const { headings = [], tags = [], categories = [] } = Astro.props;
 ---
 
-<aside
-    class="stalux-sidebar-right"
-    transition:name="right-sidebar"
-    transition:animate={getSidebarAnimation("right")}
->
-    <div
-        class="stalux-sidebar-container"
-        transition:name="stalux-article-right-date"
-        transition:animate="none"
-    >
+<aside class="stalux-sidebar-right">
+    <div class="stalux-sidebar-container">
         <PostDate />
         <Weather />
     </div>
-    <div
-        class="stalux-sidebar-container"
-        transition:name="stalux-article-right-toc"
-        transition:animate="none"
-    >
+    <div class="stalux-sidebar-container">
         <PostToc headings={headings} />
     </div>
-    <div
-        class="stalux-sidebar-container"
-        transition:name="stalux-article-right-tags"
-        transition:animate="none"
-    >
+    <div class="stalux-sidebar-container">
         <PostTaxonomy kind="tag" items={tags} />
     </div>
-    <div
-        class="stalux-sidebar-container"
-        transition:name="stalux-article-right-categories"
-        transition:animate="none"
-    >
+    <div class="stalux-sidebar-container">
         <PostTaxonomy kind="category" items={categories} />
     </div>
 </aside>

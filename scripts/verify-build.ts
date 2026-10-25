@@ -92,7 +92,36 @@ const pages = {
     notFound: read("404.html"),
 };
 
-assert(pages.archives.includes("data-archive-month"), "archive month reveal hooks are missing");
+// The generated document must expose one Swup container and a live shell,
+// without silently reintroducing Astro's second navigation controller.
+for (const [route, html] of Object.entries(pages)) {
+    let mains = 0;
+    let backgrounds = 0;
+    function verifyRouter(node: DefaultTreeAdapterMap["node"], inMain = false): void {
+        if ("tagName" in node) {
+            const attr = (name: string) => node.attrs.find((item) => item.name === name)?.value;
+            inMain ||= node.tagName === "main";
+            if (node.tagName === "main" && attr("data-stalux-route") !== undefined) mains++;
+            assert(
+                !(node.tagName === "meta" && attr("name") === "astro-view-transitions-enabled"),
+                `${route} must not enable Astro ClientRouter alongside Swup`,
+            );
+            assert(
+                !node.attrs.some((item) => item.name.startsWith("data-astro-transition-")),
+                `${route} must not emit native transition directives`,
+            );
+            if (attr("data-stalux-background") !== undefined) {
+                backgrounds++;
+                assert(!inMain, `${route} background must stay outside the Swup container`);
+            }
+        }
+        if ("childNodes" in node) for (const child of node.childNodes) verifyRouter(child, inMain);
+    }
+    verifyRouter(parse(html));
+    assert(mains === 1 && backgrounds === 2, `${route} is missing its Swup container or shell`);
+}
+
+assert(pages.archives.includes("data-archive-month"), "archive month groups are missing");
 assert(pages.archives.includes("data-archive-description="), "archive descriptions are missing");
 assert(pages.archives.includes('role="tooltip"'), "archive description tooltip is missing");
 assert(

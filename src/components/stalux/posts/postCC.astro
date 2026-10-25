@@ -20,13 +20,13 @@ const siteConfig = (configEntries.find((e) => e.id === "site")?.data ?? {}) as R
     unknown
 >;
 const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
-const { title, author, url, cc = "CC-BY-NC-SA-4.0", transitionName } = Astro.props;
+const { title, author, url, cc = "CC-BY-NC-SA-4.0" } = Astro.props;
 
 const licenseLink = buildCCLink(cc);
 const licenseName = buildCCName(cc, t);
 ---
 
-<div class="stalux-license-box" transition:name={transitionName} transition:animate="none">
+<div class="stalux-license-box">
     <div class="stalux-license-content">
         <p class="stalux-license-title">{title}</p>
         <p class="stalux-license-author">{t("post.author")}{author}</p>

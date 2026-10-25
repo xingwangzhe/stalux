@@ -14,6 +14,11 @@
         "@mcp-b/webmcp-polyfill": "^5.1.0",
         "@microsoft/clarity": "1.0.2",
         "@pagefind/component-ui": "^1.5.2",
+        "@swup/a11y-plugin": "^5.2.1",
+        "@swup/head-plugin": "^2.3.1",
+        "@swup/js-plugin": "^3.2.0",
+        "@swup/preload-plugin": "^3.2.12",
+        "@swup/scroll-plugin": "^4.0.0",
         "@takumi-rs/core": "2.17.1",
         "@waline/client": "^3.16.1",
         "@xingwangzhe/cjk-font-split-native": "^0.4.10",
@@ -31,6 +36,7 @@
         "photoswipe": "^5.4.4",
         "satteri": "^0.10.5",
         "simple-icons": "^16.35.0",
+        "swup": "4.10.0",
         "temml": "^0.14.0",
         "yaml": "^2.9.1",
       },
@@ -421,6 +427,18 @@
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "https://mirrors.cloud.tencent.com/npm/@standard-schema/spec/-/spec-1.1.0.tgz", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 
+    "@swup/a11y-plugin": ["@swup/a11y-plugin@5.2.1", "", { "dependencies": { "@swup/plugin": "^4.0.0", "focus-options-polyfill": "^1.5.0" }, "peerDependencies": { "swup": "^4.0.0" } }, "sha512-n7gphzG+LBuE1RZVYpMxVELqDVFtUNhbehoVZsUiKXaAEkQV64YASe42XmffRnwzmLVtNHBFOSUKd21whctUBg=="],
+
+    "@swup/head-plugin": ["@swup/head-plugin@2.3.1", "", { "dependencies": { "@swup/plugin": "^4.0.0" }, "peerDependencies": { "swup": "^4.6.0" } }, "sha512-kdv60fO9c0/3+K40f7Fj/uV34nSuuPeCsld83J5uVVFizOmoovA737C5M1Iqac5Spf2GLU7q+mhN6AbohSIBjA=="],
+
+    "@swup/js-plugin": ["@swup/js-plugin@3.2.0", "", { "dependencies": { "@swup/plugin": "^4.0.0" }, "peerDependencies": { "swup": "^4.6.0" } }, "sha512-lWqQqFEBs+ndEvBdyyGLrS+WQqLiPfX6aHzoCa6cxps8hSU3KK0/uXU/F6urMjMh7PHbJ7slaJe2acEqX9SDvw=="],
+
+    "@swup/plugin": ["@swup/plugin@4.0.0", "", { "dependencies": { "swup": "^4.0.0" } }, "sha512-3Kq31BJxnzoPg643YxGoWQggoU6VPKZpdE5CqqmP7wwkpCYTzkRmrfcQ29mGhsSS7xfS7D33iZoBiwY+wPoo2A=="],
+
+    "@swup/preload-plugin": ["@swup/preload-plugin@3.2.12", "", { "dependencies": { "@swup/plugin": "^4.0.0" }, "peerDependencies": { "swup": "^4.0.0" } }, "sha512-syDXSjN9ltEenkAhOtRx0yxJWNBSmZncZUNmiuZbtoImdwMTL6/GJue1LOCzRxemOE1wttui1SkgqJyEcu6UIA=="],
+
+    "@swup/scroll-plugin": ["@swup/scroll-plugin@4.0.0", "", { "dependencies": { "@swup/plugin": "^4.0.0", "compute-scroll-into-view": "^3.1.1" } }, "sha512-13cR7zVGanAVgdJwszTPuyZxJ8cVo0ylGgVsf2OF/hZUzEpvmrd0pMdo3d4v8O6c+bB/np6hpCHPDLxkmL40xg=="],
+
     "@takumi-rs/core": ["@takumi-rs/core@2.17.1", "", { "dependencies": { "@takumi-rs/helpers": "2.17.1" }, "optionalDependencies": { "@takumi-rs/core-darwin-arm64": "2.17.1", "@takumi-rs/core-darwin-x64": "2.17.1", "@takumi-rs/core-linux-arm64-gnu": "2.17.1", "@takumi-rs/core-linux-arm64-musl": "2.17.1", "@takumi-rs/core-linux-x64-gnu": "2.17.1", "@takumi-rs/core-linux-x64-musl": "2.17.1", "@takumi-rs/core-win32-arm64-msvc": "2.17.1", "@takumi-rs/core-win32-x64-msvc": "2.17.1" }, "peerDependencies": { "csstype": "*" }, "optionalPeers": ["csstype"] }, "sha512-QjouXqR+yYxiot4pTngsItdaJAtpzrmU+zOJfqqnkPp4FY+1zWi7L3vEI/nPt90+f7S1U1sSkCAiS4ttlw2cgA=="],
 
     "@takumi-rs/core-darwin-arm64": ["@takumi-rs/core-darwin-arm64@2.17.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-fobI/Js9Dw7w2w8ZoDytcH0yLs1/s33U0O1R99jETquG7eJWMZ7IZbIO+nVwGGhEv/rQNokNlXp8HZ60rXdN5A=="],
@@ -669,6 +687,8 @@
 
     "common-ancestor-path": ["common-ancestor-path@2.0.0", "https://mirrors.cloud.tencent.com/npm/common-ancestor-path/-/common-ancestor-path-2.0.0.tgz", {}, "sha512-dnN3ibLeoRf2HNC+OlCiNc5d2zxbLJXOtiZUudNFSXZrNSydxcCsSpRzXwfu7BBWCIfHPw+xTayeBvJCP/D8Ng=="],
 
+    "compute-scroll-into-view": ["compute-scroll-into-view@3.1.1", "", {}, "sha512-VRhuHOLoKYOy4UbilLbUzbYg93XLjv2PncJC50EuTWPA3gaja1UjBsUP/D/9/juV3vQFr6XBEzn9KCAHdUvOHw=="],
+
     "consola": ["consola@3.4.2", "", {}, "sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA=="],
 
     "cookie": ["cookie@2.0.1", "https://mirrors.cloud.tencent.com/npm/cookie/-/cookie-2.0.1.tgz", {}, "sha512-yuToqVvRrj6pfDXREyQAAv8SkAEk/8GS3jQRTiUMm66TVtBYmqQeoEjL2Lmq8Rpo6271vH76InTChTitEAm65w=="],
@@ -696,6 +716,8 @@
     "csstype": ["csstype@3.2.3", "https://mirrors.cloud.tencent.com/npm/csstype/-/csstype-3.2.3.tgz", {}, "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ=="],
 
     "defu": ["defu@6.1.7", "https://mirrors.cloud.tencent.com/npm/defu/-/defu-6.1.7.tgz", {}, "sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ=="],
+
+    "delegate-it": ["delegate-it@6.4.0", "", { "dependencies": { "typed-query-selector": "^2.11.2" } }, "sha512-NbMljKgnyvQQFLRx3hjPs2x++R3GzIZgvtINq/Q7PzxiC58CSG+N2RT8x4qF7JhkFZI4h9zZ1BszoJYdYREkbA=="],
 
     "dequal": ["dequal@2.0.3", "https://mirrors.cloud.tencent.com/npm/dequal/-/dequal-2.0.3.tgz", {}, "sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA=="],
 
@@ -764,6 +786,8 @@
     "flattie": ["flattie@1.1.1", "https://mirrors.cloud.tencent.com/npm/flattie/-/flattie-1.1.1.tgz", {}, "sha512-9UbaD6XdAL97+k/n+N7JwX46K/M6Zc6KcFYskrYL8wbBV/Uyk0CTAMY0VT+qiK5PM7AIc9aTWYtq65U7T+aCNQ=="],
 
     "fnv1a-64": ["fnv1a-64@0.1.2", "", {}, "sha512-mJbcILTPybAR1jdOwt/lVv8N2cffeJFFP+gVbSAwLEx1ujXH27RpPd8Rokec/KX9c76UYIB6Co+H4lQzxPnJfA=="],
+
+    "focus-options-polyfill": ["focus-options-polyfill@1.6.0", "", {}, "sha512-uyrAmLZrPnUItQY5wTdg31TO9GGZRGsh/jmohUg9oLmLi/sw5y7LlTV/mwyd6rvbxIOGwmRiv6LcTS8w7Bk9NQ=="],
 
     "fontace": ["fontace@0.4.1", "https://mirrors.cloud.tencent.com/npm/fontace/-/fontace-0.4.1.tgz", { "dependencies": { "fontkitten": "^1.0.2" } }, "sha512-lDMvbAzSnHmbYMTEld5qdtvNH2/pWpICOqpean9IgC7vUbUJc3k+k5Dokp85CegamqQpFbXf0rAVkbzpyTA8aw=="],
 
@@ -937,6 +961,8 @@
 
     "path-expression-matcher": ["path-expression-matcher@1.6.2", "https://mirrors.cloud.tencent.com/npm/path-expression-matcher/-/path-expression-matcher-1.6.2.tgz", {}, "sha512-enSlaiat05iasnzmgNxRj8reFdj3puY2QpNgP1aPIaVfT6nn9ICuPoFlKHk8EN22HcwewshO+mN2DGbkCEOtqQ=="],
 
+    "path-to-regexp": ["path-to-regexp@6.3.0", "", {}, "sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ=="],
+
     "pathe": ["pathe@2.0.3", "", {}, "sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w=="],
 
     "perfect-debounce": ["perfect-debounce@2.1.0", "", {}, "sha512-LjgdTytVFXeUgtHZr9WYViYSM/g8MkcTPYDlPa3cDqMirHjKiSZPYd6DoL7pK8AJQr+uWkQvCjHNdiMqsrJs+g=="],
@@ -1031,6 +1057,8 @@
 
     "svgo": ["svgo@4.1.0", "https://mirrors.cloud.tencent.com/npm/svgo/-/svgo-4.1.0.tgz", { "dependencies": { "commander": "^11.1.0", "css-select": "^6.0.0", "css-tree": "^3.0.1", "css-what": "^7.0.0", "csso": "^5.0.5", "picocolors": "^1.1.1", "sax": "1.6.1" }, "bin": { "svgo": "bin/svgo.js" } }, "sha512-bkxnTg1kSU0guhIBmibA6UUhrQmPVA1XsQLN+ylCd+UWzbnLkySOcXpyk1mrl05f+pcaCx2eHb+sp6BgMZWX+Q=="],
 
+    "swup": ["swup@4.10.0", "", { "dependencies": { "delegate-it": "^6.0.0", "path-to-regexp": "^6.2.1" } }, "sha512-bzl5u94ovy5YDc+6No28De2TgMWK47Ym0uuMpN9kmzu+NWm3/mhQrmRPjArsFpfVTWO1nMFUZrKRwpRjS6eNJg=="],
+
     "temml": ["temml@0.14.0", "", {}, "sha512-tz1LW/5IZpThK8c7ZpdTSH/n56eAj+ThirLieErtKxYC3EKCIiB4sKdRUehAgH+fQmvIKqMfP3gqTLBdLpy9zw=="],
 
     "tiny-inflate": ["tiny-inflate@1.0.3", "https://mirrors.cloud.tencent.com/npm/tiny-inflate/-/tiny-inflate-1.0.3.tgz", {}, "sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw=="],
@@ -1054,6 +1082,8 @@
     "trough": ["trough@2.2.0", "https://mirrors.cloud.tencent.com/npm/trough/-/trough-2.2.0.tgz", {}, "sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw=="],
 
     "tslib": ["tslib@2.8.1", "https://mirrors.cloud.tencent.com/npm/tslib/-/tslib-2.8.1.tgz", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
+
+    "typed-query-selector": ["typed-query-selector@2.12.3", "", {}, "sha512-/dtuMZyutHLlrxWhhC1uib00ELUr2dZ8C9B8YzZYsJmeE3V56OxRblrSM2UaF142pcMtak7ehZ6+poWGeehNIg=="],
 
     "typesafe-path": ["typesafe-path@0.2.2", "https://mirrors.cloud.tencent.com/npm/typesafe-path/-/typesafe-path-0.2.2.tgz", {}, "sha512-OJabfkAg1WLZSqJAJ0Z6Sdt3utnbzr/jh+NAHoyWHJe8CMSy79Gm085094M9nvTPy22KzTVn5Zq5mbapCI/hPA=="],
 

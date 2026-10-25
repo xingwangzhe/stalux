@@ -10,13 +10,7 @@ const texts = normalizeMessages(messages);
 ---
 
 {texts.length > 0 && (
-    <div
-        class={className}
-        data-stalux-typewriter
-        data-messages={JSON.stringify(texts)}
-        transition:name="stalux-home-typewriter"
-        transition:animate="fade"
-    >
+    <div class={className} data-stalux-typewriter data-messages={JSON.stringify(texts)}>
         <span class="stalux-typewriter-accessible">{texts.join(", ")}</span>
         <span class="stalux-typewriter-reserve" aria-hidden="true">
             {texts.map((text) => (

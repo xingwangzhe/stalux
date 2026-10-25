@@ -86,6 +86,9 @@ function environment(dataset: Record<string, string> = {}, autoStartMotion = tru
     const host = Object.assign(new EventTarget(), {
         location: Object.assign(new URL("https://example.org/first/"), { reload: vi.fn() }),
         screen: { width: 1440, height: 900 },
+        innerWidth: 1440,
+        innerHeight: 900,
+        matchMedia: () => ({ matches: false }),
         requestAnimationFrame: (callback: FrameRequestCallback) =>
             setTimeout(() => callback(performance.now()), 16) as unknown as number,
         cancelAnimationFrame: (id: number) => clearTimeout(id),
@@ -201,11 +204,23 @@ describe("native analytics navigation", () => {
             cancel: vi.fn(),
         };
         const animate = vi.fn(() => animation);
-        prepareMotion(event).start({ animate } as unknown as HTMLElement);
+        prepareMotion(event).start({
+            animate,
+            isConnected: true,
+            hasAttribute: (name: string) => name === "data-stalux-motion-focus",
+            getBoundingClientRect: () => ({
+                width: 300,
+                height: 50,
+                top: 100,
+                bottom: 150,
+                left: 0,
+                right: 300,
+            }),
+        } as unknown as HTMLElement);
         await vi.advanceTimersByTimeAsync(32);
         expect(animate).toHaveBeenCalledWith(
-            { opacity: [0.7, 1] },
-            { duration: 100, easing: "ease-out" },
+            { opacity: [0.86, 1] },
+            { duration: 100, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
         );
         expect(animation.cancel).not.toHaveBeenCalled();
         expect(gtag.mock.calls.filter(([, name]) => name === "page_view")).toHaveLength(1);

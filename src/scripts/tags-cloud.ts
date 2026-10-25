@@ -1,5 +1,5 @@
-import { navigate } from "astro:transitions/client";
 import { createClientLogger } from "./logger";
+import { navigate } from "./navigation-client";
 
 import { registerPageLifecycle } from "./page-runtime";
 

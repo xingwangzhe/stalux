@@ -4,18 +4,12 @@ interface Props {
     label: string;
     transitionName: string;
 }
-const { description, label, transitionName } = Astro.props;
+const { description, label } = Astro.props;
 const summary = description?.trim();
 ---
 
 {summary && (
-    <aside
-        class="stalux-article-summary"
-        data-stalux-motion-content
-        aria-label={label}
-        transition:name={transitionName}
-        transition:animate="none"
-    >
+    <aside class="stalux-article-summary" data-stalux-motion-content aria-label={label}>
         <p class="stalux-article-summary-label">{label}</p>
         <p class="stalux-article-summary-text">{summary}</p>
     </aside>

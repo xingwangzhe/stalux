@@ -127,9 +127,7 @@ const archiveYears = [...archivesByYearMonth.entries()]
 
 <script>
 import { mountArchiveDescriptions } from "../../../scripts/archive-descriptions";
-import { mountArchiveReveal } from "../../../scripts/archive-reveal";
 import { registerPageLifecycle } from "../../../scripts/page-runtime";
 
-registerPageLifecycle("archive-reveal", mountArchiveReveal);
 registerPageLifecycle("archive-descriptions", mountArchiveDescriptions);
 </script>

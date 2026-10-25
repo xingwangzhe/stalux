@@ -16,7 +16,12 @@ it("decodes before fading, waits for content motion and ignores superseded prepa
         b: { style: { opacity: "0", backgroundImage: "" } },
     };
     const decode: Array<() => void> = [];
-    vi.stubGlobal("window", { __STALUX_BG_URLS__: ["/background/one.svg"] });
+    vi.stubGlobal("window", {
+        __STALUX_BG_URLS__: ["/background/one.svg"],
+        innerWidth: 1440,
+        innerHeight: 900,
+        matchMedia: () => ({ matches: false }),
+    });
     vi.stubGlobal("document", document);
     vi.stubGlobal("navigator", { connection: {} });
     vi.stubGlobal(
@@ -59,7 +64,7 @@ it("decodes before fading, waits for content motion and ignores superseded prepa
     expect(layers.b.style.backgroundImage).toBe("url('/background/one.svg')");
 });
 
-it("keeps decoded backgrounds out of the shared content animation", async () => {
+it("keeps decoded backgrounds out of the shared heading animation", async () => {
     const layers = {
         a: { style: { opacity: "1", backgroundImage: "url(old.svg)" } },
         b: { style: { opacity: "0", backgroundImage: "" } },
@@ -68,7 +73,12 @@ it("keeps decoded backgrounds out of the shared content animation", async () => 
         body: { dataset: { staluxBgIndex: "0" } },
         querySelector: (selector: string) => (selector.includes('"a"') ? layers.a : layers.b),
     });
-    vi.stubGlobal("window", { __STALUX_BG_URLS__: ["/background/one.svg"] });
+    vi.stubGlobal("window", {
+        __STALUX_BG_URLS__: ["/background/one.svg"],
+        innerWidth: 1440,
+        innerHeight: 900,
+        matchMedia: () => ({ matches: false }),
+    });
     vi.stubGlobal("document", document);
     vi.stubGlobal("navigator", { connection: {} });
     vi.stubGlobal(
@@ -87,17 +97,32 @@ it("keeps decoded backgrounds out of the shared content animation", async () => 
     });
     document.dispatchEvent(new Event("astro:before-preparation"));
     const swap = Object.assign(new Event("astro:before-swap"), {
-        viewTransition: { ready: Promise.resolve(), finished: Promise.resolve() },
+        signal: new AbortController().signal,
     });
     document.dispatchEvent(swap);
+    const cancel = vi.fn();
+    const animate = vi.fn(() => ({ finished: content, cancel }));
     prepareRouteMotion(swap).start({
-        animate: () => ({ finished: content, cancel: vi.fn() }),
+        animate,
+        isConnected: true,
+        hasAttribute: (name: string) => name === "data-stalux-motion-focus",
+        getBoundingClientRect: () => ({
+            width: 300,
+            height: 50,
+            top: 100,
+            bottom: 150,
+            left: 0,
+            right: 300,
+        }),
     } as unknown as HTMLElement);
     document.dispatchEvent(new Event("astro:page-load"));
     for (let tick = 0; tick < 10; tick++) await Promise.resolve();
+    expect(animate).toHaveBeenCalledOnce();
+    expect(cancel).not.toHaveBeenCalled();
     expect(layers.b.style.opacity).toBe("0");
     finishContent();
     for (let tick = 0; tick < 10; tick++) await Promise.resolve();
+    expect(cancel).toHaveBeenCalledOnce();
     expect(layers.b.style.opacity).toBe("1");
 });
 

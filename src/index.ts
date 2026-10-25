@@ -163,7 +163,26 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             config.build.inlineStylesheets === "always" ? "always" : "never",
                     },
                     vite: {
-                        optimizeDeps: { exclude: ["@mcp-b/webmcp-polyfill"] },
+                        optimizeDeps: {
+                            exclude: ["@mcp-b/webmcp-polyfill"],
+                            // Discover lazy page features before the first visit:
+                            // Vite re-optimization would otherwise reload the
+                            // entire document midway through a Swup navigation.
+                            include: [
+                                "swup",
+                                "@swup/a11y-plugin",
+                                "@swup/head-plugin",
+                                "@swup/js-plugin",
+                                "@swup/preload-plugin",
+                                "@swup/scroll-plugin",
+                                "@microsoft/clarity",
+                                "@pagefind/component-ui",
+                                "@waline/client",
+                                "@xingwangzhe/tags-cloud",
+                                "photoswipe",
+                                "photoswipe/lightbox",
+                            ],
+                        },
                         css: { lightningcss: { targets: modernCssTargets } },
                         build: {
                             target: config.vite.build?.target ?? "esnext",

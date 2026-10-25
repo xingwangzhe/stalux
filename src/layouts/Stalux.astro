@@ -91,20 +91,10 @@ const routeKind = getRouteKind(Astro.url.pathname);
         data-stalux-umami-id={headConfig?.umami?.id}
         data-stalux-umami-url={headConfig?.umami?.url}
     >
-        <header
-            class="stalux-site-header"
-            data-stalux-font-group="header"
-            transition:name="stalux-site-header"
-            transition:animate="none"
-            transition:persist="stalux-site-header"
-        >
+        <header class="stalux-site-header" data-stalux-font-group="header">
             <Navs />
         </header>
-        <div
-            data-stalux-scroll-sentinel
-            transition:persist="stalux-scroll-sentinel"
-            aria-hidden="true"
-        ></div>
+        <div data-stalux-scroll-sentinel aria-hidden="true"></div>
         {llmPromote && (
             <section class="stalux-ai-prompt" data-stalux-ai-prompt aria-label="AI site context">
                 <p>{llmPromote}</p>
@@ -114,15 +104,9 @@ const routeKind = getRouteKind(Astro.url.pathname);
             class="bg-layer bg-a"
             data-stalux-background="a"
             style="opacity: 1;"
-            transition:persist="stalux-bg-a"
             aria-hidden="true"
         ></div>
-        <div
-            class="bg-layer bg-b"
-            data-stalux-background="b"
-            transition:persist="stalux-bg-b"
-            aria-hidden="true"
-        ></div>
+        <div class="bg-layer bg-b" data-stalux-background="b" aria-hidden="true"></div>
         <main class="stalux-main" data-stalux-route={routeKind}>
             <slot />
         </main>

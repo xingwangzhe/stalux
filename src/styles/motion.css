@@ -7,91 +7,8 @@
     }
 }
 
-/* 共享列表入场动画延迟 — 由 Stalux.astro 全局导入 */
-
-.stagger-children > *:nth-child(1) {
-    animation-delay: 0.1s;
-}
-.stagger-children > *:nth-child(2) {
-    animation-delay: 0.15s;
-}
-.stagger-children > *:nth-child(3) {
-    animation-delay: 0.2s;
-}
-.stagger-children > *:nth-child(4) {
-    animation-delay: 0.25s;
-}
-.stagger-children > *:nth-child(5) {
-    animation-delay: 0.3s;
-}
-.stagger-children > *:nth-child(n + 6) {
-    animation-delay: 0.35s;
-}
-
-/* Only a bounded heading is captured by native VT. Long article/list content
-   stays in the live DOM; sidebars, navigation, footer and backgrounds stay put. */
-html,
-[data-astro-transition-persist],
-.stalux-main,
-.stalux-main *,
-.bg-layer,
-.bg-layer *,
-[data-stalux-scroll-sentinel],
-[data-stalux-back-to-top] {
-    view-transition-name: none !important;
-}
-
-html[data-stalux-vt-preset] {
-    --stalux-vt-duration: 160ms;
-    --stalux-vt-distance: clamp(28px, 4vw, 40px);
-    --stalux-vt-tilt: 8deg;
-    --stalux-vt-x: var(--stalux-vt-distance);
-    --stalux-vt-y: 0px;
-    --stalux-vt-rx: 0deg;
-    --stalux-vt-ry: 0deg;
-    --stalux-vt-rz: -0.35deg;
-    --stalux-vt-scale: 1;
-}
-
-html[data-stalux-vt-preset]:not([data-stalux-vt-preset="none"]) [data-stalux-motion-focus] {
-    view-transition-name: stalux-focus !important;
-}
-
-::view-transition {
-    pointer-events: none;
-}
-::view-transition-group(stalux-focus) {
-    animation: none !important;
-}
-::view-transition-old(stalux-focus) {
-    display: none;
-    animation: none !important;
-}
-::view-transition-new(stalux-focus) {
-    mix-blend-mode: normal;
-    transform-origin: 50% 50%;
-    backface-visibility: hidden;
-    animation: stalux-content-in var(--stalux-vt-duration, 160ms) cubic-bezier(0.22, 0.7, 0.2, 1)
-        both paused;
-}
-
-/* The incoming document starts paused, before it can be painted. Native ready
-   releases both the small heading and live content in the same style update. */
-html[data-stalux-vt-phase="prepared"] [data-stalux-motion-content],
-html[data-stalux-vt-phase="running"] [data-stalux-motion-content] {
-    transform-origin: 50% min(42vh, 400px);
-    backface-visibility: hidden;
-    animation: stalux-content-in var(--stalux-vt-duration, 160ms) cubic-bezier(0.22, 0.7, 0.2, 1)
-        both paused;
-}
-html[data-stalux-vt-phase="running"] [data-stalux-motion-content],
-html[data-stalux-vt-phase="running"]::view-transition-new(stalux-focus) {
-    animation-play-state: running;
-}
-html[data-stalux-vt-phase] .stalux-article {
-    /* Clip a sliding paragraph at its reading card, without a scroll container. */
-    overflow: clip;
-}
+/* Swup's JS plugin animates one visible heading through route-motion.ts.
+   There is no full-page snapshot, waiting body, stagger or native VT layer. */
 [data-stalux-home-content] {
     display: flex;
     flex-direction: column;
@@ -99,104 +16,6 @@ html[data-stalux-vt-phase] .stalux-article {
     width: 100%;
 }
 
-/* Reading follows a horizontal page sequence; prev/next articles are siblings
-   in that sequence, so they keep a lateral glide. Vertical travel is reserved
-   for hierarchical moves (list -> detail, back up to the archive). A slower
-   260ms window keeps the longer sibling travel legible instead of abrupt. */
-html[data-stalux-vt-preset="enter"] {
-    --stalux-vt-x: calc(var(--stalux-vt-distance) * 1.25);
-    --stalux-vt-rz: 0deg;
-}
-html[data-stalux-vt-preset="article"] {
-    --stalux-vt-duration: 260ms;
-    --stalux-vt-distance: clamp(36px, 5vw, 56px);
-    --stalux-vt-x: calc(var(--stalux-vt-distance) * 1.25);
-    --stalux-vt-rz: 0deg;
-}
-html[data-stalux-vt-preset="next"] {
-    --stalux-vt-duration: 260ms;
-    --stalux-vt-distance: clamp(36px, 5vw, 56px);
-    --stalux-vt-x: calc(var(--stalux-vt-distance) * 1.5);
-    --stalux-vt-rz: 0deg;
-}
-html[data-stalux-vt-preset="previous"] {
-    --stalux-vt-duration: 260ms;
-    --stalux-vt-distance: clamp(36px, 5vw, 56px);
-    --stalux-vt-x: calc(var(--stalux-vt-distance) * -1.5);
-    --stalux-vt-rz: 0deg;
-}
-html[data-stalux-vt-preset="up"] {
-    --stalux-vt-duration: 140ms;
-    --stalux-vt-x: calc(var(--stalux-vt-distance) * -0.75);
-    --stalux-vt-y: -10px;
-    --stalux-vt-rz: 0deg;
-}
-html[data-stalux-vt-preset="taxonomy"] {
-    --stalux-vt-duration: 140ms;
-    --stalux-vt-x: 0px;
-    --stalux-vt-y: 18px;
-    --stalux-vt-rx: calc(var(--stalux-vt-tilt) * -0.5);
-    --stalux-vt-rz: 0deg;
-}
-html[data-stalux-vt-preset="panel"] {
-    --stalux-vt-x: calc(var(--stalux-vt-distance) * 0.6);
-    --stalux-vt-ry: calc(var(--stalux-vt-tilt) * -1);
-    --stalux-vt-rz: 0deg;
-}
-html[data-stalux-vt-preset="panel"][data-stalux-vt-to="links"] {
-    --stalux-vt-x: 0px;
-    --stalux-vt-y: 12px;
-    --stalux-vt-rx: calc(var(--stalux-vt-tilt) * 0.75);
-    --stalux-vt-ry: 0deg;
-}
-html[data-stalux-vt-preset="panel"][data-stalux-vt-to="words"] {
-    --stalux-vt-x: 0px;
-    --stalux-vt-y: 16px;
-    --stalux-vt-ry: 0deg;
-    --stalux-vt-rz: -1deg;
-}
-html[data-stalux-vt-preset="home"] {
-    --stalux-vt-duration: 180ms;
-    --stalux-vt-x: 0px;
-    --stalux-vt-y: 20px;
-    --stalux-vt-rx: calc(var(--stalux-vt-tilt) * -0.625);
-    --stalux-vt-rz: 0deg;
-    --stalux-vt-scale: 0.985;
-}
-/* History restores the actual reading position. Small mirrored translation
-   signals direction without re-playing the page-entry tilt at a deep scroll. */
-html[data-stalux-vt-preset="restore"] {
-    --stalux-vt-duration: 100ms;
-    --stalux-vt-x: 12px;
-    --stalux-vt-rz: 0deg;
-}
-html[data-stalux-vt-preset="restore"][data-stalux-vt-direction="back"],
-html[data-stalux-vt-preset="restore"][data-stalux-vt-direction="backward"] {
-    --stalux-vt-x: -12px;
-}
-html[data-stalux-vt-preset="error"] {
-    --stalux-vt-duration: 120ms;
-    --stalux-vt-x: 0px;
-    --stalux-vt-y: 12px;
-    --stalux-vt-rz: -0.7deg;
-}
-
-@keyframes stalux-content-in {
-    from {
-        opacity: 0.25;
-        transform: perspective(1200px) translate3d(var(--stalux-vt-x), var(--stalux-vt-y), 0)
-            rotateX(var(--stalux-vt-rx)) rotateY(var(--stalux-vt-ry)) rotateZ(var(--stalux-vt-rz))
-            scale(var(--stalux-vt-scale));
-    }
-    55% {
-        opacity: 1;
-    }
-    to {
-        opacity: 1;
-        transform: perspective(1200px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg)
-            rotateZ(0deg) scale(1);
-    }
-}
 /* Public transition helpers retain their names as opacity-only compatibility
    frames. Theme layouts no longer use them to move large content/sidebars. */
 @keyframes stalux-page-exit {
@@ -330,35 +149,7 @@ html[data-stalux-vt-preset="error"] {
     pointer-events: none;
 }
 
-/* Phone routes keep direction and depth with smaller travel/angles. */
-@media (max-width: 768px) {
-    html[data-stalux-vt-preset]:not([data-stalux-vt-preset="none"]) {
-        --stalux-vt-distance: 20px;
-        --stalux-vt-tilt: 4deg;
-    }
-    html[data-stalux-vt-preset="restore"] {
-        --stalux-vt-x: 8px;
-    }
-    html[data-stalux-vt-preset="restore"][data-stalux-vt-direction="back"],
-    html[data-stalux-vt-preset="restore"][data-stalux-vt-direction="backward"] {
-        --stalux-vt-x: -8px;
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
-    html[data-stalux-vt-preset],
-    html[data-stalux-vt-preset] [data-astro-transition-persist] {
-        view-transition-name: none !important;
-    }
-
-    ::view-transition-group(*),
-    ::view-transition-old(*),
-    ::view-transition-new(*) {
-        animation: none !important;
-        filter: none !important;
-        transform: none !important;
-    }
-
     .stalux-main,
     .stalux-main *,
     .postLayout * {

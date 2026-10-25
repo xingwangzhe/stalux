@@ -29,15 +29,10 @@ const tocItems = headings
     }));
 ---
 
-<nav
-    transition:name="toc-container"
-    transition:animate="none"
-    data-toc-active-class="stalux-toc-active"
-    aria-label={t("taxonomy.toc")}
->
+<nav data-toc-active-class="stalux-toc-active" aria-label={t("taxonomy.toc")}>
     <h3 class="stalux-toc-title">{title}</h3>
     {tocItems.length > 0 ? (
-        <ul class="stalux-toc-list" transition:name="toc-content" transition:animate="fade">
+        <ul class="stalux-toc-list">
             {tocItems.map((heading) => (
                 <li>
                     <a
@@ -51,9 +46,7 @@ const tocItems = headings
             ))}
         </ul>
     ) : (
-        <div class="stalux-toc-empty" transition:name="toc-content" transition:animate="fade">
-            {t("taxonomy.noToc")}
-        </div>
+        <div class="stalux-toc-empty">{t("taxonomy.noToc")}</div>
     )}
 </nav>
 

@@ -3,34 +3,16 @@ import "../../../styles/generated-article.css";
 import SocialMedia from "@components/stalux/links/socialMedia.astro";
 import PostAuthor from "@components/stalux/posts/postAuthor.astro";
 import RandomPost from "@components/stalux/posts/randomPost.astro";
-
-import { getSidebarAnimation } from "@utils/view-transitions";
 ---
 
-<aside
-    class="stalux-sidebar"
-    transition:name="left-sidebar"
-    transition:animate={getSidebarAnimation("left")}
->
-    <div
-        class="stalux-sidebar-container"
-        transition:name="stalux-article-left-author"
-        transition:animate="fade"
-    >
+<aside class="stalux-sidebar">
+    <div class="stalux-sidebar-container">
         <PostAuthor />
     </div>
-    <div
-        class="stalux-sidebar-container"
-        transition:name="stalux-article-left-social"
-        transition:animate="fade"
-    >
+    <div class="stalux-sidebar-container">
         <SocialMedia />
     </div>
-    <div
-        class="stalux-sidebar-container"
-        transition:name="stalux-article-left-random"
-        transition:animate="fade"
-    >
+    <div class="stalux-sidebar-container">
         <RandomPost />
     </div>
 </aside>

@@ -1,7 +1,6 @@
 ---
 import { Font } from "astro:assets";
 import { getCollection } from "astro:content";
-import { ClientRouter } from "astro:transitions";
 // Emit a stable asset even while the search component JavaScript stays lazy.
 // The closed search dialog does not need to block the page's first paint.
 import pagefindStyles from "virtual:stalux-search-style";
@@ -54,7 +53,6 @@ const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
 
 <head>
     <meta charset="utf-8">
-    <ClientRouter fallback="swap" />
     <SEO
         title={seo.title}
         description={seo.description}

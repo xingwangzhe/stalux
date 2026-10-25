@@ -7,8 +7,14 @@ function scrollToWord(hash: string): void {
         highlighted.removeAttribute("data-glow");
     }
     element.dataset.glow = "";
-    element.scrollIntoView({ behavior: "smooth", block: "center" });
-    history.replaceState(null, "", hash);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    element.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "center" });
+    // Keep Swup's source/index so back from another page can restore this entry.
+    history.replaceState(
+        { ...history.state, url: `${location.pathname}${location.search}${hash}` },
+        "",
+        hash,
+    );
 }
 
 registerPageLifecycle("word-list", () => {
@@ -17,7 +23,7 @@ registerPageLifecycle("word-list", () => {
     let firstFrame = 0;
     let secondFrame = 0;
 
-    if (location.hash.startsWith("#word-")) {
+    if (location.hash.startsWith("#word-") && !window.swup?.visit.history.popstate) {
         firstFrame = requestAnimationFrame(() => {
             firstFrame = 0;
             secondFrame = requestAnimationFrame(() => {

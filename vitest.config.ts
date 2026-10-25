@@ -22,7 +22,6 @@ export default getViteConfig({
                 "src/scripts/pagefind-api.ts",
                 "src/utils/site-path.ts",
                 "src/scripts/back-to-top.ts",
-                "src/scripts/archive-reveal.ts",
                 "src/scripts/archive-descriptions.ts",
                 "src/scripts/typewriter.ts",
                 "src/scripts/weather.ts",

@@ -51,12 +51,7 @@ const totalWordCount = await getTotalWordCount(Astro.logger);
 const formattedWordCount = formatWordCount(totalWordCount, siteConfig.lang || "zh-CN");
 ---
 
-<footer
-    class="stalux-footer stalux-u-w-full stalux-u-text-center"
-    data-stalux-font-group="footer"
-    transition:persist="stalux-site-footer"
-    transition:persist-props
->
+<footer class="stalux-footer stalux-u-w-full stalux-u-text-center" data-stalux-font-group="footer">
     <div class="stalux-footer-content stalux-u-flex stalux-u-flex-col">
         <!-- 版权信息 -->
         {footerConfig?.copyright?.enabled && (
