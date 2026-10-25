@@ -12,6 +12,7 @@ export interface RouteMotionEvent {
 
 export interface RouteMotionOptions {
     skip?: boolean;
+    content?: boolean;
     preset?: RouteMotionPreset;
     browserMotion?: boolean;
 }
@@ -30,8 +31,8 @@ interface HeadingMotion {
     y?: number;
 }
 
-// F / E / U / T / S / L / R / X from the route design. Only the incoming
-// heading moves; article prose, lists, sidebars and the persistent shell do not.
+// Legacy heading cues remain available to integrations. The router requests
+// one content animation; it never stacks a second animation on the heading.
 const headingMotions: Record<Exclude<RouteMotionPreset, "none">, HeadingMotion> = {
     glide: { opacity: 0.86, duration: 100 },
     article: { opacity: 0.86, duration: 100 },
@@ -76,7 +77,7 @@ function isVisibleHeading(heading: HTMLElement): boolean {
     );
 }
 
-/** Share Swup's actual heading animation with background and analytics consumers. */
+/** Share Swup's actual content animation with background and analytics consumers. */
 export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
     const native = event.viewTransition;
     const key = native ?? event;
@@ -132,29 +133,32 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
                 if (
                     !heading ||
                     preset === "none" ||
+                    (options?.content && preset === "restore") ||
                     options?.skip ||
                     options?.browserMotion ||
                     document.hidden ||
                     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ||
                     typeof heading.animate !== "function" ||
-                    !isVisibleHeading(heading) ||
+                    !(options?.content ? heading.isConnected : isVisibleHeading(heading)) ||
                     (mobile && preset === "restore")
                 ) {
                     animationDone.resolve();
                     return;
                 }
-                const spec = headingMotions[preset];
+                const spec = options?.content
+                    ? { opacity: 0, duration: mobile ? 180 : 220, y: mobile ? 8 : 16 }
+                    : headingMotions[preset];
                 const keyframes: PropertyIndexedKeyframes = { opacity: [spec.opacity, 1] };
-                // Phone routes use the specified pure fade. Unrelated article
-                // links also fade: lateral motion requires explicit prev/next.
-                if (!mobile && (spec.x || spec.y)) {
+                // Content uses a short vertical entry on both breakpoints. Legacy
+                // heading cues retain their motionless phone fallback.
+                if ((options?.content || !mobile) && (spec.x || spec.y)) {
                     keyframes.transform = [
                         `translate3d(${spec.x ?? 0}px, ${spec.y ?? 0}px, 0)`,
                         "translate3d(0px, 0px, 0)",
                     ];
                 }
                 animation = heading.animate(keyframes, {
-                    duration: mobile ? 80 : spec.duration,
+                    duration: options?.content ? spec.duration : mobile ? 80 : spec.duration,
                     easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
                     fill: "both",
                 });

@@ -55,7 +55,26 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
         activeLink = link;
         if (link && !sidebarHovered) {
             link.classList.add(activeClass);
-            link.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            // Scroll only the TOC pane. scrollIntoView also scrolls the page,
+            // fighting anchor navigation and the reader's wheel/touch input.
+            const scrollPane = sidebar?.closest<HTMLElement>("[data-stalux-scroll-pane]");
+            if (scrollPane) {
+                const item = link.getBoundingClientRect();
+                const pane = scrollPane.getBoundingClientRect();
+                const delta =
+                    item.top < pane.top
+                        ? item.top - pane.top
+                        : item.bottom > pane.bottom
+                          ? item.bottom - pane.bottom
+                          : 0;
+                if (delta)
+                    scrollPane.scrollTo({
+                        top: scrollPane.scrollTop + delta,
+                        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                            ? "instant"
+                            : "smooth",
+                    });
+            }
         } else if (link) {
             // 用户正在操作侧边栏时只高亮，不自动滚动
             link.classList.add(activeClass);
@@ -107,19 +126,7 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
 
     for (const h of headings) observer.observe(h);
 
-    // 拦截 TOC 锚点点击，替换为平滑滚动
-    for (const link of tocLinks) {
-        link.addEventListener(
-            "click",
-            (event) => {
-                event.preventDefault();
-                const id = link.getAttribute("href")?.replace("#", "");
-                const target = id ? document.getElementById(id) : null;
-                target?.scrollIntoView({ behavior: "smooth", block: "start" });
-            },
-            { signal: controller.signal },
-        );
-    }
+    // Swup owns anchor scrolling, history and interruption for TOC links too.
 
     return () => {
         controller.abort();

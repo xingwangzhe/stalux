@@ -288,3 +288,31 @@ describe("shared route motion", () => {
         expect(content.animate).not.toHaveBeenCalled();
     });
 });
+
+describe("content entry motion", () => {
+    it.each([false, true])("animates one content surface on phone=%s", async (phone) => {
+        vi.stubGlobal("window", {
+            matchMedia: (query: string) => ({ matches: phone && query === "(max-width: 768px)" }),
+        });
+        const content = animation({ height: 8000 });
+        const motion = prepareRouteMotion({});
+        motion.start(content.main, { content: true, preset: "article" });
+        expect(content.animate).toHaveBeenCalledWith(
+            {
+                opacity: [0, 1],
+                transform: [`translate3d(0px, ${phone ? 8 : 16}px, 0)`, "translate3d(0px, 0px, 0)"],
+            },
+            expect.objectContaining({ duration: phone ? 180 : 220 }),
+        );
+        content.done.resolve();
+        await motion.finished;
+        expect(content.cancel).toHaveBeenCalledOnce();
+    });
+    it("preserves history reading position without a content entry", async () => {
+        const content = animation();
+        const motion = prepareRouteMotion({});
+        motion.start(content.main, { content: true, preset: "restore" });
+        await motion.finished;
+        expect(content.animate).not.toHaveBeenCalled();
+    });
+});

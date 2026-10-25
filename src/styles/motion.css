@@ -214,3 +214,8 @@
         }
     }
 }
+
+/* Hide only the new content between DOM replacement and its first motion frame. */
+html[data-stalux-motion-pending] main[data-stalux-route] {
+    opacity: 0;
+}

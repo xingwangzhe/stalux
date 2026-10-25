@@ -80,3 +80,49 @@ describe("TOC observer candidates", () => {
         expect(disconnect).toHaveBeenCalledOnce();
     });
 });
+
+it("keeps directory tracking inside its scroll pane and leaves anchor clicks to Swup", () => {
+    let observerCallback: IntersectionObserverCallback = () => {};
+    let tick: FrameRequestCallback = () => {};
+    const pane = {
+        scrollTop: 200,
+        getBoundingClientRect: () => ({ top: 20, bottom: 300 }),
+        scrollTo: vi.fn(),
+    };
+    const sidebar = Object.assign(new EventTarget(), { closest: () => pane });
+    const heading = { id: "part", getBoundingClientRect: () => ({ top: 50, bottom: 80 }) };
+    const link = Object.assign(new EventTarget(), {
+        getAttribute: () => "#part",
+        closest: () => sidebar,
+        classList: { add: vi.fn(), remove: vi.fn() },
+        getBoundingClientRect: () => ({ top: 350, bottom: 380 }),
+        scrollIntoView: vi.fn(),
+    });
+    const listener = vi.spyOn(link, "addEventListener");
+    vi.stubGlobal("document", { querySelectorAll: () => [link], getElementById: () => heading });
+    vi.stubGlobal("window", { innerHeight: 1000, matchMedia: () => ({ matches: false }) });
+    vi.stubGlobal(
+        "IntersectionObserver",
+        class {
+            constructor(cb: IntersectionObserverCallback) {
+                observerCallback = cb;
+            }
+            observe() {}
+            disconnect() {}
+        },
+    );
+    vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
+        tick = cb;
+        return 1;
+    });
+    const cleanup = initTocScrollSpy("active");
+    observerCallback(
+        [{ target: heading, isIntersecting: true }] as unknown as IntersectionObserverEntry[],
+        {} as IntersectionObserver,
+    );
+    tick(0);
+    expect(pane.scrollTo).toHaveBeenCalledWith({ top: 280, behavior: "smooth" });
+    expect(link.scrollIntoView).not.toHaveBeenCalled();
+    expect(listener).not.toHaveBeenCalled();
+    cleanup?.();
+});

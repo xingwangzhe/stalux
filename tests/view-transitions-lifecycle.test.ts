@@ -1,3 +1,5 @@
+vi.mock("../src/scripts/route-out", () => ({ animateRouteOut: vi.fn(async () => () => {}) }));
+
 import type { Options as ScrollOptions } from "@swup/scroll-plugin";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RouteMotion, RouteMotionEvent } from "../src/scripts/route-motion";
@@ -234,7 +236,7 @@ beforeEach(async () => {
         activeElement: null as Anchor | null,
         querySelectorAll: () => [] as Anchor[],
         querySelector: (selector: string) =>
-            selector === "[data-stalux-motion-focus]" ? heading : null,
+            selector === "main[data-stalux-route]" ? heading : null,
         startViewTransition: vi.fn(),
     });
     windowMock = Object.assign(new EventTarget(), {
@@ -306,8 +308,8 @@ describe("Swup navigation bridge and persistent shell", () => {
         if (!scroll) throw new Error("Missing custom ScrollPlugin scrollFunction");
         expect(state.scrollOptions?.animateScroll).toEqual({
             betweenPages: false,
-            samePageWithHash: false,
-            samePage: false,
+            samePageWithHash: true,
+            samePage: true,
         });
         const order: string[] = [];
         const element = Object.assign(new EventTarget(), {
@@ -408,10 +410,10 @@ describe("Swup navigation bridge and persistent shell", () => {
         expect(finished).toBe(false);
         expect(heading.animate).toHaveBeenCalledWith(
             {
-                opacity: [0.86, 1],
-                transform: ["translate3d(0px, 6px, 0)", "translate3d(0px, 0px, 0)"],
+                opacity: [0, 1],
+                transform: ["translate3d(0px, 16px, 0)", "translate3d(0px, 0px, 0)"],
             },
-            { duration: 140, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
+            { duration: 220, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
         );
         animationFinished.resolve();
         await incoming;

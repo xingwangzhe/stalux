@@ -11,6 +11,8 @@ import { prepareNavigationFont } from "./navigation-font";
 import "./navigation-client";
 import { prepareNavigationScripts } from "./navigation-scripts";
 import { prepareRouteMotion, type RouteMotion } from "./route-motion";
+import { animateRouteOut } from "./route-out";
+import { cancelPageScroll, scrollPage } from "./smooth-scroll";
 
 interface NavigationContext {
     controller: AbortController;
@@ -25,6 +27,7 @@ interface NavigationContext {
     executeScripts?: (signal?: AbortSignal) => Promise<void>;
     scriptsReady?: Promise<void>;
     obsoleteStyles: Element[];
+    releaseOutgoing?: () => void;
 }
 
 type Position = { top: number; left: number; focus?: string };
@@ -51,6 +54,7 @@ function dispatchNavigation(name: string, context: NavigationContext, nextDocume
 }
 
 function clearMotionState(): void {
+    delete document.documentElement.dataset.staluxMotionPending;
     for (const key of ["staluxVtFrom", "staluxVtTo", "staluxVtDirection", "staluxVtPreset"])
         delete document.documentElement.dataset[key];
 }
@@ -66,15 +70,8 @@ export function installSwupRouter(): Swup {
     let browserMotion = false;
     const scroll = new SwupScrollPlugin({
         doScrollingRightAway: false,
-        animateScroll: { betweenPages: false, samePageWithHash: false, samePage: false },
-        // ScrollPlugin's default callback adds one-shot wheel/scrollend
-        // listeners even for instant/no-op scrolls. Those events may never fire
-        // while navigating at the top, retaining two listeners per page visit.
-        scrollFunction: (element, top, left, _animate, start, end) => {
-            start();
-            element.scrollTo({ top, left, behavior: "instant" });
-            end();
-        },
+        animateScroll: { betweenPages: false, samePageWithHash: true, samePage: true },
+        scrollFunction: scrollPage,
     });
 
     window.addEventListener(
@@ -128,14 +125,12 @@ export function installSwupRouter(): Swup {
                         in: async (_done, { visit }) => {
                             const context = contexts.get(visit);
                             if (!context?.motion) return;
-                            context.motion.start(
-                                document.querySelector<HTMLElement>("[data-stalux-motion-focus]"),
-                                {
-                                    preset: context.preset,
-                                    browserMotion: context.browserMotion,
-                                    skip: context.controller.signal.aborted,
-                                },
-                            );
+                            context.motion.start(document.querySelector<HTMLElement>(MAIN), {
+                                preset: context.preset,
+                                content: true,
+                                browserMotion: context.browserMotion,
+                                skip: context.controller.signal.aborted,
+                            });
                             await context.motion.finished;
                         },
                     },
@@ -160,6 +155,7 @@ export function installSwupRouter(): Swup {
     );
 
     swup.hooks.on("visit:start", (visit) => {
+        cancelPageScroll();
         const focused = document.activeElement;
         const focus =
             focused instanceof HTMLAnchorElement
@@ -252,6 +248,17 @@ export function installSwupRouter(): Swup {
         const next = visit.to.document;
         if (!context || !next || !replace) throw new Error("Missing Swup document");
         if (context.controller.signal.aborted) return;
+        // Keep the old page readable until HTML, styles and fonts are ready.
+        if (context.navigationType !== "traverse" && context.preset !== "none") {
+            context.releaseOutgoing = await animateRouteOut(
+                document.querySelector<HTMLElement>(MAIN),
+                context.controller.signal,
+            );
+            if (context.controller.signal.aborted || visit !== swup.visit) {
+                context.releaseOutgoing();
+                return;
+            }
+        }
         const html = document.documentElement;
         html.dataset.staluxVtFrom = getRouteKind(context.from.pathname);
         html.dataset.staluxVtTo = getRouteKind(context.to.pathname);
@@ -259,7 +266,10 @@ export function installSwupRouter(): Swup {
         html.dataset.staluxVtPreset = context.preset;
         context.motion = prepareRouteMotion(dispatchNavigation("astro:before-swap", context, next));
         if (context.controller.signal.aborted) return;
+        if (context.navigationType !== "traverse" && context.preset !== "none")
+            html.dataset.staluxMotionPending = "";
         await replace(visit, args);
+        context.releaseOutgoing?.();
         if (context.controller.signal.aborted) return;
         for (const element of context.obsoleteStyles) element.remove();
         const incomingStyles = [...next.head.querySelectorAll("style,link[rel=stylesheet]")];
@@ -315,8 +325,11 @@ export function installSwupRouter(): Swup {
 
     function startMotion(visit: Visit): void {
         const context = contexts.get(visit);
-        context?.motion?.start(document.querySelector<HTMLElement>("[data-stalux-motion-focus]"), {
+        if (!context || context !== activeContext || visit !== swup.visit) return;
+        delete document.documentElement.dataset.staluxMotionPending;
+        context?.motion?.start(document.querySelector<HTMLElement>(MAIN), {
             preset: context.preset,
+            content: true,
             skip: !visit.animation.animate || context.controller.signal.aborted,
             browserMotion: context.browserMotion,
         });
@@ -335,6 +348,7 @@ export function installSwupRouter(): Swup {
     const cancel = (visit: Visit) => {
         const context = contexts.get(visit);
         context?.controller.abort();
+        context?.releaseOutgoing?.();
         context?.motion?.cancel();
         if (context === activeContext) {
             clearMotionState();
@@ -346,6 +360,7 @@ export function installSwupRouter(): Swup {
     swup.hooks.on("visit:fail", cancel);
     swup.hooks.on("visit:end", (visit) => {
         const context = contexts.get(visit);
+        context?.releaseOutgoing?.();
         context?.motion?.start(null, { skip: true });
         if (activeContext === context) {
             clearMotionState();
