@@ -92,9 +92,15 @@ function prepareBackground(): Promise<number | undefined> {
     );
 }
 
+let firstCommitStarted = false;
+
 function initializeBackground(): void {
     const active = getLayerEl(getActiveLayer());
     if (!prepared && active?.style.backgroundImage) return;
+    // 首访的早提交已经发起，但解码还没落地：此时 window.load 上的 page-load
+    // 不是新页面，不能再解码并淡入第二张。
+    if (!prepared && firstCommitStarted) return;
+    if (!prepared) firstCommitStarted = true;
     const current = generation;
     const ready = prepared ?? prepareBackground();
     prepared = undefined;
@@ -119,4 +125,9 @@ if (!(window as Window & { __STALUX_BG_LISTENER__?: boolean }).__STALUX_BG_LISTE
         transitionFinished = prepareRouteMotion(event as RouteMotionEvent).finished;
     });
     document.addEventListener("astro:page-load", initializeBackground);
+    // 首访的 page-load 由 window.load 派发，任何慢图片或卡死的第三方资源都会把首屏背景
+    // 拖成一片纯色；文档解析完就提交首张背景，软导航仍由 page-load 负责。
+    const readyState = document.readyState;
+    if (readyState === "interactive" || readyState === "complete") initializeBackground();
+    else document.addEventListener("DOMContentLoaded", initializeBackground, { once: true });
 }

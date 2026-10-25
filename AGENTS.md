@@ -45,7 +45,7 @@
 | `astro:config:setup` | 更新配置、注入路由与脚本、注册 Markdown 插件和 Astro Fonts 配置。此处的 `config` 不能当成所有集成都执行后的最终配置。 |
 | `astro:config:done` | 使用最终 `publicDir` 同步主题背景和数学字体，使用最终 `outDir` 确定正文字体输出位置。资源同步早于开发服务器和生产构建的资源管线，保留不变文件与用户自定义资源。 |
 | `astro:build:done` | 处理已经生成的 HTML、图片尺寸、逐页字体、页面缓存及 Pagefind 索引。 |
-| `astro:page-load` | 通过 `src/scripts/page-runtime.ts` 挂载当前 DOM 的交互；WebMCP 也在此注册当前页工具。晚加载的补偿微任务不能覆盖已经发生的导航事件。 |
+| `astro:page-load` / 文档解析完成 | 通过 `src/scripts/page-runtime.ts` 挂载当前 DOM 的交互；WebMCP 也在此注册当前页工具。首访的 `astro:page-load` 由 `window.load` 派发，要等完所有图片、字体与第三方资源，**不能作为首屏唯一挂载点**：文档解析完成（`readyState` 为 `interactive`/`complete`）即用补偿微任务挂载本页，`page-load` 负责软导航后的新页面与同一页的重复信号（早挂载已接管时不再挂第二次）。晚加载的补偿微任务不能覆盖已经发生的导航事件，同一页也不能挂载两次。 |
 | `astro:before-swap` | 清理页面交互、注销 WebMCP 工具并中止旧页注册批次；等待中的注册完成或失败后不能继续注册后续工具。 |
 
 页面字体由构建期 AST 写入同源 `preload`；软导航在 `astro:before-preparation` 包装原 loader，为目标页字体最多预留 150 毫秒，再进入 swap；会话内最多保留 16 个独立 FontFace，复用进行中或已完成的载入，失败可重试，取消不阻断导航。不得在旧页尚可见时安装目标页 FontFace，也不得无限等待字体。打字区域通过重叠的完整文案预留最大换行高度，时钟行高和滚动条空间必须稳定。

@@ -541,6 +541,35 @@ describe("native analytics navigation", () => {
         expect(host.location.reload).not.toHaveBeenCalled();
     });
 
+    it("reports the first view once the document is parsed instead of waiting for window.load", async () => {
+        const { scripts, doc, page } = environment();
+        Object.assign(doc, { readyState: "interactive" });
+        await loadRuntime();
+        await Promise.resolve();
+        expect(scripts).toHaveLength(1);
+        expect(scripts[0]).toMatchObject({ src: "https://events.vercount.one/js" });
+
+        // window.load 上的 page-load 只是同一页的重复信号，不能再追加一份统计脚本。
+        page();
+        expect(scripts).toHaveLength(1);
+
+        // 软导航照旧换一份新脚本。
+        doc.dispatchEvent(new Event("astro:before-swap"));
+        page();
+        expect(scripts).toHaveLength(1);
+    });
+
+    it("counts one Google view when the early report is followed by page-load", async () => {
+        const { doc, page, host } = environment({ staluxGaId: "G-TEST" });
+        Object.assign(doc, { readyState: "interactive" });
+        const gtag = vi.fn();
+        Object.assign(host, { gtag });
+        await loadRuntime();
+        page();
+        await vi.advanceTimersByTimeAsync(100);
+        expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(1);
+    });
+
     it("reloads an already-open legacy worker session once rather than double-tracking", async () => {
         const { host, scripts, page } = environment({ staluxGaId: "G-TEST" });
         Object.assign(host, { __staluxAnalyticsRuntime: { installed: true } });

@@ -61,6 +61,55 @@ describe("page runtime", () => {
         expect(mount).toHaveBeenCalledOnce();
     });
 
+    it("mounts as soon as the document is parsed and keeps that instance for page-load", () => {
+        // 首访时 astro:page-load 由 window.load 派发；子资源卡住时 readyState 停在
+        // interactive，只认 window.load 会让页面永久空白。
+        const target = new RuntimeTarget();
+        target.readyState = "interactive";
+        const { value, queued } = environment(target);
+        const dispose = vi.fn();
+        const mount = vi.fn(() => dispose);
+        registerPageLifecycle("early", mount, value);
+        expect(queued).toHaveLength(1);
+        queued[0]?.();
+        expect(mount).toHaveBeenCalledOnce();
+
+        target.dispatchEvent(new Event("astro:page-load"));
+        expect(mount).toHaveBeenCalledOnce();
+        expect(dispose).not.toHaveBeenCalled();
+
+        // 下一次软导航仍然照常换挂载。
+        target.dispatchEvent(new Event("astro:before-swap"));
+        expect(dispose).toHaveBeenCalledOnce();
+        target.dispatchEvent(new Event("astro:page-load"));
+        expect(mount).toHaveBeenCalledTimes(2);
+    });
+
+    it("waits for DOMContentLoaded when the document is still parsing", () => {
+        const { target, value, queued } = environment();
+        const mount = vi.fn();
+        registerPageLifecycle("parsing", mount, value);
+        expect(mount).not.toHaveBeenCalled();
+        target.dispatchEvent(new Event("DOMContentLoaded"));
+        queued[0]?.();
+        expect(mount).toHaveBeenCalledOnce();
+        target.dispatchEvent(new Event("astro:page-load"));
+        expect(mount).toHaveBeenCalledOnce();
+    });
+
+    it("does not mount the outgoing DOM when a swap lands before the early mount runs", () => {
+        const target = new RuntimeTarget();
+        target.readyState = "interactive";
+        const { value, queued } = environment(target);
+        const mount = vi.fn();
+        registerPageLifecycle("early-swap", mount, value);
+        target.dispatchEvent(new Event("astro:before-swap"));
+        queued[0]?.();
+        expect(mount).not.toHaveBeenCalled();
+        target.dispatchEvent(new Event("astro:page-load"));
+        expect(mount).toHaveBeenCalledOnce();
+    });
+
     it("is a no-op during server rendering", () => {
         const mount = vi.fn();
         const unregister = registerPageLifecycle("server", mount, undefined);

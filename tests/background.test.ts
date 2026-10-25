@@ -100,3 +100,39 @@ it("keeps decoded backgrounds out of the shared content animation", async () => 
     for (let tick = 0; tick < 10; tick++) await Promise.resolve();
     expect(layers.b.style.opacity).toBe("1");
 });
+
+it("commits one background for a first load that outlives window.load", async () => {
+    const layers = {
+        a: { style: { opacity: "1", backgroundImage: "" } },
+        b: { style: { opacity: "0", backgroundImage: "" } },
+    };
+    const document = Object.assign(new EventTarget(), {
+        // 子资源卡住时 readyState 停在 interactive，window.load 上的 page-load 迟到。
+        readyState: "interactive",
+        body: { dataset: { staluxBgIndex: "0" } },
+        querySelector: (selector: string) => (selector.includes('"a"') ? layers.a : layers.b),
+    });
+    const decode: Array<() => void> = [];
+    vi.stubGlobal("window", { __STALUX_BG_URLS__: ["/background/one.svg", "/background/two.svg"] });
+    vi.stubGlobal("document", document);
+    vi.stubGlobal("navigator", { connection: {} });
+    vi.stubGlobal(
+        "Image",
+        class {
+            decode() {
+                return new Promise<void>((resolve) => decode.push(resolve));
+            }
+        },
+    );
+    await import("../src/scripts/background");
+    expect(decode).toHaveLength(1);
+
+    // 迟到的 page-load 属于同一页，不能再解码并淡入第二张。
+    document.dispatchEvent(new Event("astro:page-load"));
+    expect(decode).toHaveLength(1);
+
+    decode[0]?.();
+    for (let tick = 0; tick < 10; tick++) await Promise.resolve();
+    expect(layers.b.style.opacity).toBe("1");
+    expect(layers.a.style.opacity).toBe("0");
+});

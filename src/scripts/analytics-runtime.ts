@@ -274,6 +274,57 @@ function trackVercountPage(): void {
     document.head.appendChild(script);
 }
 
+/** 文档是否已解析完、DOM 可查询（`loading` 之外的两种状态都算）。 */
+function documentIsParsed(): boolean {
+    const readyState = document.readyState;
+    return readyState === "interactive" || readyState === "complete";
+}
+
+let pendingEarlyView = 0;
+let earlyViewPending = false;
+let viewedEarly = false;
+
+function dispatchPageView(): void {
+    initializeTrackers();
+    trackGooglePage();
+    trackUmamiPage();
+    trackVercountPage();
+    state.previousPage = window.location.href;
+}
+
+/**
+ * 首访在文档解析完成后就上报一次，不等 window.load。
+ * `astro:page-load` 首访时由 window.load 派发，要等完所有图片、字体和第三方资源，
+ * 慢资源或卡死的请求会让页脚统计一直停在 Loading...。上报必须按页去重，
+ * 否则同一次访问会被重复计入、Vercount 也会重复追加脚本。
+ */
+function dispatchEarlyView(): void {
+    const token = ++pendingEarlyView;
+    earlyViewPending = true;
+    queueMicrotask(() => {
+        if (token !== pendingEarlyView || !earlyViewPending) return;
+        earlyViewPending = false;
+        viewedEarly = true;
+        dispatchPageView();
+    });
+}
+
+function handlePageLoad(): void {
+    if (earlyViewPending) {
+        // page-load 属于当前页，由它立即上报，作废排队中的早派发。
+        pendingEarlyView++;
+        earlyViewPending = false;
+        viewedEarly = true;
+        dispatchPageView();
+        return;
+    }
+    if (viewedEarly) {
+        viewedEarly = false;
+        return;
+    }
+    dispatchPageView();
+}
+
 if (state.installed && (!state.native || state.revision !== 4)) {
     // Revision 4 replaces synchronous Google page views and the motion policy.
     // An open tab can cross a deployment boundary. Its old anonymous worker
@@ -284,6 +335,9 @@ if (state.installed && (!state.native || state.revision !== 4)) {
     state.revision = 4;
     state.installed = true;
     document.addEventListener("astro:before-swap", (event) => {
+        pendingEarlyView++;
+        earlyViewPending = false;
+        viewedEarly = false;
         transitionReady = prepareRouteMotion(event as Event & RouteMotionEvent).ready;
         // Invalidate an older page's frames, timer and posted task before this
         // incoming snapshot starts. Its captured visit remains in the FIFO.
@@ -294,11 +348,7 @@ if (state.installed && (!state.native || state.revision !== 4)) {
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) flushGooglePages();
     });
-    document.addEventListener("astro:page-load", () => {
-        initializeTrackers();
-        trackGooglePage();
-        trackUmamiPage();
-        trackVercountPage();
-        state.previousPage = window.location.href;
-    });
+    document.addEventListener("astro:page-load", handlePageLoad);
+    if (documentIsParsed()) dispatchEarlyView();
+    else document.addEventListener("DOMContentLoaded", dispatchEarlyView, { once: true });
 }
