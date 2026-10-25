@@ -28,7 +28,7 @@
 | main 原生VT 380/460ms，blur/scale/大位移 | 1.43.1 有 outgoing 140ms 与 incoming 220ms（手机180ms）的整main WAAPI | 本轮收敛为一次区域过渡，不再叠模块入场；长文章和长列表避免整长位移 |
 | priority 卡片与文章有共享标题名 | 当前 postCard/标题无实际 transition:name；旧props仍有兼容留痕 | 不宣称已有共享标题；Canvas词也不冒充DOM共享元素 |
 | 左右侧栏仅≥1600px | 当前仍然如此 | 1440px与手机不安排不存在的侧栏飞入 |
-| 关于复用PostContent | 当前仍复用，但没有日期/左右侧栏 | 共享组件不等于共享内容，不persist正文或评论 |
+| 关于复用PostContent | 当前仍复用，但没有日期/左右侧栏 | 共享组件不等于共享内容，不persist正文或评论；只persist文章左栏与右栏时钟天气块 |
 
 ## 效果层次与预算
 
@@ -39,9 +39,11 @@
 | 中性页面切换 | 100–160ms透明度 | 80–120ms透明度；reduce即时 | 正文及时可读，零人工delay |
 | 层级深入/普通返回 | 可见短引导区≤6px、120–160ms | 手机纯淡入；reduce无位移 | 不推动整篇文章/整条时间线 |
 | 明确上一篇/下一篇 | 可见引导区≤8px、140–180ms | 手机纯淡入 | 只由真实previous/next意图决定方向 |
-| 列表和长正文 | 内容保持静态与直接可读，路由由有界引导区表达 | 同左 | 禁止逐项/逐段stagger、长高快照morph |
+| 列表和长正文 | 内容保持静态与直接可读，路由由有界引导区表达；可见列表分组可一次性层叠（单组≤16项、22ms递增、最长176ms延迟、240ms） | 同左；reduce 不层叠 | 禁止逐段stagger、逐行观察器、长高快照morph |
 | 普通hover/focus/pressed | 120–160ms色彩/透明度，必要时≤2px | 触屏pressed即时 | 不改width、height、字号、行高或grid布局 |
+| 跨页回顶（push/replace，无 hash） | 在出页文档内 160–360ms 二次缓出滚回顶部，随后才替换 main | 同左；reduce 瞬时到位 | 不 await 超过 360ms；wheel/touch/key 可中断；traverse 仍按历史位置恢复 |
 | 同URL、同页hash、历史深位恢复 | 不启动路由入场 | 同左 | hash使用可中断平滑滚动；restore恢复已读位置与焦点 |
+| 固定外壳（页头、页脚、文章左右侧栏） | 跨页保留节点身份，不参与任何淡入淡出 | 同左 | 只 persist 文章左栏与右栏时钟天气块；正文与评论必须重建 |
 | 背景、页头和页脚 | 持久壳保持，背景只在完整文档首次淡显 | reduce直接显示已解码图 | html/body暗底先到；不将壳层整页截图后再淡出 |
 
 ## 完整模块清单
@@ -71,7 +73,7 @@
 | `page-heading` | 页面标题与短描述 | home / archive / categories / tags / links / words；首页站名或公共列表页的标题/短描述；文章头与筛选头分别在专用模块登记，不重复计数 | data-stalux-motion-focus；1.43.1 被整 main 动画覆盖。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 有界引导区按实际preset入场160–180ms；手机120ms纯淡入；不做跨标题几何morph。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 只选一个当前可见引导区；不对首页、卡片与文章标题强行共享变形。 | [src/components/stalux/layout/PageHeading.astro](../src/components/stalux/layout/PageHeading.astro)<br>[src/pages/index.astro](../src/pages/index.astro) |
 | `archive-call-to-action` | 首页归档入口 | home；首页底部入口 | 普通链接全局下划线反馈。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 hover/focus 底线120–160ms；pressed 即时；跟随首页父区入场。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不扩大按钮几何到整页时间线；仍真实链接可无JS访问。 | [src/components/stalux/archives/toArchive.astro](../src/components/stalux/archives/toArchive.astro) |
 | `empty-state` | 空列表提示 | archive / tags；无已发布文章或标签 | 静态空状态文本。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 空状态立即可读；路由变化由页面引导区表达，不播放假加载或循环动效。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 保留可读最终态；不使用不断循环的假加载。 | [src/components/stalux/archives/archivesList.astro](../src/components/stalux/archives/archivesList.astro)<br>[src/components/stalux/tags/tagsCloud.astro](../src/components/stalux/tags/tagsCloud.astro) |
-| `archive-timeline` | 年月分组时间线 | archive；已发布文章按真实年月分组 | 静态真实文流布局，标题与时间线。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 整条时间线保持真实静态文流；页面引导区承担进入/返回提示；深位历史恢复原样显示。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不逐行 stagger，不补间长列表尺寸，不叠 content-visibility 与估算月份高度。 | [src/components/stalux/archives/archivesList.astro](../src/components/stalux/archives/archivesList.astro)<br>[src/styles/rules/archives.ts](../src/styles/rules/archives.ts) |
+| `archive-timeline` | 年月分组时间线 | archive；已发布文章按真实年月分组 | 静态真实文流布局，标题与时间线。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 整条时间线保持真实静态文流；页面引导区承担进入/返回提示；深位历史恢复原样显示。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 分组进入视口时一次性层叠（单组≤16行，其余直接可读），不逐行注册观察器，不补间长列表尺寸，不叠 content-visibility 与估算月份高度。 | [src/components/stalux/archives/archivesList.astro](../src/components/stalux/archives/archivesList.astro)<br>[src/styles/rules/archives.ts](../src/styles/rules/archives.ts) |
 | `archive-entry` | 日期与文章标题行 | archive；每篇有日期的已发布文章；实例数量不计模块种类 | 标题 hover/focus 颜色与下划线。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 hover/focus 单一底线120ms；点击后由路由过渡接管。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不为每行注册观察器/VT名称；不因悬停改变文字宽度或行高。 | [src/components/stalux/archives/archivesList.astro](../src/components/stalux/archives/archivesList.astro)<br>[src/styles/rules/archives.ts](../src/styles/rules/archives.ts) |
 | `archive-description` | 文章摘要预览浮层 | archive；有 desc 且 hover/focus 的标题；触屏直接访问 | 定位顶层 tooltip，隐藏/显示。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 opacity .9→1/100ms；定位完成再显示；离开、滚动或导航立即收起。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 单浮层复用；不在 pointermove 循环读全列表布局；不截获触屏点击。 | [src/components/stalux/archives/archivesList.astro](../src/components/stalux/archives/archivesList.astro)<br>[src/scripts/archive-descriptions.ts](../src/scripts/archive-descriptions.ts) |
 | `category-grid` | 分类集合区 | categories；分类列表 | 网格布局；条目使用 content-visibility。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 分类集合保持静态布局；由页面引导区表达进入/返回，卡片只在真实交互时反馈。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不动画 grid 重排、宽高或最大高度；避免同帧海量 getBoundingClientRect。 | [src/components/stalux/categories/categoriesList.astro](../src/components/stalux/categories/categoriesList.astro) |
@@ -95,8 +97,8 @@
 | `article-adjacent-navigation` | 上一篇与下一篇 | post；至少一个相邻文章；缺失方向禁用 | 带 previous/next 意图，箭头hover定向位移。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 hover/focus箭头≤3px/140ms；点击路由仅明确相邻方向可≤8px横向提示。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | disabled不动画；不能把随机/正文链接伪装成时间方向；不拖动整篇长文。 | [src/components/stalux/posts/postNavigation.astro](../src/components/stalux/posts/postNavigation.astro)<br>[src/styles/rules/article.ts](../src/styles/rules/article.ts) |
 | `article-comments` | Waline 评论与加载/重试 | post / about；comment.enabled且serverURL存在 | 异步SDK，评论交互，失败提示/重试。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 容器随父区；SDK就绪可用opacity反馈；错误/重试即时可读。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不等待第三方评论阻塞转场；切换文章销毁实例并绑定新path；不捕获整个评论区morph。 | [src/components/stalux/posts/WalineComment.astro](../src/components/stalux/posts/WalineComment.astro)<br>[src/scripts/waline.ts](../src/scripts/waline.ts)<br>[src/scripts/waline-client.ts](../src/scripts/waline-client.ts) |
 | `article-random-posts` | 随机文章与刷新控制 | post；左栏≥1600px | 刷新图标0.6s旋转，列表opacity .5→1。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 刷新不增加人为等待；数据就绪后列表100ms opacity .82→1，busy阻止并发刷新。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不让异步结果写回已离开页面；刷新不启动路由动效；不逐项stagger。 | [src/components/stalux/posts/randomPost.astro](../src/components/stalux/posts/randomPost.astro)<br>[src/scripts/random-posts.ts](../src/scripts/random-posts.ts) |
-| `article-table-of-contents` | 目录、当前项与侧栏跟随 | post；右栏≥1600px；无标题显示空文案 | IntersectionObserver选当前标题；仅侧栏平滑跟随，Swup接管锚点。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 当前项底色/边框120ms；目录自身滚动，点击正文锚点平滑定位。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不使用scrollIntoView拉动整个页面；hover目录时暂停自动跟随；swap清观察器。 | [src/components/stalux/posts/postToc.astro](../src/components/stalux/posts/postToc.astro)<br>[src/utils/toc-scrollspy.ts](../src/utils/toc-scrollspy.ts) |
-| `article-taxonomy` | 文章侧栏标签与分类 | post；右栏≥1600px；空集合有提示 | pill/column链接hover底色。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 hover/focus底色和边框120ms；单项按下即时；跨页随右栏整体一次淡入。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 同一组件两种kind算同一模块类型；不逐标签动画，不误持久旧文章数据。 | [src/components/stalux/posts/PostTaxonomy.astro](../src/components/stalux/posts/PostTaxonomy.astro)<br>[src/styles/rules/article.ts](../src/styles/rules/article.ts) |
+| `article-table-of-contents` | 目录、当前项与侧栏跟随 | post；右栏≥1600px；无标题显示空文案 | IntersectionObserver选当前标题；仅侧栏平滑跟随，Swup接管锚点。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 当前项底色/边框120ms；目录列表按分组层叠一次（≤16项），目录自身滚动，点击正文锚点平滑定位。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不使用scrollIntoView拉动整个页面；hover目录时暂停自动跟随；swap清观察器。 | [src/components/stalux/posts/postToc.astro](../src/components/stalux/posts/postToc.astro)<br>[src/utils/toc-scrollspy.ts](../src/utils/toc-scrollspy.ts) |
+| `article-taxonomy` | 文章侧栏标签与分类 | post；右栏≥1600px；空集合有提示 | pill/column链接hover底色。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 hover/focus底色和边框120ms；单项按下即时；跨页时标签/分类分组各层叠一次（≤16项），整块不再整体淡入。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 同一组件两种kind算同一模块类型；不逐标签动画，不误持久旧文章数据。 | [src/components/stalux/posts/PostTaxonomy.astro](../src/components/stalux/posts/PostTaxonomy.astro)<br>[src/styles/rules/article.ts](../src/styles/rules/article.ts) |
 | `links-collection` | 友链集合 | links；配置 links.sites | 响应式列表网格。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 集合直接可读；页面标题区表达进入，头像按需加载不阻塞集合。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不等待全部头像解码，不动画网格重排，不逐卡延迟。 | [src/components/stalux/links/linkList.astro](../src/components/stalux/links/linkList.astro) |
 | `link-card` | 友链卡片、头像与简介 | links；每个友链条目 | 内容上移2px，头像hover650ms旋转，卡片边框/阴影。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 卡片保留≤2px抬升与边框；头像改rotate(3deg)/180ms，focus轮廓反馈。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 固定头像80×80，懒加载；target=_blank保持；不要所有头像一齐旋转。 | [src/components/stalux/links/linkCard.astro](../src/components/stalux/links/linkCard.astro)<br>[src/styles/rules/links.ts](../src/styles/rules/links.ts) |
 | `word-collection` | 一言集合 | words；所有非draft words，按时间排序 | 静态变高卡片列表。 | 路由由有界引导区表达；本模块保持可读，仅被所属有界区域实际包含时继承该效果，不再另播入场。 变高列表保持静态文流；页面标题区表达路由变化，同页hash不重播入场。 | prefers-reduced-motion: reduce 时去除位移、旋转和循环，状态立即切换；保留焦点、可读内容与功能。 | 不补间高度，不逐卡stagger，不给长列表多快照。 | [src/components/stalux/words/wordList.astro](../src/components/stalux/words/wordList.astro) |
@@ -149,8 +151,8 @@
 | `page-heading` | new-route-region | `[data-stalux-motion-focus], [data-stalux-motion-region]` | 有界引导区统一WAAPI路由效果；入场按preset160–180ms，手机120ms纯淡入。 |
 | `archive-call-to-action` | new-css-control | `[data-stalux-control="button"]` | 最小44px按钮，140ms交互反馈与hover≤2px上移，pressed归位。 |
 | `empty-state` | stable | `所属内容区域` | 页面引导区表达路由变化；本模块保持可读与原位，不增加独立路由动画。 |
-| `archive-timeline` | stable | `所属内容区域` | 页面引导区表达路由变化；本模块保持可读与原位，不增加独立路由动画。 |
-| `archive-entry` | retained-control | `.stalux-archive-post-link` | 保留颜色/单一下划线与可聚焦标题；不逐行入场。 |
+| `archive-timeline` | grouped-cascade | `[data-stalux-reveal]` | 页面引导区表达路由变化；每个可见分组一次性层叠，不逐行、不补间高度。 |
+| `archive-entry` | grouped-cascade | `[data-stalux-reveal-item]` | 保留颜色/单一下划线与可聚焦标题；仅随所属分组层叠，单组≤16行。 |
 | `archive-description` | retained-control | `[data-archive-tooltip]` | 保留单一顶层浮层的定位、显示和清理；不新增mousemove动画。 |
 | `category-grid` | stable | `所属内容区域` | 页面引导区表达路由变化；本模块保持可读与原位，不增加独立路由动画。 |
 | `category-card` | new-control-hook | `[data-stalux-control="category-card"]` | 增加统一focus-visible轮廓，保留原有卡片≤2px反馈与局部图标反馈；reduce取消。 |

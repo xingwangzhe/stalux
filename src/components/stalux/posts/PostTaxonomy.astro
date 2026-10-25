@@ -46,12 +46,13 @@ const cfg = {
 <nav class="stalux-post-taxonomy-container" aria-label={title ?? cfg.heading}>
     <h3 class="stalux-post-taxonomy-title">{title ?? cfg.heading}</h3>
     {items.length > 0 ? (
-        <div class={cfg.listClass}>
+        <div class={cfg.listClass} data-stalux-reveal>
             {items.map((item) => (
                 <a
                     href={`${cfg.prefix}${item}/`}
                     class={`${cfg.itemClass} a-none`}
                     data-astro-prefetch
+                    data-stalux-reveal-item
                 >
                     {item}
                 </a>

@@ -77,9 +77,12 @@ const archiveYears = [...archivesByYearMonth.entries()]
                                     { length: Math.ceil(monthPosts.length / 12) },
                                     (_, index) => monthPosts.slice(index * 12, (index + 1) * 12),
                                 ).map((group) => (
-                                    <ul class="stalux-archive-post-list">
+                                    <ul class="stalux-archive-post-list" data-stalux-reveal>
                                         {group.map((post) => (
-                                            <li class="stalux-archive-post-item">
+                                            <li
+                                                class="stalux-archive-post-item"
+                                                data-stalux-reveal-item
+                                            >
                                                 <time
                                                     class="stalux-archive-post-date"
                                                     datetime={toMachineDateTime(
@@ -127,7 +130,10 @@ const archiveYears = [...archivesByYearMonth.entries()]
 
 <script>
 import { mountArchiveDescriptions } from "../../../scripts/archive-descriptions";
+import { mountListReveal } from "../../../scripts/list-reveal";
 import { registerPageLifecycle } from "../../../scripts/page-runtime";
 
 registerPageLifecycle("archive-descriptions", mountArchiveDescriptions);
+// The archive cascade ships only with the archive markup it animates.
+registerPageLifecycle("list-reveal", mountListReveal);
 </script>

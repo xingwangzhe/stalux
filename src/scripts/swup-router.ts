@@ -12,7 +12,7 @@ import "./navigation-client";
 import { prepareNavigationScripts } from "./navigation-scripts";
 import { prepareRouteMotion, type RouteMotion } from "./route-motion";
 import { animateRouteOut } from "./route-out";
-import { cancelPageScroll, scrollPage } from "./smooth-scroll";
+import { cancelPageScroll, glideToTop, type PageGlide, scrollPage } from "./smooth-scroll";
 
 interface NavigationContext {
     controller: AbortController;
@@ -27,6 +27,7 @@ interface NavigationContext {
     executeScripts?: (signal?: AbortSignal) => Promise<void>;
     scriptsReady?: Promise<void>;
     obsoleteStyles: Element[];
+    glide?: PageGlide;
     releaseOutgoing?: () => void;
 }
 
@@ -251,12 +252,17 @@ export function installSwupRouter(): Swup {
         const next = visit.to.document;
         if (!context || !next || !replace) throw new Error("Missing Swup document");
         if (context.controller.signal.aborted) return;
-        // Keep the old page readable until HTML, styles and fonts are ready.
+        // Two cues overlap on the outgoing document: a bounded fade on the
+        // changing content region, and the whole page walking back to the top.
+        // The frame, sidebars and header are never part of either one.
         if (context.navigationType !== "traverse" && context.preset !== "none") {
-            context.releaseOutgoing = await animateRouteOut(
+            const outgoing = animateRouteOut(
                 document.querySelector<HTMLElement>("[data-stalux-motion-focus]"),
                 context.controller.signal,
             );
+            if (!context.to.hash) context.glide = glideToTop();
+            await context.glide?.promise;
+            context.releaseOutgoing = await outgoing;
             if (context.controller.signal.aborted || visit !== swup.visit) {
                 context.releaseOutgoing();
                 return;
@@ -270,6 +276,7 @@ export function installSwupRouter(): Swup {
         context.motion = prepareRouteMotion(dispatchNavigation("astro:before-swap", context, next));
         if (context.controller.signal.aborted) return;
         await replace(visit, args);
+        // The old region is detached; drop any fill effect left on it.
         context.releaseOutgoing?.();
         if (context.controller.signal.aborted) return;
         for (const element of context.obsoleteStyles) element.remove();
@@ -349,7 +356,7 @@ export function installSwupRouter(): Swup {
     const cancel = (visit: Visit) => {
         const context = contexts.get(visit);
         context?.controller.abort();
-        context?.releaseOutgoing?.();
+        context?.glide?.cancel();
         context?.motion?.cancel();
         if (context === activeContext) {
             clearMotionState();
@@ -361,7 +368,7 @@ export function installSwupRouter(): Swup {
     swup.hooks.on("visit:fail", cancel);
     swup.hooks.on("visit:end", (visit) => {
         const context = contexts.get(visit);
-        context?.releaseOutgoing?.();
+        context?.glide?.cancel();
         context?.motion?.start(null, { skip: true });
         if (activeContext === context) {
             clearMotionState();

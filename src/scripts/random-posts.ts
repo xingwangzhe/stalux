@@ -50,6 +50,9 @@ export function mountRandomPosts(): (() => void) | undefined {
     };
     const reveal = () => {
         if (reducedMotion.matches || document.hidden || typeof list.animate !== "function") return;
+        // A persisted sidebar keeps its node across visits; fading it again would
+        // read as the fixed shell blinking, which is exactly what it must not do.
+        if (container.closest("[data-swup-persist]")) return;
         try {
             // Real titles can wrap the sidebar beyond the same bounded-region
             // budget used for route effects. Keep that result immediately readable.

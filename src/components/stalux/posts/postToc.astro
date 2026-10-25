@@ -32,9 +32,9 @@ const tocItems = headings
 <nav data-toc-active-class="stalux-toc-active" aria-label={t("taxonomy.toc")}>
     <h3 class="stalux-toc-title">{title}</h3>
     {tocItems.length > 0 ? (
-        <ul class="stalux-toc-list">
+        <ul class="stalux-toc-list" data-stalux-reveal>
             {tocItems.map((heading) => (
-                <li>
+                <li data-stalux-reveal-item>
                     <a
                         class={`stalux-toc-item ${({ 1: "stalux-toc-depth-1", 2: "stalux-toc-depth-2", 3: "stalux-toc-depth-3", 4: "stalux-toc-depth-4", 5: "stalux-toc-depth-5", 6: "stalux-toc-depth-6" } as Record<number, string>)[heading.depth] || ""} a-none`}
                         href={`#${heading.slug}`}

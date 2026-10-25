@@ -32,6 +32,9 @@ export function mountModuleMotion(): (() => void) | undefined {
                     motionPreference.matches ||
                     document.documentElement.classList.contains("is-changing") ||
                     document.documentElement.dataset.staluxVtPreset ||
+                    // A persisted node kept its identity across the visit; it was
+                    // never rebuilt, so re-entering it would be a second cue.
+                    element.closest("[data-swup-persist]") ||
                     element.closest("[data-stalux-motion-region]") ||
                     entry.boundingClientRect.height > Math.min(420, window.innerHeight * 0.6) ||
                     typeof element.animate !== "function"

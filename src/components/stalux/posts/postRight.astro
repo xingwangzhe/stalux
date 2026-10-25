@@ -15,7 +15,11 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
 ---
 
 <aside class="stalux-sidebar-right" data-stalux-scroll-pane>
-    <div class="stalux-sidebar-container" data-stalux-module="sidebar">
+    <div
+        class="stalux-sidebar-container"
+        data-stalux-module="sidebar"
+        data-swup-persist="post-sidebar-clock"
+    >
         <PostDate />
         <Weather />
     </div>

@@ -92,3 +92,11 @@ const walineConfig = walineSection?.serverURL
         <PostRight headings={headings} tags={tags} categories={categories} />
     </div>
 </div>
+
+<script>
+import { mountListReveal } from "../scripts/list-reveal";
+import { registerPageLifecycle } from "../scripts/page-runtime";
+
+// Article sidebars cascade their lists; the script ships with article pages only.
+registerPageLifecycle("list-reveal", mountListReveal);
+</script>

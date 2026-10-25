@@ -27,6 +27,7 @@ let container: {
     querySelector: (q: string) => unknown;
     setAttribute: ReturnType<typeof vi.fn>;
     removeAttribute: ReturnType<typeof vi.fn>;
+    closest: (selector: string) => unknown;
 };
 let list: {
     innerHTML: string;
@@ -63,6 +64,7 @@ beforeEach(() => {
         querySelector: (q: string) => (q === "#random-posts-list" ? list : button),
         setAttribute: vi.fn((name: string, value: string) => busy.set(name, value)),
         removeAttribute: vi.fn((name: string) => busy.delete(name)),
+        closest: () => null,
     };
     vi.stubGlobal("document", { hidden: false, querySelector: () => container });
     vi.stubGlobal("window", { innerHeight: 900, matchMedia: () => preference });
@@ -133,6 +135,15 @@ it("reveals only a completed list, settles the effect and never retains inline o
     effects[0]?.done.resolve();
     await settle();
     expect(effects[0]?.cancel).toHaveBeenCalledOnce();
+});
+it("does not fade a list inside a persisted sidebar shell", async () => {
+    container.closest = (selector: string) =>
+        selector === "[data-swup-persist]" ? ({} as Element) : null;
+    cleanup = mountRandomPosts();
+    respond(0, "ready");
+    await settle();
+    expect(list.innerHTML).toContain("ready");
+    expect(list.animate).not.toHaveBeenCalled();
 });
 it.each(["reduced", "hidden"])("keeps final content motionless when %s", async (mode) => {
     if (mode === "reduced") preference.matches = true;
