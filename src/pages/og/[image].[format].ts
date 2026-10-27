@@ -19,12 +19,15 @@ export async function getStaticPaths() {
         )
         .flatMap((post) => {
             const card = createSocialCardData(post.data, site, author);
-            return (["webp", "png"] as const).map((format) => ({
+            // PNG only. og:image must stay PNG because several platforms refuse
+            // WebP and AVIF in share previews, and a second format per post
+            // doubled the render work (about 8s each) for no visible gain.
+            return (["png"] as const).map((format) => ({
                 params: {
                     image: socialCardPath(card)
                         .split("/")
                         .at(-1)
-                        ?.replace(/\.webp$/u, ""),
+                        ?.replace(/\.png$/u, ""),
                     format,
                 },
                 props: { card, format },

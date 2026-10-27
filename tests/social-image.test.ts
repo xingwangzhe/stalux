@@ -40,13 +40,15 @@ describe("article social images", () => {
             reconstructMarkdown({ ...post, abbrlink: "test", "og:image": "/social.png" }),
         ).toContain("og:image: /social.png");
     });
-    it("generates a WebP for covers and coverless posts, including base paths", () => {
+    it("generates one PNG for covers and coverless posts, including base paths", () => {
         expect(resolvePostSocialImage(undefined, card)).toMatchObject({
             width: 1200,
             height: 630,
-            type: "image/webp",
+            type: "image/png",
         });
-        expect(socialCardPath(card, "/blog/")).toMatch(/^\/blog\/og\/[a-f0-9]{20}\.webp$/u);
+        // No second format is emitted, so there is no fallback image to advertise.
+        expect(resolvePostSocialImage(undefined, card)).not.toHaveProperty("fallbackUrl");
+        expect(socialCardPath(card, "/blog/")).toMatch(/^\/blog\/og\/[a-f0-9]{20}\.png$/u);
         expect(socialCardPath({ ...card, cover: undefined })).not.toBe(socialCardPath(card));
         expect(socialCardPath({ ...card, title: "新标题" })).not.toBe(socialCardPath(card));
         expect(resolvePostSocialImage(" ", card).url).toBe(socialCardPath(card));
@@ -104,7 +106,7 @@ describe("article social images", () => {
             url,
             width: 1200,
             height: 630,
-            type: "image/webp",
+            type: "image/png",
         });
         expect(seo.twitter).toMatchObject({ image: url, card: "summary_large_image" });
         expect(seo.schema["@graph"]).toContainEqual(

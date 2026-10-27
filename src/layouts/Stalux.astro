@@ -76,6 +76,13 @@ const routeKind = getRouteKind(Astro.url.pathname);
     import "../scripts/background.ts";
     import "../scripts/module-motion.ts";
     import "../scripts/view-transitions.ts";
+    // Every page type has at least one list, so the unroll cue is registered
+    // once in the shared layout instead of per page. Page-runtime dedupes it
+    // against the article and archive components that also request it.
+    import { mountListReveal } from "../scripts/list-reveal";
+    import { registerPageLifecycle } from "../scripts/page-runtime";
+
+    registerPageLifecycle("list-reveal", mountListReveal);
     </script>
     {aiConfig?.conformance !== "disabled" && <script>import "../scripts/webmcp.ts";</script>}
     <body

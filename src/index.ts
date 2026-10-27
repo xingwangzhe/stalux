@@ -49,6 +49,7 @@ import { createInjectedRoutes } from "./internal/injected-routes";
 import { markdownPropagationPlugin } from "./internal/markdown-propagation";
 import { containMermaidSvgs } from "./internal/offscreen-layout";
 import { createPageOutputCache } from "./internal/page-output-cache";
+import { loadCoverEncoder, restoreCoverFiles, upgradeCoverImages } from "./internal/post-cover";
 import { isPluginProject } from "./internal/project-mode";
 import { syncBackgroundSvgs, syncFontAssets } from "./internal/public-assets";
 import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
@@ -121,6 +122,9 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     };
 
     const socialCardPaths = { publicDir: "", cacheDir: "", base: "/", fontPath: "" };
+    // Content-addressed card covers, kept outside the build output so a page that
+    // is served from the page-output cache still finds its file on disk.
+    let coverCacheDir = "";
 
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
 
@@ -378,6 +382,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     base: config.base,
                     fontPath: path.join(srcDir, "assets/fonts/LXGWWenKai-Regular.ttf"),
                 });
+                coverCacheDir = fileURLToPath(new URL("stalux-post-covers/", config.cacheDir));
                 const assetsLogger = logger.fork("stalux/assets");
                 if (pageFontData) {
                     pageFontData.outputDir = path.join(
@@ -411,6 +416,10 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const htmlFiles = await fs.readdir(outDir, { recursive: true });
                 const sourceDir = fileURLToPath(new URL(".", import.meta.url));
                 const resolveModule = createRequire(import.meta.url).resolve;
+                const requireModule = createRequire(import.meta.url);
+                const coverEncoder = coverCacheDir
+                    ? loadCoverEncoder(requireModule, logger)
+                    : undefined;
                 const parserEntry = resolveModule("parse5");
                 const imageSizeEntry = resolveModule("image-size");
                 const nativeEntry = resolveModule("@xingwangzhe/cjk-font-split-native");
@@ -510,6 +519,22 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         loadingPolicy: true,
                         dependencies,
                     });
+                    // Card covers become content-addressed WebP. The encoded files
+                    // are restored into the output at the end of every build, so a
+                    // page served from the page-output cache still resolves them.
+                    if (coverEncoder) {
+                        try {
+                            await upgradeCoverImages(images, {
+                                outDir,
+                                cacheDir: coverCacheDir,
+                                sharp: coverEncoder,
+                                dependencies,
+                                logger,
+                            });
+                        } catch (error) {
+                            logger.warn(`封面转 WebP 失败：${describeError(error)}`);
+                        }
+                    }
                     if (pageFontData) {
                         const linkedStylesheetText = readLinkedStylesheetText(
                             "",
@@ -579,6 +604,13 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 logger.info(
                     `HTML postprocessing ${(performance.now() - started).toFixed(1)}ms; cache ${cacheHits}/${htmlFiles.filter((entry) => entry.endsWith(".html")).length}`,
                 );
+                // Covers are emitted here rather than only while a page is
+                // post-processed: a cached page skips that pass entirely but its
+                // HTML already points at these files, so they must always exist.
+                if (coverCacheDir) {
+                    const restored = restoreCoverFiles({ outDir, cacheDir: coverCacheDir });
+                    if (restored > 0) logger.debug(`restored ${restored} card covers`);
+                }
 
                 // 后处理：Pagefind 搜索索引。启用时任何失败都必须让构建失败，
                 // 避免发布一个页面正常但搜索已损坏的产物。

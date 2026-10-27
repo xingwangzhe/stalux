@@ -63,7 +63,7 @@ function enter(target: Container) {
     );
 }
 
-it("cascades one bounded group once it becomes visible", () => {
+it("unrolls one bounded group once it becomes visible", () => {
     const items = Array.from({ length: 20 }, item);
     const group = container(items);
     containers = [group];
@@ -74,18 +74,43 @@ it("cascades one bounded group once it becomes visible", () => {
     // Sixteen rows cascade; the tail beyond the cap is left to the authored state.
     expect(items.filter((entry) => entry.animate.mock.calls.length > 0)).toHaveLength(16);
     expect(at(items).animate).toHaveBeenCalledWith(
-        { opacity: [0.6, 1], transform: ["translateY(8px)", "translateY(0)"] },
-        expect.objectContaining({ duration: 240, delay: 0, fill: "backwards" }),
+        [
+            {
+                clipPath: "inset(-10px -10px 100% -10px)",
+                opacity: 0.4,
+                transform: "translate3d(0, -10px, 0)",
+            },
+            {
+                clipPath: "inset(-10px -10px -10px -10px)",
+                opacity: 1,
+                transform: "translate3d(0, 0, 0)",
+            },
+        ],
+        expect.objectContaining({ duration: 380, delay: 0, fill: "backwards" }),
     );
     expect(at(items, 15).animate).toHaveBeenCalledWith(expect.anything(), {
-        duration: 240,
-        delay: 176,
-        easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        duration: 380,
+        delay: 400,
+        easing: "cubic-bezier(0.23, 1, 0.32, 1)",
         fill: "backwards",
     });
     expect(unobserve).toHaveBeenCalledOnce();
     dispose?.();
     expect(disconnect).toHaveBeenCalledOnce();
+});
+
+it("lets a running route cue settle before the sheet starts unrolling", () => {
+    const items = [item()];
+    const group = container(items);
+    containers = [group];
+    dataset.staluxVtPreset = "enter";
+    const dispose = mountListReveal();
+    enter(group);
+    expect(at(items).animate).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ delay: 150 }),
+    );
+    dispose?.();
 });
 
 it("leaves persisted shells, restored history and reduced motion alone", () => {

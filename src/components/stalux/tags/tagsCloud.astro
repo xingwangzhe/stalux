@@ -25,7 +25,7 @@ const tagLinks = tagList.map((t) => ({
 <div class="stalux-cloud-cards" id="tags-cards" data-stalux-tag-cards data-stalux-motion-content>
     {tagList.length > 0 ? (
         tagGroups.map((group) => (
-            <div class="stalux-cloud-tag-group">
+            <div class="stalux-cloud-tag-group" data-stalux-reveal>
                 {group.map(({ name, count }) => (
                     <a
                         href={`/tags/${name}/`}
@@ -33,6 +33,7 @@ const tagLinks = tagList.map((t) => ({
                         data-stalux-card
                         data-stalux-tag-card
                         data-stalux-control="tag-card"
+                        data-stalux-reveal-item
                         data-count={count}
                         data-astro-prefetch
                     >

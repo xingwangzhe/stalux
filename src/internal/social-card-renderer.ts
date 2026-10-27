@@ -23,6 +23,23 @@ function getRenderer(fontPath: string): Promise<Renderer> {
     return rendererPromise;
 }
 
+/**
+ * Font identity for the render cache.
+ *
+ * The key used to carry the font's size and mtime, so re-installing the theme,
+ * restoring a checkout, or copying the package to a build machine changed every
+ * card's key at once and re-rendered all of them (about 8s each). Hashing the
+ * bytes keeps the key stable for identical font content and still changes when
+ * the font really is different.
+ */
+let fontDigestPromise: Promise<string> | undefined;
+function getFontDigest(fontPath: string): Promise<string> {
+    fontDigestPromise ??= readFile(fontPath).then((bytes) =>
+        createHash("sha256").update(bytes).digest("hex"),
+    );
+    return fontDigestPromise;
+}
+
 /** Resolve only assets inside the final public directory, including encoded Chinese paths. */
 export function localCoverPath(cover: string, paths: SocialCardPaths): string | undefined {
     if (!cover.startsWith("/") || cover.startsWith("//")) return undefined;
@@ -248,9 +265,11 @@ export async function renderSocialCard(
             warn(`分享封面不可用，已回退标题卡片：${data.title}`);
         }
     }
-    const font = await stat(paths.fontPath);
+    // Content-only key: identical card data + identical font + identical cover
+    // always reuses the cached render, whatever the filesystem timestamps say.
+    const fontDigest = await getFontDigest(paths.fontPath);
     const key = createHash("sha256")
-        .update(JSON.stringify(["v2", format, data, font.size, font.mtimeMs]))
+        .update(JSON.stringify(["v3", format, data, fontDigest]))
         .update(cover ?? "")
         .digest("hex");
     const cacheFile = path.join(paths.cacheDir, `${key}.${format}`);

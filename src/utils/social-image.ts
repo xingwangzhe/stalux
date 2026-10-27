@@ -41,7 +41,7 @@ export function socialCardPath(data: SocialCardData, base = "/"): string {
         .update(JSON.stringify(["stalux-takumi-v2", data]))
         .digest("hex")
         .slice(0, 20);
-    return `${base.replace(/\/$/u, "")}/og/${hash}.webp`;
+    return `${base.replace(/\/$/u, "")}/og/${hash}.png`;
 }
 
 export function resolvePostSocialImage(
@@ -50,11 +50,14 @@ export function resolvePostSocialImage(
     base = "/",
 ): SocialImage {
     if (explicit?.trim() && isSocialImageUrl(explicit.trim())) return { url: explicit.trim() };
+    // PNG for the sharing image, always. Several platforms (and every legacy
+    // crawler) refuse WebP or AVIF in og:image, so this is the one place the
+    // modern format costs reach instead of saving bytes. In-page images are
+    // served as WebP instead, where the browser decides.
     return {
         url: socialCardPath(data, base),
         width: 1200,
         height: 630,
-        type: "image/webp",
-        fallbackUrl: socialCardPath(data, base).replace(/\.webp$/u, ".png"),
+        type: "image/png",
     };
 }

@@ -19,10 +19,10 @@ const sorted = [...entries].sort((a, b) => {
 });
 ---
 
-<ul class="stalux-word-list-list" data-stalux-motion-content>
+<ul class="stalux-word-list-list" data-stalux-motion-content data-stalux-reveal>
     {sorted.map((entry) => {
         return (
-            <li class="stalux-word-list-item">
+            <li class="stalux-word-list-item" data-stalux-reveal-item>
                 <WordCard entry={entry} timezone={timezone} />
             </li>
         );
