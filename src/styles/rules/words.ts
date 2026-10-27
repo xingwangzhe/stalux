@@ -6,8 +6,11 @@ export const wordsStyles: StyleSpec[] = [
         "",
         {
             "border-left": "2px solid var(--accent-50p)",
-            background:
-                "linear-gradient(135deg, rgb(var(--stalux-accent-rgb) / 0.06), transparent 55%), rgb(18 20 24 / 0.92)",
+            // Translucent tint of the accent rather than a gradient wash: the
+            // card reads as a pane of the page's own colour, so the background
+            // image stays visible behind it instead of being covered by a slab.
+            background: "rgb(var(--stalux-accent-rgb) / 0.045)",
+            "backdrop-filter": "blur(3px)",
             "overflow-wrap": "anywhere",
             "scroll-margin-top": "6rem",
         },

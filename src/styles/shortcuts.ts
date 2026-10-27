@@ -200,8 +200,15 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-cloud-no-tags": "text-center w-full text-[1.2rem] text-ink-60 p-8",
     },
     words: {
-        "stalux-word-list-list": "stalux-stack items-center p-0 list-none gap-6 m-[2rem_auto]",
-        "stalux-word-list-item": "w-full flex max-w-[900px]",
+        // The width cap lives on the list, not on each row. base.css sets a
+        // generic max-width:100% on .stalux-word-list-item in the same cascade
+        // layer, so the two only ever differed by source order — which Swup
+        // rewrites when it replaces the head during a soft navigation, making
+        // the cards full-bleed until a hard reload. Constraining the container
+        // removes the order dependency entirely.
+        "stalux-word-list-list":
+            "stalux-stack items-center p-0 list-none gap-6 m-[2rem_auto] w-full max-w-[900px]",
+        "stalux-word-list-item": "w-full min-w-0 flex",
         "stalux-word-card":
             "relative w-full min-w-0 box-border stalux-stack stalux-glass rounded-[var(--radius-lg,_12px)] p-[2rem_2rem_1.25rem] shadow-stalux [transition:border-color_var(--transition-normal),_box-shadow_var(--transition-normal)] gap-6",
         "stalux-word-body": "relative min-w-0 text-ink-90 leading-[1.9] text-[1.1rem]",
