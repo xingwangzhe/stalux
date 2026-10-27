@@ -197,6 +197,18 @@ let heading: {
     getBoundingClientRect: () => object;
     animate: ReturnType<typeof vi.fn>;
 };
+let article: {
+    isConnected: boolean;
+    getBoundingClientRect: () => object;
+    closest: () => null;
+    animate: ReturnType<typeof vi.fn>;
+};
+let sidebar: {
+    isConnected: boolean;
+    getBoundingClientRect: () => object;
+    closest: (selector: string) => object | null;
+    animate: ReturnType<typeof vi.fn>;
+};
 let reducedMotion: boolean;
 let animationFinished: ReturnType<typeof deferred>;
 
@@ -227,6 +239,52 @@ beforeEach(async () => {
         }),
         animate: vi.fn(() => ({ finished: animationFinished.promise, cancel: vi.fn() })),
     };
+    // Article layout: a persisted sidebar plus the middle column. The route cue
+    // must land on the column and leave the sidebar alone.
+    article = {
+        isConnected: true,
+        getBoundingClientRect: () => ({
+            width: 800,
+            height: 4000,
+            top: 0,
+            bottom: 4000,
+            left: 200,
+            right: 1000,
+        }),
+        closest: () => null,
+        animate: vi.fn(() => ({ finished: animationFinished.promise, cancel: vi.fn() })),
+    };
+    sidebar = {
+        isConnected: true,
+        getBoundingClientRect: () => ({
+            width: 200,
+            height: 900,
+            top: 0,
+            bottom: 900,
+            left: 0,
+            right: 200,
+        }),
+        closest: (selector: string) => (selector === "[data-swup-persist]" ? {} : null),
+        animate: vi.fn(),
+    };
+    const main = {
+        isConnected: true,
+        getBoundingClientRect: () => ({
+            width: 1000,
+            height: 4000,
+            top: 0,
+            bottom: 4000,
+            left: 0,
+            right: 1000,
+        }),
+        querySelector: (selector: string) => {
+            if (selector === "article.stalux-article") return article;
+            if (selector === "[data-swup-persist]") return sidebar;
+            return null;
+        },
+        querySelectorAll: (selector: string) =>
+            selector === "[data-stalux-motion-content]" ? [sidebar, article] : [],
+    };
     documentMock = Object.assign(new EventTarget(), {
         hidden: false,
         readyState: "interactive",
@@ -235,8 +293,11 @@ beforeEach(async () => {
         head: { querySelectorAll: () => [] as ReturnType<typeof style>[] },
         activeElement: null as Anchor | null,
         querySelectorAll: () => [] as Anchor[],
-        querySelector: (selector: string) =>
-            selector === "[data-stalux-motion-focus]" ? heading : null,
+        querySelector: (selector: string) => {
+            if (selector === "main[data-stalux-route]") return main;
+            if (selector === "[data-stalux-motion-focus]") return heading;
+            return null;
+        },
         startViewTransition: vi.fn(),
     });
     windowMock = Object.assign(new EventTarget(), {
@@ -388,7 +449,7 @@ describe("Swup navigation bridge and persistent shell", () => {
         });
         await settle();
         expect(ready).toBe(false);
-        heading.animate.mockImplementation(() => {
+        article.animate.mockImplementation(() => {
             state.order.push("animate");
             return { finished: animationFinished.promise, cancel: vi.fn() };
         });
@@ -408,13 +469,13 @@ describe("Swup navigation bridge and persistent shell", () => {
         await settle();
         expect(ready).toBe(true);
         expect(finished).toBe(false);
-        expect(heading.animate).toHaveBeenCalledWith(
-            {
-                opacity: [0.72, 1],
-                transform: ["translate3d(0px, 6px, 0)", "translate3d(0px, 0px, 0)"],
-            },
-            { duration: 180, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
+        expect(article.animate).toHaveBeenCalledWith(
+            { opacity: [0, 1], transform: ["translate3d(0, 56px, 0)", "translate3d(0, 0, 0)"] },
+            { duration: 340, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "both" },
         );
+        // The persisted sidebars belong to the shell, not to the route cue.
+        expect(sidebar.animate).not.toHaveBeenCalled();
+        expect(heading.animate).not.toHaveBeenCalled();
         animationFinished.resolve();
         await incoming;
         expect(finished).toBe(true);
@@ -483,7 +544,8 @@ describe("Swup navigation bridge and persistent shell", () => {
             expect(documentMock.documentElement.dataset.staluxVtPreset).toBeUndefined();
             expect(documentMock.documentElement.removeAttribute).toHaveBeenCalledWith("aria-busy");
             hook("on", "page:view", navigation);
-            expect(heading.animate).not.toHaveBeenCalled();
+            expect(article.animate).not.toHaveBeenCalled();
+            expect(sidebar.animate).not.toHaveBeenCalled();
         },
     );
 
@@ -670,7 +732,8 @@ describe("Swup navigation bridge and persistent shell", () => {
             await hook("replace", "content:replace", navigation, {}, async () => {});
             await state.animationOptions?.animations[0]?.in(undefined, { visit: navigation });
             expect(documentMock.documentElement.dataset.staluxVtPreset).toBe("none");
-            expect(heading.animate).not.toHaveBeenCalled();
+            expect(article.animate).not.toHaveBeenCalled();
+            expect(sidebar.animate).not.toHaveBeenCalled();
             expect(hook("replace", "link:self", navigation)).toBeUndefined();
         },
     );
@@ -730,7 +793,8 @@ describe("Swup navigation bridge and persistent shell", () => {
         hook("on", "page:view", navigation);
         await state.animationOptions?.animations[0]?.in(undefined, { visit: navigation });
         expect(documentMock.documentElement.dataset.staluxVtPreset).toBe("none");
-        expect(heading.animate).not.toHaveBeenCalled();
+        expect(article.animate).not.toHaveBeenCalled();
+        expect(sidebar.animate).not.toHaveBeenCalled();
         hook("on", "visit:end", navigation);
         expect(documentMock.documentElement.dataset.staluxVtPreset).toBeUndefined();
     });

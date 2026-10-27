@@ -289,56 +289,221 @@ describe("shared route motion", () => {
     });
 });
 
-describe("bounded region entry motion", () => {
-    it.each([false, true])("animates a bounded surface on phone=%s", async (phone) => {
-        vi.stubGlobal("window", {
-            innerWidth: phone ? 390 : 1440,
-            innerHeight: 844,
-            matchMedia: (q: string) => ({ matches: phone && q === "(max-width: 768px)" }),
+describe("route stage entry motion", () => {
+    function stageNode(label: string, area: number, options: { inPersist?: boolean } = {}) {
+        const inPersist = options.inPersist ?? false;
+        const done = deferred();
+        const cancel = vi.fn();
+        const animate = vi.fn(() => ({ finished: done.promise, cancel }));
+        return {
+            label,
+            animate,
+            cancel,
+            done,
+            node: {
+                label,
+                isConnected: true,
+                animate,
+                getBoundingClientRect: () => ({
+                    width: 1000,
+                    height: area / 1000,
+                    top: 0,
+                    bottom: area / 1000,
+                    left: 0,
+                    right: 1000,
+                }),
+                closest: (selector: string) =>
+                    selector === "[data-swup-persist]" && inPersist ? {} : null,
+            } as unknown as HTMLElement,
+        };
+    }
+
+    function stubStage(parts: { article?: unknown; content?: unknown[]; mainPersist?: boolean }) {
+        const main = {
+            isConnected: true,
+            getBoundingClientRect: () => ({
+                width: 1000,
+                height: 2000,
+                top: 0,
+                bottom: 2000,
+                left: 0,
+                right: 1000,
+            }),
+            querySelector: (selector: string) => {
+                if (selector === "article.stalux-article") return parts.article ?? null;
+                if (selector === "[data-swup-persist]") return parts.mainPersist ? {} : null;
+                return null;
+            },
+            querySelectorAll: () => parts.content ?? [],
+        };
+        vi.stubGlobal("document", {
+            hidden: false,
+            querySelector: (selector: string) =>
+                selector === "main[data-stalux-route]" ? main : null,
         });
-        const content = animation();
+    }
+
+    it("moves the article column, never the whole shell", async () => {
+        const article = stageNode("article", 1000 * 4000);
+        stubStage({ article: article.node, mainPersist: true });
         const motion = prepareRouteMotion({});
-        motion.start(content.main, { content: true, preset: "enter" });
-        expect(content.animate).toHaveBeenCalledWith(
-            phone
-                ? { opacity: [0.72, 1] }
-                : {
-                      opacity: [0.72, 1],
-                      transform: ["translate3d(0px, 6px, 0)", "translate3d(0px, 0px, 0)"],
-                  },
-            expect.objectContaining({ duration: phone ? 120 : 180 }),
+        motion.start(null, { content: true, preset: "enter" });
+        expect(article.animate).toHaveBeenCalledWith(
+            { opacity: [0, 1], transform: ["translate3d(0, 56px, 0)", "translate3d(0, 0, 0)"] },
+            expect.objectContaining({ duration: 340, fill: "both" }),
         );
-        content.done.resolve();
+        article.done.resolve();
         await motion.finished;
-        expect(content.cancel).toHaveBeenCalledOnce();
+        expect(article.cancel).toHaveBeenCalledOnce();
     });
-    it("never animates a full-height article even when requested as content", async () => {
-        const content = animation({ height: 8000 });
+
+    it.each([
+        ["previous", "translate3d(-36px, 0, 0)"],
+        ["next", "translate3d(36px, 0, 0)"],
+    ])("keeps article-to-article lateral for %s", async (preset, expected) => {
+        const article = stageNode("article", 1000 * 4000);
+        stubStage({ article: article.node, mainPersist: true });
         const motion = prepareRouteMotion({});
-        motion.start(content.main, { content: true, preset: "enter" });
+        motion.start(null, { content: true, preset: preset as never });
+        expect(article.animate).toHaveBeenCalledWith(
+            { opacity: [0, 1], transform: [expected, "translate3d(0, 0, 0)"] },
+            expect.objectContaining({ duration: 300 }),
+        );
+        article.done.resolve();
         await motion.finished;
-        expect(content.animate).not.toHaveBeenCalled();
     });
-    it("preserves history reading position without a content entry", async () => {
-        const content = animation();
+
+    it("leaves an article upward when the reader heads to an index", async () => {
+        const article = stageNode("article", 1000 * 4000);
+        stubStage({ article: article.node, mainPersist: true });
         const motion = prepareRouteMotion({});
-        motion.start(content.main, { content: true, preset: "restore" });
+        motion.start(null, { content: true, preset: "up" });
+        expect(article.animate).toHaveBeenCalledWith(
+            { opacity: [0, 1], transform: ["translate3d(0, -44px, 0)", "translate3d(0, 0, 0)"] },
+            expect.anything(),
+        );
+        article.done.resolve();
         await motion.finished;
-        expect(content.animate).not.toHaveBeenCalled();
     });
-    it.each([100, 1000])(
-        "uses an intro region of height %s only within its visual budget",
-        async (height) => {
-            const focus = animation();
-            const region = animation({ height, bottom: 100 + height });
-            Object.assign(focus.main, { closest: () => region.main });
-            const motion = prepareRouteMotion({});
-            motion.start(focus.main, { content: true, preset: "article" });
-            expect(region.animate).toHaveBeenCalledTimes(height === 100 ? 1 : 0);
-            expect(focus.animate).toHaveBeenCalledTimes(height === 100 ? 0 : 1);
-            focus.done.resolve();
-            region.done.resolve();
-            await motion.finished;
-        },
-    );
+
+    it("takes the largest authored content stage on a list page", async () => {
+        const heading = stageNode("heading-description", 900 * 40);
+        const list = stageNode("archive-list", 1000 * 1200);
+        stubStage({ content: [heading.node, list.node] });
+        const motion = prepareRouteMotion({});
+        motion.start(null, { content: true, preset: "glide" });
+        expect(list.animate).toHaveBeenCalledOnce();
+        expect(heading.animate).not.toHaveBeenCalled();
+        list.done.resolve();
+        heading.done.resolve();
+        await motion.finished;
+    });
+
+    it("skips any candidate that sits inside a persisted shell", async () => {
+        const sidebar = stageNode("sidebar", 400 * 900, { inPersist: true });
+        const body = stageNode("article-body", 800 * 600);
+        stubStage({ content: [sidebar.node, body.node] });
+        const motion = prepareRouteMotion({});
+        motion.start(null, { content: true, preset: "enter" });
+        expect(sidebar.animate).not.toHaveBeenCalled();
+        expect(body.animate).toHaveBeenCalledOnce();
+        body.done.resolve();
+        sidebar.done.resolve();
+        await motion.finished;
+    });
+
+    it("falls back to main only where no persisted shell lives", async () => {
+        const mainOnly = {
+            isConnected: true,
+            animate: vi.fn(() => ({ finished: Promise.resolve(), cancel: vi.fn() })),
+            getBoundingClientRect: () => ({
+                width: 1000,
+                height: 2000,
+                top: 0,
+                bottom: 2000,
+                left: 0,
+                right: 1000,
+            }),
+            querySelector: () => null,
+            querySelectorAll: () => [],
+        };
+        vi.stubGlobal("document", {
+            hidden: false,
+            querySelector: () => mainOnly,
+        });
+        const motion = prepareRouteMotion({});
+        motion.start(null, { content: true, preset: "home" });
+        expect(mainOnly.animate).toHaveBeenCalledOnce();
+        await motion.finished;
+
+        // With a persisted shell present, an unmarked document gets no cue at all.
+        const shelled = {
+            ...mainOnly,
+            animate: vi.fn(),
+            querySelector: (s: string) => (s === "[data-swup-persist]" ? {} : null),
+        };
+        vi.stubGlobal("document", { hidden: false, querySelector: () => shelled });
+        const second = prepareRouteMotion({});
+        second.start(null, { content: true, preset: "home" });
+        await second.finished;
+        expect(shelled.animate).not.toHaveBeenCalled();
+    });
+
+    it("releases the exit fill in the same block that starts the entry cue", async () => {
+        const article = stageNode("article", 1000 * 4000);
+        stubStage({ article: article.node, mainPersist: true });
+        const releaseOutgoing = vi.fn();
+        const motion = prepareRouteMotion({});
+        motion.start(null, { content: true, preset: "enter", releaseOutgoing });
+        expect(releaseOutgoing).toHaveBeenCalledOnce();
+        expect(article.animate).toHaveBeenCalledOnce();
+        article.done.resolve();
+        await motion.finished;
+    });
+
+    it.each([
+        ["missing stage", () => stubStage({ article: null, mainPersist: true })],
+        ["skipped cue", () => stubStage({ article: stageNode("a", 1000).node, mainPersist: true })],
+        [
+            "reduced motion",
+            () => {
+                stubStage({ article: stageNode("a", 1000).node, mainPersist: true });
+                vi.stubGlobal("window", {
+                    innerWidth: 1440,
+                    innerHeight: 900,
+                    matchMedia: () => ({ matches: true }),
+                });
+            },
+        ],
+    ])("always releases the exit fill on %s", async (_label, setup) => {
+        setup();
+        const releaseOutgoing = vi.fn();
+        const motion = prepareRouteMotion({});
+        motion.start(null, {
+            content: true,
+            preset: "enter",
+            skip: _label === "skipped cue" ? true : undefined,
+            releaseOutgoing,
+        });
+        await Promise.all([motion.ready, motion.finished]);
+        expect(releaseOutgoing).toHaveBeenCalledOnce();
+    });
+
+    it("keeps phones shorter without dropping the movement", async () => {
+        vi.stubGlobal("window", {
+            innerWidth: 390,
+            innerHeight: 844,
+            matchMedia: (q: string) => ({ matches: q === "(max-width: 768px)" }),
+        });
+        const article = stageNode("article", 390 * 3000);
+        stubStage({ article: article.node, mainPersist: true });
+        const motion = prepareRouteMotion({});
+        motion.start(null, { content: true, preset: "enter" });
+        expect(article.animate).toHaveBeenCalledWith(
+            { opacity: [0, 1], transform: ["translate3d(0, 34px, 0)", "translate3d(0, 0, 0)"] },
+            expect.objectContaining({ duration: 306 }),
+        );
+        article.done.resolve();
+        await motion.finished;
+    });
 });

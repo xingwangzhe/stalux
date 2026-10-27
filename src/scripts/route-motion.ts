@@ -12,10 +12,12 @@ export interface RouteMotionEvent {
 
 export interface RouteMotionOptions {
     skip?: boolean;
-    /** Use a bounded introductory region around the marked heading. */
+    /** Animate the route's own content stage instead of a bounded heading area. */
     content?: boolean;
     preset?: RouteMotionPreset;
     browserMotion?: boolean;
+    /** Releases the outgoing fill effect inside the entry cue's sync block. */
+    releaseOutgoing?: () => void;
 }
 
 export interface RouteMotion {
@@ -48,13 +50,102 @@ const headingMotions: Record<Exclude<RouteMotionPreset, "none">, HeadingMotion> 
     error: { opacity: 0.9, duration: 80 },
 };
 
+const MAIN = "main[data-stalux-route]";
+const ARTICLE = "article.stalux-article";
+// Authored per page type by the theme, not inferred from layout: the article
+// body, archive list, tag cloud, post list, word list, link list, home block.
+const CONTENT = "[data-stalux-motion-content]";
+// A persist node marks the three-column article shell. Those sidebars keep
+// their identity across visits and must never travel with a route cue.
+const PERSIST = "[data-swup-persist]";
+
+interface StageMotion {
+    opacity: number;
+    /** Enter offset in px. Positive y enters from below, positive x from the right. */
+    distance: number;
+    axis: "x" | "y";
+    duration: number;
+}
+
+// One entry per route kind, because the components are not interchangeable: an
+// article opens from below, the next article slides in from the side that the
+// reader is heading toward, and going back up to an index pulls away upward.
+const stageMotions: Record<Exclude<RouteMotionPreset, "none">, StageMotion> = {
+    // Article-to-article keeps a lateral direction: previous/next already says
+    // which way the reading order goes, so the cue repeats that, not a fade.
+    previous: { opacity: 0, distance: -36, axis: "x", duration: 300 },
+    next: { opacity: 0, distance: 36, axis: "x", duration: 300 },
+    // Entering a different article without a reading-direction trigger.
+    article: { opacity: 0, distance: 40, axis: "y", duration: 300 },
+    // Reaching an article from any list or the home block.
+    enter: { opacity: 0, distance: 56, axis: "y", duration: 340 },
+    home: { opacity: 0, distance: 48, axis: "y", duration: 320 },
+    // Leaving an article for the archive or a taxonomy index.
+    up: { opacity: 0, distance: -44, axis: "y", duration: 300 },
+    // Moving between two taxonomy detail pages.
+    taxonomy: { opacity: 0, distance: 36, axis: "y", duration: 280 },
+    // About / links / words: single-panel pages.
+    panel: { opacity: 0, distance: 44, axis: "y", duration: 300 },
+    glide: { opacity: 0, distance: 40, axis: "y", duration: 280 },
+    // History traversal restores what the reader already saw.
+    restore: { opacity: 0, distance: -36, axis: "y", duration: 280 },
+    error: { opacity: 0, distance: 28, axis: "y", duration: 260 },
+};
+
+const laidOut = (element: HTMLElement): boolean => {
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+};
+
+/**
+ * The single node a route cue may animate for the current document.
+ *
+ * Picks the largest authored content stage, so an article moves its own column
+ * and an archive moves its list, while sidebars (persisted shells), the header
+ * and the footer stay untouched. Falls back to `main` only for pages without a
+ * persisted shell inside it.
+ */
+export function getRouteStage(): HTMLElement | null {
+    const main = document.querySelector<HTMLElement>(MAIN);
+    if (!main?.isConnected) return null;
+    const candidates: HTMLElement[] = [];
+    const article = main.querySelector<HTMLElement>(ARTICLE);
+    if (article) candidates.push(article);
+    for (const element of main.querySelectorAll<HTMLElement>(CONTENT)) candidates.push(element);
+
+    let stage: HTMLElement | null = null;
+    let area = 0;
+    for (const element of candidates) {
+        // A stage inside a persisted subtree is the shell itself.
+        if (!element.isConnected || element.closest(PERSIST)) continue;
+        const rect = element.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+        const current = rect.width * rect.height;
+        if (current > area) {
+            area = current;
+            stage = element;
+        }
+    }
+    if (stage) return stage;
+    if (main.querySelector(PERSIST)) return null;
+    return laidOut(main) ? main : null;
+}
+
+/** Offset applied to the outgoing document, continuing the entry direction. */
+export function getStageExit(preset: RouteMotionPreset): StageMotion | null {
+    if (preset === "none") return null;
+    const motion = stageMotions[preset];
+    // Entering from below means leaving upward, so both halves read as one
+    // continuous flow instead of an enter/leave bounce.
+    return { ...motion, distance: -Math.round(motion.distance * 0.72) };
+}
+
 const motions = new WeakMap<object, RouteMotion>();
 const settle = (promise?: PromiseLike<unknown>): Promise<void> =>
     Promise.resolve(promise).then(
         () => undefined,
         () => undefined,
     );
-
 function completion() {
     let resolve = () => {};
     const promise = new Promise<void>((done) => {
@@ -149,41 +240,80 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
         start(heading, options) {
             if (started) return;
             started = true;
+            // Every exit path must release the outgoing fill, or the swapped
+            // document stays transparent behind a cancelled cue.
+            const release = options?.releaseOutgoing;
             try {
                 const preset = options?.preset ?? "glide";
                 const mobile = window.matchMedia?.("(max-width: 768px)").matches;
-                const target = getRouteMotionTarget(heading);
                 if (
-                    !target ||
-                    preset === "none" ||
-                    (options?.content && preset === "restore") ||
                     options?.skip ||
                     options?.browserMotion ||
+                    preset === "none" ||
+                    (options?.content && preset === "restore") ||
+                    // History never replays an entry on a phone: the reader is
+                    // returning to a position, not arriving somewhere new.
+                    (mobile && preset === "restore") ||
                     document.hidden ||
-                    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ||
-                    typeof target.animate !== "function" ||
-                    (mobile && preset === "restore")
+                    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
                 ) {
+                    release?.();
                     animationDone.resolve();
                     return;
                 }
-                const spec = options?.content ? regionMotions[preset] : headingMotions[preset];
-                const keyframes: PropertyIndexedKeyframes = { opacity: [spec.opacity, 1] };
-                // Phones use a pure fade. Explicit previous/next alone imply a
-                // lateral reading direction; history never replays the entry.
-                if (!mobile && (spec.x || spec.y)) {
-                    keyframes.transform = [
-                        `translate3d(${spec.x ?? 0}px, ${spec.y ?? 0}px, 0)`,
-                        "translate3d(0px, 0px, 0)",
-                    ];
+                const stage = options?.content ? getRouteStage() : null;
+                const target = stage ?? getRouteMotionTarget(heading);
+                if (!target || typeof target.animate !== "function") {
+                    release?.();
+                    animationDone.resolve();
+                    return;
                 }
-                animation = target.animate(keyframes, {
-                    duration: mobile ? (options?.content ? 120 : 80) : spec.duration,
-                    easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
-                    fill: "both",
-                });
+                // Cancelling the outgoing fill and starting the entry cue must
+                // share one synchronous block. Split across frames, the reader
+                // sees the new document at full opacity for a frame first.
+                release?.();
+                if (stage) {
+                    const spec = stageMotions[preset];
+                    // Phones get a shorter throw; the same offset reads as a much
+                    // larger move on a narrow viewport.
+                    const distance = mobile ? Math.round(spec.distance * 0.6) : spec.distance;
+                    const from =
+                        spec.axis === "x"
+                            ? `translate3d(${distance}px, 0, 0)`
+                            : `translate3d(0, ${distance}px, 0)`;
+                    animation = stage.animate(
+                        {
+                            opacity: [spec.opacity, 1],
+                            transform: [from, "translate3d(0, 0, 0)"],
+                        },
+                        {
+                            duration: mobile ? Math.round(spec.duration * 0.9) : spec.duration,
+                            // Strong ease-out: quick arrival, soft settle. The
+                            // built-in ease-out is too weak to read at this size.
+                            easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+                            fill: "both",
+                        },
+                    );
+                } else {
+                    const spec = options?.content ? regionMotions[preset] : headingMotions[preset];
+                    const keyframes: PropertyIndexedKeyframes = { opacity: [spec.opacity, 1] };
+                    // Phones use a pure fade. Explicit previous/next alone imply a
+                    // lateral reading direction; history never replays the entry.
+                    if (!mobile && (spec.x || spec.y)) {
+                        keyframes.transform = [
+                            `translate3d(${spec.x ?? 0}px, ${spec.y ?? 0}px, 0)`,
+                            "translate3d(0px, 0px, 0)",
+                        ];
+                    }
+                    animation = target.animate(keyframes, {
+                        duration: mobile ? (options?.content ? 120 : 80) : spec.duration,
+                        easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
+                        fill: "both",
+                    });
+                }
                 void animation.finished.then(clearAnimation, clearAnimation);
             } catch {
+                release?.();
                 clearAnimation();
             } finally {
                 installed.resolve();

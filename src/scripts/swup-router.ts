@@ -60,6 +60,16 @@ function clearMotionState(): void {
         delete document.documentElement.dataset[key];
 }
 
+/** The exit fill is released by whichever path finishes first; never twice. */
+function once(effect: () => void): () => void {
+    let done = false;
+    return () => {
+        if (done) return;
+        done = true;
+        effect();
+    };
+}
+
 /** Astro renders pages; Swup alone owns their client navigation and animation. */
 export function installSwupRouter(): Swup {
     if (window.swup) return window.swup;
@@ -133,6 +143,7 @@ export function installSwupRouter(): Swup {
                                     content: true,
                                     browserMotion: context.browserMotion,
                                     skip: context.controller.signal.aborted,
+                                    releaseOutgoing: context.releaseOutgoing,
                                 },
                             );
                             await context.motion.finished;
@@ -252,17 +263,14 @@ export function installSwupRouter(): Swup {
         const next = visit.to.document;
         if (!context || !next || !replace) throw new Error("Missing Swup document");
         if (context.controller.signal.aborted) return;
-        // Two cues overlap on the outgoing document: a bounded fade on the
-        // changing content region, and the whole page walking back to the top.
-        // The frame, sidebars and header are never part of either one.
+        // Two cues overlap on the outgoing document: the content stage leaving,
+        // and the page walking back to the top. Persisted sidebars, the header
+        // and the frame are never part of either one.
         if (context.navigationType !== "traverse" && context.preset !== "none") {
-            const outgoing = animateRouteOut(
-                document.querySelector<HTMLElement>("[data-stalux-motion-focus]"),
-                context.controller.signal,
-            );
+            const outgoing = animateRouteOut(context.preset, context.controller.signal);
             if (!context.to.hash) context.glide = glideToTop();
             await context.glide?.promise;
-            context.releaseOutgoing = await outgoing;
+            context.releaseOutgoing = once(await outgoing);
             if (context.controller.signal.aborted || visit !== swup.visit) {
                 context.releaseOutgoing();
                 return;
@@ -276,8 +284,10 @@ export function installSwupRouter(): Swup {
         context.motion = prepareRouteMotion(dispatchNavigation("astro:before-swap", context, next));
         if (context.controller.signal.aborted) return;
         await replace(visit, args);
-        // The old region is detached; drop any fill effect left on it.
-        context.releaseOutgoing?.();
+        // The stage node survives the swap, so the filled exit effect still holds
+        // the incoming document at zero opacity. It is released inside
+        // motion.start, in the same synchronous block as the entry cue: releasing
+        // it here would paint the new document fully visible for one frame.
         if (context.controller.signal.aborted) return;
         for (const element of context.obsoleteStyles) element.remove();
         const incomingStyles = [...next.head.querySelectorAll("style,link[rel=stylesheet]")];
@@ -340,6 +350,7 @@ export function installSwupRouter(): Swup {
             content: true,
             skip: !visit.animation.animate || context.controller.signal.aborted,
             browserMotion: context.browserMotion,
+            releaseOutgoing: context.releaseOutgoing,
         });
     }
 
@@ -349,7 +360,8 @@ export function installSwupRouter(): Swup {
         await context.scriptsReady;
         if (context.controller.signal.aborted) return;
         dispatchNavigation("astro:page-load", context);
-        if (!visit.animation.animate) context.motion?.start(null, { skip: true });
+        if (!visit.animation.animate)
+            context.motion?.start(null, { skip: true, releaseOutgoing: context.releaseOutgoing });
     });
     swup.hooks.replace("link:self", () => undefined);
 
@@ -357,6 +369,9 @@ export function installSwupRouter(): Swup {
         const context = contexts.get(visit);
         context?.controller.abort();
         context?.glide?.cancel();
+        // An aborted visit keeps no exit fill: without this the stage would stay
+        // transparent until the next successful navigation.
+        context?.releaseOutgoing?.();
         context?.motion?.cancel();
         if (context === activeContext) {
             clearMotionState();
@@ -369,6 +384,7 @@ export function installSwupRouter(): Swup {
     swup.hooks.on("visit:end", (visit) => {
         const context = contexts.get(visit);
         context?.glide?.cancel();
+        context?.releaseOutgoing?.();
         context?.motion?.start(null, { skip: true });
         if (activeContext === context) {
             clearMotionState();
