@@ -5,12 +5,16 @@ export const wordsStyles: StyleSpec[] = [
         ".stalux-word-card",
         "",
         {
-            // The accent stays on the edge, the quote mark and the links — never
-            // as a surface tint. The card is a transparent pane so the page
-            // background reads straight through it; the blur only softens
-            // whatever pattern sits behind the text to keep it legible.
-            "border-left": "2px solid var(--accent-50p)",
+            // Transparent fill, but a full outline on every side. With only a
+            // left rule and no background the cards had nothing separating them:
+            // a quote ending in a short line and the next one starting looked
+            // like a single block. The accent stays a *marker* (left rule, quote
+            // glyph, links) while the outline does the dividing work.
+            border: "1px solid var(--white-15p)",
+            "border-left": "3px solid var(--accent-50p)",
             background: "transparent",
+            // Softens whatever the page background shows through the card so the
+            // text keeps its contrast without painting a slab over the artwork.
             "backdrop-filter": "blur(3px)",
             "overflow-wrap": "anywhere",
             "scroll-margin-top": "6rem",
