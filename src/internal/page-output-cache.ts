@@ -59,14 +59,13 @@ export async function createPageOutputCache(
                 for (const [asset, expected] of record.assets) {
                     if ((await assetDigest(asset)) !== expected) return undefined;
                 }
-                if (record.font) {
-                    if (
-                        !/^page-[a-f\d]+\.woff2$/u.test(record.font.filename) ||
+                if (
+                    record.font &&
+                    (!/^page-[a-f\d]+\.woff2$/u.test(record.font.filename) ||
                         typeof record.font.sourcePath !== "string" ||
-                        !(await fs.stat(record.font.sourcePath)).isFile()
-                    )
-                        return undefined;
-                }
+                        !(await fs.stat(record.font.sourcePath)).isFile())
+                )
+                    return undefined;
                 return { html: record.html, font: record.font };
             } catch {
                 // Missing, truncated, or invalid cache entries are rebuilt from source.

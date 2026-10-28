@@ -65,9 +65,9 @@ type DocumentWithModelContext = { modelContext?: ModelContext };
 // ---------------------------------------------------------------------------
 
 const SITE_LANG =
-    (typeof document !== "undefined"
-        ? document.body?.dataset.staluxSiteLang
-        : "zh-CN"
+    (typeof document === "undefined"
+        ? "zh-CN"
+        : document.body?.dataset.staluxSiteLang
     )?.toLowerCase() ?? "zh-cn";
 
 /** 站点为英文站时为 true */
@@ -141,22 +141,26 @@ function loadPostsMeta(): Promise<PostMeta[] | null> {
         const attempt = fetchJSON(sitePath("api/posts.json"))
             .then((data) => {
                 if (
-                    !Array.isArray(data) ||
-                    !data.every(
-                        (post) =>
-                            post &&
-                            typeof post.title === "string" &&
-                            typeof post.abbrlink === "string" &&
-                            typeof post.url === "string" &&
-                            (post.desc === undefined || typeof post.desc === "string") &&
-                            (!post.categories ||
-                                (Array.isArray(post.categories) &&
-                                    post.categories.every(
-                                        (category: unknown) => typeof category === "string",
-                                    ))) &&
-                            (!post.tags ||
-                                (Array.isArray(post.tags) &&
-                                    post.tags.every((tag: unknown) => typeof tag === "string"))),
+                    !(
+                        Array.isArray(data) &&
+                        data.every(
+                            (post) =>
+                                post &&
+                                typeof post.title === "string" &&
+                                typeof post.abbrlink === "string" &&
+                                typeof post.url === "string" &&
+                                (post.desc === undefined || typeof post.desc === "string") &&
+                                (!post.categories ||
+                                    (Array.isArray(post.categories) &&
+                                        post.categories.every(
+                                            (category: unknown) => typeof category === "string",
+                                        ))) &&
+                                (!post.tags ||
+                                    (Array.isArray(post.tags) &&
+                                        post.tags.every(
+                                            (tag: unknown) => typeof tag === "string",
+                                        ))),
+                        )
                     )
                 )
                     return null;
@@ -494,7 +498,7 @@ function searchPostsTool(): WebMCPTool {
             if (!pagefind) return fallback("INDEX_UNAVAILABLE");
             try {
                 const result = await pagefind.search(keyword);
-                if (!result || !Array.isArray(result.results)) return fallback("SEARCH_FAILED");
+                if (!(result && Array.isArray(result.results))) return fallback("SEARCH_FAILED");
                 const posts: Record<string, unknown>[] = [...metadataMatches];
                 const seen = new Set(metadataMatches.map((post) => post.abbrlink));
                 for (

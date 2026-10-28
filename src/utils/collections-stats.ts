@@ -6,8 +6,10 @@ function countUncategorized(posts: PostEntry[]): number {
     let count = 0;
     for (const post of posts) {
         const names = post.data.categories ?? [];
-        if (!names.length) count++;
-        else for (const name of names) if (name === "uncategorized") count++;
+        if (names.length)
+            for (const name of names)
+                if (name === "uncategorized") count++;
+                else count++;
     }
     return count;
 }

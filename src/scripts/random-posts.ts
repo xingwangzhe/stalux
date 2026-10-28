@@ -10,7 +10,7 @@ function shuffle<T extends object>(items: T[]): T[] {
         const j = (crypto.getRandomValues(bytes)[0] ?? 0) % (i + 1);
         const current = result[i];
         const target = result[j];
-        if (!current || !target) throw new RangeError("Shuffle index is out of bounds");
+        if (!(current && target)) throw new RangeError("Shuffle index is out of bounds");
         result[i] = target;
         result[j] = current;
     }
@@ -35,7 +35,7 @@ function render(posts: { abbrlink: string; title: string }[]) {
 export function mountRandomPosts(): (() => void) | undefined {
     const container = document.querySelector<HTMLElement>("[data-stalux-random-posts]");
     const list = container?.querySelector<HTMLElement>("#random-posts-list");
-    if (!container || !list) return;
+    if (!(container && list)) return;
     const controller = new AbortController();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const fallback = container.dataset.loadError ?? "Failed to load posts";

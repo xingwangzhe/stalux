@@ -87,7 +87,7 @@ async function loadCoverUncached(cover: string, paths: SocialCardPaths): Promise
         if (cachedStat && Date.now() - cachedStat.mtimeMs < 86_400_000)
             return readFile(remoteCache);
         const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
-        if (!response.ok || !response.headers.get("content-type")?.startsWith("image/"))
+        if (!(response.ok && response.headers.get("content-type")?.startsWith("image/")))
             throw new Error(`cover returned HTTP ${response.status} or non-image content`);
         const chunks: Uint8Array[] = [];
         let size = 0;
@@ -100,8 +100,7 @@ async function loadCoverUncached(cover: string, paths: SocialCardPaths): Promise
         bytes = Buffer.concat(chunks);
         const dimensions = imageSize(bytes);
         if (
-            !dimensions.width ||
-            !dimensions.height ||
+            !(dimensions.width && dimensions.height) ||
             dimensions.width * dimensions.height > 32_000_000
         )
             throw new Error("invalid cover dimensions");
@@ -110,8 +109,7 @@ async function loadCoverUncached(cover: string, paths: SocialCardPaths): Promise
     }
     const dimensions = imageSize(bytes);
     if (
-        !dimensions.width ||
-        !dimensions.height ||
+        !(dimensions.width && dimensions.height) ||
         dimensions.width * dimensions.height > 32_000_000
     )
         throw new Error("invalid or oversized cover dimensions");

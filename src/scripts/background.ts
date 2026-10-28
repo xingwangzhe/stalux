@@ -34,7 +34,7 @@ export function installSessionBackground(): void {
         if (connection?.saveData) return;
         const a = document.querySelector<HTMLElement>('[data-stalux-background="a"]');
         const b = document.querySelector<HTMLElement>('[data-stalux-background="b"]');
-        if (!a || !b || a.style.backgroundImage || b.style.backgroundImage) return;
+        if (!(a && b) || a.style.backgroundImage || b.style.backgroundImage) return;
         const custom = Boolean(window.__STALUX_BG_URLS__?.length);
         const urls = window.__STALUX_BG_URLS__?.length
             ? window.__STALUX_BG_URLS__
@@ -50,7 +50,7 @@ export function installSessionBackground(): void {
             () => {
                 // These two shell nodes retain their identities during Swup visits.
                 // No navigation event can start another image or reset this result.
-                if (!a.isConnected || !b.isConnected) return;
+                if (!(a.isConnected && b.isConnected)) return;
                 // Original SVGs have only a viewBox: auto sizes them as contain.
                 // Raster files have intrinsic dimensions, so retain that sizing
                 // explicitly. Custom URLs keep the existing auto semantics.

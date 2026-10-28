@@ -15,16 +15,14 @@ export async function buildTaxonomyStaticPaths(key: TaxonomyKey): Promise<GetSta
     const paramName = key === "tags" ? "tag" : "category";
     const taxonomy = index[key];
 
-    return [...taxonomy].map(([name, entry]) => {
-        return {
-            params: { [paramName]: name },
-            cacheKey: `${entry.cacheKey}|${getRuntimeCacheKey()}`,
-            props: {
-                [paramName]: name,
-                count: entry.posts.length,
-                posts: entry.posts,
-                lastUpdateDate: entry.latestTime,
-            },
-        };
-    });
+    return [...taxonomy].map(([name, entry]) => ({
+        params: { [paramName]: name },
+        cacheKey: `${entry.cacheKey}|${getRuntimeCacheKey()}`,
+        props: {
+            [paramName]: name,
+            count: entry.posts.length,
+            posts: entry.posts,
+            lastUpdateDate: entry.latestTime,
+        },
+    }));
 }

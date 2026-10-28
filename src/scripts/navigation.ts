@@ -38,7 +38,7 @@ registerPageLifecycle("navigation", () => {
     const navOverlay = document.querySelector<HTMLElement>("[data-ref='stalux-nav-overlay']");
     const buttonLeft = document.querySelector<HTMLElement>("[data-ref='stalux-nav-scroll-left']");
     const buttonRight = document.querySelector<HTMLElement>("[data-ref='stalux-nav-scroll-right']");
-    if (!navList || !buttonLeft || !buttonRight) return;
+    if (!(navList && buttonLeft && buttonRight)) return;
 
     const controller = new AbortController();
     const listenerOptions = { signal: controller.signal };

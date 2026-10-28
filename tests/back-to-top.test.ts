@@ -36,7 +36,7 @@ function setup(reducedMotion = false, present = true) {
     }) as unknown as BackToTopWindow;
     const doc = Object.assign(new EventTarget(), {
         querySelector: vi.fn((selector: string) =>
-            !present ? null : selector === "[data-stalux-back-to-top]" ? button : sentinel,
+            present ? (selector === "[data-stalux-back-to-top]" ? button : sentinel) : null,
         ),
     });
     vi.stubGlobal("window", win);

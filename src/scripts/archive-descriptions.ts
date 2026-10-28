@@ -36,7 +36,7 @@ export function getArchiveDescriptionPosition(
 export function mountArchiveDescriptions() {
     const root = document.querySelector<HTMLElement>(".stalux-archive-container");
     const tooltip = document.querySelector<HTMLElement>("[data-archive-tooltip]");
-    if (!root || !tooltip) return;
+    if (!(root && tooltip)) return;
     const usePopover =
         typeof tooltip.showPopover === "function" && typeof tooltip.hidePopover === "function";
     if (usePopover) tooltip.setAttribute("popover", "manual");

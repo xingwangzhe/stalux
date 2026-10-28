@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import en from "../src/i18n/en.json";
-import zhCN from "../src/i18n/zh-CN.json";
+import en from "../src/i18n/en.json" with { type: "json" };
+import zhCN from "../src/i18n/zh-CN.json" with { type: "json" };
 import { authorSchema, commentSchema, siteSchema } from "../src/schemas/config";
 import { getAccentColorStyle } from "../src/utils/accent-color";
 import { buildCCLink, buildCCName } from "../src/utils/cc";

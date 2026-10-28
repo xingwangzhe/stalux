@@ -678,7 +678,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             const postsDir = path.resolve(process.cwd(), contentDir, "posts");
             if (existsSync(postsDir)) {
                 for (const filename of readdirSync(postsDir)) {
-                    if (!filename.endsWith(".md") && !filename.endsWith(".mdx")) {
+                    if (!(filename.endsWith(".md") || filename.endsWith(".mdx"))) {
                         continue;
                     }
                     const source = readFileSync(path.join(postsDir, filename), "utf8");

@@ -262,7 +262,7 @@ export function installSwupRouter(): Swup {
         // missing document on an aborted visit is not a failed navigation.
         if (context?.controller.signal.aborted || visit.done || visit !== swup.visit) return;
         const next = visit.to.document;
-        if (!context || !next || !replace) throw new Error("Missing Swup document");
+        if (!(context && next && replace)) throw new Error("Missing Swup document");
         if (context.controller.signal.aborted) return;
         // Two cues overlap on the outgoing document: the content stage leaving,
         // and the page walking back to the top. Persisted sidebars, the header

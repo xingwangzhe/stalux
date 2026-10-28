@@ -25,7 +25,7 @@ function toDisplayDate(date: Date, lang: string): string {
 registerPageLifecycle("date-time", () => {
     const dateElement = document.querySelector<HTMLTimeElement>('[data-ref="date"]');
     const timeElement = document.querySelector<HTMLTimeElement>('[data-ref="time"]');
-    if (!dateElement || !timeElement) return;
+    if (!(dateElement && timeElement)) return;
     const lang = document.documentElement.lang || "zh-CN";
     let lastDate = "";
     const update = () => {

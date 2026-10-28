@@ -244,7 +244,7 @@ function trackGooglePage(): void {
 
 function trackUmamiPage(): void {
     const config = document.body?.dataset;
-    if (!config?.staluxUmamiId || !config.staluxUmamiUrl) return;
+    if (!(config?.staluxUmamiId && config.staluxUmamiUrl)) return;
     // Snapshot now: a slow SDK must not attribute every queued visit to the last URL.
     const payload = {
         website: config.staluxUmamiId,

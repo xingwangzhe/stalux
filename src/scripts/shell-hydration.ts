@@ -31,7 +31,7 @@ export function hydrateShells(next: Document | undefined): number {
         // A slot that arrived with the incoming document already holds the right
         // children; replacing them again would dirty layout for nothing.
         const shell = live.closest("[data-swup-persist]");
-        if (!shell || !retained.has(shell)) continue;
+        if (!(shell && retained.has(shell))) continue;
         const incoming = next.querySelector<HTMLElement>(`[data-stalux-shell-slot="${slot}"]`);
         if (!incoming) continue;
         // Two articles often share the same tags or the same category. Writing

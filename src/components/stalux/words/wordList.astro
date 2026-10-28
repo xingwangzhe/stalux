@@ -25,13 +25,11 @@ const sorted = [...entries].sort((a, b) => {
     data-stalux-motion-stage
     data-stalux-reveal
 >
-    {sorted.map((entry) => {
-        return (
-            <li class="stalux-word-list-item" data-stalux-reveal-item>
-                <WordCard entry={entry} timezone={timezone} />
-            </li>
-        );
-    })}
+    {sorted.map((entry) => (
+        <li class="stalux-word-list-item" data-stalux-reveal-item>
+            <WordCard entry={entry} timezone={timezone} />
+        </li>
+    ))}
 </ul>
 
 <script src="../../../scripts/word-list.ts"></script>

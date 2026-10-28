@@ -138,7 +138,7 @@ export function format(date: Date | string | number, formatStr: string): string 
 export function formatInTimeZone(
     date: Date | string | number,
     timeZone: string,
-    formatStr: string = "yyyy-MM-dd'T'HH:mm:ssXXX",
+    formatStr = "yyyy-MM-dd'T'HH:mm:ssXXX",
 ): string {
     const d = date instanceof Date ? date : new Date(date);
     if (Number.isNaN(d.getTime())) return "";
@@ -160,7 +160,7 @@ export function formatInTimeZone(
         offset = "+00:00";
     } else {
         offset = offset.replace(/^GMT/, "").replace(/^UTC/, "");
-        if (!offset.startsWith("+") && !offset.startsWith("-")) {
+        if (!(offset.startsWith("+") || offset.startsWith("-"))) {
             offset = `+${offset}`;
         }
         const m = offset.match(/^([+-])(\d{1,2})(?::?(\d{2}))?$/);

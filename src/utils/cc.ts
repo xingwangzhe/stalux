@@ -18,7 +18,7 @@ export function buildCCLink(licenseCode: string): string {
 
     const pathPart = match[1];
     const version = match[2];
-    if (!pathPart || !version) {
+    if (!(pathPart && version)) {
         return "https://creativecommons.org/licenses/by-nc-sa/4.0/";
     }
     return `https://creativecommons.org/licenses/${pathPart.toLowerCase()}/${version}/`;
@@ -45,7 +45,7 @@ export function buildCCName(licenseCode: string, t: Translator["t"]): string {
 
     const pathPart = match[1];
     const version = match[2];
-    if (!pathPart || !version) {
+    if (!(pathPart && version)) {
         const elements = ["BY", "NC", "SA"].map((code) => t(`cc.${code}`)).join("-");
         return t("cc.format", { elements, version: "4.0" });
     }

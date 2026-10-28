@@ -4,7 +4,7 @@ import { observeVisibleClock } from "./visible-clock";
 registerPageLifecycle("runtime-counter", () => {
     const container = document.querySelector<HTMLElement>("[data-stalux-buildtime]");
     const counter = document.getElementById("runtime-counter");
-    if (!container || !counter) return;
+    if (!(container && counter)) return;
     const start = new Date(container.dataset.staluxBuildtime ?? "");
     const format =
         container.dataset.staluxRuntimeFormat ?? "{days}d {hours}h {minutes}m {seconds}s";

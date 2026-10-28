@@ -168,7 +168,7 @@ function completion() {
 
 /** A route transition never captures a long article, list, or off-screen heading. */
 export function getRouteMotionTarget(focus: HTMLElement | null): HTMLElement | null {
-    if (!focus?.isConnected || !focus.hasAttribute("data-stalux-motion-focus")) return null;
+    if (!(focus?.isConnected && focus.hasAttribute("data-stalux-motion-focus"))) return null;
     const visible = (element: HTMLElement, maxHeight: number) => {
         const rect = element.getBoundingClientRect();
         return (

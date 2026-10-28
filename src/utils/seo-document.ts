@@ -145,14 +145,14 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
         { name: "generator", content: "Stalux" },
         { name: "theme", content: "Stalux" },
         { name: "stalux-version", content: version },
-        ...(!noindex
-            ? [
+        ...(noindex
+            ? []
+            : [
                   {
                       name: "googlebot",
                       content: "max-image-preview:large, max-snippet:-1, max-video-preview:-1",
                   },
-              ]
-            : []),
+              ]),
     ];
 
     const sameAs = input.mediaLinks.filter((link) => /^https?:\/\//i.test(link));

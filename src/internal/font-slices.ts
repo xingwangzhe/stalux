@@ -258,7 +258,7 @@ function isHiddenElement(attrs: Array<{ name: string; value: string }>): boolean
 const CONTROL_CHARACTER = /\p{C}/u;
 function addGlyphs(text: string, output: Set<string>): void {
     for (const char of text)
-        if (!output.has(char) && !CONTROL_CHARACTER.test(char)) output.add(char);
+        if (!(output.has(char) || CONTROL_CHARACTER.test(char))) output.add(char);
 }
 
 function collectBodyText(node: HtmlNode, output: Set<string>, skipSharedComponents = false): void {
@@ -410,7 +410,7 @@ function preparePageFont(
     excludedChars: ReadonlySet<string> = new Set(),
 ) {
     const body = findBody(document);
-    if (!body) return undefined;
+    if (!body) return;
 
     const glyphs = new Set<string>();
     addGlyphs(RESERVED_GLYPHS, glyphs);
@@ -425,7 +425,7 @@ function preparePageFont(
     const chars = [...glyphs].sort(
         (a, b) => (a.codePointAt(0) as number) - (b.codePointAt(0) as number),
     );
-    if (chars.length === 0) return undefined;
+    if (chars.length === 0) return;
 
     let prepared = preparedFonts.get(fontBuffer);
     if (!prepared) {

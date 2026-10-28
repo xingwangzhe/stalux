@@ -204,7 +204,7 @@ describe("static blog WebMCP tools", () => {
         const { fetcher } = await setup();
         for (const [name, input] of [
             ["list_posts", { page: 1.2 }],
-            ["list_posts", { pageSize: Infinity }],
+            ["list_posts", { pageSize: Number.POSITIVE_INFINITY }],
             ["list_posts", { toString: "unknown" }],
             ["get_post", { id: { nested: true } }],
             ["search_posts", { keyword: "ok", limit: -1 }],

@@ -18,7 +18,7 @@ import {
 import { toMachineDateTime } from "@utils/semantic-time";
 import { buildSeoDocument, type SeoPageInput } from "@utils/seo-document";
 import { SEO } from "astro-seo";
-import packageJson from "../../../../package.json";
+import packageJson from "../../../../package.json" with { type: "json" };
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);

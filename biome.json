@@ -25,21 +25,67 @@
         "indentWidth": 4,
         "lineEnding": "lf",
         "lineWidth": 100,
-        "attributePosition": "auto"
+        "attributePosition": "auto",
+        "bracketSpacing": true,
+        "expand": "auto",
+        "useEditorconfig": true
     },
     "linter": {
         "enabled": true,
         "rules": {
-            "preset": "recommended",
+            "preset": "all",
             "complexity": {
-                "noImportantStyles": "off"
+                "noImportantStyles": "off",
+                "useSimplifiedLogicExpression": "error",
+                "noExcessiveCognitiveComplexity": "info",
+                "noExcessiveLinesPerFunction": "info",
+                "useMaxParams": "info",
+                "noVoid": "off"
+            },
+            "correctness": {
+                "useImportExtensions": "off",
+                "noUndeclaredDependencies": "off",
+                "noNodejsModules": "off",
+                "useQwikValidLexicalScope": "off",
+                "noUnresolvedImports": "off",
+                "noProcessGlobal": "off"
+            },
+            "performance": {
+                "useTopLevelRegex": "off",
+                "noAwaitInLoops": "info",
+                "noBarrelFile": "off",
+                "noSyncScripts": "off",
+                "noImgElement": "off"
+            },
+            "security": {
+                "noSecrets": "off"
             },
             "style": {
                 "noDescendingSpecificity": "off",
-                "useConst": "error"
+                "useConst": "error",
+                "useBlockStatements": "off",
+                "noMagicNumbers": "off",
+                "noTernary": "off",
+                "useNamingConvention": "off",
+                "useFilenamingConvention": "off",
+                "useExportsLast": "off",
+                "noIncrementDecrement": "off",
+                "noContinue": "off",
+                "noImplicitBoolean": "off",
+                "useNumericSeparators": "off",
+                "useGlobalThis": "off",
+                "noHexColors": "off",
+                "noJsxLiterals": "off",
+                "noDefaultExport": "off",
+                "noParameterProperties": "off"
             },
             "suspicious": {
-                "noVar": "error"
+                "noVar": "error",
+                "noUnknownAttribute": "off",
+                "noConsole": "off",
+                "noReactSpecificProps": "off",
+                "noLeakedRender": "off",
+                "noEmptySource": "off"
             }
         }
     },
@@ -52,6 +98,7 @@
         }
     },
     "javascript": {
+        "globals": ["Fragment"],
         "formatter": {
             "quoteStyle": "double",
             "jsxQuoteStyle": "double",
@@ -63,6 +110,34 @@
             "bracketSameLine": false
         }
     },
+    "overrides": [
+        {
+            "includes": ["**/*.astro"],
+            "linter": {
+                "rules": {
+                    "correctness": {
+                        "useUniqueElementIds": "off",
+                        "noUndeclaredVariables": "off"
+                    }
+                }
+            }
+        },
+        {
+            "includes": ["tests/**"],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noEmptyBlockStatements": "off",
+                        "noMisplacedAssertion": "off",
+                        "noShadow": "off",
+                        "noUnnecessaryConditions": "off",
+                        "useAwait": "off",
+                        "useArraySortCompare": "off"
+                    }
+                }
+            }
+        }
+    ],
     "html": {
         "experimentalFullSupportEnabled": true,
         "formatter": {

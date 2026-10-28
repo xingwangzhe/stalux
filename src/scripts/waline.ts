@@ -10,7 +10,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 registerPageLifecycle("waline", () => {
     const container = document.querySelector<HTMLElement>("#waline-container");
     const commentElement = document.querySelector<HTMLElement>("#waline-comment");
-    if (!container || !commentElement) return;
+    if (!(container && commentElement)) return;
 
     let decoded: unknown;
     try {

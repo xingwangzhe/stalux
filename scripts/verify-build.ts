@@ -401,7 +401,7 @@ for (const endpoint of Object.values(openApi.paths) as Array<{
     get: { responses: Record<string, unknown> };
 }>) {
     assert(
-        !endpoint.get.responses["429"] && !endpoint.get.responses["400"],
+        !(endpoint.get.responses["429"] || endpoint.get.responses["400"]),
         "Static OpenAPI must not advertise dynamic quota/input errors",
     );
 }

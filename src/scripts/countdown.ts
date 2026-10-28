@@ -3,7 +3,7 @@ import { registerPageLifecycle } from "./page-runtime";
 registerPageLifecycle("not-found-countdown", () => {
     const el = document.getElementById("countdown");
     const template = el?.dataset.countdownTemplate;
-    if (!el || !template) return;
+    if (!(el && template)) return;
     let seconds = 5;
     const timer = window.setInterval(() => {
         seconds -= 1;

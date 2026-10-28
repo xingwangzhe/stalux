@@ -16,8 +16,7 @@ export async function animateRouteOut(
     const spec = getStageExit(preset);
     const stage = spec ? getRouteStage() : null;
     if (
-        !spec ||
-        !stage ||
+        !(spec && stage) ||
         signal.aborted ||
         document.hidden ||
         typeof stage.animate !== "function" ||

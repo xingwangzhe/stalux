@@ -18,7 +18,7 @@ export function installBackToTop(): void {
     if (host.__STALUX_BACK_TO_TOP__) return;
     const sentinel = document.querySelector(SENTINEL_SELECTOR);
     const button = document.querySelector<HTMLButtonElement>(BUTTON_SELECTOR);
-    if (!sentinel || !button) return;
+    if (!(sentinel && button)) return;
     host.__STALUX_BACK_TO_TOP__ = true;
 
     button.addEventListener("click", () => {

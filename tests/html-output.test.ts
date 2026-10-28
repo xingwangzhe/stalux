@@ -8,7 +8,7 @@ function addStyle(document: DefaultTreeAdapterMap["document"]) {
     const head = document.childNodes
         .flatMap((node) => ("childNodes" in node ? node.childNodes : []))
         .find((node) => "tagName" in node && node.tagName === "head");
-    if (!head || !("childNodes" in head)) throw new Error("No head");
+    if (!(head && "childNodes" in head)) throw new Error("No head");
     const style = defaultTreeAdapter.createElement("style", html.NS.HTML, [
         { name: "data-stalux-page-font", value: "" },
     ]);
@@ -33,7 +33,7 @@ describe("AST mutation output", () => {
         const head = document.childNodes
             .flatMap((n) => ("childNodes" in n ? n.childNodes : []))
             .find((n) => "tagName" in n && n.tagName === "head");
-        if (!head || !("childNodes" in head)) throw new Error("No head");
+        if (!(head && "childNodes" in head)) throw new Error("No head");
         defaultTreeAdapter.appendChild(
             head,
             defaultTreeAdapter.createElement("link", html.NS.HTML, [

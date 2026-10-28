@@ -413,7 +413,7 @@ export async function renderLlmsTxt(
     for (const { name, url } of mediaLinks) {
         lines.push(`- ${t("ai.socialMedia")} (${escapeMd(name)}): ${url}`);
     }
-    if (!authorName && !email && mediaLinks.length === 0) {
+    if (!(authorName || email) && mediaLinks.length === 0) {
         lines.push(`- ${t("ai.noContact")}`);
     }
     lines.push("");

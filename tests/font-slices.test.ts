@@ -66,7 +66,7 @@ describe("page-specific font subsets", () => {
             const html = "<html><head></head><body>中文 café 123</body></html>";
             const expected = writePageFontSubset(html, font, join(root, "sync"));
             const actual = await writePageFontSubsetAsync(html, font, join(root, "async"));
-            if (!actual || !expected) throw new Error("Missing page font output");
+            if (!(actual && expected)) throw new Error("Missing page font output");
             expect(actual.html).toBe(expected.html);
             expect(actual?.filename).toBe(expected?.filename);
             expect(readFileSync(actual.sourcePath)).toEqual(readFileSync(expected.sourcePath));
@@ -101,7 +101,7 @@ describe("page-specific font subsets", () => {
 
             expect(first).toBeDefined();
             expect(second).toBeDefined();
-            if (!first || !second) throw new Error("Expected a page CJK subset");
+            if (!(first && second)) throw new Error("Expected a page CJK subset");
             expect(first.filename).toBe(second.filename);
             expect(first.cacheHit).toBe(false);
             expect(second.cacheHit).toBe(true);
@@ -138,7 +138,7 @@ describe("page-specific font subsets", () => {
                     return point >= start && point <= end;
                 });
             };
-            for (const char of "Homepage Go café" + "—“©✓首页折叠展开可见图中文字") {
+            for (const char of "Homepage Go café—“©✓首页折叠展开可见图中文字") {
                 expect(includes(char), `expected ${char} in page subset unicode-range`).toBe(true);
             }
             for (const char of "描述头属机器隐藏显注释") {

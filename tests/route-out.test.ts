@@ -76,7 +76,8 @@ it("fades the article column out in place, with no lateral travel", async () => 
         // The shell is kept, so only the column's opacity changes: a translate
         // would make a very tall column look like it jerked sideways.
         expect(animate).toHaveBeenCalledWith({ opacity: [1, 0] }, expect.anything());
-        expect(animate.mock.calls[0]?.[0]).not.toHaveProperty("transform");
+        const [frames] = animate.mock.calls[0] as unknown as [Record<string, unknown>];
+        expect(frames).not.toHaveProperty("transform");
         release();
     }
 });

@@ -10,12 +10,12 @@ import { wordsStyles } from "./rules/words.ts";
 
 function interactionStates(specs: StyleSpec[]): StyleSpec[] {
     return specs.flatMap(([selector, utilities, differences, parent]) => {
-        if (!selector.includes(":hover") || !selector.includes(":focus"))
+        if (!(selector.includes(":hover") && selector.includes(":focus")))
             return [[selector, utilities, differences, parent] as StyleSpec];
         const hover = selector
             .replace(/:is\(:hover, :focus-visible\)/g, ":hover")
             .split(",")
-            .filter((part) => !part.includes(":focus") && !part.includes(":active"))
+            .filter((part) => !(part.includes(":focus") || part.includes(":active")))
             .join(",");
         const focus = selector
             .replace(/:is\(:hover, :focus-visible\)/g, ":focus-visible")

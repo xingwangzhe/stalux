@@ -15,7 +15,7 @@ export async function getStaticPaths() {
     return posts
         .filter(
             (post) =>
-                !post.data["og:image"]?.trim() || !isSocialImageUrl(post.data["og:image"].trim()),
+                !(post.data["og:image"]?.trim() && isSocialImageUrl(post.data["og:image"].trim())),
         )
         .flatMap((post) => {
             const card = createSocialCardData(post.data, site, author);

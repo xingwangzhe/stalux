@@ -238,7 +238,7 @@ export function mountWeather() {
         const locationOutput = element.querySelector<HTMLElement>("[data-weather-location]");
         const status = element.querySelector<HTMLElement>("[data-weather-status]");
         const retry = element.querySelector<HTMLButtonElement>("[data-weather-retry]");
-        if (!output || !status || !retry) return () => {};
+        if (!(output && status && retry)) return () => {};
         const zh = (element.dataset.lang ?? "zh-CN").startsWith("zh");
         let visible = !globalThis.IntersectionObserver;
         let unsubscribe: (() => void) | undefined;

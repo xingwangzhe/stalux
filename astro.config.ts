@@ -64,19 +64,16 @@ export default defineConfig({
             pagefind: true,
             devToolbar: true,
             sitemap: {
-                filter: (page) => {
-                    return (
-                        (exportMarkdown || !new URL(page).pathname.endsWith(".md")) &&
-                        (page.includes("/posts/") ||
-                            page.includes("/about/") ||
-                            page.includes("/links/") ||
-                            page.includes("/words/") ||
-                            page === `${site}/` ||
-                            page === `${site}/archives/` ||
-                            page.includes("/tags/") ||
-                            page.includes("/categories/"))
-                    );
-                },
+                filter: (page) =>
+                    (exportMarkdown || !new URL(page).pathname.endsWith(".md")) &&
+                    (page.includes("/posts/") ||
+                        page.includes("/about/") ||
+                        page.includes("/links/") ||
+                        page.includes("/words/") ||
+                        page === `${site}/` ||
+                        page === `${site}/archives/` ||
+                        page.includes("/tags/") ||
+                        page.includes("/categories/")),
             },
             expressiveCode: {
                 themes: ["dark-plus"],

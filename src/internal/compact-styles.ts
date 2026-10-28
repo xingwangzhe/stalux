@@ -80,7 +80,7 @@ function markupEdits(value: string, names: Names): Edit[] {
             if (["pre", "code", "script", "style"].includes(node.tagName)) return;
             for (const attr of node.attrs) {
                 const loc = node.sourceCodeLocation?.attrs?.[attr.name];
-                if (!loc || !["class", "style", "data-toc-active-class"].includes(attr.name))
+                if (!(loc && ["class", "style", "data-toc-active-class"].includes(attr.name)))
                     continue;
                 const raw = value.slice(loc.startOffset, loc.endOffset);
                 const offset = loc.startOffset + raw.indexOf("=") + 1;

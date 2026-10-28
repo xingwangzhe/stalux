@@ -7,7 +7,7 @@
 (() => {
     const dateElement = document.querySelector('[data-ref="date"]');
     const timeElement = document.querySelector('[data-ref="time"]');
-    if (!dateElement || !timeElement) return;
+    if (!(dateElement && timeElement)) return;
     const now = new Date();
     const pad = (value) => String(value).padStart(2, "0");
     const lang = document.documentElement.lang || "zh-CN";
