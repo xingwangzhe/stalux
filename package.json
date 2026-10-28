@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.46.4",
+    "version": "1.46.5",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -91,7 +91,7 @@
         "knip": "knip",
         "verify:build": "node scripts/verify-build.ts",
         "validate": "bun run styles:build && bun run check && bun run node:check && bun run astro:check && bun run knip && bun run test:coverage && bun run build && bun run build:cli",
-        "prepare": "sh -c 'if [ -d scripts/git-hooks ]; then git config core.hooksPath scripts/git-hooks; fi'",
+        "prepare": "sh -c 'if [ -d scripts/git-hooks ] && git rev-parse --git-dir >/dev/null 2>&1; then git config core.hooksPath scripts/git-hooks; fi'",
         "dev:debug": "STALUX_DEBUG=1 astro dev --verbose",
         "build:debug": "STALUX_DEBUG=1 astro build --timings --verbose && node scripts/verify-build.ts",
         "styles:build": "node scripts/build-styles.ts && node scripts/build-style-names.ts",
