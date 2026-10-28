@@ -182,8 +182,10 @@ export function installSwupRouter(): Swup {
             left: window.scrollX,
             focus,
         });
-        if (historyPositions.size > 64)
-            historyPositions.delete(historyPositions.keys().next().value as number);
+        if (historyPositions.size > 64) {
+            const oldest = historyPositions.keys().next();
+            if (!oldest.done) historyPositions.delete(oldest.value);
+        }
         const from = new URL(visit.from.url + (visit.from.hash ?? ""), window.location.origin);
         const to = new URL(visit.to.url + (visit.to.hash ?? ""), window.location.origin);
         const navigationType = visit.history.popstate ? "traverse" : visit.history.action;
@@ -427,8 +429,11 @@ export function installSwupRouter(): Swup {
         }
     });
     swup.hooks.on("cache:set", () => {
-        while (swup.cache.size > 32)
-            swup.cache.delete(swup.cache.all.keys().next().value as string);
+        while (swup.cache.size > 32) {
+            const oldest = swup.cache.all.keys().next();
+            if (oldest.done) break;
+            swup.cache.delete(oldest.value);
+        }
     });
     // Parsed DOM, not window.load: slow third-party resources cannot hold the
     // first page's interactions hostage. Page-runtime dedupes the early mount.

@@ -23,6 +23,8 @@ export function mountModuleMotion(): (() => void) | undefined {
         (entries) => {
             for (const entry of entries) {
                 if (!entry.isIntersecting) continue;
+                // Observed targets are always elements; the lib types them as the
+                // Element supertype only.
                 const element = entry.target as HTMLElement;
                 observer.unobserve(element);
                 // The router owns a single bounded lead region. Do not layer an

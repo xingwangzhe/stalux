@@ -16,7 +16,10 @@ function warmFont(href: string): Promise<FontFace> {
     });
     const ready = face.load();
     fonts.set(href, { face, ready });
-    if (fonts.size > MAX_FONTS) fonts.delete(fonts.keys().next().value as string);
+    if (fonts.size > MAX_FONTS) {
+        const oldest = fonts.keys().next();
+        if (!oldest.done) fonts.delete(oldest.value);
+    }
     void ready.catch(() => {
         if (fonts.get(href)?.ready === ready) fonts.delete(href);
     });

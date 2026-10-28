@@ -1,5 +1,7 @@
-interface BackToTopWindow extends Window {
-    __STALUX_BACK_TO_TOP__?: boolean;
+declare global {
+    interface Window {
+        __STALUX_BACK_TO_TOP__?: boolean;
+    }
 }
 
 const SENTINEL_SELECTOR = "[data-stalux-scroll-sentinel]";
@@ -14,12 +16,11 @@ const BUTTON_SELECTOR = "[data-stalux-back-to-top]";
  * not reached `ready`.
  */
 export function installBackToTop(): void {
-    const host = window as BackToTopWindow;
-    if (host.__STALUX_BACK_TO_TOP__) return;
+    if (window.__STALUX_BACK_TO_TOP__) return;
     const sentinel = document.querySelector(SENTINEL_SELECTOR);
     const button = document.querySelector<HTMLButtonElement>(BUTTON_SELECTOR);
     if (!(sentinel && button)) return;
-    host.__STALUX_BACK_TO_TOP__ = true;
+    window.__STALUX_BACK_TO_TOP__ = true;
 
     button.addEventListener("click", () => {
         window.scrollTo({

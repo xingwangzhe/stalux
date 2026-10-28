@@ -12,12 +12,14 @@ interface RuntimeRegistration {
     unregister: PageDisposer;
 }
 
-interface RuntimeHost {
-    __staluxPageRuntime?: Map<string, RuntimeRegistration>;
+declare global {
+    interface Window {
+        __staluxPageRuntime?: Map<string, RuntimeRegistration>;
+    }
 }
 
 export interface PageRuntimeEnvironment {
-    host: RuntimeHost;
+    host: Pick<Window, "__staluxPageRuntime">;
     target: RuntimeTarget;
     queueTask: (callback: () => void) => void;
 }
@@ -25,7 +27,7 @@ export interface PageRuntimeEnvironment {
 function getBrowserEnvironment(): PageRuntimeEnvironment | undefined {
     if (typeof window === "undefined" || typeof document === "undefined") return undefined;
     return {
-        host: window as RuntimeHost,
+        host: window,
         target: document,
         queueTask: queueMicrotask,
     };

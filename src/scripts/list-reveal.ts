@@ -238,6 +238,9 @@ export function mountListReveal(): (() => void) | undefined {
             for (const entry of entries) {
                 if (!entry.isIntersecting) continue;
                 observer.unobserve(entry.target);
+                // IntersectionObserverEntry.target is typed as Element, but this
+                // observer only ever observes group elements; the cast states the
+                // contract we set up when observing.
                 reveal(entry.target as HTMLElement);
             }
         },
@@ -261,13 +264,14 @@ export function mountListReveal(): (() => void) | undefined {
 // before the browser paints, which is the only moment where the incoming rows
 // can be held without a visible flash. Registered once per document even when
 // both the shared layout and the article layout import this module.
-interface PrimeHost {
-    __staluxListRevealPrime?: boolean;
+declare global {
+    interface Window {
+        __staluxListRevealPrime?: boolean;
+    }
 }
 if (typeof document !== "undefined" && typeof window !== "undefined") {
-    const host = document as Document & PrimeHost;
-    if (!host.__staluxListRevealPrime) {
-        host.__staluxListRevealPrime = true;
+    if (!window.__staluxListRevealPrime) {
+        window.__staluxListRevealPrime = true;
         document.addEventListener("astro:after-swap", primeListReveal);
     }
 }

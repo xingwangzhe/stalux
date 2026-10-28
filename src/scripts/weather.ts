@@ -8,22 +8,140 @@ export interface WeatherData {
     code: number;
     updated: number;
 }
-export type WeatherState = { status: "loading" | "ready" | "error"; data?: WeatherData };
+export interface WeatherState {
+    status: "loading" | "ready" | "error";
+    data?: WeatherData;
+}
 type Listener = (state: WeatherState) => void;
+/** One provider request; the only shape callers may assume is `unknown`. */
+type GeoRequest = (url: string) => Promise<unknown>;
 
-function validData(value: unknown): value is WeatherData {
-    if (!value || typeof value !== "object") return false;
-    const data = value as WeatherData;
-    return (
-        typeof data.city === "string" &&
-        data.city.length > 0 &&
-        data.city.length < 160 &&
-        (data.ip === undefined ||
-            (typeof data.ip === "string" &&
-                data.ip.length <= 45 &&
-                /^[0-9a-f:.]+$/i.test(data.ip))) &&
-        [data.temperature, data.apparent, data.code, data.updated].every(Number.isFinite)
-    );
+interface ApproximateLocation {
+    city: string;
+    lat: number;
+    lon: number;
+    ip?: string;
+}
+
+interface WeatherReading {
+    temperature: number;
+    apparent: number;
+    code: number;
+}
+
+const invalidLocation = () => new Error("Invalid approximate location");
+
+/**
+ * Read one provider's answer into a location, or reject it.
+ *
+ * The two providers use different field names, so this is the only place that
+ * knows either wire format; everything downstream sees ApproximateLocation.
+ * Narrowing happens through `in` checks, so no value is ever asserted.
+ */
+function parseLocation(value: unknown): ApproximateLocation {
+    if (typeof value !== "object" || value === null) throw invalidLocation();
+    if ("error" in value && value.error) throw invalidLocation();
+    if (!("city" in value) || typeof value.city !== "string" || !value.city.trim())
+        throw invalidLocation();
+    if (!("latitude" in value) || typeof value.latitude !== "number") throw invalidLocation();
+    if (!("longitude" in value) || typeof value.longitude !== "number") throw invalidLocation();
+    const lat = value.latitude;
+    const lon = value.longitude;
+    if (
+        !(Number.isFinite(lat) && Number.isFinite(lon)) ||
+        Math.abs(lat) > 90 ||
+        Math.abs(lon) > 180
+    )
+        throw invalidLocation();
+    const usableIp =
+        "ip" in value &&
+        typeof value.ip === "string" &&
+        value.ip.length <= 45 &&
+        /^[0-9a-f:.]+$/i.test(value.ip);
+    return { city: value.city.trim(), lat, lon, ...(usableIp ? { ip: value.ip as string } : {}) };
+}
+
+/** Prefer the primary provider, fall back to the second one on any failure. */
+async function resolveLocation(get: GeoRequest): Promise<ApproximateLocation> {
+    try {
+        return parseLocation(await get("https://api.ip.sb/geoip"));
+    } catch {
+        const fallback = await get("https://ipinfo.io/json");
+        if (typeof fallback !== "object" || fallback === null) throw invalidLocation();
+        const coordinates =
+            "loc" in fallback && typeof fallback.loc === "string" ? fallback.loc.split(",") : [];
+        const pair = coordinates.length === 2 ? coordinates : undefined;
+        return parseLocation({
+            city: "city" in fallback ? fallback.city : undefined,
+            ip: "ip" in fallback ? fallback.ip : undefined,
+            latitude: pair?.[0]?.trim() ? Number(pair[0]) : undefined,
+            longitude: pair?.[1]?.trim() ? Number(pair[1]) : undefined,
+            error: "error" in fallback ? fallback.error : undefined,
+        });
+    }
+}
+
+/**
+ * Parse an untrusted value into weather data, or reject it.
+ *
+ * `in` narrowing keeps this assertion-free: the value stays `unknown` until each
+ * field is proven, and the caller receives a domain type instead of a flag.
+ */
+function parseWeatherData(value: unknown): WeatherData | undefined {
+    if (typeof value !== "object" || value === null) return undefined;
+    if (!("city" in value) || typeof value.city !== "string") return undefined;
+    const city = value.city;
+    if (city.length === 0 || city.length >= 160) return undefined;
+    let ip: string | undefined;
+    if ("ip" in value && value.ip !== undefined) {
+        if (
+            typeof value.ip !== "string" ||
+            value.ip.length > 45 ||
+            !/^[0-9a-f:.]+$/i.test(value.ip)
+        )
+            return undefined;
+        ip = value.ip;
+    }
+    if (!("temperature" in value)) return undefined;
+    if (!("apparent" in value)) return undefined;
+    if (!("code" in value)) return undefined;
+    if (!("updated" in value)) return undefined;
+    const temperature = finite(value.temperature);
+    const apparent = finite(value.apparent);
+    const code = finite(value.code);
+    const updated = finite(value.updated);
+    if (
+        temperature === undefined ||
+        apparent === undefined ||
+        code === undefined ||
+        updated === undefined
+    )
+        return undefined;
+    return { city, ...(ip === undefined ? {} : { ip }), temperature, apparent, code, updated };
+}
+
+const finite = (value: unknown): number | undefined =>
+    typeof value === "number" && Number.isFinite(value) ? value : undefined;
+
+/** Read the three numbers the card shows, or reject the response. */
+function parseReading(value: unknown): WeatherReading | undefined {
+    if (typeof value !== "object" || value === null) return undefined;
+    if (!("current" in value)) return undefined;
+    const current = value.current;
+    if (typeof current !== "object" || current === null) return undefined;
+    const number = (key: "temperature_2m" | "apparent_temperature" | "weather_code") => {
+        if (key === "temperature_2m" && "temperature_2m" in current)
+            return finite(current.temperature_2m);
+        if (key === "apparent_temperature" && "apparent_temperature" in current)
+            return finite(current.apparent_temperature);
+        if (key === "weather_code" && "weather_code" in current)
+            return finite(current.weather_code);
+    };
+    const temperature = number("temperature_2m");
+    const apparent = number("apparent_temperature");
+    const code = number("weather_code");
+    if (temperature === undefined || apparent === undefined || code === undefined) return undefined;
+    return { temperature, apparent, code };
 }
 
 export function createWeatherClient({
@@ -41,8 +159,8 @@ export function createWeatherClient({
     let timer: ReturnType<typeof setTimeout> | undefined;
     let generation = 0;
     try {
-        const cached: unknown = JSON.parse(storage?.getItem(CACHE_KEY) ?? "null");
-        if (validData(cached) && cached.updated <= now()) data = cached;
+        const cached = parseWeatherData(JSON.parse(storage?.getItem(CACHE_KEY) ?? "null"));
+        if (cached && cached.updated <= now()) data = cached;
     } catch {
         /* Storage is optional. */
     }
@@ -57,7 +175,7 @@ export function createWeatherClient({
         timer = undefined;
     };
     const refresh = async (force = false) => {
-        if (!listeners.size || controller) return;
+        if (listeners.size === 0 || controller) return;
         clearTimeout(timer);
         if (!force && data && now() - data.updated < WEATHER_TTL) {
             emit("ready");
@@ -71,9 +189,9 @@ export function createWeatherClient({
         timer = timeout;
         emit("loading");
         try {
-            const get = async (url: string) => {
+            const get = async (endpoint: string): Promise<unknown> => {
                 if (request.signal.aborted) throw new Error("Request cancelled");
-                const response = await fetcher(url, {
+                const response = await fetcher(endpoint, {
                     signal: request.signal,
                     credentials: "omit",
                     referrerPolicy: "no-referrer",
@@ -82,55 +200,7 @@ export function createWeatherClient({
                     throw new Error("Weather service unavailable");
                 return response.json();
             };
-            const validateLocation = (location: {
-                city?: unknown;
-                latitude?: unknown;
-                longitude?: unknown;
-                ip?: unknown;
-                error?: unknown;
-            }) => {
-                const lat = location.latitude;
-                const lon = location.longitude;
-                if (
-                    location.error ||
-                    typeof location.city !== "string" ||
-                    !location.city.trim() ||
-                    typeof lat !== "number" ||
-                    typeof lon !== "number" ||
-                    !Number.isFinite(lat) ||
-                    !Number.isFinite(lon) ||
-                    Math.abs(lat) > 90 ||
-                    Math.abs(lon) > 180
-                )
-                    throw new Error("Invalid approximate location");
-                const ip =
-                    typeof location.ip === "string" &&
-                    location.ip.length <= 45 &&
-                    /^[0-9a-f:.]+$/i.test(location.ip)
-                        ? location.ip
-                        : undefined;
-                return { city: location.city.trim(), lat, lon, ip };
-            };
-            let location: ReturnType<typeof validateLocation>;
-            try {
-                location = validateLocation(await get("https://api.ip.sb/geoip"));
-            } catch {
-                const info = await get("https://ipinfo.io/json");
-                const coordinates = typeof info.loc === "string" ? info.loc.split(",") : [];
-                location = validateLocation({
-                    city: info.city,
-                    ip: info.ip,
-                    latitude:
-                        coordinates.length === 2 && coordinates[0]?.trim()
-                            ? Number(coordinates[0])
-                            : undefined,
-                    longitude:
-                        coordinates.length === 2 && coordinates[1]?.trim()
-                            ? Number(coordinates[1])
-                            : undefined,
-                    error: info.error,
-                });
-            }
+            const location = await resolveLocation(get);
             const { lat, lon } = location;
             const url = new URL("https://api.open-meteo.com/v1/forecast");
             url.search = new URLSearchParams({
@@ -140,19 +210,15 @@ export function createWeatherClient({
                 timezone: "auto",
                 forecast_days: "1",
             }).toString();
-            const weather = await get(url.href);
-            const current = weather.current;
-            const next: WeatherData = {
-                city: location.city.trim(),
-                ip: location.ip,
-                temperature: current?.temperature_2m,
-                apparent: current?.apparent_temperature,
-                code: current?.weather_code,
+            const reading = parseReading(await get(url.href));
+            if (!reading) throw new Error("Invalid weather response");
+            if (token !== generation || request.signal.aborted) return;
+            data = {
+                city: location.city,
+                ...(location.ip === undefined ? {} : { ip: location.ip }),
+                ...reading,
                 updated: now(),
             };
-            if (!validData(next)) throw new Error("Invalid weather response");
-            if (token !== generation || request.signal.aborted) return;
-            data = next;
             try {
                 storage?.setItem(CACHE_KEY, JSON.stringify(data));
             } catch {
@@ -173,7 +239,7 @@ export function createWeatherClient({
             void refresh();
             return () => {
                 listeners.delete(listener);
-                if (!listeners.size) stop();
+                if (listeners.size === 0) stop();
             };
         },
         refresh: () => void refresh(true),
@@ -222,7 +288,7 @@ export function weatherDescription(code: number, lang: string): string {
 let client: ReturnType<typeof createWeatherClient> | undefined;
 export function mountWeather() {
     const elements = [...document.querySelectorAll<HTMLElement>("[data-stalux-weather]")];
-    if (!elements.length) return;
+    if (elements.length === 0) return;
     if (!client) {
         let storage: Storage | undefined;
         try {
@@ -238,7 +304,7 @@ export function mountWeather() {
         const locationOutput = element.querySelector<HTMLElement>("[data-weather-location]");
         const status = element.querySelector<HTMLElement>("[data-weather-status]");
         const retry = element.querySelector<HTMLButtonElement>("[data-weather-retry]");
-        if (!(output && status && retry)) return () => {};
+        if (!(output && status && retry)) return () => undefined;
         const zh = (element.dataset.lang ?? "zh-CN").startsWith("zh");
         let visible = !globalThis.IntersectionObserver;
         let unsubscribe: (() => void) | undefined;
