@@ -68,18 +68,15 @@ it("moves the article column out and holds the fill until released", async () =>
     expect(remove).toHaveBeenCalledWith("abort", expect.any(Function));
 });
 
-it("keeps article-to-article lateral and mirrors the reading direction", async () => {
-    for (const [preset, expected] of [
-        ["next", "translate3d(-26px, 0, 0)"],
-        ["previous", "translate3d(26px, 0, 0)"],
-    ] as const) {
+it("fades the article column out in place, with no lateral travel", async () => {
+    for (const preset of ["next", "previous", "article"] as const) {
         const animate = vi.fn(() => ({ finished: Promise.resolve(), cancel: vi.fn() }));
         stubDocument({ article: node("article", animate) });
         const release = await animateRouteOut(preset, new AbortController().signal);
-        expect(animate).toHaveBeenCalledWith(
-            { opacity: [1, 0], transform: ["translate3d(0, 0, 0)", expected] },
-            expect.anything(),
-        );
+        // The shell is kept, so only the column's opacity changes: a translate
+        // would make a very tall column look like it jerked sideways.
+        expect(animate).toHaveBeenCalledWith({ opacity: [1, 0] }, expect.anything());
+        expect(animate.mock.calls[0]?.[0]).not.toHaveProperty("transform");
         release();
     }
 });

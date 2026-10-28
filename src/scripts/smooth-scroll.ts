@@ -12,9 +12,9 @@ export interface PageGlide {
 }
 
 /** Bound the pre-swap return-to-top so a 6000px article does not add a second. */
-const GLIDE_MIN_MS = 160;
-const GLIDE_MAX_MS = 360;
-const GLIDE_SAFETY_MS = 760;
+const GLIDE_MIN_MS = 80;
+const GLIDE_MAX_MS = 180;
+const GLIDE_SAFETY_MS = 380;
 
 /**
  * Walk the current document back to the top before the container is replaced.
@@ -42,7 +42,7 @@ export function glideToTop(): PageGlide {
 
     // Longer documents take proportionally longer, but the ceiling keeps the
     // whole cue inside the same budget as the content fade.
-    const duration = Math.min(GLIDE_MAX_MS, GLIDE_MIN_MS + startTop / 10);
+    const duration = Math.min(GLIDE_MAX_MS, GLIDE_MIN_MS + startTop / 20);
     let frame: number | undefined;
     let settled = false;
     const release = () => {

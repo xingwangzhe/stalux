@@ -59,7 +59,7 @@ it("bounds observation and releases each visible region immediately", () => {
     expect(observer.unobserve).toHaveBeenCalledWith(elements[0]);
     expect(elements[0]?.animate).toHaveBeenCalledWith(
         { opacity: [0.88, 1] },
-        expect.objectContaining({ duration: 140 }),
+        expect.objectContaining({ duration: 70 }),
     );
     cleanup?.();
     expect(observer.disconnect).toHaveBeenCalledOnce();

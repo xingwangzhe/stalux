@@ -73,7 +73,7 @@ describe("shared route motion", () => {
         motion.start(content.main);
         expect(content.animate).toHaveBeenCalledWith(
             { opacity: [0.86, 1] },
-            { duration: 100, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
+            { duration: 50, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
         );
         await settle();
         expect(ready).toBe(true);
@@ -189,12 +189,12 @@ describe("shared route motion", () => {
     });
 
     it.each([
-        ["enter", 6, "y", 140],
-        ["up", -4, "y", 120],
-        ["previous", -8, "x", 140],
-        ["next", 8, "x", 140],
-        ["panel", 4, "y", 120],
-        ["home", 4, "y", 120],
+        ["enter", 6, "y", 70],
+        ["up", -4, "y", 60],
+        ["previous", -8, "x", 70],
+        ["next", 8, "x", 70],
+        ["panel", 4, "y", 60],
+        ["home", 4, "y", 60],
     ] as const)("applies the bounded %s heading cue", async (preset, distance, axis, duration) => {
         const content = animation();
         const motion = prepareRouteMotion({});
@@ -213,11 +213,11 @@ describe("shared route motion", () => {
     });
 
     it.each([
-        ["glide", 100, 0.86],
-        ["article", 100, 0.86],
-        ["taxonomy", 120, 0.85],
-        ["restore", 80, 0.96],
-        ["error", 80, 0.9],
+        ["glide", 50, 0.86],
+        ["article", 50, 0.86],
+        ["taxonomy", 60, 0.85],
+        ["restore", 40, 0.96],
+        ["error", 40, 0.9],
     ] as const)("keeps %s as a pure heading fade", async (preset, duration, opacity) => {
         const content = animation();
         const motion = prepareRouteMotion({});
@@ -243,7 +243,7 @@ describe("shared route motion", () => {
             motion.start(content.main, { preset });
             expect(content.animate).toHaveBeenCalledWith(
                 { opacity: [expect.any(Number), 1] },
-                expect.objectContaining({ duration: 80 }),
+                expect.objectContaining({ duration: 40 }),
             );
             content.done.resolve();
             await motion.finished;
@@ -350,28 +350,33 @@ describe("route stage entry motion", () => {
         motion.start(null, { content: true, preset: "enter" });
         expect(article.animate).toHaveBeenCalledWith(
             { opacity: [0, 1], transform: ["translate3d(0, 56px, 0)", "translate3d(0, 0, 0)"] },
-            expect.objectContaining({ duration: 340, fill: "both" }),
+            expect.objectContaining({ duration: 170, fill: "both" }),
         );
         article.done.resolve();
         await motion.finished;
         expect(article.cancel).toHaveBeenCalledOnce();
     });
 
-    it.each([
-        ["previous", "translate3d(-36px, 0, 0)"],
-        ["next", "translate3d(36px, 0, 0)"],
-    ])("keeps article-to-article lateral for %s", async (preset, expected) => {
-        const article = stageNode("article", 1000 * 4000);
-        stubStage({ article: article.node, mainPersist: true });
-        const motion = prepareRouteMotion({});
-        motion.start(null, { content: true, preset: preset as never });
-        expect(article.animate).toHaveBeenCalledWith(
-            { opacity: [0, 1], transform: [expected, "translate3d(0, 0, 0)"] },
-            expect.objectContaining({ duration: 300 }),
-        );
-        article.done.resolve();
-        await motion.finished;
-    });
+    // Article to article keeps the shell and swaps the column in place: the
+    // reader stays in the same reading position, so the column must not travel.
+    it.each(["previous", "next", "article"] as const)(
+        "cross-fades the article column in place for %s",
+        async (preset) => {
+            const article = stageNode("article", 1000 * 4000);
+            stubStage({ article: article.node, mainPersist: true });
+            const motion = prepareRouteMotion({});
+            motion.start(null, { content: true, preset });
+            const [frames, timing] = article.animate.mock.calls[0] as unknown as [
+                PropertyIndexedKeyframes,
+                KeyframeAnimationOptions,
+            ];
+            expect(frames.opacity).toEqual([0, 1]);
+            expect(frames.transform).toBeUndefined();
+            expect(timing.duration).toBe(150);
+            article.done.resolve();
+            await motion.finished;
+        },
+    );
 
     it("leaves an article upward when the reader heads to an index", async () => {
         const article = stageNode("article", 1000 * 4000);
@@ -501,7 +506,7 @@ describe("route stage entry motion", () => {
         motion.start(null, { content: true, preset: "enter" });
         expect(article.animate).toHaveBeenCalledWith(
             { opacity: [0, 1], transform: ["translate3d(0, 34px, 0)", "translate3d(0, 0, 0)"] },
-            expect.objectContaining({ duration: 306 }),
+            expect.objectContaining({ duration: 153 }),
         );
         article.done.resolve();
         await motion.finished;

@@ -37,17 +37,17 @@ interface HeadingMotion {
 // Legacy heading cues remain available to integrations. The router requests
 // one content animation; it never stacks a second animation on the heading.
 const headingMotions: Record<Exclude<RouteMotionPreset, "none">, HeadingMotion> = {
-    glide: { opacity: 0.86, duration: 100 },
-    article: { opacity: 0.86, duration: 100 },
-    enter: { opacity: 0.86, duration: 140, y: 6 },
-    up: { opacity: 0.9, duration: 120, y: -4 },
-    taxonomy: { opacity: 0.85, duration: 120 },
-    previous: { opacity: 0.9, duration: 140, x: -8 },
-    next: { opacity: 0.9, duration: 140, x: 8 },
-    panel: { opacity: 0.9, duration: 120, y: 4 },
-    home: { opacity: 0.9, duration: 120, y: 4 },
-    restore: { opacity: 0.96, duration: 80 },
-    error: { opacity: 0.9, duration: 80 },
+    glide: { opacity: 0.86, duration: 50 },
+    article: { opacity: 0.86, duration: 50 },
+    enter: { opacity: 0.86, duration: 70, y: 6 },
+    up: { opacity: 0.9, duration: 60, y: -4 },
+    taxonomy: { opacity: 0.85, duration: 60 },
+    previous: { opacity: 0.9, duration: 70, x: -8 },
+    next: { opacity: 0.9, duration: 70, x: 8 },
+    panel: { opacity: 0.9, duration: 60, y: 4 },
+    home: { opacity: 0.9, duration: 60, y: 4 },
+    restore: { opacity: 0.96, duration: 40 },
+    error: { opacity: 0.9, duration: 40 },
 };
 
 const MAIN = "main[data-stalux-route]";
@@ -55,41 +55,50 @@ const ARTICLE = "article.stalux-article";
 // Authored per page type by the theme, not inferred from layout: the article
 // body, archive list, tag cloud, post list, word list, link list, home block.
 const CONTENT = "[data-stalux-motion-content]";
+// The one node a page nominates as its cue stage. Preferred over measuring,
+// because measuring an article column forces a full layout of a document that
+// is tens of thousands of pixels tall, before it has ever been painted.
+const STAGE = "[data-stalux-motion-stage]";
 // A persist node marks the three-column article shell. Those sidebars keep
 // their identity across visits and must never travel with a route cue.
 const PERSIST = "[data-swup-persist]";
 
 interface StageMotion {
     opacity: number;
-    /** Enter offset in px. Positive y enters from below, positive x from the right. */
+    /**
+     * Enter offset in px. Positive y enters from below, positive x from the right.
+     * Zero means a pure cross-fade: the column is replaced in place.
+     */
     distance: number;
     axis: "x" | "y";
     duration: number;
 }
 
 // One entry per route kind, because the components are not interchangeable: an
-// article opens from below, the next article slides in from the side that the
-// reader is heading toward, and going back up to an index pulls away upward.
+// article opens from below and going back up to an index pulls away upward.
+//
+// Article-to-article is the exception: the reader keeps the same shell (sidebars,
+// header) and only the column changes, so the column fades in place instead of
+// travelling. Sliding a 28,000px column sideways made the whole page look like it
+// jerked, and the shell already tells the reader where they are.
 const stageMotions: Record<Exclude<RouteMotionPreset, "none">, StageMotion> = {
-    // Article-to-article keeps a lateral direction: previous/next already says
-    // which way the reading order goes, so the cue repeats that, not a fade.
-    previous: { opacity: 0, distance: -36, axis: "x", duration: 300 },
-    next: { opacity: 0, distance: 36, axis: "x", duration: 300 },
+    previous: { opacity: 0, distance: 0, axis: "x", duration: 150 },
+    next: { opacity: 0, distance: 0, axis: "x", duration: 150 },
     // Entering a different article without a reading-direction trigger.
-    article: { opacity: 0, distance: 40, axis: "y", duration: 300 },
+    article: { opacity: 0, distance: 0, axis: "y", duration: 150 },
     // Reaching an article from any list or the home block.
-    enter: { opacity: 0, distance: 56, axis: "y", duration: 340 },
-    home: { opacity: 0, distance: 48, axis: "y", duration: 320 },
+    enter: { opacity: 0, distance: 56, axis: "y", duration: 170 },
+    home: { opacity: 0, distance: 48, axis: "y", duration: 160 },
     // Leaving an article for the archive or a taxonomy index.
-    up: { opacity: 0, distance: -44, axis: "y", duration: 300 },
+    up: { opacity: 0, distance: -44, axis: "y", duration: 150 },
     // Moving between two taxonomy detail pages.
-    taxonomy: { opacity: 0, distance: 36, axis: "y", duration: 280 },
+    taxonomy: { opacity: 0, distance: 36, axis: "y", duration: 140 },
     // About / links / words: single-panel pages.
-    panel: { opacity: 0, distance: 44, axis: "y", duration: 300 },
-    glide: { opacity: 0, distance: 40, axis: "y", duration: 280 },
+    panel: { opacity: 0, distance: 44, axis: "y", duration: 150 },
+    glide: { opacity: 0, distance: 40, axis: "y", duration: 140 },
     // History traversal restores what the reader already saw.
-    restore: { opacity: 0, distance: -36, axis: "y", duration: 280 },
-    error: { opacity: 0, distance: 28, axis: "y", duration: 260 },
+    restore: { opacity: 0, distance: -36, axis: "y", duration: 140 },
+    error: { opacity: 0, distance: 28, axis: "y", duration: 130 },
 };
 
 const laidOut = (element: HTMLElement): boolean => {
@@ -100,14 +109,17 @@ const laidOut = (element: HTMLElement): boolean => {
 /**
  * The single node a route cue may animate for the current document.
  *
- * Picks the largest authored content stage, so an article moves its own column
- * and an archive moves its list, while sidebars (persisted shells), the header
- * and the footer stay untouched. Falls back to `main` only for pages without a
- * persisted shell inside it.
+ * A page can nominate its stage; only when it does not is the largest authored
+ * content stage measured. Measuring is the fallback, not the rule: on an article
+ * the column is tens of thousands of pixels tall and measuring it forces a full
+ * layout of the incoming document at the exact moment the entry cue needs to
+ * start. Sidebars (persisted shells), the header and the footer never qualify.
  */
 export function getRouteStage(): HTMLElement | null {
     const main = document.querySelector<HTMLElement>(MAIN);
     if (!main?.isConnected) return null;
+    const authored = main.querySelector<HTMLElement>(STAGE);
+    if (authored?.isConnected && !authored.closest(PERSIST)) return authored;
     const candidates: HTMLElement[] = [];
     const article = main.querySelector<HTMLElement>(ARTICLE);
     if (article) candidates.push(article);
@@ -177,17 +189,17 @@ export function getRouteMotionTarget(focus: HTMLElement | null): HTMLElement | n
 }
 
 const regionMotions: Record<Exclude<RouteMotionPreset, "none">, HeadingMotion> = {
-    glide: { opacity: 0.72, duration: 160 },
-    article: { opacity: 0.72, duration: 180, y: 4 },
-    enter: { opacity: 0.72, duration: 180, y: 6 },
-    up: { opacity: 0.8, duration: 160, y: -4 },
-    taxonomy: { opacity: 0.72, duration: 160, x: 6 },
-    previous: { opacity: 0.76, duration: 180, x: -8 },
-    next: { opacity: 0.76, duration: 180, x: 8 },
-    panel: { opacity: 0.76, duration: 160, y: 4 },
-    home: { opacity: 0.76, duration: 180, y: 4 },
+    glide: { opacity: 0.72, duration: 80 },
+    article: { opacity: 0.72, duration: 90, y: 4 },
+    enter: { opacity: 0.72, duration: 90, y: 6 },
+    up: { opacity: 0.8, duration: 80, y: -4 },
+    taxonomy: { opacity: 0.72, duration: 80, x: 6 },
+    previous: { opacity: 0.76, duration: 90, x: -8 },
+    next: { opacity: 0.76, duration: 90, x: 8 },
+    panel: { opacity: 0.76, duration: 80, y: 4 },
+    home: { opacity: 0.76, duration: 90, y: 4 },
     restore: { opacity: 1, duration: 0 },
-    error: { opacity: 0.85, duration: 100 },
+    error: { opacity: 0.85, duration: 50 },
 };
 
 /** Share Swup's actual content animation with background and analytics consumers. */
@@ -281,19 +293,18 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
                         spec.axis === "x"
                             ? `translate3d(${distance}px, 0, 0)`
                             : `translate3d(0, ${distance}px, 0)`;
-                    animation = stage.animate(
-                        {
-                            opacity: [spec.opacity, 1],
-                            transform: [from, "translate3d(0, 0, 0)"],
-                        },
-                        {
-                            duration: mobile ? Math.round(spec.duration * 0.9) : spec.duration,
-                            // Strong ease-out: quick arrival, soft settle. The
-                            // built-in ease-out is too weak to read at this size.
-                            easing: "cubic-bezier(0.23, 1, 0.32, 1)",
-                            fill: "both",
-                        },
-                    );
+                    // A zero distance is a cross-fade in place. Authoring a
+                    // translate3d(0,0,0) would put a 28,000px column on its own
+                    // compositor layer for nothing.
+                    const keyframes: PropertyIndexedKeyframes = { opacity: [spec.opacity, 1] };
+                    if (distance !== 0) keyframes.transform = [from, "translate3d(0, 0, 0)"];
+                    animation = stage.animate(keyframes, {
+                        duration: mobile ? Math.round(spec.duration * 0.9) : spec.duration,
+                        // Strong ease-out: quick arrival, soft settle. The
+                        // built-in ease-out is too weak to read at this size.
+                        easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+                        fill: "both",
+                    });
                 } else {
                     const spec = options?.content ? regionMotions[preset] : headingMotions[preset];
                     const keyframes: PropertyIndexedKeyframes = { opacity: [spec.opacity, 1] };
@@ -306,7 +317,7 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
                         ];
                     }
                     animation = target.animate(keyframes, {
-                        duration: mobile ? (options?.content ? 120 : 80) : spec.duration,
+                        duration: mobile ? (options?.content ? 60 : 40) : spec.duration,
                         easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
                         fill: "both",
                     });

@@ -28,6 +28,10 @@ export async function animateRouteOut(
     const distance = mobile ? Math.round(spec.distance * 0.6) : spec.distance;
     const to =
         spec.axis === "x" ? `translate3d(${distance}px, 0, 0)` : `translate3d(0, ${distance}px, 0)`;
+    // Article-to-article has no distance: the column fades out in place, matching
+    // the entry fade, so the shell stays put and only the content disappears.
+    const keyframes: PropertyIndexedKeyframes = { opacity: [1, 0] };
+    if (distance !== 0) keyframes.transform = ["translate3d(0, 0, 0)", to];
     let animation: Animation | undefined;
     const cancel = () => {
         const active = animation;
@@ -39,18 +43,13 @@ export async function animateRouteOut(
         }
     };
     try {
-        animation = stage.animate(
-            { opacity: [1, 0], transform: ["translate3d(0, 0, 0)", to] },
-            {
-                duration: mobile
-                    ? Math.round(spec.duration * 0.62)
-                    : Math.round(spec.duration * 0.58),
-                // Strong ease-in: the outgoing document accelerates away. An exit
-                // is the one place ease-in is correct; entrances use ease-out.
-                easing: "cubic-bezier(0.4, 0, 1, 1)",
-                fill: "forwards",
-            },
-        );
+        animation = stage.animate(keyframes, {
+            duration: mobile ? Math.round(spec.duration * 0.62) : Math.round(spec.duration * 0.58),
+            // Strong ease-in: the outgoing document accelerates away. An exit
+            // is the one place ease-in is correct; entrances use ease-out.
+            easing: "cubic-bezier(0.4, 0, 1, 1)",
+            fill: "forwards",
+        });
         signal.addEventListener("abort", cancel, { once: true });
         await animation.finished;
         // The stage node survives the swap, so this filled effect is what holds

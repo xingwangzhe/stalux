@@ -7,7 +7,12 @@ import { getCategoryCountList } from "@utils/collections-stats";
 const categoryList = await getCategoryCountList(Astro.logger);
 ---
 
-<ul class="stalux-categories" data-stalux-motion-content data-stalux-reveal>
+<ul
+    class="stalux-categories"
+    data-stalux-motion-content
+    data-stalux-motion-stage
+    data-stalux-reveal
+>
     {categoryList.map((category) => (
         <li data-stalux-reveal-item>
             <CategoriesCard category={category} />

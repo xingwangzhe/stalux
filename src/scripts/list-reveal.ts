@@ -4,13 +4,17 @@ const ITEM = ":scope > [data-stalux-reveal-item]";
 // never a queue long enough to keep the reader waiting for the last item.
 const MAX_CONTAINERS = 48;
 const MAX_ITEMS = 16;
-const STAGGER_MS = 45;
-const MAX_DELAY_MS = 400;
-const DURATION_MS = 380;
+// The whole unroll budget is lead-in + max delay + row duration. At the previous
+// 150 + 400 + 380 the tail alone ran 930ms after the swap, which readers report
+// as the page still moving a second later. Every number here is half of that, so
+// the same sheet reads in one motion without the wait.
+const STAGGER_MS = 22;
+const MAX_DELAY_MS = 200;
+const DURATION_MS = 190;
 // When a route cue is already moving the page body, the sheet waits for it to
 // mostly settle before unrolling. Starting both at once makes the rows wipe
 // open while the whole page is still semi-transparent, which reads as a smudge.
-const ROUTE_LEAD_IN_MS = 150;
+const ROUTE_LEAD_IN_MS = 75;
 // Strong ease-out: the row arrives fast and settles softly. The built-in
 // ease-out is too weak to read at this size.
 const EASING = "cubic-bezier(0.23, 1, 0.32, 1)";
@@ -59,7 +63,15 @@ function canReveal(): boolean {
 
 function groups(): HTMLElement[] {
     return [...document.querySelectorAll<HTMLElement>(CONTAINER)]
-        .filter((element) => !element.closest("[data-swup-persist]"))
+        .filter(
+            (element) =>
+                // A retained shell kept its identity, so its list was already
+                // read: cueing it again would be a second animation. Contents
+                // that shell-hydration just replaced are new content and are
+                // explicitly marked as such.
+                element.hasAttribute("data-stalux-shell-fresh") ||
+                !element.closest("[data-swup-persist]"),
+        )
         .slice(0, MAX_CONTAINERS);
 }
 

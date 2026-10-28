@@ -12,6 +12,7 @@ import "./navigation-client";
 import { prepareNavigationScripts } from "./navigation-scripts";
 import { prepareRouteMotion, type RouteMotion } from "./route-motion";
 import { animateRouteOut } from "./route-out";
+import { hydrateShells, markRetainedShells } from "./shell-hydration";
 import { cancelPageScroll, glideToTop, type PageGlide, scrollPage } from "./smooth-scroll";
 
 interface NavigationContext {
@@ -283,6 +284,9 @@ export function installSwupRouter(): Swup {
         html.dataset.staluxVtPreset = context.preset;
         context.motion = prepareRouteMotion(dispatchNavigation("astro:before-swap", context, next));
         if (context.controller.signal.aborted) return;
+        // Remember which shells exist now: after the swap only those slots need
+        // refilling, because only those nodes came from the previous document.
+        markRetainedShells();
         await replace(visit, args);
         // The stage node survives the swap, so the filled exit effect still holds
         // the incoming document at zero opacity. It is released inside
@@ -306,6 +310,10 @@ export function installSwupRouter(): Swup {
         }
         html.dataset.staluxRoute = getRouteKind(context.to.pathname);
         visibleHistoryIndex = Number(window.history.state?.index ?? visibleHistoryIndex);
+        // Kept shells whose contents belong to the page (the article sidebars'
+        // lists) take their children from the incoming document now, before any
+        // page module mounts, so nothing needs to re-render or re-measure later.
+        hydrateShells(next);
         dispatchNavigation("astro:after-swap", context, next);
         // The entry cue has to own the first painted frame of the new document.
         // content:scroll is an await and a rAF away, and running the incoming

@@ -220,7 +220,7 @@ describe("native analytics navigation", () => {
         await vi.advanceTimersByTimeAsync(32);
         expect(animate).toHaveBeenCalledWith(
             { opacity: [0.86, 1] },
-            { duration: 100, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
+            { duration: 50, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
         );
         expect(animation.cancel).not.toHaveBeenCalled();
         expect(gtag.mock.calls.filter(([, name]) => name === "page_view")).toHaveLength(1);

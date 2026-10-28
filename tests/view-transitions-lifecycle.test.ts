@@ -476,7 +476,7 @@ describe("Swup navigation bridge and persistent shell", () => {
         expect(finished).toBe(false);
         expect(article.animate).toHaveBeenCalledWith(
             { opacity: [0, 1], transform: ["translate3d(0, 56px, 0)", "translate3d(0, 0, 0)"] },
-            { duration: 340, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "both" },
+            { duration: 170, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "both" },
         );
         // The persisted sidebars belong to the shell, not to the route cue.
         expect(sidebar.animate).not.toHaveBeenCalled();

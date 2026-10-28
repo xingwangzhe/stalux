@@ -19,7 +19,12 @@ const sorted = [...entries].sort((a, b) => {
 });
 ---
 
-<ul class="stalux-word-list-list" data-stalux-motion-content data-stalux-reveal>
+<ul
+    class="stalux-word-list-list"
+    data-stalux-motion-content
+    data-stalux-motion-stage
+    data-stalux-reveal
+>
     {sorted.map((entry) => {
         return (
             <li class="stalux-word-list-item" data-stalux-reveal-item>

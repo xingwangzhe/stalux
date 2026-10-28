@@ -44,7 +44,7 @@ export function mountModuleMotion(): (() => void) | undefined {
                     const animation = element.animate(
                         { opacity: [0.88, 1] },
                         {
-                            duration: 140,
+                            duration: 70,
                             easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
                         },
                     );

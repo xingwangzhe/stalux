@@ -14,7 +14,14 @@ interface Props {
 const { headings = [], tags = [], categories = [] } = Astro.props;
 ---
 
-<aside class="stalux-sidebar-right" data-stalux-scroll-pane>
+<!--
+    The right column is a shell. Between two articles it keeps its node, its
+    scroll position and its frame; only the three article-specific lists inside
+    the slots are refreshed (see scripts/shell-hydration.ts). Rebuilding the whole
+    aside on every article change made the reader watch the sidebar disappear and
+    reflow, and it cost a full layout of the new article to do it.
+-->
+<aside class="stalux-sidebar-right" data-stalux-scroll-pane data-swup-persist="post-sidebar-right">
     <div
         class="stalux-sidebar-container"
         data-stalux-module="sidebar"
@@ -23,13 +30,13 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
         <PostDate />
         <Weather />
     </div>
-    <div class="stalux-sidebar-container">
+    <div class="stalux-sidebar-container" data-stalux-shell-slot="toc">
         <PostToc headings={headings} />
     </div>
-    <div class="stalux-sidebar-container">
+    <div class="stalux-sidebar-container" data-stalux-shell-slot="tags">
         <PostTaxonomy kind="tag" items={tags} />
     </div>
-    <div class="stalux-sidebar-container">
+    <div class="stalux-sidebar-container" data-stalux-shell-slot="categories">
         <PostTaxonomy kind="category" items={categories} />
     </div>
 </aside>

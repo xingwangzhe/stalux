@@ -15,6 +15,7 @@ type Item = {
 };
 type Container = {
     closest: (selector: string) => Element | null;
+    hasAttribute: (name: string) => boolean;
     querySelectorAll: (selector: string) => Item[];
     getBoundingClientRect: () => { top: number; bottom: number; width: number; height: number };
 };
@@ -40,9 +41,17 @@ const item = (): Item => {
     };
     return { animate: vi.fn(() => animation), animation, isConnected: true };
 };
-const container = (items: Item[], persisted = false, atTop = 100): Container => ({
+const container = (
+    items: Item[],
+    persisted = false,
+    atTop = 100,
+    hydratedIntoShell = false,
+): Container => ({
     closest: (selector: string) =>
         persisted && selector === "[data-swup-persist]" ? ({} as Element) : null,
+    // A list whose frame was kept but whose contents were replaced still gets
+    // the cue, so hydration marks it.
+    hasAttribute: (name: string) => hydratedIntoShell && name === "data-stalux-shell-fresh",
     querySelectorAll: () => items,
     // Rows sit at `atTop` in the viewport; a group far below is off-screen.
     getBoundingClientRect: () => ({ top: atTop, bottom: atTop + 400, width: 800, height: 400 }),
@@ -107,11 +116,11 @@ it("unrolls one bounded group once it becomes visible", () => {
                 transform: "translate3d(0, 0, 0)",
             },
         ],
-        expect.objectContaining({ duration: 380, delay: 0, fill: "backwards" }),
+        expect.objectContaining({ duration: 190, delay: 0, fill: "backwards" }),
     );
     expect(at(items, 15).animate).toHaveBeenCalledWith(expect.anything(), {
-        duration: 380,
-        delay: 400,
+        duration: 190,
+        delay: 200,
         easing: "cubic-bezier(0.23, 1, 0.32, 1)",
         fill: "backwards",
     });
@@ -129,7 +138,7 @@ it("lets a running route cue settle before the sheet starts unrolling", () => {
     enter(group);
     expect(at(items).animate).toHaveBeenCalledWith(
         expect.anything(),
-        expect.objectContaining({ delay: 150 }),
+        expect.objectContaining({ delay: 75 }),
     );
     dispose?.();
 });
@@ -186,7 +195,7 @@ it("holds the incoming rows on the start frame before the observer fires", () =>
     expect(at(items).animation.play).toHaveBeenCalledOnce();
     // The stagger counts from the moment the group is actually on screen.
     expect(at(items).animation.effect.updateTiming).toHaveBeenCalledWith({ delay: 0 });
-    expect(at(items, 1).animation.effect.updateTiming).toHaveBeenCalledWith({ delay: 45 });
+    expect(at(items, 1).animation.effect.updateTiming).toHaveBeenCalledWith({ delay: 22 });
     dispose?.();
 });
 
