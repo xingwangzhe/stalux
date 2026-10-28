@@ -11,7 +11,7 @@ export function mountModuleMotion(): (() => void) | undefined {
         typeof IntersectionObserver !== "function"
     )
         return;
-    const elements = [...document.querySelectorAll<HTMLElement>(SELECTOR)].slice(0, MAX_REGIONS);
+    const elements = [...document.querySelectorAll<Element>(SELECTOR)].slice(0, MAX_REGIONS);
     if (!elements.length) return;
     const active = new Set<Animation>();
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -23,9 +23,9 @@ export function mountModuleMotion(): (() => void) | undefined {
         (entries) => {
             for (const entry of entries) {
                 if (!entry.isIntersecting) continue;
-                // Observed targets are always elements; the lib types them as the
-                // Element supertype only.
-                const element = entry.target as HTMLElement;
+                // Element already covers everything used below (closest, animate),
+                // so the observer's target needs no assertion.
+                const element = entry.target;
                 observer.unobserve(element);
                 // The router owns a single bounded lead region. Do not layer an
                 // observer entry over that motion or make long comments slide.

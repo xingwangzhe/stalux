@@ -36,9 +36,11 @@ type Position = { top: number; left: number; focus?: string };
 const MAIN = "main[data-stalux-route]";
 
 function abortObsoleteVisit(visit: Visit): void {
-    // Swup 4.10 ships abort() but strips @internal members from its .d.ts.
-    // Pin core to that audited version; recheck this adapter when upgrading it.
-    (visit as Visit & { abort: () => void }).abort();
+    // `abort()` is @internal in swup 4.10.0 and stripped from the published
+    // types; swup-internals.d.ts restores the declaration, so this is checked
+    // like any other member. The guard keeps a future removal from throwing in
+    // the middle of a navigation: every caller returns right after this anyway.
+    if (typeof visit.abort === "function") visit.abort();
 }
 
 function dispatchNavigation(name: string, context: NavigationContext, nextDocument?: Document) {
@@ -89,9 +91,9 @@ export function installSwupRouter(): Swup {
     window.addEventListener(
         "popstate",
         (event) => {
-            browserMotion =
-                (event as PopStateEvent & { hasUAVisualTransition?: boolean })
-                    .hasUAVisualTransition === true;
+            // hasUAVisualTransition is part of the DOM lib's PopStateEvent, so
+            // this reads the event directly; the listener is typed for popstate.
+            browserMotion = event.hasUAVisualTransition === true;
         },
         { capture: true },
     );

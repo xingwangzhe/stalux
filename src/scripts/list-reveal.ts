@@ -50,7 +50,10 @@ interface Held {
     stagger: number;
     timer: ReturnType<typeof setTimeout>;
 }
-const held = new Map<HTMLElement, Held>();
+// Rows and groups are only ever queried, measured and animated, all of which
+// Element already provides. Typing them as HTMLElement forced a cast on the
+// observer's target for no gain.
+const held = new Map<Element, Held>();
 
 function canReveal(): boolean {
     if (typeof IntersectionObserver !== "function") return false;
@@ -61,8 +64,8 @@ function canReveal(): boolean {
     return document.documentElement.dataset.staluxVtPreset !== "restore";
 }
 
-function groups(): HTMLElement[] {
-    return [...document.querySelectorAll<HTMLElement>(CONTAINER)]
+function groups(): Element[] {
+    return [...document.querySelectorAll<Element>(CONTAINER)]
         .filter(
             (element) =>
                 // A retained shell kept its identity, so its list was already
@@ -75,8 +78,8 @@ function groups(): HTMLElement[] {
         .slice(0, MAX_CONTAINERS);
 }
 
-function rows(group: HTMLElement): HTMLElement[] {
-    return [...group.querySelectorAll<HTMLElement>(ITEM)].slice(0, MAX_ITEMS);
+function rows(group: Element): Element[] {
+    return [...group.querySelectorAll<Element>(ITEM)].slice(0, MAX_ITEMS);
 }
 
 /**
@@ -88,7 +91,7 @@ function rows(group: HTMLElement): HTMLElement[] {
  * the entry cue needed. Groups further down the page keep the authored visible
  * state and start their wipe when they scroll in, which never flashed anyway.
  */
-function nearViewport(group: HTMLElement): boolean {
+function nearViewport(group: Element): boolean {
     const rect = group.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return false;
     const margin = window.innerHeight * 0.5;
@@ -142,6 +145,11 @@ export function primeListReveal(): void {
                     fill: "backwards",
                 });
                 animation.pause();
+                // A paused effect only ever settles by rejecting when the hold is
+                // released, and nothing awaits it yet: without a handler that is an
+                // unhandled rejection in the console. `reveal` attaches the real
+                // handler when it takes the effect over.
+                void animation.finished.catch(() => undefined);
                 const timer = setTimeout(() => {
                     // The visit was abandoned: release the row so the authored
                     // visible state returns rather than staying clipped.
@@ -191,7 +199,7 @@ export function mountListReveal(): (() => void) | undefined {
         for (const animation of active) animation.cancel();
         active.clear();
     };
-    const reveal = (container: HTMLElement) => {
+    const reveal = (container: Element) => {
         if (document.hidden || preference.matches) return;
         const lead = leadIn();
         for (const [index, row] of rows(container).entries()) {
@@ -238,10 +246,7 @@ export function mountListReveal(): (() => void) | undefined {
             for (const entry of entries) {
                 if (!entry.isIntersecting) continue;
                 observer.unobserve(entry.target);
-                // IntersectionObserverEntry.target is typed as Element, but this
-                // observer only ever observes group elements; the cast states the
-                // contract we set up when observing.
-                reveal(entry.target as HTMLElement);
+                reveal(entry.target);
             }
         },
         { threshold: 0.05 },
