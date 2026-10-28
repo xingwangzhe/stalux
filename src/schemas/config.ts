@@ -164,7 +164,7 @@ export const commentSchema = z.object({
         .object({
             serverURL: z.url("comment.waline.serverURL must be a valid URL").optional(),
             lang: z.string().optional().default("zh-CN"),
-            locale: z.any().optional(),
+            locale: z.unknown().optional(),
             emoji: z
                 .array(z.string())
                 .optional()
@@ -181,10 +181,10 @@ export const commentSchema = z.object({
             dark: z.union([z.string(), z.boolean()]).optional().default(true),
             noCopyright: z.boolean().optional().default(false),
             commentSorting: z.string().optional().default("latest"),
-            imageUploader: z.any().optional(),
-            highlighter: z.any().optional(),
-            texRenderer: z.any().optional(),
-            search: z.any().optional(),
+            imageUploader: z.unknown().optional(),
+            highlighter: z.unknown().optional(),
+            texRenderer: z.unknown().optional(),
+            search: z.unknown().optional(),
             wordLimit: z.number().optional().default(200),
             pageSize: z.number().optional().default(10),
         })
