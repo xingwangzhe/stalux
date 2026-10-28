@@ -428,6 +428,12 @@ describe("Swup navigation bridge and persistent shell", () => {
         fonts.resolve();
         await preparing;
         expect(state.order).toContain("after-preparation");
+        // The entry cue is created by the router inside the swap, so its own
+        // animation call is ordered against the swap, not against content:scroll.
+        article.animate.mockImplementation(() => {
+            state.order.push("animate");
+            return { finished: animationFinished.promise, cancel: vi.fn() };
+        });
         let replaced = false;
         const replacing = Promise.resolve(
             hook("replace", "content:replace", navigation, {}, async () => {
@@ -448,11 +454,10 @@ describe("Swup navigation bridge and persistent shell", () => {
             finished = true;
         });
         await settle();
-        expect(ready).toBe(false);
-        article.animate.mockImplementation(() => {
-            state.order.push("animate");
-            return { finished: animationFinished.promise, cancel: vi.fn() };
-        });
+        // Ready as soon as the swap installed the cue. Holding it back until
+        // content:scroll let one or more finished frames paint first, which is
+        // the jump the reader saw as the page shaking.
+        expect(ready).toBe(true);
         await hook("replace", "content:scroll", navigation, {}, async () => {
             state.order.push("scroll");
         });
@@ -488,9 +493,11 @@ describe("Swup navigation bridge and persistent shell", () => {
             "before-swap",
             "swap",
             "after-swap",
+            // The cue owns the first painted frame of the new document, so it
+            // starts before the incoming scripts are executed.
+            "animate",
             "scripts-start",
             "scroll",
-            "animate",
             "scripts-ready",
             "page-load",
         ]);
@@ -529,6 +536,12 @@ describe("Swup navigation bridge and persistent shell", () => {
             await settle();
             let shared: RouteMotion | undefined;
             let signal: AbortSignal | undefined;
+            const cancels: ReturnType<typeof vi.fn>[] = [];
+            article.animate.mockImplementation(() => {
+                const cancel = vi.fn();
+                cancels.push(cancel);
+                return { finished: animationFinished.promise, cancel };
+            });
             const { prepareRouteMotion } = await import("../src/scripts/route-motion");
             documentMock.addEventListener("astro:before-swap", (event) => {
                 shared = prepareRouteMotion(event as RouteMotionEvent);
@@ -538,13 +551,18 @@ describe("Swup navigation bridge and persistent shell", () => {
             hook("on", "visit:start", navigation);
             await hook("before", "content:replace", navigation);
             await hook("replace", "content:replace", navigation, {}, async () => {});
+            // The entry cue starts inside the swap, so an aborted or failed visit
+            // has to take it back: a surviving fill would leave the page
+            // transparent or pushed off its real position.
+            expect(cancels).toHaveLength(1);
             hook("on", reason, navigation);
             await Promise.all([shared?.ready, shared?.finished]);
+            expect(cancels[0]).toHaveBeenCalled();
             expect(signal?.aborted).toBe(true);
             expect(documentMock.documentElement.dataset.staluxVtPreset).toBeUndefined();
             expect(documentMock.documentElement.removeAttribute).toHaveBeenCalledWith("aria-busy");
             hook("on", "page:view", navigation);
-            expect(article.animate).not.toHaveBeenCalled();
+            expect(article.animate).toHaveBeenCalledOnce();
             expect(sidebar.animate).not.toHaveBeenCalled();
         },
     );
@@ -762,6 +780,9 @@ describe("Swup navigation bridge and persistent shell", () => {
             });
             hook("on", "visit:start", back);
             await hook("before", "content:replace", back);
+            // The forward visit already put the page at its own top inside the
+            // swap; only the restored position is under test here.
+            windowMock.scrollTo.mockClear();
             await hook("replace", "content:replace", back, {}, async () => {});
             await hook("replace", "content:scroll", back, {}, vi.fn());
             expect(windowMock.scrollTo).toHaveBeenCalledExactlyOnceWith({

@@ -307,6 +307,33 @@ export function installSwupRouter(): Swup {
         html.dataset.staluxRoute = getRouteKind(context.to.pathname);
         visibleHistoryIndex = Number(window.history.state?.index ?? visibleHistoryIndex);
         dispatchNavigation("astro:after-swap", context, next);
+        // The entry cue has to own the first painted frame of the new document.
+        // content:scroll is an await and a rAF away, and running the incoming
+        // scripts can block the main thread for hundreds of milliseconds: the
+        // reader would see the finished page for one or more frames and only
+        // then watch it jump to the entry offset and slide back, which reads as
+        // the page shaking. Put the scroll at its final position and start the
+        // cue in this same synchronous block, before the scripts run, so the
+        // compositor already owns the cue while the main thread is busy. A visit
+        // with a hash or a history traversal keeps the deferred path, because its
+        // scroll is not decided yet.
+        if (
+            // A history traversal restores a position that is only known later,
+            // and a hash target is decided by the anchor.
+            !visit.history.popstate &&
+            context.navigationType !== "traverse" &&
+            !context.to.hash &&
+            context.preset !== "none" &&
+            // ScrollPlugin owns visit.scroll; a bare visit has no reset flag.
+            visit.scroll?.reset !== false
+        ) {
+            const position = scroll.getCachedScrollPositions?.(visit.to.url)?.window;
+            const top = position?.top ?? 0;
+            const left = position?.left ?? 0;
+            if (window.scrollY !== top || window.scrollX !== left)
+                window.scrollTo({ top, left, behavior: "instant" });
+            startMotion(visit);
+        }
         context.scriptsReady = context.executeScripts?.(context.controller.signal);
     });
 

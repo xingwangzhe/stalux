@@ -20,6 +20,138 @@ const EASING = "cubic-bezier(0.23, 1, 0.32, 1)";
 const BLEED = "-10px";
 const UNROLL_START = `inset(${BLEED} ${BLEED} 100% ${BLEED})`;
 const UNROLL_END = `inset(${BLEED} ${BLEED} ${BLEED} ${BLEED})`;
+const UNROLL_KEYFRAMES: Keyframe[] = [
+    {
+        clipPath: UNROLL_START,
+        opacity: 0.4,
+        transform: "translate3d(0, -10px, 0)",
+    },
+    {
+        clipPath: UNROLL_END,
+        opacity: 1,
+        transform: "translate3d(0, 0, 0)",
+    },
+];
+// A swap can leave a row waiting at the start frame until it is scrolled into
+// view. Keep the bookkeeping bounded; a runaway map would pin removed nodes.
+const MAX_HELD = MAX_CONTAINERS * MAX_ITEMS;
+// A held row that never reaches the viewport would sit clipped forever if the
+// visit were abandoned before the observer ever ran. Releasing it after this
+// long is safe: an unheld row falls back to the original path, which starts the
+// wipe on its own without a flash.
+const HOLD_TIMEOUT_MS = 5000;
+
+interface Held {
+    animation: Animation;
+    stagger: number;
+    timer: ReturnType<typeof setTimeout>;
+}
+const held = new Map<HTMLElement, Held>();
+
+function canReveal(): boolean {
+    if (typeof IntersectionObserver !== "function") return false;
+    if (typeof document === "undefined") return false;
+    if (document.hidden) return false;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+    // Returning to a history entry restores what the reader already saw.
+    return document.documentElement.dataset.staluxVtPreset !== "restore";
+}
+
+function groups(): HTMLElement[] {
+    return [...document.querySelectorAll<HTMLElement>(CONTAINER)]
+        .filter((element) => !element.closest("[data-swup-persist]"))
+        .slice(0, MAX_CONTAINERS);
+}
+
+function rows(group: HTMLElement): HTMLElement[] {
+    return [...group.querySelectorAll<HTMLElement>(ITEM)].slice(0, MAX_ITEMS);
+}
+
+/**
+ * Only a group the reader can already see is worth holding.
+ *
+ * Every held row costs a live effect on the compositor. An archive page carries
+ * one group per month, so holding all of them at swap time built hundreds of
+ * paused effects inside the swap frame — a 200-400ms task that dropped the frame
+ * the entry cue needed. Groups further down the page keep the authored visible
+ * state and start their wipe when they scroll in, which never flashed anyway.
+ */
+function nearViewport(group: HTMLElement): boolean {
+    const rect = group.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return false;
+    const margin = window.innerHeight * 0.5;
+    return rect.top < window.innerHeight + margin && rect.bottom > -margin;
+}
+
+function staggerOf(index: number): number {
+    return Math.min(index * STAGGER_MS, MAX_DELAY_MS);
+}
+
+function leadIn(): number {
+    // A route cue leaves its preset on the document element while it runs.
+    return document.documentElement.dataset.staluxVtPreset ? ROUTE_LEAD_IN_MS : 0;
+}
+
+/**
+ * Hold every incoming row on the wipe's first frame the moment the router has
+ * its new document, before the browser paints it.
+ *
+ * Without this the swap paints the finished list for one frame, the observer
+ * fires a frame later, and the rows appear to flash, vanish, then unroll. A
+ * paused effect still paints its `backwards` fill, so priming here makes the
+ * first painted frame the *start* of the wipe: the reader only ever sees the
+ * sheet hidden, then unrolling.
+ */
+export function primeListReveal(): void {
+    if (!canReveal()) return;
+    // Rows from the document that was just replaced can never be revealed
+    // again; drop their paused effects instead of pinning detached nodes.
+    for (const [row, entry] of held) {
+        if (row.isConnected) continue;
+        held.delete(row);
+        clearTimeout(entry.timer);
+        entry.animation.cancel();
+    }
+    for (const group of groups()) {
+        // A group that is not laid out (the desktop tag cloud hides the mobile
+        // card groups, and vice versa) could never play its effect, and a group
+        // that is still off-screen must not add effects to the swap frame.
+        if (!nearViewport(group)) continue;
+        for (const [index, row] of rows(group).entries()) {
+            if (held.has(row) || held.size >= MAX_HELD) continue;
+            if (typeof row.animate !== "function") continue;
+            try {
+                const animation = row.animate(UNROLL_KEYFRAMES, {
+                    duration: DURATION_MS,
+                    delay: 0,
+                    easing: EASING,
+                    // The paused effect still paints this first frame, which is
+                    // what removes the flash.
+                    fill: "backwards",
+                });
+                animation.pause();
+                const timer = setTimeout(() => {
+                    // The visit was abandoned: release the row so the authored
+                    // visible state returns rather than staying clipped.
+                    if (!held.has(row)) return;
+                    held.delete(row);
+                    animation.cancel();
+                }, HOLD_TIMEOUT_MS);
+                held.set(row, { animation, stagger: staggerOf(index), timer });
+            } catch {
+                /* An unsupported effect leaves the authored visible row. */
+            }
+        }
+    }
+}
+
+function cancelHeld(): void {
+    for (const [row, entry] of held) {
+        held.delete(row);
+        clearTimeout(entry.timer);
+        entry.animation.cancel();
+    }
+}
 
 /**
  * Rows unroll into place like paper: each one wipes open from its top edge
@@ -32,50 +164,50 @@ const UNROLL_END = `inset(${BLEED} ${BLEED} ${BLEED} ${BLEED})`;
  * clipped state can outlive the animation.
  */
 export function mountListReveal(): (() => void) | undefined {
-    if (typeof IntersectionObserver !== "function") return;
+    if (!canReveal()) return;
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (preference.matches || document.hidden) return;
-    // Returning to a history entry restores what the reader already saw.
-    if (document.documentElement.dataset.staluxVtPreset === "restore") return;
-    const containers = [...document.querySelectorAll<HTMLElement>(CONTAINER)]
-        .filter((element) => !element.closest("[data-swup-persist]"))
-        .slice(0, MAX_CONTAINERS);
+    const containers = groups();
     if (!containers.length) return;
-    // A route cue leaves its preset on the document element while it runs.
-    const leadIn = document.documentElement.dataset.staluxVtPreset ? ROUTE_LEAD_IN_MS : 0;
 
     const active = new Set<Animation>();
-    const cancel = () => {
+    // Disposal runs on every same-document remount (page-runtime remounts on
+    // page-load). Releasing the held rows there would paint the finished list
+    // for a frame and clip it again on the next mount, which is the very flash
+    // this file removes. Held rows are released by the observer, by the timeout
+    // or by a reduced-motion switch instead.
+    const cancelActive = () => {
         for (const animation of active) animation.cancel();
         active.clear();
     };
     const reveal = (container: HTMLElement) => {
         if (document.hidden || preference.matches) return;
-        const items = [...container.querySelectorAll<HTMLElement>(ITEM)].slice(0, MAX_ITEMS);
-        for (const [index, item] of items.entries()) {
-            if (typeof item.animate !== "function") continue;
+        const lead = leadIn();
+        for (const [index, row] of rows(container).entries()) {
+            if (typeof row.animate !== "function") continue;
+            // Prefer the effect created during the swap: it already owns the
+            // start frame, so starting it here never shows a finished row.
+            const primed = held.get(row);
+            if (primed) {
+                held.delete(row);
+                clearTimeout(primed.timer);
+            }
             try {
-                const animation = item.animate(
-                    [
-                        {
-                            clipPath: UNROLL_START,
-                            opacity: 0.4,
-                            transform: "translate3d(0, -10px, 0)",
-                        },
-                        {
-                            clipPath: UNROLL_END,
-                            opacity: 1,
-                            transform: "translate3d(0, 0, 0)",
-                        },
-                    ],
-                    {
+                const animation =
+                    primed?.animation ??
+                    row.animate(UNROLL_KEYFRAMES, {
                         duration: DURATION_MS,
-                        delay: leadIn + Math.min(index * STAGGER_MS, MAX_DELAY_MS),
+                        delay: lead + staggerOf(index),
                         easing: EASING,
                         // Hidden during the stagger delay instead of popping in.
                         fill: "backwards",
-                    },
-                );
+                    });
+                if (primed) {
+                    // The stagger is counted from now, not from the swap.
+                    primed.animation.effect?.updateTiming({
+                        delay: lead + primed.stagger,
+                    });
+                    primed.animation.play();
+                }
                 active.add(animation);
                 const release = () => {
                     active.delete(animation);
@@ -84,7 +216,8 @@ export function mountListReveal(): (() => void) | undefined {
                 };
                 void animation.finished.then(release, release);
             } catch {
-                /* An unsupported effect leaves the authored visible list. */
+                // A paused row would stay clipped forever otherwise.
+                primed?.animation.cancel();
             }
         }
     };
@@ -99,10 +232,30 @@ export function mountListReveal(): (() => void) | undefined {
         { threshold: 0.05 },
     );
     for (const container of containers) observer.observe(container);
-    preference.addEventListener("change", cancel);
+    const stopMotion = () => {
+        cancelActive();
+        // The reader asked for less motion: nothing may stay clipped.
+        cancelHeld();
+    };
+    preference.addEventListener("change", stopMotion);
     return () => {
         observer.disconnect();
-        preference.removeEventListener("change", cancel);
-        cancel();
+        preference.removeEventListener("change", stopMotion);
+        cancelActive();
     };
+}
+
+// The router dispatches this synchronously after replacing the main node and
+// before the browser paints, which is the only moment where the incoming rows
+// can be held without a visible flash. Registered once per document even when
+// both the shared layout and the article layout import this module.
+interface PrimeHost {
+    __staluxListRevealPrime?: boolean;
+}
+if (typeof document !== "undefined" && typeof window !== "undefined") {
+    const host = document as Document & PrimeHost;
+    if (!host.__staluxListRevealPrime) {
+        host.__staluxListRevealPrime = true;
+        document.addEventListener("astro:after-swap", primeListReveal);
+    }
 }
