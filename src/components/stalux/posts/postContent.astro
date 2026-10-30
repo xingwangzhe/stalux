@@ -13,6 +13,7 @@ interface Props {
     postId?: string | number;
     title: string;
     description?: string;
+    searchKeywords?: string[];
     transitionName?: string;
     titleTransitionName?: string;
     transitionScope?: "article" | "about";
@@ -45,7 +46,12 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
 >
     <!-- Article Header -->
     <header class="stalux-post-article-header" data-stalux-motion-region>
-        <h1 class="stalux-post-title" data-stalux-motion-focus>
+        <h1
+            class="stalux-post-title"
+            data-stalux-motion-focus
+            data-pagefind-body
+            data-pagefind-meta="title"
+        >
             {props.title}
         </h1>
         <div class="stalux-post-metadata">
@@ -110,6 +116,14 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "
         label={t("post.summary")}
         transitionName={`${transitionPrefix}-summary`}
     />
+
+    <span
+        hidden
+        data-pagefind-body
+        data-stalux-search-keywords
+        data-pagefind-index-attrs="data-search-keywords"
+        data-search-keywords={(props.searchKeywords ?? []).join(" ")}
+    ></span>
 
     <!-- Article Body -->
     <section

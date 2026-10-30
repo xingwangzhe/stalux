@@ -2,8 +2,10 @@
 // Pagefind component-ui search modal.
 // Docs: https://pagefind.app/llms-component-ui.txt
 // data-pf-theme must be on a DIRECT parent wrapper of the component.
+import { sitePath } from "../../../utils/site-path";
 ---
 
 <div data-pf-theme="dark">
+    <pagefind-config bundle-path={sitePath("pagefind-enhanced/")}></pagefind-config>
     <pagefind-modal id="search"></pagefind-modal>
 </div>

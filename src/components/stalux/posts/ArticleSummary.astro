@@ -16,7 +16,14 @@ const summary = description?.trim();
         aria-label={label}
     >
         <p class="stalux-article-summary-label">{label}</p>
-        <p class="stalux-article-summary-text">{summary}</p>
+        <p
+            class="stalux-article-summary-text"
+            data-pagefind-body
+            data-pagefind-weight="2"
+            data-stalux-search-description
+        >
+            {summary}
+        </p>
     </aside>
 )}
 

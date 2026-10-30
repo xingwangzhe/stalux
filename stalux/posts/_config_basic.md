@@ -75,6 +75,7 @@ Optional frontmatter:
 
 | Field        | Type     | Default           | Description                              |
 | ------------ | -------- | ----------------- | ---------------------------------------- |
+| `searchKeywords` | string[] | empty | Optional public search aliases; indexed in HTML and CJK search files. Never include secrets. |
 | `updated`    | string   | —                 | Update time                              |
 | `draft`      | boolean  | `false`           | Hide from published lists                |
 | `tags`       | string[] | —                 | Tag array (single string auto-converted) |

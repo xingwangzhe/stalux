@@ -29,6 +29,7 @@ import { parse } from "parse5";
 import { parse as parseYaml } from "yaml";
 import type { StaluxOptions } from "./config";
 import { expressiveCode } from "./expressive-code";
+import { writeCjkSearchIndex } from "./internal/cjk-search-index";
 import { staluxComponentsAlias } from "./internal/components-plugin";
 import {
     clearPageFontSubsets,
@@ -126,6 +127,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     // is served from the page-output cache still finds its file on disk.
     let coverCacheDir = "";
 
+    let searchBase = "/";
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
 
     const coreIntegration: AstroIntegration = {
@@ -140,6 +142,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 command,
                 logger,
             }) => {
+                searchBase = config.base;
                 const started = performance.now();
                 const isPluginMode = isPluginProject(config.root, new URL("../", import.meta.url));
                 const configLogger = logger.fork("stalux/config");
@@ -619,7 +622,9 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     const pagefindStarted = performance.now();
 
                     try {
-                        const { index, errors } = await pagefindCreateIndex();
+                        const { index, errors } = await pagefindCreateIndex({
+                            includeCharacters: "+#._",
+                        });
 
                         if (!index) {
                             throw new Error(
@@ -627,14 +632,21 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             );
                         }
 
-                        const { page_count } = await index.addDirectory({ path: outDir });
+                        const { page_count, errors: crawlErrors } = await index.addDirectory({
+                            path: outDir,
+                        });
+                        if (crawlErrors.length) throw new Error(crawlErrors.join("; "));
                         if (page_count === 0) {
                             throw new Error("Pagefind did not index any pages");
                         }
 
-                        const { outputPath } = await index.writeFiles({
+                        const { outputPath, errors: writeErrors } = await index.writeFiles({
                             outputPath: path.join(outDir, "pagefind"),
                         });
+
+                        if (writeErrors.length) throw new Error(writeErrors.join("; "));
+                        const cjkPages = await writeCjkSearchIndex(outDir, pageEntries, searchBase);
+                        logger.info(`CJK substring index: ${cjkPages} pages`);
 
                         logger.info(
                             `indexed ${page_count} pages → ${outputPath} (${(performance.now() - pagefindStarted).toFixed(1)}ms)`,

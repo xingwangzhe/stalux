@@ -88,6 +88,7 @@ const postSchema = z.object({
     date: datetimeField("date"),
     updated: datetimeField("updated").optional(),
     draft: z.boolean().optional().default(false),
+    searchKeywords: z.array(z.string().trim().min(1)).optional(),
     tags: z.preprocess(
         (val) => (typeof val === "string" ? [val] : val),
         z.array(z.string()).optional(),

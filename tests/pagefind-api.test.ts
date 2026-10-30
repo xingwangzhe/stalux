@@ -12,7 +12,9 @@ describe("static Pagefind loader", () => {
         expect(await first).toBe(api);
         expect(await load()).toBe(api);
         expect(importer).toHaveBeenCalledOnce();
-        expect(importer).toHaveBeenCalledWith("https://blog.test/blog/pagefind/pagefind.js");
+        expect(importer).toHaveBeenCalledWith(
+            "https://blog.test/blog/pagefind-enhanced/pagefind.js",
+        );
         expect(sitePath("/api/posts.json", "/blog/")).toBe("/blog/api/posts.json");
     });
     it("retries failed or malformed imports", async () => {
@@ -30,9 +32,9 @@ describe("static Pagefind loader", () => {
             expect(await load()).toBe(api);
             expect(importer).toHaveBeenCalledTimes(3);
             expect(importer.mock.calls.map(([url]) => url)).toEqual([
-                "https://blog.test/pagefind/pagefind.js",
-                "https://blog.test/pagefind/pagefind.js?stalux_retry=1",
-                "https://blog.test/pagefind/pagefind.js?stalux_retry=2",
+                "https://blog.test/pagefind-enhanced/pagefind.js",
+                "https://blog.test/pagefind-enhanced/pagefind.js?stalux_retry=1",
+                "https://blog.test/pagefind-enhanced/pagefind.js?stalux_retry=2",
             ]);
         } finally {
             output.mockRestore();

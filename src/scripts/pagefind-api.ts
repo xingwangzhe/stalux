@@ -30,7 +30,7 @@ export function createPagefindLoader(
         if (!pending) {
             pending = (async () => {
                 try {
-                    const url = new URL(sitePath("pagefind/pagefind.js", base), origin());
+                    const url = new URL(sitePath("pagefind-enhanced/pagefind.js", base), origin());
                     // Browsers can retain a failed ESM fetch; retry with a fresh module URL.
                     if (failedAttempts)
                         url.searchParams.set("stalux_retry", String(failedAttempts));

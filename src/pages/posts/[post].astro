@@ -75,6 +75,7 @@ export async function getStaticPaths() {
     <PostLayout
         title={props.post.data.title}
         description={autoDesc}
+        searchKeywords={props.post.data.searchKeywords ?? []}
         postId={props.post.data.abbrlink}
         date={props.post.data.date}
         updated={props.post.data.updated}
