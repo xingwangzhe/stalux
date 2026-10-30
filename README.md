@@ -142,6 +142,10 @@ The desktop tag cloud loads dynamically near the viewport. Switching to mobile, 
 
 TypeScript uses ESNext. The theme defaults `vite.build.target` to `"esnext"` to retain modern syntax with minimal compatibility transforms; an explicit consumer target takes precedence. This targets modern browsers, does not polyfill missing Web APIs, and does not move ordinary scripts onto the GPU. Biome enforces `noVar` and `useConst` as errors in maintained source; dependencies and generated bundles are outside this source policy.
 
+### EdgeOne build environment
+
+The repository `edgeone.json` runs install and build through `bunx --bun bun@1.4.4`. Installation uses `--frozen-lockfile`, preventing an older preinstalled Bun from ignoring the v2 lockfile and resolving different dependencies. Both development and peer dependencies require Astro `^7.4.4`. Consuming projects should use the same pinned commands when deploying; their existing build script remains unchanged.
+
 ### CJK search enhancement
 
 Builds generate both Pagefind and a sharded CJK substring index shared by the dialog and WebMCP. Titles, summaries, tags and categories are searchable. Optional post frontmatter `searchKeywords: [alias, abbreviation]` defaults to an empty array; keywords are published in HTML and static search files, so never put private information there. Unquoted Chinese, Japanese and Korean queries add verified contiguous substring matches, including single characters, NFKC normalization and space-separated terms. Title matches rank first; native results are retained and deduplicated. Quoted queries and active filters retain native Pagefind semantics. Automatic Traditional/Simplified conversion, pinyin, typo correction and semantic search are not included. Search files load on demand, failures fall back to Pagefind and can be retried, with no external search service or new telemetry.

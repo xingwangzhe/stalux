@@ -142,6 +142,10 @@ Stalux 内置中文字体 LXGW WenKai 和可变代码字体 Google Sans Code。�
 
 TypeScript 使用 ESNext，主题默认将 `vite.build.target` 设为 `"esnext"`，保留现代 JavaScript 语法并减少兼容转换；消费方显式指定的 target 优先。此目标面向现代浏览器，不会自动补齐缺失的 Web API，也不代表普通脚本会使用 GPU。自有源码由 Biome 的 `noVar`、`useConst` 错误规则约束；第三方依赖和构建器生成的代码不在这项源码约束内。
 
+### EdgeOne 构建环境
+
+仓库的 `edgeone.json` 使用 `bunx --bun bun@1.4.4` 执行安装和构建，安装始终带 `--frozen-lockfile`，避免平台预装旧 Bun 忽略 v2 锁文件并重新解析依赖。项目依赖及 peer 最低要求均为 Astro `^7.4.4`。消费项目部署时也应使用相同命令；静态构建仍使用项目现有 `bun run build`，不切换包管理器。
+
 ### CJK 搜索增强
 
 构建自动生成 Pagefind 全文索引及分片 CJK 子串索引，搜索弹窗与 WebMCP 共用。标题、摘要、标签和分类参与检索；可在文章 frontmatter 添加可选 `searchKeywords: [别名, 缩写]`，默认空数组。这些关键词会公开写入 HTML 和静态搜索索引，不应用于保存私密内容。中文、日文和韩文的未加引号查询会补充连续子串命中，支持单字、NFKC 全角半角规范化及空格分开的多词；连续标题匹配优先。候选必须通过原文核对，原生结果保留并去重。引号查询和活动筛选保留 Pagefind 原生语义；不提供自动简繁转换、拼音、错别字或语义搜索。增强索引失败时退回 Pagefind，失败资源可重试。索引按需加载，无外部查询服务或新增遥测。
