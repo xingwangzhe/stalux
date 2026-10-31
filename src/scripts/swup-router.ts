@@ -126,6 +126,8 @@ export function installSwupRouter(): Swup {
             scroll,
             new SwupA11yPlugin({ headingSelector: "[data-stalux-motion-focus]" }),
             new SwupPreloadPlugin({
+                // The initial document is already present; avoid fetching it twice.
+                preloadInitialPage: false,
                 preloadHoveredLinks: true,
                 preloadVisibleLinks: false,
                 throttle: 2,

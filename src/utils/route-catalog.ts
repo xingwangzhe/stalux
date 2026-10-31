@@ -16,6 +16,10 @@ export const ROUTE_DEFINITIONS: readonly RouteDefinition[] = [
     { pattern: "/tags/[tag]", source: "./pages/tags/[tag].astro" },
     { pattern: "/categories/", source: "./pages/categories/index.astro" },
     { pattern: "/categories/[category]", source: "./pages/categories/[category].astro" },
+    {
+        pattern: "/stalux-assets/badges/[id].svg",
+        source: "./pages/stalux-assets/badges/[id].svg.ts",
+    },
     { pattern: "/og/[image].[format]", source: "./pages/og/[image].[format].ts" },
     { pattern: "/rss.xml", source: "./pages/rss.xml.ts" },
     { pattern: "/atom.xml", source: "./pages/atom.xml.ts" },

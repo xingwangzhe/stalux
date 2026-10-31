@@ -48,9 +48,36 @@ const zh = (site.lang || "zh-CN").startsWith("zh");
 )}
 <script>
 import { registerPageLifecycle } from "../../../scripts/page-runtime";
-import { mountWeather } from "../../../scripts/weather";
 
-registerPageLifecycle("weather", mountWeather);
+// 页脚天气在首屏之外。模块本身、以及它发起的两次第三方请求，
+// 都推迟到卡片接近视口时才发生；SSR 已经输出占位文案，不依赖这段脚本。
+registerPageLifecycle("weather", () => {
+    const targets = [...document.querySelectorAll<HTMLElement>("[data-stalux-weather]")];
+    if (targets.length === 0) return;
+    let disposed = false;
+    let cleanup: (() => void) | undefined;
+    const start = async () => {
+        observer?.disconnect();
+        const { mountWeather } = await import("../../../scripts/weather");
+        if (disposed) return;
+        cleanup = mountWeather();
+    };
+    const observer = globalThis.IntersectionObserver
+        ? new IntersectionObserver(
+              (entries) => {
+                  if (entries.some((entry) => entry.isIntersecting)) void start();
+              },
+              { rootMargin: "200px" },
+          )
+        : undefined;
+    if (observer) for (const target of targets) observer.observe(target);
+    else void start();
+    return () => {
+        disposed = true;
+        observer?.disconnect();
+        cleanup?.();
+    };
+});
 </script>
 <style>
 .stalux-weather {

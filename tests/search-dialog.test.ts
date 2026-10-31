@@ -5,7 +5,9 @@ import { ensureSearchStyles, upgradeAndOpenSearchDialog } from "../src/scripts/s
 describe("Pagefind search dialog", () => {
     it("waits for a cold stylesheet before the caller can open the dialog", async () => {
         const link = Object.assign(new EventTarget(), {
-            rel: "prefetch",
+            rel: "stylesheet",
+            href: "",
+            dataset: { href: "/search.css" },
             media: "all",
             sheet: null,
         });
@@ -14,6 +16,7 @@ describe("Pagefind search dialog", () => {
         await Promise.resolve();
         expect(link.media).toBe("all");
         expect(link.rel).toBe("stylesheet");
+        expect(link.href).toBe("/search.css");
         expect(open).not.toHaveBeenCalled();
         link.dispatchEvent(new Event("load"));
         await ready;

@@ -1,3 +1,4 @@
+import { commonStyleOwner } from "./ownership.ts";
 import type { StyleSpec } from "./rule-utils.ts";
 import { selectorRules } from "./rule-utils.ts";
 import { archivesStyles } from "./rules/archives.ts";
@@ -32,7 +33,44 @@ export const styleFeatures = {
     common: {
         sources: ["base.css", "motion.css"],
         suffix: "",
-        styles: interactionStates(commonStyles),
+        styles: interactionStates(
+            commonStyles.filter(([selector]) => commonStyleOwner(selector) === "common"),
+        ),
+    },
+    home: {
+        sources: [],
+        suffix: "-home",
+        styles: interactionStates(
+            commonStyles.filter(([selector]) => commonStyleOwner(selector) === "home"),
+        ),
+    },
+    notFound: {
+        sources: [],
+        suffix: "-not-found",
+        styles: interactionStates(
+            commonStyles.filter(([selector]) => commonStyleOwner(selector) === "notFound"),
+        ),
+    },
+    cards: {
+        sources: [],
+        suffix: "-cards",
+        styles: interactionStates(
+            commonStyles.filter(([selector]) => commonStyleOwner(selector) === "cards"),
+        ),
+    },
+    author: {
+        sources: [],
+        suffix: "-author",
+        styles: interactionStates(
+            commonStyles.filter(([selector]) => commonStyleOwner(selector) === "author"),
+        ),
+    },
+    social: {
+        sources: [],
+        suffix: "-social",
+        styles: interactionStates(
+            commonStyles.filter(([selector]) => commonStyleOwner(selector) === "social"),
+        ),
     },
     article: { sources: [], suffix: "-article", styles: interactionStates(articleStyles) },
     archives: { sources: [], suffix: "-archives", styles: interactionStates(archivesStyles) },

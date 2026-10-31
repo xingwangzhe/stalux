@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import type { AstroRuntimeLogger } from "astro";
 /**
  * 徽章生成器工具
@@ -56,13 +57,40 @@ export function generateBadge(options: BadgeOptions, logger?: AstroRuntimeLogger
     }
 }
 
-/**
- * 将SVG字符串转为Data URL
- * @param svg SVG字符串
- * @returns data URL
- */
+/** Content-addressed assets are shared by all pages and remain lazy inside details. */
+export function badgeAssetId(svg: string): string {
+    return createHash("sha256").update(svg).digest("hex").slice(0, 24);
+}
+
+export function normalizeBadgeStyle(style: string | undefined): BadgeOptions["style"] {
+    return style && ["flat", "plastic", "flat-square", "for-the-badge", "social"].includes(style)
+        ? (style as BadgeOptions["style"])
+        : "flat";
+}
+
+/** Keep Data URLs available for custom component badges outside footer.yml. */
 export function svgToDataUrl(svg: string): string {
     if (!svg) return "";
     const encoded = encodeURIComponent(svg).replaceAll("'", "%27").replaceAll('"', "%22");
     return `data:image/svg+xml,${encoded}`;
+}
+
+type BadgeInput = Omit<BadgeOptions, "style"> & { style?: string };
+type BadgeConfig = BadgeInput | { title: string; items: BadgeInput[] };
+const assetCache = new WeakMap<readonly BadgeConfig[], Map<string, string>>();
+
+/** Use identical normalization in the component and prerendered asset route. */
+export function createBadgeAssets(items: readonly BadgeConfig[] | undefined): Map<string, string> {
+    if (!items) return new Map();
+    const cached = assetCache.get(items);
+    if (cached) return cached;
+    const assets = new Map<string, string>();
+    for (const item of items) {
+        for (const badge of "items" in item ? item.items : [item]) {
+            const svg = generateBadge({ ...badge, style: normalizeBadgeStyle(badge.style) });
+            assets.set(badgeAssetId(svg), svg);
+        }
+    }
+    assetCache.set(items, assets);
+    return assets;
 }

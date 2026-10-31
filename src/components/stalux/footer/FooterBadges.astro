@@ -1,9 +1,16 @@
 ---
 import { getCollection } from "astro:content";
 import type { BadgeItem, BadgeOptions } from "@utils/badge-generator";
-import { generateBadge, isBadgeGroup, svgToDataUrl } from "@utils/badge-generator";
-import { getSiteData } from "@utils/config-utils";
+import {
+    badgeAssetId,
+    createBadgeAssets,
+    generateBadge,
+    isBadgeGroup,
+    svgToDataUrl,
+} from "@utils/badge-generator";
+import { getFooterData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
+import { sitePath } from "@utils/site-path";
 
 interface Props {
     badges?: BadgeItem[];
@@ -12,11 +19,15 @@ interface Props {
 const { badges } = Astro.props;
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
+const badgeAssets = createBadgeAssets(getFooterData(configEntries)?.badges);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
 function badgeImg(opts: BadgeOptions) {
     const svg = generateBadge(opts, Astro.logger);
-    const src = svgToDataUrl(svg);
+    const id = badgeAssetId(svg);
+    const src = badgeAssets.has(id)
+        ? sitePath(`stalux-assets/badges/${id}.svg`)
+        : svgToDataUrl(svg);
     const alt = opts.alt || `${opts.label}: ${opts.message}`;
     const width = svg.match(/<svg\b[^>]*\bwidth="(\d+)"/)?.[1];
     const height = svg.match(/<svg\b[^>]*\bheight="(\d+)"/)?.[1];

@@ -11,6 +11,7 @@ export interface CustomElementRegistryLike<ElementType> {
 export async function ensureSearchStyles(link: HTMLLinkElement | null): Promise<void> {
     if (!link) return;
     link.rel = "stylesheet";
+    if (!link.href && link.dataset?.href) link.href = link.dataset.href;
     link.media = "all";
     if (link.sheet) return;
     await new Promise<void>((resolve, reject) => {

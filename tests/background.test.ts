@@ -143,7 +143,7 @@ it("does not mutate detached background shells after a late decode", async () =>
 it("uses raster companions with the original ratio-only SVG contain sizing", async () => {
     vi.stubGlobal("window", {});
     await import("../src/scripts/background");
-    expect(images[0]?.src).toMatch(/^\/background\/pattern-\d+\.min\.webp$/u);
+    expect(images[0]?.src).toMatch(/^\/background\/pattern-\d+\.min\.dark\.webp$/u);
     decodes[0]?.resolve();
     await settle();
     expect(layers.b.style.backgroundSize).toBe("contain");
@@ -159,4 +159,16 @@ it("is harmless during an SSR import without window or document", async () => {
     vi.stubGlobal("document", undefined);
     await expect(import("../src/scripts/background")).resolves.toBeDefined();
     expect(images).toHaveLength(0);
+});
+it("preserves a custom CSS canvas color with the transparent original", async () => {
+    vi.stubGlobal("window", {});
+    vi.stubGlobal("getComputedStyle", () => ({ backgroundColor: "rgb(0, 0, 64)" }));
+    await import("../src/scripts/background");
+    expect(images[0]?.src).toMatch(/^\/background\/pattern-\d+\.min\.webp$/u);
+});
+it("uses the compact raster on the standard dark canvas", async () => {
+    vi.stubGlobal("window", {});
+    vi.stubGlobal("getComputedStyle", () => ({ backgroundColor: "rgb(32, 32, 32)" }));
+    await import("../src/scripts/background");
+    expect(images[0]?.src).toMatch(/^\/background\/pattern-\d+\.min\.dark\.webp$/u);
 });

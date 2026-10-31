@@ -138,6 +138,9 @@ Processed pages are cached under `node_modules/.astro/stalux-page-output/`. The 
 
 The desktop tag cloud loads dynamically near the viewport. Switching to mobile, leaving the viewport or hiding the document destroys it and stops animation scheduling; becoming visible recreates it. Tag clicks use the same Swup navigation as ordinary internal links. Clocks and the footer runtime update only while visible, and the date changes only on a new day. Comments load within half a viewport (capped at 400px). Tag groups, archive months and category cards retain static HTML while deferring offscreen rendering.
 
+
+Configured footer badges are generated as content-addressed SVG assets. Native lazy loading keeps closed groups from embedding their image payload in every page; expanding groups also works without JavaScript. Custom component badges outside footer.yml retain Data URL support.
+
 ### Modern JavaScript
 
 TypeScript uses ESNext. The theme defaults `vite.build.target` to `"esnext"` to retain modern syntax with minimal compatibility transforms; an explicit consumer target takes precedence. This targets modern browsers, does not polyfill missing Web APIs, and does not move ordinary scripts onto the GPU. Biome enforces `noVar` and `useConst` as errors in maintained source; dependencies and generated bundles are outside this source policy.
@@ -381,4 +384,4 @@ Local covers are read from the final `publicDir`. Remote covers are requested by
 
 Motion is specified for 55 visible semantic modules in [Modules and view transitions](docs/MOTION.md). Swup animates one visible, height-bounded heading or introductory region after destination assets are ready, with cues for reading, returning, filtering and previous/next articles. Long documents stay readable and the header, footer and dark canvas remain stable. Phones use a short fade; history restores the reading position; same-page anchors use interruptible native scrolling. Module hover, focus, press and asynchronous update feedback complement bounded secondary entry cues. Reduced motion and print remain static and readable. No new configuration is required.
 
-Built-in background artwork uses committed lossless WebP companions. Ratio-only SVG sizing is preserved with `contain`; custom background URLs retain their existing sizing. Regenerate companions after changing the SVG originals with `bun run backgrounds:build`.
+Built-in backgrounds use committed WebP companions composited against the default #202020 canvas (quality 80, original resolution). Custom CSS canvas colors use the original transparent WebP; SVG sources are retained. Ratio-only SVG sizing is preserved with `contain`; custom background URLs retain their existing sizing. Regenerate companions after changing the SVG originals with `bun run backgrounds:build`.

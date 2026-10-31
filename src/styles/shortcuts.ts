@@ -1,7 +1,13 @@
 import type { StyleFeature } from "./features.ts";
+import { commonStyleOwner } from "./ownership.ts";
 
 // Explicit ownership keeps feature CSS out of unrelated pages.
 export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = {
+    home: {},
+    notFound: {},
+    cards: {},
+    author: {},
+    social: {},
     archives: {
         "stalux-archive-container": "max-w-[1000px] m-[0_auto] p-[var(--space-xl)_var(--space-md)]",
         "stalux-archive-year-section": "relative mb-2xl",
@@ -222,6 +228,14 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
             "underline text-[var(--accent-90p)] [text-decoration-color:var(--accent-50p)] [text-underline-offset:0.15em] [transition:color_var(--transition-fast)]",
     },
 };
+
+// Move component-owned shortcuts out of the shared shell stylesheet.
+for (const [name, value] of Object.entries(shortcutsByFeature.common)) {
+    const owner = commonStyleOwner(name);
+    if (owner === "common") continue;
+    shortcutsByFeature[owner][name] = value;
+    delete shortcutsByFeature.common[name];
+}
 
 export const componentShortcuts = Object.assign({}, ...Object.values(shortcutsByFeature)) as Record<
     string,

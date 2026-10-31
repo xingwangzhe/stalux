@@ -77,7 +77,7 @@ const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
     )}
     <!-- 代码字体由 Astro Fonts API 注入；正文按页面生成 native CJK 子集。 -->
     <Font cssVariable="--font-code" />
-    <link rel="prefetch" as="style" href={pagefindStyles} data-stalux-search-style>
+    <link rel="stylesheet" data-href={pagefindStyles} data-stalux-search-style>
     <noscript><link rel="stylesheet" href={pagefindStyles}></noscript>
     {headConfig?.anyhead && <Fragment set:html={headConfig.anyhead} />}
     {headConfig?.googleAnalyticsId && <GoogleAnalytics />}

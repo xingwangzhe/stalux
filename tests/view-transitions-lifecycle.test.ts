@@ -139,6 +139,7 @@ function style(name: string) {
 }
 function nextPage() {
     return {
+        querySelector: () => null,
         head: { querySelectorAll: () => [] as ReturnType<typeof style>[] },
         body: {
             attributes: [

@@ -84,4 +84,18 @@ describe("precompiled feature styles", () => {
             "Unknown selector utility",
         );
     });
+    it("keeps route-specific card and recovery styles out of the shared shell", async () => {
+        const uno = await createGenerator(config);
+        const shared = await uno.generate(featureStateClasses("common").join(" "), {
+            preflights: false,
+        });
+        expect(shared.css).not.toContain(".stalux-card-post");
+        expect(shared.css).not.toContain(".stalux-404");
+        expect(shared.css).not.toContain(".stalux-home");
+        const cards = await uno.generate(featureStateClasses("cards").join(" "), {
+            preflights: false,
+        });
+        expect(cards.css).toContain(".stalux-card-post");
+        expect(cards.css).not.toContain(".stalux-footer");
+    });
 });
