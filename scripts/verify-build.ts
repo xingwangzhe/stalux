@@ -205,8 +205,11 @@ assert(
     !initialStyles.includes(`.${cssClass("stalux-prose")}`),
     "homepage includes unused article typography CSS",
 );
-assert(searchStyle.includes('rel="prefetch"'), "search CSS must not block the first paint");
-assert(searchStyle.includes('as="style"'), "search CSS must be emitted as a stylesheet asset");
+assert(!/\shref="/u.test(searchStyle), "search CSS must not be fetched before the search UI opens");
+assert(
+    /\sdata-href="/u.test(searchStyle),
+    "search CSS must carry a deferred data-href for the search UI",
+);
 const eagerStyles = new Set<string>();
 let deferredSearchHref: string | undefined;
 function collectSearchLinks(node: DefaultTreeAdapterMap["node"]): void {
@@ -214,7 +217,8 @@ function collectSearchLinks(node: DefaultTreeAdapterMap["node"]): void {
     if ("tagName" in node && node.tagName === "link") {
         const attributes = new Map(node.attrs.map(({ name, value }) => [name, value]));
         const href = attributes.get("href");
-        if (attributes.has("data-stalux-search-style")) deferredSearchHref = href;
+        if (attributes.has("data-stalux-search-style"))
+            deferredSearchHref = attributes.get("data-href");
         if (href && attributes.get("rel") === "stylesheet") eagerStyles.add(href);
     }
     if ("childNodes" in node) for (const child of node.childNodes) collectSearchLinks(child);
