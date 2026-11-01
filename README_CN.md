@@ -16,7 +16,7 @@
 
 独占段落的图片 `![图片说明](url)` 会在构建期通过 satteri HAST 自动生成 `figure` 和 `figcaption`，在图片下方显示居中的灰色小字；保留图片 alt 和 PhotoSwipe 灯箱，无需配置或浏览器脚本。空描述、行内图片、同段多图及已有 figure 不重复生成图注。说明按纯文本输出，特殊字符自动转义。外部图片可在标题里声明尺寸：`![说明](https://example.com/a.webp "1150x439")`，构建期转成 `width`/`height` 并移除提示性 title，PhotoSwipe 同时拿到 `data-pswp-width/height`；不写尺寸声明时保持原行为。
 
-友链图标只在滚动到附近时请求（400px 预取边距），不会因为浏览器原生 lazy 的大预取窗口把整页第三方头像都拉下来；加载失败保留占位圆盘，文字信息不受影响。Google Analytics SDK 延后到首屏稳定之后加载（首次交互、LCP 稳定 600ms 或解析后 6 秒任一条件），`page_view` 快照和 dataLayer 队列仍在导航发生时立即写入，不依赖 SDK 到达。随机文章侧栏也等到接近视口才请求索引。
+友链图标只在滚动到附近时请求（400px 预取边距），不会因为浏览器原生 lazy 的大预取窗口把整页第三方头像都拉下来；加载失败保留占位圆盘，文字信息不受影响。Google Analytics SDK 延后到首屏稳定之后加载（首次交互、LCP 稳定 600ms 或解析后 6 秒任一条件），`page_view` 快照和 dataLayer 队列仍在导航发生时立即写入，不依赖 SDK 到达。随机文章侧栏也等到接近视口才请求索引。首页首屏稳定后（load 后约 1 秒，最迟 2.5 秒兜底）按导航顺序逐个预热主要路由，使用 Swup preload 的页面缓存和并发上限；saveData、2G、减少流量偏好和隐藏标签页不预热，点击时直接复用缓存。
 
 代码块默认固定为 `dark-plus` 暗色主题，不跟随系统明暗偏好，也不生成主题切换选择器。需要自定义时，可通过 `expressiveCode` 显式覆盖 `themes`、`useDarkModeMediaQuery` 和 `themeCssSelector`。此行为仅改变构建生成的代码样式，不增加遥测。
 
