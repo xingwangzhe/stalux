@@ -106,21 +106,47 @@ export function mountRandomPosts(): (() => void) | undefined {
             }
         }
     };
+    let started = false;
+    let observer: IntersectionObserver | undefined;
+    const start = () => {
+        if (started || disposed) return;
+        started = true;
+        observer?.disconnect();
+        observer = undefined;
+        void refresh();
+    };
     container.querySelector("#refresh-random-posts")?.addEventListener(
         "click",
         (event) => {
             event.preventDefault();
+            if (!started) {
+                start();
+                return;
+            }
             void refresh();
         },
         { signal: controller.signal },
     );
     reducedMotion.addEventListener("change", cancelAnimation, { signal: controller.signal });
-    void refresh();
+    if ("IntersectionObserver" in window) {
+        // The sidebar sits below the article on phones; do not fetch its index
+        // until the reader is close enough to see it.
+        observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((entry) => entry.isIntersecting)) start();
+            },
+            { rootMargin: "300px 0px" },
+        );
+        observer.observe(container);
+    } else {
+        start();
+    }
     return () => {
         disposed = true;
         revision++;
         request?.abort();
         controller.abort();
+        observer?.disconnect();
         cancelAnimation();
         container.removeAttribute("aria-busy");
     };

@@ -6,6 +6,9 @@ import { createRetryableInitializer } from "./retryable-initializer";
 const logger = createClientLogger("photoswipe");
 
 const GALLERY_SELECTOR = "a.pswp-gallery-item";
+// The article header, summary and keyword span also carry data-pagefind-body.
+// Selecting the first of those gave PhotoSwipe an empty gallery (counter "1 / 0").
+const GALLERY_CONTAINER_SELECTOR = "[data-stalux-gallery='true'] [data-stalux-gallery-body]";
 
 async function enrichPhotoSwipeData(container: Element, signal: AbortSignal): Promise<void> {
     const links = container.querySelectorAll<HTMLAnchorElement>(GALLERY_SELECTOR);
@@ -40,9 +43,7 @@ async function enrichPhotoSwipeData(container: Element, signal: AbortSignal): Pr
 }
 
 registerPageLifecycle("photoswipe", () => {
-    const container = document.querySelector<HTMLElement>(
-        "[data-stalux-gallery='true'] [data-pagefind-body]",
-    );
+    const container = document.querySelector<HTMLElement>(GALLERY_CONTAINER_SELECTOR);
     if (!container) return;
 
     const controller = new AbortController();

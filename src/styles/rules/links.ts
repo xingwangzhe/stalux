@@ -52,6 +52,11 @@ export const linksStyles: StyleSpec[] = [
         },
     ],
     [
+        ".stalux-link-card-avatar img[data-src], .stalux-link-card-avatar img[data-stalux-link-icon-failed]",
+        "",
+        { background: "var(--white-05p)" },
+    ],
+    [
         ".stalux-link-card-avatar:hover img",
         "",
         {

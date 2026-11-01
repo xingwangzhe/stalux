@@ -47,7 +47,13 @@ describe("PhotoSwipe async lifecycle", () => {
         }
         const anchor = new Anchor();
         const container = { querySelectorAll: () => [anchor] };
-        const document = Object.assign(new EventTarget(), { querySelector: () => container });
+        let queriedSelector = "";
+        const document = Object.assign(new EventTarget(), {
+            querySelector: (selector?: string) => {
+                queriedSelector = String(selector);
+                return container;
+            },
+        });
         vi.stubGlobal("Element", Anchor);
         vi.stubGlobal("document", document);
         await import("../src/scripts/photoswipe");
@@ -62,6 +68,7 @@ describe("PhotoSwipe async lifecycle", () => {
             expect(event.defaultPrevented).toBe(true);
         };
         const cleanup = state.mount?.();
+        expect(queriedSelector).toContain("[data-stalux-gallery-body]");
         click();
         cleanup?.();
         state.release();

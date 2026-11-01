@@ -39,9 +39,13 @@ const icon = link.icon ?? link.avatar ?? "/favicon.ico";
     <div class="stalux-link-card">
         <div class="stalux-link-card-avatar">
             <img
-                src={icon}
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                data-src={icon}
+                data-stalux-link-icon
                 alt={t("links.iconAlt", { name: title })}
                 loading="lazy"
+                decoding="async"
+                fetchpriority="low"
                 width="80"
                 height="80"
             >

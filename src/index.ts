@@ -64,6 +64,7 @@ import { createViteAliases } from "./internal/vite-aliases";
 import { webMcpMutationsPlugin } from "./internal/webmcp-mutations";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { imageCaptions } from "./plugins/image-captions";
+import { imageDimensions } from "./plugins/image-dimensions";
 import { temml } from "./plugins/satteri-temml";
 import { describeError } from "./utils/diagnostics";
 
@@ -293,6 +294,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             }),
                             seen,
                         );
+                        // Dimensions must land before PhotoSwipe copies them onto the link.
+                        appendUniquePlugin(processorOptions.hastPlugins, imageDimensions, seen);
                         appendUniquePlugin(processorOptions.hastPlugins, photoswipe(), seen);
                         appendUniquePlugin(processorOptions.hastPlugins, imageCaptions, seen);
                         appendUniquePlugin(processorOptions.hastPlugins, featureFlagsHast, seen);

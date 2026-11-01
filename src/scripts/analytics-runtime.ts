@@ -202,6 +202,105 @@ function initializeClarity(id: string): void {
     });
 }
 
+/**
+ * GA's SDK is 195 KB compressed / ~610 KB parsed, larger than every first-party
+ * asset combined. The dataLayer queue and the page_view snapshot do not need it:
+ * events are pushed immediately and consumed when the SDK finally arrives.
+ * Loading is gated on the same signals that mean "first paint is done" instead
+ * of `window.load`, which slow third-party resources can postpone forever.
+ */
+const GOOGLE_SDK_FLOOR_MS = 1200;
+const GOOGLE_SDK_LCP_QUIET_MS = 600;
+const GOOGLE_SDK_CEILING_MS = 6000;
+let googleSdkStarted = false;
+let googleGateInstalled = false;
+let googleGateOpen = false;
+
+function runBackgroundTask(callback: () => void): void {
+    const scheduler = (
+        window as Window & {
+            scheduler?: {
+                postTask: (
+                    task: () => void,
+                    options: { priority: "background" },
+                ) => Promise<unknown>;
+            };
+        }
+    ).scheduler;
+    if (scheduler?.postTask) {
+        void scheduler
+            .postTask(callback, { priority: "background" })
+            .catch(() => setTimeout(callback, 0));
+        return;
+    }
+    setTimeout(callback, 0);
+}
+
+function startGoogleSdk(): void {
+    if (googleSdkStarted || !state.googleId) return;
+    googleSdkStarted = true;
+    void loadTrackerScript(
+        `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(state.googleId)}`,
+        { "data-stalux-google": "true" },
+    ).catch(() => logger.debug("Google SDK unavailable; queued events retained"));
+}
+
+/** Three independent doors: first input, LCP quiet, and a hard ceiling after parsing. */
+function installGoogleGate(): void {
+    if (googleGateInstalled) return;
+    googleGateInstalled = true;
+    const startedAt = performance.now();
+    const floorAt = startedAt + GOOGLE_SDK_FLOOR_MS;
+    const ceilingAt = startedAt + GOOGLE_SDK_CEILING_MS;
+    let quietTimer: ReturnType<typeof setTimeout> | undefined;
+    let ceilingTimer: ReturnType<typeof setTimeout> | undefined;
+    let observer: PerformanceObserver | undefined;
+
+    const cleanup = () => {
+        for (const type of ["pointerdown", "keydown", "wheel", "touchstart"]) {
+            window.removeEventListener(type, handleInteraction);
+        }
+        if (quietTimer !== undefined) clearTimeout(quietTimer);
+        if (ceilingTimer !== undefined) clearTimeout(ceilingTimer);
+        observer?.disconnect();
+        observer = undefined;
+    };
+    const open = () => {
+        if (googleGateOpen) return;
+        googleGateOpen = true;
+        cleanup();
+        // Never compete with the input that just opened the gate.
+        runBackgroundTask(startGoogleSdk);
+    };
+    function handleInteraction(): void {
+        open();
+    }
+    const scheduleQuiet = () => {
+        if (googleGateOpen) return;
+        if (quietTimer !== undefined) clearTimeout(quietTimer);
+        const wait = Math.max(GOOGLE_SDK_LCP_QUIET_MS, floorAt - performance.now());
+        quietTimer = setTimeout(() => {
+            quietTimer = undefined;
+            if (performance.now() >= floorAt) open();
+            else scheduleQuiet();
+        }, wait);
+    };
+
+    if ("PerformanceObserver" in window) {
+        try {
+            observer = new window.PerformanceObserver(scheduleQuiet);
+            observer.observe({ type: "largest-contentful-paint", buffered: true });
+        } catch {
+            // Older engines may know the constructor but not this entry type.
+        }
+    }
+    for (const type of ["pointerdown", "keydown", "wheel", "touchstart"]) {
+        window.addEventListener(type, handleInteraction, { passive: true, once: true });
+    }
+    ceilingTimer = setTimeout(open, Math.max(0, ceilingAt - startedAt));
+    if (document.hidden) open();
+}
+
 function initializeTrackers(): void {
     const config = document.body?.dataset;
     if (!config) return;
@@ -218,10 +317,10 @@ function initializeTrackers(): void {
             host.gtag("js", new Date());
             host.gtag("config", state.googleId, { send_page_view: false });
         }
-        void loadTrackerScript(
-            `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(state.googleId)}`,
-            { "data-stalux-google": "true" },
-        ).catch(() => logger.debug("Google SDK unavailable; queued events retained"));
+        installGoogleGate();
+        // A navigation can expose the measurement ID after the first document
+        // already opened its gate; in that case load immediately.
+        if (googleGateOpen) startGoogleSdk();
     }
     if (config.staluxClarityId) initializeClarity(config.staluxClarityId);
 }

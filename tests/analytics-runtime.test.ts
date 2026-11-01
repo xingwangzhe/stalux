@@ -132,7 +132,8 @@ describe("native analytics navigation", () => {
         await loadRuntime();
         page();
         page();
-        await vi.advanceTimersByTimeAsync(100);
+        // GA is gated behind first input / LCP quiet / the six-second ceiling.
+        await vi.advanceTimersByTimeAsync(6100);
         const trackers = scripts.filter((script) => !script.dataset.staluxVercount);
         expect(trackers).toHaveLength(2);
         for (const tracker of trackers) {
@@ -152,6 +153,60 @@ describe("native analytics navigation", () => {
         expect(clarityPackage.init).toHaveBeenCalledOnce();
         expect(scripts.find((script) => script.id === "clarity-script")?.src).toBe(
             "https://www.clarity.ms/tag/test-site?ref=npm",
+        );
+    });
+
+    it("keeps queued views but withholds the Google SDK until the reader interacts", async () => {
+        const { scripts, page, host } = environment({ staluxGaId: "G-TEST" });
+        await loadRuntime();
+        page();
+        await vi.advanceTimersByTimeAsync(100);
+        expect(scripts.some((script) => script.attributes["data-stalux-google"] === "true")).toBe(
+            false,
+        );
+        const commands = (host as typeof host & { dataLayer: IArguments[] }).dataLayer.map((args) =>
+            Array.from(args),
+        );
+        expect(
+            commands.filter(([name, event]) => name === "event" && event === "page_view"),
+        ).toHaveLength(1);
+
+        host.dispatchEvent(new Event("pointerdown"));
+        await vi.advanceTimersByTimeAsync(1);
+        expect(scripts.some((script) => script.attributes["data-stalux-google"] === "true")).toBe(
+            true,
+        );
+    });
+
+    it("loads the Google SDK after an LCP-quiet window once the floor has elapsed", async () => {
+        const observers: Array<() => void> = [];
+        class FakePerformanceObserver {
+            private readonly callback: () => void;
+            constructor(callback: () => void) {
+                this.callback = callback;
+            }
+            observe(): void {
+                observers.push(this.callback);
+            }
+            disconnect(): void {}
+        }
+        const { scripts, page, host } = environment({ staluxGaId: "G-TEST" });
+        Object.assign(host, { PerformanceObserver: FakePerformanceObserver });
+        await loadRuntime();
+        page();
+        await vi.advanceTimersByTimeAsync(100);
+        expect(scripts.some((script) => script.attributes["data-stalux-google"] === "true")).toBe(
+            false,
+        );
+
+        observers[0]?.();
+        await vi.advanceTimersByTimeAsync(600);
+        expect(scripts.some((script) => script.attributes["data-stalux-google"] === "true")).toBe(
+            false,
+        );
+        await vi.advanceTimersByTimeAsync(600);
+        expect(scripts.some((script) => script.attributes["data-stalux-google"] === "true")).toBe(
+            true,
         );
     });
 

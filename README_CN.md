@@ -14,7 +14,9 @@
 
 首页打字效果由 Stalux 自有组件提供，继续使用 `stalux/config/typetexts.yml` 的 `items` 字符串列表，无需新增配置。默认输入 100ms/字素、删除 33ms/字素，完整文字停留 1500ms、清空后等待 500ms。组件在视口外或后台暂停，支持软导航清理；减少动画时整句轮播且隐藏光标。禁用 JavaScript 时显示首句，屏幕阅读器和打印输出完整列表。
 
-独占段落的图片 `![图片说明](url)` 会在构建期通过 satteri HAST 自动生成 `figure` 和 `figcaption`，在图片下方显示居中的灰色小字；保留图片 alt 和 PhotoSwipe 灯箱，无需配置或浏览器脚本。空描述、行内图片、同段多图及已有 figure 不重复生成图注。说明按纯文本输出，特殊字符自动转义。
+独占段落的图片 `![图片说明](url)` 会在构建期通过 satteri HAST 自动生成 `figure` 和 `figcaption`，在图片下方显示居中的灰色小字；保留图片 alt 和 PhotoSwipe 灯箱，无需配置或浏览器脚本。空描述、行内图片、同段多图及已有 figure 不重复生成图注。说明按纯文本输出，特殊字符自动转义。外部图片可在标题里声明尺寸：`![说明](https://example.com/a.webp "1150x439")`，构建期转成 `width`/`height` 并移除提示性 title，PhotoSwipe 同时拿到 `data-pswp-width/height`；不写尺寸声明时保持原行为。
+
+友链图标只在滚动到附近时请求（400px 预取边距），不会因为浏览器原生 lazy 的大预取窗口把整页第三方头像都拉下来；加载失败保留占位圆盘，文字信息不受影响。Google Analytics SDK 延后到首屏稳定之后加载（首次交互、LCP 稳定 600ms 或解析后 6 秒任一条件），`page_view` 快照和 dataLayer 队列仍在导航发生时立即写入，不依赖 SDK 到达。随机文章侧栏也等到接近视口才请求索引。
 
 代码块默认固定为 `dark-plus` 暗色主题，不跟随系统明暗偏好，也不生成主题切换选择器。需要自定义时，可通过 `expressiveCode` 显式覆盖 `themes`、`useDarkModeMediaQuery` 和 `themeCssSelector`。此行为仅改变构建生成的代码样式，不增加遥测。
 
