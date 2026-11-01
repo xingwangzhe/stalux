@@ -44,9 +44,11 @@ coverage/
 .playwright-cli/
 .playwright-mcp/
 docs/*
-!docs/STYLING.md
-!docs/RUNTIME.md
-!docs/MOTION.md
+!docs/*.md
+!docs/reports/
+!docs/reports/*.md
+!docs/assets/
+!docs/assets/*.webp
 
 # build-generated font subsets (rebuilt each build by integration)
 public/fonts/common-*.woff2

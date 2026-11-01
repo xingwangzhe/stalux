@@ -1,49 +1,49 @@
 [English](./README.md) | 中文文档
 
 [![CI](https://github.com/xingwangzhe/stalux/actions/workflows/ci.yml/badge.svg?branch=newMain)](https://github.com/xingwangzhe/stalux/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@xingwangzhe/stalux?color=EAB308&label=npm)](https://www.npmjs.com/package/@xingwangzhe/stalux)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-# Stalux — 现代化 Astro 博客主题
+# Stalux
 
-**双模式使用：既可作为源码模板 📦，也可作为 npm 插件安装 🔌**
+**现代化、暗色、玻璃拟态风格的 Astro 博客主题。**
 
-**[stalux.needhelp.icu](https://stalux.needhelp.icu)**
+为内容阅读而生的静态博客主题：内置中文按页字体子集、Pagefind 全文搜索、PhotoSwipe 灯箱、Mermaid / 数学公式、Waline 评论和 Swup 视图过渡，同时提供 `llms.txt`、WebMCP 等 AI 友好接口。既能作为 npm 插件装进现有项目，也能作为源码模板直接二次开发。
 
-深色主题、高性能的 Astro 博客主题，采用玻璃拟态设计，支持 native 页面 CJK 字体子集，专注内容阅读体验。
+[在线演示](https://stalux.needhelp.icu) · [完整文档](./docs/README.md) · [快速开始](#快速开始) · [问题反馈](https://github.com/xingwangzhe/stalux/issues)
 
-所有 HTML 路由的页脚内置圆形回到顶部按钮：滚动 240px 后显示，点击平滑回顶；遵循系统减少动画设置。按钮在页脚正常布局中显示，不遮挡正文、不改变页面宽度和居中布局，打印时隐藏。无需配置。
+<p align="center">
+  <a href="https://stalux.needhelp.icu">
+    <img src="./docs/assets/home.webp" alt="Stalux 首页：暗色玻璃拟态、极繁背景、打字机标题与作者信息" width="1200">
+  </a>
+</p>
 
-首页打字效果由 Stalux 自有组件提供，继续使用 `stalux/config/typetexts.yml` 的 `items` 字符串列表，无需新增配置。默认输入 100ms/字素、删除 33ms/字素，完整文字停留 1500ms、清空后等待 500ms。组件在视口外或后台暂停，支持软导航清理；减少动画时整句轮播且隐藏光标。禁用 JavaScript 时显示首句，屏幕阅读器和打印输出完整列表。
+## 特性
 
-独占段落的图片 `![图片说明](url)` 会在构建期通过 satteri HAST 自动生成 `figure` 和 `figcaption`，在图片下方显示居中的灰色小字；保留图片 alt 和 PhotoSwipe 灯箱，无需配置或浏览器脚本。空描述、行内图片、同段多图及已有 figure 不重复生成图注。说明按纯文本输出，特殊字符自动转义。外部图片可在标题里声明尺寸：`![说明](https://example.com/a.webp "1150x439")`，构建期转成 `width`/`height` 并移除提示性 title，PhotoSwipe 同时拿到 `data-pswp-width/height`；不写尺寸声明时保持原行为。
+- **暗色 + 玻璃拟态**：42 张可随机切换的极繁背景，导航、卡片和页脚保持统一的玻璃质感。
+- **中文按页字体子集**：构建期用 Rust / N-API 为每页可见 CJK 文本生成内容寻址 WOFF2 子集，同字符集页面复用文件。
+- **搜索与检索**：Pagefind 全文索引 + 分片 CJK 子串索引，支持单字、全半角规范化和多词查询。
+- **开箱即用的 Markdown**：PhotoSwipe 灯箱、图片图注、Mermaid、Temml 数学公式、Expressive Code 行号，全部由主题集成自动注入。
+- **评论与订阅**：Waline 评论、RSS / Atom、Sitemap、`llms.txt` / `llms-full.txt`。
+- **顺滑导航**：Swup 接管软导航，只替换主内容区，提供有界入场动效并保留背景、导航和页脚。
+- **AI 友好**：页面内 WebMCP 只读工具、文章 Markdown 导出、OpenAPI 描述和构建期分享卡片。
+- **零配置集成**：`stalux()` 一行注入 sitemap、Expressive Code 和 Markdown 插件；站点信息全部走 YAML。
+- **可定制**：`accentColor` 一键换色，30+ 组件可覆盖，支持英文 / 中文界面。
 
-友链图标只在滚动到附近时请求（400px 预取边距），不会因为浏览器原生 lazy 的大预取窗口把整页第三方头像都拉下来；加载失败保留占位圆盘，文字信息不受影响。Google Analytics SDK 延后到首屏稳定之后加载（首次交互、LCP 稳定 600ms 或解析后 6 秒任一条件），`page_view` 快照和 dataLayer 队列仍在导航发生时立即写入，不依赖 SDK 到达。随机文章侧栏也等到接近视口才请求索引。首页首屏稳定后（load 后约 1 秒，最迟 2.5 秒兜底）按导航顺序逐个预热主要路由，使用 Swup preload 的页面缓存和并发上限；saveData、2G、减少流量偏好和隐藏标签页不预热，点击时直接复用缓存。
-
-代码块默认固定为 `dark-plus` 暗色主题，不跟随系统明暗偏好，也不生成主题切换选择器。需要自定义时，可通过 `expressiveCode` 显式覆盖 `themes`、`useDarkModeMediaQuery` 和 `themeCssSelector`。此行为仅改变构建生成的代码样式，不增加遥测。
-
-软导航与动效时序由 Swup 负责。Astro 渲染静态文档，浏览器只替换 `main[data-stalux-route]`，导航、页脚、滚动 sentinel 和背景继续保留原 DOM。目标资源就绪后，可见且有高度上限的标题或引导区采用短退场与入场：进入阅读最多纵向 6px，明确的上一篇/下一篇水平 8px，普通阅读替换纵向 4px，同维度筛选水平 6px，跨分类/标签维度采用中性淡入。桌面入场为 100–180ms、退场 80ms，手机入场统一 120ms 纯淡入；长正文和长列表保持直接可读，不整体位移或隐藏。历史恢复、减少动态偏好、浏览器原生历史手势和同页锚点不重播页面动画。独立 HTML 和导出数据使用浏览器文档导航。完整模块清单与实际时序见 [模块与视图过渡](docs/MOTION.md)。
-
-运行时组合 Swup 的 Head、Accessibility、Preload、Scroll 和 JS 插件，并由 Stalux 桥接页面生命周期：准备目标样式，为目标字体预留最多 150ms，在替换前清理旧页交互，执行首次遇到的页面脚本后派发 Astro 兼容事件，让评论、计数、标签云与 WebMCP 挂载到新 DOM。背景在每个完整文档中只随机选择并异步解码一次，首次从稳定暗底用 200ms 淡显；同一 Swup 会话的软导航保持这张背景，不再重选、重复解码或交叉淡入。减少动态效果时直接显示；saveData 开启时保留暗底且不请求装饰 SVG。自定义 `window.__STALUX_BG_URLS__` 继续生效，慢加载或解码失败不会阻塞阅读。历史阅读位置由 Swup 运行时恢复，包括减少动态模式。无需新增配置或统计服务；动画时长只代表效果自身，不能当作完整导航耗时或性能提升数据。
-
----
-
-## 🚀 快速开始
+## 快速开始
 
 ### 插件模式（推荐）
 
 ```bash
 bun create astro                    # 选择 minimal 空模板
 cd myblog
-bun add @xingwangzhe/stalux         # 安装主题（所有依赖自动包含）
+bun add @xingwangzhe/stalux         # 主题及全部依赖
 bunx stalux init                    # 生成 stalux/ 内容目录
 ```
 
-需要 Node.js 26 或更高版本。然后配置 `astro.config.ts`。所有插件都由 Stalux 集成默认打包注入，**无需手动配置**：
+配置 `astro.config.ts`：
 
-- **Markdown**：Mermaid（MDAST 识别 + HAST/SVG 渲染）、数学公式（Temml → MathML）、字数统计/特性标记、PhotoSwipe 图片灯箱，全部自动注入默认的 `satteri()` processor（math / frontmatter / gfm / 智能标点默认开启）。
-- **Sitemap**：构建完成后自动生成 `/sitemap.xml`（单文件时复制 `sitemap-0.xml`，多文件时复制索引以保留完整 URL）。自动打包 `@astrojs/sitemap`（`promote.export_md: true` 时收录已发布文章 `/posts/*.md` 导出端点，默认过滤其它页面的 Markdown 镜像端点）。
-- **Expressive Code**：自动打包，默认启用代码块行号。
-
-```ts
+```ts title="astro.config.ts"
 import { defineConfig } from "astro/config";
 import stalux from "@xingwangzhe/stalux";
 
@@ -54,34 +54,19 @@ export default defineConfig({
 });
 ```
 
-主题颜色可在 `stalux/config/site.yml` 通过可选的 `accentColor` 统一设置，支持六位 HEX，默认 `#EAB308`。该颜色会驱动主题强调色与 Waline 强调色；请确保实际使用的颜色与背景保持足够对比度。
-
-```yaml title="stalux/config/site.yml"
-accentColor: "#EAB308"
-```
-
-如需自定义内置集成，传入选项即可（传 `false` 可关闭）：
-
-```ts
-integrations: [
-    stalux({
-        contentDir: "stalux",
-        sitemap: { filter: (page) => page.startsWith("https://example.com/posts/") },
-        expressiveCode: { themes: ["dark-plus"], useDarkModeMediaQuery: false },
-    }),
-];
-```
-
 创建 `src/content.config.ts`：
 
-```ts
+```ts title="src/content.config.ts"
 import { defineCollections } from "@xingwangzhe/stalux/schemas/collections";
+
 export const collections = defineCollections({ contentDir: "stalux" });
 ```
 
 ```bash
-bun run dev  # 开始写作！
+bun run dev   # http://localhost:4321
 ```
+
+`stalux init` 只生成 `stalux/` 下的配置和示例内容，不会覆盖已有的 `package.json`、`astro.config.ts` 或 `src/content.config.ts`。
 
 ### 源码模板模式
 
@@ -92,301 +77,46 @@ bun install
 bun run dev
 ```
 
----
+> 需要 Node.js 26 或更高版本，推荐使用 Bun。完整步骤、插件选项和目录结构见 [快速开始](./docs/GETTING-STARTED.md)。
 
-桌面导航会吸附在视口顶部，向下滚动超过 24px 后显示模糊玻璃背景，返回顶部恢复透明。手机菜单按钮同样在滚动后显示玻璃背景，展开抽屉时隐藏按钮，关闭后恢复。一言卡片的日期可用于定位，正文及来源链接可独立访问。
+## 常用配置
 
-Waline 在接近视口时加载，在 Astro 换页前销毁，在新页面重新挂载；评论资源加载失败可点击重新加载页面，重建浏览器模块状态。评论正文与输入控件使用系统字体，代码使用系统等宽字体，避免继承构建期 LXGW WenKai 逐页字体子集。以上行为无需新增配置。
+站点信息、导航、作者、评论和统计都在 `stalux/config/` 的 YAML 里。换主题色只需要：
 
-## ✨ 功能特性
-
-- 🌙 **暗色主题** + 玻璃拟态设计
-- 🔤 **Native 页面字体子集** — Rust/N-API 为每页可见中文生成带缓存的 WOFF2 子集
-- 🔍 **全文搜索**（Pagefind 构建时自动索引）
-- 📡 **RSS / Atom 订阅**
-- 🗺️ **Sitemap**（内置打包，文章 `.md` 原文可收录，过滤其它页面的 Markdown 镜像端点）
-- 🖼️ **PhotoSwipe** 图片灯箱
-- 📊 **Mermaid** 图表和流程图
-  通过 `@xingwangzhe/satteri-mermaid@0.8.2` 使用 Merman，默认 `dark` 主题和透明画布。插件支持 11 个主题预设，完整选项见 [配置说明](https://github.com/xingwangzhe/satteri-mermaid/blob/v0.8.2/docs/configuration.zh-CN.md)。默认渲染失败会抛错。
-- 📐 **数学公式渲染**（Temml → MathML）
-- 💬 **Waline** 评论系统
-- 🤖 **LLM 发现文件**（llms.txt / llms-full.txt）
-- 🤝 **WebMCP 工具**（W3C 草案，纯前端，供 AI 代理调用）
-- ⚡ **视图过渡动画**
-- 🌐 **国际化**（英文 / 中文）
-- 🏷️ **标签、分类、归档**页面
-- 🎨 **组件覆盖系统**（Starlight 风格）
-- 🛠️ **YAML 配置** — 无需修改代码
-
----
-
-## 🔤 字体优化
-
-Stalux 内置中文字体 LXGW WenKai 和可变代码字体 Google Sans Code。构建时由 Rust/N-API 包 `@xingwangzhe/cjk-font-split-native` 按页面可见或可展开的 CJK 正文生成内容寻址 WOFF2 子集；字符集相同的页面复用同一个文件。代码和 MathML 中可见的中文也会纳入子集。
-
-每个子集都会无条件保留阿拉伯数字 `0-9`（`RESERVED_GLYPHS`），即使页面里没有任何可见数字。时钟、计数、日期、脚本注入的值等在运行时生成的数字不会出现在构建产物 HTML 中，预留它们可避免数字回退到系统字体。调用方可通过 `writePageFontSubset` 的可选参数 `extraChars` 追加更多预留字符。
-
-子集 CSS 使用精确到字符的 `unicode-range` 和 `font-display: swap`，让可见文本与下载字形对应。代码可变字体仍通过 Astro 官方 local Fonts API 注入。 正文字体子集在 HTML head 中使用同源 `preload`，无需消费方手写字体链接。
-
-持久 BLAKE3 缓存键包含字体内容、face index、规范化字符集和算法版本；缓存保存在 `node_modules/.astro/`，可跨页面和增量构建复用。字体输入从本地读取，构建不会联网下载字体。
-
-多页面构建通过 `FontSubsetter` 复用已准备的字体和哈希状态，冷缓存时最多同时运行四个原生分片任务，避免每页重复读取、复制和哈希完整字体。字体输入先解码/提取为 SFNT，再复用 HarfBuzz 预处理结构，保留原始轮廓；WOFF2 使用 Google Brotli，质量仍为 8。图片尺寸、加载策略、关联 CSS 文本和字体字符提取共享一次 HTML 解析；共用图片尺寸与 CSS 生成文本也在同一次构建内复用，在同一棵 parse5 AST 上修改图片与字体节点，最后按源码位置统一输出一次；脚本、注释、模板和未改子树保留原文。
-
-本地图片尺寸使用 `image-size` 探测，增加 SVG、AVIF 等格式支持。常规文件最多读取 512 KiB；JPEG 尺寸标记位于文件开头或超出该窗口时，兼容兜底可能读取完整文件。已有尺寸属性和远程图片保持原样。被引用资产使用流式摘要，同 URL 内容变化会使页面缓存失效，不再按图片扩展名限制。
-
-页面后处理结果另外缓存到 `node_modules/.astro/stalux-page-output/`。缓存检查原始 HTML、页面路径、实际依赖的本地 CSS/图片内容，以及字体和处理代码；相关输入变化、字体缓存文件丢失或记录损坏时会重新处理。未变化页面可以直接恢复后处理结果，Pagefind 仍在每次构建后完整生成索引。保留 `node_modules/.astro/` 才能跨构建受益；清除该目录会安全重建缓存。
-
-### 按可见性加载与更新
-
-桌面标签云进入视口附近后才动态加载；切换到移动布局、离屏或页面隐藏时销毁实例以停止动画调度，重新可见后恢复。标签点击使用与普通站内链接相同的 Swup 导航。时钟与页脚运行时间仅在可见时更新，日期仅在跨天时重写。评论在距离视口约半屏（最多 400px）时加载。标签按组、归档按月份、分类按卡片保留静态 HTML 并跳过离屏渲染。
-
-
-页脚配置徽章在构建期输出为带内容哈希的独立 SVG；折叠分组使用浏览器原生懒加载，避免在每页 HTML 中重复内嵌整组图像。展开和禁用 JavaScript 时仍可正常显示。自定义组件传入且不在 footer.yml 中的徽章保留 Data URL 支持。
-
-### 现代 JavaScript
-
-TypeScript 使用 ESNext，主题默认将 `vite.build.target` 设为 `"esnext"`，保留现代 JavaScript 语法并减少兼容转换；消费方显式指定的 target 优先。此目标面向现代浏览器，不会自动补齐缺失的 Web API，也不代表普通脚本会使用 GPU。自有源码由 Biome 的 `noVar`、`useConst` 错误规则约束；第三方依赖和构建器生成的代码不在这项源码约束内。
-
-### EdgeOne 构建环境
-
-仓库的 `edgeone.json` 使用 `bunx --bun bun@1.4.4` 执行安装和构建，安装始终带 `--frozen-lockfile`，避免平台预装旧 Bun 忽略 v2 锁文件并重新解析依赖。项目依赖及 peer 最低要求均为 Astro `^7.4.4`。消费项目部署时也应使用相同命令；静态构建仍使用项目现有 `bun run build`，不切换包管理器。
-
-### CJK 搜索增强
-
-构建自动生成 Pagefind 全文索引及分片 CJK 子串索引，搜索弹窗与 WebMCP 共用。标题、摘要、标签和分类参与检索；可在文章 frontmatter 添加可选 `searchKeywords: [别名, 缩写]`，默认空数组。这些关键词会公开写入 HTML 和静态搜索索引，不应用于保存私密内容。中文、日文和韩文的未加引号查询会补充连续子串命中，支持单字、NFKC 全角半角规范化及空格分开的多词；连续标题匹配优先。候选必须通过原文核对，原生结果保留并去重。引号查询和活动筛选保留 Pagefind 原生语义；不提供自动简繁转换、拼音、错别字或语义搜索。增强索引失败时退回 Pagefind，失败资源可重试。索引按需加载，无外部查询服务或新增遥测。
-
-### 首屏 CSS 与搜索样式
-
-主题默认使用 Astro 的 `build.inlineStylesheets: "never"`，共享样式作为带哈希、可缓存的外部 CSS 输出，组件专用样式按页面加载。样式表正常阻塞首次绘制，避免无样式内容闪烁；消费项目显式设置 `build.inlineStylesheets: "always"` 可恢复内联，但会增加每页 HTML 大小。
-
-Pagefind 搜索弹窗样式单独输出为带哈希的静态文件，以 `prefetch` 提示浏览器提前获取；打开搜索时才作为样式表启用，并等待加载完成后显示弹窗。它不阻塞正文首屏，也不依赖搜索 JavaScript 动态生成 CSS 文件；无脚本访问保留 `<noscript>` 样式回退。
-
----
-
-## 🎨 组件覆盖
-
-```ts
-stalux({
-    components: {
-        Navs: "./src/components/CustomNavs.astro",
-        Footer: "./src/components/CustomFooter.astro",
-    },
-});
+```yaml title="stalux/config/site.yml"
+accentColor: "#EAB308"
 ```
 
-30+ 个组件可覆盖，完整列表见 `src/internal/override.ts`。
+`accentColor` 接受六位 HEX，同时驱动主题与 Waline 的强调色。其余字段见 [配置说明](./docs/CONFIGURATION.md)。
 
----
-
-## 📝 内容目录结构
-
-```
-stalux/
-├── config/              # YAML 配置文件
-│   ├── site.yml         # 站点元信息
-│   ├── author.yml       # 作者信息（name/avatar/bio/jobTitle）
-│   ├── navs.yml         # 导航菜单
-│   ├── footer.yml       # 页脚配置
-│   ├── links.yml        # 友情链接
-│   ├── comment.yml      # 评论配置
-│   ├── head.yml         # 统计和自定义 head
-│   ├── media-links.yml  # 社交媒体
-│   ├── promote.yml      # LLM 推广
-│   ├── ai-discovery.yml # AI 发现文件
-│   └── typetexts.yml    # 打字机文本
-├── posts/               # 博客文章（Markdown）
-├── about/index.md       # 关于页面
-└── words/               # 随想/语录
-```
-
-### 统计配置
-
-统计工具统一配置在 `stalux/config/head.yml`，不需要修改模板代码：
-
-```yaml
-id: head
-bingClarityId: "YOUR_CLARITY_PROJECT_ID"
-```
-
-Google Analytics、Clarity 和 Umami 使用低优先级的原生异步脚本，每个 SDK 在会话中只加载一次，加载失败不会阻塞正文或站内导航。Vercount 在每次 `astro:page-load` 后重新绑定计数节点。GA 记录每页 URL、标题和 referrer，等共享的 Swup 内容动效 gate 结算并让出绘制后，在独立后台任务中按访问顺序发送 pageview；任务饥饿时有界补发，页面隐藏或退出前立即清空队列。SDK 仍在主线程工作，这项调度只减少路由首帧上的同步阻塞。Umami 关闭 SDK 自动 pageview，保留点击事件采集，并在异步加载前保存各页信息，避免快速导航时串页。已有旧运行时或 Partytown 会话首次遇到新运行时会整页刷新一次，避免旧监听器重复上报。
-
-使用 Google Analytics 时，请在 **管理 → 数据流 → 增强型衡量 → 网页浏览量 → 高级设置** 关闭“根据浏览器历史记录事件判断的页面更改”。主题已设置 `send_page_view: false` 并显式发送每次导航的 URL 和标题；GA 的历史自动统计需要在后台单独关闭，否则软导航会重复计数。其他增强型衡量选项可以保留。参见 [Google 页面浏览量文档](https://developers.google.com/analytics/devguides/collection/ga4/views)。
-
-`bingClarityId` 是 Stalux 沿用的字段名，实际对应 Microsoft Clarity Project ID。登录 Clarity 后，在项目 **Settings → Setup → Get tracking code** 中获取对应 ID。Stalux 内置官方 `@microsoft/clarity` npm 依赖，在浏览器动态导入并调用 `Clarity.init()`，软导航期间只初始化一次，由 SDK 自行处理历史导航。myblog 等消费项目只需配置 ID 和升级主题，无需另装或手工引入 Clarity。主题监控官方 tag 的加载失败并允许后续页面重试；tag 加载完成与录制核心、收集请求成功分别验证。官方 npm 包仍使用托管录制引擎，不会自动把 DOM 采集移到 Worker。不要再通过 `anyhead`、Tag Manager 或其他插件重复接入同一个项目。
-
-Project ID 是公开的浏览器标识；不要把 Clarity Data Export API token 写入这个 YAML 或任何前端代码。如果站点使用严格 CSP、Cookie 横幅或 CMP，请由宿主站点自行配置相应策略和同意信号；主题不替站点判断法律合规。
-
-部署后可检查脚本 URL 是否完整保留 Project ID，并在浏览器 Network 中确认出现 Clarity `/collect` 请求（收集域名可能为 `a.clarity.ms` 等区域端点）。
-
----
-
-## 🛠️ 开发命令
+## 部署
 
 ```bash
-bun install     # 安装依赖
-bun run dev     # 启动开发服务器 localhost:4321
-bun run build   # 构建到 dist/
-bun run preview # 预览构建结果
+bun run build     # 生成静态站点到 dist/
+bun run preview   # 本地预览生产产物
 ```
 
----
+`dist/` 可直接部署到任意静态托管。仓库自带 EdgeOne Pages 配置（固定 Bun 1.4.4 + `--frozen-lockfile`）；缓存目录、产物检查和时区注意事项见 [部署](./docs/DEPLOYMENT.md)。
 
-## 📖 文档
+## 文档
 
-完整文档和在线演示：**[stalux.needhelp.icu](https://stalux.needhelp.icu)**
-
----
-
-## 🤝 WebMCP / AI 代理
-
-Stalux 内置页面内 WebMCP 工具：支持 WebMCP 的浏览器代理或扩展打开站点后，可以调用以下**只读**工具，数据全部来自构建产物，**无需后端**。这不是供桌面 MCP 客户端直接连接的 HTTP `/mcp` 服务；普通静态托管不能处理 MCP JSON-RPC POST 请求。协议以 [WebMCP 社区组草案](https://webmachinelearning.github.io/webmcp/) 为准。
-
-| 工具                  | 功能                                     | 数据来源               |
-| --------------------- | ---------------------------------------- | ---------------------- |
-| `stalux_list_posts`   | 分页列出全部文章（含元信息）             | `/api/posts.json`      |
-| `stalux_get_post`     | 按 abbrlink / 标题关键词取单篇元信息     | `/api/posts.json`      |
-| `stalux_current_post` | 当前正在浏览的文章元信息                 | `/api/posts.json`      |
-| `stalux_random_post`  | 随机挑一篇文章的元信息                   | `/api/posts.json`      |
-| `stalux_search_posts` | 全文搜索文章                             | Pagefind `/pagefind/`  |
-| `stalux_read_post`    | 分段读取 Markdown；未导出时读取已索引纯文本 | Markdown / Pagefind |
-| `stalux_site_info`    | 站点信息 + llms.txt / llms-full.txt 入口 | `site.yml`（构建期）   |
-
-所有工具均为 `readOnlyHint: true`，不会写入站点数据或主动导航。
-
-`stalux_search_posts` 合并已发布元信息中的标题、标签、分类和摘要匹配，以及 [Pagefind JavaScript API](https://pagefind.app/docs/api/) 的正文命中，使用 `meta.title` 和 `plain_excerpt`，附带 `abbrlink` 和完整 URL。每次最多返回 10 篇并去重，标题匹配优先。全文索引不可用时，已有元信息匹配会标记 `source: "metadata"`、`fullText: false`；没有匹配则返回索引不可用错误，不把故障误报成全文无匹配。Pagefind 的高亮 HTML 不作为工具摘要返回；文章元信息及 Pagefind 模块的失败加载不会永久占用缓存。
-
-`stalux_read_post` 接受 `id`、`offset`（默认 0）和 `maxChars`（默认及上限 50000）。偏移按 UTF-16 单元计数，不拆开 emoji 等代理对。开启 `promote.export_md` 时返回 `format: "text/markdown"` 和 `markdown`；关闭导出或 Markdown 文件不可用时，使用 Pagefind 的 `post` 精确过滤读取，返回 `format: "text/plain"` 和 `content`，不承诺保留 Markdown 语法或未索引内容。返回的 `totalChars`、`truncated`、`nextOffset` 用于续读：`nextOffset` 非空时再次传入该偏移，直到它为 `null`。关闭 Markdown 导出且关闭 Pagefind 时返回 `CONTENT_UNAVAILABLE`。
-
-工具在 `astro:page-load` 初始化 polyfill 并注册，在 `astro:before-swap` 注销和停止旧注册批次。只发送读取静态资源的请求；不提交搜索词给外部搜索服务、不调用模型、不新增遥测。文章 `post` 过滤值及 Markdown 导出开关会写入静态 HTML，供本地工具选择实际可用的数据源。`/api/*.json`、Markdown 和 OpenAPI 均为静态文件，不宣称动态配额或固定 `RateLimit-*` 余量。
-
-**开启 / 关闭：** 跟随 `stalux/config/ai-discovery.yml` 的 `conformance` 设置。
-设为 `disabled` 即停止注册工具；`essential` / `recommended` / `complete` 均会启用。
-
-**浏览器支持：** WebMCP 是社区组草案，原生支持取决于浏览器和版本。
-在无原生 `modelContext` 的浏览器上，Stalux 会自动加载
-[`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill)
-兜底；原生支持落地后 polyfill 自动失效（no-op），无需改动。
-
----
-
-## 📄 许可证
-
-MIT License
-
-### 作者 JSON-LD 配置
-
-`stalux/config/author.yml` 支持可选的 `jobTitle` 字段。填写后，Stalux 会把它写入首页和文章页面 JSON-LD 的 `Person` 实体，帮助 Agent 识别作者的公开职业角色；它不会改变页面上的作者卡片样式：
-
-```yaml title="stalux/config/author.yml"
-id: author
-name: xingwangzhe
-avatar: /avatar.png
-bio: Blog Theme Stalux
-jobTitle: Software Engineer # 可选；输出为 JSON-LD Person.jobTitle
-```
-
-这是构建期元数据配置，不会创建联系 API，也不会暴露私密信息；只应填写本来就准备公开的职业称谓。
-
-
-## 页面加载与软导航
-
-根页面使用稳定滚动条空间和明确行高，避免字体换入或页面高度变化引起布局跳位。首页打字区域按完整文案预留最大换行高度，文本起点固定；时钟预留行高并使用等宽数字。文字、光标和页面过渡动画仍然保留，无需新增配置。
-
-Swup 在替换内容前预热目标页正文字体，不提前把目标 FontFace 安装到旧页面。字体准备最多等待 150ms，失败、超时或导航取消都会释放这段等待；目标样式与首次遇到的页面模块分别使用有上限的加载等待，让新页面交互完成注册。慢网络下首次加载仍可能出现系统字体回退；第三方内容和没有尺寸的远程图片仍需内容作者自行预留空间。减少动态效果和打印规则保持生效。
-
-维护细节见 [样式维护](docs/STYLING.md) 和 [生命周期与静态接口](docs/RUNTIME.md)。开发 Astro API 时可使用 [官方文档 MCP](https://mcp.docs.astro.build/mcp)；项目连接配置见 `.codex/config.toml`、`.mcp.json` 和 `AGENTS.md`。该开发 MCP 与博客前端 WebMCP 是不同接口。
-
-## 开发诊断日志
-
-Stalux 使用 Astro 官方 logger 输出集成、内容加载和页面生成日志。普通模式保留初始化摘要、警告和错误；详细模式记录配置与路由注入、组件覆盖、字体分片缓存、Markdown 分析缓存、内容统计、feed、资源同步和 Pagefind 阶段信息。
-
-```bash title="Stalux 开发诊断"
-bun run dev:debug
-bun run build:debug
-# 消费主题的项目也可以直接运行：
-STALUX_DEBUG=1 bun run dev --verbose
-STALUX_DEBUG=1 bun run build --verbose
-# 只静默 Astro 日志；独立 verify:build 的验收结果仍会输出：
-bun run astro -- build --silent
-```
-
-| 日志位置 | 行为 |
+| 文档 | 内容 |
 | --- | --- |
-| 终端 | 集成使用 `logger.fork("stalux/模块")`；页面使用 `Astro.logger`，端点和 loader 显式传递上下文 logger。支持 Astro 的日志级别、自定义 destination 和 `--silent`。 |
-| 浏览器控制台 | 独立轻量封装，统一 `[stalux/模块]` 前缀。详细信息只在开发模式且 `STALUX_DEBUG=1` 或 `--verbose` 时输出；需要在 DevTools 中显示 Verbose 日志。生产构建只保留警告和错误。 |
-| 内容诊断 | `getStaticPaths()` 没有运行时 logger，纯计算函数由上层或 Astro 报告异常；数学错误沿 Sätteri 的诊断机制报告，避免重复错误。 |
+| [快速开始](./docs/GETTING-STARTED.md) | 环境要求、两种安装方式、目录结构、开发命令、诊断日志 |
+| [配置说明](./docs/CONFIGURATION.md) | `stalux/config/*.yml` 全量字段、主题色、天气、评论、AI 发现 |
+| [功能行为](./docs/FEATURES.md) | 打字机、图注、灯箱、代码主题、归档、软导航、背景 |
+| [字体](./docs/FONTS.md) | 中文按页字体子集、缓存、字体许可 |
+| [搜索](./docs/SEARCH.md) | Pagefind + CJK 索引、`searchKeywords`、降级行为 |
+| [统计](./docs/ANALYTICS.md) | Google Analytics、Clarity、Umami、Vercount |
+| [性能与加载](./docs/PERFORMANCE.md) | 按可见性加载、首屏 CSS、路由预热、背景资源 |
+| [部署](./docs/DEPLOYMENT.md) | 静态构建、EdgeOne、缓存目录、产物检查 |
+| [WebMCP](./docs/WEBMCP.md) | 页面内 AI 工具、数据源、启停、polyfill |
+| [文章分享卡片](./docs/SOCIAL-CARDS.md) | `og:image` / `cover` 优先级与构建期生成 |
+| [组件覆盖](./docs/COMPONENTS.md) | Starlight 风格组件覆盖 |
+| [许可](./docs/LICENSING.md) | 主题 MIT 与字体许可范围 |
 
-浏览器日志覆盖页面挂载/清理、软导航、搜索、灯箱、评论、WebMCP、背景和外部统计脚本。日志不会上传到服务端，也不会新增遥测；不主动记录搜索词、文章正文、完整配置或凭据。错误保留模块、原因和堆栈，并过滤常见 token、密码和 URL 查询参数；第三方错误可能仍含业务信息，分享前请检查。
+完整索引与维护文档见 [docs/README.md](./docs/README.md)。
 
-Astro 7.3 的集成 `logger.debug()` 使用官方 `DEBUG/--verbose` 通道，不进入自定义 JSON destination；`info/warn/error` 和渲染阶段诊断走配置的 destination。需要静默运行时不要同时启用 `--verbose` 或 `DEBUG`。
+## 许可证
 
-耗时只写入日志，不写入静态页面或缓存键。正常构建与详细构建切换后可能需要一次重新构建，同一模式连续构建保持确定性。使用 `astro dev --background` 的消费项目可通过 `astro dev logs` 查看终端日志。
-
-维护依赖时保留 TypeScript 6 别名以支持 `astro check`；Vitest 与 `@vitest/coverage-v8` 同步升级。所有质量检查使用 `bun run validate`。
-
-## 样式开发与输出
-
-Stalux 使用 UnoCSS 在主题内预编译样式，消费项目无需安装或配置 UnoCSS。共享 CSS 默认作为可缓存的外部样式表输出，正文、数学、归档、分类、标签和短句样式随相应组件加载。显式设置 Astro 的 `build.inlineStylesheets: "always"` 可恢复内联输出。自定义组件新增的 UnoCSS utilities 需要消费方自行编译。样式维护位置与开发监听参见 [STYLING.md](./docs/STYLING.md)。
-
-文章页宽屏使用 280px 左右侧栏和最多 1544px 的整体布局；外侧内边距 16px，小于 1600px 时收起两侧栏。样式由 UnoCSS 构建，正文及第三方集成样式使用标准 CSS，发布构建检查不允许 Tailwind 变量或未编译指令。
-
-友情链接列表最大宽度为 1600px，左右内边距各 16px；卡片填满网格列，随屏幕宽度使用一至五列布局。
-
-文章正文和摘要卡最大宽度为 840px。摘要读取文章原有 `desc`，为空时不显示；Markdown 引用块显示为提示卡，无需新增配置或修改文章语法。
-
-访客天气默认关闭：在 `stalux/config/site.yml` 设置 `weather: { enabled: true }` 后，显示于页脚文字区域（含访客 IP 和近似位置）及桌面文章右侧时钟下方；省略或设置为 `false` 则关闭。进入可见区域后自动向 IP.SB 查询（失败时回退到 IPinfo） IP 近似城市，再向 Open-Meteo 查询天气，不调用浏览器 GPS。外部服务会接收到访客 IP，Open-Meteo 还会收到保留两位小数的经纬度。20 分钟的会话缓存只保存城市、访客 IP 与天气，不保存经纬度；VPN 可能显示出口城市。后台、视口外及 Astro 软导航会停止工作；接口失败显示重试，并保留上次天气。Open-Meteo 免费接口仅限非商业使用并受调用额度限制，组件附数据来源及许可链接。无需服务端接口或新增依赖。
-
-归档保留透明背景的单列年／月时间线，所有文章始终展开。月份首次进入视口时以 280ms 轻微位移和淡入，使用浏览器原生 API，无新增依赖。减少动画、打印、缺少浏览器 API 及禁用 JavaScript 时保持完整静态列表；手机端日期位于标题上方，长标题自然换行。无需新增配置。 文章标题悬停只保留一条下划线；鼠标悬停或键盘聚焦时在右侧预览原有 `desc`，靠近视口边缘时移到下方。空摘要不显示预览，触屏仍直接打开文章。 摘要预览使用浏览器顶层浮层，不受父容器裁剪及普通层级遮挡；不支持时使用高层级回退。
-
-### 生产样式名称压缩（1.35.0）
-
-源码和开发服务器保留可读的样式名称。生产构建在 Astro 编译与资源哈希生成之前，用主题随包发布的固定映射压缩 Stalux 私有 class、CSS variables 和 keyframes；模板模式与 npm 集成模式使用相同映射。HTML、CSS、客户端选择器和动态 SSR 动画名称同步转换，映射及转换器内容进入增量缓存指纹。
-
-`data-*` 行为钩子、文章锚点、`--font-body` / `--font-code` 及兼容覆盖变量 `--accent` / `--foreground-60p`、第三方组件接口和用户文章中的自定义名称保持原义。扩展组件请使用自己的 class、公开组件接口和稳定的行为属性，不依赖生产私有类名或 `s*` / `--s*` / `k*` 输出名称；这些短名称由主题保留。公开样式导入路径保持兼容，消费项目不需要增加配置或安装 UnoCSS。
-
-主题自有规则使用原生 CSS nesting、现代 `rgb(... / alpha)`、`overflow-wrap: anywhere` 和 `clip-path: inset(50%)`；输出使用 Lightning CSS 的现代浏览器目标，去除已不需要的旧兼容展开。多行截断和第三方 MathML 等仍有实际浏览器需求的适配保留，不能以删除必要规则来换取体积数字。生产 sourcemap 默认关闭，避免公开原名称映射。
-
-构建会检查 CSS、HTML 和 JavaScript 中的未压缩私有名称、Tailwind 指纹及资源引用。文章正文与代码示例不属于指纹清理对象。Wappalyzer 的检测规则及缓存会变化；构建检查通过与某个检测器版本的实际扫描结果分别报告。
-
-主题代码使用 MIT；字体保留各自许可。LXGW WenKai 与 Google Sans Code 使用 OFL 1.1；Latin Modern Math 使用 GUST Font License。数学辅助字体 Stalux Math Aux 从 KaTeX 的 OFL 字体独立重建，不使用含 FontCreator 非商用元数据的 Temml 字体。花体字母轮廓保持一致；撇号使用 OFL 来源并保持原边界、宽度和重复间距，曲线略有不同。字体与许可全文会同步到消费项目的 `public/fonts/`；旧版本留下的 `Temml.woff2` 已不再被引用，可删除。生成脚本和源文件位于 `scripts/build-math-font.py` 与 `scripts/font-sources/`。
-
-## LICENSES 与许可范围
-
-主题代码采用 **MIT**，根 [LICENSE](LICENSE) 保持标准许可全文，以便 GitHub 识别。内置字体保留自己的许可，不会因主题使用 MIT 而变成 MIT。独立许可文件及适用范围如下：
-
-| 组件 / Component | 许可 / License | 全文 / Full text |
-| --- | --- | --- |
-| Stalux 主题代码 | MIT | [LICENSE-MIT.txt](LICENSES/LICENSE-MIT.txt) |
-| LXGW WenKai | OFL-1.1，含保留名称与网页字体额外许可 | [LXGW-WenKai-OFL.txt](public/fonts/LXGW-WenKai-OFL.txt) |
-| Google Sans Code | OFL-1.1 | [Google-Sans-Code-OFL.txt](public/fonts/Google-Sans-Code-OFL.txt) |
-| Stalux Math Aux（由 KaTeX OFL 字体数据重建） | OFL-1.1，独立名称 | [StaluxMathAux-OFL.txt](public/fonts/StaluxMathAux-OFL.txt) |
-| Latin Modern Math | GUST Font License / LPPL-1.3c | [LICENSE-GUST.txt](LICENSES/LICENSE-GUST.txt) |
-| LPPL 1.3c 完整正文 | LPPL-1.3c | [LICENSE-LPPL-1.3c.txt](LICENSES/LICENSE-LPPL-1.3c.txt) |
-| OFL 1.1 标准正文 | OFL-1.1 | [LICENSE-OFL-1.1.txt](LICENSES/LICENSE-OFL-1.1.txt) |
-| 字体版权、保留名称与修改声明汇总 | 按各字体原许可 | [LICENSE-FONT-NOTICES.txt](LICENSES/LICENSE-FONT-NOTICES.txt) |
-
-`LICENSES/` 和 `public/fonts/` 许可全文随 npm 包分发；构建时字体声明同步到消费项目 `public/fonts/`，使线上 WOFF2 文件与许可一并可访问。原生分片依赖的独立声明见 [cjk-font-split-native LICENSES](https://github.com/xingwangzhe/cjk-font-split-native#licenses-与许可范围) 及其 npm 包内 `THIRD_PARTY_LICENSES.txt`。GitHub 主许可显示用于识别主题代码；字体与其他第三方组件必须按此表分别判断。
-
-
-### 文章社交分享卡片
-
-文章分享图按以下优先级选择，`cover` 仍用于站内文章列表：
-
-| 优先级 | 文章字段 | 分享行为 |
-| --- | --- | --- |
-| 1 | `og:image` | 非空时直接使用指定图片，不加工；支持 HTTP(S)、协议相对 URL 和站点根路径，建议 PNG/JPEG、1200×630 |
-| 2 | `cover` | Takumi 将有效封面放入带标题、摘要和站点信息的 1200×630 WebP 卡片 |
-| 3 | 无封面或封面不可用 | 自动生成中文标题卡片，不再用头像充当文章分享封面 |
-
-```yaml title="文章分享图配置"
-cover: /images/article-cover.webp
-og:image: /images/custom-social-card.png
-```
-
-`og:image` 可省略或留空；不需要修改已有文章。生成图位于 `/og/<元数据哈希>.webp`，静态 HTML 的 `og:image`、`twitter:image` 和 BlogPosting `image` 指向同一绝对地址；自动卡片附带尺寸和 MIME 类型，文章使用 `summary_large_image`。随后追加 PNG 格式的第二张 `og:image` 供平台选择，WebP 质量为 86；平台是否使用回退图取决于各自实现，AVIF 不作为默认格式。摘要、站点名称、作者、域名、分类、站点强调色和按站点时区显示的日期来自已有数据，无需新增站点配置。
-
-图片由 `@takumi-rs/core` 在构建期本地渲染，使用主题自带的 LXGW WenKai 字体，不向浏览器增加渲染器 JS，也不调用远程制图服务。本地封面从最终 `publicDir` 读取；远程封面会从构建机请求原 URL，单次请求最长 8 秒、最多 8 MiB，远程图片字节缓存 24 小时；不可读或无法解码时警告并回退标题卡片。构建 WebP / PNG 缓存保存在 Astro 缓存目录的 `stalux-social-cards/` 下，仍会将图片写入本次静态输出。显式指定的图片由社交平台自行抓取，不在构建时转码；请确保公开可访问且内容为图片。社交平台有自己的预览缓存，页面部署成功不代表已有分享卡片立即刷新。
-
-全站动效按 55 种可见语义模块设计，清单与触发、降级规则见 [模块与视图过渡](docs/MOTION.md)。目标资源准备好后，Swup 只对可见且有高度上限的标题或引导区执行短退场与入场，区分进入阅读、返回目录、切换筛选和上下篇；长正文与长时间线始终可读，页头、页脚和深色背景保持稳定。手机采用短淡入，历史返回保留阅读位置，同页锚点采用可中断的原生平滑滚动。模块交互提供悬停、聚焦、按下和异步更新反馈，辅助区域仅有限次数淡入；减少动态效果与打印保持静态可读，无需新增配置。
-
-内置 42 张背景默认使用预生成的深色底 WebP（quality 80），保持原分辨率，减少透明度边缘带来的首访流量。CSS 自定义底色时使用原透明 WebP，SVG 原图继续保留。原 SVG 只有 viewBox，其 auto 背景尺寸等价于 contain；内置 WebP 显式沿用 contain，自定义背景 URL 仍保持原有尺寸。修改原图后用 `bun run backgrounds:build` 重新生成实体资源；消费项目构建只复制资源，不重复栅格化。性能结论以独立 preview 验收报告为准。
+主题代码采用 [MIT License](LICENSE)。内置字体（LXGW WenKai、Google Sans Code、Latin Modern Math 等）保留各自许可，详见 [许可说明](./docs/LICENSING.md)。
