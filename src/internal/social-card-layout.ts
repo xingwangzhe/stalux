@@ -1,41 +1,34 @@
+import type { Node } from "@takumi-rs/core";
 import type { SocialCardData } from "../utils/social-image";
 
 export const CARD_WIDTH = 1200;
 export const CARD_HEIGHT = 630;
 export const CARD_MARGIN = 72;
 export const COVER_WIDTH = 440;
-export const COVER_LEFT = CARD_WIDTH - COVER_WIDTH;
 export const CARD_FONT_FAMILY = "Stalux Card";
-export const CARD_FONT_WEIGHT = 400;
 
-export interface CardNode {
-    type: string;
-    props: Record<string, unknown> & { style?: Record<string, unknown>; children?: unknown };
-}
+const MUTED = "#545454";
+const RULE = "rgba(0, 0, 0, 0.16)";
 
-const text = (value: string, style: Record<string, unknown>): CardNode => ({
-    type: "div",
-    // `display: block` is what enables `lineClamp` and its ellipsis in Satori.
-    props: { style: { display: "block", overflow: "hidden", ...style }, children: value },
-});
+const text = (value: string, style: Record<string, unknown>): Node =>
+    ({ type: "text", text: value, style }) as Node;
 
-const rule = (top: number, width: number): CardNode => ({
-    type: "div",
-    props: {
+const rule = (top: number, width: number): Node =>
+    ({
+        type: "container",
         style: {
             position: "absolute",
             left: CARD_MARGIN,
             top,
             width,
             height: 1,
-            backgroundColor: "rgba(0, 0, 0, 0.16)",
+            backgroundColor: RULE,
         },
-    },
-});
+    }) as Node;
 
-const row = (top: number, width: number, children: CardNode[]): CardNode => ({
-    type: "div",
-    props: {
+const row = (top: number, width: number, children: Node[]): Node =>
+    ({
+        type: "container",
         style: {
             position: "absolute",
             left: CARD_MARGIN,
@@ -46,16 +39,16 @@ const row = (top: number, width: number, children: CardNode[]): CardNode => ({
             alignItems: "baseline",
         },
         children,
-    },
-});
+    }) as Node;
 
-function header(data: SocialCardData, textWidth: number): CardNode {
+function header(data: SocialCardData, textWidth: number): Node {
     return row(50, textWidth, [
         text(data.siteTitle, {
             fontSize: 26,
             lineHeight: 1.2,
             maxWidth: "62%",
             lineClamp: 1,
+            overflow: "hidden",
             color: "#000000",
         }),
         text(data.category || "", {
@@ -65,32 +58,34 @@ function header(data: SocialCardData, textWidth: number): CardNode {
             letterSpacing: 3,
             lineHeight: 1.2,
             lineClamp: 1,
+            overflow: "hidden",
             color: "#000000",
         }),
     ]);
 }
 
-function footer(data: SocialCardData, textWidth: number): CardNode {
+function footer(data: SocialCardData, textWidth: number): Node {
     return row(550, textWidth, [
         text(data.host, { fontSize: 22, lineHeight: 1.3, color: "#000000" }),
         text(`${data.author}  /  ${data.date}`, {
             fontSize: 22,
             lineHeight: 1.3,
             textAlign: "right",
-            color: "#545454",
+            color: MUTED,
         }),
     ]);
 }
 
 /**
  * A fixed editorial layout: black type on white, one full-colour artwork panel.
- * No accent colour, gradients, or decoration — the title and the image carry it.
+ * No accent colour, gradients, or decoration — the title, metadata and image
+ * carry it. Every text block is black or neutral gray; only the cover is colour.
  */
-export function socialCardTree(data: SocialCardData, withCover = false, cover?: string): CardNode {
+export function socialCardTree(data: SocialCardData, withCover = false): Node {
     const textWidth = withCover
         ? CARD_WIDTH - COVER_WIDTH - CARD_MARGIN * 2
         : CARD_WIDTH - CARD_MARGIN * 2;
-    const children: CardNode[] = [
+    const children: Node[] = [
         header(data, textWidth),
         rule(106, textWidth),
         text(data.title, {
@@ -101,53 +96,64 @@ export function socialCardTree(data: SocialCardData, withCover = false, cover?: 
             fontSize: 58,
             lineHeight: 1.2,
             lineClamp: 3,
+            overflow: "hidden",
             overflowWrap: "anywhere",
             color: "#000000",
         }),
-        text(data.description.replace(/\s+/gu, " ").trim(), {
+    ];
+    if (data.tags.length > 0)
+        children.push(
+            text(data.tags.map((tag) => `#${tag}`).join("  ·  "), {
+                position: "absolute",
+                left: CARD_MARGIN,
+                top: 384,
+                width: textWidth,
+                fontSize: 23,
+                lineHeight: 1.3,
+                lineClamp: 1,
+                overflow: "hidden",
+                color: "#000000",
+            }),
+        );
+    children.push(
+        text(data.postUrl.replace(/^https?:\/\//u, ""), {
             position: "absolute",
             left: CARD_MARGIN,
-            top: 398,
+            top: 426,
             width: textWidth,
-            fontSize: 24,
-            lineHeight: 1.55,
-            lineClamp: 2,
-            overflowWrap: "anywhere",
-            color: "#545454",
+            fontSize: 21,
+            lineHeight: 1.3,
+            lineClamp: 1,
+            overflow: "hidden",
+            color: MUTED,
         }),
         rule(532, textWidth),
         footer(data, textWidth),
-    ];
-    if (cover)
+    );
+    if (withCover)
         children.push({
-            type: "img",
-            props: {
-                src: cover,
-                style: {
-                    position: "absolute",
-                    right: 0,
-                    top: 0,
-                    width: COVER_WIDTH,
-                    height: CARD_HEIGHT,
-                    objectFit: "cover",
-                },
-            },
-        });
-    return {
-        type: "div",
-        props: {
+            type: "image",
+            src: "stalux-cover",
             style: {
-                width: CARD_WIDTH,
+                position: "absolute",
+                right: 0,
+                top: 0,
+                width: COVER_WIDTH,
                 height: CARD_HEIGHT,
-                position: "relative",
-                display: "flex",
-                backgroundColor: "#ffffff",
-                color: "#000000",
-                fontFamily: CARD_FONT_FAMILY,
-                overflow: "hidden",
+                objectFit: "cover",
             },
-            lang: data.lang,
-            children,
+        } as Node);
+    return {
+        type: "container",
+        style: {
+            width: CARD_WIDTH,
+            height: CARD_HEIGHT,
+            position: "relative",
+            backgroundColor: "#ffffff",
+            color: "#000000",
+            fontFamily: CARD_FONT_FAMILY,
+            overflow: "hidden",
         },
-    };
+        children,
+    } as Node;
 }

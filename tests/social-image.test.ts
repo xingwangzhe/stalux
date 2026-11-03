@@ -29,6 +29,8 @@ const post = {
     title: "中文标题与 Astro",
     desc: "摘要",
     date: "2026-10-24 23:55:00",
+    abbrlink: "test",
+    tags: ["Astro", "中文"],
     cover: "/封面.webp",
 };
 const card = createSocialCardData(post, site, author);
@@ -54,6 +56,16 @@ describe("article social images", () => {
         expect(resolvePostSocialImage(" ", card).url).toBe(socialCardPath(card));
         expect(resolvePostSocialImage(undefined, { ...card, cover: undefined })).toMatchObject({
             type: "image/png",
+        });
+    });
+    it("carries the site name, tags, links and author onto the card", () => {
+        expect(card).toMatchObject({
+            siteTitle: "中文博客",
+            tags: ["Astro", "中文"],
+            category: "",
+            host: "example.com",
+            postUrl: "https://example.com/posts/test/",
+            author: "Tester",
         });
     });
     it("keeps dates in the site timezone on a UTC build machine", () => {

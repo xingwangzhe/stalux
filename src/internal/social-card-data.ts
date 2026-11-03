@@ -4,10 +4,11 @@ import type { SocialCardData } from "../utils/social-image";
 
 interface PostData {
     title: string;
-    desc: string;
     date: string;
+    abbrlink: string;
     cover?: string;
     categories?: string[];
+    tags?: string[];
 }
 
 export function createSocialCardData(
@@ -15,13 +16,14 @@ export function createSocialCardData(
     site: SiteData,
     author: AuthorData,
 ): SocialCardData {
+    const siteUrl = new URL(site.canonical ?? site.url);
     return {
         title: post.title,
-        description: post.desc,
         siteTitle: site.title,
         author: author.name,
-        host: new URL(site.canonical ?? site.url).host,
-        lang: site.lang || "zh-CN",
+        host: siteUrl.host,
+        postUrl: new URL(`/posts/${encodeURIComponent(post.abbrlink)}/`, siteUrl).href,
+        tags: post.tags ?? [],
         date: formatInTimeZone(
             parseDate(post.date, site.timezone || "Asia/Shanghai"),
             site.timezone || "Asia/Shanghai",

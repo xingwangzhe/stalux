@@ -2,8 +2,6 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { imageSize } from "image-size";
-import { loadSharp, type SharpRawBuffer } from "./sharp-loader";
-import { CARD_HEIGHT, COVER_WIDTH } from "./social-card-layout";
 
 export interface SocialCardPaths {
     publicDir: string;
@@ -95,49 +93,4 @@ function loadCoverUncached(cover: string, paths: SocialCardPaths): Promise<Buffe
         url,
         path.join(paths.cacheDir, "covers", createHash("sha256").update(url.href).digest("hex")),
     );
-}
-
-const preparedCovers = new Map<string, Promise<SharpRawBuffer>>();
-
-/**
- * Crop, flatten and downscale the artwork to the exact panel size. The pixels
- * are composited after rasterization instead of being embedded in the SVG: an
- * image inside the SVG made Resvg decode and scale it as part of vector
- * rasterization, which cost several hundred milliseconds per card.
- */
-export async function prepareCover(bytes: Buffer): Promise<SharpRawBuffer> {
-    const sharp = loadSharp();
-    if (!sharp) throw new Error("sharp is required to crop artwork");
-    const digest = createHash("sha256").update(bytes).digest("hex");
-    let pending = preparedCovers.get(digest);
-    if (!pending) {
-        pending = sharp(bytes)
-            .rotate()
-            .resize({
-                width: COVER_WIDTH,
-                height: CARD_HEIGHT,
-                fit: "cover",
-                position: "centre",
-            })
-            .flatten({ background: "#ffffff" })
-            .removeAlpha()
-            .raw()
-            .toBuffer({ resolveWithObject: true });
-        preparedCovers.set(digest, pending);
-        if (preparedCovers.size > 16)
-            preparedCovers.delete(preparedCovers.keys().next().value ?? "");
-    }
-    try {
-        return await pending;
-    } catch (error) {
-        preparedCovers.delete(digest);
-        throw new Error("cover could not be prepared", { cause: error });
-    }
-}
-
-/** Only used when sharp is unavailable, so Satori can embed the original bytes. */
-export function coverDataUri(bytes: Buffer): string {
-    const { type } = imageSize(bytes);
-    const mime = type === "jpg" ? "image/jpeg" : `image/${type ?? "png"}`;
-    return `data:${mime};base64,${bytes.toString("base64")}`;
 }

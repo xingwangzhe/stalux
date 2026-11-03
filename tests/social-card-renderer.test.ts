@@ -13,6 +13,7 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { Node } from "@takumi-rs/core";
 import { imageSize } from "image-size";
 import sharp from "sharp";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -29,11 +30,11 @@ const fontPath = fileURLToPath(
 const artwork = await readFile(new URL("../public/avatar.png", import.meta.url));
 const data: SocialCardData = {
     title: "中文标题与 Astro / Vite",
-    description: "构建时生成社交分享卡片，浏览器无需加载渲染器。",
     siteTitle: "测试博客",
     author: "xingwangzhe",
     host: "example.com",
-    lang: "zh-CN",
+    postUrl: "https://example.com/posts/abc123/",
+    tags: ["Astro", "中文"],
     date: "2026-10-25",
     category: "技术",
 };
@@ -60,7 +61,12 @@ function expectImage(bytes: Buffer, format: "png" | "jpg") {
     expect(imageSize(bytes)).toMatchObject({ type: format, width: 1200, height: 630 });
 }
 
-describe("Satori social-card rendering", () => {
+function collectText(node: Node): string[] {
+    if (node.type === "text") return [node.text];
+    return "children" in node && node.children ? node.children.flatMap(collectText) : [];
+}
+
+describe("Takumi social-card rendering", () => {
     it("renders a real PNG title card with the bundled Chinese font and no network", async () => {
         const fetcher = vi.fn();
         vi.stubGlobal("fetch", fetcher);
@@ -70,9 +76,25 @@ describe("Satori social-card rendering", () => {
         expect(warn).not.toHaveBeenCalled();
     });
 
+    it("puts the site name, title, tags, category, article link, site link and author on the card", () => {
+        const text = collectText(socialCardTree(data)).join("\n");
+        expect(text).toContain(data.siteTitle);
+        expect(text).toContain(data.title);
+        expect(text).toContain("#Astro  ·  #中文");
+        expect(text).toContain(data.category);
+        expect(text).toContain("example.com/posts/abc123/");
+        expect(text).toContain(data.host);
+        expect(text).toContain(data.author);
+    });
+
     it("keeps the artwork in colour on a black-and-white card", async () => {
         const red = await sharp({
-            create: { width: 400, height: 400, channels: 3, background: { r: 220, g: 20, b: 30 } },
+            create: {
+                width: 400,
+                height: 400,
+                channels: 3,
+                background: { r: 220, g: 20, b: 30 },
+            },
         })
             .png()
             .toBuffer();
@@ -111,20 +133,14 @@ describe("Satori social-card rendering", () => {
         expect(warn).not.toHaveBeenCalled();
     });
 
-    it("keeps a long mixed Chinese/English title inside three clamped lines", async () => {
+    it("clamps a long mixed Chinese/English title to three lines", () => {
         const title =
             "发布 @xingwangzhe/satteri-mermaid：剔除mermaid.js，用Rust原生渲染流程图，构建时产出纯静态SVG，这是一段刻意超长的标题用来验证截断行为";
-        const tree = socialCardTree({ ...data, title }, undefined);
-        const titleNode = (
-            tree.props.children as { props: { style: Record<string, unknown> } }[]
-        )[2];
-        expect(titleNode?.props.style).toMatchObject({
-            fontSize: 58,
-            lineClamp: 3,
-            overflow: "hidden",
-            display: "block",
-        });
-        expectImage(await renderSocialCard({ ...data, title }, paths, vi.fn()), "png");
+        const tree = socialCardTree({ ...data, title });
+        const titleNode = (tree as { children?: Node[] }).children?.find(
+            (node) => node.type === "text" && node.text === title,
+        );
+        expect(titleNode).toMatchObject({ type: "text", style: { lineClamp: 3 } });
     });
 
     it("restores identical encoded bytes from the persistent render cache", async () => {

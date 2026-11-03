@@ -14,7 +14,7 @@ README 只保留主题介绍、安装、使用和部署入口，细节都收在�
 | [统计](./ANALYTICS.md) | Google Analytics、Clarity、Umami、Vercount 配置与注意事项 |
 | [部署](./DEPLOYMENT.md) | 静态构建、EdgeOne、缓存目录、构建产物 |
 | [性能与加载](./PERFORMANCE.md) | 按可见性加载、首屏 CSS、预加载、背景图、现代 JavaScript |
-| [文章分享卡片](./SOCIAL-CARDS.md) | `og:image` / `cover` 优先级、黑白卡片与彩色封面、Satori 生成、缓存 |
+| [文章分享卡片](./SOCIAL-CARDS.md) | `og:image` / `cover` 优先级、黑白卡片与彩色封面、Takumi 生成、缓存 |
 | [WebMCP](./WEBMCP.md) | 页面内 AI 工具、数据源、启停、polyfill |
 | [组件覆盖](./COMPONENTS.md) | Starlight 风格的组件覆盖系统 |
 | [许可](./LICENSING.md) | 主题 MIT、字体 OFL / GUST 许可范围 |

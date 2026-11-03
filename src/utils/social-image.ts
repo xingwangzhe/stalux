@@ -1,13 +1,12 @@
 import { createHash } from "node:crypto";
-import { loadSharp } from "../internal/sharp-loader";
 
 export interface SocialCardData {
     title: string;
-    description: string;
     siteTitle: string;
     author: string;
     host: string;
-    lang: string;
+    postUrl: string;
+    tags: string[];
     date: string;
     category: string;
     cover?: string;
@@ -37,20 +36,15 @@ export function isSocialImageUrl(value: string): boolean {
     }
 }
 
-/**
- * Cards with artwork are photographic, so JPEG saves most of the bytes and is
- * accepted by every crawler. Plain cards stay PNG: flat type compresses far
- * better there. Without `sharp` neither palette PNG nor JPEG is available, so
- * the card falls back to a plain PNG.
- */
+/** Artwork cards are photographic, so JPEG saves bytes; plain cards stay PNG. */
 export function socialCardFormat(data: Pick<SocialCardData, "cover">): SocialCardFormat {
-    return data.cover && loadSharp() ? "jpg" : "png";
+    return data.cover ? "jpg" : "png";
 }
 
 export function socialCardPath(data: SocialCardData, base = "/"): string {
     // Bump the template revision when layout changes. Metadata changes get a fresh URL.
     const hash = createHash("sha256")
-        .update(JSON.stringify(["stalux-mono-v1", data]))
+        .update(JSON.stringify(["stalux-mono-v2", data]))
         .digest("hex")
         .slice(0, 20);
     return `${base.replace(/\/$/u, "")}/og/${hash}.${socialCardFormat(data)}`;
