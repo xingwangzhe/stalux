@@ -46,7 +46,6 @@
         "@biomejs/biome": "^2.5.15",
         "@types/css-tree": "^3.2.0",
         "@types/node": "^26.6.5",
-        "@types/react": "19",
         "@unocss/astro": "^66.11.0",
         "@vitest/coverage-v8": "^5.0.4",
         "astro": "^7.4.4",
@@ -490,8 +489,6 @@
     "@types/nlcst": ["@types/nlcst@2.0.3", "https://mirrors.cloud.tencent.com/npm/@types/nlcst/-/nlcst-2.0.3.tgz", { "dependencies": { "@types/unist": "*" } }, "sha512-vSYNSDe6Ix3q+6Z7ri9lyWqgGhJTmzRjZRqyq15N0Z/1/UnVsno9G/N40NBijoYx2seFDIl0+B2mgAb9mezUCA=="],
 
     "@types/node": ["@types/node@26.6.5", "", { "dependencies": { "undici-types": "~8.9.0" } }, "sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg=="],
-
-    "@types/react": ["@types/react@19.3.0", "", { "dependencies": { "csstype": "^3.2.2" } }, "sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg=="],
 
     "@types/sax": ["@types/sax@1.2.7", "https://mirrors.cloud.tencent.com/npm/@types/sax/-/sax-1.2.7.tgz", { "dependencies": { "@types/node": "*" } }, "sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A=="],
 
