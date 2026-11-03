@@ -5,7 +5,12 @@ import { createSocialCardData } from "../../internal/social-card-data";
 import { renderSocialCard } from "../../internal/social-card-renderer";
 import { getAuthorData, getSiteData } from "../../utils/config-utils";
 import { getPostContentIndex } from "../../utils/content-index";
-import { isSocialImageUrl, type SocialCardData, socialCardPath } from "../../utils/social-image";
+import {
+    isSocialImageUrl,
+    type SocialCardData,
+    type SocialCardFormat,
+    socialCardPath,
+} from "../../utils/social-image";
 
 export async function getStaticPaths() {
     const entries = await getCollection("config");
@@ -17,34 +22,28 @@ export async function getStaticPaths() {
             (post) =>
                 !(post.data["og:image"]?.trim() && isSocialImageUrl(post.data["og:image"].trim())),
         )
-        .flatMap((post) => {
+        .map((post) => {
             const card = createSocialCardData(post.data, site, author);
-            // PNG only. og:image must stay PNG because several platforms refuse
-            // WebP and AVIF in share previews, and a second format per post
-            // doubled the render work (about 8s each) for no visible gain.
-            return (["png"] as const).map((format) => ({
+            // The extension is part of the metadata contract: artwork cards are
+            // photographic JPEG, plain cards are palette PNG.
+            const file = socialCardPath(card).split("/").at(-1) ?? "";
+            const dot = file.lastIndexOf(".");
+            return {
                 params: {
-                    image: socialCardPath(card)
-                        .split("/")
-                        .at(-1)
-                        ?.replace(/\.png$/u, ""),
-                    format,
+                    image: file.slice(0, dot),
+                    format: file.slice(dot + 1) as SocialCardFormat,
                 },
-                props: { card, format },
-                // Covers may change independently of Markdown. Always recheck them; the renderer
-                // has its own content cache and writes outputs even after Astro cleans dist.
-            }));
+                props: { card, format: file.slice(dot + 1) as SocialCardFormat },
+            };
         });
 }
 
 export const GET: APIRoute = async ({ props, logger }) => {
-    const bytes = await renderSocialCard(
-        props.card as SocialCardData,
-        paths,
-        (message) => logger.warn(message),
-        props.format as "webp" | "png",
+    const bytes = await renderSocialCard(props.card as SocialCardData, paths, (message) =>
+        logger.warn(message),
     );
+    const type = props.format === "jpg" ? "image/jpeg" : "image/png";
     return new Response(new Uint8Array(bytes), {
-        headers: { "Content-Type": `image/${props.format}` },
+        headers: { "Content-Type": type },
     });
 };

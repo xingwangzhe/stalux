@@ -13,10 +13,14 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { Renderer } from "@takumi-rs/core";
 import { imageSize } from "image-size";
+import sharp from "sharp";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderSocialCard, type SocialCardPaths } from "../src/internal/social-card-renderer";
+import {
+    renderSocialCard,
+    type SocialCardPaths,
+    socialCardTree,
+} from "../src/internal/social-card-renderer";
 import type { SocialCardData } from "../src/utils/social-image";
 
 const fontPath = fileURLToPath(
@@ -30,7 +34,6 @@ const data: SocialCardData = {
     author: "xingwangzhe",
     host: "example.com",
     lang: "zh-CN",
-    accent: "#64FFDA",
     date: "2026-10-25",
     category: "技术",
 };
@@ -53,61 +56,87 @@ afterEach(async () => {
     await rm(root, { recursive: true, force: true });
 });
 
-function expectImage(bytes: Buffer, format: "png" | "webp") {
+function expectImage(bytes: Buffer, format: "png" | "jpg") {
     expect(imageSize(bytes)).toMatchObject({ type: format, width: 1200, height: 630 });
 }
 
-describe("Takumi social-card rendering", () => {
-    it.each(["webp", "png"] as const)(
-        "renders a real %s with the bundled Chinese font and no network",
-        async (format) => {
-            const fetcher = vi.fn();
-            vi.stubGlobal("fetch", fetcher);
-            const warn = vi.fn();
-            expectImage(await renderSocialCard(data, paths, warn, format), format);
-            expect(fetcher).not.toHaveBeenCalled();
-            expect(warn).not.toHaveBeenCalled();
-        },
-    );
+describe("Satori social-card rendering", () => {
+    it("renders a real PNG title card with the bundled Chinese font and no network", async () => {
+        const fetcher = vi.fn();
+        vi.stubGlobal("fetch", fetcher);
+        const warn = vi.fn();
+        expectImage(await renderSocialCard(data, paths, warn), "png");
+        expect(fetcher).not.toHaveBeenCalled();
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    it("keeps the artwork in colour on a black-and-white card", async () => {
+        const red = await sharp({
+            create: { width: 400, height: 400, channels: 3, background: { r: 220, g: 20, b: 30 } },
+        })
+            .png()
+            .toBuffer();
+        await writeFile(path.join(paths.publicDir, "red.png"), red);
+        const warn = vi.fn();
+        const bytes = await renderSocialCard({ ...data, cover: "/red.png" }, paths, warn);
+        expectImage(bytes, "jpg");
+        const metadata = await sharp(bytes).metadata();
+        expect(metadata.space).toBe("srgb");
+        const { data: pixel } = await sharp(bytes)
+            .extract({ left: 1100, top: 300, width: 1, height: 1 })
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+        expect(pixel[0]).toBeGreaterThan(170);
+        expect(pixel[1]).toBeLessThan(80);
+        expect(pixel[2]).toBeLessThan(90);
+        const { data: paper } = await sharp(bytes)
+            .extract({ left: 20, top: 300, width: 1, height: 1 })
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+        expect(Math.min(paper[0] ?? 0, paper[1] ?? 0, paper[2] ?? 0)).toBeGreaterThan(235);
+        expect(warn).not.toHaveBeenCalled();
+    });
 
     it("uses the encoded local cover under a deployment base", async () => {
         await writeFile(path.join(paths.publicDir, "封面.png"), artwork);
         const warn = vi.fn();
-        const render = vi.spyOn(Renderer.prototype, "render");
-        const bytes = await renderSocialCard(
-            { ...data, cover: "/blog/%E5%B0%81%E9%9D%A2.png" },
-            { ...paths, base: "/blog/" },
-            warn,
+        expectImage(
+            await renderSocialCard(
+                { ...data, cover: "/blog/%E5%B0%81%E9%9D%A2.png" },
+                { ...paths, base: "/blog/" },
+                warn,
+            ),
+            "jpg",
         );
-        expectImage(bytes, "webp");
-        expect(render.mock.calls[0]?.[1]?.images).toEqual([{ src: "stalux-cover", data: artwork }]);
         expect(warn).not.toHaveBeenCalled();
     });
 
-    it("fits a real mixed Chinese/English long title inside its available height", async () => {
+    it("keeps a long mixed Chinese/English title inside three clamped lines", async () => {
         const title =
-            "发布 @xingwangzhe/satteri-mermaid：剔除mermaid.js，用Rust原生渲染流程图，构建时产出纯静态SVG";
-        const measure = vi.spyOn(Renderer.prototype, "measure");
-        expectImage(await renderSocialCard({ ...data, title }, paths, vi.fn()), "webp");
-        expect(measure).toHaveBeenCalled();
-        const last = measure.mock.calls.at(-1)?.[0];
-        expect(last).toMatchObject({ type: "text", text: title });
-        const measured = await measure.mock.results.at(-1)?.value;
-        expect(measured.height).toBeLessThanOrEqual(250);
+            "发布 @xingwangzhe/satteri-mermaid：剔除mermaid.js，用Rust原生渲染流程图，构建时产出纯静态SVG，这是一段刻意超长的标题用来验证截断行为";
+        const tree = socialCardTree({ ...data, title }, undefined);
+        const titleNode = (
+            tree.props.children as { props: { style: Record<string, unknown> } }[]
+        )[2];
+        expect(titleNode?.props.style).toMatchObject({
+            fontSize: 58,
+            lineClamp: 3,
+            overflow: "hidden",
+            display: "block",
+        });
+        expectImage(await renderSocialCard({ ...data, title }, paths, vi.fn()), "png");
     });
 
     it("restores identical encoded bytes from the persistent render cache", async () => {
-        const render = vi.spyOn(Renderer.prototype, "render");
         const first = await renderSocialCard(data, paths, vi.fn());
         const second = await renderSocialCard(data, paths, vi.fn());
         expect(second).toEqual(first);
-        expect(render).toHaveBeenCalledTimes(1);
         expect(
-            (await readdir(paths.cacheDir)).filter((name) => name.endsWith(".webp")),
+            (await readdir(paths.cacheDir)).filter((name) => name.endsWith(".png")),
         ).toHaveLength(1);
     });
 
-    it("shares downloaded artwork between WebP and PNG output and caches its bytes", async () => {
+    it("downloads remote artwork once and caches its bytes", async () => {
         const cover = "https://images.example.com/cover.png";
         const fetcher = vi.fn(
             async () =>
@@ -115,8 +144,8 @@ describe("Takumi social-card rendering", () => {
         );
         vi.stubGlobal("fetch", fetcher);
         const warn = vi.fn();
-        expectImage(await renderSocialCard({ ...data, cover }, paths, warn), "webp");
-        expectImage(await renderSocialCard({ ...data, cover }, paths, warn, "png"), "png");
+        expectImage(await renderSocialCard({ ...data, cover }, paths, warn), "jpg");
+        expectImage(await renderSocialCard({ ...data, cover }, paths, warn), "jpg");
         expect(fetcher).toHaveBeenCalledTimes(1);
         const key = createHash("sha256").update(cover).digest("hex");
         expect(await readFile(path.join(paths.cacheDir, "covers", key))).toEqual(artwork);
@@ -134,7 +163,7 @@ describe("Takumi social-card rendering", () => {
         await writeFile(cacheFile, artwork);
         const fetcher = vi.fn();
         vi.stubGlobal("fetch", fetcher);
-        expectImage(await renderSocialCard({ ...data, cover }, paths, vi.fn()), "webp");
+        expectImage(await renderSocialCard({ ...data, cover }, paths, vi.fn()), "jpg");
         expect(fetcher).not.toHaveBeenCalled();
     });
 
@@ -154,7 +183,7 @@ describe("Takumi social-card rendering", () => {
                 new Response(new Uint8Array(artwork), { headers: { "Content-Type": "image/png" } }),
         );
         vi.stubGlobal("fetch", fetcher);
-        expectImage(await renderSocialCard({ ...data, cover }, paths, vi.fn()), "webp");
+        expectImage(await renderSocialCard({ ...data, cover }, paths, vi.fn()), "jpg");
         expect(fetcher).toHaveBeenCalledTimes(1);
     });
 
@@ -176,7 +205,7 @@ describe("Takumi social-card rendering", () => {
             ),
         );
         const warn = vi.fn();
-        expectImage(await renderSocialCard({ ...data, cover }, paths, warn), "webp");
+        expectImage(await renderSocialCard({ ...data, cover }, paths, warn), "jpg");
         expect(warn).toHaveBeenCalledWith(expect.stringContaining("回退标题卡片"));
     });
 
@@ -187,28 +216,14 @@ describe("Takumi social-card rendering", () => {
         const warn = vi.fn();
         expectImage(
             await renderSocialCard({ ...data, cover: "/oversized.png" }, paths, warn),
-            "webp",
+            "jpg",
         );
         expect(warn).toHaveBeenCalledOnce();
     });
 
-    it("recovers from native artwork decoding failure with a coverless render", async () => {
-        await writeFile(path.join(paths.publicDir, "cover.png"), artwork);
-        const render = vi
-            .spyOn(Renderer.prototype, "render")
-            .mockRejectedValueOnce(new Error("decode failed"));
-        const warn = vi.fn();
-        expectImage(await renderSocialCard({ ...data, cover: "/cover.png" }, paths, warn), "webp");
-        expect(render).toHaveBeenCalledTimes(2);
-        expect(warn).toHaveBeenCalledWith(expect.stringContaining("解码失败"));
-    });
-
-    it("propagates a renderer failure when there is no artwork to remove", async () => {
-        vi.spyOn(Renderer.prototype, "render").mockRejectedValueOnce(
-            new Error("renderer unavailable"),
-        );
-        await expect(renderSocialCard(data, paths, vi.fn())).rejects.toThrow(
-            "renderer unavailable",
-        );
+    it("propagates a font read failure when there is no artwork to remove", async () => {
+        await expect(
+            renderSocialCard(data, { ...paths, fontPath: path.join(root, "missing.ttf") }, vi.fn()),
+        ).rejects.toThrow();
     });
 });

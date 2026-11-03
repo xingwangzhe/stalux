@@ -40,18 +40,21 @@ describe("article social images", () => {
             reconstructMarkdown({ ...post, abbrlink: "test", "og:image": "/social.png" }),
         ).toContain("og:image: /social.png");
     });
-    it("generates one PNG for covers and coverless posts, including base paths", () => {
+    it("generates a JPEG with artwork and a PNG for coverless posts, including base paths", () => {
         expect(resolvePostSocialImage(undefined, card)).toMatchObject({
             width: 1200,
             height: 630,
-            type: "image/png",
+            type: "image/jpeg",
         });
         // No second format is emitted, so there is no fallback image to advertise.
         expect(resolvePostSocialImage(undefined, card)).not.toHaveProperty("fallbackUrl");
-        expect(socialCardPath(card, "/blog/")).toMatch(/^\/blog\/og\/[a-f0-9]{20}\.png$/u);
-        expect(socialCardPath({ ...card, cover: undefined })).not.toBe(socialCardPath(card));
+        expect(socialCardPath(card, "/blog/")).toMatch(/^\/blog\/og\/[a-f0-9]{20}\.jpg$/u);
+        expect(socialCardPath({ ...card, cover: undefined })).toMatch(/\.png$/u);
         expect(socialCardPath({ ...card, title: "新标题" })).not.toBe(socialCardPath(card));
         expect(resolvePostSocialImage(" ", card).url).toBe(socialCardPath(card));
+        expect(resolvePostSocialImage(undefined, { ...card, cover: undefined })).toMatchObject({
+            type: "image/png",
+        });
     });
     it("keeps dates in the site timezone on a UTC build machine", () => {
         expect(card.date).toBe("2026-10-24");
@@ -106,7 +109,7 @@ describe("article social images", () => {
             url,
             width: 1200,
             height: 630,
-            type: "image/png",
+            type: "image/jpeg",
         });
         expect(seo.twitter).toMatchObject({ image: url, card: "summary_large_image" });
         expect(seo.schema["@graph"]).toContainEqual(

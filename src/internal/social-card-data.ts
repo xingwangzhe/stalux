@@ -22,7 +22,6 @@ export function createSocialCardData(
         author: author.name,
         host: new URL(site.canonical ?? site.url).host,
         lang: site.lang || "zh-CN",
-        accent: site.accentColor || "#EAB308",
         date: formatInTimeZone(
             parseDate(post.date, site.timezone || "Asia/Shanghai"),
             site.timezone || "Asia/Shanghai",
