@@ -34,7 +34,7 @@
         "pagefind": "^1.6.0",
         "parse5": "^8.1.0",
         "photoswipe": "^5.4.4",
-        "satteri": "^0.11.6",
+        "satteri": "0.11.6",
         "simple-icons": "^16.36.0",
         "swup": "4.10.0",
         "temml": "^0.14.0",
