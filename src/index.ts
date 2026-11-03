@@ -13,10 +13,9 @@ import { styleNames } from "./internal/style-names.generated.ts";
  * 基于 Astro 7.1.3 Integration API（astro:config:setup / injectRoute / injectScript）
  */
 
-import { copyFileSync, existsSync, promises as fs, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import sitemap from "@astrojs/sitemap";
 import { mermaidHast, mermaidMdast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
@@ -151,15 +150,19 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const markdownLogger = logger.fork("stalux/markdown");
                 const fontsLogger = logger.fork("stalux/fonts");
                 configLogger.debug(`setup started; mode=${isPluginMode ? "plugin" : "source"}`);
-                const srcDir = fileURLToPath(new URL(".", import.meta.url));
-                const runtimeCacheKey = createRuntimeCacheKey(
+                const srcDir = Bun.fileURLToPath(new URL(".", import.meta.url));
+                const runtimeCacheKey = await createRuntimeCacheKey(
                     path.join(srcDir, "scripts"),
                     path.resolve(srcDir, "../package.json"),
                     path.join(srcDir, "styles"),
                     JSON.stringify([styleNames, modernCssTargets]) +
-                        readFileSync(path.join(srcDir, "internal/compact-styles.ts"), "utf8") +
-                        readFileSync(path.join(srcDir, "internal/offscreen-layout.ts"), "utf8"),
-                    path.resolve(fileURLToPath(config.root), opt.contentDir ?? "stalux", "config"),
+                        (await Bun.file(path.join(srcDir, "internal/compact-styles.ts")).text()) +
+                        (await Bun.file(path.join(srcDir, "internal/offscreen-layout.ts")).text()),
+                    path.resolve(
+                        Bun.fileURLToPath(config.root),
+                        opt.contentDir ?? "stalux",
+                        "config",
+                    ),
                 );
 
                 // 1. 注入 Vite 别名 + 组件覆盖插件 + Vue 特性标记（Waline 依赖）
@@ -223,8 +226,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         define: {
                             __STALUX_COMPACT_STYLES__: JSON.stringify(command === "build"),
                             __STALUX_DEBUG__: JSON.stringify(
-                                process.env.STALUX_DEBUG === "1" ||
-                                    process.argv.includes("--verbose"),
+                                Bun.env.STALUX_DEBUG === "1" || Bun.argv.includes("--verbose"),
                             ),
                             __VUE_OPTIONS_API__: true,
                             __VUE_PROD_DEVTOOLS__: false,
@@ -256,7 +258,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         id: "stalux",
                         name: "Stalux",
                         icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
-                        entrypoint: fileURLToPath(
+                        entrypoint: Bun.fileURLToPath(
                             new URL("./internal/dev-toolbar.ts", import.meta.url),
                         ),
                     });
@@ -324,15 +326,15 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         "config",
                         "site.yml",
                     );
-                    const siteYaml = readFileSync(siteYamlPath, "utf-8");
-                    const urlMatch = siteYaml.match(/^url\s*:\s*(.+)$/m);
+                    const siteYaml = await Bun.file(siteYamlPath).text();
+                    const urlMatch = siteYaml.match(/^url\s*:\s*(.+)$/mu);
                     const rawYamlUrl = urlMatch?.[1];
                     const yamlUrl = rawYamlUrl
                         ?.trim()
-                        .replace(/^["']|["']$/g, "")
-                        .replace(/\/+$/, "");
+                        .replace(/^["']|["']$/gu, "")
+                        .replace(/\/+$/u, "");
                     if (yamlUrl) {
-                        const configuredSite = config.site?.replace(/\/+$/, "");
+                        const configuredSite = config.site?.replace(/\/+$/u, "");
                         if (!configuredSite || configuredSite === "https://example.com") {
                             // 未配置或为占位符 → 直接以 site.yml 为准
                             updateConfig({ site: yamlUrl });
@@ -348,7 +350,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         }
                     }
                 } catch (error) {
-                    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+                    if ((error as { code?: string }).code === "ENOENT") {
                         configLogger.debug("site.yml not found; site sync skipped");
                     } else {
                         configLogger.warn(`site sync failed: ${describeError(error)}`);
@@ -361,7 +363,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     if (sliced) {
                         pageFontData = {
                             fontBuffer: sliced.fontBuffer,
-                            outputDir: path.join(fileURLToPath(config.outDir), "_astro", "fonts"),
+                            outputDir: path.join(
+                                Bun.fileURLToPath(config.outDir),
+                                "_astro",
+                                "fonts",
+                            ),
                             cacheDir: sliced.pageSubsetDir,
                         };
                         updateConfig({
@@ -379,27 +385,27 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
 
             // Read final paths after every integration has finished updating configuration.
             // Public assets must exist before Astro creates its Vite server/build asset pipeline.
-            "astro:config:done": ({ config, logger }) => {
-                const srcDir = fileURLToPath(new URL(".", import.meta.url));
-                const publicDir = fileURLToPath(config.publicDir);
+            "astro:config:done": async ({ config, logger }) => {
+                const srcDir = Bun.fileURLToPath(new URL(".", import.meta.url));
+                const publicDir = Bun.fileURLToPath(config.publicDir);
                 Object.assign(socialCardPaths, {
                     publicDir,
-                    cacheDir: fileURLToPath(new URL("stalux-social-cards/", config.cacheDir)),
+                    cacheDir: Bun.fileURLToPath(new URL("stalux-social-cards/", config.cacheDir)),
                     base: config.base,
                     fontPath: path.join(srcDir, "assets/fonts/LXGWWenKai-Regular.ttf"),
                 });
-                coverCacheDir = fileURLToPath(new URL("stalux-post-covers/", config.cacheDir));
+                coverCacheDir = Bun.fileURLToPath(new URL("stalux-post-covers/", config.cacheDir));
                 const assetsLogger = logger.fork("stalux/assets");
                 if (pageFontData) {
                     pageFontData.outputDir = path.join(
-                        fileURLToPath(config.outDir),
+                        Bun.fileURLToPath(config.outDir),
                         "_astro",
                         "fonts",
                     );
                 }
                 try {
-                    syncFontAssets(srcDir, publicDir);
-                    const { copied, skipped } = syncBackgroundSvgs(srcDir, publicDir);
+                    await syncFontAssets(srcDir, publicDir);
+                    const { copied, skipped } = await syncBackgroundSvgs(srcDir, publicDir);
                     if (copied > 0) {
                         assetsLogger.info(`同步背景 SVG ${copied} 个（跳过 ${skipped} 个不变）`);
                     } else if (skipped > 0) {
@@ -415,13 +421,16 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const started = performance.now();
                 const outDir = pageFontData
                     ? path.dirname(path.dirname(pageFontData.outputDir))
-                    : fileURLToPath(new URL(String(dir)));
+                    : Bun.fileURLToPath(new URL(String(dir)));
 
                 // Astro's Markdown image transform drops arbitrary lazy-loading hints
                 // added during HAST processing. Reapply the policy to emitted HTML.
-                const htmlFiles = await fs.readdir(outDir, { recursive: true });
-                const sourceDir = fileURLToPath(new URL(".", import.meta.url));
-                const resolveModule = createRequire(import.meta.url).resolve;
+                const htmlFiles = [
+                    ...new Bun.Glob("**/*").scanSync({ cwd: outDir, onlyFiles: true }),
+                ].sort();
+                const sourceDir = Bun.fileURLToPath(new URL(".", import.meta.url));
+                const moduleDir = Bun.fileURLToPath(new URL(".", import.meta.url));
+                const resolveModule = (id: string) => Bun.resolveSync(id, moduleDir);
                 const requireModule = createRequire(import.meta.url);
                 const coverEncoder = coverCacheDir
                     ? loadCoverEncoder(requireModule, logger)
@@ -434,12 +443,10 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 let sharedFontKey = "";
                 if (pageFontData) {
                     const sharedGlyphs = createSharedFontGlyphs();
-                    await fs.mkdir(pageFontData.outputDir, { recursive: true });
-                    await fs.mkdir(pageFontData.cacheDir, { recursive: true });
                     // The common shell is static across soft navigations; scan once, then
                     // reuse each component's content-addressed subset on every route.
                     await forEachBounded(pageEntries, 4, async (entry) => {
-                        const html = await fs.readFile(path.join(outDir, entry), "utf8");
+                        const html = await Bun.file(path.join(outDir, entry)).text();
                         collectSharedFontGlyphs(parse(html), sharedGlyphs);
                     });
                     sharedFonts = await writeSharedFontSubsetsAsync(
@@ -478,13 +485,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 let optimizedImagePages = 0;
                 let pageFontPages = 0;
                 let pageFontSubsetCacheHits = 0;
-                if (pageFontData) await fs.mkdir(pageFontData.outputDir, { recursive: true });
-                if (pageFontData) await fs.mkdir(pageFontData.cacheDir, { recursive: true });
                 const referencedPageFonts = new Set<string>();
                 for (const sharedFont of sharedFonts) {
-                    copyFileSync(
-                        sharedFont.sourcePath,
+                    await Bun.write(
                         path.join(pageFontData?.outputDir ?? outDir, sharedFont.filename),
+                        Bun.file(sharedFont.sourcePath),
                     );
                     referencedPageFonts.add(sharedFont.filename);
                 }
@@ -492,21 +497,21 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const dimensionsCache = new Map<string, Promise<ImageDimensions | undefined>>();
                 const processPage = async (entry: string) => {
                     const output = path.join(outDir, entry);
-                    const before = await fs.readFile(output, "utf8");
+                    const before = await Bun.file(output).text();
                     const cached = await outputCache.get(entry, before);
                     if (cached) {
                         if (cached.font && pageFontData) {
                             if (!referencedPageFonts.has(cached.font.filename)) {
-                                copyFileSync(
-                                    cached.font.sourcePath,
+                                await Bun.write(
                                     path.join(pageFontData.outputDir, cached.font.filename),
+                                    Bun.file(cached.font.sourcePath),
                                 );
                             }
                             referencedPageFonts.add(cached.font.filename);
                             pageFontPages++;
                         }
                         if (cached.html !== before) {
-                            await fs.writeFile(output, cached.html);
+                            await Bun.write(output, cached.html);
                             optimizedImagePages++;
                         }
                         cacheHits++;
@@ -542,7 +547,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         }
                     }
                     if (pageFontData) {
-                        const linkedStylesheetText = readLinkedStylesheetText(
+                        const linkedStylesheetText = await readLinkedStylesheetText(
                             "",
                             output,
                             outDir,
@@ -566,9 +571,9 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                                 sourcePath: pageFont.sourcePath,
                             };
                             if (!referencedPageFonts.has(pageFont.filename)) {
-                                copyFileSync(
-                                    pageFont.sourcePath,
+                                await Bun.write(
                                     path.join(pageFontData.outputDir, pageFont.filename),
+                                    Bun.file(pageFont.sourcePath),
                                 );
                             }
                             referencedPageFonts.add(pageFont.filename);
@@ -576,7 +581,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     }
                     const after = emitHtml();
                     if (after !== before) {
-                        await fs.writeFile(output, after);
+                        await Bun.write(output, after);
                         optimizedImagePages++;
                     }
                     await outputCache.set(
@@ -592,7 +597,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // Bound I/O concurrency without retaining the entire site's HTML in memory.
                 await forEachBounded(pageEntries, 4, processPage);
                 if (pageFontData) {
-                    clearPageFontSubsets(pageFontData.outputDir, referencedPageFonts);
+                    await clearPageFontSubsets(pageFontData.outputDir, referencedPageFonts);
                 }
                 logger.info(`applied image loading hints to ${optimizedImagePages} HTML pages`);
                 logger.info(
@@ -614,7 +619,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // post-processed: a cached page skips that pass entirely but its
                 // HTML already points at these files, so they must always exist.
                 if (coverCacheDir) {
-                    const restored = restoreCoverFiles({ outDir, cacheDir: coverCacheDir });
+                    const restored = await restoreCoverFiles({ outDir, cacheDir: coverCacheDir });
                     if (restored > 0) logger.debug(`restored ${restored} card covers`);
                 }
 
@@ -738,14 +743,15 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     "astro:build:done": async ({ dir, logger }) => {
                         const base = userSitemap?.filenameBase ?? "sitemap";
                         const source = new URL(`${base}-0.xml`, dir);
-                        if (!existsSync(source)) return;
+                        if (!(await Bun.file(source).exists())) return;
                         // Keep every URL discoverable when a site uses multiple chunks.
                         const index = new URL(`${base}-index.xml`, dir);
-                        const indexXml = await fs.readFile(index, "utf8");
-                        const hasMultipleSitemaps = (indexXml.match(/<sitemap>/g)?.length ?? 0) > 1;
-                        await fs.copyFile(
-                            hasMultipleSitemaps ? index : source,
+                        const indexXml = await Bun.file(index).text();
+                        const hasMultipleSitemaps =
+                            (indexXml.match(/<sitemap>/gu)?.length ?? 0) > 1;
+                        await Bun.write(
                             new URL("sitemap.xml", dir),
+                            Bun.file(hasMultipleSitemaps ? index : source),
                         );
                         logger.info("Generated sitemap.xml");
                     },

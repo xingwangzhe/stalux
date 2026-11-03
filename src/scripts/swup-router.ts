@@ -111,7 +111,7 @@ export function installSwupRouter(): Swup {
                 document.querySelector("base[target]")?.getAttribute("target");
             return (
                 getRouteKind(url.pathname) === "other" ||
-                /\.(?:md|json|xml|txt|html?|pdf|png|webp|avif|svg|jpe?g)$/i.test(url.pathname) ||
+                /\.(?:md|json|xml|txt|html?|pdf|png|webp|avif|svg|jpe?g)$/iu.test(url.pathname) ||
                 Boolean(el?.closest("[data-no-swup],[data-astro-reload],[rel~=external]")) ||
                 Boolean(target && target !== "_self")
             );

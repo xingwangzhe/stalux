@@ -17,8 +17,8 @@
  */
 // 浏览器无原生 document.modelContext 时由 polyfill 兜底安装；
 // 有原生实现或已存在 WebMCP-aware 扩展时，polyfill 检测到后自动 no-op。
-// ESM entry exports an initializer; importing it alone does not install the API.
-import { initializeWebMCPPolyfill } from "@mcp-b/webmcp-polyfill";
+// ESM entry exports installWebMCP; importing it alone does not install the API.
+import { installWebMCP } from "@mcp-b/webmcp-polyfill";
 import { createPostLookup } from "../utils/post-lookup";
 import { sitePath } from "../utils/site-path";
 import { createClientLogger } from "./logger";
@@ -211,7 +211,7 @@ function postIdFromUrl(value: string): string | null {
         const prefix = sitePath("posts/");
         if (!url.pathname.startsWith(prefix)) return null;
         const suffix = url.pathname.slice(prefix.length);
-        const path = suffix.endsWith("/") ? suffix.slice(0, -1) : suffix.replace(/\.md$/, "");
+        const path = suffix.endsWith("/") ? suffix.slice(0, -1) : suffix.replace(/\.md$/u, "");
         if (!path || path.includes("/")) return null;
         return decodeURIComponent(path);
     } catch {
@@ -841,7 +841,7 @@ async function registerTools(
 registerPageLifecycle("webmcp", () => {
     // Astro can hoist processed scripts from conditional template branches.
     if (document.body?.dataset.staluxWebmcpEnabled === "false") return;
-    initializeWebMCPPolyfill();
+    installWebMCP();
     const controller = new AbortController();
     void registerTools(controller.signal)
         .then((r) => {

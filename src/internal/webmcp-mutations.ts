@@ -1,6 +1,4 @@
 import { readFileSync } from "node:fs";
-import { createRequire } from "node:module";
-import { pathToFileURL } from "node:url";
 import type { Plugin } from "vite";
 import { affectsDeclarativeTools } from "../scripts/webmcp-mutations";
 
@@ -21,9 +19,17 @@ export function optimizeWebMcpMutations(code: string, version: string): string |
 }
 
 export function webMcpMutationsPlugin(): Plugin {
-    const entry = createRequire(import.meta.url).resolve("@mcp-b/webmcp-polyfill");
-    const version = JSON.parse(
-        readFileSync(new URL("../package.json", pathToFileURL(entry)), "utf8"),
+    const entry = Bun.resolveSync(
+        "@mcp-b/webmcp-polyfill",
+        Bun.fileURLToPath(new URL(".", import.meta.url)),
+    );
+    const version = (
+        JSON.parse(
+            readFileSync(
+                Bun.fileURLToPath(new URL("../package.json", Bun.pathToFileURL(entry))),
+                "utf8",
+            ),
+        ) as { version: string }
     ).version;
     return {
         name: "stalux:webmcp-mutations",

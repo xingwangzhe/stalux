@@ -1,5 +1,3 @@
-import { fileURLToPath } from "node:url";
-
 import { ROUTE_DEFINITIONS } from "../utils/route-catalog";
 
 export interface InjectedRoute {
@@ -10,6 +8,6 @@ export interface InjectedRoute {
 export function createInjectedRoutes(baseDir: URL): InjectedRoute[] {
     return ROUTE_DEFINITIONS.map(({ pattern, source }) => ({
         pattern,
-        entrypoint: fileURLToPath(new URL(source, baseDir)),
+        entrypoint: Bun.fileURLToPath(new URL(source, baseDir)),
     }));
 }

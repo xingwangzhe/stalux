@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-import { createReadStream, promises as fs } from "node:fs";
 import path from "node:path";
 
 export interface CachedPageOutput {
@@ -7,7 +5,8 @@ export interface CachedPageOutput {
     font?: { filename: string; sourcePath: string };
 }
 
-const digest = (value: string | Buffer) => createHash("sha256").update(value).digest("hex");
+const digest = (value: string | Uint8Array) =>
+    new Bun.CryptoHasher("sha256").update(value).digest("hex");
 
 /** Content hashes include dependencies even when their public URL has not changed. */
 export async function createPageOutputCache(
@@ -17,15 +16,14 @@ export async function createPageOutputCache(
     assets: readonly string[] = [],
     contentKey = "",
 ) {
-    const hash = createHash("sha256").update("stalux-page-output-v2\0");
+    const hash = new Bun.CryptoHasher("sha256").update("stalux-page-output-v2\0");
     if (font) hash.update(font);
     if (contentKey) hash.update("\0content-key\0").update(contentKey);
     for (const dependency of [...dependencies].sort()) {
         hash.update(dependency).update("\0");
-        hash.update(await fs.readFile(dependency)).update("\0");
+        hash.update(await Bun.file(dependency).bytes()).update("\0");
     }
     const namespace = path.join(directory, hash.digest("hex"));
-    await fs.mkdir(namespace, { recursive: true });
     const knownAssets = new Set(assets);
     const assetDigests = new Map<string, Promise<string | null>>();
     const assetDigest = (asset: string): Promise<string | null> => {
@@ -34,8 +32,8 @@ export async function createPageOutputCache(
         if (!pending) {
             pending = (async () => {
                 try {
-                    const hash = createHash("sha256");
-                    for await (const chunk of createReadStream(asset)) hash.update(chunk);
+                    const hash = new Bun.CryptoHasher("sha256");
+                    for await (const chunk of Bun.file(asset).stream()) hash.update(chunk);
                     return hash.digest("hex");
                 } catch {
                     return null;
@@ -46,12 +44,12 @@ export async function createPageOutputCache(
         return pending;
     };
     const key = (entry: string, html: string) =>
-        createHash("sha256").update(entry).update("\0").update(html).digest("hex");
+        new Bun.CryptoHasher("sha256").update(entry).update("\0").update(html).digest("hex");
     return {
         async get(entry: string, html: string): Promise<CachedPageOutput | undefined> {
             try {
                 const record = JSON.parse(
-                    await fs.readFile(path.join(namespace, `${key(entry, html)}.json`), "utf8"),
+                    await Bun.file(path.join(namespace, `${key(entry, html)}.json`)).text(),
                 );
                 if (typeof record.html !== "string" || digest(record.html) !== record.digest)
                     return undefined;
@@ -63,7 +61,7 @@ export async function createPageOutputCache(
                     record.font &&
                     (!/^page-[a-f\d]+\.woff2$/u.test(record.font.filename) ||
                         typeof record.font.sourcePath !== "string" ||
-                        !(await fs.stat(record.font.sourcePath)).isFile())
+                        !(await Bun.file(record.font.sourcePath).exists()))
                 )
                     return undefined;
                 return { html: record.html, font: record.font };
@@ -79,9 +77,8 @@ export async function createPageOutputCache(
             referencedAssets: readonly string[] = [],
         ): Promise<void> {
             const target = path.join(namespace, `${key(entry, html)}.json`);
-            const temporary = `${target}.${process.pid}.tmp`;
-            await fs.writeFile(
-                temporary,
+            await Bun.write(
+                target,
                 JSON.stringify({
                     ...output,
                     digest: digest(output.html),
@@ -90,7 +87,6 @@ export async function createPageOutputCache(
                     ),
                 }),
             );
-            await fs.rename(temporary, target);
         },
     };
 }

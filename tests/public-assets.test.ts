@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 describe("theme public assets after config resolution", () => {
-    it("uses the resolved public directory, preserves custom files and skips unchanged writes", () => {
+    it("uses the resolved public directory, preserves custom files and skips unchanged writes", async () => {
         const root = mkdtempSync(path.join(tmpdir(), "stalux-public-assets-"));
         temporary.push(root);
         const source = path.join(root, "package/src");
@@ -29,29 +29,29 @@ describe("theme public assets after config resolution", () => {
         writeFileSync(path.join(source, "../public/fonts/LICENSE.txt"), "license");
         writeFileSync(path.join(source, "../public/fonts/ignore.ttf"), "ignore");
         writeFileSync(path.join(publicDir, "background/custom.svg"), "custom");
-        expect(syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 1, skipped: 0 });
-        syncFontAssets(source, publicDir);
+        expect(await syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 1, skipped: 0 });
+        await syncFontAssets(source, publicDir);
         const destination = path.join(publicDir, "background/theme.svg");
         const mtime = statSync(destination).mtimeMs;
-        expect(syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 0, skipped: 1 });
+        expect(await syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 0, skipped: 1 });
         expect(statSync(destination).mtimeMs).toBe(mtime);
         expect(readFileSync(path.join(publicDir, "fonts/math.woff2"), "utf8")).toBe("font");
         expect(readFileSync(path.join(publicDir, "fonts/LICENSE.txt"), "utf8")).toBe("license");
         writeFileSync(background, "<svg>updated</svg>");
-        expect(syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 1, skipped: 0 });
+        expect(await syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 1, skipped: 0 });
         expect(readFileSync(destination, "utf8")).toBe("<svg>updated</svg>");
         expect(readFileSync(path.join(publicDir, "background/custom.svg"), "utf8")).toBe("custom");
         expect(() => statSync(path.join(publicDir, "fonts/ignore.ttf"))).toThrow();
         expect(() => statSync(path.join(publicDir, "background/ignore.txt"))).toThrow();
         writeFileSync(path.join(source, "../public/background/theme.webp"), "raster");
-        expect(syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 1, skipped: 1 });
+        expect(await syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 1, skipped: 1 });
         expect(readFileSync(path.join(publicDir, "background/theme.webp"), "utf8")).toBe("raster");
-        expect(syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 0, skipped: 2 });
-        syncFontAssets(source, publicDir);
-        expect(syncBackgroundSvgs(path.join(root, "missing/src"), publicDir)).toEqual({
+        expect(await syncBackgroundSvgs(source, publicDir)).toEqual({ copied: 0, skipped: 2 });
+        await syncFontAssets(source, publicDir);
+        expect(await syncBackgroundSvgs(path.join(root, "missing/src"), publicDir)).toEqual({
             copied: 0,
             skipped: 0,
         });
-        syncFontAssets(path.join(root, "missing/src"), publicDir);
+        await syncFontAssets(path.join(root, "missing/src"), publicDir);
     });
 });

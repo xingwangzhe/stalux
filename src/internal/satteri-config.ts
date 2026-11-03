@@ -23,13 +23,13 @@ function pluginName(plugin: unknown): string | undefined {
     return undefined;
 }
 
-export function appendUniquePlugin<T>(list: T[], plugin: T, seen: Set<string>): void {
+export function appendUniquePlugin<T>(list: T[], plugin: unknown, seen: Set<string>): void {
     const name = pluginName(plugin);
     if (name) {
         if (seen.has(name)) return;
         seen.add(name);
     }
-    list.push(plugin);
+    list.push(plugin as T);
 }
 
 export function prepareSatteriProcessor(processor: unknown): SatteriProcessorOptions | undefined {

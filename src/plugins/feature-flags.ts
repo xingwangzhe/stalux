@@ -79,8 +79,8 @@ function getState(ctx: PluginContext): FeatureFlagsState {
 }
 
 function getFrontmatter(ctx: PluginContext): Record<string, unknown> {
-    const astroData = ctx.data.astro;
-    if (!astroData) throw new Error("Satteri did not provide Astro frontmatter data");
+    const astroData = ctx.data.astro as { frontmatter?: Record<string, unknown> } | undefined;
+    if (!astroData?.frontmatter) throw new Error("Satteri did not provide Astro frontmatter data");
     return astroData.frontmatter;
 }
 

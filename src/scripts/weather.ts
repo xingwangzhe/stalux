@@ -57,7 +57,7 @@ function parseLocation(value: unknown): ApproximateLocation {
         "ip" in value &&
         typeof value.ip === "string" &&
         value.ip.length <= 45 &&
-        /^[0-9a-f:.]+$/i.test(value.ip);
+        /^[0-9a-f:.]+$/iu.test(value.ip);
     return { city: value.city.trim(), lat, lon, ...(usableIp ? { ip: value.ip as string } : {}) };
 }
 
@@ -97,7 +97,7 @@ function parseWeatherData(value: unknown): WeatherData | undefined {
         if (
             typeof value.ip !== "string" ||
             value.ip.length > 45 ||
-            !/^[0-9a-f:.]+$/i.test(value.ip)
+            !/^[0-9a-f:.]+$/iu.test(value.ip)
         )
             return undefined;
         ip = value.ip;

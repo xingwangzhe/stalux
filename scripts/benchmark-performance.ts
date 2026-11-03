@@ -1,14 +1,10 @@
 /** Run source microbenchmarks against an unchanged baseline or candidate checkout. */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { createRequire } from "node:module";
-import { tmpdir } from "node:os";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 import { createServer } from "vite";
 
-const root = path.resolve(process.argv[2] ?? ".");
-const output = process.argv[3];
-const only = process.argv[4];
+const root = path.resolve(Bun.argv[2] ?? ".");
+const output = Bun.argv[3];
+const only = Bun.argv[4];
 const server = await createServer({
     root,
     configFile: false,
@@ -66,22 +62,24 @@ try {
     const { compactAstro, mapUtf8Offsets } = await server.ssrLoadModule(
         path.join(root, "src/internal/compact-styles.ts"),
     );
-    const compilerEntry = createRequire(path.join(root, "package.json")).resolve(
-        "@astrojs/compiler",
-    );
+    const compilerEntry = Bun.resolveSync("@astrojs/compiler", root);
     const compiler = await import(
-        pathToFileURL(path.join(path.dirname(compilerEntry), "index.js")).href
+        Bun.pathToFileURL(path.join(path.dirname(compilerEntry), "index.js")).href
     );
     disposeCompiler = compiler.teardown;
     const { formatInTimeZone } = await server.ssrLoadModule(path.join(root, "src/utils/dayjs.ts"));
     const { writePageFontSubset } = await server.ssrLoadModule(
         path.join(root, "src/internal/font-slices.ts"),
     );
-    const font = readFileSync(path.join(root, "src/assets/fonts/LXGWWenKai-Regular.ttf"));
-    const cache = path.join(tmpdir(), "stalux-perf-font-benchmark");
-    mkdirSync(cache, { recursive: true });
+    const font = Buffer.from(
+        await Bun.file(path.join(root, "src/assets/fonts/LXGWWenKai-Regular.ttf")).bytes(),
+    );
+    const cache = path.join(Bun.env.TMPDIR ?? "/tmp", "stalux-perf-font-benchmark");
+    const sentinel = path.join(cache, ".keep");
+    await Bun.write(sentinel, "");
+    await Bun.file(sentinel).delete();
     const lookupPath = path.join(root, "src/utils/post-lookup.ts");
-    const lookupModule = existsSync(lookupPath)
+    const lookupModule = (await Bun.file(lookupPath).exists())
         ? await server.ssrLoadModule(lookupPath)
         : undefined;
     for (const size of [1_000, 5_000, 20_000]) {
@@ -116,7 +114,7 @@ try {
         const source = unit.repeat(size);
         const locations = Array.from(
             { length: size },
-            (_, index) => index * Buffer.byteLength(unit),
+            (_, index) => index * new TextEncoder().encode(unit).byteLength,
         );
         const legacy = () => {
             const bytes = Buffer.from(source);
@@ -156,8 +154,14 @@ try {
         for (let index = 0; index < 1000; index++)
             formatInTimeZone(1700000000000 + index * 1000, "Asia/Shanghai");
     });
-    const report = { node: process.version, root, rssBytes: process.memoryUsage().rss, results };
-    if (output) writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`);
+    const report = {
+        bun: process.versions.bun,
+        node: process.versions.node,
+        root,
+        rssBytes: process.memoryUsage().rss,
+        results,
+    };
+    if (output) await Bun.write(output, `${JSON.stringify(report, null, 2)}\n`);
     console.log(JSON.stringify(report, null, 2));
 } finally {
     disposeCompiler?.();

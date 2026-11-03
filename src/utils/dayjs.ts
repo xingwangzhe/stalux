@@ -33,7 +33,7 @@ export const toTimestamp = (v: unknown, timeZone?: string): number =>
  * RSS pubDate、页面 datetime 全体平移 8 小时（2026-10-24 事故）。
  */
 const NAIVE_DATE_PATTERN =
-    /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?$/;
+    /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?$/u;
 
 /** 用共享的 formatter 计算目标时区在给定时刻的 UTC 偏移（毫秒，东八区为 +28800000） */
 function zoneOffsetMs(date: Date, timeZone: string): number {
@@ -128,7 +128,7 @@ export function format(date: Date | string | number, formatStr: string): string 
         mm: pad2(d.getMinutes()),
         ss: pad2(d.getSeconds()),
     };
-    return formatStr.replace(/yyyy|MM|dd|HH|mm|ss/g, (t) => tokens[t] ?? t);
+    return formatStr.replace(/yyyy|MM|dd|HH|mm|ss/gu, (t) => tokens[t] ?? t);
 }
 
 /**
@@ -159,11 +159,11 @@ export function formatInTimeZone(
     if (offset === "GMT" || offset === "UTC") {
         offset = "+00:00";
     } else {
-        offset = offset.replace(/^GMT/, "").replace(/^UTC/, "");
+        offset = offset.replace(/^GMT/u, "").replace(/^UTC/u, "");
         if (!(offset.startsWith("+") || offset.startsWith("-"))) {
             offset = `+${offset}`;
         }
-        const m = offset.match(/^([+-])(\d{1,2})(?::?(\d{2}))?$/);
+        const m = offset.match(/^([+-])(\d{1,2})(?::?(\d{2}))?$/u);
         const sign = m?.[1];
         const hours = m?.[2];
         if (sign && hours) {
@@ -186,5 +186,5 @@ export function formatInTimeZone(
         ss: second,
         XXX: offset,
     };
-    return formatStr.replace(/yyyy|MM|dd|HH|mm|ss|XXX/g, (t) => tokens[t] ?? t);
+    return formatStr.replace(/yyyy|MM|dd|HH|mm|ss|XXX/gu, (t) => tokens[t] ?? t);
 }

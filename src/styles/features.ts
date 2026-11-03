@@ -14,12 +14,12 @@ function interactionStates(specs: StyleSpec[]): StyleSpec[] {
         if (!(selector.includes(":hover") && selector.includes(":focus")))
             return [[selector, utilities, differences, parent] as StyleSpec];
         const hover = selector
-            .replace(/:is\(:hover, :focus-visible\)/g, ":hover")
+            .replace(/:is\(:hover, :focus-visible\)/gu, ":hover")
             .split(",")
             .filter((part) => !(part.includes(":focus") || part.includes(":active")))
             .join(",");
         const focus = selector
-            .replace(/:is\(:hover, :focus-visible\)/g, ":focus-visible")
+            .replace(/:is\(:hover, :focus-visible\)/gu, ":focus-visible")
             .split(",")
             .filter((part) => !part.includes(":hover"))
             .join(",");

@@ -12,7 +12,7 @@ const state = vi.hoisted(() => ({
     mount: undefined as undefined | (() => () => void),
     loadPagefind: vi.fn(),
 }));
-vi.mock("@mcp-b/webmcp-polyfill", () => ({ initializeWebMCPPolyfill: vi.fn() }));
+vi.mock("@mcp-b/webmcp-polyfill", () => ({ installWebMCP: vi.fn() }));
 vi.mock("../src/scripts/pagefind-api", () => ({ loadPagefind: state.loadPagefind }));
 vi.mock("../src/scripts/page-runtime", () => ({
     registerPageLifecycle: (_key: string, mount: () => () => void) => {

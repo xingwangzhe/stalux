@@ -61,7 +61,7 @@ export interface CollectionPaths {
  * 因此在 schema 层直接拒绝，让构建尽快失败，而不是产出错误时间。
  */
 export const PADDED_DATETIME_PATTERN =
-    /^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:?\d{2})?)?$/;
+    /^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:?\d{2})?)?$/u;
 
 const datetimeField = (label: string) =>
     z

@@ -43,15 +43,15 @@ describe("image captions", () => {
             '<figure><img src="/image.webp" alt="说明"><figcaption>原图注</figcaption></figure>';
         const html = render(markdown);
         expect(html).not.toContain('data-stalux-image=""');
-        expect(html.match(/<figcaption>/g)).toHaveLength(1);
+        expect(html.match(/<figcaption>/gu)).toHaveLength(1);
     });
 
     it("preserves Markdown inside raw HTML figures without affecting images outside", () => {
         const html = render(
             "<figure>\n\n![内部](/inside.webp)\n\n<figcaption>已有图注</figcaption>\n</figure>\n\n![外部](/outside.webp)",
         );
-        expect(html.match(/data-stalux-image/g)).toHaveLength(1);
-        expect(html.match(/<figcaption>/g)).toHaveLength(2);
+        expect(html.match(/data-stalux-image/gu)).toHaveLength(1);
+        expect(html.match(/<figcaption>/gu)).toHaveLength(2);
         expect(html).not.toContain("<figcaption>内部</figcaption>");
         expect(html).toContain("<figcaption>外部</figcaption>");
     });
@@ -60,7 +60,7 @@ describe("image captions", () => {
         const { html } = markdownToHtml("![说明](/image.webp)", {
             hastPlugins: [photoswipe(), imageCaptions, imageCaptions],
         });
-        expect(html.match(/<figcaption>/g)).toHaveLength(1);
+        expect(html.match(/<figcaption>/gu)).toHaveLength(1);
     });
 
     it("preserves an explicit image link when used without PhotoSwipe", () => {

@@ -46,10 +46,10 @@ const htmlLang = siteConfig.lang || "zh-CN";
 // 保证增量构建依赖图 hash 稳定。
 const llmPromoteRaw = promoteConfig?.llm_promote ?? "";
 const llmPromote = llmPromoteRaw
-    ?.replace(/\{author\}/g, authorConfig.name)
-    ?.replace(/\{url\}/g, siteConfig.url)
-    ?.replace(/\{title\}/g, siteConfig.title)
-    ?.replace(/\{cc\}/g, "CC-BY-NC-SA-4.0");
+    ?.replace(/\{author\}/gu, authorConfig.name)
+    ?.replace(/\{url\}/gu, siteConfig.url)
+    ?.replace(/\{title\}/gu, siteConfig.title)
+    ?.replace(/\{cc\}/gu, "CC-BY-NC-SA-4.0");
 const routeKind = getRouteKind(Astro.url.pathname);
 ---
 

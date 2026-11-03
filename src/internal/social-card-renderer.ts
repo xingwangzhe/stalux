@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Renderer } from "@takumi-rs/core";
 import { type SocialCardData, socialCardFormat } from "../utils/social-image";
@@ -23,7 +21,7 @@ function getRenderer(fontPath: string): Promise<Renderer> {
             const renderer = new Renderer({ cacheMaxBytes: 32 * 1024 * 1024 });
             await renderer.registerFont({
                 name: CARD_FONT_FAMILY,
-                data: await readFile(fontPath),
+                data: await Bun.file(fontPath).bytes(),
             });
             return renderer;
         })();
@@ -36,9 +34,9 @@ const fontDigests = new Map<string, Promise<string>>();
 function getFontDigest(fontPath: string): Promise<string> {
     let pending = fontDigests.get(fontPath);
     if (!pending) {
-        pending = readFile(fontPath).then((bytes) =>
-            createHash("sha256").update(bytes).digest("hex"),
-        );
+        pending = Bun.file(fontPath)
+            .bytes()
+            .then((bytes) => new Bun.CryptoHasher("sha256").update(bytes).digest("hex"));
         fontDigests.set(fontPath, pending);
     }
     return pending;
@@ -62,13 +60,13 @@ export async function renderSocialCard(
     // always reuses the cached render, whatever the filesystem timestamps say.
     // It is checked before any raster work, so a warm build only reads bytes.
     const fontDigest = await getFontDigest(paths.fontPath);
-    const key = createHash("sha256")
+    const key = new Bun.CryptoHasher("sha256")
         .update(JSON.stringify([TEMPLATE, format, data, fontDigest]))
         .update(coverBytes ?? "")
         .digest("hex");
     const cacheFile = path.join(paths.cacheDir, `${key}.${format}`);
-    const hit = await readFile(cacheFile).catch(() => undefined);
-    if (hit) return hit;
+    const cached = Bun.file(cacheFile);
+    if (cached.size > 0) return Buffer.from(await cached.bytes());
 
     const renderer = await getRenderer(paths.fontPath);
     const render = (withCover: boolean) =>
@@ -92,7 +90,6 @@ export async function renderSocialCard(
         cacheable = false;
     }
     if (!cacheable) return bytes;
-    await mkdir(paths.cacheDir, { recursive: true });
-    await writeFile(cacheFile, bytes);
+    await Bun.write(cacheFile, bytes);
     return bytes;
 }

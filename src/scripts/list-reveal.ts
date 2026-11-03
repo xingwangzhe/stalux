@@ -274,9 +274,11 @@ declare global {
         __staluxListRevealPrime?: boolean;
     }
 }
-if (typeof document !== "undefined" && typeof window !== "undefined") {
-    if (!window.__staluxListRevealPrime) {
-        window.__staluxListRevealPrime = true;
-        document.addEventListener("astro:after-swap", primeListReveal);
-    }
+if (
+    typeof document !== "undefined" &&
+    typeof window !== "undefined" &&
+    !window.__staluxListRevealPrime
+) {
+    window.__staluxListRevealPrime = true;
+    document.addEventListener("astro:after-swap", primeListReveal);
 }

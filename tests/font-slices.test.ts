@@ -89,7 +89,7 @@ describe("page-specific font subsets", () => {
             const html =
                 '<!doctype html><html><head><meta name="description" content="描述中文 snippet <body></body>"><style>@font-face{font-family:"LXGW WenKai-hash";src:url("/ascii.woff2");unicode-range:U+0020-007E}@font-face{font-family:"LXGW WenKai-hash";src:url("/large.woff2");unicode-range:U+4E00-9FFF}@font-face{font-family:"LXGW WenKai-hash";src:url("/large-2.woff2");unicode-range:U+5200-52FF}:root{--font-body:"Original Font",system-ui,sans-serif}.agent-home-summary{clip:rect(0,0,0,0);position:absolute;width:1px;height:1px;overflow:hidden}h1::after{content:"— “© ✓"}</style></head><body><button aria-label="属性导航" title="属性提示" placeholder="属性占位"></button><p>Homepage首页性能 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz café</p><details><summary>折叠标题</summary><p>展开后内容</p></details><div class="agent-home-summary">机器隐藏摘要</div><div hidden>显式隐藏文字</div><div style="display:none">样式隐藏文字</div><!-- 注释文字 --><pre>&lt;body&gt;可见代码内容&lt;/body&gt;</pre><svg><text>可见图中文字</text><title>不可见 SVG 标题</title></svg><script>脚本内容</script><template>模板内容</template><style>.隐藏样式内容{}</style></body></html>';
             const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf");
-            const linkedText = readLinkedStylesheetText(
+            const linkedText = await readLinkedStylesheetText(
                 '<html><head><link rel="stylesheet" href="/_astro/site.css"></head><body></body></html>',
                 pagePath,
                 outputDir,
@@ -164,9 +164,9 @@ describe("page-specific font subsets", () => {
             copyFileSync(first.sourcePath, join(outputDir, first.filename));
             const outputFile = join(outputDir, first.filename);
             expect(statSync(outputFile).size).toBeLessThan(500_000);
-            clearPageFontSubsets(outputDir, new Set([first.filename]));
+            await clearPageFontSubsets(outputDir, new Set([first.filename]));
             expect(readdirSync(outputDir)).toEqual([first.filename]);
-            clearPageFontSubsets(outputDir);
+            await clearPageFontSubsets(outputDir);
             expect(readdirSync(outputDir)).toHaveLength(0);
             expect(readdirSync(cacheDir)).toContain("manifest.jsonl");
         } finally {

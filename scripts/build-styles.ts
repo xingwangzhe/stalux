@@ -1,6 +1,5 @@
-import { readFileSync, renameSync, unlinkSync, watch, writeFileSync } from "node:fs";
+import { watch } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import UnoCSS from "unocss/vite";
 import { build as viteBuild } from "vite";
 import { modernCssTargets } from "../src/internal/modern-css.ts";
@@ -13,12 +12,19 @@ import {
 import { componentShortcuts, shortcutGroups } from "../src/styles/shortcuts.ts";
 import unoConfig from "../uno.config.ts";
 
-const root = fileURLToPath(new URL("../", import.meta.url));
-function readStyle(filename: string): string {
-    return readFileSync(filename, "utf8").replace(
-        /@import\s+"(\.[^"]+)";/g,
-        (_match, relative: string) => readStyle(path.resolve(path.dirname(filename), relative)),
-    );
+const root = Bun.fileURLToPath(new URL("../", import.meta.url));
+async function readStyle(filename: string): Promise<string> {
+    const source = await Bun.file(filename).text();
+    let output = source;
+    for (const match of source.matchAll(/@import\s+"(\.[^"]+)";/gu)) {
+        const relative = match[1];
+        if (relative)
+            output = output.replace(
+                match[0],
+                await readStyle(path.resolve(path.dirname(filename), relative)),
+            );
+    }
+    return output;
 }
 async function compile(
     sources: readonly string[],
@@ -29,11 +35,14 @@ async function compile(
     const output = `${root}src/styles/generated${suffix}.css`;
     const entry = `${root}.styles-entry${suffix}-${process.pid}.ts`;
     const stylesheet = `${root}.styles-entry${suffix}-${process.pid}.css`;
-    writeFileSync(
-        stylesheet,
-        `${suffix === "-waline" ? "" : "@layer theme, base, components, utilities;\n"}${sources.map((input) => readStyle(`${root}src/styles/${input}`)).join("\n")}`,
+    const styles = await Promise.all(
+        sources.map((input) => readStyle(`${root}src/styles/${input}`)),
     );
-    writeFileSync(
+    await Bun.write(
+        stylesheet,
+        `${suffix === "-waline" ? "" : "@layer theme, base, components, utilities;\n"}${styles.join("\n")}`,
+    );
+    await Bun.write(
         entry,
         `${utilities ? 'import "virtual:uno.css";\n' : ""}import ${JSON.stringify(`./.styles-entry${suffix}-${process.pid}.css`)};\n`,
     );
@@ -95,24 +104,22 @@ async function compile(
             ? `@layer theme, base, components, utilities;\n${compiled}`
             : compiled;
         if (unresolved.length) throw new Error(unresolved.join("\n"));
-        if (!compiled || /@apply\b/.test(css))
+        if (!compiled || /@apply\b/u.test(css))
             throw new Error("UnoCSS did not compile all style directives");
         let previous = "";
         try {
-            previous = readFileSync(output, "utf8");
+            previous = await Bun.file(output).text();
         } catch {
             /* First compilation. */
         }
-        if (previous !== css) {
-            const temporary = `${output}.tmp-${process.pid}`;
-            writeFileSync(temporary, css);
-            renameSync(temporary, output);
-        }
-        console.log(`[styles] UnoCSS generated${suffix}.css: ${Buffer.byteLength(css)} bytes`);
+        if (previous !== css) await Bun.write(output, css);
+        console.log(
+            `[styles] UnoCSS generated${suffix}.css: ${new TextEncoder().encode(css).byteLength} bytes`,
+        );
     } finally {
         console.warn = previousWarn;
-        unlinkSync(entry);
-        unlinkSync(stylesheet);
+        await Bun.file(entry).delete();
+        await Bun.file(stylesheet).delete();
     }
 }
 async function compileAll() {
@@ -121,7 +128,7 @@ async function compileAll() {
     for (const { sources, suffix } of nativeFeatures) await compile(sources, suffix, false);
 }
 await compileAll();
-if (process.argv.includes("--watch")) {
+if (Bun.argv.includes("--watch")) {
     let timer: ReturnType<typeof setTimeout>;
     let running = false;
     let pending = false;
@@ -150,8 +157,8 @@ if (process.argv.includes("--watch")) {
     watch(`${root}src`, { recursive: true }, (_event, filename) => {
         if (
             !filename ||
-            /(?:^|[/\\])generated(?:-|\.)/.test(filename) ||
-            !/\.(astro|css|ts)$/.test(filename)
+            /(?:^|[/\\])generated(?:-|\.)/u.test(filename) ||
+            !/\.(astro|css|ts)$/u.test(filename)
         )
             return;
         changed();

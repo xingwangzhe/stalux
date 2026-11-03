@@ -46,7 +46,7 @@ export interface SeoDocument {
 }
 
 function normalizeSiteUrl(value: string): string {
-    return new URL(value).href.replace(/\/+$/, "");
+    return new URL(value).href.replace(/\/+$/u, "");
 }
 
 function absoluteUrl(value: string, base: string, protocol: string): string {
@@ -155,7 +155,7 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
               ]),
     ];
 
-    const sameAs = input.mediaLinks.filter((link) => /^https?:\/\//i.test(link));
+    const sameAs = input.mediaLinks.filter((link) => /^https?:\/\//iu.test(link));
     const authorImage = absoluteUrl(author.avatar, siteUrl, input.protocol);
     const authorEntity = {
         "@type": "Person",

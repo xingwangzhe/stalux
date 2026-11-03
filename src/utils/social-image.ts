@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 export interface SocialCardData {
     title: string;
     siteTitle: string;
@@ -43,7 +41,7 @@ export function socialCardFormat(data: Pick<SocialCardData, "cover">): SocialCar
 
 export function socialCardPath(data: SocialCardData, base = "/"): string {
     // Bump the template revision when layout changes. Metadata changes get a fresh URL.
-    const hash = createHash("sha256")
+    const hash = new Bun.CryptoHasher("sha256")
         .update(JSON.stringify(["stalux-mono-v2", data]))
         .digest("hex")
         .slice(0, 20);

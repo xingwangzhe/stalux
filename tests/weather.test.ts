@@ -274,7 +274,7 @@ async function browserWeather(languages = ["zh-CN"]) {
         .mockImplementation(
             async (url) =>
                 new Response(
-                    JSON.stringify(/ip\.sb|ipinfo/.test(String(url)) ? location : weather),
+                    JSON.stringify(/ip\.sb|ipinfo/u.test(String(url)) ? location : weather),
                 ),
         );
     vi.stubGlobal("document", doc);

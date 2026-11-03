@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
 import type { Plugin } from "vite";
 
 const publicId = "virtual:stalux-search-style";
@@ -7,9 +5,10 @@ const virtualId = `\0${publicId}`;
 
 /** Astro dev treats a direct CSS ?url import as a module script; keep it a URL-only leaf. */
 export function searchStylePlugin(development: boolean, base: string): Plugin {
-    const stylesheet = createRequire(import.meta.url)
-        .resolve("@pagefind/component-ui/css")
-        .replaceAll("\\", "/");
+    const stylesheet = Bun.resolveSync(
+        "@pagefind/component-ui/css",
+        Bun.fileURLToPath(new URL(".", import.meta.url)),
+    ).replaceAll("\\", "/");
     let building = false;
     return {
         name: "stalux:search-style",
@@ -20,7 +19,7 @@ export function searchStylePlugin(development: boolean, base: string): Plugin {
             if (building && this.environment.name === "client")
                 this.emitFile({
                     type: "chunk",
-                    id: fileURLToPath(
+                    id: Bun.fileURLToPath(
                         new URL("../scripts/search-engine-entry.ts", import.meta.url),
                     ),
                     fileName: "pagefind-enhanced/pagefind.js",
@@ -39,7 +38,7 @@ export function searchStylePlugin(development: boolean, base: string): Plugin {
         },
         load(id) {
             if (id !== virtualId) return;
-            return `export default ${JSON.stringify(`${base.replace(/\/$/, "")}/@fs${stylesheet}`)};`;
+            return `export default ${JSON.stringify(`${base.replace(/\/$/u, "")}/@fs${stylesheet}`)};`;
         },
     };
 }

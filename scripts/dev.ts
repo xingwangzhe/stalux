@@ -1,16 +1,21 @@
-import { spawn } from "node:child_process";
+export {};
 
-const styles = spawn(process.execPath, ["scripts/build-styles.ts", "--watch"], {
-    stdio: "inherit",
+const styles = Bun.spawn([process.execPath, "scripts/build-styles.ts", "--watch"], {
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
 });
-const astro = spawn("bun", ["run", "astro", "dev", ...process.argv.slice(2)], { stdio: "inherit" });
+const astro = Bun.spawn([process.execPath, "x", "--bun", "astro", "dev", ...Bun.argv.slice(2)], {
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
+});
 function stop() {
     styles.kill();
     astro.kill();
 }
 process.on("SIGINT", stop);
 process.on("SIGTERM", stop);
-astro.on("exit", (code) => {
-    styles.kill();
-    process.exitCode = code ?? 1;
-});
+const code = await astro.exited;
+styles.kill();
+process.exitCode = code ?? 1;

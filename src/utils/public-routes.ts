@@ -13,7 +13,7 @@ export type RouteKind =
     | "other";
 
 export function normalizePublicPath(pathname: string): string {
-    const path = pathname.split(/[?#]/, 1)[0]?.replace(/\/+$/, "") ?? "";
+    const path = pathname.split(/[?#]/u, 1)[0]?.replace(/\/+$/u, "") ?? "";
     return path || "/";
 }
 
@@ -41,12 +41,12 @@ export function getMarkdownPath(pathname: string): string | undefined {
     if (path === "/") return "/index.md";
     if (path === "/tags" || path === "/categories") return `${path}/index.md`;
     if (["/about", "/archives", "/links", "/words"].includes(path)) return `${path}.md`;
-    if (/^\/(?:posts|tags|categories)\/[^/]+$/.test(path)) return `${path}.md`;
+    if (/^\/(?:posts|tags|categories)\/[^/]+$/u.test(path)) return `${path}.md`;
     return undefined;
 }
 
 export function toPublicUrl(site: string, pathname: string, markdown = false): string {
-    const base = site.replace(/\/+$/, "");
+    const base = site.replace(/\/+$/u, "");
     const normalized = normalizePublicPath(pathname);
     const path = markdown ? getMarkdownPath(normalized) : normalized;
     if (!path) return `${base}${normalized === "/" ? "/" : `${normalized}/`}`;

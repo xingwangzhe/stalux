@@ -15,7 +15,11 @@
             "!**/licenses.txt",
             "!**/.astro",
             "!public/background",
-            "!src/internal/style-names.generated.ts"
+            "!src/internal/style-names.generated.ts",
+            "!**/*.md",
+            "!stalux",
+            "!docs",
+            "!.github"
         ]
     },
     "formatter": {
@@ -98,7 +102,7 @@
         }
     },
     "javascript": {
-        "globals": ["Fragment"],
+        "globals": ["Bun"],
         "formatter": {
             "quoteStyle": "double",
             "jsxQuoteStyle": "double",
@@ -117,7 +121,8 @@
                 "rules": {
                     "correctness": {
                         "useUniqueElementIds": "off",
-                        "noUndeclaredVariables": "off"
+                        "noUndeclaredVariables": "off",
+                        "noReactNativeRawText": "off"
                     }
                 }
             }

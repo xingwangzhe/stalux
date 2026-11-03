@@ -8,7 +8,7 @@ const responseSchema = {
 };
 
 export const GET: APIRoute = async ({ site }) => {
-    const server = site?.toString().replace(/\/$/, "") || "";
+    const server = site?.toString().replace(/\/$/u, "") || "";
     const document = {
         openapi: "3.1.0",
         info: {

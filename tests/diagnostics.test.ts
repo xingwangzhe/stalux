@@ -47,7 +47,7 @@ describe("diagnostic boundaries", () => {
         );
         const error = new Error("cycle");
         error.cause = error;
-        expect(describeError(error).match(/Error: cycle/g)).toHaveLength(1);
+        expect(describeError(error).match(/Error: cycle/gu)).toHaveLength(1);
         expect(describeError(null)).toBe("null");
     });
 

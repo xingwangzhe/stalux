@@ -18,7 +18,7 @@ export function selectorRules(feature: string, specs: StyleSpec[]): Rule[] {
                             : "@media (hover: hover) and (pointer: fine)"
                         : wrapper;
                 const entries: CSSObject = {};
-                for (const utility of utilities.split(/\s+/).filter(Boolean)) {
+                for (const utility of utilities.split(/\s+/u).filter(Boolean)) {
                     await expandUtility(utility, context, entries);
                 }
                 return {
@@ -43,8 +43,8 @@ export function selectorRules(feature: string, specs: StyleSpec[]): Rule[] {
 // UnoCSS otherwise alphabetizes custom media wrappers, putting 900px after 600px.
 // Keep broad max-width rules before narrower overrides and accessibility rules last.
 function parentOrder(parent: string): number {
-    const maximum = parent.match(/max-width:\s*(\d+)px/);
-    const minimum = parent.match(/min-width:\s*(\d+)px/);
+    const maximum = parent.match(/max-width:\s*(\d+)px/u);
+    const minimum = parent.match(/min-width:\s*(\d+)px/u);
     if (maximum) return 10_000 - Number(maximum[1]);
     if (minimum) return 1_000 + Number(minimum[1]);
     if (parent.includes("prefers-reduced-motion")) return 20_000;

@@ -16,8 +16,6 @@
  * 插件自动将别名解析为用户提供的路径或包内默认路径。
  */
 
-import { fileURLToPath } from "node:url";
-
 import type { AstroIntegrationLogger } from "astro";
 import type { Plugin } from "vite";
 
@@ -34,7 +32,7 @@ export function staluxComponentsAlias(
     logger?: AstroIntegrationLogger,
 ): Plugin {
     // 包内 components 目录的绝对路径
-    const componentsDir = fileURLToPath(new URL("../components", import.meta.url));
+    const componentsDir = Bun.fileURLToPath(new URL("../components", import.meta.url));
 
     return {
         name: "stalux:components-alias",

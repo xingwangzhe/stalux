@@ -18,7 +18,10 @@ export const siteSchema = z.object({
     description: z.string().min(1, "site.description is required"),
     accentColor: z
         .string()
-        .regex(/^#[\da-fA-F]{6}$/, "site.accentColor must be a six-digit HEX color such as #EAB308")
+        .regex(
+            /^#[\da-fA-F]{6}$/u,
+            "site.accentColor must be a six-digit HEX color such as #EAB308",
+        )
         .optional()
         .default("#EAB308"),
     seoTitle: z.string().min(1).optional(),

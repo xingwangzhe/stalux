@@ -4,6 +4,7 @@
     "exclude": ["dist", "coverage"],
     "compilerOptions": {
         "target": "ESNext",
+        "types": ["bun"],
         "allowImportingTsExtensions": true,
         "strictNullChecks": true,
         "allowJs": true,

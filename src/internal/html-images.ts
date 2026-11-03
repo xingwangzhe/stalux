@@ -81,7 +81,7 @@ export function updateImageTag(image: HtmlImage, updates: Record<string, string>
         tag = tag.slice(0, edit.start) + edit.value + tag.slice(edit.end);
     if (additions.length)
         tag = tag.replace(
-            /\s*\/?\s*>$/,
+            /\s*\/?\s*>$/u,
             (ending) => ` ${additions.join(" ")}${ending.trimStart()}`,
         );
     return tag;

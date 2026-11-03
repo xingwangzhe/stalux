@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import type { AstroRuntimeLogger } from "astro";
 /**
  * 徽章生成器工具
@@ -59,7 +58,7 @@ export function generateBadge(options: BadgeOptions, logger?: AstroRuntimeLogger
 
 /** Content-addressed assets are shared by all pages and remain lazy inside details. */
 export function badgeAssetId(svg: string): string {
-    return createHash("sha256").update(svg).digest("hex").slice(0, 24);
+    return new Bun.CryptoHasher("sha256").update(svg).digest("hex").slice(0, 24);
 }
 
 export function normalizeBadgeStyle(style: string | undefined): BadgeOptions["style"] {

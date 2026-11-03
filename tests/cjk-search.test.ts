@@ -48,7 +48,7 @@ function fixture(
         engine: createEnhancedSearch(
             Promise.resolve(native),
             "/blog/",
-            request as typeof fetch,
+            request as unknown as typeof fetch,
             () => "zh-CN",
         ),
         request,

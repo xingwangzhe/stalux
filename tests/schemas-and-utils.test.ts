@@ -121,7 +121,7 @@ describe("route transition mapping", () => {
         });
         expect(getPostTitleTransitionName("post-1")).toBe(getPostTitleTransitionName("post-1"));
         expect(getPostTitleTransitionName("post-1")).not.toBe(getPostTitleTransitionName("post-2"));
-        expect(getPostTitleTransitionName("post-1")).toMatch(/^stalux-post-title-[a-z0-9]+$/);
+        expect(getPostTitleTransitionName("post-1")).toMatch(/^stalux-post-title-[a-z0-9]+$/u);
     });
 });
 

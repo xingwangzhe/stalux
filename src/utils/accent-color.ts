@@ -1,6 +1,6 @@
 import { productionStyleName } from "./style-name.ts";
 
-const ACCENT_COLOR_PATTERN = /^#[\da-fA-F]{6}$/;
+const ACCENT_COLOR_PATTERN = /^#[\da-fA-F]{6}$/u;
 
 const ACCENT_OPACITIES = [90, 85, 80, 70, 60, 50, 40, 30, 20] as const;
 

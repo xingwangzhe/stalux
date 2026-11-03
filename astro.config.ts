@@ -1,6 +1,5 @@
 // @ts-check
 
-import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import UnoCSS from "@unocss/astro";
 import { defineConfig } from "astro/config";
@@ -12,13 +11,14 @@ import stalux from "./src/index.ts";
 
 const site = "https://stalux.needhelp.icu";
 const promotePath = path.join(process.cwd(), "stalux/config/promote.yml");
-const promoteConfig = existsSync(promotePath)
-    ? (parseYaml(readFileSync(promotePath, "utf8")) as { export_md?: boolean } | undefined)
+const promoteFile = Bun.file(promotePath);
+const promoteConfig = (await promoteFile.exists())
+    ? (parseYaml(await promoteFile.text()) as { export_md?: boolean } | undefined)
     : undefined;
 const exportMarkdown = promoteConfig?.export_md === true;
 
 // 包体积分析：仅当显式设置 SONDA=1 时生成 .sonda 报告，日常构建不做额外分析。
-const analyzeBundle = process.env.SONDA === "1";
+const analyzeBundle = Bun.env.SONDA === "1";
 
 // https://astro.build/config
 export default defineConfig({
@@ -43,7 +43,7 @@ export default defineConfig({
             ? {
                   plugins: [
                       Sonda({
-                          include: [/^dist\/_astro\//],
+                          include: [/^dist\/_astro\//u],
                           format: ["html", "json"],
                           filename: "sonda",
                           outputDir: ".sonda",

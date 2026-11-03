@@ -1,4 +1,3 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { generate, parse as parseCss, walk as walkCss } from "css-tree";
 import { imageSize } from "image-size";
@@ -17,15 +16,14 @@ function assert(condition: unknown, message: string): asserts condition {
     if (!condition) throw new Error(`[verify-build] ${message}`);
 }
 
-function read(relativePath: string): string {
-    return readFileSync(path.join(dist, relativePath), "utf8");
+function read(relativePath: string): Promise<string> {
+    return Bun.file(path.join(dist, relativePath)).text();
 }
 
 function walk(directory: string): string[] {
-    return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-        const target = path.join(directory, entry.name);
-        return entry.isDirectory() ? walk(target) : [target];
-    });
+    return [...new Bun.Glob("**/*").scanSync({ cwd: directory, onlyFiles: true })].map((name) =>
+        path.join(directory, name),
+    );
 }
 
 function verifyJsonLd(html: string, route: string): void {
@@ -46,7 +44,7 @@ function verifyJsonLd(html: string, route: string): void {
 
 // Parse the rendered Markdown fixture so a renderer upgrade cannot silently
 // reintroduce a white canvas on the dark theme or drop a diagram.
-const mermaidFixture = parse(read("posts/2cb4f19c/index.html"));
+const mermaidFixture = parse(await read("posts/2cb4f19c/index.html"));
 const mermaidSvgs: DefaultTreeAdapterMap["element"][] = [];
 function collectMermaidSvgs(node: DefaultTreeAdapterMap["node"]): void {
     if (
@@ -84,12 +82,12 @@ for (const svg of mermaidSvgs) {
 const cssClass = (name: string) => styleNames.classes[name] ?? name;
 
 const pages = {
-    home: read("index.html"),
-    archives: read("archives/index.html"),
-    post: read("posts/a1b2c3d4/index.html"),
-    tags: read("tags/index.html"),
-    categories: read("categories/index.html"),
-    notFound: read("404.html"),
+    home: await read("index.html"),
+    archives: await read("archives/index.html"),
+    post: await read("posts/a1b2c3d4/index.html"),
+    tags: await read("tags/index.html"),
+    categories: await read("categories/index.html"),
+    notFound: await read("404.html"),
 };
 
 // The generated document must expose one Swup container and a live shell,
@@ -163,10 +161,10 @@ assert(
 
 // The source template locks code blocks to dark-plus, including on light systems.
 let darkCodeBackgrounds = 0;
-for (const file of readdirSync(path.join(dist, "_astro")).filter((name) =>
-    /^ec\..*\.css$/u.test(name),
-)) {
-    walkCss(parseCss(read(`_astro/${file}`)), (node) => {
+for (const file of [
+    ...new Bun.Glob("*").scanSync({ cwd: path.join(dist, "_astro"), onlyFiles: true }),
+].filter((name) => /^ec\..*\.css$/u.test(name))) {
+    walkCss(parseCss(await read(`_astro/${file}`)), (node) => {
         if (node.type === "Declaration" && node.property === "--ec-codeBg") {
             assert(generate(node.value) === "#1e1e1e", "code background must stay dark-plus");
             darkCodeBackgrounds++;
@@ -190,7 +188,9 @@ const initialStyles = [
     ...[...pages.home.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gu)].map(
         (match) => match[1] ?? "",
     ),
-    ...initialStyleLinks.map((match) => read((match[1] ?? "").replace(/^\//u, ""))),
+    ...(await Promise.all(
+        initialStyleLinks.map((match) => read((match[1] ?? "").replace(/^\//u, ""))),
+    )),
 ].join("\n");
 assert(
     initialStyles.includes(`.${cssClass("stalux-main")}`),
@@ -287,10 +287,10 @@ assert(
 for (const [route, html] of Object.entries(pages)) verifyJsonLd(html, route);
 
 for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
-    const html = readFileSync(file, "utf8");
+    const html = await Bun.file(file).text();
     if (!html.includes(`class="${cssClass("stalux-root")}`)) continue;
     assert(
-        (html.match(/data-stalux-back-to-top/g) ?? []).length === 1,
+        (html.match(/data-stalux-back-to-top/gu) ?? []).length === 1,
         `${path.relative(dist, file)} must have exactly one back-to-top button`,
     );
     assert(
@@ -303,8 +303,8 @@ for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
     );
 }
 
-const sitemap = read("sitemap-0.xml");
-assert(read("sitemap.xml") === sitemap, "sitemap.xml must match the single sitemap output");
+const sitemap = await read("sitemap-0.xml");
+assert((await read("sitemap.xml")) === sitemap, "sitemap.xml must match the single sitemap output");
 assert(
     sitemap.includes("/posts/0035a0ee.md</loc>"),
     "sitemap is missing the generated Markdown post endpoint",
@@ -320,15 +320,17 @@ assert(!sitemap.includes("<lastmod>"), "sitemap contains synthetic build-time la
 // 必须与“frontmatter 墙钟 + 站点时区”表示同一时刻。GitHub Actions 构建机是 UTC，
 // 任何一处回退到构建机器本地时区解析都会在这里失败。
 const feedSiteOptions = parseYaml(
-    readFileSync(path.join(root, "stalux/config/site.yml"), "utf8"),
+    await Bun.file(path.join(root, "stalux/config/site.yml")).text(),
 ) as { timezone?: string };
 const feedTimezone = feedSiteOptions.timezone || "Asia/Shanghai";
 
-function findPostSourceBySlug(slug: string): string {
+async function findPostSourceBySlug(slug: string): Promise<string> {
     const postsDir = path.join(root, "stalux/posts");
-    for (const entry of readdirSync(postsDir)) {
-        if (!entry.endsWith(".md")) continue;
-        const content = readFileSync(path.join(postsDir, entry), "utf8");
+    for (const entry of new Bun.Glob("*.md").scanSync({
+        cwd: postsDir,
+        onlyFiles: true,
+    })) {
+        const content = await Bun.file(path.join(postsDir, entry)).text();
         if (content.match(/^abbrlink:\s*"?([^\s"]+)"?\s*$/mu)?.[1] === slug) return content;
     }
     return "";
@@ -341,15 +343,15 @@ function collectPageDatetimeInstants(html: string): number[] {
 }
 
 for (const feedPath of ["rss.xml", "atom.xml"]) {
-    const feed = read(feedPath);
+    const feed = await read(feedPath);
     const feedItems = [...feed.matchAll(/<item>([\s\S]*?)<\/item>/gu)].slice(0, 3);
     assert(feedItems.length > 0, `${feedPath} has no items`);
     for (const feedItem of feedItems) {
-        const link = feedItem[1]?.match(/<link>([^<]+)<\/link>/)?.[1] ?? "";
-        const pubDate = feedItem[1]?.match(/<pubDate>([^<]+)<\/pubDate>/)?.[1] ?? "";
+        const link = feedItem[1]?.match(/<link>([^<]+)<\/link>/u)?.[1] ?? "";
+        const pubDate = feedItem[1]?.match(/<pubDate>([^<]+)<\/pubDate>/u)?.[1] ?? "";
         assert(Boolean(link && pubDate), `${feedPath} item lacks link or pubDate`);
         const slug = link.match(/\/posts\/(.+?)\/?$/u)?.[1] ?? "";
-        const source = findPostSourceBySlug(slug);
+        const source = await findPostSourceBySlug(slug);
         assert(source, `${feedPath}: no frontmatter source found for ${slug}`);
         const naiveDate = source.match(/^date:\s*"?([^"\n]+)"?\s*$/mu)?.[1]?.trim() ?? "";
         assert(Boolean(naiveDate), `${slug} frontmatter has no date`);
@@ -359,7 +361,9 @@ for (const feedPath of ["rss.xml", "atom.xml"]) {
             `${feedPath}: ${slug} pubDate "${pubDate}" must equal frontmatter "${naiveDate}" interpreted in ${feedTimezone}`,
         );
         assert(
-            collectPageDatetimeInstants(read(`posts/${slug}/index.html`)).includes(expectedInstant),
+            collectPageDatetimeInstants(await read(`posts/${slug}/index.html`)).includes(
+                expectedInstant,
+            ),
             `${feedPath}: ${slug} article page datetime must include publish instant ${new Date(expectedInstant).toISOString()}`,
         );
     }
@@ -371,7 +375,14 @@ const fontCount = files.filter((file) => file.endsWith(".woff2")).length;
 
 const assetSources = files.filter((file) => /\.(?:css|html|js)$/u.test(file));
 const assetContents = new Map(
-    assetSources.map((source) => [path.relative(dist, source), readFileSync(source, "utf8")]),
+    await Promise.all(
+        assetSources.map(
+            async (source): Promise<[string, string]> => [
+                path.relative(dist, source),
+                await Bun.file(source).text(),
+            ],
+        ),
+    ),
 );
 assert(
     [...assetContents.values()].some((content) =>
@@ -386,7 +397,7 @@ const missingAssetReferences = findMissingAssetReferences(assetContents, existin
 
 assert(htmlCount >= 40, `expected at least 40 HTML pages, found ${htmlCount}`);
 assert(fontCount >= 2, `expected normal and italic code fonts, found ${fontCount}`);
-assert(statSync(path.join(dist, "pagefind", "pagefind.js")).size > 0, "Pagefind output is missing");
+assert(Bun.file(path.join(dist, "pagefind", "pagefind.js")).size > 0, "Pagefind output is missing");
 assert(
     missingAssetReferences.length === 0,
     `generated files reference missing assets:\n${missingAssetReferences.join("\n")}`,
@@ -396,11 +407,11 @@ console.info(
 );
 
 for (const file of files.filter((file) => /\.(?:css|html|js|map)$/u.test(file))) {
-    const problems = styleArtifactProblems(file, readFileSync(file, "utf8"));
+    const problems = styleArtifactProblems(file, await Bun.file(file).text());
     assert(problems.length === 0, `${path.relative(dist, file)}: ${problems.join("; ")}`);
 }
 
-const openApi = JSON.parse(read("openapi.json"));
+const openApi = JSON.parse(await read("openapi.json"));
 for (const endpoint of Object.values(openApi.paths) as Array<{
     get: { responses: Record<string, unknown> };
 }>) {
@@ -414,13 +425,13 @@ assert(
     "Static endpoints must not advertise fabricated rate-limit headers",
 );
 
-const postIndex = JSON.parse(read("api/posts.json")) as Array<{
+const postIndex = JSON.parse(await read("api/posts.json")) as Array<{
     abbrlink: string;
     url: string;
     desc?: string;
 }>;
 for (const post of postIndex) {
-    const html = read(`${post.url.replace(/^\//u, "")}index.html`);
+    const html = await read(`${post.url.replace(/^\//u, "")}index.html`);
     const socialMeta = new Map<string, string>();
     function collectSocialMeta(node: DefaultTreeAdapterMap["node"]): void {
         if ("tagName" in node && node.tagName === "meta") {
@@ -447,10 +458,12 @@ for (const post of postIndex) {
     );
     const imagePath = new URL(sharingImage).pathname;
     if (/^\/og\/[a-f0-9]{20}\.webp$/u.test(imagePath)) {
-        const bytes = readFileSync(path.join(dist, imagePath));
+        const bytes = Buffer.from(await Bun.file(path.join(dist, imagePath)).bytes());
         const dimensions = imageSize(bytes);
         const fallback = imageSize(
-            readFileSync(path.join(dist, imagePath.replace(/\.webp$/u, ".png"))),
+            Buffer.from(
+                await Bun.file(path.join(dist, imagePath.replace(/\.webp$/u, ".png"))).bytes(),
+            ),
         );
         assert(
             fallback.type === "png" && fallback.width === 1200 && fallback.height === 630,
@@ -492,7 +505,7 @@ for (const post of postIndex) {
     );
 }
 
-const siteOptions = parseYaml(readFileSync(path.join(root, "stalux/config/site.yml"), "utf8")) as {
+const siteOptions = parseYaml(await Bun.file(path.join(root, "stalux/config/site.yml")).text()) as {
     weather?: { enabled?: boolean };
 };
 for (const [route, html] of [
@@ -514,7 +527,7 @@ for (const [route, html, count] of [
     ["post", pages.post, 2],
 ] as const) {
     assert(
-        (html.match(/<section[^>]*data-stalux-weather/g) ?? []).length ===
+        (html.match(/<section[^>]*data-stalux-weather/gu) ?? []).length ===
             (siteOptions.weather?.enabled ? count : 0),
         `${route} must have footer weather, plus sidebar weather only on articles`,
     );
@@ -522,7 +535,9 @@ for (const [route, html, count] of [
 
 // Fonts are separately licensed; their notices must survive the production build.
 assert(
-    readFileSync(path.join(dist, "fonts/StaluxMathAux.woff2")).subarray(0, 4).toString() === "wOF2",
+    Buffer.from(await Bun.file(path.join(dist, "fonts/StaluxMathAux.woff2")).bytes())
+        .subarray(0, 4)
+        .toString() === "wOF2",
     "Missing rebuilt math auxiliary font",
 );
 for (const filename of [
@@ -531,22 +546,22 @@ for (const filename of [
     "Google-Sans-Code-OFL.txt",
 ]) {
     assert(
-        read(`fonts/${filename}`).includes("SIL OPEN FONT LICENSE"),
+        (await read(`fonts/${filename}`)).includes("SIL OPEN FONT LICENSE"),
         `Missing full font license: ${filename}`,
     );
 }
 assert(
-    read("fonts/GUST-FONT-LICENSE.txt").includes("LaTeX Project Public License"),
+    (await read("fonts/GUST-FONT-LICENSE.txt")).includes("LaTeX Project Public License"),
     "Missing Latin Modern license",
 );
 for (const file of files.filter((file) => file.endsWith(".css"))) {
     assert(
-        !readFileSync(file, "utf8").includes("/fonts/Temml.woff2"),
+        !(await Bun.file(file).text()).includes("/fonts/Temml.woff2"),
         "Legacy math font must not be referenced",
     );
 }
 
-const mathCss = readFileSync(path.join(root, "src/styles/math.css"), "utf8");
+const mathCss = await Bun.file(path.join(root, "src/styles/math.css")).text();
 assert(
     /@font-face\s*\{\s*font-family:\s*"Stalux Math Aux";/u.test(mathCss),
     "Math font-face requires a single family name",

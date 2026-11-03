@@ -11,7 +11,7 @@ export function promoteCodeStyles(document: DefaultTreeAdapterMap["document"]): 
             if (node.tagName === "template" || node.tagName === "noscript") return;
             if (node.tagName === "head") head = node;
             inCode ||= (
-                node.attrs.find((a) => a.name === "class")?.value.split(/\s+/) ?? []
+                node.attrs.find((a) => a.name === "class")?.value.split(/\s+/u) ?? []
             ).includes("expressive-code");
             if (
                 inCode &&

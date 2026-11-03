@@ -109,10 +109,10 @@ describe("card cover output", () => {
     it("restores cached covers into the output for pages served from cache", async () => {
         mkdirSync(path.join(cacheDir, "v1"), { recursive: true });
         writeFileSync(path.join(cacheDir, "v1", "abc.webp"), "x");
-        const copied = restoreCoverFiles({ outDir, cacheDir });
+        const copied = await restoreCoverFiles({ outDir, cacheDir });
         expect(copied).toBe(1);
         expect(readdirSync(path.join(outDir, COVER_DIR))).toEqual(["abc.webp"]);
         // Nothing to restore is not an error.
-        expect(restoreCoverFiles({ outDir, cacheDir: path.join(root, "absent") })).toBe(0);
+        expect(await restoreCoverFiles({ outDir, cacheDir: path.join(root, "absent") })).toBe(0);
     });
 });

@@ -61,22 +61,22 @@ function getSiteConfig(config: ConfigMap): Record<string, unknown> {
 export function getSite(config: ConfigMap, contextSite?: string): string {
     const siteData = getSiteConfig(config);
     const configUrl = siteData.url as string | undefined;
-    return (configUrl || contextSite || "").replace(/\/$/, "");
+    return (configUrl || contextSite || "").replace(/\/$/u, "");
 }
 
 /** 将任意空白压缩为单行 */
 function inlineText(text: string | undefined): string {
-    return (text || "").replace(/\s+/g, " ").trim();
+    return (text || "").replace(/\s+/gu, " ").trim();
 }
 
 /** 转义 markdown 文本中的特殊字符（用于描述） */
 function escapeMd(text: string | undefined): string {
-    return inlineText(text).replace(/([\\[*_`#])/g, "\\$1");
+    return inlineText(text).replace(/([\\[*_`#])/gu, "\\$1");
 }
 
 /** 转义 markdown 链接标题中的特殊字符 */
 function escapeMdLinkTitle(text: string | undefined): string {
-    return inlineText(text).replace(/([\\[\]])/g, "\\$1");
+    return inlineText(text).replace(/([\\[\]])/gu, "\\$1");
 }
 
 /** 构建 markdown 列表项 */
@@ -125,7 +125,7 @@ function getMediaLinks(
             try {
                 const hostname = new URL(url.startsWith("http") ? url : `https://example.com${url}`)
                     .hostname;
-                const domain = hostname.replace(/^www\./, "").split(".")[0];
+                const domain = hostname.replace(/^www\./u, "").split(".")[0];
                 name = domain ? domain.charAt(0).toUpperCase() + domain.slice(1) : "Link";
             } catch {
                 logDetail(
@@ -147,7 +147,7 @@ function getEmail(config: ConfigMap): string | undefined {
         | undefined;
     if (!items) return undefined;
     const mail = items.find((l) => l.link?.startsWith("mailto:"))?.link;
-    if (mail) return mail.replace(/^mailto:/, "");
+    if (mail) return mail.replace(/^mailto:/u, "");
     return undefined;
 }
 

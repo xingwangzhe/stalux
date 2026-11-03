@@ -17,9 +17,7 @@ import { styleNames } from "./style-names.generated.ts";
  *     shared-header/footer-*.woff2 — persistent shell glyph subsets
  */
 
-import { existsSync, readdirSync, readFileSync, unlinkSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
 import { FontSubsetter } from "@xingwangzhe/cjk-font-split-native";
 import type { AstroIntegrationLogger } from "astro";
 import {
@@ -75,13 +73,14 @@ export interface FontInputs {
 // ---------------------------------------------------------------------------
 
 /** Locate a font file: project root → stalux package → this package. */
-function findFont(projectRoot: string, rel: string): string | undefined {
+async function findFont(projectRoot: string, rel: string): Promise<string | undefined> {
     const candidates = [
         resolve(projectRoot, rel),
         resolve(projectRoot, "node_modules", "@xingwangzhe", "stalux", rel),
-        resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", rel),
+        resolve(dirname(Bun.fileURLToPath(import.meta.url)), "..", "..", rel),
     ];
-    return candidates.find((p) => existsSync(p));
+    for (const candidate of candidates) if (await Bun.file(candidate).exists()) return candidate;
+    return undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -102,19 +101,19 @@ export async function resolveFontInputs(
     const started = performance.now();
     logger.debug("locating font inputs");
     // 1. Locate fonts (check project root first, then stalux package dir)
-    const fontPath = findFont(projectRoot, FONT_INPUT);
+    const fontPath = await findFont(projectRoot, FONT_INPUT);
     if (!fontPath) {
         logger.warn(`Body font not found at ${FONT_INPUT}, skipping font injection`);
         return null;
     }
-    const codeNormal = findFont(projectRoot, CODE_FONT_INPUT);
+    const codeNormal = await findFont(projectRoot, CODE_FONT_INPUT);
     if (!codeNormal) {
         logger.warn(`Code font not found at ${CODE_FONT_INPUT}, skipping font injection`);
         return null;
     }
-    const codeItalic = findFont(projectRoot, CODE_FONT_ITALIC_INPUT);
+    const codeItalic = await findFont(projectRoot, CODE_FONT_ITALIC_INPUT);
 
-    const fontBuffer = readFileSync(fontPath);
+    const fontBuffer = Buffer.from(await Bun.file(fontPath).bytes());
     logger.debug(`font inputs located in ${(performance.now() - started).toFixed(1)}ms`);
     logger.info(
         `Native page-font source ready (LXGW ${(fontBuffer.length / 1024 / 1024).toFixed(1)} MB)`,
@@ -168,9 +167,9 @@ const VISUALLY_HIDDEN_CLASSES = new Set([
 ]);
 
 function cssGeneratedText(css: string): string {
-    return [...css.matchAll(/\bcontent\s*:\s*(["'])(.*?)\1\s*(?:!important\s*)?(?:;|})/gis)]
+    return [...css.matchAll(/\bcontent\s*:\s*(["'])(.*?)\1\s*(?:!important\s*)?(?:;|\})/gisu)]
         .map(([, , value]) =>
-            (value ?? "").replace(/\\([\da-f]{1,6})\s?|\\(.)/gi, (_, hex, char) =>
+            (value ?? "").replace(/\\([\da-f]{1,6})\s?|\\(.)/giu, (_, hex, char) =>
                 hex ? String.fromCodePoint(Number.parseInt(hex, 16)) : char,
             ),
         )
@@ -191,14 +190,14 @@ function collectStylesheetLinks(node: HtmlNode, output: string[]): void {
 }
 
 /** Read local CSS files linked from an emitted page and return generated text strings. */
-export function readLinkedStylesheetText(
+export async function readLinkedStylesheetText(
     html: string,
     pagePath: string,
     outputDir: string,
     cache = new Map<string, string>(),
     document = parse(html),
     dependencies?: Set<string>,
-): string {
+): Promise<string> {
     const root = resolve(outputDir);
     const links: string[] = [];
     collectStylesheetLinks(document, links);
@@ -209,7 +208,7 @@ export function readLinkedStylesheetText(
         try {
             cssPath = href.startsWith("/")
                 ? resolve(root, `.${new URL(href, "https://stalux.local").pathname}`)
-                : fileURLToPath(new URL(href, pathToFileURL(pagePath)));
+                : Bun.fileURLToPath(new URL(href, Bun.pathToFileURL(pagePath)));
         } catch {
             continue;
         }
@@ -217,7 +216,7 @@ export function readLinkedStylesheetText(
         dependencies?.add(cssPath);
         if (!cache.has(cssPath)) {
             try {
-                cache.set(cssPath, cssGeneratedText(readFileSync(cssPath, "utf8")));
+                cache.set(cssPath, cssGeneratedText(await Bun.file(cssPath).text()));
             } catch {
                 cache.set(cssPath, "");
             }
@@ -476,11 +475,11 @@ function renderPageFont(
         for (const node of style.childNodes) {
             if (node.nodeName !== "#text" || !("value" in node)) continue;
             node.value = node.value.replace(
-                /@font-face\{[^}]*font-family:"LXGW WenKai-[^"]+"[^}]*\}/g,
+                /@font-face\{[^}]*font-family:"LXGW WenKai-[^"]+"[^}]*\}/gu,
                 (face) => {
-                    const unicodeRange = face.match(/unicode-range:([^;}]+)/i)?.[1] ?? "";
+                    const unicodeRange = face.match(/unicode-range:([^;}]+)/iu)?.[1] ?? "";
                     const hasCjkRange = unicodeRange.split(",").some((range) => {
-                        const start = range.match(/U\+([\da-f]+)/i)?.[1];
+                        const start = range.match(/U\+([\da-f]+)/iu)?.[1];
                         if (!start) return false;
                         const point = Number.parseInt(start, 16);
                         return point >= 0x4e00 && point <= 0x9fff;
@@ -595,18 +594,26 @@ export async function writePageFontSubsetIntoDocumentAsync(
 }
 
 /** Remove stale page subsets so deploy artifacts only contain the current build's referenced files. */
-export function clearPageFontSubsets(
+export async function clearPageFontSubsets(
     outputDir: string,
     referencedFiles: Set<string> = new Set(),
-): void {
-    if (!existsSync(outputDir)) return;
-    for (const name of readdirSync(outputDir)) {
-        const isSubset =
-            name.startsWith("page-") ||
-            name.startsWith("shared-header-") ||
-            name.startsWith("shared-footer-");
-        if (isSubset && name.endsWith(".woff2") && !referencedFiles.has(name)) {
-            unlinkSync(join(outputDir, name));
-        }
+): Promise<void> {
+    let names: string[];
+    try {
+        names = [...new Bun.Glob("**/*.woff2").scanSync({ cwd: outputDir, onlyFiles: true })];
+    } catch {
+        return;
     }
+    await Promise.all(
+        names
+            .filter(
+                (name) =>
+                    (name.startsWith("page-") ||
+                        name.startsWith("shared-header-") ||
+                        name.startsWith("shared-footer-")) &&
+                    name.endsWith(".woff2") &&
+                    !referencedFiles.has(name),
+            )
+            .map((name) => Bun.file(join(outputDir, name)).delete()),
+    );
 }

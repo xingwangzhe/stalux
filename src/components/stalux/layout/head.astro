@@ -48,7 +48,7 @@ const seo = buildSeoDocument({
     exportMarkdown: Boolean(promoteConfig?.export_md),
     version: packageJson.version,
 });
-const ldJson = JSON.stringify(seo.schema).replace(/<\//g, "<\\/");
+const ldJson = JSON.stringify(seo.schema).replace(/<\//gu, "<\\/");
 ---
 
 <head>

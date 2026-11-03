@@ -29,8 +29,8 @@ function badgeImg(opts: BadgeOptions) {
         ? sitePath(`stalux-assets/badges/${id}.svg`)
         : svgToDataUrl(svg);
     const alt = opts.alt || `${opts.label}: ${opts.message}`;
-    const width = svg.match(/<svg\b[^>]*\bwidth="(\d+)"/)?.[1];
-    const height = svg.match(/<svg\b[^>]*\bheight="(\d+)"/)?.[1];
+    const width = svg.match(/<svg\b[^>]*\bwidth="(\d+)"/u)?.[1];
+    const height = svg.match(/<svg\b[^>]*\bheight="(\d+)"/u)?.[1];
     const dimensions = width && height ? ` width="${width}" height="${height}"` : "";
     // Closed badge groups should not initialize every SVG document during first paint.
     const img = `<img src="${src}" alt="${alt}" class="stalux-badge" loading="lazy" decoding="async"${dimensions} />`;

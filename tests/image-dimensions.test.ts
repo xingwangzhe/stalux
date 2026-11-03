@@ -154,7 +154,7 @@ describe("image dimensions", () => {
                 root,
                 { cache },
             );
-            expect(output.match(/width="640" height="360"/g)).toHaveLength(2);
+            expect(output.match(/width="640" height="360"/gu)).toHaveLength(2);
             expect(output).toContain('<img src="/missing.svg">');
             expect(opened.filter((name) => name.endsWith("large.svg"))).toHaveLength(1);
             expect(opened.some((name) => name.endsWith("outside.svg"))).toBe(false);

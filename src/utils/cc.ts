@@ -11,7 +11,7 @@ export function buildCCLink(licenseCode: string): string {
         return "https://creativecommons.org/publicdomain/zero/1.0/";
     }
 
-    const match = licenseCode.match(/^CC-?(.+)-(\d+(?:\.\d+))$/);
+    const match = licenseCode.match(/^CC-?(.+)-(\d+(?:\.\d+))$/u);
     if (!match) {
         return "https://creativecommons.org/licenses/by-nc-sa/4.0/";
     }
@@ -36,7 +36,7 @@ export function buildCCName(licenseCode: string, t: Translator["t"]): string {
         return t("cc.zero");
     }
 
-    const match = licenseCode.match(/^CC-?(.+)-(\d+(?:\.\d+))$/);
+    const match = licenseCode.match(/^CC-?(.+)-(\d+(?:\.\d+))$/u);
     if (!match) {
         // 无法解析时回退为默认 CC-BY-NC-SA-4.0
         const elements = ["BY", "NC", "SA"].map((code) => t(`cc.${code}`)).join("-");

@@ -36,7 +36,7 @@ const timezone = siteConfig.timezone;
 // /about 等非文章页面固定不显示 Markdown 原文按钮
 const isAboutPage = Astro.url.pathname.startsWith("/about");
 const exportMd = Boolean(promoteConfig?.export_md) && !isAboutPage;
-const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/, "")}.md` : "";
+const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/u, "")}.md` : "";
 ---
 
 <article

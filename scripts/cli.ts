@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 /**
  * Stalux CLI — 主题初始化工具
@@ -14,8 +14,7 @@
  *   - 静默运行，无交互式问答
  */
 
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 
 // ---------------------------------------------------------------------------
 // 默认内容模板数据
@@ -210,18 +209,17 @@ date: "${date}"
 // 主流程
 // ---------------------------------------------------------------------------
 
-function writeIfMissing(filePath: string, label: string, content: string): void {
-    if (existsSync(filePath)) {
+async function writeIfMissing(filePath: string, label: string, content: string): Promise<void> {
+    if (await Bun.file(filePath).exists()) {
         console.log(`  ⏭  ${label} (exists, skipped)`);
         return;
     }
 
-    mkdirSync(dirname(filePath), { recursive: true });
-    writeFileSync(filePath, content);
+    await Bun.write(filePath, content);
     console.log(`  ✅  ${label}`);
 }
 
-function main([command, targetArg = "."]: string[] = process.argv.slice(2)): void {
+async function main([command, targetArg = "."]: string[] = Bun.argv.slice(2)): Promise<void> {
     if (!command || command === "--help" || command === "-h") {
         printHelp();
         return;
@@ -238,10 +236,6 @@ function main([command, targetArg = "."]: string[] = process.argv.slice(2)): voi
     const contentRoot = join(targetPath, "stalux");
     console.log(`📦 Initializing Stalux content in ${targetPath}...\n`);
 
-    for (const dir of ["config", "posts", "about", "words"]) {
-        mkdirSync(join(contentRoot, dir), { recursive: true });
-    }
-
     const files = {
         ...Object.fromEntries(
             Object.entries(getConfigYamls()).map(([name, content]) => [`config/${name}`, content]),
@@ -252,7 +246,7 @@ function main([command, targetArg = "."]: string[] = process.argv.slice(2)): voi
         "words/einstein-imagination.md": getWordsExample(),
     };
     for (const [file, content] of Object.entries(files)) {
-        writeIfMissing(join(contentRoot, file), `stalux/${file}`, content);
+        await writeIfMissing(join(contentRoot, file), `stalux/${file}`, content);
     }
 
     console.log("\n  ✅  Done! Stalux content initialized.\n");
@@ -301,4 +295,4 @@ function printNextSteps() {
     console.log("");
 }
 
-main();
+await main();

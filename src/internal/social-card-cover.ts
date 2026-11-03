@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { imageSize } from "image-size";
 
@@ -52,8 +50,9 @@ function assertDimensions(bytes: Buffer): void {
 }
 
 async function readLocalCover(local: string): Promise<Buffer> {
-    if ((await stat(local)).size > MAX_COVER_BYTES) throw new Error("cover exceeds 8 MiB");
-    const bytes = await readFile(local);
+    const file = Bun.file(local);
+    if (file.size > MAX_COVER_BYTES) throw new Error("cover exceeds 8 MiB");
+    const bytes = Buffer.from(await file.bytes());
     assertDimensions(bytes);
     return bytes;
 }
@@ -71,16 +70,15 @@ async function readResponseBytes(response: Response): Promise<Buffer> {
 }
 
 async function fetchCover(url: URL, cacheFile: string): Promise<Buffer> {
-    const cachedStat = await stat(cacheFile).catch(() => undefined);
-    if (cachedStat && Date.now() - cachedStat.mtimeMs < COVER_CACHE_TTL_MS)
-        return readFile(cacheFile);
+    const cached = Bun.file(cacheFile);
+    if (cached.size > 0 && Date.now() - cached.lastModified < COVER_CACHE_TTL_MS)
+        return Buffer.from(await cached.bytes());
     const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!(response.ok && response.headers.get("content-type")?.startsWith("image/")))
         throw new Error(`cover returned HTTP ${response.status} or non-image content`);
     const bytes = await readResponseBytes(response);
     assertDimensions(bytes);
-    await mkdir(path.dirname(cacheFile), { recursive: true });
-    await writeFile(cacheFile, bytes);
+    await Bun.write(cacheFile, bytes);
     return bytes;
 }
 
@@ -91,6 +89,10 @@ function loadCoverUncached(cover: string, paths: SocialCardPaths): Promise<Buffe
     if (!["https:", "http:"].includes(url.protocol)) throw new Error("invalid cover URL");
     return fetchCover(
         url,
-        path.join(paths.cacheDir, "covers", createHash("sha256").update(url.href).digest("hex")),
+        path.join(
+            paths.cacheDir,
+            "covers",
+            new Bun.CryptoHasher("sha256").update(url.href).digest("hex"),
+        ),
     );
 }

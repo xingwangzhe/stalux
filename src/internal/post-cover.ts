@@ -1,12 +1,3 @@
-import { createHash } from "node:crypto";
-import {
-    copyFileSync,
-    existsSync,
-    mkdirSync,
-    readdirSync,
-    readFileSync,
-    writeFileSync,
-} from "node:fs";
 import path from "node:path";
 import type { HtmlImage } from "./html-images";
 
@@ -60,8 +51,8 @@ export interface CoverContext {
     logger?: { warn: (message: string) => void };
 }
 
-const digest = (parts: readonly (string | Buffer)[]): string => {
-    const hash = createHash("sha256");
+const digest = (parts: readonly (string | Buffer | Uint8Array)[]): string => {
+    const hash = new Bun.CryptoHasher("sha256");
     for (const part of parts) hash.update(part).update("\0");
     return hash.digest("hex");
 };
@@ -96,27 +87,26 @@ export async function upgradeCoverImages(
         if (!CONVERTIBLE.test(pathname)) continue;
         const source = path.resolve(root, `.${pathname}`);
         if (!source.startsWith(`${root}${path.sep}`)) continue;
-        if (!existsSync(source)) continue;
+        if (!(await Bun.file(source).exists())) continue;
         context.dependencies?.add(source);
 
         let bytes: Buffer;
         try {
-            bytes = readFileSync(source);
+            bytes = Buffer.from(await Bun.file(source).bytes());
         } catch {
             continue;
         }
         const hash = digest([RECIPE, "webp", String(MAX_WIDTH), String(QUALITY), bytes]);
         const filename = `${hash.slice(0, 16)}.webp`;
         const cached = path.join(cacheDir, filename);
-        if (!existsSync(cached)) {
+        if (!(await Bun.file(cached).exists())) {
             try {
                 const encoded = await context
                     .sharp(bytes)
                     .resize({ width: MAX_WIDTH, withoutEnlargement: true })
                     .webp({ quality: QUALITY, effort: 5 })
                     .toBuffer();
-                mkdirSync(cacheDir, { recursive: true });
-                writeFileSync(cached, encoded);
+                await Bun.write(cached, encoded);
             } catch (error) {
                 // One malformed source must not fail the page it appears on.
                 context.logger?.warn(`封面转 WebP 失败（${pathname}）：${String(error)}`);
@@ -132,16 +122,22 @@ export async function upgradeCoverImages(
 }
 
 /** Copy every cached cover into the build output so cached pages still resolve. */
-export function restoreCoverFiles(context: { outDir: string; cacheDir: string }): number {
+export async function restoreCoverFiles(context: {
+    outDir: string;
+    cacheDir: string;
+}): Promise<number> {
     const cacheDir = path.join(context.cacheDir, RECIPE);
-    if (!existsSync(cacheDir)) return 0;
-    const target = path.join(context.outDir, COVER_DIR);
-    mkdirSync(target, { recursive: true });
-    let copied = 0;
-    for (const name of readdirSync(cacheDir)) {
-        if (!name.endsWith(".webp")) continue;
-        copyFileSync(path.join(cacheDir, name), path.join(target, name));
-        copied++;
+    let names: string[];
+    try {
+        names = [...new Bun.Glob("*.webp").scanSync({ cwd: cacheDir, onlyFiles: true })];
+    } catch {
+        return 0;
     }
-    return copied;
+    const target = path.join(context.outDir, COVER_DIR);
+    await Promise.all(
+        names.map((name) =>
+            Bun.write(path.join(target, name), Bun.file(path.join(cacheDir, name))),
+        ),
+    );
+    return names.length;
 }

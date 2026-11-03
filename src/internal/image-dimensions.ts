@@ -1,4 +1,3 @@
-import { open } from "node:fs/promises";
 import path from "node:path";
 import { imageSize } from "image-size";
 import { imageSizeFromFile } from "image-size/fromFile";
@@ -56,17 +55,13 @@ async function readLocalImageDimensions(filename: string): Promise<ImageDimensio
     } catch {
         // Preserve previously supported JPEGs whose SOF is first or beyond the header window.
         // Only this compatibility path reads a whole image, never an unknown or remote format.
-        const file = await open(filename, "r").catch(() => undefined);
-        if (!file) return undefined;
         try {
-            const signature = Buffer.alloc(2);
-            await file.read(signature, 0, 2, 0);
+            const file = Bun.file(filename);
+            const signature = new Uint8Array(await file.slice(0, 2).arrayBuffer());
             if (signature[0] !== 0xff || signature[1] !== 0xd8) return undefined;
-            return readImageDimensions(await file.readFile());
+            return readImageDimensions(Buffer.from(await file.bytes()));
         } catch {
             return undefined;
-        } finally {
-            await file.close();
         }
     }
 }

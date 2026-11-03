@@ -8,7 +8,7 @@
         "allowImportingTsExtensions": true,
         "erasableSyntaxOnly": true,
         "verbatimModuleSyntax": true,
-        "types": ["node"]
+        "types": ["bun"]
     },
     "include": ["scripts/**/*.ts"]
 }

@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { type DefaultTreeAdapterMap, parse } from "parse5";
 import { type CjkDocument, cjkGrams, gramShard, normalizeSearch } from "../utils/cjk-search";
@@ -92,17 +90,16 @@ export function extractCjkDocument(html: string, url: string) {
 /** Content-addressed shards prevent mixed old/new deployments and keep downloads query-specific. */
 export async function writeCjkSearchIndex(outDir: string, htmlFiles: string[], base: string) {
     const directory = path.join(outDir, "pagefind", "cjk");
-    await mkdir(directory, { recursive: true });
     async function asset(value: unknown) {
         const json = JSON.stringify(value);
-        const hash = createHash("sha256").update(json).digest("hex").slice(0, 20);
+        const hash = new Bun.CryptoHasher("sha256").update(json).digest("hex").slice(0, 20);
         const file = `${hash}.json`;
-        await writeFile(path.join(directory, file), json);
+        await Bun.write(path.join(directory, file), json);
         return file;
     }
     const extracted = new Map<string, NonNullable<ReturnType<typeof extractCjkDocument>>>();
     await forEachBounded(htmlFiles, 6, async (file) => {
-        const html = await readFile(path.join(outDir, file), "utf8");
+        const html = await Bun.file(path.join(outDir, file)).text();
         // Most output pages are archives/tags: don't parse pages without indexed sections.
         if (!html.includes("data-pagefind-body")) return;
         const url = `${base.replace(/\/$/u, "")}/${file.replace(/index\.html$/u, "")}`;
@@ -125,6 +122,6 @@ export async function writeCjkSearchIndex(outDir: string, htmlFiles: string[], b
     }
     const shards: Record<string, string> = {};
     for (const [key, value] of Object.entries(postings)) shards[key] = await asset(value);
-    await writeFile(path.join(directory, "manifest.json"), JSON.stringify({ documents, shards }));
+    await Bun.write(path.join(directory, "manifest.json"), JSON.stringify({ documents, shards }));
     return documents.length;
 }

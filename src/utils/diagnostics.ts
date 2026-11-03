@@ -19,9 +19,9 @@ export function describeError(error: unknown): string {
     }
     const text = parts.join("\nCaused by: ");
     return text
-        .replace(/(https?:\/\/[^\s?#]+)[?#][^\s)]+/g, "$1?[redacted]")
-        .replace(/(Bearer\s+)[^\s]+/gi, "$1[redacted]")
-        .replace(/((?:token|password|secret|api[_-]?key)\s*[=:]\s*)[^\s,;]+/gi, "$1[redacted]");
+        .replace(/(https?:\/\/[^\s?#]+)[?#][^\s)]+/gu, "$1?[redacted]")
+        .replace(/(Bearer\s+)[^\s]+/giu, "$1[redacted]")
+        .replace(/((?:token|password|secret|api[_-]?key)\s*[=:]\s*)[^\s,;]+/giu, "$1[redacted]");
 }
 
 /** Runtime loggers have no debug method. Detail is opt-in, then sent through official info. */
