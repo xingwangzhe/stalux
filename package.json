@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.52.1",
+    "version": "1.52.2",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -139,23 +139,23 @@
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.12",
-        "@biomejs/biome": "^2.6.4",
+        "@biomejs/biome": "^2.6.5",
         "@types/bun": "1.4.4",
         "@types/css-tree": "^3.2.0",
         "@unocss/astro": "^66.12.0",
         "@vitest/coverage-v8": "^5.1.0",
-        "astro": "^7.4.5",
+        "astro": "^7.4.7",
         "happy-dom": "^21.0.4",
         "knip": "^6.44.1",
         "sharp": "0.35.5",
         "sonda": "^0.14.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
         "unocss": "^66.12.0",
-        "vite": "^8.3.5",
+        "vite": "^8.3.6",
         "vitest": "^5.1.0"
     },
     "peerDependencies": {
-        "astro": "^7.4.5"
+        "astro": "^7.4.7"
     },
     "overrides": {
         "satteri": "0.11.6"
