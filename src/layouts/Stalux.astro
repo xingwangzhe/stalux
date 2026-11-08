@@ -86,7 +86,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
     </script>
     {aiConfig?.conformance !== "disabled" && <script>import "../scripts/webmcp.ts";</script>}
     <body
-        class="stalux-root dark"
+        class={`stalux-root dark page-${routeKind}`}
         data-stalux-bg-layer="a"
         data-stalux-bg-index="0"
         data-stalux-site-title={siteConfig.title}
@@ -116,7 +116,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
             aria-hidden="true"
         ></div>
         <div class="bg-layer bg-b" data-stalux-background="b" aria-hidden="true"></div>
-        <main class="stalux-main" data-stalux-route={routeKind}>
+        <main id="swup-main" class="stalux-main" data-stalux-route={routeKind}>
             <slot />
         </main>
         <Footer />

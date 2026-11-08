@@ -3,6 +3,7 @@ import { forEachBounded } from "./internal/bounded-tasks.ts";
 import { compactStylesPlugin } from "./internal/compact-styles.ts";
 import { modernCssTargets } from "./internal/modern-css.ts";
 import { styleNames } from "./internal/style-names.generated.ts";
+import { swupDebugPlugin } from "./internal/swup-debug-plugin.ts";
 /**
  * Stalux — Astro 博客主题集成入口
  *
@@ -182,6 +183,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             include: [
                                 "swup",
                                 "@swup/a11y-plugin",
+                                "@swup/body-class-plugin",
+                                "@swup/fragment-plugin",
+                                "@swup/parallel-plugin",
+                                "@swup/route-name-plugin",
+                                "@swup/scripts-plugin",
                                 "@swup/head-plugin",
                                 "@swup/js-plugin",
                                 "@swup/preload-plugin",
@@ -216,6 +222,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                                         ? `export default ${JSON.stringify(socialCardPaths)}`
                                         : undefined,
                             },
+                            swupDebugPlugin(command === "dev"),
                             searchStylePlugin(command === "dev", config.base),
                             webMcpMutationsPlugin(),
                             ...(command === "build"

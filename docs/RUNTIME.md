@@ -15,6 +15,30 @@
 
 官方钩子说明见 [Integration API](https://docs.astro.build/en/reference/integrations-reference/) 和 [View Transitions 生命周期](https://docs.astro.build/en/guides/view-transitions/#lifecycle-events)。项目记录了官方文档 MCP `https://mcp.docs.astro.build/mcp`，传输为 Streamable HTTP；查询工具为 `search_astro_docs`。配置保存不等于当前客户端已加载，应实际检查连接并查询。
 
+## Swup 导航与插件边界
+
+实现入口为 [swup-router.ts](../src/scripts/swup-router.ts)，脚本适配见 [navigation-scripts.ts](../src/scripts/navigation-scripts.ts)。Swup 4.10.0 负责导航；Astro 提供静态 HTML。主题将 Swup hooks 转发为页面组件使用的 Astro 生命周期事件。
+
+| 插件 | 职责与范围 |
+| --- | --- |
+| Body Class | 同步 `page-` 前缀的 body class 和 `data-stalux-*` 属性，排除背景运行时属性；菜单等其他 class 保留 |
+| Route Name | 为首页、文章、归档、标签、分类、关于、友链、一言和 404 命名；目标路由名同步到 html 与 main 的路由属性 |
+| Fragment | 文章间只替换 `#swup-article`；标签和分类详情间只替换 `#swup-taxonomy`；其他导航替换 `#swup-main` |
+| Parallel | 普通导航中旧容器淡出与新内容入场并行；旧容器立即 inert、退出文档流并移除非持久节点的 ID，结束或取消时移除；历史恢复、减少动态和隐藏页面使用串行替换 |
+| Scripts | 通过官方 `runScript()` 执行页面脚本；主题适配层负责模块顺序、完成等待、取消和会话去重 |
+| Head、Preload、Progress、Scroll、Accessibility、JS | 分别管理 head 资源、预取、进度条、滚动、无障碍与 JS 动画完成等待 |
+| Debug | devDependency，仅开发构建动态加载；生产 preview 不加载 |
+
+Debug 在主题源码仓库的开发构建自动启用；消费项目如需同样的日志，可执行 `bun add -d @swup/debug-plugin`。未安装时虚拟模块返回空实现，生产构建不解析该依赖。
+
+页头、页脚和背景位于替换容器之外，保留节点身份。文章间 Fragment 保留主布局和左右侧栏；目录、标签和分类等文章相关 slot 从目标文档刷新。Body Class 不负责组件状态保存。
+
+资源和字体准备完成后，主题在旧容器被替换或并行插入之前派发 `astro:before-swap`；替换后刷新侧栏 slot 并派发 `astro:after-swap`。页面脚本完成后才派发 `astro:page-load`。JS 插件等待入场和旧容器淡出完成，随后结束导航。浏览器原生 View Transition 保持关闭，历史遍历按已保存位置恢复。
+
+普通内联脚本和页面模块按会话去重；`data-astro-rerun` 或 `data-swup-reload-script` 表示每次重新执行，`data-swup-ignore-script` 表示跳过。JSON-LD、import map 和非 JavaScript script 不执行。外部脚本失败或超时后允许重试；导航取消只停止后续执行，不把仍在加载的共享模块当成成功结果。统计 SDK 继续由统计运行时按会话管理，不进入页面脚本重跑范围。
+
+自定义 Fragment 规则必须使用当前页与目标页共有的 ID 容器，且位于 main 内。路由 ID 使用 `swup-` 命名空间，避免与构建期压缩的 `stalux-` CSS class 混用。扩展并行容器时需同时验证快速取消、重复 ID、焦点、目录更新和旧容器清理。
+
 ## AST 与缓存
 
 生产后处理在同一棵 parse5 AST 上修改真实 img/style/link 元素，收集正文字符和 CSS 生成文本。输出器基于源码位置只序列化变化节点，保留未改 HTML、脚本、注释和模板示例。Markdown 统计使用已有 MDAST/HAST；导出用 YAML Document AST 序列化元数据，正文保留原文并追加版权脚注。

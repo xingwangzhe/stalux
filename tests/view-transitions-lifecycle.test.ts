@@ -59,6 +59,7 @@ vi.mock("swup", () => ({
             },
             delete: (key: string) => state.cache.delete(key),
         };
+        use() {}
         navigate = state.navigate;
         get visit() {
             return state.currentVisit;
@@ -99,6 +100,7 @@ vi.mock("../src/scripts/navigation-font", () => ({
     },
 }));
 vi.mock("../src/scripts/navigation-scripts", () => ({
+    navigationScripts: {},
     prepareNavigationScripts: (...args: unknown[]) => {
         state.prepareScripts(...args);
         state.order.push("capture-scripts");
@@ -145,6 +147,7 @@ function style(name: string) {
 }
 function nextPage() {
     return {
+        cloneNode: () => nextPage(),
         querySelector: () => null,
         head: { querySelectorAll: () => [] as ReturnType<typeof style>[] },
         body: {
@@ -275,6 +278,7 @@ beforeEach(async () => {
         animate: vi.fn(),
     };
     const main = {
+        setAttribute: vi.fn(),
         isConnected: true,
         getBoundingClientRect: () => ({
             width: 1000,
@@ -301,7 +305,7 @@ beforeEach(async () => {
         activeElement: null as Anchor | null,
         querySelectorAll: () => [] as Anchor[],
         querySelector: (selector: string) => {
-            if (selector === "main[data-stalux-route]") return main;
+            if (selector === "main[data-stalux-route]" || selector === "#swup-main") return main;
             if (selector === "[data-stalux-motion-focus]") return heading;
             return null;
         },
@@ -341,7 +345,7 @@ describe("Swup navigation bridge and persistent shell", () => {
         expect(state.backToTop).toHaveBeenCalledOnce();
         expect(state.options).toMatchObject({
             native: false,
-            containers: ["main[data-stalux-route]"],
+            containers: ["#swup-main"],
             animationSelector: false,
         });
         expect(firstLoad).toHaveBeenCalledOnce();
@@ -530,10 +534,8 @@ describe("Swup navigation bridge and persistent shell", () => {
         expect(old.remove).toHaveBeenCalledOnce();
         expect(kept.remove).not.toHaveBeenCalled();
         expect(runtime.remove).not.toHaveBeenCalled();
-        expect(documentMock.body.setAttribute).toHaveBeenCalledExactlyOnceWith(
-            "data-stalux-site-title",
-            "New site title",
-        );
+        // Body Class Plugin owns body metadata; the bridge never resets background state.
+        expect(documentMock.body.setAttribute).not.toHaveBeenCalled();
     });
 
     it.each(["visit:abort", "visit:fail"])(

@@ -32,6 +32,8 @@ const props = Astro.props as Props;
         count: props.count,
     })}
 >
-    <TagHeader type={t("taxonomy.category")} name={props.category} count={props.count} />
-    <PostList posts={props.posts} />
+    <div id="swup-taxonomy">
+        <TagHeader type={t("taxonomy.category")} name={props.category} count={props.count} />
+        <PostList posts={props.posts} />
+    </div>
 </Stalux>

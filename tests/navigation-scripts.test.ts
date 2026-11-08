@@ -9,7 +9,15 @@ class Script extends EventTarget {
     ownerDocument?: object;
     parentElement = { tagName: "BODY" };
     remove = vi.fn();
-    replaceWith = vi.fn();
+    replaceWith = vi.fn((script: Script) => {
+        const index = inserted.indexOf(this);
+        if (index >= 0) inserted[index] = script;
+        this.replacement = script;
+    });
+    replacement?: Script;
+    cloneNode() {
+        return new Script(Object.fromEntries(this.values), this.textContent);
+    }
     constructor(attributes: Record<string, string> = {}, content = "") {
         super();
         this.values = new Map(Object.entries(attributes));
@@ -199,7 +207,8 @@ describe("incoming navigation scripts", () => {
         expect(sdkClone.remove).toHaveBeenCalledOnce();
         expect(moduleClone.replaceWith).toHaveBeenCalledOnce();
         expect(inserted).toHaveLength(0);
-        const replacement = moduleClone.replaceWith.mock.calls[0]?.[0] as Script | undefined;
+        const replacement = (moduleClone.replaceWith.mock.calls[0]?.[0] as Script | undefined)
+            ?.replacement;
         replacement?.dispatchEvent(new Event("load"));
         await running;
     });

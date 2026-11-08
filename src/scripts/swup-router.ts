@@ -1,8 +1,12 @@
 import SwupA11yPlugin from "@swup/a11y-plugin";
+import SwupBodyClassPlugin from "@swup/body-class-plugin";
+import SwupFragmentPlugin from "@swup/fragment-plugin";
 import SwupHeadPlugin from "@swup/head-plugin";
 import SwupJsPlugin from "@swup/js-plugin";
+import SwupParallelPlugin from "@swup/parallel-plugin";
 import SwupPreloadPlugin from "@swup/preload-plugin";
 import SwupProgressPlugin from "@swup/progress-plugin";
+import SwupRouteNamePlugin from "@swup/route-name-plugin";
 import SwupScrollPlugin from "@swup/scroll-plugin";
 import Swup, { type Visit } from "swup";
 import { getRouteKind } from "../utils/public-routes";
@@ -10,7 +14,7 @@ import { getRouteMotionPreset, type RouteMotionPreset } from "../utils/route-mot
 import { installBackToTop } from "./back-to-top";
 import { prepareNavigationFont } from "./navigation-font";
 import "./navigation-client";
-import { prepareNavigationScripts } from "./navigation-scripts";
+import { navigationScripts, prepareNavigationScripts } from "./navigation-scripts";
 import { prepareRouteMotion, type RouteMotion } from "./route-motion";
 import { animateRouteOut } from "./route-out";
 import { hydrateShells, markRetainedShells } from "./shell-hydration";
@@ -28,13 +32,16 @@ interface NavigationContext {
     motion?: RouteMotion;
     executeScripts?: (signal?: AbortSignal) => Promise<void>;
     scriptsReady?: Promise<void>;
+    outgoingReady?: Promise<void>;
+    incomingDocument?: Document;
+    removeOutgoing?: () => void;
     obsoleteStyles: Element[];
     glide?: PageGlide;
     releaseOutgoing?: () => void;
 }
 
 type Position = { top: number; left: number; focus?: string };
-const MAIN = "main[data-stalux-route]";
+const MAIN = "#swup-main";
 
 function abortObsoleteVisit(visit: Visit): void {
     // `abort()` is @internal in swup 4.10.0 and stripped from the published
@@ -119,6 +126,41 @@ export function installSwupRouter(): Swup {
             );
         },
         plugins: [
+            navigationScripts,
+            new SwupBodyClassPlugin({
+                prefix: "page-",
+                attributes: [/^data-stalux-(?!bg-)/u],
+            }),
+            new SwupRouteNamePlugin({
+                routes: [
+                    { name: "home", path: "/" },
+                    { name: "article", path: "/posts/:post" },
+                    { name: "archive", path: "/archives" },
+                    { name: "tags-index", path: "/tags" },
+                    { name: "tags-detail", path: "/tags/:tag" },
+                    { name: "categories-index", path: "/categories" },
+                    { name: "categories-detail", path: "/categories/:category" },
+                    ...["about", "links", "words"].map((name) => ({ name, path: "/" + name })),
+                    { name: "not-found", path: "/404" },
+                ],
+            }),
+            new SwupFragmentPlugin({
+                rules: [
+                    {
+                        from: ["/tags/:slug", "/categories/:slug"],
+                        to: ["/tags/:slug", "/categories/:slug"],
+                        containers: ["#swup-taxonomy"],
+                        scroll: true,
+                    },
+                    {
+                        from: "/posts/:post",
+                        to: "/posts/:post",
+                        containers: ["#swup-article"],
+                        scroll: true,
+                    },
+                ],
+            }),
+            new SwupParallelPlugin({ containers: [MAIN, "#swup-article", "#swup-taxonomy"] }),
             progress,
             new SwupHeadPlugin({
                 awaitAssets: true,
@@ -154,13 +196,18 @@ export function installSwupRouter(): Swup {
                                     releaseOutgoing: context.releaseOutgoing,
                                 },
                             );
-                            await context.motion.finished;
+                            await Promise.all([context.motion.finished, context.outgoingReady]);
                         },
                     },
                 ],
             }),
         ],
     });
+    if (import.meta.env.DEV) {
+        void import("virtual:stalux-swup-debug").then(({ default: Debug }) => {
+            if (Debug) swup.use(new Debug());
+        });
+    }
     window.swup = swup;
     document.documentElement.dataset.staluxRouter = "swup";
     document.documentElement.dataset.staluxRoute = getRouteKind(window.location.pathname);
@@ -222,6 +269,7 @@ export function installSwupRouter(): Swup {
         contexts.set(visit, context);
         activeContext = context;
         visit.animation.wait = true;
+        if (context.preset === "none" || visit.history.popstate) visit.animation.parallel = false;
         visit.a11y.focus = visit.history.popstate ? false : { selector: MAIN, wait: true };
         if (dispatchNavigation("astro:before-preparation", context).defaultPrevented)
             visit.ignore();
@@ -233,6 +281,52 @@ export function installSwupRouter(): Swup {
         // visit must stop here as well as before the later head/DOM work.
         if (!context || context.controller.signal.aborted || visit !== swup.visit)
             abortObsoleteVisit(visit);
+    });
+
+    swup.hooks.before("content:insert", (visit, { containers }) => {
+        const context = contexts.get(visit);
+        if (!context) return;
+        context.motion = prepareRouteMotion(
+            dispatchNavigation("astro:before-swap", context, context.incomingDocument),
+        );
+        markRetainedShells();
+        const animations: Animation[] = [];
+        for (const { previous } of containers) {
+            const rect = previous.getBoundingClientRect();
+            previous.inert = true;
+            // The incoming document owns IDs and focus as soon as it is inserted.
+            // Persisted shells are moved by Swup and retain their original IDs.
+            for (const element of [previous, ...previous.querySelectorAll("[id]")]) {
+                if (!element.closest("[data-swup-persist]")) element.removeAttribute("id");
+            }
+            Object.assign(previous.style, {
+                position: "fixed",
+                top: rect.top + "px",
+                left: rect.left + "px",
+                width: rect.width + "px",
+                height: rect.height + "px",
+                // Clip the visible slice without truncating a deeply scrolled article.
+                clipPath: `inset(${Math.max(0, -rect.top)}px 0 ${Math.max(0, rect.bottom - window.innerHeight)}px 0)`,
+                overflow: "hidden",
+                pointerEvents: "none",
+                zIndex: "1",
+            });
+            animations.push(
+                previous.animate(
+                    { opacity: [1, 0], transform: ["translateY(0)", "translateY(-12px)"] },
+                    { duration: 160, easing: "ease-out", fill: "forwards" },
+                ),
+            );
+        }
+        const remove = () => {
+            for (const animation of animations) animation.cancel();
+            for (const { previous } of containers) previous.remove();
+        };
+        context.removeOutgoing = once(remove);
+        context.controller.signal.addEventListener("abort", context.removeOutgoing, { once: true });
+        context.outgoingReady = Promise.all(
+            animations.map((animation) => animation.finished.catch(() => {})),
+        ).then(() => context.removeOutgoing?.());
     });
 
     swup.hooks.before(
@@ -253,6 +347,7 @@ export function installSwupRouter(): Swup {
                 abortObsoleteVisit(visit);
                 return;
             }
+            context.incomingDocument = next.cloneNode(true) as Document;
             const incoming = [...next.head.querySelectorAll("style,link[rel=stylesheet]")];
             context.obsoleteStyles = authoredStyles.filter(
                 (el) => !incoming.some((other) => el.isEqualNode(other)),
@@ -276,7 +371,11 @@ export function installSwupRouter(): Swup {
         // Two cues overlap on the outgoing document: the content stage leaving,
         // and the page walking back to the top. Persisted sidebars, the header
         // and the frame are never part of either one.
-        if (context.navigationType !== "traverse" && context.preset !== "none") {
+        if (
+            !visit.animation.parallel &&
+            context.navigationType !== "traverse" &&
+            context.preset !== "none"
+        ) {
             const outgoing = animateRouteOut(context.preset, context.controller.signal);
             if (!context.to.hash) context.glide = glideToTop();
             await context.glide?.promise;
@@ -291,8 +390,12 @@ export function installSwupRouter(): Swup {
         html.dataset.staluxVtTo = getRouteKind(context.to.pathname);
         html.dataset.staluxVtDirection = context.direction;
         html.dataset.staluxVtPreset = context.preset;
-        context.motion = prepareRouteMotion(dispatchNavigation("astro:before-swap", context, next));
         if (context.controller.signal.aborted) return;
+        if (!visit.animation.parallel) {
+            context.motion = prepareRouteMotion(
+                dispatchNavigation("astro:before-swap", context, next),
+            );
+        }
         // Remember which shells exist now: after the swap only those slots need
         // refilling, because only those nodes came from the previous document.
         markRetainedShells();
@@ -309,20 +412,13 @@ export function installSwupRouter(): Swup {
         );
         // Main alone is replaced: header/footer/sentinel and background layers
         // keep their node identities. Never reset live background state to SSR 0.
-        for (const { name, value } of [...next.body.attributes]) {
-            if (
-                name.startsWith("data-stalux-") &&
-                name !== "data-stalux-bg-index" &&
-                name !== "data-stalux-bg-layer"
-            )
-                document.body.setAttribute(name, value);
-        }
-        html.dataset.staluxRoute = getRouteKind(context.to.pathname);
+        html.dataset.staluxRoute = visit.to.route ?? getRouteKind(context.to.pathname);
+        document.querySelector(MAIN)?.setAttribute("data-stalux-route", html.dataset.staluxRoute);
         visibleHistoryIndex = Number(window.history.state?.index ?? visibleHistoryIndex);
         // Kept shells whose contents belong to the page (the article sidebars'
         // lists) take their children from the incoming document now, before any
         // page module mounts, so nothing needs to re-render or re-measure later.
-        hydrateShells(next);
+        hydrateShells(context.incomingDocument ?? next);
         dispatchNavigation("astro:after-swap", context, next);
         // The entry cue has to own the first painted frame of the new document.
         // content:scroll is an await and a rAF away, and running the incoming
@@ -378,7 +474,8 @@ export function installSwupRouter(): Swup {
             }
             await defaultScroll?.(visit, args);
             // ScrollPlugin scrolls in rAF; finish it before heading visibility checks.
-            await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+            if (!document.hidden)
+                await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
             startMotion(visit);
             return true;
         },
@@ -415,6 +512,7 @@ export function installSwupRouter(): Swup {
         if (visit === swup.visit) progress.stopShowingProgress();
         const context = contexts.get(visit);
         context?.controller.abort();
+        context?.removeOutgoing?.();
         context?.glide?.cancel();
         // An aborted visit keeps no exit fill: without this the stage would stay
         // transparent until the next successful navigation.
