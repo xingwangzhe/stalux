@@ -538,6 +538,92 @@ describe("Swup navigation bridge and persistent shell", () => {
         expect(documentMock.body.setAttribute).not.toHaveBeenCalled();
     });
 
+    it("keeps outgoing page CSS alive until the parallel container is gone", async () => {
+        const old = style("old");
+        const kept = style("kept");
+        documentMock.head.querySelectorAll = () => [old, kept];
+        install();
+        await settle();
+        const navigation = visit();
+        navigation.to.document.head.querySelectorAll = () => [style("kept")];
+        documentMock.head.querySelectorAll = () => [old, kept];
+        hook("on", "visit:start", navigation);
+
+        // ParallelPlugin inserts the incoming container while the outgoing one
+        // is still visible. Its exit animation deliberately stays pending here.
+        const finished = deferred();
+        const previous = {
+            getBoundingClientRect: () => ({
+                top: 0,
+                left: 0,
+                width: 1000,
+                height: 800,
+                bottom: 800,
+                right: 1000,
+            }),
+            querySelectorAll: () => [],
+            style: {} as Record<string, string>,
+            inert: false,
+            animate: vi.fn(() => ({ finished: finished.promise, cancel: vi.fn() })),
+            remove: vi.fn(),
+            removeAttribute: vi.fn(),
+            closest: () => null,
+        };
+        hook("before", "content:insert", navigation, { containers: [{ previous }] });
+        await hook("before", "content:replace", navigation);
+        await hook("replace", "content:replace", navigation, {}, async () => {});
+
+        // This is the FOUC window: the old DOM is still on screen, so pruning
+        // its page-scoped CSS here would paint it unstyled for the whole overlap.
+        expect(old.remove).not.toHaveBeenCalled();
+        expect(previous.remove).not.toHaveBeenCalled();
+
+        finished.resolve();
+        await settle();
+        expect(previous.remove).toHaveBeenCalledOnce();
+        expect(old.remove).toHaveBeenCalledOnce();
+        expect(kept.remove).not.toHaveBeenCalled();
+        // visit:end's safety net must not prune twice.
+        hook("on", "visit:end", navigation);
+        expect(old.remove).toHaveBeenCalledOnce();
+    });
+
+    it("releases outgoing CSS when a parallel visit is aborted", async () => {
+        const old = style("old");
+        documentMock.head.querySelectorAll = () => [old];
+        install();
+        await settle();
+        const navigation = visit();
+        navigation.to.document.head.querySelectorAll = () => [];
+        documentMock.head.querySelectorAll = () => [old];
+        hook("on", "visit:start", navigation);
+        const finished = deferred();
+        const previous = {
+            getBoundingClientRect: () => ({
+                top: 0,
+                left: 0,
+                width: 1000,
+                height: 800,
+                bottom: 800,
+                right: 1000,
+            }),
+            querySelectorAll: () => [],
+            style: {} as Record<string, string>,
+            inert: false,
+            animate: vi.fn(() => ({ finished: finished.promise, cancel: vi.fn() })),
+            remove: vi.fn(),
+            removeAttribute: vi.fn(),
+            closest: () => null,
+        };
+        hook("before", "content:insert", navigation, { containers: [{ previous }] });
+        await hook("before", "content:replace", navigation);
+        await hook("replace", "content:replace", navigation, {}, async () => {});
+        expect(old.remove).not.toHaveBeenCalled();
+        hook("on", "visit:abort", navigation);
+        await settle();
+        expect(old.remove).toHaveBeenCalledOnce();
+    });
+
     it.each(["visit:abort", "visit:fail"])(
         "settles shared gates and removes busy state on %s",
         async (reason) => {

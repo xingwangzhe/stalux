@@ -36,6 +36,7 @@ interface NavigationContext {
     incomingDocument?: Document;
     removeOutgoing?: () => void;
     obsoleteStyles: Element[];
+    pruneObsoleteStyles?: () => void;
     glide?: PageGlide;
     releaseOutgoing?: () => void;
 }
@@ -405,7 +406,17 @@ export function installSwupRouter(): Swup {
         // motion.start, in the same synchronous block as the entry cue: releasing
         // it here would paint the new document fully visible for one frame.
         if (context.controller.signal.aborted) return;
-        for (const element of context.obsoleteStyles) element.remove();
+        // ParallelPlugin keeps the outgoing container visible while it fades out
+        // and only removes it at visit:end / content:remove. Its page-scoped CSS
+        // must outlive that DOM: pruning here paints the outgoing (and already
+        // overlapping) content unstyled for the whole overlap. `awaitAssets`
+        // only covers the incoming stylesheets, not the outgoing ones.
+        const pruneObsoleteStyles = once(() => {
+            for (const element of context.obsoleteStyles) element.remove();
+        });
+        context.pruneObsoleteStyles = pruneObsoleteStyles;
+        if (context.outgoingReady) void context.outgoingReady.then(pruneObsoleteStyles);
+        else pruneObsoleteStyles();
         const incomingStyles = [...next.head.querySelectorAll("style,link[rel=stylesheet]")];
         authoredStyles = [...document.head.querySelectorAll("style,link[rel=stylesheet]")].filter(
             (el) => incomingStyles.some((other) => el.isEqualNode(other)),
@@ -513,6 +524,9 @@ export function installSwupRouter(): Swup {
         const context = contexts.get(visit);
         context?.controller.abort();
         context?.removeOutgoing?.();
+        // An aborted visit never reaches visit:end, so its outgoing CSS has to
+        // be released here or it would linger in head forever.
+        context?.pruneObsoleteStyles?.();
         context?.glide?.cancel();
         // An aborted visit keeps no exit fill: without this the stage would stay
         // transparent until the next successful navigation.
@@ -528,6 +542,9 @@ export function installSwupRouter(): Swup {
     swup.hooks.on("visit:fail", cancel);
     swup.hooks.on("visit:end", (visit) => {
         const context = contexts.get(visit);
+        // Safety net for paths where the exit animation never settles. The prune
+        // is idempotent, so a completed outgoingReady does not remove twice.
+        context?.pruneObsoleteStyles?.();
         context?.glide?.cancel();
         context?.releaseOutgoing?.();
         context?.motion?.start(null, { skip: true });
