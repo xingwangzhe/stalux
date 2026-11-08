@@ -14,6 +14,7 @@ type RouterOptions = {
 };
 
 const state = vi.hoisted(() => ({
+    progressStop: vi.fn(),
     hooks: new Map<string, Hook>(),
     hookPriorities: new Map<string, number>(),
     options: undefined as RouterOptions | undefined,
@@ -62,6 +63,11 @@ vi.mock("swup", () => ({
         get visit() {
             return state.currentVisit;
         }
+    },
+}));
+vi.mock("@swup/progress-plugin", () => ({
+    default: class {
+        stopShowingProgress = state.progressStop;
     },
 }));
 vi.mock("@swup/head-plugin", () => ({ default: class {} }));
@@ -557,6 +563,7 @@ describe("Swup navigation bridge and persistent shell", () => {
             // transparent or pushed off its real position.
             expect(cancels).toHaveLength(1);
             hook("on", reason, navigation);
+            expect(state.progressStop).toHaveBeenCalledOnce();
             await Promise.all([shared?.ready, shared?.finished]);
             expect(cancels[0]).toHaveBeenCalled();
             expect(signal?.aborted).toBe(true);
@@ -567,6 +574,18 @@ describe("Swup navigation bridge and persistent shell", () => {
             expect(sidebar.animate).not.toHaveBeenCalled();
         },
     );
+
+    it("does not hide the current progress bar when a stale visit fails", () => {
+        install();
+        const old = visit();
+        hook("on", "visit:start", old);
+        const current = visit("/archives/", "/tags/");
+        hook("on", "visit:start", current);
+        hook("on", "visit:fail", old);
+        expect(state.progressStop).not.toHaveBeenCalled();
+        hook("on", "visit:abort", current);
+        expect(state.progressStop).toHaveBeenCalledOnce();
+    });
 
     it("does not dispatch late preparation or page-load after cancellation during an await", async () => {
         install();

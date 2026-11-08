@@ -172,3 +172,16 @@ pagefind-modal dialog::backdrop {
         animation: none !important;
     }
 }
+
+/* The official plugin prepends its defaults; keep theme color authoritative. */
+html .swup-progress-bar {
+    height: 3px;
+    background-color: var(--stalux-accent-color);
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html .swup-progress-bar {
+        transition: none;
+    }
+}

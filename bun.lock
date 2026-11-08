@@ -18,6 +18,7 @@
         "@swup/head-plugin": "^2.3.1",
         "@swup/js-plugin": "^3.2.0",
         "@swup/preload-plugin": "^3.2.12",
+        "@swup/progress-plugin": "^3.2.0",
         "@swup/scroll-plugin": "^4.0.0",
         "@takumi-rs/core": "2.19.0",
         "@waline/client": "^3.16.2",
@@ -439,6 +440,8 @@
     "@swup/plugin": ["@swup/plugin@4.0.0", "", { "dependencies": { "swup": "^4.0.0" } }, "sha512-3Kq31BJxnzoPg643YxGoWQggoU6VPKZpdE5CqqmP7wwkpCYTzkRmrfcQ29mGhsSS7xfS7D33iZoBiwY+wPoo2A=="],
 
     "@swup/preload-plugin": ["@swup/preload-plugin@3.2.12", "", { "dependencies": { "@swup/plugin": "^4.0.0" }, "peerDependencies": { "swup": "^4.0.0" } }, "sha512-syDXSjN9ltEenkAhOtRx0yxJWNBSmZncZUNmiuZbtoImdwMTL6/GJue1LOCzRxemOE1wttui1SkgqJyEcu6UIA=="],
+
+    "@swup/progress-plugin": ["@swup/progress-plugin@3.2.0", "", { "dependencies": { "@swup/plugin": "^4.0.0" }, "peerDependencies": { "swup": "^4.0.0" } }, "sha512-Ur+D4+aee9swR6pn7JbEyGMwVP1BTcN5ygjlno7IaSQ/vMZbuJ73po1RkKlIi86p+/PZ+1kynkH4K4eMZuHKKg=="],
 
     "@swup/scroll-plugin": ["@swup/scroll-plugin@4.0.0", "", { "dependencies": { "@swup/plugin": "^4.0.0", "compute-scroll-into-view": "^3.1.1" } }, "sha512-13cR7zVGanAVgdJwszTPuyZxJ8cVo0ylGgVsf2OF/hZUzEpvmrd0pMdo3d4v8O6c+bB/np6hpCHPDLxkmL40xg=="],
 

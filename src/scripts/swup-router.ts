@@ -2,6 +2,7 @@ import SwupA11yPlugin from "@swup/a11y-plugin";
 import SwupHeadPlugin from "@swup/head-plugin";
 import SwupJsPlugin from "@swup/js-plugin";
 import SwupPreloadPlugin from "@swup/preload-plugin";
+import SwupProgressPlugin from "@swup/progress-plugin";
 import SwupScrollPlugin from "@swup/scroll-plugin";
 import Swup, { type Visit } from "swup";
 import { getRouteKind } from "../utils/public-routes";
@@ -82,6 +83,7 @@ export function installSwupRouter(): Swup {
     let activeContext: NavigationContext | undefined;
     let visibleHistoryIndex = Number(window.history.state?.index ?? 1);
     let browserMotion = false;
+    const progress = new SwupProgressPlugin();
     const scroll = new SwupScrollPlugin({
         doScrollingRightAway: false,
         animateScroll: { betweenPages: false, samePageWithHash: true, samePage: true },
@@ -117,6 +119,7 @@ export function installSwupRouter(): Swup {
             );
         },
         plugins: [
+            progress,
             new SwupHeadPlugin({
                 awaitAssets: true,
                 // Keep old CSS readable until replacement, then prune authored
@@ -407,6 +410,9 @@ export function installSwupRouter(): Swup {
     swup.hooks.replace("link:self", () => undefined);
 
     const cancel = (visit: Visit) => {
+        // A cancelled/failed visit never reaches page:view. Clear its delayed
+        // indicator without allowing a stale visit to hide a newer one.
+        if (visit === swup.visit) progress.stopShowingProgress();
         const context = contexts.get(visit);
         context?.controller.abort();
         context?.glide?.cancel();

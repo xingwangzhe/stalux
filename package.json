@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.52.2",
+    "version": "1.53.0",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -115,6 +115,7 @@
         "@swup/head-plugin": "^2.3.1",
         "@swup/js-plugin": "^3.2.0",
         "@swup/preload-plugin": "^3.2.12",
+        "@swup/progress-plugin": "^3.2.0",
         "@swup/scroll-plugin": "^4.0.0",
         "@takumi-rs/core": "2.19.0",
         "@waline/client": "^3.16.2",
