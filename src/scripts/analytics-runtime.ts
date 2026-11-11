@@ -209,9 +209,15 @@ function initializeClarity(id: string): void {
  * Loading is gated on the same signals that mean "first paint is done" instead
  * of `window.load`, which slow third-party resources can postpone forever.
  */
-const GOOGLE_SDK_FLOOR_MS = 1200;
-const GOOGLE_SDK_LCP_QUIET_MS = 600;
-const GOOGLE_SDK_CEILING_MS = 6000;
+/**
+ * GA SDK 只在三个条件之一满足后才加载：首次交互、LCP 后安静期、解析后硬顶。
+ * 线上实测 gtag.js 194KB、脚本执行 290ms，若在 LCP 后 600ms 就加载，长任务正好
+ * 落在 TBT 统计窗口内。这里把门控整体后移：无交互访客要等到 3.5s 之后，
+ * 有交互访客仍然立即加载（统计最完整）。代价是首屏前几秒的行为不计入 GA。
+ */
+const GOOGLE_SDK_FLOOR_MS = 5000;
+const GOOGLE_SDK_LCP_QUIET_MS = 1500;
+const GOOGLE_SDK_CEILING_MS = 10_000;
 let googleSdkStarted = false;
 let googleGateInstalled = false;
 let googleGateOpen = false;

@@ -16,6 +16,11 @@ const logger = createClientLogger("route-prefetch");
 const AFTER_LOAD_DELAY_MS = 1000;
 const LOAD_CEILING_MS = 2500;
 const IDLE_TIMEOUT_MS = 2000;
+/**
+ * 首页导航有 6~8 个路由，全量预热在线上实测约 122KB（`/archives/` 单页 48KB）。
+ * 只预热导航顺序最靠前的几条，把带宽留给用户当下的交互。
+ */
+const MAX_PREFETCH_ROUTES = 3;
 
 export function collectMainRouteUrls(
     documentLike: Pick<Document, "querySelectorAll"> = document,
@@ -57,7 +62,7 @@ export function mountRoutePrefetch(): (() => void) | undefined {
             logger.debug("swup preload API unavailable; skipping route prefetch");
             return;
         }
-        const urls = collectMainRouteUrls();
+        const urls = collectMainRouteUrls().slice(0, MAX_PREFETCH_ROUTES);
         if (!urls.length) return;
         logger.debug(`prefetching ${urls.length} main routes`);
         // One document at a time: keep the prefetch invisible to the current

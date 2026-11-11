@@ -132,8 +132,8 @@ describe("native analytics navigation", () => {
         await loadRuntime();
         page();
         page();
-        // GA is gated behind first input / LCP quiet / the six-second ceiling.
-        await vi.advanceTimersByTimeAsync(6100);
+        // GA is gated behind first input / LCP quiet / the ten-second ceiling.
+        await vi.advanceTimersByTimeAsync(10_100);
         const trackers = scripts.filter((script) => !script.dataset.staluxVercount);
         expect(trackers).toHaveLength(2);
         for (const tracker of trackers) {
@@ -200,11 +200,12 @@ describe("native analytics navigation", () => {
         );
 
         observers[0]?.();
-        await vi.advanceTimersByTimeAsync(600);
+        // 新门控：LCP 安静期 1.5s，且不早于解析后 5s。
+        await vi.advanceTimersByTimeAsync(1500);
         expect(scripts.some((script) => script.attributes["data-stalux-google"] === "true")).toBe(
             false,
         );
-        await vi.advanceTimersByTimeAsync(600);
+        await vi.advanceTimersByTimeAsync(3500);
         expect(scripts.some((script) => script.attributes["data-stalux-google"] === "true")).toBe(
             true,
         );
