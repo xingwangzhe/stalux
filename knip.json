@@ -1,4 +1,5 @@
 {
     "$schema": "https://unpkg.com/knip@6/schema.json",
-    "astro": true
+    "astro": true,
+    "ignoreDependencies": ["@swup/debug-plugin"]
 }

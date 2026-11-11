@@ -193,7 +193,7 @@ cat /tmp/indexnow-response
 
 Pagefind CSS 的虚拟模块只在 dev 返回已允许访问的文件 URL，避免 CSS ?url 被 Astro 当作模块脚本请求；生产仍走 Vite 正常的哈希资源管线。dev 默认不生成 Pagefind 索引，验收搜索结果时可把同内容快照的生产 pagefind 目录复制到副本 public/pagefind，不能因此改真实项目。
 
-WebMCP polyfill 5.1.0 的声明式观察器优化只过滤不影响工具定义的文本/样式变化；表单、外置控件和标签、slot、开放 shadow tree 的变化仍需同步。源码匹配失败或版本变化时使用原实现。必须在真实浏览器验证表单新增、属性修改、移除与 shadow tree，不得只验证七个程序式工具。
+WebMCP 使用官方 `@w3c/webmcp-polyfill`（程序式 API，不提供声明式工具），历史针对 `@mcp-b/webmcp-polyfill` 5.1.0 声明式观察器的源码补丁已移除。七个工具全部通过 `document.modelContext.registerTool()` 注册；必须在真实浏览器验证工具注册、注销与 AI 代理调用，不能只跑单元测试。
 
 手机和桌面分别测冷/热加载与站内点击。Lighthouse 首屏分数不能代表软导航 INP；记录 HTML/样式准备、字体等待、swap、内容可见和过渡结束的独立时间，布局变化同时报告包含近期输入的原始位移。每条主要路线至少 20 次，Lighthouse 至少三次；真实连续导航至少 50 次，内存和监听器在相同页面、相同稳定等待后比较。不要把首次加载模块造成的增长当成持续泄漏，也不要把强制 GC 导致的第三方弱引用异常隐藏。
 

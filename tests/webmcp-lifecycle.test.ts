@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const polyfill = vi.hoisted(() => ({ initialize: vi.fn() }));
-vi.mock("@mcp-b/webmcp-polyfill", () => ({ installWebMCP: polyfill.initialize }));
+vi.mock("@w3c/webmcp-polyfill", () => ({ installWebMCP: polyfill.initialize }));
 
 type Register = (tool: { name: string }, options: { signal: AbortSignal }) => Promise<void>;
 

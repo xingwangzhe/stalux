@@ -73,9 +73,19 @@ export function installSessionBackground(): void {
             },
         );
     };
+    /**
+     * 装饰背景不参与 LCP，也不该和首屏脚本/字体抢带宽。
+     * DOM 就绪后先让关键资源占用连接，再在空闲时请求；
+     * `timeout` 兜底防止页面持续繁忙时背景永远缺席。
+     */
+    const schedule = () => {
+        const idle = globalThis.requestIdleCallback;
+        if (typeof idle === "function") idle(start, { timeout: 1000 });
+        else setTimeout(start, 200);
+    };
     if (document.readyState === "loading")
-        document.addEventListener("DOMContentLoaded", start, { once: true });
-    else start();
+        document.addEventListener("DOMContentLoaded", schedule, { once: true });
+    else schedule();
 }
 
 installSessionBackground();

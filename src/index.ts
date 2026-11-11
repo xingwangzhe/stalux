@@ -61,7 +61,6 @@ import {
 } from "./internal/satteri-config";
 import { searchStylePlugin } from "./internal/search-style";
 import { createViteAliases } from "./internal/vite-aliases";
-import { webMcpMutationsPlugin } from "./internal/webmcp-mutations";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { imageCaptions } from "./plugins/image-captions";
 import { imageDimensions } from "./plugins/image-dimensions";
@@ -176,7 +175,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     },
                     vite: {
                         optimizeDeps: {
-                            exclude: ["@mcp-b/webmcp-polyfill"],
+                            exclude: ["@w3c/webmcp-polyfill"],
                             // Discover lazy page features before the first visit:
                             // Vite re-optimization would otherwise reload the
                             // entire document midway through a Swup navigation.
@@ -224,7 +223,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             },
                             swupDebugPlugin(command === "dev"),
                             searchStylePlugin(command === "dev", config.base),
-                            webMcpMutationsPlugin(),
                             ...(command === "build"
                                 ? [markdownPropagationPlugin(), compactStylesPlugin(srcDir)]
                                 : []),

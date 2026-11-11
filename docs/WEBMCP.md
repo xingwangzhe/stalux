@@ -62,7 +62,7 @@ conformance: "essential"   # disabled 时停止注册工具
 
 ## 浏览器支持
 
-WebMCP 是社区组草案，原生支持取决于浏览器和版本。在无原生 `modelContext` 的浏览器上，Stalux 会自动加载 [`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill) 兜底；原生支持落地后 polyfill 自动失效（no-op），无需改动。
+WebMCP 是社区组草案，原生支持取决于浏览器和版本。在无原生 `modelContext` 的浏览器上，Stalux 会自动加载官方 [`@w3c/webmcp-polyfill`](https://www.npmjs.com/package/@w3c/webmcp-polyfill) 兜底；原生支持落地后 polyfill 自动失效（no-op），无需改动。工具类型采用 [`webmcp-types`](https://www.npmjs.com/package/webmcp-types) 的官方字典定义，七个工具全部通过 `document.modelContext.registerTool()` 程序式注册，不依赖任何声明式工具扩展。
 
 ## 相关文件
 

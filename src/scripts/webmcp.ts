@@ -10,7 +10,7 @@
  * 工具描述跟随站点语言（site.yml 的 lang）：中文站显示中文说明，
  * 英文站显示英文说明，保证 AI 代理与评审（如 webmcp.com）能读懂。
  *
- * 浏览器无原生 modelContext 时，由布局注入的 @mcp-b/webmcp-polyfill
+ * 浏览器无原生 modelContext 时，由官方 @w3c/webmcp-polyfill
  * 提供兜底实现；两者都没有则静默跳过注册，不影响普通访问者。
  *
  * Spec: https://github.com/webmachinelearning/webmcp
@@ -18,7 +18,8 @@
 // 浏览器无原生 document.modelContext 时由 polyfill 兜底安装；
 // 有原生实现或已存在 WebMCP-aware 扩展时，polyfill 检测到后自动 no-op。
 // ESM entry exports installWebMCP; importing it alone does not install the API.
-import { installWebMCP } from "@mcp-b/webmcp-polyfill";
+import { installWebMCP } from "@w3c/webmcp-polyfill";
+import type { WebMCP } from "webmcp-types";
 import { createPostLookup } from "../utils/post-lookup";
 import { sitePath } from "../utils/site-path";
 import { createClientLogger } from "./logger";
@@ -38,27 +39,8 @@ declare global {
     }
 }
 
-/** 规范（index.bs）中 ModelContextTool 字典的最小类型子集 */
-interface WebMCPTool {
-    name: string;
-    title?: string;
-    description: string;
-    inputSchema?: object;
-    annotations?: {
-        readOnlyHint?: boolean;
-        untrustedContentHint?: boolean;
-    };
-    execute: (
-        input: Record<string, unknown>,
-        options?: { signal?: AbortSignal },
-    ) => Promise<unknown>;
-}
-
-interface ModelContext {
-    registerTool: (tool: WebMCPTool, options?: { signal?: AbortSignal }) => Promise<undefined>;
-}
-
-type DocumentWithModelContext = { modelContext?: ModelContext };
+/** 工具定义直接使用官方 webmcp-types 的 ModelContextTool，不自写最小接口。 */
+type WebMCPTool = WebMCP.ModelContextTool;
 
 // ---------------------------------------------------------------------------
 // 语言选择（跟随站点 site.yml 的 lang）
@@ -763,7 +745,10 @@ function buildTools(): WebMCPTool[] {
         const execute = tool.execute;
         return {
             ...tool,
-            execute: async (input: Record<string, unknown>, options?: { signal?: AbortSignal }) => {
+            execute: async (
+                input: Record<string, unknown>,
+                options?: WebMCP.ToolExecuteCallbackOptions,
+            ) => {
                 if (!input || typeof input !== "object" || Array.isArray(input))
                     return err("BAD_INPUT", pick("参数必须是对象", "Input must be an object"));
                 const properties =
@@ -773,7 +758,10 @@ function buildTools(): WebMCPTool[] {
                     return err("BAD_INPUT", pick("包含未知参数", "Unknown input property"));
                 if (options?.signal?.aborted) throw options.signal.reason;
                 try {
-                    const result = await execute(input, options);
+                    const result = await execute(
+                        input,
+                        options ?? { signal: new AbortController().signal },
+                    );
                     options?.signal?.throwIfAborted();
                     return result;
                 } catch (error) {
@@ -799,8 +787,7 @@ function buildTools(): WebMCPTool[] {
 async function registerTools(
     signal: AbortSignal,
 ): Promise<{ registered: string[]; reason?: string }> {
-    const doc = document as DocumentWithModelContext;
-    const ctx = doc.modelContext;
+    const ctx = document.modelContext;
     if (!ctx || typeof ctx.registerTool !== "function") {
         logger.debug("modelContext unavailable; registration skipped");
         return { registered: [], reason: "unsupported" };

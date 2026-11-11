@@ -1,3 +1,5 @@
+import escapeStringRegexp from "escape-string-regexp";
+import { escape as escapeHtml } from "html-escaper";
 import {
     CJK,
     type CjkDocument,
@@ -37,19 +39,12 @@ export interface NativeSearch {
     mergeIndex: (url: string, options?: Record<string, unknown>) => Promise<void>;
 }
 const logger = createClientLogger("search/cjk");
-const escapeHtml = (text: string) =>
-    text.replace(
-        /[&<>"']/gu,
-        (char) =>
-            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] ?? char,
-    );
-
 function excerpt(content: string, terms: string[]) {
     const position = Math.max(0, normalizeSearch(content).indexOf(terms[0] ?? ""));
     const start = Math.max(0, position - 45);
     const plain = `${start ? "…" : ""}${content.slice(start, start + 180)}${content.length > start + 180 ? "…" : ""}`;
     const pattern = terms
-        .map((term) => term.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"))
+        .map((term) => escapeStringRegexp(term))
         .sort((a, b) => b.length - a.length)
         .join("|");
     const regex = new RegExp(pattern, "giu");

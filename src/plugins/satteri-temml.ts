@@ -9,19 +9,11 @@
  */
 import type { AstroIntegrationLogger } from "astro";
 
+import { escape as escapeHtml } from "html-escaper";
 import { defineMdastPlugin, type MdastNode, type MdastVisitorContext } from "satteri";
 import temmlLib, { type Options as TemmlOptions } from "temml";
 
 const emptyOptions = {};
-
-function escapeHtml(value: string): string {
-    return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-}
 
 type MathNode = Extract<MdastNode, { type: "math" | "inlineMath" }>;
 

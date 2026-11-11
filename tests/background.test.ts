@@ -44,6 +44,11 @@ beforeEach(() => {
             },
         },
     });
+    // 背景改为空闲调度：默认同步执行 idle 回调，让现有断言保持同步语义。
+    vi.stubGlobal("requestIdleCallback", (callback: () => void) => {
+        callback();
+        return 1;
+    });
     vi.stubGlobal(
         "Image",
         class {
@@ -84,6 +89,19 @@ it("starts one low-priority custom decode as soon as the document is parsed", as
     expect(layers.b.style.backgroundImage).toBe("url('/background/custom.svg')");
     expect(layers.b.style.opacity).toBe("1");
     expect(layers.a.style.opacity).toBe("0");
+});
+it("defers the decorative decode until the browser is idle", async () => {
+    const pending: Array<() => void> = [];
+    vi.stubGlobal("requestIdleCallback", (callback: () => void) => {
+        pending.push(callback);
+        return pending.length;
+    });
+    await import("../src/scripts/background");
+    expect(images).toHaveLength(0);
+    expect(layers.a.style.opacity).toBe("1");
+    pending[0]?.();
+    expect(images).toHaveLength(1);
+    expect(images[0]).toMatchObject({ fetchPriority: "low", decoding: "async" });
 });
 it("does not decode or change the background across fifty soft visits", async () => {
     await import("../src/scripts/background");

@@ -75,7 +75,7 @@ CSS 维护与浏览器测量边界见 [STYLING.md](STYLING.md)。实验室 CLS�
 
 Google Analytics、Clarity 和 Umami 使用原生 async SDK，每个会话只加载一次，失败后允许后续页面重试；加载和发送不进入路由等待链。Umami 的手动 pageview 捕获触发时的 URL、标题与 referrer，保留 SDK 的点击采集。旧 Partytown 会话跨部署首次进入新运行时会整页刷新一次，避免匿名旧监听器与新上报并存。
 
-polyfill 5.1.0 的声明式 WebMCP 观察器忽略普通时钟和样式变化；表单、标签、外置控件和开放 shadow tree 继续同步。只转换核对过的版本与源码，匹配失败退回上游实现。生产与 dev 均须在真实浏览器验证声明式表单，不能仅检查程序式工具。
+官方 `@w3c/webmcp-polyfill` 只提供程序式 API，七个工具在 `astro:page-load` 注册、`astro:before-swap` 注销。生产与 preview 均须在真实浏览器验证工具可被调用，不能仅检查单元测试。
 
 运行时验收方法与本轮证据见 [2026-10-17 实测报告](runtime-performance-2026-10-17.md)。
 

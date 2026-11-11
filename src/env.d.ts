@@ -1,4 +1,5 @@
 /// <reference types="astro/client" />
+/// <reference types="webmcp-types" />
 
 declare module "*.css";
 declare module "@pagefind/component-ui/css";
