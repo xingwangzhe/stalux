@@ -865,7 +865,31 @@ describe("Swup navigation bridge and persistent shell", () => {
     );
 
     it.each([false, true])(
-        "restores history scroll and focus with reduced motion %s",
+        "scrolls a link visit to the top even with a none preset and disabled reset (%s)",
+        async (reduced) => {
+            install();
+            await settle();
+            reducedMotion = reduced;
+            windowMock.scrollY = 4800;
+            windowMock.scrollX = 8;
+            const navigation = visit("/posts/old/", "/posts/new/", {
+                scroll: { reset: false },
+                animation: { animate: true, wait: false, parallel: true },
+            });
+            hook("on", "visit:start", navigation);
+            await hook("before", "content:replace", navigation);
+            windowMock.scrollTo.mockClear();
+            await hook("replace", "content:replace", navigation, {}, async () => {});
+            expect(windowMock.scrollTo).toHaveBeenCalledWith({
+                top: 0,
+                left: 0,
+                behavior: "instant",
+            });
+        },
+    );
+
+    it.each([false, true])(
+        "scrolls history visits to the top and restores focus with reduced motion %s",
         async (reduced) => {
             install();
             await settle();
@@ -889,13 +913,13 @@ describe("Swup navigation bridge and persistent shell", () => {
             hook("on", "visit:start", back);
             await hook("before", "content:replace", back);
             // The forward visit already put the page at its own top inside the
-            // swap; only the restored position is under test here.
+            // swap; a back visit must also land at the top, not at 4800.
             windowMock.scrollTo.mockClear();
             await hook("replace", "content:replace", back, {}, async () => {});
             await hook("replace", "content:scroll", back, {}, vi.fn());
             expect(windowMock.scrollTo).toHaveBeenCalledExactlyOnceWith({
-                top: 4800,
-                left: 8,
+                top: 0,
+                left: 0,
                 behavior: "instant",
             });
             expect(originalLink.focus).toHaveBeenCalledWith({ preventScroll: true });

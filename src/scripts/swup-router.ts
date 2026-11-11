@@ -438,25 +438,20 @@ export function installSwupRouter(): Swup {
         // then watch it jump to the entry offset and slide back, which reads as
         // the page shaking. Put the scroll at its final position and start the
         // cue in this same synchronous block, before the scripts run, so the
-        // compositor already owns the cue while the main thread is busy. A visit
-        // with a hash or a history traversal keeps the deferred path, because its
-        // scroll is not decided yet.
-        if (
-            // A history traversal restores a position that is only known later,
-            // and a hash target is decided by the anchor.
-            !visit.history.popstate &&
-            context.navigationType !== "traverse" &&
-            !context.to.hash &&
-            context.preset !== "none" &&
-            // ScrollPlugin owns visit.scroll; a bare visit has no reset flag.
-            visit.scroll?.reset !== false
-        ) {
-            const position = scroll.getCachedScrollPositions?.(visit.to.url)?.window;
-            const top = position?.top ?? 0;
-            const left = position?.left ?? 0;
-            if (window.scrollY !== top || window.scrollX !== left)
-                window.scrollTo({ top, left, behavior: "instant" });
-            startMotion(visit);
+        // compositor already owns the cue while the main thread is busy. Hash
+        // targets and history traversals are settled in content:scroll below.
+        // Entering a new document from a link always starts at its top. The
+        // motion preset (reduced motion / hidden tab) and the ScrollPlugin's
+        // reset flag are visual concerns, not navigation ones; neither may opt
+        // out of the reset. A cached offset belongs to history traversals only
+        // (handled in content:scroll) and must never pull a fresh page back
+        // into the middle of the previous article.
+        const startsFresh =
+            !visit.history.popstate && context.navigationType !== "traverse" && !context.to.hash;
+        if (startsFresh) {
+            if (window.scrollY !== 0 || window.scrollX !== 0)
+                window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            if (context.preset !== "none" && visit.scroll?.reset !== false) startMotion(visit);
         }
         context.scriptsReady = context.executeScripts?.(context.controller.signal);
     });
@@ -464,15 +459,16 @@ export function installSwupRouter(): Swup {
     swup.hooks.replace(
         "content:scroll",
         async (visit, args, defaultScroll) => {
+            const context = contexts.get(visit);
             const saved = visit.history.popstate
                 ? historyPositions.get(Number(window.history.state?.index))
                 : undefined;
             if (visit.history.popstate) {
-                // ScrollPlugin defers unanimated popstate to the browser, but Swup
-                // uses manual restoration even for reduced motion and native swipes.
-                const position = saved ??
-                    scroll.getCachedScrollPositions(visit.to.url)?.window ?? { top: 0, left: 0 };
-                window.scrollTo({ top: position.top, left: position.left, behavior: "instant" });
+                // Every route change starts at the top. Restoring the exact
+                // mid-article offset on back/forward reads as "the navigation
+                // never scrolled"; keep only the focused link so keyboard users
+                // retain their place in the navigation.
+                window.scrollTo({ top: 0, left: 0, behavior: "instant" });
                 scroll.restoreScrollContainers(visit.to.url);
                 if (saved?.focus) {
                     const link = [...document.querySelectorAll<HTMLAnchorElement>("a[href]")].find(
@@ -487,6 +483,14 @@ export function installSwupRouter(): Swup {
             // ScrollPlugin scrolls in rAF; finish it before heading visibility checks.
             if (!document.hidden)
                 await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+            // That deferred frame may have restored a cached mid-article offset.
+            // A link navigation always wins: land the new document at its top.
+            if (
+                context?.navigationType !== "traverse" &&
+                !context?.to.hash &&
+                (window.scrollY !== 0 || window.scrollX !== 0)
+            )
+                window.scrollTo({ top: 0, left: 0, behavior: "instant" });
             startMotion(visit);
             return true;
         },
