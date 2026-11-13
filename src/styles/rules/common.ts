@@ -41,15 +41,11 @@ export const commonStyles: StyleSpec[] = [
         { transition: "transform var(--transition-fast)" },
     ],
     [
-        ".stalux-post-card-shell:hover .stalux-post-card .stalux-card-post-cover img",
+        ".stalux-post-card-shell:hover .stalux-card-post-cover img",
         "",
         { transform: "scale(1.025)" },
     ],
-    [
-        ".stalux-post-card-shell:hover .stalux-post-card",
-        "",
-        { "box-shadow": "var(--card-box-shadow-hover)" },
-    ],
+    [".stalux-post-card-shell:hover", "", { "box-shadow": "var(--card-box-shadow-hover)" }],
     [
         ".stalux-card-post-date, .stalux-card-post-updated",
         "inline-flex items-center w-[fit-content] gap-[0.35rem] p-[0.28rem_0.6rem] rounded-[10px] text-[0.9rem] leading-[1.1]",
@@ -82,6 +78,8 @@ export const commonStyles: StyleSpec[] = [
         { background: "var(--category-bg-hover)" },
     ],
     [".stalux-social", "mt-[3em]", {}],
+    // <h3> 化后归一 UA 默认字号/字重/外边距，保持 div 时代的视觉输出
+    [".stalux-weather-heading", "m-0 [font-size:inherit] [font-weight:inherit]", {}],
     [".stalux-social ul", "m-0 flex flex-wrap justify-center p-0 gap-[1em]", {}],
     [
         ".stalux-social ul li",
@@ -255,8 +253,12 @@ export const commonStyles: StyleSpec[] = [
     [".stalux-footer-content", "gap-[0.6rem] p-[0_0.8rem]", {}, "@media (max-width: 768px)"],
     [".stalux-footer", "p-[1rem_0] text-[0.8rem]", {}, "@media (max-width: 480px)"],
     [".stalux-footer-content", "gap-[0.6rem] p-[0_0.8rem]", {}, "@media (max-width: 480px)"],
-    ["#stalux-to-archive-archs", "mt-[2em]", {}],
-    ["#stalux-date-date-time", "flex flex-col items-center mt-[2em] stalux-glow text-ink-full", {}],
+    ["#stalux-to-archive-archs", "m-[2em_0_0]", {}],
+    [
+        "#stalux-date-date-time",
+        "m-[2em_0_0] flex flex-col items-center stalux-glow text-ink-full",
+        {},
+    ],
     [
         "#stalux-date-date-time #stalux-date-date",
         "text-[2em] mb-[0.5em]",

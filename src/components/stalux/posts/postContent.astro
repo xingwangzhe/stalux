@@ -55,7 +55,8 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/u, "")}.md` : 
         >
             {props.title}
         </h1>
-        <div class="stalux-post-metadata">
+        <!-- Modern Web Guidance (html): 元信息、阅读统计、原文链接行都是文字行 => <p>。 -->
+        <p class="stalux-post-metadata">
             {props.date && (
                 <time
                     class="stalux-post-meta-item"
@@ -75,8 +76,8 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/u, "")}.md` : 
                     {props.updated}
                 </time>
             )}
-        </div>
-        <div class="stalux-post-page-stats">
+        </p>
+        <p class="stalux-post-page-stats">
             {(props.readingMinutes ?? 0) > 0 && (
                 <span class="stalux-post-reading-time">
                     {t("post.readingTime")}
@@ -97,9 +98,9 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/u, "")}.md` : 
                 {t("post.viewCount")}
                 <span id="vercount_value_page_pv">Loading...</span>
             </span>
-        </div>
+        </p>
         {exportMd && (
-            <div class="stalux-post-source-link-row">
+            <p class="stalux-post-source-link-row">
                 <a
                     class="stalux-post-source-link"
                     href={mdSourceUrl}
@@ -108,7 +109,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/u, "")}.md` : 
                 >
                     {t("post.viewSource")}
                 </a>
-            </div>
+            </p>
         )}
     </header>
 

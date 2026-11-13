@@ -25,9 +25,11 @@ const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
     id={abbrlink ? `word-${abbrlink}` : undefined}
 >
     <Quote class="stalux-word-mark" size={28} stroke-width={1.4} aria-hidden="true" />
-    <div class="stalux-word-body stalux-prose" data-pagefind-body>
+    <!-- Modern Web Guidance (html): 语录正文本身就是引用 => <blockquote>；
+         来源与日期是脚注性文字 => <footer> + <p>。 -->
+    <blockquote class="stalux-word-body stalux-prose" data-pagefind-body>
         <Content />
-    </div>
+    </blockquote>
     {(date || source || sourceDate || abbrlink) && (
         <footer class="stalux-word-footer">
             {abbrlink ? (
@@ -47,7 +49,7 @@ const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
                 <span />
             )}
             {(source || sourceDate) && (
-                <div class="stalux-word-source-meta">
+                <p class="stalux-word-source-meta">
                     {sourceDate && <span class="stalux-word-source-date">{sourceDate}</span>}
                     {source &&
                         (link ? (
@@ -62,7 +64,7 @@ const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
                         ) : (
                             <span class="stalux-word-source-text">— {source}</span>
                         ))}
-                </div>
+                </p>
             )}
         </footer>
     )}

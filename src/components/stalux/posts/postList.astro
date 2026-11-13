@@ -11,7 +11,8 @@ const props = Astro.props as Props;
 const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
 ---
 
-<div
+<!-- Modern Web Guidance (html): 文章列表是内容分组 => <section> + <ul>/<li>。 -->
+<section
     data-stalux="postlist"
     class="stalux-post-list-container"
     data-stalux-motion-content
@@ -24,4 +25,4 @@ const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.d
             </li>
         ))}
     </ul>
-</div>
+</section>

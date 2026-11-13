@@ -45,20 +45,23 @@ const cfg = {
 
 <nav class="stalux-post-taxonomy-container" aria-label={title ?? cfg.heading}>
     <h3 class="stalux-post-taxonomy-title">{title ?? cfg.heading}</h3>
+    <!-- Modern Web Guidance (html): 标签/分类是导航链接集合 => <ul>/<li>；
+         无条目时是一句提示 => <p>。reveal 钩子挂在 <li> 上（:scope > 直接子元素）。 -->
     {items.length > 0 ? (
-        <div class={cfg.listClass} data-stalux-reveal>
+        <ul class={cfg.listClass} data-stalux-reveal>
             {items.map((item) => (
-                <a
-                    href={`${cfg.prefix}${item}/`}
-                    class={`${cfg.itemClass} a-none`}
-                    data-astro-prefetch
-                    data-stalux-reveal-item
-                >
-                    {item}
-                </a>
+                <li data-stalux-reveal-item>
+                    <a
+                        href={`${cfg.prefix}${item}/`}
+                        class={`${cfg.itemClass} a-none`}
+                        data-astro-prefetch
+                    >
+                        {item}
+                    </a>
+                </li>
             ))}
-        </div>
+        </ul>
     ) : (
-        <div class="stalux-post-taxonomy-empty">{cfg.empty}</div>
+        <p class="stalux-post-taxonomy-empty">{cfg.empty}</p>
     )}
 </nav>

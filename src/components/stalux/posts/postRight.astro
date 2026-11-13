@@ -22,21 +22,23 @@ const { headings = [], tags = [], categories = [] } = Astro.props;
     reflow, and it cost a full layout of the new article to do it.
 -->
 <aside class="stalux-sidebar-right" data-stalux-scroll-pane data-swup-persist="post-sidebar-right">
-    <div
+    <!-- Modern Web Guidance (html): 侧栏每一块是独立的内容分组 => <section>，
+         而不是通用 <div>；无 aria-label 时不产生额外的 landmark 噪音。 -->
+    <section
         class="stalux-sidebar-container"
         data-stalux-module="sidebar"
         data-swup-persist="post-sidebar-clock"
     >
         <PostDate />
         <Weather />
-    </div>
-    <div class="stalux-sidebar-container" data-stalux-shell-slot="toc">
+    </section>
+    <section class="stalux-sidebar-container" data-stalux-shell-slot="toc">
         <PostToc headings={headings} />
-    </div>
-    <div class="stalux-sidebar-container" data-stalux-shell-slot="tags">
+    </section>
+    <section class="stalux-sidebar-container" data-stalux-shell-slot="tags">
         <PostTaxonomy kind="tag" items={tags} />
-    </div>
-    <div class="stalux-sidebar-container" data-stalux-shell-slot="categories">
+    </section>
+    <section class="stalux-sidebar-container" data-stalux-shell-slot="categories">
         <PostTaxonomy kind="category" items={categories} />
-    </div>
+    </section>
 </aside>

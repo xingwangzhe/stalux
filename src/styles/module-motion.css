@@ -42,7 +42,7 @@
         background-color 140ms ease,
         opacity 140ms ease;
 }
-[data-stalux-module="badge-group"][open] > div {
+[data-stalux-module="badge-group"][open] > ul {
     animation: stalux-module-fade 140ms ease-out;
 }
 pagefind-modal#search dialog[open] {

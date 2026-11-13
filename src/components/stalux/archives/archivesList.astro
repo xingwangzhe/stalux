@@ -57,76 +57,76 @@ const archiveYears = [...archivesByYearMonth.entries()]
 ---
 
 <section class="stalux-archive-container" data-stalux-motion-content data-stalux-motion-stage>
-    <div class="stalux-archive-page-header">
-        <div class="stalux-archive-timeline-container">
-            {archiveYears.length > 0 ? (
-                archiveYears.map((archiveYear) => (
-                    <div class="stalux-archive-year-section" data-year={String(archiveYear.year)}>
-                        <div class="stalux-archive-year-header">
-                            <h2 class="stalux-archive-year-title">{archiveYear.year}</h2>
-                            <div class="stalux-archive-year-count">
-                                {t("archives.postCount", { n: archiveYear.count })}
-                            </div>
-                        </div>
-                        {archiveYear.months.map(({ month, posts: monthPosts }) => (
-                            <div class="stalux-archive-month-section" data-archive-month>
-                                <h3 class="stalux-archive-month-title">
-                                    {t("archives.month", { n: month })}
-                                </h3>
-                                {Array.from(
-                                    { length: Math.ceil(monthPosts.length / 12) },
-                                    (_, index) => monthPosts.slice(index * 12, (index + 1) * 12),
-                                ).map((group) => (
-                                    <ul class="stalux-archive-post-list" data-stalux-reveal>
-                                        {group.map((post) => (
-                                            <li
-                                                class="stalux-archive-post-item"
-                                                data-stalux-reveal-item
+    <!-- Modern Web Guidance (html): 年份/月份是带标题的内容分组 => <section> + <header>；
+         文章条目用 <ul>/<li>；计数与空态是纯文字 => <p>。
+         仅剩的 <div> 是时间轴装饰容器（::before 画线 + --tl-* 变量），没有语义对等元素。 -->
+    <div class="stalux-archive-timeline-container stalux-archive-page-header">
+        {archiveYears.length > 0 ? (
+            archiveYears.map((archiveYear) => (
+                <section class="stalux-archive-year-section" data-year={String(archiveYear.year)}>
+                    <header class="stalux-archive-year-header">
+                        <h2 class="stalux-archive-year-title">{archiveYear.year}</h2>
+                        <p class="stalux-archive-year-count">
+                            {t("archives.postCount", { n: archiveYear.count })}
+                        </p>
+                    </header>
+                    {archiveYear.months.map(({ month, posts: monthPosts }) => (
+                        <section class="stalux-archive-month-section" data-archive-month>
+                            <h3 class="stalux-archive-month-title">
+                                {t("archives.month", { n: month })}
+                            </h3>
+                            {Array.from({ length: Math.ceil(monthPosts.length / 12) }, (_, index) =>
+                                monthPosts.slice(index * 12, (index + 1) * 12),
+                            ).map((group) => (
+                                <ul class="stalux-archive-post-list" data-stalux-reveal>
+                                    {group.map((post) => (
+                                        <li
+                                            class="stalux-archive-post-item"
+                                            data-stalux-reveal-item
+                                        >
+                                            <time
+                                                class="stalux-archive-post-date"
+                                                datetime={toMachineDateTime(
+                                                    post.data.date,
+                                                    timezone,
+                                                )}
                                             >
-                                                <time
-                                                    class="stalux-archive-post-date"
-                                                    datetime={toMachineDateTime(
-                                                        post.data.date,
-                                                        timezone,
-                                                    )}
-                                                >
-                                                    {formatInTimeZone(
-                                                        parseDate(post.data.date, timezone),
-                                                        timezone,
-                                                        "yyyy-MM-dd",
-                                                    )}
-                                                </time>
-                                                <a
-                                                    href={`/posts/${post.data.abbrlink}/`}
-                                                    class="stalux-archive-post-link"
-                                                    data-archive-description={post.data.desc || ""}
-                                                    data-astro-prefetch="viewport"
-                                                >
-                                                    {post.data.title}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                ))
-            ) : (
-                <div class="stalux-archive-no-posts">{t("archives.noPosts")}</div>
-            )}
-        </div>
+                                                {formatInTimeZone(
+                                                    parseDate(post.data.date, timezone),
+                                                    timezone,
+                                                    "yyyy-MM-dd",
+                                                )}
+                                            </time>
+                                            <a
+                                                href={`/posts/${post.data.abbrlink}/`}
+                                                class="stalux-archive-post-link"
+                                                data-archive-description={post.data.desc || ""}
+                                                data-astro-prefetch="viewport"
+                                            >
+                                                {post.data.title}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ))}
+                        </section>
+                    ))}
+                </section>
+            ))
+        ) : (
+            <p class="stalux-archive-no-posts">{t("archives.noPosts")}</p>
+        )}
 
         <slot name="main" />
     </div>
 </section>
-<div
+<p
     id="stalux-archive-description"
     class="stalux-archive-description"
     data-archive-tooltip
     role="tooltip"
     hidden
-></div>
+></p>
 
 <script>
 import { mountArchiveDescriptions } from "../../../scripts/archive-descriptions";

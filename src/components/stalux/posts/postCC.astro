@@ -26,8 +26,10 @@ const licenseLink = buildCCLink(cc);
 const licenseName = buildCCName(cc, t);
 ---
 
-<div class="stalux-license-box" data-stalux-module="license">
-    <div class="stalux-license-content">
+<!-- Modern Web Guidance (html): 版权声明是正文的补充信息 => <aside>；
+     水印图标纯装饰 => 行内 <span> + aria-hidden，不用 <div>。 -->
+<aside class="stalux-license-box" data-stalux-module="license">
+    <section class="stalux-license-content">
         <p class="stalux-license-title">{title}</p>
         <p class="stalux-license-author">{t("post.author")}{author}</p>
         {url && (
@@ -44,9 +46,9 @@ const licenseName = buildCCName(cc, t);
                 {licenseName}
             </a>{t("post.licenseSuffix")}
         </p>
-    </div>
+    </section>
 
-    <div class="stalux-license-watermark">
-        <div class="stalux-license-icon" set:html={ccIcon} />
-    </div>
-</div>
+    <span class="stalux-license-watermark" aria-hidden="true">
+        <span class="stalux-license-icon" set:html={ccIcon} />
+    </span>
+</aside>

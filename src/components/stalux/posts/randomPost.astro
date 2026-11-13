@@ -26,7 +26,8 @@ const { count = 5, title = t("randomPost.title") } = Astro.props;
     data-load-failed={t("randomPost.loadFailed")}
     data-load-error={t("randomPost.loadError")}
 >
-    <div class="stalux-random-header">
+    <!-- Modern Web Guidance (html): 标题 + 刷新按钮是这一块的 header。 -->
+    <header class="stalux-random-header">
         <h3 class="stalux-random-title">{title}</h3>
         <button
             type="button"
@@ -52,7 +53,7 @@ const { count = 5, title = t("randomPost.title") } = Astro.props;
                 ></path>
             </svg>
         </button>
-    </div>
+    </header>
     <ul class="stalux-random-list" id="random-posts-list">
         <li class="stalux-random-loading">{t("randomPost.loading")}</li>
     </ul>

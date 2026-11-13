@@ -50,7 +50,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
                         class="a-none"
                     >
                         {icon ? (
-                            <div class="icon-container">
+                            <span class="icon-container">
                                 <svg
                                     role="img"
                                     viewBox="0 0 24 24"
@@ -63,7 +63,7 @@ function getIconByTitle(iconName: string): SimpleIcon | undefined {
                                     <title>{icon.title}</title>
                                     <path d={icon.path} />
                                 </svg>
-                            </div>
+                            </span>
                         ) : (
                             <span class="custom-icon">
                                 {item.icon ? item.icon.charAt(0).toUpperCase() : ""}

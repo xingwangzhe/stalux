@@ -35,7 +35,7 @@ export const linksStyles: StyleSpec[] = [
         "@media (max-width: 479px)",
     ],
     [
-        ".stalux-link-shell:hover .stalux-link-card",
+        ".stalux-link-shell:hover",
         "",
         {
             background: "var(--white-05p)",

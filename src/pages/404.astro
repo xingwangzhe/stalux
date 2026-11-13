@@ -14,7 +14,9 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
     title={`${t("page404.title")} | ${siteConfig.title}`}
     description={t("page404.description")}
 >
-    <div
+    <!-- Modern Web Guidance (html): 404 提示是一个内容分组 => <section>；
+         内层保留一个纯排版容器（居中 + motion-region），没有语义对等元素。 -->
+    <section
         class="stalux-404-error-container stalux-u-flex stalux-u-items-center stalux-u-justify-center stalux-u-text-center"
         data-pagefind-ignore
     >
@@ -45,7 +47,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
                 >{t("page404.backHome")}</a
             >
         </div>
-    </div>
+    </section>
 
     <script src="../scripts/countdown.ts"></script>
 </Stalux>

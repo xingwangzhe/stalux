@@ -29,6 +29,8 @@ const desc = link.description ?? "";
 const icon = link.icon ?? link.avatar ?? "/favicon.ico";
 ---
 
+<!-- Modern Web Guidance (html): 友链卡是自包含内容 => <article>；
+     头像是 <figure>（无题注的独立图像），标题 + 描述是卡片 <header>。 -->
 <a
     data-stalux-control="link-card"
     class="stalux-link-shell a-none"
@@ -36,8 +38,8 @@ const icon = link.icon ?? link.avatar ?? "/favicon.ico";
     target="_blank"
     rel="noopener"
 >
-    <div class="stalux-link-card">
-        <div class="stalux-link-card-avatar">
+    <article class="stalux-link-card">
+        <figure class="stalux-link-card-avatar">
             <img
                 src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
                 data-src={icon}
@@ -49,10 +51,10 @@ const icon = link.icon ?? link.avatar ?? "/favicon.ico";
                 width="80"
                 height="80"
             >
-        </div>
-        <div class="stalux-link-card-content">
+        </figure>
+        <header class="stalux-link-card-content">
             <h2 class="stalux-link-card-title">{title}</h2>
             {desc && <p class="stalux-link-card-description">{desc}</p>}
-        </div>
-    </div>
+        </header>
+    </article>
 </a>

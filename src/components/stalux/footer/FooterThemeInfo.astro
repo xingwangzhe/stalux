@@ -9,7 +9,8 @@ const showThemeInfoSection = !!(showPoweredBy || showThemeInfo);
 ---
 
 {showThemeInfoSection && (
-    <div class="stalux-theme-info stalux-u-flex stalux-u-justify-center stalux-u-flex-wrap">
+    /* Modern Web Guidance (html): 一行主题署名文字 => <p>。 */
+    <p class="stalux-theme-info stalux-u-flex stalux-u-justify-center stalux-u-flex-wrap">
         {showPoweredBy && (
             <span>
                 Powered by
@@ -31,5 +32,5 @@ const showThemeInfoSection = !!(showPoweredBy || showThemeInfo);
                 </a>
             </span>
         )}
-    </div>
+    </p>
 )}

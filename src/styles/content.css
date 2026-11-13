@@ -76,6 +76,13 @@
         line-height: 1.75;
     }
 
+    /* 组件里的段落（例如分页卡片的“上一篇/下一篇”文字块）位于正文容器内部，
+       但不属于正文流：不能继承正文的段距与行高。 */
+    .stalux-prose .stalux-pagination-content {
+        margin: 0;
+        line-height: inherit;
+    }
+
     .stalux-prose strong {
         font-weight: 600;
         color: #ffd966;

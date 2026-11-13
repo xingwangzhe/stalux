@@ -6,13 +6,14 @@ import RandomPost from "@components/stalux/posts/randomPost.astro";
 ---
 
 <aside class="stalux-sidebar" data-swup-persist="post-sidebar-left">
-    <div class="stalux-sidebar-container" data-stalux-module="sidebar">
+    <!-- Modern Web Guidance (html): 侧栏分块用 <section>，不再用通用 <div>。 -->
+    <section class="stalux-sidebar-container" data-stalux-module="sidebar">
         <PostAuthor />
-    </div>
-    <div class="stalux-sidebar-container">
+    </section>
+    <section class="stalux-sidebar-container">
         <SocialMedia />
-    </div>
-    <div class="stalux-sidebar-container">
+    </section>
+    <section class="stalux-sidebar-container">
         <RandomPost />
-    </div>
+    </section>
 </aside>

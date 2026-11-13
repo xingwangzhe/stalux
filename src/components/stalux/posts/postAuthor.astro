@@ -13,10 +13,10 @@ const isPostPage = Astro.url.pathname.includes("/posts/");
 ---
 
 <aside class="stalux-byline-sidebar-container" style={isPostPage ? "margin-top: -3em;" : ""}>
-    <div class="stalux-byline-author-section">
-        <div class="stalux-byline-author-card">
-            <Author iscolum />
-            <p class="stalux-byline-author-bio">{authorConfig.bio}</p>
-        </div>
-    </div>
+    <!-- Modern Web Guidance (html): 作者卡是独立内容分组 => <section>；
+         原来的 section > card 双层 <div> 合并为一层，减少无意义嵌套。 -->
+    <section class="stalux-byline-author-section stalux-byline-author-card">
+        <Author iscolum />
+        <p class="stalux-byline-author-bio">{authorConfig.bio}</p>
+    </section>
 </aside>

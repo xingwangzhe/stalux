@@ -19,7 +19,8 @@ const showBeian = !!(icp || pubsec);
 ---
 
 {showBeian && (
-    <div class="stalux-beian-beian-info stalux-u-flex stalux-u-justify-center stalux-u-flex-wrap">
+    /* Modern Web Guidance (html): 备案号是一行文字链接 => <p>。 */
+    <p class="stalux-beian-beian-info stalux-u-flex stalux-u-justify-center stalux-u-flex-wrap">
         {icp && (
             <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
                 {icp}
@@ -41,5 +42,5 @@ const showBeian = !!(icp || pubsec);
                 {pubsec}
             </a>
         )}
-    </div>
+    </p>
 )}

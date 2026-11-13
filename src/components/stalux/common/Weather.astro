@@ -19,10 +19,10 @@ const zh = (site.lang || "zh-CN").startsWith("zh");
         data-lang={site.lang || "zh-CN"}
         aria-label={zh ? "附近城市天气" : "Nearby weather"}
     >
-        <div class="stalux-weather-heading">
+        <p class="stalux-weather-heading">
             <CloudSun size={18} aria-hidden="true" />
             <span>{zh ? "附近天气" : "Nearby weather"}</span>
-        </div>
+        </p>
         <p class="stalux-weather-main" data-weather-output role="status">
             {zh ? "正在获取附近城市天气…" : "Loading nearby weather…"}
         </p>
@@ -96,6 +96,7 @@ registerPageLifecycle("weather", () => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin: 0;
     color: var(--accent-90p);
     font-size: 0.85rem;
 }

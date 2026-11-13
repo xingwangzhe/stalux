@@ -14,7 +14,9 @@ const categoryList = await getCategoryCountList(Astro.logger);
     data-stalux-reveal
 >
     {categoryList.map((category) => (
-        <li data-stalux-reveal-item>
+        /* Modern Web Guidance (html): shell 的 hover/focus-within 作用范围由 <li> 承担，
+           卡片组件本身不再输出多余的包裹 <div>。 */
+        <li class="stalux-category-shell" data-stalux-reveal-item>
             <CategoriesCard category={category} />
         </li>
     ))}

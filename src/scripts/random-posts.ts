@@ -23,13 +23,24 @@ async function fetchPosts(signal: AbortSignal) {
     return (await response.json()) as { abbrlink: string; title: string }[];
 }
 
-function render(posts: { abbrlink: string; title: string }[]) {
-    return posts
-        .map(
-            (post) =>
-                `<li class="random-post-item"><a href="/posts/${post.abbrlink}/" class="random-post-link a-none">${post.title}</a></li>`,
-        )
-        .join("");
+// Modern Web Guidance (javascript/DOM): 用 DOM API 组装节点 + replaceChildren，
+// 不再把接口返回的标题拼进 innerHTML —— 标题里的 <、& 会被当成标记解析。
+function createMessageItem(className: string, text: string): HTMLLIElement {
+    const item = document.createElement("li");
+    item.className = className;
+    item.textContent = text;
+    return item;
+}
+
+function createPostItem(post: { abbrlink: string; title: string }): HTMLLIElement {
+    const item = document.createElement("li");
+    item.className = "random-post-item";
+    const link = document.createElement("a");
+    link.href = `/posts/${encodeURIComponent(post.abbrlink)}/`;
+    link.className = "random-post-link a-none";
+    link.textContent = post.title;
+    item.append(link);
+    return item;
 }
 
 export function mountRandomPosts(): (() => void) | undefined {
@@ -91,14 +102,18 @@ export function mountRandomPosts(): (() => void) | undefined {
             );
             if (!isCurrent()) return;
             logger.debug(`refresh completed; posts=${posts.length}`);
-            list.innerHTML = posts.length
-                ? render(posts)
-                : `<li class="no-posts">${container.dataset.noPosts ?? fallback}</li>`;
+            list.replaceChildren(
+                ...(posts.length > 0
+                    ? posts.map(createPostItem)
+                    : [createMessageItem("no-posts", container.dataset.noPosts ?? fallback)]),
+            );
             reveal();
         } catch (error) {
             if (!isCurrent()) return;
             logger.error("refresh failed; showing fallback", error);
-            list.innerHTML = `<li class="error">${container.dataset.loadFailed ?? fallback}</li>`;
+            list.replaceChildren(
+                createMessageItem("error", container.dataset.loadFailed ?? fallback),
+            );
         } finally {
             if (isCurrent()) {
                 request = undefined;

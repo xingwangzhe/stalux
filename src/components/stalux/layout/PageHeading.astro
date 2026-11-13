@@ -7,13 +7,14 @@ interface Props {
 const { heading, description } = Astro.props;
 ---
 
-<div data-stalux-motion-region>
+<!-- Modern Web Guidance (html): 页面标题块是列表页的 header，描述是 <p>。 -->
+<header data-stalux-motion-region>
     <h1 class="stalux-page-title stalux-u-text-center" data-stalux-motion-focus>
         {heading}
     </h1>
     {description && (
-        <div class="stalux-page-description stalux-u-text-center" data-stalux-motion-content>
+        <p class="stalux-page-description stalux-u-text-center" data-stalux-motion-content>
             {description}
-        </div>
+        </p>
     )}
-</div>
+</header>

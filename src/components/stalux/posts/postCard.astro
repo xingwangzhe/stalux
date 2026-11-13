@@ -20,88 +20,86 @@ const timezone = siteConfig.timezone;
 const description = post.data.desc || "";
 ---
 
+<!-- Modern Web Guidance (html): 卡片本身即 <article>；日期/描述是 <p>，标签与分类是 <ul>/<li>，
+     尾部元数据用 <footer>。合并了旧的 shell>card 双层 div。 -->
 <article
     data-stalux-control="post-card"
-    class="stalux-post-card-shell block h-full text-inherit no-underline"
+    class="stalux-post-card-shell stalux-post-card h-full text-inherit no-underline stalux-u-flex stalux-u-flex-col stalux-u-w-full stalux-u-min-w-0"
 >
-    <div class="stalux-post-card stalux-u-flex stalux-u-flex-col stalux-u-w-full stalux-u-min-w-0">
-        {post.data.cover && (
-            <a
-                href={`/posts/${post.data.abbrlink}/`}
-                class="a-none"
-                data-astro-prefetch="viewport"
-                aria-label={post.data.title}
+    {post.data.cover && (
+        <a
+            href={`/posts/${post.data.abbrlink}/`}
+            class="a-none"
+            data-astro-prefetch="viewport"
+            aria-label={post.data.title}
+        >
+            <span class="stalux-card-post-cover stalux-u-w-full stalux-u-min-w-0">
+                <img
+                    src={post.data.cover}
+                    alt={post.data.title}
+                    loading={priority ? "eager" : "lazy"}
+                    decoding="async"
+                    fetchpriority={priority ? "high" : "auto"}
+                    width="640"
+                    height="360"
+                    data-stalux-cover
+                />
+            </span>
+        </a>
+    )}
+    <h2 class="stalux-card-post-title">
+        <a href={`/posts/${post.data.abbrlink}/`} class="a-none" data-astro-prefetch="viewport">
+            {post.data.title}
+        </a>
+    </h2>
+    <p class="stalux-card-time stalux-u-items-center stalux-u-flex-wrap">
+        {post.data.date && (
+            <time
+                class="stalux-card-post-date"
+                datetime={timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date}
             >
-                <div class="stalux-card-post-cover stalux-u-w-full stalux-u-min-w-0">
-                    <img
-                        src={post.data.cover}
-                        alt={post.data.title}
-                        loading={priority ? "eager" : "lazy"}
-                        decoding="async"
-                        fetchpriority={priority ? "high" : "auto"}
-                        width="640"
-                        height="360"
-                        data-stalux-cover
-                    />
-                </div>
-            </a>
+                {post.data.date}
+            </time>
         )}
-        <h2 class="stalux-card-post-title">
-            <a href={`/posts/${post.data.abbrlink}/`} class="a-none" data-astro-prefetch="viewport">
-                {post.data.title}
-            </a>
-        </h2>
-        <div class="stalux-card-time stalux-u-items-center stalux-u-flex-wrap">
-            {post.data.date && (
-                <time
-                    class="stalux-card-post-date"
-                    datetime={
-                        timezone ? toMachineDateTime(post.data.date, timezone) : post.data.date
-                    }
-                >
-                    {post.data.date}
-                </time>
-            )}
-            {post.data.updated && (
-                <time
-                    class="stalux-card-post-updated"
-                    datetime={
-                        timezone
-                            ? toMachineDateTime(post.data.updated, timezone)
-                            : post.data.updated
-                    }
-                >
-                    {post.data.updated}
-                </time>
-            )}
-        </div>
-        <div class="stalux-card-post-description stalux-u-min-w-0">{description}</div>
-        <div class="stalux-card-post-meta stalux-u-flex stalux-u-flex-col">
-            <div
-                class="stalux-card-post-tags stalux-u-flex stalux-u-items-center stalux-u-flex-wrap"
+        {post.data.updated && (
+            <time
+                class="stalux-card-post-updated"
+                datetime={
+                    timezone ? toMachineDateTime(post.data.updated, timezone) : post.data.updated
+                }
             >
-                {post.data.tags?.map((tag) => (
+                {post.data.updated}
+            </time>
+        )}
+    </p>
+    <p class="stalux-card-post-description stalux-u-min-w-0">{description}</p>
+    <footer class="stalux-card-post-meta stalux-u-flex stalux-u-flex-col">
+        <ul class="stalux-card-post-tags stalux-u-flex stalux-u-items-center stalux-u-flex-wrap">
+            {post.data.tags?.map((tag) => (
+                <li>
                     <a class="a-none" href={`/tags/${tag}`} data-astro-prefetch>
                         <span class="stalux-card-post-tag">{tag}</span>
                     </a>
-                ))}
-            </div>
-            <div
-                class="stalux-card-post-categories stalux-u-flex stalux-u-items-center stalux-u-flex-wrap"
-            >
-                {post.data.categories?.map((category) => (
+                </li>
+            ))}
+        </ul>
+        <ul
+            class="stalux-card-post-categories stalux-u-flex stalux-u-items-center stalux-u-flex-wrap"
+        >
+            {post.data.categories?.map((category) => (
+                <li>
                     <a class="a-none" href={`/categories/${category}`} data-astro-prefetch>
                         <span class="stalux-card-post-category">{category}</span>
                     </a>
-                ))}
-            </div>
-        </div>
-        <a
-            href={`/posts/${post.data.abbrlink}/`}
-            class="stalux-card-read-more a-none"
-            data-astro-prefetch
-        >
-            Read More
-        </a>
-    </div>
+                </li>
+            ))}
+        </ul>
+    </footer>
+    <a
+        href={`/posts/${post.data.abbrlink}/`}
+        class="stalux-card-read-more a-none"
+        data-astro-prefetch
+    >
+        Read More
+    </a>
 </article>

@@ -10,7 +10,8 @@ const texts = normalizeMessages(messages);
 ---
 
 {texts.length > 0 && (
-    <div class={className} data-stalux-typewriter data-messages={JSON.stringify(texts)}>
+    /* Modern Web Guidance (html): 打字机输出是一段文字 => <p>，内部只用行内 <span>。 */
+    <p class={className} data-stalux-typewriter data-messages={JSON.stringify(texts)}>
         <span class="stalux-typewriter-accessible">{texts.join(", ")}</span>
         <span class="stalux-typewriter-reserve" aria-hidden="true">
             {texts.map((text) => (
@@ -20,7 +21,7 @@ const texts = normalizeMessages(messages);
         <span class="stalux-typewriter-text" data-typewriter-text aria-hidden="true">
             {texts[0]}
         </span>
-    </div>
+    </p>
 )}
 
 <script>

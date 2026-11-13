@@ -20,8 +20,13 @@ import { getSiteData } from "@utils/config-utils";
 ---
 
 <Stalux title={siteTitle} description={siteDescription}>
-    <div class="stalux-home-body stalux-u-flex stalux-u-items-center stalux-u-flex-col">
+    <!-- Modern Web Guidance (html): 首页主体是具名内容分组 => <section>；不再用 <div>。 -->
+    <section
+        class="stalux-home-body stalux-u-flex stalux-u-items-center stalux-u-flex-col"
+        aria-labelledby="stalux-home-title"
+    >
         <h1
+            id="stalux-home-title"
             class="stalux-home-title stalux-u-text-center"
             data-stalux-motion-region
             data-stalux-motion-focus
@@ -50,12 +55,12 @@ import { getSiteData } from "@utils/config-utils";
                 mutate data.
             </p>
         </section>
-        <div data-stalux-home-content data-stalux-motion-content>
+        <section data-stalux-home-content data-stalux-motion-content>
             <Author />
             <TextType />
             <DateTime />
             <SocialMedia />
             <ToArchive />
-        </div>
-    </div>
+        </section>
+    </section>
 </Stalux>

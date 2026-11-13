@@ -41,7 +41,8 @@ const machineBuildtime = buildtime
 )}
 
 {machineBuildtime && (
-    <div
+    /* Modern Web Guidance (html): 构建时间是一行统计文字，用 <p> 而非通用 <div>。 */
+    <p
         class="stalux-stats-site-build-time stalux-u-text-center"
         data-stalux-buildtime={machineBuildtime}
         data-stalux-runtime-format={t("footer.runtimeFormat")}
@@ -50,5 +51,5 @@ const machineBuildtime = buildtime
             {t("footer.runningTime")}
             <span id="runtime-counter" />
         </span>
-    </div>
+    </p>
 )}

@@ -197,7 +197,8 @@ export const articleStyles: StyleSpec[] = [
         { "grid-template-columns": "minmax(0, 1fr)", "max-width": "936px" },
         "@media (max-width: 1599px)",
     ],
-    [".stalux-post-page", "p-0", {}, "@media (max-width: 768px)"],
+    // 移动端只去掉左右内边距，垂直留白与桌面端一致（顶部 3em 由 .stalux-post-page 承担）
+    [".stalux-post-page", "p-[3em_0_0]", {}, "@media (max-width: 768px)"],
     [".stalux-post-layout", "flex flex-col m-0 p-0 gap-[2rem]", {}, "@media (max-width: 768px)"],
     [".stalux-post-layout > :nth-child(2)", "", { order: "1" }, "@media (max-width: 768px)"],
     [".stalux-post-layout > :nth-child(1)", "", { order: "2" }, "@media (max-width: 768px)"],

@@ -67,15 +67,16 @@ const navs = navsConfig?.items ?? [];
                 );
             })}
             <li class="stalux-nav-item stalux-u-flex stalux-u-items-center">
-                <a
-                    href="#search"
+                <!-- Modern Web Guidance (html): 页内交互一律用 <button>，<a> 只负责 URL 导航 -->
+                <button
+                    type="button"
                     class="stalux-nav-link"
                     data-ref="stalux-search-btn"
                     aria-label={t("search.title")}
                 >
                     {SearchIcon && <SearchIcon size={20} stroke-width={2} class="nav-icon" />}
                     <span class="stalux-nav-text">{t("nav.search")}</span>
-                </a>
+                </button>
             </li>
         </ul>
 

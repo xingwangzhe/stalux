@@ -22,41 +22,49 @@ const tagLinks = tagList.map((t) => ({
 ---
 
 <!-- 移动端：SSR 卡片 -->
-<div class="stalux-cloud-cards" id="tags-cards" data-stalux-tag-cards data-stalux-motion-content>
+<!-- Modern Web Guidance (html): 标签是一组条目 => <ul>/<li>；空态是纯文字 => <p>。 -->
+<section
+    class="stalux-cloud-cards"
+    id="tags-cards"
+    data-stalux-tag-cards
+    data-stalux-motion-content
+    aria-label={t("tags.title")}
+>
     {tagList.length > 0 ? (
         tagGroups.map((group) => (
-            <div class="stalux-cloud-tag-group" data-stalux-reveal>
+            <ul class="stalux-cloud-tag-group" data-stalux-reveal>
                 {group.map(({ name, count }) => (
-                    <a
-                        href={`/tags/${name}/`}
-                        class="stalux-cloud-tag-card"
-                        data-stalux-card
-                        data-stalux-tag-card
-                        data-stalux-control="tag-card"
-                        data-stalux-reveal-item
-                        data-count={count}
-                        data-astro-prefetch
-                    >
-                        <span class="stalux-cloud-tag-name">{name}</span>
-                        <span class="stalux-cloud-tag-count">{count}</span>
-                    </a>
+                    <li data-stalux-reveal-item>
+                        <a
+                            href={`/tags/${name}/`}
+                            class="stalux-cloud-tag-card"
+                            data-stalux-card
+                            data-stalux-tag-card
+                            data-stalux-control="tag-card"
+                            data-count={count}
+                            data-astro-prefetch
+                        >
+                            <span class="stalux-cloud-tag-name">{name}</span>
+                            <span class="stalux-cloud-tag-count">{count}</span>
+                        </a>
+                    </li>
                 ))}
-            </div>
+            </ul>
         ))
     ) : (
-        <div class="stalux-cloud-no-tags">{t("tags.noTags")}</div>
+        <p class="stalux-cloud-no-tags">{t("tags.noTags")}</p>
     )}
-</div>
+</section>
 
-<!-- 桌面端：Canvas 标签云 -->
-<div
+<!-- 桌面端：Canvas 标签云（可视化整体，用 <figure> 承载；内部节点是脚本挂载点） -->
+<figure
     class="stalux-cloud-canvas-frame"
     data-stalux-tag-canvas
     style={{ "--cloud-density": cloudDensity }}
     data-stalux-motion-content
 >
     <div class="stalux-cloud-canvas" id="tags-canvas" data-tags={JSON.stringify(tagLinks)}></div>
-</div>
+</figure>
 
 <script>
 import "../../../scripts/tags-cloud";
