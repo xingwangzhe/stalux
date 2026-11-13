@@ -1,3 +1,4 @@
+import { Window } from "happy-dom";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 vi.mock("../src/scripts/page-runtime", () => ({ registerPageLifecycle: vi.fn() }));
@@ -29,9 +30,8 @@ let container: {
     removeAttribute: ReturnType<typeof vi.fn>;
     closest: (selector: string) => unknown;
 };
-let list: {
-    innerHTML: string;
-    style: { opacity: string };
+let dom: Window;
+let list: HTMLElement & {
     animate: ReturnType<typeof vi.fn>;
     getBoundingClientRect: ReturnType<typeof vi.fn>;
 };
@@ -48,17 +48,21 @@ beforeEach(() => {
     busy = new Map();
     button = new EventTarget();
     preference = Object.assign(new EventTarget(), { matches: false });
-    list = {
-        innerHTML: "old readable articles",
-        getBoundingClientRect: vi.fn(() => ({ height: 200 })),
-        style: { opacity: "" },
-        animate: vi.fn(() => {
-            const done = deferred<void>();
-            const effect = { finished: done.promise, cancel: vi.fn(), done };
-            effects.push(effect);
-            return effect;
-        }),
-    };
+    dom = new Window();
+    // 渲染走 DOM API（createElement + replaceChildren），夹具必须是真实节点，
+    // 这样 innerHTML 断言读到的就是序列化后的结果。
+    const element = dom.document.createElement("ul") as unknown as typeof list;
+    element.innerHTML = "old readable articles";
+    element.getBoundingClientRect = vi.fn(() => ({
+        height: 200,
+    })) as unknown as typeof element.getBoundingClientRect;
+    element.animate = vi.fn(() => {
+        const done = deferred<void>();
+        const effect = { finished: done.promise, cancel: vi.fn(), done };
+        effects.push(effect);
+        return effect;
+    }) as unknown as typeof element.animate;
+    list = element;
     container = {
         dataset: { count: "1", loadFailed: "Unable to refresh" },
         querySelector: (q: string) => (q === "#random-posts-list" ? list : button),
@@ -66,7 +70,11 @@ beforeEach(() => {
         removeAttribute: vi.fn((name: string) => busy.delete(name)),
         closest: () => null,
     };
-    vi.stubGlobal("document", { hidden: false, querySelector: () => container });
+    vi.stubGlobal("document", {
+        hidden: false,
+        querySelector: () => container,
+        createElement: (tag: string) => dom.document.createElement(tag),
+    });
     vi.stubGlobal("window", { innerHeight: 900, matchMedia: () => preference });
     vi.stubGlobal(
         "fetch",
