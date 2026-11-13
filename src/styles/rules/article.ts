@@ -99,9 +99,16 @@ export const articleStyles: StyleSpec[] = [
     [
         ":is(.stalux-sidebar, .stalux-sidebar-right)",
         "flex flex-col sticky h-fit w-full box-border min-w-0 overflow-y-auto top-[var(--stalux-nav-offset,_20px)] max-h-[calc(100vh_-_var(--stalux-nav-offset,_20px)_-_20px)] gap-lg p-[var(--space-lg)_0]",
-        { "scrollbar-width": "none", "-ms-overflow-style": "none" },
+        { "scrollbar-width": "none" },
     ],
-    [":is(.stalux-sidebar, .stalux-sidebar-right)::-webkit-scrollbar", "hidden", {}],
+    // Modern Web Guidance: keep the WebKit fallback scoped to engines without the
+    // standard property; `-ms-overflow-style` (IE/legacy Edge) is no longer needed.
+    [
+        ":is(.stalux-sidebar, .stalux-sidebar-right)::-webkit-scrollbar",
+        "hidden",
+        {},
+        "@supports not (scrollbar-width: none)",
+    ],
 
     [
         ":is(.stalux-sidebar, .stalux-sidebar-right), .stalux-sidebar-right",

@@ -9,7 +9,10 @@
         main {
             flex: 1;
         }
-        scrollbar-color: #4a4a4a #2a2a2a;
+        /* Modern Web Guidance: standard scrollbar theming. Keep `auto` width so the
+           thumb stays large enough to operate (WCAG 2.2 target size). */
+        scrollbar-color: var(--stalux-scrollbar-thumb) var(--stalux-scrollbar-track);
+        scrollbar-width: auto;
         display: block;
         font-family:
             var(--font-body), "Noto Sans SC", "Noto Sans CJK SC", system-ui, -apple-system,
@@ -131,6 +134,11 @@
     :root {
         --stalux-bg-color: #202020;
         --stalux-bg-filter: none;
+        /* Thumb/track tokens: >=3:1 contrast (WCAG 1.4.11), shared with the
+           legacy WebKit fallback below. */
+        --stalux-scrollbar-thumb: #7d7d7d;
+        --stalux-scrollbar-thumb-hover: #9a9a9a;
+        --stalux-scrollbar-track: #2a2a2a;
         --stalux-site-header-min-height: 3.75rem;
         --stalux-site-header-height: var(--stalux-site-header-min-height);
         --stalux-text-shadow: var(--stalux-accent-color) 0.08rem 0.08rem 0.18rem;
@@ -247,29 +255,35 @@
         --border-medium: 2px;
         --border-thick: 3px;
     }
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #2a2a2a;
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #4a4a4a;
-        border-radius: 4px;
-        transition: background 0.3s ease-out;
-    }
-    @media (hover: hover) and (pointer: fine) {
-        ::-webkit-scrollbar-thumb:hover {
-            background: #5a5a5a;
+    /* Modern Web Guidance: `scrollbar-color` is Baseline since 2025-12-12.
+       Only engines without the standard property need the WebKit pseudo-elements;
+       wrapping them prevents the two mechanisms from fighting in modern browsers. */
+    @supports not (scrollbar-color: auto) {
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-    }
 
-    ::-webkit-scrollbar-corner {
-        background: #2a2a2a;
+        ::-webkit-scrollbar-track {
+            background: var(--stalux-scrollbar-track);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--stalux-scrollbar-thumb);
+            border-radius: 4px;
+            transition: background 0.3s ease-out;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--stalux-scrollbar-thumb-hover);
+            }
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--stalux-scrollbar-track);
+        }
     }
 
     /* 持久背景层：完整文档首次解码后淡显，软导航保持原图。 */

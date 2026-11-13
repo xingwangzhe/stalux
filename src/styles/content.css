@@ -118,23 +118,27 @@
         font-size: 0.8em;
     }
 
+    /* Modern Web Guidance: native text-decoration instead of a border-bottom
+       underline simulation. The visible decoration is tuned once below. */
     .stalux-prose a {
-        text-decoration: none;
         color: var(--accent-80p);
-        border-bottom: 2px solid transparent;
+        text-decoration-line: underline;
+        text-decoration-color: transparent;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.2em;
         transition:
             color var(--transition-fast),
-            border-bottom-color var(--transition-fast);
+            text-decoration-color var(--transition-fast);
         overflow-wrap: anywhere;
     }
     .stalux-prose a:focus-visible {
         color: var(--accent-90p);
-        border-bottom-color: var(--accent-60p);
+        text-decoration-color: var(--accent-60p);
     }
     @media (hover: hover) and (pointer: fine) {
         .stalux-prose a:hover {
             color: var(--accent-90p);
-            border-bottom-color: var(--accent-60p);
+            text-decoration-color: var(--accent-60p);
         }
     }
 
@@ -511,10 +515,7 @@
         content: none;
     }
     .stalux-prose a {
-        border-bottom: 0;
-        text-decoration: underline;
         text-decoration-color: var(--accent-50p);
-        text-underline-offset: 0.2em;
         text-decoration-thickness: 1px;
     }
     .stalux-prose a:has(img) {
