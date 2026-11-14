@@ -23,11 +23,7 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
 <!-- Modern Web Guidance (html): 分类卡本身即 <article>；外层曾经的 <div class="stalux-category-shell">
      已上移到列表的 <li>（见 categoriesList.astro），避免多一层无语义容器。 -->
 <article class="stalux-category-card" data-stalux-control="category-card">
-    <a
-        href={`/categories/${props.category.name}/`}
-        class="stalux-categoryheader a-none"
-        data-astro-prefetch
-    >
+    <a href={`/categories/${props.category.name}/`} class="stalux-categoryheader a-none">
         <span class="stalux-category-icon">
             <svg
                 aria-hidden="true"

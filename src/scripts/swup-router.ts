@@ -91,7 +91,13 @@ export function installSwupRouter(): Swup {
     let activeContext: NavigationContext | undefined;
     let visibleHistoryIndex = Number(window.history.state?.index ?? 1);
     let browserMotion = false;
-    const progress = new SwupProgressPlugin();
+    // Swup waits for the target document before it starts any animation, so a
+    // slow fetch is a window with no visual response at all. The official
+    // plugin waits 300ms before showing its bar, which leaves most of that
+    // window empty; 80ms keeps a cached/preloaded visit invisible (it finishes
+    // first) while a real network round trip gets an immediate, theme-coloured
+    // cue. The bar itself is compositor-only: a 3px transform on one element.
+    const progress = new SwupProgressPlugin({ delay: 80, transition: 200 });
     const scroll = new SwupScrollPlugin({
         doScrollingRightAway: false,
         animateScroll: { betweenPages: false, samePageWithHash: true, samePage: true },

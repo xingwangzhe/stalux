@@ -8,7 +8,6 @@ import PostNavigation from "@components/stalux/posts/postNavigation.astro";
 import PostRight from "@components/stalux/posts/postRight.astro";
 import WalineComment from "@components/stalux/posts/WalineComment.astro";
 import { getCommentData } from "@utils/config-utils";
-import { getPostTitleTransitionName } from "@utils/view-transitions";
 import { buildWalineProps } from "@utils/waline";
 
 interface Props {
@@ -63,9 +62,6 @@ const walineConfig = walineSection?.serverURL
             title={props.title}
             description={props.description}
             searchKeywords={[...tags, ...categories, ...(props.searchKeywords ?? [])]}
-            titleTransitionName={props.postId === undefined
-                ? undefined
-                : getPostTitleTransitionName(props.postId)}
             date={props.date}
             updated={props.updated}
             readingMinutes={props.readingMinutes}

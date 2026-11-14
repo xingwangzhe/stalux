@@ -6,7 +6,24 @@
 
 Astro 继续负责内容集合、静态 HTML、样式、字体与客户端模块的构建。浏览器端由 Swup 负责链接拦截、预取、页面缓存、历史记录、内容替换和动效时序。主题移除 Astro ClientRouter；Swup 设置 `native: false`，不依赖浏览器 `document.startViewTransition()`。
 
-Swup 的替换容器只有 `main[data-stalux-route]`。header、footer、滚动 sentinel 和背景双层位于 main 外，跨页保留原节点；文章目录、正文、评论、标签云等页面内容随 main 更新。主题布局与组件不再输出 Astro `transition:*` 指令，避免继续生成原生 VT 的编译辅助代码。节点保留来自 Swup 的容器边界，不以 Astro 的 swap 为前提。公开的 `utils/view-transitions.ts` 中兼容性 helper 仍保留，不能把 helper 名称或可选的 `transitionName` 字段当作浏览器正在运行原生 VT 的证据。
+Swup 的替换容器只有 `main[data-stalux-route]`。header、footer、滚动 sentinel 和背景双层位于 main 外，跨页保留原节点；文章目录、正文、评论、标签云等页面内容随 main 更新。主题布局与组件不再输出 Astro `transition:*` 指令，避免继续生成原生 VT 的编译辅助代码。节点保留来自 Swup 的容器边界，不以 Astro 的 swap 为前提。`utils/view-transitions.ts` 现在只保留服务端与客户端共用的 `getRouteKind`；1.41 时代为 ClientRouter 生成 `transition:animate` 配置的 `getRouteAnimation` / `getSidebarAnimation`、以及生成 `view-transition-name` 的 `getPostTitleTransitionName` 已随 ClientRouter 一起删除，因为它们在 Swup 接管后没有任何消费者。
+
+### 客户端没有任何 Astro 路由/VT 运行时
+
+下表是 1.56.0 生产构建（myblog 实体主题包，753 个页面）的实测结果，不是设计意图：
+
+| 检查项 | 结论 | 核对方式 |
+| --- | --- | --- |
+| `ClientRouter` / `astro:transitions` 脚本 | 未注入 | 生产 HTML 无对应 `<script>`，`_astro/*.js` 无派发端 |
+| `transition:name` / `transition:animate` / `transition:persist` | 0 处 | 源码 grep 为 0 |
+| `view-transition-name` | 0 处 | 生产 HTML grep 为 0 |
+| `document.startViewTransition` | 仅出现在 Swup core 的 `native` 分支 | `native: false`，该分支不执行 |
+| `data-astro-prefetch` | 已删除（原本 11 个文件 16 处） | 生产 HTML grep 为 0 |
+| Astro 预取运行时 | 消费站点无（未配置）；demo 已改 `prefetch: false` | 产物 `_astro/*.js` 中无 `prefetchAll` / `MutationObserver` 预取派发端 |
+
+`data-astro-prefetch` 是本次清理的重点，但它的性质要分清：Astro 的内置预取**不依赖** ClientRouter，而是由 `astro.config` 的 `prefetch` 配置注入运行时。主题自身的 demo 构建曾开着该配置，于是同一批链接同时被 Astro 预取和 Swup 预取覆盖；消费站点（myblog 的 `astro.config.ts` 没有该键）则根本没有 Astro 预取运行时，组件上的属性既不预取也不报错，属纯残留。现在两处一起收口：组件不再输出该属性，demo 配置改为 `prefetch: false`。预取职责只有一处——Swup PreloadPlugin 的 hover/focus/touchstart，以及首页导航的 idle 预热（`route-prefetch.ts`）。
+
+`PostContent` 仍接受 `transitionName` / `transitionScope`：它们是覆盖组件（`src/internal/override.ts`）的既有 props，删掉会让下游自定义实现报类型错误，而他们在主题自己的渲染路径里已不再产生任何 CSS。同理，`utils/view-transitions.ts` 只保留 `getRouteKind`，被删的三个 VT 辅助函数不对应任何稳定的公开契约。
 
 代码入口为 [`view-transitions.ts`](../src/scripts/view-transitions.ts) → [`swup-router.ts`](../src/scripts/swup-router.ts)。程序化导航通过 [`navigation-client.ts`](../src/scripts/navigation-client.ts) 进入同一 Swup 实例，标签云不再调用 Astro 的 `navigate()`。正文导出、JSON/XML、图片/PDF、独立 HTML、外站、新标签页及显式 reload 链接保留文档导航行为。
 
@@ -22,9 +39,10 @@ Swup core 精确锁定为 `4.10.0`。快速连续导航的过期 visit 防护使
 | HeadPlugin | 更新 head 元数据并等待新样式；保留旧样式直到 main 替换，再移除主题页面的旧样式 | 旧页面在目标资源准备期间继续可读；运行中 SDK 插入的样式不机械删除 |
 | A11yPlugin | 页面标题播报、忙碌状态、焦点与减少动态偏好 | 正常进入新页面聚焦 main；历史恢复优先保留原列表链接焦点；取消和失败也要清忙碌状态 |
 | PreloadPlugin | 预取悬停链接，不预取整个可见链接集合；并发节制 | 避免归档或标签列表一次下载大量文章；仍要处理未预取成功的正常导航 |
+| ProgressPlugin | `delay: 80`、`transition: 200`，主题色 3px 条 | Swup 要拿到目标文档才开始任何动画（`animation.wait` + `await page`），这段纯网络等待原本只有 300ms 后才出现的进度条兜底。80ms 让预取命中的导航完全不显示进度条，需要真实往返时又能在点击后立刻给出反馈；进度条本身只有一次合成层变换 |
 | ScrollPlugin | 锚点与常规页面滚动；Stalux 额外按历史索引恢复位置；通过 `scrollFunction` 同步执行 instant 滚动并结算 start/end | 特别覆盖减少动态与浏览器原生手势场景；自定义 instant 回调不添加默认实现的 wheel/scrollend 一次性监听器，避免无位移滚动时监听器持续驻留 |
 | JSPlugin | 在 Swup 的 incoming animation 阶段等待 Stalux 的可取消标题动效 | Swup 知道真实结束时间，统计可等待同一个完成信号，背景独立于软导航 |
-| `@swup/astro` | 核对源码并作为集成参考，未直接启用 | 当前集成只派发三个裸 Astro 事件，不提供旧代码需要的 URL、signal、目标 Document 等字段；其默认脚本重跑策略也不适合主题已有的页面清理注册表 |
+| `@swup/astro` | 核对 1.8.0 源码与 README 后不启用 | 该集成的全部工作是 `astro:config:setup` 里 `injectScript('page', buildInitScript(options))`：把一段序列化配置的字符串脚本注入每页，在客户端新建 Swup 实例。它无法表达本主题需要的 `SwupJsPlugin` 自定义动画、`scrollFunction`、`ignoreVisit`、并行 + fragment 容器组合与 visit hook 时序；默认值还与本主题相反（`loadOnIdle: true` 会把路由初始化推迟到 idle，`reloadScripts: true` 会整页重跑脚本）。启用它等于用更弱的配置换一层额外抽象 |
 | Fade / Slide / Overlay theme | 未直接套用 | 这些是预设效果，不能表达 Stalux 的路由语义、手机纯淡入与长内容约束；本实现使用 JSPlugin 的分路由策略 |
 | ScriptsPlugin | 未全量重跑当前页面的脚本 | 主题控制自己的初始化和清理。首次脚本执行与显式 `data-astro-rerun` 分开处理，避免统计 SDK、全局监听器和评论重复创建 |
 | 原生 View Transition / 并行整页副本 / morph | 未作为路由动画基础 | 不拍摄或缩放整篇长文章，不强行匹配 Canvas 标签词、头像或多行标题，也不创建离开的正文副本 |

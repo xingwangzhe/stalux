@@ -108,6 +108,12 @@ for (const [route, html] of Object.entries(pages)) {
                 !node.attrs.some((item) => item.name.startsWith("data-astro-transition-")),
                 `${route} must not emit native transition directives`,
             );
+            // Astro's built-in prefetch is off: preloading belongs to Swup, and a
+            // marker without that runtime silently does nothing.
+            assert(
+                attr("data-astro-prefetch") === undefined,
+                `${route} must not emit Astro prefetch markers; Swup owns preloading`,
+            );
             if (attr("data-stalux-background") !== undefined) {
                 backgrounds++;
                 assert(!inMain, `${route} background must stay outside the Swup container`);

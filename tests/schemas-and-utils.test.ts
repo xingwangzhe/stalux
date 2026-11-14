@@ -5,11 +5,6 @@ import { authorSchema, commentSchema, siteSchema } from "../src/schemas/config";
 import { getAccentColorStyle } from "../src/utils/accent-color";
 import { buildCCLink, buildCCName } from "../src/utils/cc";
 import { createTranslator } from "../src/utils/i18n";
-import {
-    getPostTitleTransitionName,
-    getRouteAnimation,
-    getSidebarAnimation,
-} from "../src/utils/view-transitions";
 
 describe("configuration schemas", () => {
     it("applies safe site defaults", () => {
@@ -82,46 +77,6 @@ describe("accent color tokens", () => {
         expect(getAccentColorStyle("#3366CC")).toContain("--accent-50p: rgb(51 102 204 / 0.5)");
         expect(getAccentColorStyle(undefined)).toContain("--stalux-accent-color: #eab308");
         expect(() => getAccentColorStyle("#369")).toThrow();
-    });
-});
-
-describe("route transition mapping", () => {
-    it("selects direction-aware page animations and stable post identity", () => {
-        const kinds = [
-            "home",
-            "archive",
-            "links",
-            "words",
-            "about",
-            "tags-index",
-            "tags-detail",
-            "categories-index",
-            "categories-detail",
-            "article",
-            "not-found",
-            "other",
-        ] as const;
-        for (const kind of kinds) {
-            const animation = getRouteAnimation(kind);
-            expect(animation.forwards.new).toHaveProperty("name");
-            expect(animation.backwards.new).toHaveProperty("name");
-            expect(animation.forwards.new).not.toEqual(animation.backwards.new);
-        }
-        expect(getRouteAnimation("article").backwards.new).toMatchObject({
-            name: "stalux-article-enter-back",
-        });
-        expect(getRouteAnimation("tags-detail").forwards.new).toMatchObject({
-            name: "stalux-taxonomy-enter",
-        });
-        expect(getSidebarAnimation("left").forwards.new).toMatchObject({
-            name: "stalux-sidebar-left-in",
-        });
-        expect(getSidebarAnimation("right").backwards.new).toMatchObject({
-            name: "stalux-sidebar-right-back-in",
-        });
-        expect(getPostTitleTransitionName("post-1")).toBe(getPostTitleTransitionName("post-1"));
-        expect(getPostTitleTransitionName("post-1")).not.toBe(getPostTitleTransitionName("post-2"));
-        expect(getPostTitleTransitionName("post-1")).toMatch(/^stalux-post-title-[a-z0-9]+$/u);
     });
 });
 

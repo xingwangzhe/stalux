@@ -29,10 +29,10 @@ export default defineConfig({
         // 增量静态构建：未变化的 getStaticPaths 页面直接复用上次输出，大幅缩短构建时间
         incrementalBuild: true,
     },
-    prefetch: {
-        prefetchAll: false,
-        defaultStrategy: "hover",
-    },
+    // Astro 内置预取保持关闭：站内导航由 swup 的 PreloadPlugin 负责（hover /
+    // focus / touchstart），首页导航另有 idle 预热。开启 Astro prefetch 会注入
+    // 第二套客户端预取运行时，并与 swup 重复请求同一批页面。
+    prefetch: false,
     // 仅在包体积分析时生成 sourcemap，让 Sonda 还原真实模块体积。
     vite: {
         build: { sourcemap: analyzeBundle },

@@ -339,24 +339,9 @@ export const styleNames: { classes: Record<string, string>; variables: Record<st
     },
     "animations": {
         "spin": "k0",
-        "stalux-article-enter": "k1",
-        "stalux-article-enter-back": "k2",
-        "stalux-cursor-blink": "k3",
-        "stalux-link-avatar-spin": "k4",
-        "stalux-page-enter": "k5",
-        "stalux-page-enter-back": "k6",
-        "stalux-page-exit": "k7",
-        "stalux-random-spin": "k8",
-        "stalux-sidebar-left-back-in": "k9",
-        "stalux-sidebar-left-back-out": "ka",
-        "stalux-sidebar-left-in": "kb",
-        "stalux-sidebar-left-out": "kc",
-        "stalux-sidebar-right-back-in": "kd",
-        "stalux-sidebar-right-back-out": "ke",
-        "stalux-sidebar-right-in": "kf",
-        "stalux-sidebar-right-out": "kg",
-        "stalux-social-stalux-social-arrive": "kh",
-        "stalux-taxonomy-enter": "ki",
-        "stalux-taxonomy-enter-back": "kj"
+        "stalux-cursor-blink": "k1",
+        "stalux-link-avatar-spin": "k2",
+        "stalux-random-spin": "k3",
+        "stalux-social-stalux-social-arrive": "k4"
     }
 };

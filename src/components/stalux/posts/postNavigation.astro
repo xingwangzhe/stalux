@@ -34,7 +34,6 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
                         data-stalux-motion="previous"
                         class="stalux-pagination-link stalux-pagination-prev-post"
                         rel="prev"
-                        data-astro-prefetch
                     >
                         <span class="stalux-pagination-arrow">
                             <svg
@@ -90,7 +89,6 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
                         data-stalux-motion="next"
                         class="stalux-pagination-link stalux-pagination-next-post"
                         rel="next"
-                        data-astro-prefetch
                     >
                         <p class="stalux-pagination-content">
                             <span class="stalux-pagination-label">{t("post.nextPost")}</span>
