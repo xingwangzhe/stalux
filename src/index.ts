@@ -4,6 +4,7 @@ import { compactStylesPlugin } from "./internal/compact-styles.ts";
 import { modernCssTargets } from "./internal/modern-css.ts";
 import { styleNames } from "./internal/style-names.generated.ts";
 import { swupDebugPlugin } from "./internal/swup-debug-plugin.ts";
+import { SWUP_OPTIONS } from "./internal/swup-options.ts";
 /**
  * Stalux — Astro 博客主题集成入口
  *
@@ -18,6 +19,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import sitemap from "@astrojs/sitemap";
+import swup from "@swup/astro";
 import { mermaidHast, mermaidMdast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import type { AstroIntegration } from "astro";
@@ -181,17 +183,20 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             // Vite re-optimization would otherwise reload the
                             // entire document midway through a Swup navigation.
                             include: [
-                                "swup",
-                                "@swup/a11y-plugin",
-                                "@swup/body-class-plugin",
-                                "@swup/fragment-plugin",
-                                "@swup/parallel-plugin",
-                                "@swup/route-name-plugin",
-                                "@swup/scripts-plugin",
-                                "@swup/head-plugin",
-                                "@swup/js-plugin",
-                                "@swup/preload-plugin",
-                                "@swup/scroll-plugin",
+                                // The router and its plugins are assembled by
+                                // @swup/astro and imported through its client
+                                // entry points, so those are the specifiers Vite
+                                // has to see up front.
+                                "@swup/astro/serialise",
+                                "@swup/astro/client/Swup",
+                                "@swup/astro/client/SwupA11yPlugin",
+                                "@swup/astro/client/SwupBodyClassPlugin",
+                                "@swup/astro/client/SwupFragmentPlugin",
+                                "@swup/astro/client/SwupHeadPlugin",
+                                "@swup/astro/client/SwupPreloadPlugin",
+                                "@swup/astro/client/SwupProgressPlugin",
+                                "@swup/astro/client/SwupRouteNamePlugin",
+                                "@swup/astro/client/SwupScrollPlugin",
                                 "@microsoft/clarity",
                                 "@pagefind/component-ui",
                                 "@waline/client",
@@ -245,6 +250,12 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // 2. 注入全局 CSS
                 injectScript("page-ssr", `import "${srcDir}/styles/generated.css";`);
                 injectScript("page", `import "${srcDir}/scripts/core-runtime.ts";`);
+                // 路由层：@swup/astro 负责装配实例与插件，这里只挂三个护栏
+                // （脚本去重执行、过期 visit 中止、过期样式剪枝）。
+                injectScript(
+                    "page",
+                    `import { installRouteGuards } from "${srcDir}/scripts/route-guards.ts"; installRouteGuards();`,
+                );
 
                 // 3. 注入所有页面路由（仅插件模式，源码模式下使用文件路由）
                 if (isPluginMode) {
@@ -679,8 +690,10 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     };
 
     // 打包内置集成：Astro 的 integrations 配置支持嵌套数组并自动展平（schema 里 val.flat(Infinity)），
-    // 因此这里返回 [coreIntegration, sitemap, expressiveCode]，让消费方一行 `integrations: [stalux()]` 即可完成配置。
-    const bundled: AstroIntegration[] = [coreIntegration];
+    // 因此这里返回 [swup, coreIntegration, sitemap, expressiveCode]，让消费方一行 `integrations: [stalux()]` 即可完成配置。
+    // 路由器必须排在第一位：@swup/astro 先注入初始化脚本，主题的护栏脚本才能在同一轮
+    // 模块求值里直接拿到 window.swup。
+    const bundled: AstroIntegration[] = [swup(SWUP_OPTIONS), coreIntegration];
 
     if (opt.sitemap !== false) {
         const userSitemap = opt.sitemap === true ? undefined : opt.sitemap;
@@ -746,9 +759,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // Page routes are served without a trailing slash; keep the root
                 // and real files (`.md`, `.json`, `.xml`, images) exactly as built.
                 async serialize(item) {
-                    const next = userSitemap?.serialize
-                        ? await userSitemap.serialize(item)
-                        : item;
+                    const next = userSitemap?.serialize ? await userSitemap.serialize(item) : item;
                     if (!next) return next;
                     const url = new URL(next.url);
                     if (url.pathname !== "/") url.pathname = url.pathname.replace(/\/+$/u, "");

@@ -1,12 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { RouteMotionEvent } from "../src/scripts/route-motion";
 
 const clarityPackage = vi.hoisted(() => ({ init: vi.fn() }));
 vi.mock("@microsoft/clarity", () => ({ default: clarityPackage }));
-let prepareMotion: typeof import("../src/scripts/route-motion").prepareRouteMotion;
 
 async function loadRuntime() {
-    prepareMotion = (await import("../src/scripts/route-motion")).prepareRouteMotion;
     await import("../src/scripts/analytics-runtime");
 }
 
@@ -29,7 +26,7 @@ afterEach(() => {
     vi.resetModules();
 });
 
-function environment(dataset: Record<string, string> = {}, autoStartMotion = true) {
+function environment(dataset: Record<string, string> = {}) {
     const scripts: Array<{
         id: string;
         tagName: string;
@@ -96,18 +93,11 @@ function environment(dataset: Record<string, string> = {}, autoStartMotion = tru
     vi.stubGlobal("document", doc);
     vi.stubGlobal("window", host);
     vi.stubGlobal("navigator", { language: "zh-CN" });
-    let currentMotion: RouteMotionEvent | undefined;
-    doc.addEventListener("astro:before-swap", (event) => {
-        currentMotion = event as Event & RouteMotionEvent;
-    });
     return {
         scripts,
         doc,
         host,
-        page: () => {
-            if (autoStartMotion && currentMotion) prepareMotion(currentMotion).start(null);
-            return doc.dispatchEvent(new Event("astro:page-load"));
-        },
+        page: () => doc.dispatchEvent(new Event("astro:page-load")),
     };
 }
 
@@ -211,78 +201,19 @@ describe("native analytics navigation", () => {
         );
     });
 
-    it("yields until content motion is ready and the routed content has a paint", async () => {
-        const { page, host, doc } = environment({ staluxGaId: "G-TEST" });
+    it("yields two paint frames before handing the view to a background task", async () => {
+        const { page, host } = environment({ staluxGaId: "G-TEST" });
         const gtag = vi.fn();
         const postTask = vi.fn((callback: () => void) => Promise.resolve(callback()));
         Object.assign(host, { gtag, scheduler: { postTask } });
         await loadRuntime();
-        let ready: (() => void) | undefined;
-        const transition = new Promise<void>((resolve) => {
-            ready = resolve;
-        });
-        doc.dispatchEvent(
-            Object.assign(new Event("astro:before-swap"), {
-                viewTransition: { ready: transition },
-            }),
-        );
         page();
-        await vi.advanceTimersByTimeAsync(2000);
-        expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(0);
-        ready?.();
         await vi.advanceTimersByTimeAsync(16);
         expect(postTask).not.toHaveBeenCalled();
+        expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(0);
         await vi.advanceTimersByTimeAsync(16);
         expect(postTask).toHaveBeenCalledWith(expect.any(Function), { priority: "background" });
         expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(1);
-    });
-
-    it("shares the real content gate and sends after installation without waiting for animation finished", async () => {
-        const { page, host, doc } = environment({ staluxGaId: "G-TEST" }, false);
-        const gtag = vi.fn();
-        Object.assign(host, {
-            gtag,
-            scheduler: { postTask: (callback: () => void) => Promise.resolve(callback()) },
-        });
-        await loadRuntime();
-        const event = Object.assign(new Event("astro:before-swap"), {
-            viewTransition: { ready: Promise.resolve(), finished: Promise.resolve() },
-        });
-        doc.dispatchEvent(event);
-        page();
-        await vi.advanceTimersByTimeAsync(2000);
-        expect(gtag.mock.calls.filter(([, name]) => name === "page_view")).toHaveLength(0);
-        let finishAnimation: (() => void) | undefined;
-        const animation = {
-            finished: new Promise<void>((resolve) => {
-                finishAnimation = resolve;
-            }),
-            cancel: vi.fn(),
-        };
-        const animate = vi.fn(() => animation);
-        prepareMotion(event).start({
-            animate,
-            isConnected: true,
-            hasAttribute: (name: string) => name === "data-stalux-motion-focus",
-            getBoundingClientRect: () => ({
-                width: 300,
-                height: 50,
-                top: 100,
-                bottom: 150,
-                left: 0,
-                right: 300,
-            }),
-        } as unknown as HTMLElement);
-        await vi.advanceTimersByTimeAsync(32);
-        expect(animate).toHaveBeenCalledWith(
-            { opacity: [0.86, 1] },
-            { duration: 50, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "both" },
-        );
-        expect(animation.cancel).not.toHaveBeenCalled();
-        expect(gtag.mock.calls.filter(([, name]) => name === "page_view")).toHaveLength(1);
-        finishAnimation?.();
-        await vi.advanceTimersByTimeAsync(2000);
-        expect(gtag.mock.calls.filter(([, name]) => name === "page_view")).toHaveLength(1);
     });
 
     it("keeps quick Google visits in FIFO order with each URL/title/referrer snapshot", async () => {
@@ -334,24 +265,13 @@ describe("native analytics navigation", () => {
         await vi.advanceTimersByTimeAsync(32);
         expect(tasks).toHaveLength(1);
 
-        let ready: (() => void) | undefined;
-        const transition = new Promise<void>((resolve) => {
-            ready = resolve;
-        });
-        doc.dispatchEvent(
-            Object.assign(new Event("astro:before-swap"), {
-                viewTransition: { ready: transition },
-            }),
-        );
+        // A new swap invalidates the task the first page already handed out;
+        // its queued payload survives and is sent by the newest task instead.
+        doc.dispatchEvent(new Event("astro:before-swap"));
         host.location.href = "https://example.org/second/";
         doc.title = "Second page";
         page();
         tasks[0]?.();
-        await vi.advanceTimersByTimeAsync(1500);
-        expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(0);
-        expect(tasks).toHaveLength(1);
-
-        ready?.();
         await vi.advanceTimersByTimeAsync(32);
         expect(tasks).toHaveLength(2);
         tasks[1]?.();
@@ -378,28 +298,6 @@ describe("native analytics navigation", () => {
         expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(2);
         await vi.advanceTimersByTimeAsync(2000);
         expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(2);
-    });
-
-    it("flushes an unresolved transition on pagehide and ignores its later ready callback", async () => {
-        const { page, host, doc } = environment({ staluxGaId: "G-TEST" });
-        const gtag = vi.fn();
-        Object.assign(host, { gtag });
-        await loadRuntime();
-        let ready: (() => void) | undefined;
-        const transition = new Promise<void>((resolve) => {
-            ready = resolve;
-        });
-        doc.dispatchEvent(
-            Object.assign(new Event("astro:before-swap"), {
-                viewTransition: { ready: transition },
-            }),
-        );
-        page();
-        host.dispatchEvent(new Event("pagehide"));
-        expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(1);
-        ready?.();
-        await vi.advanceTimersByTimeAsync(2000);
-        expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(1);
     });
 
     it("uses the bounded timer when a visible document stops producing animation frames", async () => {
@@ -433,18 +331,14 @@ describe("native analytics navigation", () => {
         expect(gtag.mock.calls.filter(([, event]) => event === "page_view")).toHaveLength(2);
     });
 
-    it("handles a skipped transition, a starved task and a throwing SDK without blocking later views", async () => {
+    it("handles a starved task and a throwing SDK without blocking later views", async () => {
         const { page, host, doc } = environment({ staluxGaId: "G-TEST" });
         const gtag = vi.fn().mockImplementation((_, event) => {
             if (event === "page_view") throw new Error("SDK failed");
         });
         Object.assign(host, { gtag, scheduler: { postTask: () => new Promise(() => {}) } });
         await loadRuntime();
-        doc.dispatchEvent(
-            Object.assign(new Event("astro:before-swap"), {
-                viewTransition: { ready: Promise.reject(new Error("skipped")) },
-            }),
-        );
+        doc.dispatchEvent(new Event("astro:before-swap"));
         page();
         page();
         await vi.advanceTimersByTimeAsync(2100);

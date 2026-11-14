@@ -71,7 +71,6 @@ afterEach(() => {
     deliver = undefined as unknown as IntersectionObserverCallback;
     observed = [];
     document.body.innerHTML = "";
-    delete document.documentElement.dataset.staluxVtPreset;
 });
 
 it("matches real markup and holds every row on the wipe's first frame", () => {

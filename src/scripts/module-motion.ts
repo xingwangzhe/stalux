@@ -27,13 +27,12 @@ export function mountModuleMotion(): (() => void) | undefined {
                 // so the observer's target needs no assertion.
                 const element = entry.target;
                 observer.unobserve(element);
-                // The router owns a single bounded lead region. Do not layer an
-                // observer entry over that motion or make long comments slide.
+                // The router owns the swap. Do not layer an observer entry over
+                // it or make long comments slide.
                 if (
                     document.hidden ||
                     motionPreference.matches ||
                     document.documentElement.classList.contains("is-changing") ||
-                    document.documentElement.dataset.staluxVtPreset ||
                     // A persisted node kept its identity across the visit; it was
                     // never rebuilt, so re-entering it would be a second cue.
                     element.closest("[data-swup-persist]") ||
