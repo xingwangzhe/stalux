@@ -22,6 +22,8 @@
     "engines": {
         "bun": ">=1.4.0"
     },
+    "// browserslist": "现代基线，与 src/internal/modern-css.ts 的 lightningcss targets 保持一致；当前构建不使用 autoprefixer/postcss，此字段用于声明目标并约束后续工具链。",
+    "browserslist": ["chrome >= 154", "firefox >= 157", "safari >= 26.6"],
     "bin": {
         "stalux": ".release/cli.mjs"
     },

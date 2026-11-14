@@ -26,6 +26,7 @@ const publicVariables = new Set([
     "--font-body",
     "--font-code",
     "--waline-accent-rgb",
+    "--accent-text",
     "--accent",
     "--foreground-60p",
 ]);
