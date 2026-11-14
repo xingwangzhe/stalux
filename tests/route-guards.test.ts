@@ -339,6 +339,17 @@ describe("route guards", () => {
         Object.defineProperty(window, "scrollY", { value: 0, configurable: true });
     });
 
+    it("does not let route-name path classes pile up on the document", async () => {
+        document.documentElement.classList.add("to-posts", "from-archives", "is-changing");
+        const { swup } = await setup();
+        const visit = createVisit("/posts/new");
+        swup.visit = visit;
+        await swup.hooks.trigger("content:replace", visit);
+
+        expect([...document.documentElement.classList]).toEqual(["is-changing"]);
+        document.documentElement.className = "";
+    });
+
     it("keeps the document route in sync with the visit", async () => {
         const { swup } = await setup();
         const visit = createVisit("/posts/new");

@@ -103,6 +103,15 @@ function settle(visit: Visit): void {
         (element) => incoming.some((other) => element.isEqualNode(other)),
     );
     setRoute(visit);
+    // `@swup/astro` always turns on the route-name plugin's `paths` classes
+    // (`from-*` / `to-*` on <html>) when routes are configured, and the plugin
+    // only ever removes `from-*`. Clearing both here keeps the document element
+    // from collecting one `to-*` class per visited page.
+    for (const name of [...document.documentElement.classList]) {
+        if (name.startsWith("to-") || name.startsWith("from-")) {
+            document.documentElement.classList.remove(name);
+        }
+    }
     runners.get(visit)?.();
 }
 
