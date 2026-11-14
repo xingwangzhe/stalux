@@ -1,6 +1,8 @@
 # Swup 页面过渡与生命周期
 
-本文对应 Stalux 1.45.0 的实现。实现以仓库源码为准；本文列出的动画参数是设计与代码预算，不是完整导航耗时、FPS、INP 或跨浏览器性能保证。实际浏览器验证结果由发布验收记录另行提供，未运行的检查不能算作通过。
+> **已被取代（1.57.0）**：路由初始化与插件装配已交给官方 `@swup/astro`，手写路由器与全部路由动效已删除。当前实现见 [RUNTIME.md](./RUNTIME.md#swup-导航与插件边界)；本文保留为上一代实现的决策记录。
+
+本文对应 Stalux 1.58.0 的实现。实现以仓库源码为准；本文列出的动画参数是设计与代码预算，不是完整导航耗时、FPS、INP 或跨浏览器性能保证。实际浏览器验证结果由发布验收记录另行提供，未运行的检查不能算作通过。
 
 ## 路由由谁负责
 
@@ -25,7 +27,7 @@ Swup 的替换容器只有 `main[data-stalux-route]`。header、footer、滚动 
 
 `PostContent` 仍接受 `transitionName` / `transitionScope`：它们是覆盖组件（`src/internal/override.ts`）的既有 props，删掉会让下游自定义实现报类型错误，而他们在主题自己的渲染路径里已不再产生任何 CSS。同理，`utils/view-transitions.ts` 只保留 `getRouteKind`，被删的三个 VT 辅助函数不对应任何稳定的公开契约。
 
-代码入口为 [`view-transitions.ts`](../src/scripts/view-transitions.ts) → [`swup-router.ts`](../src/scripts/swup-router.ts)。程序化导航通过 [`navigation-client.ts`](../src/scripts/navigation-client.ts) 进入同一 Swup 实例，标签云不再调用 Astro 的 `navigate()`。正文导出、JSON/XML、图片/PDF、独立 HTML、外站、新标签页及显式 reload 链接保留文档导航行为。
+代码入口分两层：[`swup-options.ts`](../src/internal/swup-options.ts) 声明 `@swup/astro` 的配置（容器、插件、路由名、fragment 规则），由主题集成在 `astro:config:setup` 里 `injectScript('page', buildInitScript(...))` 注入；[`route-guards.ts`](../src/scripts/route-guards.ts) 只补官方选项表达不了的三件事——脚本单次执行、过期导航中止、过期样式剪枝。程序化导航通过 [`navigation-client.ts`](../src/scripts/navigation-client.ts) 进入同一 Swup 实例，标签云不再调用 Astro 的 `navigate()`。正文导出、JSON/XML、图片/PDF、独立 HTML、外站、新标签页及显式 reload 链接保留文档导航行为。
 
 ## 官方集成与插件的选择
 
@@ -49,29 +51,17 @@ Swup core 精确锁定为 `4.10.0`。快速连续导航的过期 visit 防护使
 
 官方入口：[Astro 集成](https://swup.js.org/integrations/astro/)、[Astro 集成源码与手动初始化说明](https://github.com/swup/astro)、[主题预设](https://swup.js.org/themes/)、[JSPlugin](https://swup.js.org/plugins/js-plugin/)、[配置](https://swup.js.org/options/)。
 
-## 设计稿怎样映射到页面
+## 路由没有动效
 
-动效对象是新页可见标题所属的有界引导区，高度不得超过 min(420px, 视口高60%)；超出时退回可见标题。正文、评论、长列表保持可读与原位，main 不做整体动画。目标不可见、文档隐藏或动画 API 不可用时直接结算，不滚回标题播放效果。
+1.58.0 起主题不再有任何路由过渡动画：没有入场/退场、没有交叉淡入、没有 `SwupJsPlugin` 自定义动画，也不启用官方 fade/slide/overlay 主题。`theme: false` + `animationClass: false` 让 Swup 的换页就是一次同步的 DOM 替换。
 
-策略由 [route-motion-policy.ts](../src/utils/route-motion-policy.ts) 选择，由 [route-motion.ts](../src/scripts/route-motion.ts) 实现。目标 HTML、CSS 和有时限字体准备完成后，旧引导区 80ms opacity 1→.82，桌面 Y0→-4px；手机无位移。下表描述随后新页的单次入场，无人为 delay。
+理由与代价都要说清楚：
 
-| 场景 / 策略 | 桌面有界引导区 | 手机 |
-| --- | --- | --- |
-| 普通跨页 glide | opacity .72→1，160ms | 120ms纯淡入 |
-| 普通文章间 article | opacity .72→1，Y4px→0，180ms | 120ms纯淡入 |
-| 进入内容 enter | opacity .72→1，Y6px→0，180ms | 120ms纯淡入 |
-| 返回索引 up | opacity .8→1，Y-4px→0，160ms | 120ms纯淡入 |
-| 同维度详情 taxonomy | opacity .72→1，X6px→0，160ms | 120ms纯淡入 |
-| 明确上一篇 / 下一篇 | opacity .76→1，X-8px / +8px→0，180ms | 120ms纯淡入 |
-| 关于、友链、一言 panel | opacity .76→1，Y4px→0，160ms | 120ms纯淡入 |
-| 回首页 home | opacity .76→1，Y4px→0，180ms | 120ms纯淡入 |
-| 历史恢复 restore | 恢复阅读位置，不重播内容动画 | 同桌面 |
-| 404 error | opacity .85→1，100ms | 120ms纯淡入 |
-| reduce、原生手势、隐藏、同URL/hash | 立即可读，不播放 | 同桌面 |
+- **收益**：`route-motion.ts`（340 行）、`route-out.ts`（63 行）、`swup-router.ts`（580 行）以及它们的测试（约 1800 行）全部删除；换页时序不再需要维护动画与 gate 的配合。
+- **代价**：跨页回顶从原来的 80–180ms 缓动变成瞬时归零；页面内容直接出现，没有淡入。这是"移除全部动效"的直接结果，不是缺陷。
+- `prefers-reduced-motion` 仍然尊重：无动效本身就是 reduce 的最终形态。
 
-完整55种模块的设计、实现映射和减动画策略见 [MOTION.md](MOTION.md)。
-
-首页、归档、文章、分类/标签索引及详情、关于、友链、说说和 404 统一进入这张策略表。桌面标签 Canvas 的词不参与共享元素 morph，手机标签卡片也不逐项 stagger。原审查稿中的共享标题只是条件式备选，本次不将任意列表标题冒充已经实现的几何匹配。
+模块级微交互（按钮悬停、卡片浮起、搜索弹层、目录高亮）不在路由动效范围内，保持原样，见 [MOTION.md](MOTION.md)。
 
 同 URL 点击保持当前阅读位置；同页 hash 使用锚点滚动，不换 main、不重播页面入场，也不重新选择背景。前进/返回与普通“返回列表”链接不同：前者恢复历史条目的位置，后者仍是新的导航。
 

@@ -129,31 +129,13 @@ it("unrolls one bounded group once it becomes visible", () => {
     expect(disconnect).toHaveBeenCalledOnce();
 });
 
-it("lets a running route cue settle before the sheet starts unrolling", () => {
-    const items = [item()];
-    const group = container(items);
-    containers = [group];
-    dataset.staluxVtPreset = "enter";
-    const dispose = mountListReveal();
-    enter(group);
-    expect(at(items).animate).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({ delay: 75 }),
-    );
-    dispose?.();
-});
-
-it("leaves persisted shells, restored history and reduced motion alone", () => {
+it("leaves persisted shells and reduced motion alone", () => {
     const persisted = [item()];
     containers = [container(persisted, true)];
     expect(mountListReveal()).toBeUndefined();
     expect(observe).not.toHaveBeenCalled();
 
     containers = [container([item()])];
-    dataset.staluxVtPreset = "restore";
-    expect(mountListReveal()).toBeUndefined();
-
-    dataset = {};
     preference.matches = true;
     expect(mountListReveal()).toBeUndefined();
 
@@ -271,11 +253,6 @@ it("only holds the groups the reader can already see", () => {
 it("never primes a document it would not animate", () => {
     const restored = item();
     containers = [container([restored])];
-    dataset.staluxVtPreset = "restore";
-    primeListReveal();
-    expect(restored.animate).not.toHaveBeenCalled();
-
-    dataset = {};
     preference.matches = true;
     primeListReveal();
     expect(restored.animate).not.toHaveBeenCalled();

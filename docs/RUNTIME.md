@@ -9,35 +9,39 @@
 | `astro:config:setup` | 注入路由、集成、默认 Sätteri 插件、字体配置及 Vite 转换 | 此时配置还可能被后续集成修改 |
 | `astro:config:done` | 用最终 publicDir 同步背景、数学字体与许可；根据最终 outDir 定位输出 | 不重写不变文件，保留消费方自定义资源 |
 | `astro:build:done` | HTML 图片/字体 AST 后处理、缓存、Pagefind | 缓存命中直接复用；未命中只解析一次 HTML，变更节点统一输出 |
-| `astro:before-preparation` | 包装原导航 loader，预热目标页正文字体 | 最多等待 150ms，最多复用 16 个离线 FontFace；失败/取消不阻断切页，旧页字体不被替换 |
-| `astro:before-swap` | 清理旧页观察器、定时器、交互和 WebMCP 注册批次 | 异步旧任务完成后不能继续挂载到新页 |
-| `astro:page-load` | 通过共享页面运行时挂载当前 DOM 交互、注册 WebMCP | 去重注册，销毁异常仍释放监听器；持久背景保留跨页状态 |
+| `astro:before-swap` | 清理旧页观察器、定时器、交互和 WebMCP 注册批次 | 由 `@swup/astro` 在 head 更新后、容器替换前派发；异步旧任务完成后不能继续挂载到新页 |
+| `astro:after-swap` | 刷新持久侧栏 slot、剪枝过期样式 | 替换完成后、任何页面模块挂载前 |
+| `astro:page-load` | 通过共享页面运行时挂载当前 DOM 交互、注册 WebMCP | 页面脚本执行完成后才派发；首屏在文档解析完成时派发一次，不等 `window.load` |
 
 官方钩子说明见 [Integration API](https://docs.astro.build/en/reference/integrations-reference/) 和 [View Transitions 生命周期](https://docs.astro.build/en/guides/view-transitions/#lifecycle-events)。项目记录了官方文档 MCP `https://mcp.docs.astro.build/mcp`，传输为 Streamable HTTP；查询工具为 `search_astro_docs`。配置保存不等于当前客户端已加载，应实际检查连接并查询。
 
 ## Swup 导航与插件边界
 
-实现入口为 [swup-router.ts](../src/scripts/swup-router.ts)，脚本适配见 [navigation-scripts.ts](../src/scripts/navigation-scripts.ts)。Swup 4.10.0 负责导航；Astro 提供静态 HTML。主题将 Swup hooks 转发为页面组件使用的 Astro 生命周期事件。
+实例与插件装配由官方 `@swup/astro` 完成：主题只在 [swup-options.ts](../src/internal/swup-options.ts) 里声明配置，集成在 `astro:config:setup` 注入初始化脚本；主题不再手写 `new Swup({...})`，也不再自带路由动效。三个无法用它的选项表达的正确性护栏留在 [route-guards.ts](../src/scripts/route-guards.ts)，通过 `window.swup` 挂 hook：
+
+| 护栏 | 为什么不能用选项表达 |
+| --- | --- |
+| 脚本按会话去重执行 | `reloadScripts: true` 会无差别重跑统计 SDK，`false` 则新页脚本不执行；Astro 的 `page-load` 还需要有顺序的完成栅栏 |
+| 过期 visit 中止 | swup 在 `await visit:start` 之后会把状态重置成 `started`，被取消的旧导航会复活并覆盖新页面；只有重新调用内部 `visit.abort()` 能停掉剩余 hook 链 |
+| 过期样式剪枝 | Head 插件为等新样式保留旧样式，但从不回收；每页都有独立的字体与页面样式，长会话会持续增长 |
 
 | 插件 | 职责与范围 |
 | --- | --- |
-| Body Class | 同步 `page-` 前缀的 body class 和 `data-stalux-*` 属性，排除背景运行时属性；菜单等其他 class 保留 |
-| Route Name | 为首页、文章、归档、标签、分类、关于、友链、一言和 404 命名；目标路由名同步到 html 与 main 的路由属性 |
+| Head | `awaitAssets` 等新样式加载完再替换；`persistTags` 保留旧样式直到护栏剪枝 |
 | Fragment | 文章间只替换 `#swup-article`；标签和分类详情间只替换 `#swup-taxonomy`；其他导航替换 `#swup-main` |
-| Parallel | 普通导航中旧容器淡出与新内容入场并行；旧容器立即 inert、退出文档流并移除非持久节点的 ID，结束或取消时移除；历史恢复、减少动态和隐藏页面使用串行替换 |
-| Scripts | 通过官方 `runScript()` 执行页面脚本；主题适配层负责模块顺序、完成等待、取消和会话去重 |
-| Head、Preload、Progress、Scroll、Accessibility、JS | 分别管理 head 资源、预取、进度条、滚动、无障碍与 JS 动画完成等待 |
+| Body Class | 同步 `page-` 前缀的 body class 和 `data-stalux-*` 属性，排除背景运行时属性 |
+| Route Name | 为首页、文章、归档、标签、分类、关于、友链、一言和 404 命名；目标路由名同步到 html 与 main 的路由属性 |
+| Preload、Progress、Scroll、Accessibility | 预取、延迟 80ms 的进度条、滚动与无障碍播报 |
+| Scripts | 关闭（`reloadScripts: false`），由 [navigation-scripts.ts](../src/scripts/navigation-scripts.ts) 与护栏执行 |
 | Debug | devDependency，仅开发构建动态加载；生产 preview 不加载 |
 
-Debug 在主题源码仓库的开发构建自动启用；消费项目如需同样的日志，可执行 `bun add -d @swup/debug-plugin`。未安装时虚拟模块返回空实现，生产构建不解析该依赖。
+没有路由动效：`theme: false` 且 `animationClass: false`，容器替换同步完成，不等待任何 CSS 过渡，因此也不需要 Parallel 与 JS 插件。页面切换只有最基础的替换；列表展开、模块次要提示等页内动效不属于路由层，仍由各自的 `prefers-reduced-motion` 门控。
 
-页头、页脚和背景位于替换容器之外，保留节点身份。文章间 Fragment 保留主布局和左右侧栏；目录、标签和分类等文章相关 slot 从目标文档刷新。Body Class 不负责组件状态保存。
-
-资源和字体准备完成后，主题在旧容器被替换或并行插入之前派发 `astro:before-swap`；替换后刷新侧栏 slot 并派发 `astro:after-swap`。页面脚本完成后才派发 `astro:page-load`。JS 插件等待入场和旧容器淡出完成，随后结束导航。浏览器原生 View Transition 保持关闭，历史遍历按已保存位置恢复。
+Head 插件先换好 head，随后派发 `astro:before-swap`；容器替换完成后护栏刷新侧栏 slot、剪枝过期样式并派发 `astro:after-swap`；页面脚本执行完成后才在 `page:view` 派发 `astro:page-load`。浏览器原生 View Transition 保持关闭。
 
 普通内联脚本和页面模块按会话去重；`data-astro-rerun` 或 `data-swup-reload-script` 表示每次重新执行，`data-swup-ignore-script` 表示跳过。JSON-LD、import map 和非 JavaScript script 不执行。外部脚本失败或超时后允许重试；导航取消只停止后续执行，不把仍在加载的共享模块当成成功结果。统计 SDK 继续由统计运行时按会话管理，不进入页面脚本重跑范围。
 
-自定义 Fragment 规则必须使用当前页与目标页共有的 ID 容器，且位于 main 内。路由 ID 使用 `swup-` 命名空间，避免与构建期压缩的 `stalux-` CSS class 混用。扩展并行容器时需同时验证快速取消、重复 ID、焦点、目录更新和旧容器清理。
+自定义 Fragment 规则必须使用当前页与目标页共有的 ID 容器，且位于 main 内。路由 ID 使用 `swup-` 命名空间，避免与构建期压缩的 `stalux-` CSS class 混用。页面脚本失败、快速连点与样式剪枝都要在真实浏览器里复核，不能只看单元测试。
 
 ## AST 与缓存
 

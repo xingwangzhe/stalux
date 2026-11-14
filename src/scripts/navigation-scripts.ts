@@ -1,4 +1,3 @@
-import SwupScriptsPlugin from "@swup/scripts-plugin";
 import { createClientLogger } from "./logger";
 
 const logger = createClientLogger("navigation-scripts");
@@ -28,12 +27,18 @@ const javascript = new Set([
 ]);
 
 /**
- * Scripts Plugin owns script recreation. Astro's page-load event additionally
- * needs an ordered completion barrier and once-per-session module semantics.
- * Disable the plugin's automatic whole-document pass: that would also replay
- * analytics SDKs and scripts in retained shells on every navigation.
+ * The theme owns script execution instead of the swup scripts plugin: Astro's
+ * page-load event needs an ordered completion barrier and once-per-session
+ * semantics. The plugin's whole-document pass would also replay analytics SDKs
+ * and the scripts of retained shells on every visit.
  */
-export const navigationScripts = new SwupScriptsPlugin({ head: false, body: false });
+function runScript(from: HTMLScriptElement): HTMLScriptElement {
+    const script = document.createElement("script");
+    for (const { name, value } of from.attributes) script.setAttribute(name, value);
+    script.textContent = from.textContent;
+    from.replaceWith(script);
+    return script;
+}
 
 function describeScript(script: HTMLScriptElement, base: string) {
     const type = (script.getAttribute("type") ?? "").trim().toLowerCase();
@@ -112,7 +117,7 @@ export function prepareNavigationScripts(
                     );
                 if (copy) copy.replaceWith(inert);
                 else (item.head ? document.head : document.body).append(inert);
-                const script = navigationScripts.runScript(inert);
+                const script = runScript(inert);
                 script.async = false;
                 executedNodes.add(script);
                 let observed = script;

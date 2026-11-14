@@ -1,5 +1,4 @@
-/* Swup animates one bounded introductory region through route-motion.ts.
-   Long documents stay visible; the shell is never part of an outgoing layer. */
+/* Page layout only: the router swaps containers without any route animation. */
 [data-stalux-home-content] {
     display: flex;
     flex-direction: column;
