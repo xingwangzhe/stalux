@@ -746,9 +746,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // Page routes are served without a trailing slash; keep the root
                 // and real files (`.md`, `.json`, `.xml`, images) exactly as built.
                 async serialize(item) {
-                    const next = userSitemap?.serialize
-                        ? await userSitemap.serialize(item)
-                        : item;
+                    const next = userSitemap?.serialize ? await userSitemap.serialize(item) : item;
                     if (!next) return next;
                     const url = new URL(next.url);
                     if (url.pathname !== "/") url.pathname = url.pathname.replace(/\/+$/u, "");
