@@ -1,6 +1,6 @@
 # Swup 页面过渡与生命周期
 
-本文对应 Stalux 1.45.0 的实现。实现以仓库源码为准；本文列出的动画参数是设计与代码预算，不是完整导航耗时、FPS、INP 或跨浏览器性能保证。实际浏览器验证结果由发布验收记录另行提供，未运行的检查不能算作通过。
+本文对应 Stalux 1.59.0 的实现。实现以仓库源码为准；本文列出的动画参数是设计与代码预算，不是完整导航耗时、FPS、INP 或跨浏览器性能保证。实际浏览器验证结果由发布验收记录另行提供，未运行的检查不能算作通过。
 
 ## 路由由谁负责
 
@@ -42,38 +42,57 @@ Swup core 精确锁定为 `4.10.0`。快速连续导航的过期 visit 防护使
 | ProgressPlugin | `delay: 80`、`transition: 200`，主题色 3px 条 | Swup 要拿到目标文档才开始任何动画（`animation.wait` + `await page`），这段纯网络等待原本只有 300ms 后才出现的进度条兜底。80ms 让预取命中的导航完全不显示进度条，需要真实往返时又能在点击后立刻给出反馈；进度条本身只有一次合成层变换 |
 | ScrollPlugin | 锚点与常规页面滚动；Stalux 额外按历史索引恢复位置；通过 `scrollFunction` 同步执行 instant 滚动并结算 start/end | 特别覆盖减少动态与浏览器原生手势场景；自定义 instant 回调不添加默认实现的 wheel/scrollend 一次性监听器，避免无位移滚动时监听器持续驻留 |
 | JSPlugin | 在 Swup 的 incoming animation 阶段等待 Stalux 的可取消标题动效 | Swup 知道真实结束时间，统计可等待同一个完成信号，背景独立于软导航 |
-| `@swup/astro` | 核对 1.8.0 源码与 README 后不启用 | 该集成的全部工作是 `astro:config:setup` 里 `injectScript('page', buildInitScript(options))`：把一段序列化配置的字符串脚本注入每页，在客户端新建 Swup 实例。它无法表达本主题需要的 `SwupJsPlugin` 自定义动画、`scrollFunction`、`ignoreVisit`、并行 + fragment 容器组合与 visit hook 时序；默认值还与本主题相反（`loadOnIdle: true` 会把路由初始化推迟到 idle，`reloadScripts: true` 会整页重跑脚本）。启用它等于用更弱的配置换一层额外抽象 |
+| `@swup/astro` | 不引入，任何形式的依赖里也不出现 | 它把依赖锁在 `@swup/scroll-plugin` 3.x：`scroll-plugin` 4.0.0 于 **2025-08** 发布（`scrollFunction` 等能力只在 4.x），而集成层到 **2026-02** 仍未跟进。主题要的正是 4.0.0 的自定义 `scrollFunction`，用集成层等于先降级再包一层。此外该集成的全部工作是 `astro:config:setup` 里 `injectScript('page', buildInitScript(options))`：注入一段序列化配置的字符串脚本，在客户端新建 Swup 实例。它无法表达本主题需要的 `SwupJsPlugin` 自定义动画、`scrollFunction`、`ignoreVisit`、并行 + fragment 容器组合与 visit hook 时序；默认值还与本主题相反（`loadOnIdle: true` 把路由初始化推迟到 idle，`reloadScripts: true` 整页重跑脚本）。硬接入 `new Swup()` 让 `swup@4.10.0` 与 11 个官方插件直接受控，是这套动效与生命周期的前提 |
 | Fade / Slide / Overlay theme | 未直接套用 | 这些是预设效果，不能表达 Stalux 的路由语义、手机纯淡入与长内容约束；本实现使用 JSPlugin 的分路由策略 |
 | ScriptsPlugin | 未全量重跑当前页面的脚本 | 主题控制自己的初始化和清理。首次脚本执行与显式 `data-astro-rerun` 分开处理，避免统计 SDK、全局监听器和评论重复创建 |
 | 原生 View Transition / 并行整页副本 / morph | 未作为路由动画基础 | 不拍摄或缩放整篇长文章，不强行匹配 Canvas 标签词、头像或多行标题，也不创建离开的正文副本 |
 
 官方入口：[Astro 集成](https://swup.js.org/integrations/astro/)、[Astro 集成源码与手动初始化说明](https://github.com/swup/astro)、[主题预设](https://swup.js.org/themes/)、[JSPlugin](https://swup.js.org/plugins/js-plugin/)、[配置](https://swup.js.org/options/)。
 
-## 设计稿怎样映射到页面
+## 动效对象：内容舞台与引导区
 
-动效对象是新页可见标题所属的有界引导区，高度不得超过 min(420px, 视口高60%)；超出时退回可见标题。正文、评论、长列表保持可读与原位，main 不做整体动画。目标不可见、文档隐藏或动画 API 不可用时直接结算，不滚回标题播放效果。
+动效不再只作用于标题。每个页面自行提名一个**内容舞台**（`[data-stalux-motion-stage]`：文章列、归档列表、标签卡片、友链列表、说说列表、首页内容块）。没有提名时，才测量最大的 `[data-stalux-motion-content]`；`[data-swup-persist]` 子树（文章三栏外壳）永不参与。标题块单独标 `[data-stalux-motion-region]`，只在舞台无法位移时承担位移。
 
-策略由 [route-motion-policy.ts](../src/utils/route-motion-policy.ts) 选择，由 [route-motion.ts](../src/scripts/route-motion.ts) 实现。目标 HTML、CSS 和有时限字体准备完成后，旧引导区 80ms opacity 1→.82，桌面 Y0→-4px；手机无位移。下表描述随后新页的单次入场，无人为 delay。
+两个约束决定了这套结构：
 
-| 场景 / 策略 | 桌面有界引导区 | 手机 |
+1. **舞台不许被无谓层化。** 给元素加 `transform` 会让它成为独立合成层，层尺寸等于元素完整外框。一篇 28000px 的文章列在 2560px 宽窗口上是约 78MB 纹理，而且要在换页关键路径上光栅化。因此舞台高度超过 **2 倍视口**时只做 `opacity` 交叉淡入，位移改由高度受 `min(480px, 视口高×0.6)` 限制的引导区承担。这个判断来自 `isOversizedStage()` 的实测高度，不靠页面类型假设。
+2. **两段必须首尾相接。** 退场填充效果保留到入场第一帧，`releaseOutgoing` 在入场动画的同一个同步块里释放；分数帧不得把新文档先完整显示一次再跳回 0。
+
+### 一次导航的两半
+
+| 阶段 | 在哪执行 | 作用对象 | 说明 |
+| --- | --- | --- | --- |
+| 退场 | `content:insert`（ParallelPlugin 把新容器插到旧容器之前） | 被固定定位的旧容器 | 旧内容在原地淡出，`fill: forwards`，这层遮罩让读者看不到已经插入的新内容 |
+| 入场 | `content:replace` 返回后、`content:scroll` 之前 | 新页舞台（+ 超限时的引导区） | `opacity 0 → 1`；位移只给能安全层化的节点 |
+| 结算 | JSPlugin `in`、`visit:end`、`abort`、`fail` | 同一次 visit 的 gate | 四条路径都释放填充与遮罩，不留半透明文档 |
+
+### 实测参数表（桌面；手机位移 ×0.6、时长 ×0.9）
+
+| 场景 / 策略 | 入场 | 退场 |
 | --- | --- | --- |
-| 普通跨页 glide | opacity .72→1，160ms | 120ms纯淡入 |
-| 普通文章间 article | opacity .72→1，Y4px→0，180ms | 120ms纯淡入 |
-| 进入内容 enter | opacity .72→1，Y6px→0，180ms | 120ms纯淡入 |
-| 返回索引 up | opacity .8→1，Y-4px→0，160ms | 120ms纯淡入 |
-| 同维度详情 taxonomy | opacity .72→1，X6px→0，160ms | 120ms纯淡入 |
-| 明确上一篇 / 下一篇 | opacity .76→1，X-8px / +8px→0，180ms | 120ms纯淡入 |
-| 关于、友链、一言 panel | opacity .76→1，Y4px→0，160ms | 120ms纯淡入 |
-| 回首页 home | opacity .76→1，Y4px→0，180ms | 120ms纯淡入 |
-| 历史恢复 restore | 恢复阅读位置，不重播内容动画 | 同桌面 |
-| 404 error | opacity .85→1，100ms | 120ms纯淡入 |
-| reduce、原生手势、隐藏、同URL/hash | 立即可读，不播放 | 同桌面 |
+| 文章 → 文章 `article` | opacity 0→1，180ms，引导区 Y4px→0 | opacity 1→0，150ms（无位移） |
+| 明确上一篇 / 下一篇 `previous`/`next` | opacity 0→1，150ms，引导区 X∓6px→0 | 130ms |
+| 列表/首页 → 文章 `enter` | opacity 0→1，170ms，Y56px→0（舞台 ≤2 视口时位移在舞台上，否则在引导区） | 150ms |
+| 回首页 `home` | 160ms，Y48px→0 | 140ms |
+| 文章 → 归档/标签索引 `up` | 150ms，Y-44px→0 | 130ms |
+| 标签/分类互跳 `taxonomy` | 140ms，X36px→0 | 130ms |
+| 关于/友链/说说 `panel` | 150ms，Y44px→0 | 130ms |
+| 普通跨页 `glide` | 140ms，Y40px→0 | 120ms |
+| 历史前进后退 `restore` | 不播放入场（桌面与手机一致） | 不播放 |
+| 404 `error` | 130ms 纯淡入 | 110ms |
+| reduce / 隐藏标签页 / 原生手势 / 同 URL / hash | 立即可读，不播放 | 不播放 |
+
+入场统一 `cubic-bezier(0.22, 1, 0.36, 1)`（强 ease-out：快速到位、柔和收尾），退场统一 `cubic-bezier(0.4, 0, 1, 1)`（ease-in：离场加速）。只动 `opacity` 与 `transform`，不动 `filter`、`box-shadow`、`height`。
+
+策略仍由 [route-motion-policy.ts](../src/utils/route-motion-policy.ts) 按 from/to/导航类型选择；[route-motion.ts](../src/scripts/route-motion.ts) 只负责入场实现，[route-out.ts](../src/scripts/route-out.ts) 只负责退场实现。三者不合并，因为策略要能被单测穷举，动效要能被浏览器验收。
 
 完整55种模块的设计、实现映射和减动画策略见 [MOTION.md](MOTION.md)。
 
-首页、归档、文章、分类/标签索引及详情、关于、友链、说说和 404 统一进入这张策略表。桌面标签 Canvas 的词不参与共享元素 morph，手机标签卡片也不逐项 stagger。原审查稿中的共享标题只是条件式备选，本次不将任意列表标题冒充已经实现的几何匹配。
+首页、归档、文章、分类/标签索引及详情、关于、友链、说说和 404 统一进入这张策略表。桌面标签 Canvas 的词不参与共享元素 morph，手机标签卡片也不逐项 stagger。
 
-同 URL 点击保持当前阅读位置；同页 hash 使用锚点滚动，不换 main、不重播页面入场，也不重新选择背景。前进/返回与普通“返回列表”链接不同：前者恢复历史条目的位置，后者仍是新的导航。
+**未实现：卡片封面 → 文章头图的共享元素 morph。** 它需要列表卡片与文章头图共用 `view-transition-name`，而 `document.startViewTransition()` 会对整个文档做快照：文章页一次快照就是数万像素高。局部使用需要把 morph 收敛到两个元素的独立快照层，收益是转场观感、成本是长文章首帧的不可控耗时，因此本版只做了 4.1/4.2 的基础版，shader/几何匹配留待单独的预算与测量。
+
+同 URL 点击保持当前阅读位置；同页 hash 使用锚点滚动，不换 main、不重播页面入场，也不重新选择背景。前进/返回与普通“返回列表”链接不同：前者恢复历史条目的位置，后者仍是新的导航。换页前 `glideToTop()` 把旧文档滚回顶部（80–140ms 二次缓出，上限收到 140ms，因为读者对“页面自己滚动”的容忍度低于动画）；`hasUAVisualTransition` 已存在时不再叠加。
 
 说说的 `#word-*` 永久链接更新当前 history 条目时保留 Swup 的 `source`、`index` 与已有自定义状态，并把 `url` 同步为当前 pathname、query 和 hash。普通首次进入带 hash 的说说页面仍在两帧后定位；历史前进/返回不再次自动定位旧 hash，以保留读者后来滚动到的位置。减少动态偏好下，明确点击锚点使用 instant 滚动。
 
@@ -88,9 +107,9 @@ Swup core 精确锁定为 `4.10.0`。快速连续导航的过期 visit 防护使
 | 加载目标文档后、替换前 | 收集目标脚本，给目标正文字体最多 150ms 准备时间 | `astro:after-preparation` |
 | `content:replace` 前半段 | HeadPlugin 等待新样式；旧交互仍在；准备完成才清理旧页面运行时与 WebMCP | `astro:before-swap`，带真实目标 Document；同一事件绑定共享动效 gate |
 | 只替换 main 后 | 更新主题页面状态，移除过期主题样式，保留背景与导航节点，执行首次遇到的页面脚本 | `astro:after-swap` |
-| `content:scroll` | 常规进入滚到顶部/目标锚点；历史恢复对应条目的位置与链接焦点；可见标题立即开始动画 | 不额外伪造导航 |
+| `content:scroll` | 常规进入滚到顶部/目标锚点；历史恢复对应条目的位置与链接焦点；内容舞台在替换后的同一同步块里开始入场 | 不额外伪造导航 |
 | `page:view` | 新模块已注册，挂载计数、评论、目录、标签云等当前 DOM 行为 | `astro:page-load` |
-| JSPlugin `in` | 等待同一个已启动的标题动画完成；慢模块不会使已显示标题延后跳动 | 共享 `ready` / `finished` gate |
+| JSPlugin `in` | 等待同一个已启动的内容动效完成；慢模块不会让已显示的内容延后跳动 | 共享 `ready` / `finished` gate |
 | `visit:end` / abort / fail | 结算或取消 gate，清导航状态；旧代次不能清新代次 | 释放本次 signal 与页面状态 |
 
 [`page-runtime.ts`](../src/scripts/page-runtime.ts) 继续按全局 key 注册页面行为，在 before-swap dispose，在解析完成或 page-load 挂载。首次挂载不依赖 `window.load`，因此慢图片、统计 SDK、评论服务或 iframe 不应把首访交互一直拖到所有资源加载结束。
@@ -111,7 +130,22 @@ Swup 在目标页未提交时可中止旧 visit，提交后的新导航会按其
 
 ## 验证边界
 
-发布验收需要在真实 myblog 的独立副本中链接主题进行 dev 检查，再用实体主题包执行生产构建和 preview。真实 myblog 升级发生在副本验证通过之后。此文不把历史 1.41.0 的测量数据算作 Swup 实现的结果。
+发布验收在真实 myblog 的独立副本中进行：`npm pack` 出实体主题包 → `file:` 依赖安装（不使用源码软链）→ 生产构建 → `astro preview`。**不使用 dev 服务器验收**，dev 只用于编辑。真实 myblog 升级发生在副本验证通过之后。此文不把历史 1.41.0 的测量数据算作 Swup 实现的结果。
+
+### 1.59.0 实测（Chromium 157，`astro preview`，桌面 1280×720）
+
+| 验收项 | 实测 |
+| --- | --- |
+| 软导航 | `header`/`footer` 节点身份不变，`performance.getEntriesByType("navigation").length` 始终 1，`main` 始终 1 个 |
+| 文章 → 文章 | 136 帧采样，`main` 文本长度最小 1252（无空帧），侧栏节点身份不变，舞台 opacity 时间线 1.00 → 0.00@143ms → 0.44@222ms → 1.00@321ms |
+| 列表 → 文章 | 引导区 `translateY` 实测 56 → 34 → 19 → 10 → 5 → 2 → 0（170ms），舞台只做 opacity |
+| 文章 → 归档 | 引导区 `translateY` 实测 -44 → -25 → -12 → -6 → -3 → -1 → 0（150ms），舞台只做 opacity |
+| 快速连点 | 90ms 间隔点 4 篇，最终 URL 等于第 4 个目标；`.is-next-container`/`.is-previous-container` 残留 0 |
+| 后退两次 | URL 与 `document.title` 逐条对应（/about → /tags → /archives） |
+| Waline | 两次进入同一篇文章，`#waline-container` 恒为 1，`.wl-*` 节点 39 个不翻倍 |
+| 统计去重 | 连续软导航 5 次，GA `page_view` 从 1 → 6，增量恰好 5，`page_path` 与 5 个目标一一对应 |
+| 减少动态 | 运行时替换 `matchMedia` 后导航：`document.getAnimations()` 最大 0，舞台 opacity 1 且无内联样式残留，`staluxMotionPending` 未出现 |
+| 样式不泄漏 | 连续 17 次导航，`head` 内 `style`+`link[rel=stylesheet]` 起始 6、结束 6（区间 5–8，按页面模块上下浮动，不随导航次数增长） |
 
 | 验证项 | 应记录的证据 |
 | --- | --- |

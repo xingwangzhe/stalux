@@ -1,7 +1,7 @@
 import type { AuthorData, SiteData } from "@schemas/config";
 import type { SEOProps } from "astro-seo";
 import { langToOpenGraphLocale } from "./i18n";
-import { getMarkdownPath, getRouteKind, normalizePublicPath } from "./public-routes";
+import { getMarkdownPath, getRouteKind, normalizePublicPath, toPublicUrl } from "./public-routes";
 import type { SocialImage } from "./social-image";
 
 export type TwitterCardType = "summary" | "summary_large_image";
@@ -162,7 +162,10 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
         "@type": "Person",
         "@id": `${siteUrl}/#author`,
         name: author.name,
-        url: `${siteUrl}/about/`,
+        // Route URLs are emitted without a trailing slash everywhere else
+        // (canonical, og:url, sitemap, feeds). Structured data must match, or
+        // crawlers see /about/ and /about as two entities.
+        url: toPublicUrl(siteUrl, "/about"),
         image: authorImage,
         ...(sameAs.length ? { sameAs } : {}),
         ...(author.jobTitle ? { jobTitle: author.jobTitle } : {}),
@@ -191,7 +194,7 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
             "@type": "ListItem",
             position: breadcrumbItems.length + 1,
             name: page.categories[0],
-            item: `${siteUrl}/categories/${encodeURIComponent(page.categories[0])}/`,
+            item: toPublicUrl(siteUrl, `/categories/${encodeURIComponent(page.categories[0])}`),
         });
     }
     if (routeKind !== "home") {

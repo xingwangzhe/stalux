@@ -1,4 +1,9 @@
-vi.mock("../src/scripts/route-out", () => ({ animateRouteOut: vi.fn(async () => () => {}) }));
+vi.mock("../src/scripts/route-out", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("../src/scripts/route-out")>()),
+    // The non-parallel exit path is exercised directly in route-out.test.ts;
+    // here only the bridge timing matters, so it settles immediately.
+    animateRouteOut: vi.fn(async () => () => {}),
+}));
 
 import type { Options as ScrollOptions } from "@swup/scroll-plugin";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -486,8 +491,10 @@ describe("Swup navigation bridge and persistent shell", () => {
         expect(ready).toBe(true);
         expect(finished).toBe(false);
         expect(article.animate).toHaveBeenCalledWith(
-            { opacity: [0, 1], transform: ["translate3d(0, 56px, 0)", "translate3d(0, 0, 0)"] },
-            { duration: 170, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "both" },
+            // A 4,000px column is taller than two viewports, so it cross-fades
+            // instead of becoming a compositor layer.
+            { opacity: [0, 1] },
+            { duration: 170, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "both" },
         );
         // The persisted sidebars belong to the shell, not to the route cue.
         expect(sidebar.animate).not.toHaveBeenCalled();

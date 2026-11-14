@@ -97,6 +97,35 @@ it("aborts a pending outgoing effect and restores the old cue", async () => {
     expect(cancel).toHaveBeenCalled();
 });
 
+it("uses the 150ms in-place exit between two articles", async () => {
+    const animate = vi.fn(() => ({ finished: Promise.resolve(), cancel: vi.fn() }));
+    stubDocument({ article: node("article", animate) });
+    const release = await animateRouteOut("article", new AbortController().signal);
+    expect(animate).toHaveBeenCalledWith(
+        { opacity: [1, 0] },
+        { duration: 150, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" },
+    );
+    release();
+});
+
+it("keeps an oversized column off the compositor while it leaves", async () => {
+    const animate = vi.fn(() => ({ finished: Promise.resolve(), cancel: vi.fn() }));
+    const tall = node("article", animate);
+    tall.getBoundingClientRect = () => ({
+        width: 1000,
+        height: 4000,
+        top: 0,
+        bottom: 4000,
+        left: 0,
+        right: 1000,
+    });
+    stubDocument({ article: tall });
+    const release = await animateRouteOut("up", new AbortController().signal);
+    // A fade carries no 4,000px texture; the offset would.
+    expect(animate).toHaveBeenCalledWith({ opacity: [1, 0] }, expect.anything());
+    release();
+});
+
 it("does nothing for a preset without motion or a missing stage", async () => {
     const animate = vi.fn();
     stubDocument({ article: null });

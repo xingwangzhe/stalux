@@ -16,7 +16,7 @@ import { prepareNavigationFont } from "./navigation-font";
 import "./navigation-client";
 import { navigationScripts, prepareNavigationScripts } from "./navigation-scripts";
 import { prepareRouteMotion, type RouteMotion } from "./route-motion";
-import { animateRouteOut } from "./route-out";
+import { animateRouteOut, playStageExit } from "./route-out";
 import { hydrateShells, markRetainedShells } from "./shell-hydration";
 import { cancelPageScroll, glideToTop, type PageGlide, scrollPage } from "./smooth-scroll";
 
@@ -297,6 +297,11 @@ export function installSwupRouter(): Swup {
             dispatchNavigation("astro:before-swap", context, context.incomingDocument),
         );
         markRetainedShells();
+        // Parallel visits put the incoming container *behind* a pinned copy of
+        // the outgoing one, so this fade is the mask the entry cue plays under:
+        // the reader never sees the finished page before its own cue starts.
+        // The direction, duration and easing come from the same policy table as
+        // the entry half, so both halves read as one gesture.
         const animations: Animation[] = [];
         for (const { previous } of containers) {
             const rect = previous.getBoundingClientRect();
@@ -318,12 +323,8 @@ export function installSwupRouter(): Swup {
                 pointerEvents: "none",
                 zIndex: "1",
             });
-            animations.push(
-                previous.animate(
-                    { opacity: [1, 0], transform: ["translateY(0)", "translateY(-12px)"] },
-                    { duration: 160, easing: "ease-out", fill: "forwards" },
-                ),
-            );
+            const cue = playStageExit(context.preset, context.controller.signal, previous);
+            if (cue) animations.push(...cue.animations);
         }
         const remove = () => {
             for (const animation of animations) animation.cancel();

@@ -59,9 +59,20 @@ const CONTENT = "[data-stalux-motion-content]";
 // because measuring an article column forces a full layout of a document that
 // is tens of thousands of pixels tall, before it has ever been painted.
 const STAGE = "[data-stalux-motion-stage]";
+// The bounded lead region of a page (its title block). It carries the entry
+// offset when the stage itself is too tall to be a compositor layer.
+const REGION = "[data-stalux-motion-region]";
 // A persist node marks the three-column article shell. Those sidebars keep
 // their identity across visits and must never travel with a route cue.
 const PERSIST = "[data-swup-persist]";
+
+/**
+ * One gesture, two halves: the exit is shorter than the entry and the pair
+ * stays inside ~330ms. Entrance uses a strong ease-out (quick arrival, soft
+ * settle); the exit uses ease-in because an exit accelerates away.
+ */
+const ENTER_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+export const EXIT_EASING = "cubic-bezier(0.4, 0, 1, 1)";
 
 interface StageMotion {
     opacity: number;
@@ -72,33 +83,43 @@ interface StageMotion {
     distance: number;
     axis: "x" | "y";
     duration: number;
+    /** Outgoing half of the same gesture. */
+    exit: number;
+    /**
+     * Offset for the bounded lead region when the stage cannot carry a
+     * transform (a stage taller than two viewports, or a zero-distance preset
+     * that still deserves a hint of movement).
+     */
+    nudge?: number;
 }
 
 // One entry per route kind, because the components are not interchangeable: an
 // article opens from below and going back up to an index pulls away upward.
 //
 // Article-to-article is the exception: the reader keeps the same shell (sidebars,
-// header) and only the column changes, so the column fades in place instead of
-// travelling. Sliding a 28,000px column sideways made the whole page look like it
-// jerked, and the shell already tells the reader where they are.
+// header) and only the column changes, so the column cross-fades in place and a
+// 4px settle on the title block supplies the direction. Sliding a 28,000px
+// column sideways made the whole page look like it jerked, and the shell already
+// tells the reader where they are.
 const stageMotions: Record<Exclude<RouteMotionPreset, "none">, StageMotion> = {
-    previous: { opacity: 0, distance: 0, axis: "x", duration: 150 },
-    next: { opacity: 0, distance: 0, axis: "x", duration: 150 },
-    // Entering a different article without a reading-direction trigger.
-    article: { opacity: 0, distance: 0, axis: "y", duration: 150 },
-    // Reaching an article from any list or the home block.
-    enter: { opacity: 0, distance: 56, axis: "y", duration: 170 },
-    home: { opacity: 0, distance: 48, axis: "y", duration: 160 },
+    // Article to article. The most travelled path in a blog: 180ms in, 150ms out.
+    article: { opacity: 0, distance: 0, axis: "y", duration: 180, exit: 150, nudge: 4 },
+    previous: { opacity: 0, distance: 0, axis: "x", duration: 150, exit: 130, nudge: -6 },
+    next: { opacity: 0, distance: 0, axis: "x", duration: 150, exit: 130, nudge: 6 },
+    // Reaching an article from any list or the home block: the one place a
+    // larger offset is allowed, because the reader is looking at the top.
+    enter: { opacity: 0, distance: 56, axis: "y", duration: 170, exit: 150 },
+    home: { opacity: 0, distance: 48, axis: "y", duration: 160, exit: 140 },
     // Leaving an article for the archive or a taxonomy index.
-    up: { opacity: 0, distance: -44, axis: "y", duration: 150 },
-    // Moving between two taxonomy detail pages.
-    taxonomy: { opacity: 0, distance: 36, axis: "y", duration: 140 },
+    up: { opacity: 0, distance: -44, axis: "y", duration: 150, exit: 130 },
+    // Moving between two taxonomy detail pages: lateral reading direction.
+    taxonomy: { opacity: 0, distance: 36, axis: "x", duration: 140, exit: 130 },
     // About / links / words: single-panel pages.
-    panel: { opacity: 0, distance: 44, axis: "y", duration: 150 },
-    glide: { opacity: 0, distance: 40, axis: "y", duration: 140 },
+    panel: { opacity: 0, distance: 44, axis: "y", duration: 150, exit: 130 },
+    glide: { opacity: 0, distance: 40, axis: "y", duration: 140, exit: 120 },
     // History traversal restores what the reader already saw.
-    restore: { opacity: 0, distance: -36, axis: "y", duration: 140 },
-    error: { opacity: 0, distance: 28, axis: "y", duration: 130 },
+    restore: { opacity: 0, distance: 0, axis: "y", duration: 0, exit: 0 },
+    error: { opacity: 0, distance: 0, axis: "y", duration: 130, exit: 110, nudge: 0 },
 };
 
 const laidOut = (element: HTMLElement): boolean => {
@@ -143,13 +164,60 @@ export function getRouteStage(): HTMLElement | null {
     return laidOut(main) ? main : null;
 }
 
+/** A stage taller than this cannot carry a transform without a huge texture. */
+const MAX_STAGE_VIEWPORTS = 2;
+
+/**
+ * Whether the stage must stay on the cross-fade path.
+ *
+ * Transforming an element puts it on its own compositor layer sized to its full
+ * bounds: an article column of 28,000px is roughly 78MB of texture on a 2560px
+ * wide window, rasterised on the navigation's critical path. The guard is a
+ * measurement, not an assumption, because a long post and a short one share the
+ * same markup.
+ */
+export function isOversizedStage(stage: HTMLElement): boolean {
+    const height = stage.getBoundingClientRect().height;
+    return height > window.innerHeight * MAX_STAGE_VIEWPORTS;
+}
+
+/**
+ * The bounded lead region of the current page: the title block, never the body.
+ *
+ * When the stage is too tall to transform, the cue keeps its meaning by moving
+ * this node instead — it is what the reader is looking at on arrival, and it is
+ * a few hundred pixels tall at most.
+ */
+export function getRouteRegion(): HTMLElement | null {
+    const main = document.querySelector<HTMLElement>(MAIN);
+    const region = main?.querySelector<HTMLElement>(REGION);
+    if (!region?.isConnected || region.closest(PERSIST)) return null;
+    const rect = region.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return null;
+    // A region that is itself most of the viewport is a body, not a lead block.
+    if (rect.height > Math.min(480, window.innerHeight * 0.6)) return null;
+    return region;
+}
+
+export interface StageExit {
+    opacity: number;
+    distance: number;
+    axis: "x" | "y";
+    duration: number;
+}
+
 /** Offset applied to the outgoing document, continuing the entry direction. */
-export function getStageExit(preset: RouteMotionPreset): StageMotion | null {
+export function getStageExit(preset: RouteMotionPreset): StageExit | null {
     if (preset === "none") return null;
     const motion = stageMotions[preset];
     // Entering from below means leaving upward, so both halves read as one
     // continuous flow instead of an enter/leave bounce.
-    return { ...motion, distance: -Math.round(motion.distance * 0.72) };
+    return {
+        opacity: motion.opacity,
+        distance: -Math.round(motion.distance * 0.72),
+        axis: motion.axis,
+        duration: motion.exit,
+    };
 }
 
 const motions = new WeakMap<object, RouteMotion>();
@@ -182,7 +250,7 @@ export function getRouteMotionTarget(focus: HTMLElement | null): HTMLElement | n
         );
     };
     if (!visible(focus, Math.min(320, window.innerHeight / 2))) return null;
-    const region = focus.closest?.<HTMLElement>("[data-stalux-motion-region]");
+    const region = focus.closest?.<HTMLElement>(REGION);
     return region?.isConnected && visible(region, Math.min(420, window.innerHeight * 0.6))
         ? region
         : focus;
@@ -202,6 +270,11 @@ const regionMotions: Record<Exclude<RouteMotionPreset, "none">, HeadingMotion> =
     error: { opacity: 0.85, duration: 50 },
 };
 
+/** `translate3d` from an offset on one axis. Zero is not a transform at all. */
+export function offsetTransform(distance: number, axis: "x" | "y"): string {
+    return axis === "x" ? `translate3d(${distance}px, 0, 0)` : `translate3d(0, ${distance}px, 0)`;
+}
+
 /** Share Swup's actual content animation with background and analytics consumers. */
 export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
     const native = event.viewTransition;
@@ -214,18 +287,20 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
     const installed = completion();
     const animationDone = completion();
     const canceled = completion();
-    let animation: Animation | undefined;
+    const running = new Set<Animation>();
     let started = false;
     let disposed = false;
-    const clearAnimation = () => {
-        const active = animation;
-        animation = undefined;
-        try {
-            // Remove fill effects and restore the authored final styles. No
-            // inline transform/opacity survives completion, failure or abort.
-            active?.cancel();
-        } catch {
-            // Releasing an already detached effect must not hold up navigation.
+    const clearAnimations = () => {
+        const active = [...running];
+        running.clear();
+        for (const effect of active) {
+            try {
+                // Remove fill effects and restore the authored final styles. No
+                // inline transform/opacity survives completion, failure or abort.
+                effect.cancel();
+            } catch {
+                // Releasing an already detached effect must not hold up navigation.
+            }
         }
         animationDone.resolve();
     };
@@ -233,7 +308,7 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
         if (disposed) return;
         disposed = true;
         started = true;
-        clearAnimation();
+        clearAnimations();
         installed.resolve();
         canceled.resolve();
         event.signal?.removeEventListener("abort", cancel);
@@ -289,22 +364,54 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
                     // Phones get a shorter throw; the same offset reads as a much
                     // larger move on a narrow viewport.
                     const distance = mobile ? Math.round(spec.distance * 0.6) : spec.distance;
-                    const from =
-                        spec.axis === "x"
-                            ? `translate3d(${distance}px, 0, 0)`
-                            : `translate3d(0, ${distance}px, 0)`;
-                    // A zero distance is a cross-fade in place. Authoring a
-                    // translate3d(0,0,0) would put a 28,000px column on its own
-                    // compositor layer for nothing.
+                    const duration = mobile ? Math.round(spec.duration * 0.9) : spec.duration;
+                    // A stage taller than two viewports only cross-fades; the
+                    // bounded title block carries the offset instead of putting
+                    // a 28,000px layer on the compositor.
+                    const oversized = isOversizedStage(stage);
+                    const stageDistance = oversized ? 0 : distance;
+                    // Whichever node can carry motion does: the column when it is
+                    // short enough to be a layer, the title block otherwise. The
+                    // nudge is the last resort for an in-place cross-fade.
+                    const nudge = spec.nudge ?? 0;
+                    const regionDistance =
+                        stageDistance === 0
+                            ? distance === 0
+                                ? mobile
+                                    ? Math.round(nudge * 0.6)
+                                    : nudge
+                                : distance
+                            : 0;
                     const keyframes: PropertyIndexedKeyframes = { opacity: [spec.opacity, 1] };
-                    if (distance !== 0) keyframes.transform = [from, "translate3d(0, 0, 0)"];
-                    animation = stage.animate(keyframes, {
-                        duration: mobile ? Math.round(spec.duration * 0.9) : spec.duration,
-                        // Strong ease-out: quick arrival, soft settle. The
-                        // built-in ease-out is too weak to read at this size.
-                        easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+                    // A zero distance is a cross-fade in place. Authoring a
+                    // translate3d(0,0,0) would put the column on its own
+                    // compositor layer for nothing.
+                    if (stageDistance !== 0)
+                        keyframes.transform = [
+                            offsetTransform(stageDistance, spec.axis),
+                            "translate3d(0, 0, 0)",
+                        ];
+                    const effect = stage.animate(keyframes, {
+                        duration,
+                        easing: ENTER_EASING,
                         fill: "both",
                     });
+                    running.add(effect);
+                    if (regionDistance !== 0) {
+                        const region = getRouteRegion();
+                        if (region)
+                            running.add(
+                                region.animate(
+                                    {
+                                        transform: [
+                                            offsetTransform(regionDistance, spec.axis),
+                                            "translate3d(0, 0, 0)",
+                                        ],
+                                    },
+                                    { duration, easing: ENTER_EASING, fill: "both" },
+                                ),
+                            );
+                    }
                 } else {
                     const spec = options?.content ? regionMotions[preset] : headingMotions[preset];
                     const keyframes: PropertyIndexedKeyframes = { opacity: [spec.opacity, 1] };
@@ -316,16 +423,23 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
                             "translate3d(0px, 0px, 0)",
                         ];
                     }
-                    animation = target.animate(keyframes, {
-                        duration: mobile ? (options?.content ? 60 : 40) : spec.duration,
-                        easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
-                        fill: "both",
-                    });
+                    running.add(
+                        target.animate(keyframes, {
+                            duration: mobile ? (options?.content ? 60 : 40) : spec.duration,
+                            easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
+                            fill: "both",
+                        }),
+                    );
                 }
-                void animation.finished.then(clearAnimation, clearAnimation);
+                // The longest effect owns completion; a sibling nudge must not
+                // settle the visit before the content cue does.
+                void Promise.all([...running].map((effect) => settle(effect.finished))).then(
+                    clearAnimations,
+                    clearAnimations,
+                );
             } catch {
                 release?.();
-                clearAnimation();
+                clearAnimations();
             } finally {
                 installed.resolve();
             }

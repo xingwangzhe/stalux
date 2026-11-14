@@ -217,12 +217,12 @@ export function renderTaxonomyListMd(
         lines.push(`# ${title}`);
         lines.push("");
     }
-    lines.push(`URL: ${site}/${type}/`);
+    lines.push(`URL: ${toPublicUrl(site, `/${type}`)}`);
     lines.push("");
     const sorted = [...map].sort((a, b) => b[1].length - a[1].length);
     for (const [name, posts] of sorted) {
         const slug = encodeURIComponent(name);
-        const url = `${site}/${type}/${slug}/`;
+        const url = toPublicUrl(site, `/${type}/${slug}`);
         lines.push(buildMdLink(name, url, `${posts.length} posts`));
     }
     lines.push("");
@@ -239,7 +239,7 @@ export function renderTaxonomyPageMd(
 ): string {
     const label = type === "categories" ? "Category" : "Tag";
     const slug = encodeURIComponent(name);
-    const pageUrl = `${site}/${type}/${slug}/`;
+    const pageUrl = toPublicUrl(site, `/${type}/${slug}`);
     const lines: string[] = [];
     lines.push(`# ${label}: ${name}`);
     lines.push("");
@@ -257,7 +257,7 @@ export async function renderAboutMd(site: string): Promise<string> {
     const lines: string[] = [];
     lines.push(`# ${about.data.title || "About"}`);
     lines.push("");
-    lines.push(`URL: ${site}/about/`);
+    lines.push(`URL: ${toPublicUrl(site, "/about")}`);
     lines.push("");
     lines.push((about.body as string) || "");
     lines.push("");
@@ -291,7 +291,7 @@ export function renderLinksMd(config: ConfigMap, site: string, t: (key: string) 
     const lines: string[] = [];
     lines.push(`# ${(linksSection?.title as string) || t("ai.links")}`);
     lines.push("");
-    lines.push(`URL: ${site}/links/`);
+    lines.push(`URL: ${toPublicUrl(site, "/links")}`);
     lines.push("");
     if (linksSection?.sites) {
         const sites = linksSection.sites as Array<{
@@ -318,7 +318,7 @@ export async function renderArchivesMd(
     const lines: string[] = [];
     lines.push(`# ${t("archives.title")}`);
     lines.push("");
-    lines.push(`URL: ${site}/archives/`);
+    lines.push(`URL: ${toPublicUrl(site, "/archives")}`);
     lines.push("");
     lines.push(renderPostListMd(posts, site, exportMd));
     return `${lines.join("\n").trimEnd()}\n`;

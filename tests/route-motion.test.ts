@@ -318,7 +318,12 @@ describe("route stage entry motion", () => {
         };
     }
 
-    function stubStage(parts: { article?: unknown; content?: unknown[]; mainPersist?: boolean }) {
+    function stubStage(parts: {
+        article?: unknown;
+        content?: unknown[];
+        region?: unknown;
+        mainPersist?: boolean;
+    }) {
         const main = {
             isConnected: true,
             getBoundingClientRect: () => ({
@@ -331,6 +336,7 @@ describe("route stage entry motion", () => {
             }),
             querySelector: (selector: string) => {
                 if (selector === "article.stalux-article") return parts.article ?? null;
+                if (selector === "[data-stalux-motion-region]") return parts.region ?? null;
                 if (selector === "[data-swup-persist]") return parts.mainPersist ? {} : null;
                 return null;
             },
@@ -343,14 +349,19 @@ describe("route stage entry motion", () => {
         });
     }
 
-    it("moves the article column, never the whole shell", async () => {
-        const article = stageNode("article", 1000 * 4000);
+    it("moves a short article column on the enter cue", async () => {
+        // 1200px is under twice the 900px viewport, so the column is a safe layer.
+        const article = stageNode("article", 1000 * 1200);
         stubStage({ article: article.node, mainPersist: true });
         const motion = prepareRouteMotion({});
         motion.start(null, { content: true, preset: "enter" });
         expect(article.animate).toHaveBeenCalledWith(
             { opacity: [0, 1], transform: ["translate3d(0, 56px, 0)", "translate3d(0, 0, 0)"] },
-            expect.objectContaining({ duration: 170, fill: "both" }),
+            expect.objectContaining({
+                duration: 170,
+                fill: "both",
+                easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            }),
         );
         article.done.resolve();
         await motion.finished;
@@ -359,11 +370,16 @@ describe("route stage entry motion", () => {
 
     // Article to article keeps the shell and swaps the column in place: the
     // reader stays in the same reading position, so the column must not travel.
-    it.each(["previous", "next", "article"] as const)(
+    it.each([
+        ["article", 180, 4, "y"],
+        ["previous", 150, -6, "x"],
+        ["next", 150, 6, "x"],
+    ] as const)(
         "cross-fades the article column in place for %s",
-        async (preset) => {
+        async (preset, duration, nudge, axis) => {
             const article = stageNode("article", 1000 * 4000);
-            stubStage({ article: article.node, mainPersist: true });
+            const region = stageNode("region", 1000 * 220);
+            stubStage({ article: article.node, region: region.node, mainPersist: true });
             const motion = prepareRouteMotion({});
             motion.start(null, { content: true, preset });
             const [frames, timing] = article.animate.mock.calls[0] as unknown as [
@@ -372,22 +388,61 @@ describe("route stage entry motion", () => {
             ];
             expect(frames.opacity).toEqual([0, 1]);
             expect(frames.transform).toBeUndefined();
-            expect(timing.duration).toBe(150);
+            expect(timing.duration).toBe(duration);
+            // The 4px settle lives on the bounded title block, never on a
+            // 28,000px column.
+            expect(region.animate).toHaveBeenCalledWith(
+                {
+                    transform: [
+                        axis === "x"
+                            ? `translate3d(${nudge}px, 0, 0)`
+                            : `translate3d(0, ${nudge}px, 0)`,
+                        "translate3d(0, 0, 0)",
+                    ],
+                },
+                expect.objectContaining({ duration }),
+            );
             article.done.resolve();
+            region.done.resolve();
             await motion.finished;
         },
     );
 
+    it("cross-fades a column taller than two viewports and moves the lead region", async () => {
+        const article = stageNode("article", 1000 * 28_000);
+        const region = stageNode("region", 1000 * 220);
+        stubStage({ article: article.node, region: region.node, mainPersist: true });
+        const motion = prepareRouteMotion({});
+        motion.start(null, { content: true, preset: "enter" });
+        expect(article.animate).toHaveBeenCalledWith(
+            { opacity: [0, 1] },
+            expect.objectContaining({ duration: 170 }),
+        );
+        expect(region.animate).toHaveBeenCalledWith(
+            { transform: ["translate3d(0, 56px, 0)", "translate3d(0, 0, 0)"] },
+            expect.objectContaining({ duration: 170 }),
+        );
+        article.done.resolve();
+        region.done.resolve();
+        await motion.finished;
+    });
+
     it("leaves an article upward when the reader heads to an index", async () => {
         const article = stageNode("article", 1000 * 4000);
-        stubStage({ article: article.node, mainPersist: true });
+        const region = stageNode("region", 1000 * 220);
+        stubStage({ article: article.node, region: region.node, mainPersist: true });
         const motion = prepareRouteMotion({});
         motion.start(null, { content: true, preset: "up" });
         expect(article.animate).toHaveBeenCalledWith(
-            { opacity: [0, 1], transform: ["translate3d(0, -44px, 0)", "translate3d(0, 0, 0)"] },
+            { opacity: [0, 1] },
+            expect.objectContaining({ duration: 150 }),
+        );
+        expect(region.animate).toHaveBeenCalledWith(
+            { transform: ["translate3d(0, -44px, 0)", "translate3d(0, 0, 0)"] },
             expect.anything(),
         );
         article.done.resolve();
+        region.done.resolve();
         await motion.finished;
     });
 
@@ -500,15 +555,23 @@ describe("route stage entry motion", () => {
             innerHeight: 844,
             matchMedia: (q: string) => ({ matches: q === "(max-width: 768px)" }),
         });
-        const article = stageNode("article", 390 * 3000);
-        stubStage({ article: article.node, mainPersist: true });
+        const article = stageNode("article", 3_000_000);
+        const region = stageNode("region", 390 * 200);
+        stubStage({ article: article.node, region: region.node, mainPersist: true });
         const motion = prepareRouteMotion({});
         motion.start(null, { content: true, preset: "enter" });
+        // Phones scale the throw to 60% and the duration to 90%; the column is
+        // still too tall to layer, so the bounded region carries the offset.
         expect(article.animate).toHaveBeenCalledWith(
-            { opacity: [0, 1], transform: ["translate3d(0, 34px, 0)", "translate3d(0, 0, 0)"] },
+            { opacity: [0, 1] },
+            expect.objectContaining({ duration: 153 }),
+        );
+        expect(region.animate).toHaveBeenCalledWith(
+            { transform: ["translate3d(0, 34px, 0)", "translate3d(0, 0, 0)"] },
             expect.objectContaining({ duration: 153 }),
         );
         article.done.resolve();
+        region.done.resolve();
         await motion.finished;
     });
 });

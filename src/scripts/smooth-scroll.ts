@@ -13,7 +13,9 @@ export interface PageGlide {
 
 /** Bound the pre-swap return-to-top so a 6000px article does not add a second. */
 const GLIDE_MIN_MS = 80;
-const GLIDE_MAX_MS = 180;
+// A reader tolerates "the page moves by itself" far less than an animation, so
+// the walk back to the top is capped at 140ms even on a very long article.
+const GLIDE_MAX_MS = 140;
 const GLIDE_SAFETY_MS = 380;
 
 /**
