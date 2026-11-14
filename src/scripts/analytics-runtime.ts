@@ -1,6 +1,7 @@
 /** Async native SDKs keep live DOM events out of worker proxies during Astro swaps. */
 
 import { createClientLogger } from "./logger";
+import { prepareRouteMotion, type RouteMotionEvent } from "./route-motion";
 
 const logger = createClientLogger("analytics");
 
@@ -31,6 +32,7 @@ const state = window.__staluxAnalyticsRuntime;
 state.scripts ??= new Map();
 
 type GooglePage = {
+    ready: Promise<unknown>;
     payload: {
         page_location: string;
         page_path: string;
@@ -39,6 +41,7 @@ type GooglePage = {
     };
 };
 const googlePages: GooglePage[] = [];
+let transitionReady: Promise<unknown> = Promise.resolve();
 let googleScheduled = false;
 let googleSchedule = 0;
 let googleTimer: ReturnType<typeof setTimeout> | undefined;
@@ -74,9 +77,9 @@ function scheduleGooglePages(): void {
         // A burst of visits stays FIFO, with a separate task for each SDK call.
         scheduleGooglePages();
     };
-    // A queued visit can outlive the page it belongs to; only the paint
-    // ordering of the current document matters here.
-    void Promise.resolve(page).then(() => {
+    // A queued visit can outlive its own transition. Also wait for whichever
+    // incoming snapshot is current when this task is scheduled.
+    void Promise.all([page.ready, transitionReady]).then(() => {
         if (schedule !== googleSchedule) return;
         // Let the routed content paint after native rendering resumes and its own
         // motion is installed. The timer also covers throttled/background frames.
@@ -333,6 +336,7 @@ function trackGooglePage(): void {
     // Capture the visit before yielding: another navigation must not replace its
     // URL, title or virtual referrer while the SDK is waiting for its task.
     googlePages.push({
+        ready: transitionReady,
         payload: {
             page_location: window.location.href,
             page_path: window.location.pathname + window.location.search,
@@ -435,10 +439,11 @@ if (state.installed && (!state.native || state.revision !== 4)) {
     state.native = true;
     state.revision = 4;
     state.installed = true;
-    document.addEventListener("astro:before-swap", () => {
+    document.addEventListener("astro:before-swap", (event) => {
         pendingEarlyView++;
         earlyViewPending = false;
         viewedEarly = false;
+        transitionReady = prepareRouteMotion(event as Event & RouteMotionEvent).ready;
         // Invalidate an older page's frames, timer and posted task before this
         // incoming snapshot starts. Its captured visit remains in the FIFO.
         cancelGoogleSchedule();

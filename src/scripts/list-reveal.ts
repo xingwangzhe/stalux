@@ -11,6 +11,10 @@ const MAX_ITEMS = 16;
 const STAGGER_MS = 22;
 const MAX_DELAY_MS = 200;
 const DURATION_MS = 190;
+// When a route cue is already moving the page body, the sheet waits for it to
+// mostly settle before unrolling. Starting both at once makes the rows wipe
+// open while the whole page is still semi-transparent, which reads as a smudge.
+const ROUTE_LEAD_IN_MS = 75;
 // Strong ease-out: the row arrives fast and settles softly. The built-in
 // ease-out is too weak to read at this size.
 const EASING = "cubic-bezier(0.23, 1, 0.32, 1)";
@@ -55,7 +59,9 @@ function canReveal(): boolean {
     if (typeof IntersectionObserver !== "function") return false;
     if (typeof document === "undefined") return false;
     if (document.hidden) return false;
-    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+    // Returning to a history entry restores what the reader already saw.
+    return document.documentElement.dataset.staluxVtPreset !== "restore";
 }
 
 function groups(): Element[] {
@@ -94,6 +100,11 @@ function nearViewport(group: Element): boolean {
 
 function staggerOf(index: number): number {
     return Math.min(index * STAGGER_MS, MAX_DELAY_MS);
+}
+
+function leadIn(): number {
+    // A route cue leaves its preset on the document element while it runs.
+    return document.documentElement.dataset.staluxVtPreset ? ROUTE_LEAD_IN_MS : 0;
 }
 
 /**
@@ -190,6 +201,7 @@ export function mountListReveal(): (() => void) | undefined {
     };
     const reveal = (container: Element) => {
         if (document.hidden || preference.matches) return;
+        const lead = leadIn();
         for (const [index, row] of rows(container).entries()) {
             if (typeof row.animate !== "function") continue;
             // Prefer the effect created during the swap: it already owns the
@@ -204,7 +216,7 @@ export function mountListReveal(): (() => void) | undefined {
                     primed?.animation ??
                     row.animate(UNROLL_KEYFRAMES, {
                         duration: DURATION_MS,
-                        delay: staggerOf(index),
+                        delay: lead + staggerOf(index),
                         easing: EASING,
                         // Hidden during the stagger delay instead of popping in.
                         fill: "backwards",
@@ -212,7 +224,7 @@ export function mountListReveal(): (() => void) | undefined {
                 if (primed) {
                     // The stagger is counted from now, not from the swap.
                     primed.animation.effect?.updateTiming({
-                        delay: primed.stagger,
+                        delay: lead + primed.stagger,
                     });
                     primed.animation.play();
                 }

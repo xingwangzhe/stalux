@@ -199,6 +199,43 @@ describe("SEO document", () => {
         );
     });
 
+    it("never emits a route URL with a trailing slash", () => {
+        const document = buildSeoDocument(
+            input({
+                pathname: "/posts/example/",
+                page: {
+                    title: "Example",
+                    description: "Example article",
+                    isArticle: true,
+                    date: "2026-02-03T04:05:06.000Z",
+                    categories: ["Astro"],
+                },
+            }),
+        );
+        const urls: string[] = [];
+        const collect = (value: unknown): void => {
+            if (typeof value === "string") {
+                if (/^https?:\/\//u.test(value)) urls.push(value);
+                return;
+            }
+            if (Array.isArray(value)) {
+                for (const item of value) collect(item);
+                return;
+            }
+            if (value && typeof value === "object") {
+                for (const item of Object.values(value)) collect(item);
+            }
+        };
+        collect(document.schema);
+        expect(urls.length).toBeGreaterThan(3);
+        // The site root keeps its single slash; every route must not.
+        expect(new Set(urls.filter((url) => url.endsWith("/")))).toEqual(
+            new Set(["https://example.com/"]),
+        );
+        expect(urls).toContain("https://example.com/about");
+        expect(urls).toContain("https://example.com/categories/Astro");
+    });
+
     it("uses the avatar and a compact Twitter card when no cover exists", () => {
         const document = buildSeoDocument(input({ pathname: "/archives/" }));
         expect(document.openGraph.basic.image).toBe("https://example.com/avatar.png");

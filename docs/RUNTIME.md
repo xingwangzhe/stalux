@@ -9,7 +9,7 @@
 | `astro:config:setup` | 注入路由、集成、默认 Sätteri 插件、字体配置及 Vite 转换 | 此时配置还可能被后续集成修改 |
 | `astro:config:done` | 用最终 publicDir 同步背景、数学字体与许可；根据最终 outDir 定位输出 | 不重写不变文件，保留消费方自定义资源 |
 | `astro:build:done` | HTML 图片/字体 AST 后处理、缓存、Pagefind | 缓存命中直接复用；未命中只解析一次 HTML，变更节点统一输出 |
-| `astro:before-swap` | 清理旧页观察器、定时器、交互和 WebMCP 注册批次 | 由 `@swup/astro` 在 head 更新后、容器替换前派发；异步旧任务完成后不能继续挂载到新页 |
+| `astro:before-swap` | 清理旧页观察器、定时器、交互和 WebMCP 注册批次 | 由 Stalux 路由在 head 更新后、容器替换前派发；异步旧任务完成后不能继续挂载到新页 |
 | `astro:after-swap` | 刷新持久侧栏 slot、剪枝过期样式 | 替换完成后、任何页面模块挂载前 |
 | `astro:page-load` | 通过共享页面运行时挂载当前 DOM 交互、注册 WebMCP | 页面脚本执行完成后才派发；首屏在文档解析完成时派发一次，不等 `window.load` |
 
@@ -17,31 +17,33 @@
 
 ## Swup 导航与插件边界
 
-实例与插件装配由官方 `@swup/astro` 完成：主题只在 [swup-options.ts](../src/internal/swup-options.ts) 里声明配置，集成在 `astro:config:setup` 注入初始化脚本；主题不再手写 `new Swup({...})`，也不再自带路由动效。三个无法用它的选项表达的正确性护栏留在 [route-guards.ts](../src/scripts/route-guards.ts)，通过 `window.swup` 挂 hook：
+实例与插件由主题**硬接入**：[swup-router.ts](../src/scripts/swup-router.ts) 里 `new Swup({...})` 直接持有 `swup@4.10.0` 与 11 个官方插件。不使用 `@swup/astro`——它把 `@swup/scroll-plugin` 锁在 3.x，拿不到 4.0.0 的 `scrollFunction`，也不能表达 JSPlugin 时序、`ignoreVisit`、并行与 fragment 容器组合。完整理由与版本对照见 [view-transitions-swup.md](view-transitions-swup.md)。
 
-| 护栏 | 为什么不能用选项表达 |
-| --- | --- |
-| 脚本按会话去重执行 | `reloadScripts: true` 会无差别重跑统计 SDK，`false` 则新页脚本不执行；Astro 的 `page-load` 还需要有顺序的完成栅栏 |
-| 过期 visit 中止 | swup 在 `await visit:start` 之后会把状态重置成 `started`，被取消的旧导航会复活并覆盖新页面；只有重新调用内部 `visit.abort()` 能停掉剩余 hook 链 |
-| 过期样式剪枝 | Head 插件为等新样式保留旧样式，但从不回收；每页都有独立的字体与页面样式，长会话会持续增长 |
+三条正确性约束写在路由器内部，不依赖第三方集成：
+
+| 约束 | 实现 | 破坏后果 |
+| --- | --- | --- |
+| 脚本每会话一次执行 | [navigation-scripts.ts](../src/scripts/navigation-scripts.ts)：`src` 或 `type+内容` 作 key，`executions` 记录；ScriptsPlugin 的自动整页重跑关闭（`head:false, body:false`） | 统计 SDK 重复初始化、事件重复计数 |
+| 过期 visit 中止 | `visit:transition` / `content:replace` 之前调用内部 `visit.abort()`（[swup-internals.d.ts](../src/scripts/swup-internals.d.ts) 补声明） | 被取代的旧导航复活并覆盖新页面 |
+| 过期样式剪枝 | HeadPlugin `persistTags` 保留旧样式；入场开始后才移除本次作废的那批 | `<head>` 样式随导航次数持续增长 |
 
 | 插件 | 职责与范围 |
 | --- | --- |
-| Head | `awaitAssets` 等新样式加载完再替换；`persistTags` 保留旧样式直到护栏剪枝 |
-| Fragment | 文章间只替换 `#swup-article`；标签和分类详情间只替换 `#swup-taxonomy`；其他导航替换 `#swup-main` |
-| Body Class | 同步 `page-` 前缀的 body class 和 `data-stalux-*` 属性，排除背景运行时属性 |
-| Route Name | 为首页、文章、归档、标签、分类、关于、友链、一言和 404 命名；目标路由名同步到 html 与 main 的路由属性 |
-| Preload、Progress、Scroll、Accessibility | 预取、延迟 80ms 的进度条、滚动与无障碍播报 |
-| Scripts | 关闭（`reloadScripts: false`），由 [navigation-scripts.ts](../src/scripts/navigation-scripts.ts) 与护栏执行 |
-| Debug | devDependency，仅开发构建动态加载；生产 preview 不加载 |
+| Scripts | 只用其 `runScript()` 执行惰性脚本；自动重跑关闭，去重由主题负责 |
+| Body Class | 同步 `page-` 前缀的 body class 与 `data-stalux-*` 属性，排除背景运行时属性 |
+| Route Name | 为首页、文章、归档、标签、分类、关于、友链、一言和 404 命名；目标路由名同步到 html 与 main |
+| Fragment | 文章间只替换 `#swup-article`；标签与分类详情间只替换 `#swup-taxonomy` |
+| Parallel | 旧容器固定定位后淡出，新容器插入其后：这是入场动效播放的遮罩 |
+| Head | `awaitAssets` 等新样式加载完再替换；`persistTags` 保留旧样式直到剪枝 |
+| Scroll | `@swup/scroll-plugin@4.0.0`，`betweenPages:false` + 自定义 `scrollFunction`；换页回顶由 `glideToTop()` 在旧文档上完成 |
+| Progress | 延迟 80ms 的 3px 主题色进度条（预取命中时完全不出现） |
+| Accessibility | 页面标题播报、main 焦点、历史恢复保留原链接焦点 |
+| Preload | 悬停/聚焦预取，不预取整屏链接；首页 idle 只预热 3 条导航路由 |
+| JS | `out` 立即返回，`in` 等待内容动效的 `finished`；Swup 因此知道真实结束时间 |
 
-没有路由动效：`theme: false` 且 `animationClass: false`，容器替换同步完成，不等待任何 CSS 过渡，因此也不需要 Parallel 与 JS 插件。页面切换只有最基础的替换；列表展开、模块次要提示等页内动效不属于路由层，仍由各自的 `prefers-reduced-motion` 门控。
+路由动效由 [route-motion.ts](../src/scripts/route-motion.ts)（入场）、[route-out.ts](../src/scripts/route-out.ts)（退场）与 [route-motion-policy.ts](../src/utils/route-motion-policy.ts)（策略）三层实现，参数表见 [view-transitions-swup.md](view-transitions-swup.md)。舞台高度超过 2 倍视口时只做 opacity，位移交给有界的标题区；三栏外壳与页头页脚不参与。
 
-Head 插件先换好 head，随后派发 `astro:before-swap`；容器替换完成后护栏刷新侧栏 slot、剪枝过期样式并派发 `astro:after-swap`；页面脚本执行完成后才在 `page:view` 派发 `astro:page-load`。浏览器原生 View Transition 保持关闭。
-
-普通内联脚本和页面模块按会话去重；`data-astro-rerun` 或 `data-swup-reload-script` 表示每次重新执行，`data-swup-ignore-script` 表示跳过。JSON-LD、import map 和非 JavaScript script 不执行。外部脚本失败或超时后允许重试；导航取消只停止后续执行，不把仍在加载的共享模块当成成功结果。统计 SDK 继续由统计运行时按会话管理，不进入页面脚本重跑范围。
-
-自定义 Fragment 规则必须使用当前页与目标页共有的 ID 容器，且位于 main 内。路由 ID 使用 `swup-` 命名空间，避免与构建期压缩的 `stalux-` CSS class 混用。页面脚本失败、快速连点与样式剪枝都要在真实浏览器里复核，不能只看单元测试。
+Head 插件先换好 head，随后派发 `astro:before-swap`；容器替换完成后刷新侧栏 slot、按入场时序剪枝过期样式并派发 `astro:after-swap`；页面脚本执行完成后才在 `page:view` 派发 `astro:page-load`。浏览器原生 View Transition 保持关闭（`native: false`）。
 
 ## AST 与缓存
 

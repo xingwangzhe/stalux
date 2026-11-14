@@ -28,19 +28,4 @@ declare module "swup" {
          */
         abort(): void;
     }
-    /**
-     * Added by `@swup/route-name-plugin`, which `@swup/astro` instantiates from
-     * its own package. The theme never imports the plugin, so its augmentation
-     * has to be restored here for `visit.to.route` to typecheck.
-     */
-    interface VisitTo {
-        route?: string;
-    }
-    interface Swup {
-        /**
-         * Added by `@swup/preload-plugin`, enabled through `@swup/astro`; used by
-         * `route-prefetch.ts` to warm the main navigation routes.
-         */
-        preload?: (url: string, options?: { priority?: boolean }) => Promise<unknown>;
-    }
 }
