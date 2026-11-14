@@ -85,7 +85,9 @@ mover > :first-child {
 
 /* ===== Firefox fixes ===== */
 
-@-moz-document url-prefix() {
+/* `-moz-appearance` only resolves in Gecko, so this replaces the deprecated
+   `@-moz-document url-prefix()` gate with feature detection. */
+@supports (-moz-appearance: none) {
     /* Prevent flex-wrap */
     math {
         display: inline;

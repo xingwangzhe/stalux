@@ -30,6 +30,17 @@
     --waline-accent-rgb: var(--stalux-accent-rgb);
 }
 
+/* Waline ships its own light palette. Pin the text tokens to the theme scale so
+   comment text, timestamps and the credit line stay above WCAG AA (4.5:1) on the
+   dark canvas, and keep accent-coloured text on the build-time lightened accent. */
+.waline-comment-container {
+    --waline-theme-color: var(--accent-text);
+    --waline-color: var(--white-90p);
+    --waline-info-color: var(--white-50p);
+    --waline-light-grey: var(--white-70p);
+    --waline-dark-grey: var(--white-70p);
+}
+
 /* 评论区容器与博客风格一致 */
 .waline-comment-container {
     margin-top: 3rem;
@@ -153,17 +164,12 @@
 
 /* 修改用户名样式 */
 .wl-nick {
-    color: rgb(var(--waline-accent-rgb) / 0.95) !important;
+    color: var(--waline-theme-color) !important;
     font-weight: 600;
     transition:
         background-color 180ms ease,
         border-color 180ms ease,
         color 180ms ease;
-}
-@media (hover: hover) and (pointer: fine) {
-    .wl-nick:hover {
-        color: rgb(var(--waline-accent-rgb) / 1) !important;
-    }
 }
 
 /* 评论内容样式 */
@@ -312,7 +318,7 @@
 }
 
 .wl-sort li.active {
-    color: rgb(var(--waline-accent-rgb) / 1);
+    color: var(--waline-theme-color);
     font-weight: 500;
 }
 
@@ -356,7 +362,7 @@
 }
 
 .wl-power a {
-    color: rgb(var(--waline-accent-rgb) / 0.9);
+    color: var(--waline-theme-color);
     text-decoration: none;
     transition:
         background-color 180ms ease,
@@ -365,7 +371,6 @@
 }
 @media (hover: hover) and (pointer: fine) {
     .wl-power a:hover {
-        color: rgb(var(--waline-accent-rgb) / 1);
         text-decoration: underline;
     }
 }
@@ -386,13 +391,6 @@
 
 /* 降低选中文本高亮程度，移除外边框 */
 .waline-comment-container *::selection {
-    background: rgb(var(--waline-accent-rgb) / 0.25);
-    color: inherit;
-    border: none;
-    outline: none;
-}
-
-.waline-comment-container *::-moz-selection {
     background: rgb(var(--waline-accent-rgb) / 0.25);
     color: inherit;
     border: none;
