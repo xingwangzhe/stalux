@@ -53,6 +53,17 @@ function getSiteConfig(config: ConfigMap): Record<string, unknown> {
 }
 
 /**
+ * 站点 IANA 时区（site.yml 的 timezone）。
+ *
+ * 与 `getSiteData()` 的缺省值保持一致：日期排序必须按站点时区解析无时区串，
+ * 否则会在 UTC 构建机上整体偏移，混写带偏移日期时排序还会错乱。
+ */
+export function resolveSiteTimezone(config: ConfigMap): string {
+    const value = getSiteConfig(config).timezone;
+    return typeof value === "string" && value.length > 0 ? value : "Asia/Shanghai";
+}
+
+/**
  * 解析站点根 URL。
  *
  * 唯一真源是 stalux/config/site.yml 的 url；context.site（astro.config.mjs 的 site）
@@ -254,9 +265,12 @@ export async function renderAboutMd(site: string): Promise<string> {
 }
 
 /** 渲染 Words 页 Markdown */
-export async function renderWordsMd(): Promise<string> {
+export async function renderWordsMd(timeZone = "Asia/Shanghai"): Promise<string> {
     const words = await getCollection("words", ({ data }) => !data.draft);
-    words.sort((a, b) => toTimestamp(b.data.date || 0) - toTimestamp(a.data.date || 0));
+    // 按站点时区解析无时区日期串，避免构建机时区影响排序
+    words.sort(
+        (a, b) => toTimestamp(b.data.date || 0, timeZone) - toTimestamp(a.data.date || 0, timeZone),
+    );
     const lines: string[] = [];
     lines.push("# Words");
     lines.push("");
@@ -558,7 +572,7 @@ export async function renderLlmsFullTxt(
     sections.push(await renderAboutMd(site));
     sections.push("---");
     sections.push("");
-    sections.push(await renderWordsMd());
+    sections.push(await renderWordsMd(resolveSiteTimezone(config)));
     sections.push("---");
     sections.push("");
     sections.push(renderLinksMd(config, site, t));

@@ -60,6 +60,15 @@ describe("post content index", () => {
         expect(index.neighbors.get("old")).toEqual({ previous: undefined, next: middle });
     });
 
+    it("resolves zoned-less dates in the site timezone when mixing offset dates", () => {
+        // 2026-11-10 20:30:00（Asia/Shanghai）= 12:30Z，早于 18:00Z。
+        // 若漏传站点时区，UTC 机器会把无时区串当成 20:30Z，排序翻转为 [naive, later]。
+        const naive = post("naive", { date: "2026-11-10 20:30:00" });
+        const later = post("later", { date: "2026-11-10T18:00:00Z" });
+        const index = buildPostContentIndex([naive, later], "Asia/Shanghai");
+        expect(index.posts.map(({ id }) => id)).toEqual(["later", "naive"]);
+    });
+
     it("deduplicates repeated Unicode taxonomy values within one post", () => {
         const first = post("first", {
             tags: ["中文", "中文", "Astro"],
@@ -118,11 +127,18 @@ describe("post content index", () => {
     });
 
     it("reloads the collection in the test development environment", async () => {
-        getCollectionMock.mockResolvedValue([post("from-collection")]);
+        getCollectionMock.mockImplementation((collection: string) =>
+            Promise.resolve(
+                collection === "config"
+                    ? [{ data: { id: "site", timezone: "Asia/Shanghai" } }]
+                    : [post("from-collection")],
+            ),
+        );
         const first = await getPostContentIndex();
         const second = await getPostContentIndex();
         expect(first.posts[0]?.data.abbrlink).toBe("from-collection");
         expect(second.posts[0]?.data.abbrlink).toBe("from-collection");
-        expect(getCollectionMock).toHaveBeenCalledTimes(2);
+        const postCalls = getCollectionMock.mock.calls.filter(([name]) => name === "posts");
+        expect(postCalls).toHaveLength(2);
     });
 });

@@ -1,5 +1,6 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import type { AstroRuntimeLogger } from "astro";
+import { getSiteData } from "./config-utils";
 import { toTimestamp } from "./dayjs";
 import { logDetail } from "./diagnostics";
 
@@ -93,13 +94,17 @@ function finalizeTaxonomy<T extends IndexablePost>(
  */
 export function buildPostContentIndex<T extends IndexablePost>(
     sourcePosts: readonly T[],
+    timeZone?: string,
 ): PostContentIndex<T> {
     const times = new Map<T, { date: number; updated: number }>();
     for (const post of sourcePosts) {
-        const date = toTimestamp(post.data.date);
+        // 无时区日期串必须按站点时区解析。漏传会按构建机器时区解释：
+        // UTC 构建机上整体偏 8 小时；一旦与带偏移的日期混写，两者相差 8 小时，
+        // 排序就会错——首页顺序、上一篇/下一篇、分类「最新」归属都跟着错。
+        const date = toTimestamp(post.data.date, timeZone);
         times.set(post, {
             date,
-            updated: post.data.updated == null ? date : toTimestamp(post.data.updated),
+            updated: post.data.updated == null ? date : toTimestamp(post.data.updated, timeZone),
         });
     }
     const posts = sourcePosts.toSorted(
@@ -139,9 +144,13 @@ let productionIndex: Promise<PostContentIndex<PostEntry>> | undefined;
 async function loadPostContentIndex(
     logger?: AstroRuntimeLogger,
 ): Promise<PostContentIndex<PostEntry>> {
-    const posts = await getCollection("posts", ({ data }) => !data.draft);
+    const [posts, configEntries] = await Promise.all([
+        getCollection("posts", ({ data }) => !data.draft),
+        getCollection("config"),
+    ]);
     const started = performance.now();
-    const index = buildPostContentIndex(posts);
+    // 站点时区与 feed / semantic-time / archives 同源（site.yml，缺省 Asia/Shanghai）
+    const index = buildPostContentIndex(posts, getSiteData(configEntries).timezone);
     logDetail(
         logger,
         "content-index",
