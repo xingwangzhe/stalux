@@ -44,10 +44,10 @@ export async function getStaticPaths() {
             props: {
                 post,
                 prev: prevPost
-                    ? { url: `/posts/${prevPost.data.abbrlink}`, title: prevPost.data.title }
+                    ? { url: `/posts/${prevPost.data.abbrlink}/`, title: prevPost.data.title }
                     : undefined,
                 next: nextPost
-                    ? { url: `/posts/${nextPost.data.abbrlink}`, title: nextPost.data.title }
+                    ? { url: `/posts/${nextPost.data.abbrlink}/`, title: nextPost.data.title }
                     : undefined,
             },
         };

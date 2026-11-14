@@ -67,6 +67,7 @@ import { imageCaptions } from "./plugins/image-captions";
 import { imageDimensions } from "./plugins/image-dimensions";
 import { temml } from "./plugins/satteri-temml";
 import { describeError } from "./utils/diagnostics";
+import { toRoutePath } from "./utils/public-routes";
 
 // 代码字体通过 Astro Fonts API 注入；正文字体由 native N-API 生成共享壳层与页面子集。
 function buildFontsConfig(codeNormal: string, codeItalic?: string) {
@@ -472,6 +473,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             "internal/html-images.ts",
                             "internal/html-output.ts",
                             "internal/html-styles.ts",
+                            "internal/route-hrefs.ts",
                             "internal/offscreen-layout.ts",
                             "internal/page-output-cache.ts",
                             "internal/style-names.generated.ts",
@@ -695,6 +697,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             ? (parseYaml(readFileSync(sitePath, "utf8")) as { url?: string } | undefined)
             : undefined;
         const sitemapSite = opt.site ?? siteConfig?.url;
+        const sitemapHomeUrl = sitemapSite?.replace(/\/+$/u, "");
         const defaultFilter = (page: string) =>
             exportMarkdown || !new URL(page).pathname.endsWith(".md");
         const userFilter = userSitemap?.filter;
@@ -743,14 +746,18 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 ...userSitemap,
                 customPages,
                 filter,
-                // Page routes are served without a trailing slash; keep the root
-                // and real files (`.md`, `.json`, `.xml`, images) exactly as built.
+                // Page routes are served with one trailing slash; keep the root,
+                // the 404 document and real files (`.md`, `.json`, images) as built.
                 async serialize(item) {
                     const next = userSitemap?.serialize ? await userSitemap.serialize(item) : item;
                     if (!next) return next;
                     const url = new URL(next.url);
-                    if (url.pathname !== "/") url.pathname = url.pathname.replace(/\/+$/u, "");
-                    next.url = url.href;
+                    if (url.pathname === "/") {
+                        next.url = url.origin;
+                    } else {
+                        url.pathname = toRoutePath(url.pathname);
+                        next.url = url.href;
+                    }
                     return next;
                 },
             }),
@@ -762,6 +769,15 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         const base = userSitemap?.filenameBase ?? "sitemap";
                         const source = new URL(`${base}-0.xml`, dir);
                         if (!(await Bun.file(source).exists())) return;
+                        const normalizeHomeUrl = (xml: string) =>
+                            sitemapHomeUrl
+                                ? xml.replaceAll(
+                                      `<loc>${sitemapHomeUrl}/</loc>`,
+                                      `<loc>${sitemapHomeUrl}</loc>`,
+                                  )
+                                : xml;
+                        const sourceXml = normalizeHomeUrl(await Bun.file(source).text());
+                        await Bun.write(source, sourceXml);
                         // Keep every URL discoverable when a site uses multiple chunks.
                         const index = new URL(`${base}-index.xml`, dir);
                         const indexXml = await Bun.file(index).text();
@@ -769,7 +785,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             (indexXml.match(/<sitemap>/gu)?.length ?? 0) > 1;
                         await Bun.write(
                             new URL("sitemap.xml", dir),
-                            Bun.file(hasMultipleSitemaps ? index : source),
+                            hasMultipleSitemaps ? indexXml : sourceXml,
                         );
                         logger.info("Generated sitemap.xml");
                     },

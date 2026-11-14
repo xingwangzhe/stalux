@@ -4,8 +4,10 @@ import { toMachineDateTime } from "@utils/semantic-time";
 import { getPostDescriptions } from "@utils/word-count-utils";
 import type { AstroRuntimeLogger } from "astro";
 import { logDetail } from "./diagnostics";
+import { toPublicUrl } from "./public-routes";
 
 interface FeedConfig {
+    url: string;
     timezone: string;
     rss?: {
         limit?: number;
@@ -78,7 +80,7 @@ export async function buildFeedItems(
             title: post.data.title,
             pubDate: new Date(toMachineDateTime(post.data.date, stalux.timezone)),
             description: cached?.desc || post.data.desc || "",
-            link: `/posts/${post.data.abbrlink}`,
+            link: toPublicUrl(stalux.url, `/posts/${post.data.abbrlink}`),
             categories: post.data.categories || [],
             customData,
         };

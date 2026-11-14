@@ -23,7 +23,7 @@ function post(abbrlink: string, date: string): CollectionEntry<"posts"> {
 describe("feed post limit", () => {
     it("returns the newest posts up to the configured limit", async () => {
         const items = await buildFeedItems(
-            { timezone: "Asia/Shanghai", rss: { limit: 2 } },
+            { url: "https://example.com", timezone: "Asia/Shanghai", rss: { limit: 2 } },
             [
                 post("oldest", "2026-11-01 08:00:00"),
                 post("newest", "2026-11-03 08:00:00"),
@@ -33,11 +33,15 @@ describe("feed post limit", () => {
         );
 
         expect(items.map((item) => item.title)).toEqual(["newest", "middle"]);
+        expect(items.map((item) => item.link)).toEqual([
+            "https://example.com/posts/newest/",
+            "https://example.com/posts/middle/",
+        ]);
     });
 
     it("keeps every post when the limit is omitted", async () => {
         const items = await buildFeedItems(
-            { timezone: "Asia/Shanghai" },
+            { url: "https://example.com", timezone: "Asia/Shanghai" },
             [post("older", "2026-11-01 08:00:00"), post("newer", "2026-11-02 08:00:00")],
             "updated",
         );

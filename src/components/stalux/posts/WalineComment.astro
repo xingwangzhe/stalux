@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
+import { toRoutePath } from "@utils/public-routes";
 import type { WalineComponentProps } from "@utils/waline";
 
 interface Props extends WalineComponentProps {
@@ -16,7 +17,7 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 // 为客户端脚本准备配置对象：先给默认配置，再用实际传入的 props 覆盖。
 // 这样避免把同一组字段在 Props 接口、解构默认值、init 调用里各写一遍。
 const walineConfig = {
-    path: Astro.url.pathname,
+    path: toRoutePath(Astro.url.pathname),
     title: "",
     serverURL: "",
     lang: (siteConfig.lang as string) || "zh-CN",

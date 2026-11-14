@@ -22,7 +22,7 @@ export function createSocialCardData(
         siteTitle: site.title,
         author: author.name,
         host: siteUrl.host,
-        postUrl: new URL(`/posts/${encodeURIComponent(post.abbrlink)}`, siteUrl).href,
+        postUrl: new URL(`/posts/${encodeURIComponent(post.abbrlink)}/`, siteUrl).href,
         tags: post.tags ?? [],
         date: formatInTimeZone(
             parseDate(post.date, site.timezone || "Asia/Shanghai"),

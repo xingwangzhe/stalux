@@ -1,31 +1,31 @@
 import type { DefaultTreeAdapterMap } from "parse5";
+import { getRouteKind, isRealPublicFile } from "../utils/public-routes";
 
 type Document = DefaultTreeAdapterMap["document"];
-
-/** Endpoints that are real files: the extension identifies them, never a slash. */
-const REAL_FILE =
-    /\.(?:md|json|xml|txt|html?|pdf|png|webp|avif|svg|jpe?g|gif|ico|css|js|mjs|map|zip|mp4|webm|woff2?|ttf|otf)$/iu;
 
 /**
  * Rewrite a site-absolute href to the form the router actually serves.
  *
- * Page routes carry no trailing slash (`/posts/x`, `/archives`), while real
- * files keep theirs (`/posts/x.md`, `/api/posts.json`). Only rooted paths are
- * touched: relative links, protocol-relative URLs and anchors pass through.
+ * Page routes carry exactly one trailing slash (`/posts/x/`, `/archives/`),
+ * while real files keep their extension (`/posts/x.md`, `/api/posts.json`)
+ * and no added slash. Only rooted paths are touched: relative links,
+ * protocol-relative URLs and anchors pass through.
  */
 export function normalizeRouteHref(href: string): string {
     if (!href.startsWith("/") || href.startsWith("//")) return href;
     const match = /^([^?#]*)([?#].*)?$/u.exec(href);
     const path = match?.[1] ?? href;
     const suffix = match?.[2] ?? "";
-    if (path === "/" || !path.endsWith("/") || REAL_FILE.test(path)) return href;
-    return `${path.replace(/\/+$/u, "")}${suffix}`;
+    if (path === "/" || isRealPublicFile(path) || getRouteKind(path) === "other") {
+        return href;
+    }
+    return `${path.replace(/\/+$/u, "")}/${suffix}`;
 }
 
 /**
- * Content-authored links still use the old trailing-slash form. Normalising the
- * parsed document here keeps hand-written Markdown from reintroducing a URL
- * shape the router no longer serves, without touching the author's source.
+ * Content-authored links may omit the trailing slash. Normalising the parsed
+ * document here keeps hand-written Markdown aligned with the router without
+ * touching the author's source.
  */
 export function normalizeRouteHrefs(document: Document): number {
     let changed = 0;

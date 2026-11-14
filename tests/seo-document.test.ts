@@ -38,7 +38,7 @@ describe("SEO document", () => {
     it("builds home metadata from validated config", () => {
         const document = buildSeoDocument(input());
         expect(document.title).toBe("Stalux SEO Title");
-        expect(document.canonical).toBe("https://example.com/");
+        expect(document.canonical).toBe("https://example.com");
         expect(document.noindex).toBe(false);
         expect(document.nofollow).toBe(false);
         expect(document.meta).toContainEqual({ name: "generator", content: "Stalux" });
@@ -114,7 +114,7 @@ describe("SEO document", () => {
                 page: { title: "About", description: "About page", cover: "//cdn.example/a.webp" },
             }),
         );
-        expect(document.canonical).toBe("https://canonical.example/about");
+        expect(document.canonical).toBe("https://canonical.example/about/");
         expect(document.openGraph.basic.image).toBe("https://cdn.example/a.webp");
         const graph = document.schema["@graph"] as Array<Record<string, unknown>>;
         expect(graph).toContainEqual(expect.objectContaining({ "@type": "AboutPage" }));
@@ -124,7 +124,7 @@ describe("SEO document", () => {
         const document = buildSeoDocument(
             input({ pathname: "/tags/%E6%B5%8B%E8%AF%95/?from=nav#top" }),
         );
-        expect(document.canonical).toBe("https://example.com/tags/%E6%B5%8B%E8%AF%95");
+        expect(document.canonical).toBe("https://example.com/tags/%E6%B5%8B%E8%AF%95/");
         expect(document.schema["@graph"]).toEqual(
             expect.arrayContaining([expect.objectContaining({ "@type": "CollectionPage" })]),
         );
@@ -199,7 +199,7 @@ describe("SEO document", () => {
         );
     });
 
-    it("never emits a route URL with a trailing slash", () => {
+    it("emits page routes with one trailing slash and leaves the home bare", () => {
         const document = buildSeoDocument(
             input({
                 pathname: "/posts/example/",
@@ -228,12 +228,11 @@ describe("SEO document", () => {
         };
         collect(document.schema);
         expect(urls.length).toBeGreaterThan(3);
-        // The site root keeps its single slash; every route must not.
-        expect(new Set(urls.filter((url) => url.endsWith("/")))).toEqual(
-            new Set(["https://example.com/"]),
-        );
-        expect(urls).toContain("https://example.com/about");
-        expect(urls).toContain("https://example.com/categories/Astro");
+        // The site root stays bare; every other page route ends with one slash.
+        expect(urls).toContain("https://example.com");
+        expect(urls).toContain("https://example.com/about/");
+        expect(urls).toContain("https://example.com/categories/Astro/");
+        expect(urls.filter((url) => url === "https://example.com/")).toEqual([]);
     });
 
     it("uses the avatar and a compact Twitter card when no cover exists", () => {

@@ -24,8 +24,8 @@ const analyzeBundle = Bun.env.SONDA === "1";
 export default defineConfig({
     output: "static",
     site,
-    // 页面路由统一不带尾斜杠（/posts/x、/archives）；真实文件不受影响
-    trailingSlash: "never",
+    // 页面路由统一带尾斜杠（/posts/x/、/archives/）；真实文件不受影响
+    trailingSlash: "always",
     experimental: {
         collectionStorage: "chunked",
         // 增量静态构建：未变化的 getStaticPaths 页面直接复用上次输出，大幅缩短构建时间

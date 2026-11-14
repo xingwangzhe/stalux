@@ -27,7 +27,7 @@ const description = post.data.desc || "";
     class="stalux-post-card-shell stalux-post-card h-full text-inherit no-underline stalux-u-flex stalux-u-flex-col stalux-u-w-full stalux-u-min-w-0"
 >
     {post.data.cover && (
-        <a href={`/posts/${post.data.abbrlink}`} class="a-none" aria-label={post.data.title}>
+        <a href={`/posts/${post.data.abbrlink}/`} class="a-none" aria-label={post.data.title}>
             <span class="stalux-card-post-cover stalux-u-w-full stalux-u-min-w-0">
                 <img
                     src={post.data.cover}
@@ -43,7 +43,7 @@ const description = post.data.desc || "";
         </a>
     )}
     <h2 class="stalux-card-post-title">
-        <a href={`/posts/${post.data.abbrlink}`} class="a-none">
+        <a href={`/posts/${post.data.abbrlink}/`} class="a-none">
             {post.data.title}
         </a>
     </h2>
@@ -72,7 +72,7 @@ const description = post.data.desc || "";
         <ul class="stalux-card-post-tags stalux-u-flex stalux-u-items-center stalux-u-flex-wrap">
             {post.data.tags?.map((tag) => (
                 <li>
-                    <a class="a-none" href={`/tags/${tag}`}>
+                    <a class="a-none" href={`/tags/${tag}/`}>
                         <span class="stalux-card-post-tag">{tag}</span>
                     </a>
                 </li>
@@ -83,12 +83,12 @@ const description = post.data.desc || "";
         >
             {post.data.categories?.map((category) => (
                 <li>
-                    <a class="a-none" href={`/categories/${category}`}>
+                    <a class="a-none" href={`/categories/${category}/`}>
                         <span class="stalux-card-post-category">{category}</span>
                     </a>
                 </li>
             ))}
         </ul>
     </footer>
-    <a href={`/posts/${post.data.abbrlink}`} class="stalux-card-read-more a-none"> Read More </a>
+    <a href={`/posts/${post.data.abbrlink}/`} class="stalux-card-read-more a-none"> Read More </a>
 </article>

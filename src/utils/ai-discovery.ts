@@ -103,7 +103,7 @@ function pageUrl(site: string, path: string, exportMd: boolean): string {
 
 /** 生成文章链接，可切换 .md 源码版本 */
 export function postUrl(site: string, abbrlink: string | number, exportMd: boolean): string {
-    return exportMd && abbrlink ? `${site}/posts/${abbrlink}.md` : `${site}/posts/${abbrlink}`;
+    return toPublicUrl(site, `/posts/${abbrlink}`, exportMd);
 }
 
 /** 获取已发布文章并按日期降序排列 */
@@ -339,7 +339,7 @@ export async function renderIndexMd(
 
     lines.push(`# ${(siteData.title as string) || t("ai.blog")}`);
     lines.push("");
-    lines.push(`URL: ${site}/`);
+    lines.push(`URL: ${site}`);
     lines.push("");
     lines.push(`> ${escapeMd(siteData.description as string)}`);
     lines.push("");

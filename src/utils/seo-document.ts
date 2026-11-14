@@ -59,9 +59,9 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     const routeKind = getRouteKind(pathname);
     const siteUrl = normalizeSiteUrl(site.canonical ?? site.url);
     const normalizedPath = normalizePublicPath(pathname);
-    // Canonical mirrors the URL the router actually serves: page routes carry no
-    // trailing slash, so /posts/x and /archives are canonical, /posts/x/ is not.
-    const canonical = new URL(normalizedPath, `${siteUrl}/`).href;
+    // Canonical mirrors the URL the router actually serves: every page route
+    // carries one trailing slash; real files keep their extension.
+    const canonical = toPublicUrl(siteUrl, normalizedPath);
     const title = routeKind === "home" && site.seoTitle ? site.seoTitle : page.title;
     const siteName = site.title;
     const siteTitleSuffix = ` | ${site.title}`;
@@ -162,9 +162,8 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
         "@type": "Person",
         "@id": `${siteUrl}/#author`,
         name: author.name,
-        // Route URLs are emitted without a trailing slash everywhere else
-        // (canonical, og:url, sitemap, feeds). Structured data must match, or
-        // crawlers see /about/ and /about as two entities.
+        // Route URLs carry a trailing slash everywhere else (canonical,
+        // og:url, sitemap, feeds). Structured data must match.
         url: toPublicUrl(siteUrl, "/about"),
         image: authorImage,
         ...(sameAs.length ? { sameAs } : {}),
@@ -180,14 +179,14 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     const websiteEntity = {
         "@type": "WebSite",
         "@id": `${siteUrl}/#website`,
-        url: `${siteUrl}/`,
+        url: siteUrl,
         name: siteName,
         description: site.description,
         inLanguage: site.lang,
         publisher: { "@id": `${siteUrl}/#publisher` },
     };
     const breadcrumbItems: Record<string, unknown>[] = [
-        { "@type": "ListItem", position: 1, name: siteName, item: `${siteUrl}/` },
+        { "@type": "ListItem", position: 1, name: siteName, item: siteUrl },
     ];
     if (isArticle && page.categories?.[0]) {
         breadcrumbItems.push({

@@ -8,6 +8,7 @@ import PostNavigation from "@components/stalux/posts/postNavigation.astro";
 import PostRight from "@components/stalux/posts/postRight.astro";
 import WalineComment from "@components/stalux/posts/WalineComment.astro";
 import { getCommentData } from "@utils/config-utils";
+import { toRoutePath } from "@utils/public-routes";
 import { buildWalineProps } from "@utils/waline";
 
 interface Props {
@@ -80,7 +81,7 @@ const walineConfig = walineSection?.serverURL
             {commentEnabled && walineConfig?.serverURL && (
                 <WalineComment
                     {...buildWalineProps(walineConfig)}
-                    path={Astro.url.pathname}
+                    path={toRoutePath(Astro.url.pathname)}
                     title={props.title}
                 />
             )}

@@ -5,6 +5,7 @@ import PostContent from "@components/stalux/posts/postContent.astro";
 import WalineComment from "@components/stalux/posts/WalineComment.astro";
 import Stalux from "@layouts/Stalux.astro";
 import { getAuthorData, getCommentData, getSiteData } from "@utils/config-utils";
+import { toRoutePath } from "@utils/public-routes";
 import { buildWalineProps } from "@utils/waline";
 
 // 获取关于页面内容
@@ -48,7 +49,7 @@ const author = authorConfig.name;
             {commentEnabled && walineConfig?.serverURL && (
                 <WalineComment
                     {...buildWalineProps(walineConfig)}
-                    path={Astro.url.pathname}
+                    path={toRoutePath(Astro.url.pathname)}
                     title={aboutPage.data.title}
                 />
             )}

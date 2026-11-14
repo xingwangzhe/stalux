@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content";
 import { getSiteData } from "@utils/config-utils";
 import { getPostContentIndex } from "@utils/content-index";
+import { toRoutePath } from "@utils/public-routes";
 import { toMachineDateTime } from "@utils/semantic-time";
 import { sitePath } from "@utils/site-path";
 import { getPostDescriptions } from "@utils/word-count-utils";
@@ -29,7 +30,7 @@ export const GET: APIRoute = async ({ logger }) => {
         categories: post.data.categories ?? [],
         desc: post.data.desc ?? "",
         wordCount: descriptions.get(String(post.data.abbrlink))?.wordCount ?? 0,
-        url: sitePath(`posts/${encodeURIComponent(String(post.data.abbrlink))}`),
+        url: toRoutePath(sitePath(`posts/${encodeURIComponent(String(post.data.abbrlink))}`)),
     }));
 
     return new Response(JSON.stringify(payload), {

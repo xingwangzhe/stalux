@@ -7,6 +7,7 @@ import packageJson from "../package.json" with { type: "json" };
 import { styleArtifactProblems } from "../src/internal/style-artifacts.ts";
 import { styleNames } from "../src/internal/style-names.generated.ts";
 import { parseDateInZone } from "../src/utils/dayjs.ts";
+import { getRouteKind, isRealPublicFile } from "../src/utils/public-routes.ts";
 import { findMissingAssetReferences } from "./verify-build-utils.ts";
 
 const root = process.cwd();
@@ -240,11 +241,13 @@ assert(
 );
 
 assert(
-    pages.home.includes('<link rel="canonical" href="https://stalux.needhelp.icu/">'),
+    pages.home.includes('<link rel="canonical" href="https://stalux.needhelp.icu">'),
     "home canonical is incorrect",
 );
 assert(
-    pages.post.includes('<link rel="canonical" href="https://stalux.needhelp.icu/posts/a1b2c3d4">'),
+    pages.post.includes(
+        '<link rel="canonical" href="https://stalux.needhelp.icu/posts/a1b2c3d4/">',
+    ),
     "post canonical is incorrect",
 );
 assert(
@@ -293,14 +296,20 @@ for (const [route, html] of Object.entries(pages)) verifyJsonLd(html, route);
 for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
     const html = await Bun.file(file).text();
     if (!html.includes(`class="${cssClass("stalux-root")}`)) continue;
-    // Same rule as the sitemap: page routes are published without a trailing
-    // slash. Real files keep their extension and never match this pattern.
-    const slashRoutes = [...html.matchAll(/href="(\/[^"?#]*\/)"/gu)]
+    // Page links carry one trailing slash; home, 404 and real files are exempt.
+    const pageHrefs = [...html.matchAll(/href="(\/[^"#?]*)/gu)]
         .map((match) => match[1] ?? "")
-        .filter((href) => href !== "/" && !/\.[a-z0-9]+$/iu.test(href));
+        .filter(
+            (href) =>
+                href !== "/" &&
+                href !== "/404" &&
+                !isRealPublicFile(href) &&
+                getRouteKind(href) !== "other",
+        );
+    const slashlessRoutes = pageHrefs.filter((href) => !href.endsWith("/"));
     assert(
-        slashRoutes.length === 0,
-        `${path.relative(dist, file)} must not link to trailing-slash routes: ${slashRoutes[0]}`,
+        slashlessRoutes.length === 0,
+        `${path.relative(dist, file)} must link to trailing-slash routes: ${slashlessRoutes[0]}`,
     );
     assert(
         (html.match(/data-stalux-back-to-top/gu) ?? []).length === 1,
@@ -328,15 +337,44 @@ assert(
 );
 assert(!sitemap.includes("<lastmod>"), "sitemap contains synthetic build-time lastmod values");
 
-// 页面路由统一不带尾斜杠：sitemap 里除根路径外不允许出现 `/</loc>`。
-// 真实端点（.md/.json/.xml/图片）本来就不以斜杠结尾，这条断言不会误伤它们。
-const trailingSlashLocs = [...sitemap.matchAll(/<loc>([^<]*\/)<\/loc>/gu)]
-    .map((match) => match[1] ?? "")
-    .filter((url) => new URL(url).pathname !== "/");
+// 主页保持裸域名；其余页面路由统一带尾斜杠，真实端点保持扩展名。
+const sitemapLocs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/gu)].map((match) => match[1] ?? "");
+const rootLoc = sitemapLocs.find((url) => new URL(url).pathname === "/");
+assert(rootLoc === "https://stalux.needhelp.icu", "sitemap home URL must not end with a slash");
+const slashlessLocs = sitemapLocs.filter((url) => {
+    const pathname = new URL(url).pathname;
+    return (
+        pathname !== "/" &&
+        pathname !== "/404" &&
+        !isRealPublicFile(pathname) &&
+        getRouteKind(pathname) !== "other" &&
+        !pathname.endsWith("/")
+    );
+});
 assert(
-    trailingSlashLocs.length === 0,
-    `sitemap must not emit trailing slashes on page routes: ${trailingSlashLocs.slice(0, 3).join(", ")}`,
+    slashlessLocs.length === 0,
+    `sitemap page routes must emit trailing slashes: ${slashlessLocs.slice(0, 3).join(", ")}`,
 );
+
+for (const feedFile of ["rss.xml", "atom.xml"]) {
+    const feed = await read(feedFile);
+    assert(
+        feed.includes("<link>https://stalux.needhelp.icu</link>"),
+        `${feedFile} home link must not end with a slash`,
+    );
+    const itemLinks = [...feed.matchAll(/<item>([\s\S]*?)<\/item>/gu)].map(
+        (match) => match[1]?.match(/<link>([^<]+)<\/link>/u)?.[1] ?? "",
+    );
+    assert(itemLinks.length > 0, `${feedFile} contains no items`);
+    const slashlessItemLinks = itemLinks.filter((link) => {
+        const { pathname } = new URL(link);
+        return !(isRealPublicFile(pathname) || pathname.endsWith("/"));
+    });
+    assert(
+        slashlessItemLinks.length === 0,
+        `${feedFile} item routes must emit trailing slashes: ${slashlessItemLinks[0]}`,
+    );
+}
 
 // ---- 时区一致性闸门（2026-10-24 事故回归） ----------------------------------
 // 无时区的 frontmatter 日期必须按站点时区解析：RSS pubDate、文章页 <time datetime>
@@ -454,8 +492,8 @@ const postIndex = JSON.parse(await read("api/posts.json")) as Array<{
     desc?: string;
 }>;
 for (const post of postIndex) {
-    // Routes are published without a trailing slash but the build still emits
-    // `<route>/index.html`, so the file path needs the separator the URL omits.
+    // Routes are published with a trailing slash while the build emits
+    // `<route>/index.html`; strip the URL slash before adding the filename.
     const html = await read(`${post.url.replace(/^\//u, "").replace(/\/+$/u, "")}/index.html`);
     const socialMeta = new Map<string, string>();
     function collectSocialMeta(node: DefaultTreeAdapterMap["node"]): void {
