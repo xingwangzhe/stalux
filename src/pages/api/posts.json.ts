@@ -29,7 +29,7 @@ export const GET: APIRoute = async ({ logger }) => {
         categories: post.data.categories ?? [],
         desc: post.data.desc ?? "",
         wordCount: descriptions.get(String(post.data.abbrlink))?.wordCount ?? 0,
-        url: sitePath(`posts/${encodeURIComponent(String(post.data.abbrlink))}/`),
+        url: sitePath(`posts/${encodeURIComponent(String(post.data.abbrlink))}`),
     }));
 
     return new Response(JSON.stringify(payload), {

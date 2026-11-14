@@ -59,8 +59,9 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     const routeKind = getRouteKind(pathname);
     const siteUrl = normalizeSiteUrl(site.canonical ?? site.url);
     const normalizedPath = normalizePublicPath(pathname);
-    const canonicalPath = normalizedPath === "/" ? "/" : `${normalizedPath}/`;
-    const canonical = new URL(canonicalPath, `${siteUrl}/`).href;
+    // Canonical mirrors the URL the router actually serves: page routes carry no
+    // trailing slash, so /posts/x and /archives are canonical, /posts/x/ is not.
+    const canonical = new URL(normalizedPath, `${siteUrl}/`).href;
     const title = routeKind === "home" && site.seoTitle ? site.seoTitle : page.title;
     const siteName = site.title;
     const siteTitleSuffix = ` | ${site.title}`;

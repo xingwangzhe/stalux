@@ -19,6 +19,8 @@ export const GET: APIRoute = async ({ logger }) => {
         title: stalux?.title || "Stalux Blog",
         description: stalux?.description || "A blog powered by Stalux theme",
         site: stalux.url,
+        // 页面路由不带尾斜杠，feed 里的条目链接要与之保持一致
+        trailingSlash: false,
         items,
         customData: `<language>${langToFeedLanguage(lang)}</language>\n<copyright>${t("rss.copyright")}</copyright>`,
         xmlns: {

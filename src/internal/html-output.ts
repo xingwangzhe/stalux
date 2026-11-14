@@ -1,4 +1,5 @@
 import { type DefaultTreeAdapterMap, serialize, serializeOuter } from "parse5";
+import { normalizeRouteHref } from "./route-hrefs";
 
 type Element = DefaultTreeAdapterMap["element"];
 
@@ -17,6 +18,9 @@ export function createHtmlMutationEmitter(
         attrs: Element["attrs"];
         text: string[];
     }> = [];
+    // Anchor hrefs are rewritten by value range only: reserializing the whole
+    // element would re-escape attribute text the emitter never touched.
+    const hrefSnapshots: Array<{ node: Element; start: number; end: number }> = [];
     let head: Element | undefined;
     function visit(node: DefaultTreeAdapterMap["node"]) {
         if ("tagName" in node) {
@@ -37,6 +41,10 @@ export function createHtmlMutationEmitter(
                     attrs: node.attrs.map((attribute) => ({ ...attribute })),
                     text: node.childNodes.map((child) => ("value" in child ? child.value : "")),
                 });
+            } else if (node.tagName === "a") {
+                const href = location?.attrs?.href;
+                if (href)
+                    hrefSnapshots.push({ node, start: href.startOffset, end: href.endOffset });
             }
         }
         if ("childNodes" in node) for (const child of node.childNodes) visit(child);
@@ -45,6 +53,16 @@ export function createHtmlMutationEmitter(
 
     return () => {
         const edits: Array<{ start: number; end: number; value: string }> = [];
+        for (const { node, start, end } of hrefSnapshots) {
+            const current = node.attrs.find((attribute) => attribute.name === "href")?.value;
+            if (current === undefined) continue;
+            const raw = source.slice(start, end);
+            const parsed = /^(href\s*=\s*["'])([^"']*)(["'])$/u.exec(raw);
+            if (!parsed) continue;
+            const next = normalizeRouteHref(parsed[2] ?? "");
+            if (next === parsed[2]) continue;
+            edits.push({ start, end, value: `${parsed[1]}${next}${parsed[3]}` });
+        }
         for (const snapshot of snapshots) {
             const { node, start, end, attrs, text } = snapshot;
             if (!node.parentNode) {

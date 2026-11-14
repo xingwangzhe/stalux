@@ -27,7 +27,7 @@ const description = post.data.desc || "";
     class="stalux-post-card-shell stalux-post-card h-full text-inherit no-underline stalux-u-flex stalux-u-flex-col stalux-u-w-full stalux-u-min-w-0"
 >
     {post.data.cover && (
-        <a href={`/posts/${post.data.abbrlink}/`} class="a-none" aria-label={post.data.title}>
+        <a href={`/posts/${post.data.abbrlink}`} class="a-none" aria-label={post.data.title}>
             <span class="stalux-card-post-cover stalux-u-w-full stalux-u-min-w-0">
                 <img
                     src={post.data.cover}
@@ -43,7 +43,7 @@ const description = post.data.desc || "";
         </a>
     )}
     <h2 class="stalux-card-post-title">
-        <a href={`/posts/${post.data.abbrlink}/`} class="a-none">
+        <a href={`/posts/${post.data.abbrlink}`} class="a-none">
             {post.data.title}
         </a>
     </h2>
@@ -90,5 +90,5 @@ const description = post.data.desc || "";
             ))}
         </ul>
     </footer>
-    <a href={`/posts/${post.data.abbrlink}/`} class="stalux-card-read-more a-none"> Read More </a>
+    <a href={`/posts/${post.data.abbrlink}`} class="stalux-card-read-more a-none"> Read More </a>
 </article>

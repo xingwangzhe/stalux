@@ -103,7 +103,7 @@ function pageUrl(site: string, path: string, exportMd: boolean): string {
 
 /** 生成文章链接，可切换 .md 源码版本 */
 export function postUrl(site: string, abbrlink: string | number, exportMd: boolean): string {
-    return exportMd && abbrlink ? `${site}/posts/${abbrlink}.md` : `${site}/posts/${abbrlink}/`;
+    return exportMd && abbrlink ? `${site}/posts/${abbrlink}.md` : `${site}/posts/${abbrlink}`;
 }
 
 /** 获取已发布文章并按日期降序排列 */

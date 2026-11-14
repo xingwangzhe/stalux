@@ -6,6 +6,7 @@ import {
     getRouteKind,
     normalizePublicPath,
     toPublicUrl,
+    toRoutePath,
 } from "../src/utils/public-routes";
 
 describe("public route catalog", () => {
@@ -47,12 +48,33 @@ describe("public route catalog", () => {
 
     it("builds canonical HTML and Markdown URLs from one path rule", () => {
         expect(toPublicUrl("https://example.com/", "/tags", false)).toBe(
-            "https://example.com/tags/",
+            "https://example.com/tags",
         );
         expect(toPublicUrl("https://example.com/", "/tags", true)).toBe(
             "https://example.com/tags/index.md",
         );
-        expect(toPublicUrl("https://example.com/", "/404", true)).toBe("https://example.com/404/");
+        expect(toPublicUrl("https://example.com/", "/404", true)).toBe("https://example.com/404");
+    });
+
+    it.each([
+        ["/", "/"],
+        ["/archives/", "/archives"],
+        ["/posts/a1b2c3d4/", "/posts/a1b2c3d4"],
+        ["/tags/Astro/", "/tags/Astro"],
+        ["/about?x=1#top", "/about"],
+        ["/posts/a1b2c3d4.md", "/posts/a1b2c3d4.md"],
+        ["/api/posts.json", "/api/posts.json"],
+    ])("publishes %s as the route %s", (pathname, expected) => {
+        expect(toRoutePath(pathname)).toBe(expected);
+    });
+
+    it("never adds a trailing slash to a page route", () => {
+        for (const route of ["/archives", "/posts/a1b2c3d4", "/tags/Astro", "/about"]) {
+            const url = toPublicUrl("https://example.com", route, false);
+            expect(url.endsWith("/")).toBe(false);
+            expect(toPublicUrl("https://example.com", `${route}/`, false)).toBe(url);
+        }
+        expect(toPublicUrl("https://example.com", "/", false)).toBe("https://example.com/");
     });
 
     it("creates every plugin route from the package base", () => {

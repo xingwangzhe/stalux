@@ -17,7 +17,7 @@ const cloudDensity = Math.sqrt(Math.max(tagList.length, 100) / 100);
 const tagLinks = tagList.map((t) => ({
     type: "link" as const,
     text: t.name,
-    url: `/tags/${t.name}/`,
+    url: `/tags/${t.name}`,
 }));
 ---
 
@@ -36,7 +36,7 @@ const tagLinks = tagList.map((t) => ({
                 {group.map(({ name, count }) => (
                     <li data-stalux-reveal-item>
                         <a
-                            href={`/tags/${name}/`}
+                            href={`/tags/${name}`}
                             class="stalux-cloud-tag-card"
                             data-stalux-card
                             data-stalux-tag-card

@@ -70,7 +70,7 @@ export async function buildFeedItems(
             title: post.data.title,
             pubDate: new Date(toMachineDateTime(post.data.date, stalux.timezone)),
             description: cached?.desc || post.data.desc || "",
-            link: `/posts/${post.data.abbrlink}/`,
+            link: `/posts/${post.data.abbrlink}`,
             categories: post.data.categories || [],
             customData,
         };

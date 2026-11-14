@@ -45,10 +45,20 @@ export function getMarkdownPath(pathname: string): string | undefined {
     return undefined;
 }
 
+/**
+ * The public form of an HTML route. Every page route is emitted without a
+ * trailing slash (`/posts/x`, `/tags/x`, `/archives`); only the root keeps its
+ * single slash. Real files — Markdown exports, JSON/XML endpoints, images —
+ * are returned untouched so they keep the extension that identifies them.
+ */
+export function toRoutePath(pathname: string): string {
+    const path = normalizePublicPath(pathname);
+    return path === "/" ? "/" : path;
+}
+
 export function toPublicUrl(site: string, pathname: string, markdown = false): string {
     const base = site.replace(/\/+$/u, "");
-    const normalized = normalizePublicPath(pathname);
-    const path = markdown ? getMarkdownPath(normalized) : normalized;
-    if (!path) return `${base}${normalized === "/" ? "/" : `${normalized}/`}`;
-    return markdown ? `${base}${path}` : `${base}${path === "/" ? "/" : `${path}/`}`;
+    const path = markdown ? getMarkdownPath(pathname) : toRoutePath(pathname);
+    if (!path) return `${base}${toRoutePath(pathname)}`;
+    return `${base}${path}`;
 }

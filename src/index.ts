@@ -53,6 +53,7 @@ import { createPageOutputCache } from "./internal/page-output-cache";
 import { loadCoverEncoder, restoreCoverFiles, upgradeCoverImages } from "./internal/post-cover";
 import { isPluginProject } from "./internal/project-mode";
 import { syncBackgroundSvgs, syncFontAssets } from "./internal/public-assets";
+import { normalizeRouteHrefs } from "./internal/route-hrefs";
 import { createRuntimeCacheKey } from "./internal/runtime-cache-key";
 import {
     appendUniquePlugin,
@@ -529,6 +530,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     promoteCodeStyles(document);
                     containMermaidSvgs(document);
                     removePageFontStyles(document);
+                    // 正文里手写的 /posts/x/ 也统一成路由器实际提供的形态
+                    normalizeRouteHrefs(document);
                     const images = findHtmlImages(before, document);
                     await updateLocalImageDimensions(images, outDir, {
                         cache: dimensionsCache,
@@ -740,6 +743,18 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 ...userSitemap,
                 customPages,
                 filter,
+                // Page routes are served without a trailing slash; keep the root
+                // and real files (`.md`, `.json`, `.xml`, images) exactly as built.
+                async serialize(item) {
+                    const next = userSitemap?.serialize
+                        ? await userSitemap.serialize(item)
+                        : item;
+                    if (!next) return next;
+                    const url = new URL(next.url);
+                    if (url.pathname !== "/") url.pathname = url.pathname.replace(/\/+$/u, "");
+                    next.url = url.href;
+                    return next;
+                },
             }),
             {
                 name: "stalux/sitemap-alias",

@@ -244,9 +244,7 @@ assert(
     "home canonical is incorrect",
 );
 assert(
-    pages.post.includes(
-        '<link rel="canonical" href="https://stalux.needhelp.icu/posts/a1b2c3d4/">',
-    ),
+    pages.post.includes('<link rel="canonical" href="https://stalux.needhelp.icu/posts/a1b2c3d4">'),
     "post canonical is incorrect",
 );
 assert(
@@ -295,6 +293,15 @@ for (const [route, html] of Object.entries(pages)) verifyJsonLd(html, route);
 for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
     const html = await Bun.file(file).text();
     if (!html.includes(`class="${cssClass("stalux-root")}`)) continue;
+    // Same rule as the sitemap: page routes are published without a trailing
+    // slash. Real files keep their extension and never match this pattern.
+    const slashRoutes = [...html.matchAll(/href="(\/[^"?#]*\/)"/gu)]
+        .map((match) => match[1] ?? "")
+        .filter((href) => href !== "/" && !/\.[a-z0-9]+$/iu.test(href));
+    assert(
+        slashRoutes.length === 0,
+        `${path.relative(dist, file)} must not link to trailing-slash routes: ${slashRoutes[0]}`,
+    );
     assert(
         (html.match(/data-stalux-back-to-top/gu) ?? []).length === 1,
         `${path.relative(dist, file)} must have exactly one back-to-top button`,
@@ -320,6 +327,16 @@ assert(
     "sitemap contains a non-canonical Markdown page endpoint",
 );
 assert(!sitemap.includes("<lastmod>"), "sitemap contains synthetic build-time lastmod values");
+
+// 页面路由统一不带尾斜杠：sitemap 里除根路径外不允许出现 `/</loc>`。
+// 真实端点（.md/.json/.xml/图片）本来就不以斜杠结尾，这条断言不会误伤它们。
+const trailingSlashLocs = [...sitemap.matchAll(/<loc>([^<]*\/)<\/loc>/gu)]
+    .map((match) => match[1] ?? "")
+    .filter((url) => new URL(url).pathname !== "/");
+assert(
+    trailingSlashLocs.length === 0,
+    `sitemap must not emit trailing slashes on page routes: ${trailingSlashLocs.slice(0, 3).join(", ")}`,
+);
 
 // ---- 时区一致性闸门（2026-10-24 事故回归） ----------------------------------
 // 无时区的 frontmatter 日期必须按站点时区解析：RSS pubDate、文章页 <time datetime>
@@ -437,7 +454,9 @@ const postIndex = JSON.parse(await read("api/posts.json")) as Array<{
     desc?: string;
 }>;
 for (const post of postIndex) {
-    const html = await read(`${post.url.replace(/^\//u, "")}index.html`);
+    // Routes are published without a trailing slash but the build still emits
+    // `<route>/index.html`, so the file path needs the separator the URL omits.
+    const html = await read(`${post.url.replace(/^\//u, "").replace(/\/+$/u, "")}/index.html`);
     const socialMeta = new Map<string, string>();
     function collectSocialMeta(node: DefaultTreeAdapterMap["node"]): void {
         if ("tagName" in node && node.tagName === "meta") {

@@ -114,7 +114,7 @@ describe("SEO document", () => {
                 page: { title: "About", description: "About page", cover: "//cdn.example/a.webp" },
             }),
         );
-        expect(document.canonical).toBe("https://canonical.example/about/");
+        expect(document.canonical).toBe("https://canonical.example/about");
         expect(document.openGraph.basic.image).toBe("https://cdn.example/a.webp");
         const graph = document.schema["@graph"] as Array<Record<string, unknown>>;
         expect(graph).toContainEqual(expect.objectContaining({ "@type": "AboutPage" }));
@@ -124,7 +124,7 @@ describe("SEO document", () => {
         const document = buildSeoDocument(
             input({ pathname: "/tags/%E6%B5%8B%E8%AF%95/?from=nav#top" }),
         );
-        expect(document.canonical).toBe("https://example.com/tags/%E6%B5%8B%E8%AF%95/");
+        expect(document.canonical).toBe("https://example.com/tags/%E6%B5%8B%E8%AF%95");
         expect(document.schema["@graph"]).toEqual(
             expect.arrayContaining([expect.objectContaining({ "@type": "CollectionPage" })]),
         );
