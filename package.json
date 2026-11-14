@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.59.0",
+    "version": "1.59.1",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -105,11 +105,11 @@
     },
     "dependencies": {
         "@astrojs/compiler": "^4.0.0",
-        "@astrojs/markdown-satteri": "^0.4.8",
+        "@astrojs/markdown-satteri": "^0.4.10",
         "@astrojs/rss": "^4.0.19",
-        "@astrojs/sitemap": "^3.7.4",
+        "@astrojs/sitemap": "^3.7.5",
         "@expressive-code/plugin-line-numbers": "^0.44.3",
-        "@lucide/astro": "^1.71.0",
+        "@lucide/astro": "^1.73.0",
         "@microsoft/clarity": "^1.0.2",
         "@pagefind/component-ui": "^1.6.0",
         "@swup/a11y-plugin": "^5.2.1",
@@ -145,29 +145,29 @@
         "simple-icons": "^16.37.0",
         "swup": "^4.10.0",
         "temml": "^0.14.0",
-        "webmcp-types": "^0.1.10",
+        "webmcp-types": "^0.1.11",
         "yaml": "^2.9.1"
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.12",
-        "@biomejs/biome": "^2.6.6",
+        "@biomejs/biome": "^2.6.7",
         "@swup/debug-plugin": "^4.1.0",
         "@types/bun": "^1.4.4",
         "@types/css-tree": "^3.2.0",
         "@types/html-escaper": "^3.0.4",
-        "@unocss/astro": "^66.12.0",
+        "@unocss/astro": "^66.13.0",
         "@vitest/coverage-v8": "^5.1.0",
-        "astro": "^7.4.10",
+        "astro": "^7.4.12",
         "happy-dom": "^21.0.4",
-        "knip": "^6.45.0",
+        "knip": "^6.45.1",
         "sharp": "^0.35.5",
         "sonda": "^0.14.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
-        "unocss": "^66.12.0",
+        "unocss": "^66.13.0",
         "vite": "^8.3.8",
         "vitest": "^5.1.0"
     },
     "peerDependencies": {
-        "astro": "^7.4.10"
+        "astro": "^7.4.12"
     }
 }
