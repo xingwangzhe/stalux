@@ -7,6 +7,9 @@ import { logDetail } from "./diagnostics";
 
 interface FeedConfig {
     timezone: string;
+    rss?: {
+        limit?: number;
+    };
 }
 
 interface FeedItem {
@@ -44,10 +47,15 @@ export async function buildFeedItems(
         const bTime = timestamps.get(b) ?? 0;
         return bTime - aTime;
     });
+    const feedPosts = stalux.rss?.limit ? sortedPosts.slice(0, stalux.rss.limit) : sortedPosts;
 
     const descriptions = await getPostDescriptions(logger);
-    logDetail(logger, "feed", `rendering ${sortedPosts.length} entries; format=${updatedTag}`);
-    return sortedPosts.map((post) => {
+    logDetail(
+        logger,
+        "feed",
+        `rendering ${feedPosts.length}/${sortedPosts.length} entries; format=${updatedTag}`,
+    );
+    return feedPosts.map((post) => {
         const cached = descriptions.get(String(post.data.abbrlink));
 
         let customData = "";

@@ -28,6 +28,8 @@ accentColor: "#EAB308"
 timezone: "Asia/Shanghai"
 favicon: "/favicon.ico"
 canonical: "https://example.com"
+rss:
+  limit: 20
 ```
 
 | 字段 | 说明 |
@@ -40,6 +42,7 @@ canonical: "https://example.com"
 | `favicon` | 站点图标路径 |
 | `canonical` | 可选 canonical 地址；不填时使用 `url` |
 | `weather` | 访客天气组件，见下文 |
+| `rss.limit` | RSS 与 Atom 输出的最新文章数量；省略时输出全部文章 |
 
 主题颜色也可以只在 `site.yml` 里改：
 
