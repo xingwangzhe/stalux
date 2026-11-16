@@ -9,7 +9,7 @@ import { toMachineDateTime } from "@utils/semantic-time";
 interface Props {
     post: CollectionEntry<"posts">;
     priority?: boolean;
-    timezone?: string;
+    timezone?: string | undefined;
 }
 
 const { post, priority = false, timezone: suppliedTimezone } = Astro.props;

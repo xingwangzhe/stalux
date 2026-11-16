@@ -17,5 +17,5 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
     description={t("categories.description", { title: siteConfig.title })}
 >
     <PageHeading heading={t("categories.heading")} description={t("categories.browseByTopic")} />
-    <CategoriesList />
+    <CategoriesList lang={siteConfig.lang || "zh-CN"} />
 </Stalux>

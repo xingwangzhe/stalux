@@ -261,7 +261,7 @@ assert(
     "categories Markdown alternate does not match the registered route",
 );
 assert(
-    pages.notFound.includes('<meta name="robots" content="noindex, nofollow">'),
+    /<meta name="robots" content="noindex,\s*nofollow">/u.test(pages.notFound),
     "404 robots policy is incorrect",
 );
 assert(
@@ -431,6 +431,9 @@ for (const feedPath of ["rss.xml", "atom.xml"]) {
 }
 
 const files = walk(dist);
+if (Bun.env.SONDA !== "1") {
+    assert(!files.some((file) => file.endsWith(".map")), "production output contains sourcemaps");
+}
 const htmlCount = files.filter((file) => file.endsWith(".html")).length;
 const fontCount = files.filter((file) => file.endsWith(".woff2")).length;
 

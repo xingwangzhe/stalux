@@ -1,0 +1,22 @@
+diff --git a/src/SEO.astro b/src/SEO.astro
+index 489d83702b1caac0f8c94ef715c9475654a080c4..54421ee5e958e71eb0b269f4d0cddf2e061de3cf 100644
+--- a/src/SEO.astro
++++ b/src/SEO.astro
+@@ -8,4 +8,4 @@ export type Props = SEOProps;
+ // `site` defaults to the `site` option from astro.config, which is what makes
+ // relative canonical/OG URLs absolutizable without the caller passing anything.
+ const site = Astro.props.site ?? Astro.site;
+-const tags = buildTags({ ...Astro.props, site });
++const tags = buildTags({ ...Astro.props, ...(site === undefined ? {} : { site }) });
+diff --git a/src/utils/url.ts b/src/utils/url.ts
+index fc5edaa92fabdcc8e9ce58a416743d7eed328cd1..16957bd0653cee2e69f2879fc92b69c51fb09d3a 100644
+--- a/src/utils/url.ts
++++ b/src/utils/url.ts
+@@ -49,6 +49,6 @@ const MIME_BY_EXTENSION: Record<string, string> = {
+ /** Best-effort MIME type from a URL's file extension; `undefined` if unknown. */
+ export const inferMimeType = (url: string): string | undefined => {
+   const withoutQuery = url.split(/[?#]/, 1)[0];
+-  const extension = withoutQuery.split('.').pop()?.toLowerCase();
++  const extension = withoutQuery?.split('.').pop()?.toLowerCase();
+   return extension ? MIME_BY_EXTENSION[extension] : undefined;
+ };

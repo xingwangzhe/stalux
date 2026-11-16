@@ -237,6 +237,7 @@ export function compactScript(code: string, names: Names = styleNames, expressio
                         );
                 }
         }
+        return undefined;
     });
     return expression ? output.toString().slice(1, -1) : output.toString();
 }

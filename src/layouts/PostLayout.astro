@@ -17,18 +17,18 @@ interface Props {
     searchKeywords?: string[];
     postId?: string | number;
     date?: string;
-    updated?: string;
+    updated?: string | undefined;
     readingMinutes?: number;
     wordCount?: number;
-    tags?: string[];
-    categories?: string[];
+    tags?: string[] | undefined;
+    categories?: string[] | undefined;
     headings?: Array<{ depth: number; slug: string; text: string }>;
     author?: string;
     authorAvatar?: string;
-    prev?: { url: string; title: string };
-    next?: { url: string; title: string };
-    cc?: string;
-    hasImage?: boolean;
+    prev?: { url: string; title: string } | undefined;
+    next?: { url: string; title: string } | undefined;
+    cc?: string | undefined;
+    hasImage?: boolean | undefined;
 }
 
 const props = Astro.props as Props;

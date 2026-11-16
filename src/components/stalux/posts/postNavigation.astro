@@ -5,8 +5,8 @@ import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 
 interface Props {
-    prev?: { url: string; title: string };
-    next?: { url: string; title: string };
+    prev?: { url: string; title: string } | undefined;
+    next?: { url: string; title: string } | undefined;
 }
 
 const props = Astro.props as Props;
@@ -25,7 +25,7 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
         aria-label={t("post.navigation")}
     >
         <!-- Modern Web Guidance (html): 上一篇/下一篇是一组导航条目 => <ul>/<li>；
-             方向标签与标题是成对文字 => <p> 承载，不再用无语义 <div> 包裹。 -->
+             方向标签和标题使用行内容器，兼容禁用时的 span 包裹。 -->
         <ul class="stalux-pagination-inner">
             <li class="stalux-pagination-item">
                 {props.prev ? (
@@ -51,10 +51,10 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
                                 <path d="M19 12H5M12 19l-7-7 7-7" />
                             </svg>
                         </span>
-                        <p class="stalux-pagination-content">
+                        <span class="stalux-pagination-content">
                             <span class="stalux-pagination-label">{t("post.prevPost")}</span>
                             <span class="stalux-pagination-title">{props.prev.title}</span>
-                        </p>
+                        </span>
                     </a>
                 ) : (
                     <span class="stalux-pagination-link stalux-pagination-prev-post stalux-pagination-disabled">
@@ -74,10 +74,10 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
                                 <path d="M19 12H5M12 19l-7-7 7-7" />
                             </svg>
                         </span>
-                        <p class="stalux-pagination-content">
+                        <span class="stalux-pagination-content">
                             <span class="stalux-pagination-label">{t("post.prevPost")}</span>
                             <span class="stalux-pagination-title">{t("post.noPrev")}</span>
-                        </p>
+                        </span>
                     </span>
                 )}
             </li>
@@ -90,10 +90,10 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
                         class="stalux-pagination-link stalux-pagination-next-post"
                         rel="next"
                     >
-                        <p class="stalux-pagination-content">
+                        <span class="stalux-pagination-content">
                             <span class="stalux-pagination-label">{t("post.nextPost")}</span>
                             <span class="stalux-pagination-title">{props.next.title}</span>
-                        </p>
+                        </span>
                         <span class="stalux-pagination-arrow">
                             <svg
                                 aria-hidden="true"
@@ -113,10 +113,10 @@ const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
                     </a>
                 ) : (
                     <span class="stalux-pagination-link stalux-pagination-next-post stalux-pagination-disabled">
-                        <p class="stalux-pagination-content">
+                        <span class="stalux-pagination-content">
                             <span class="stalux-pagination-label">{t("post.nextPost")}</span>
                             <span class="stalux-pagination-title">{t("post.noNext")}</span>
-                        </p>
+                        </span>
                         <span class="stalux-pagination-arrow">
                             <svg
                                 aria-hidden="true"

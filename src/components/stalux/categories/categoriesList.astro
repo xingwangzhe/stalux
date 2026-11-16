@@ -1,10 +1,18 @@
 ---
 import "../../../styles/generated-categories.css";
+import { getCollection } from "astro:content";
 import CategoriesCard from "@components/stalux/categories/categoriesCard.astro";
-
 import { getCategoryCountList } from "@utils/collections-stats";
+import { getSiteData } from "@utils/config-utils";
+
+interface Props {
+    lang?: string;
+}
 
 const categoryList = await getCategoryCountList(Astro.logger);
+const lang =
+    Astro.props.lang ??
+    (categoryList.length ? getSiteData(await getCollection("config")).lang : undefined);
 ---
 
 <ul
@@ -17,7 +25,7 @@ const categoryList = await getCategoryCountList(Astro.logger);
         /* Modern Web Guidance (html): shell 的 hover/focus-within 作用范围由 <li> 承担，
            卡片组件本身不再输出多余的包裹 <div>。 */
         <li class="stalux-category-shell" data-stalux-reveal-item>
-            <CategoriesCard category={category} />
+            <CategoriesCard category={category} lang={lang || "zh-CN"} />
         </li>
     ))}
 </ul>

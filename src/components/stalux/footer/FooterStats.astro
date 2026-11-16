@@ -7,7 +7,7 @@ import { toMachineDateTime } from "@utils/semantic-time";
 interface Props {
     showStats?: boolean;
     wordCount?: string;
-    buildtime?: string;
+    buildtime?: string | undefined;
 }
 
 const configEntries = await getCollection("config");

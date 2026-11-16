@@ -314,6 +314,7 @@ export const commonStyles: StyleSpec[] = [
         "absolute overflow-hidden p-0 w-[1px] h-[1px] m-[-1px]",
         { "clip-path": "inset(50%)", "white-space": "normal", border: "0" },
     ],
+    [".stalux-404-error-content", "", { "font-family": "system-ui, sans-serif" }],
     [".stalux-404-error-content h1", "m-0 font-bold text-[6rem] text-ink-90", {}],
     [".stalux-404-error-content p", "text-[1.5rem] m-[1rem_0_2rem_0] text-ink-70", {}],
     [

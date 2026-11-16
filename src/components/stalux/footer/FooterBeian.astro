@@ -4,9 +4,9 @@ import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
 interface Props {
-    icp?: string;
-    pubsec?: string;
-    pubsecNumber?: string;
+    icp?: string | undefined;
+    pubsec?: string | undefined;
+    pubsecNumber?: string | undefined;
 }
 
 const { icp, pubsec, pubsecNumber } = Astro.props;

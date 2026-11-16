@@ -10,7 +10,7 @@ export interface WeatherData {
 }
 export interface WeatherState {
     status: "loading" | "ready" | "error";
-    data?: WeatherData;
+    data?: WeatherData | undefined;
 }
 type Listener = (state: WeatherState) => void;
 /** One provider request; the only shape callers may assume is `unknown`. */
@@ -136,6 +136,7 @@ function parseReading(value: unknown): WeatherReading | undefined {
             return finite(current.apparent_temperature);
         if (key === "weather_code" && "weather_code" in current)
             return finite(current.weather_code);
+        return undefined;
     };
     const temperature = number("temperature_2m");
     const apparent = number("apparent_temperature");
@@ -150,7 +151,7 @@ export function createWeatherClient({
     now = Date.now,
 }: {
     fetcher?: typeof fetch;
-    storage?: Pick<Storage, "getItem" | "setItem">;
+    storage?: Pick<Storage, "getItem" | "setItem"> | undefined;
     now?: () => number;
 } = {}) {
     const listeners = new Set<Listener>();

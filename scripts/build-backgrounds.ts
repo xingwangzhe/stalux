@@ -3,14 +3,15 @@ import sharp from "sharp";
 
 // Composite the default dark canvas before encoding: preserving thousands of
 // alpha edge values costs far more than the visible dark-on-dark detail.
-// Original SVGs remain available for custom canvas colors.
-const directory = Bun.fileURLToPath(new URL("../public/background/", import.meta.url));
+// Keep original SVGs as source artwork for regenerating the rasters.
+const sourceDir = Bun.fileURLToPath(new URL("../src/assets/background/", import.meta.url));
+const outputDir = Bun.fileURLToPath(new URL("../public/background/", import.meta.url));
 let count = 0;
 for (const name of [
-    ...new Bun.Glob("*.min.svg").scanSync({ cwd: directory, onlyFiles: true }),
+    ...new Bun.Glob("*.min.svg").scanSync({ cwd: sourceDir, onlyFiles: true }),
 ].sort()) {
     if (!/^pattern-\d+\.min\.svg$/u.test(name)) continue;
-    const artwork = sharp(path.join(directory, name));
+    const artwork = sharp(path.join(sourceDir, name));
     const metadata = await artwork.metadata();
     await artwork
         // Some vectors have small viewBoxes. Rasterize those at reading-screen
@@ -18,7 +19,7 @@ for (const name of [
         .resize({ height: Math.max(metadata.height ?? 2436, 2436) })
         .flatten({ background: "#202020" })
         .webp({ quality: 80, effort: 6 })
-        .toFile(path.join(directory, name.replace(/\.svg$/u, ".dark.webp")));
+        .toFile(path.join(outputDir, name.replace(/\.svg$/u, ".dark.webp")));
     count++;
 }
 console.log(`Generated ${count} dark background companions.`);

@@ -197,7 +197,7 @@ function initializeClarity(id: string): void {
     void initialized.catch(() => {
         if (state.scripts?.get(CLARITY_LOADER_KEY) !== initialized) return;
         state.scripts.delete(CLARITY_LOADER_KEY);
-        if (state.clarityId === id) state.clarityId = undefined;
+        if (state.clarityId === id) delete state.clarityId;
         logger.debug("Clarity loader unavailable; a later navigation can retry");
     });
 }

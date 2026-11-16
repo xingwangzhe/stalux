@@ -29,12 +29,19 @@ export async function getStaticPaths() {
     return index.posts.map((post) => {
         const { previous: prevPost, next: nextPost } =
             index.neighbors.get(String(post.data.abbrlink)) ?? {};
-        // 增量构建 cacheKey：含自身与 prev/next 的更新时间，
+        // 增量构建 cacheKey：含自身与 prev/next 的标识、标题和更新时间，
         // 任一邻居变化（文章新增/编辑导致前后链接变化）时本页也会失效重渲染
         const cacheKey = [
             post.data.updated ?? post.data.date,
-            prevPost ? (prevPost.data.updated ?? prevPost.data.date) : "",
-            nextPost ? (nextPost.data.updated ?? nextPost.data.date) : "",
+            ...[prevPost, nextPost].map((neighbor) =>
+                neighbor
+                    ? JSON.stringify([
+                          neighbor.data.abbrlink,
+                          neighbor.data.title,
+                          neighbor.data.updated ?? neighbor.data.date,
+                      ])
+                    : "",
+            ),
             JSON.stringify(post.data),
             getRuntimeCacheKey(),
         ].join("|");

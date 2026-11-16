@@ -11,9 +11,10 @@ import {
 import { getFooterData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 import { sitePath } from "@utils/site-path";
+import { escape as escapeHtml } from "html-escaper";
 
 interface Props {
-    badges?: BadgeItem[];
+    badges?: BadgeItem[] | undefined;
 }
 
 const { badges } = Astro.props;
@@ -33,9 +34,9 @@ function badgeImg(opts: BadgeOptions) {
     const height = svg.match(/<svg\b[^>]*\bheight="(\d+)"/u)?.[1];
     const dimensions = width && height ? ` width="${width}" height="${height}"` : "";
     // Closed badge groups should not initialize every SVG document during first paint.
-    const img = `<img src="${src}" alt="${alt}" class="stalux-badge" loading="lazy" decoding="async"${dimensions} />`;
+    const img = `<img src="${src}" alt="${escapeHtml(alt)}" class="stalux-badge" loading="lazy" decoding="async"${dimensions} />`;
     if (opts.href) {
-        return `<a href="${opts.href}" target="_blank" rel="${opts.rel ?? "noopener"}">${img}</a>`;
+        return `<a href="${escapeHtml(opts.href)}" target="_blank" rel="${escapeHtml(opts.rel ?? "noopener")}">${img}</a>`;
     }
     return img;
 }
@@ -54,6 +55,8 @@ function badgeImg(opts: BadgeOptions) {
                             data-stalux-module="badge-group"
                             class="stalux-badge-group stalux-u-w-full badge-group"
                             id={groupId}
+                            open={item.collapsed === false}
+                            data-default-open={item.collapsed === false ? "true" : undefined}
                         >
                             <summary class="stalux-badge-group-summary stalux-u-flex stalux-u-items-center stalux-u-justify-center">
                                 <span class="stalux-badge-group-arrow">&#9654;</span>

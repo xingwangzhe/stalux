@@ -1,0 +1,9 @@
+{
+    "extends": "./tsconfig.json",
+    "contentMappers": [
+        {
+            "package": "@astrojs/ts-content-mapper",
+            "extensions": [".astro"]
+        }
+    ]
+}

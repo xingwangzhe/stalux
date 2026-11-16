@@ -7,7 +7,7 @@ export interface HtmlImage {
     tag: string;
     attributes: Map<string, string>;
     locations: Map<string, { startOffset: number; endOffset: number }>;
-    body?: number;
+    body?: number | undefined;
 }
 
 /** Source ranges preserve scripts and code-copy attributes byte-for-byte. */

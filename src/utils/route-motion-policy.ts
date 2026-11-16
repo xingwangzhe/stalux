@@ -18,7 +18,7 @@ interface MotionContext {
     from: URL;
     to: URL;
     navigationType?: string;
-    intent?: string;
+    intent?: string | undefined;
     reducedMotion?: boolean;
     browserMotion?: boolean;
     hidden?: boolean;

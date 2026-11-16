@@ -98,6 +98,7 @@ export function createEnhancedSearch(
             if ((await result.data()).url.replace(/\/$/u, "") === record.url.replace(/\/$/u, ""))
                 return result.id;
         }
+        return undefined;
     }
     async function search(query: string | null, options?: SearchOptions): Promise<SearchResponse> {
         const api = await getNative();

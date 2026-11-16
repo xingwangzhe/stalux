@@ -6,9 +6,7 @@
 
 # Stalux
 
-**现代化、暗色、玻璃拟态风格的 Astro 博客主题。**
-
-为内容阅读而生的静态博客主题：内置中文按页字体子集、Pagefind 全文搜索、PhotoSwipe 灯箱、Mermaid / 数学公式、Waline 评论和 Swup 视图过渡，同时提供 `llms.txt`、WebMCP 等 AI 友好接口。既能作为 npm 插件装进现有项目，也能作为源码模板直接二次开发。
+Astro 博客主题，内置中文字体子集、Pagefind 搜索、Markdown 渲染、Waline 评论和 Swup 导航。
 
 [在线演示](https://stalux.needhelp.icu) · [完整文档](./docs/README.md) · [快速开始](#快速开始) · [问题反馈](https://github.com/xingwangzhe/stalux/issues)
 
@@ -18,21 +16,9 @@
   </a>
 </p>
 
-## 特性
-
-- **暗色 + 玻璃拟态**：42 张可随机切换的极繁背景，导航、卡片和页脚保持统一的玻璃质感。
-- **中文按页字体子集**：构建期用 Rust / N-API 为每页可见 CJK 文本生成内容寻址 WOFF2 子集，同字符集页面复用文件。
-- **搜索与检索**：Pagefind 全文索引 + 分片 CJK 子串索引，支持单字、全半角规范化和多词查询。
-- **开箱即用的 Markdown**：PhotoSwipe 灯箱、图片图注、Mermaid、Temml 数学公式、Expressive Code 行号，全部由主题集成自动注入。
-- **评论与订阅**：Waline 评论、RSS / Atom、Sitemap、`llms.txt` / `llms-full.txt`。
-- **顺滑导航**：Swup 接管软导航，只替换主内容区，提供有界入场动效并保留背景、导航和页脚。
-- **AI 友好**：页面内 WebMCP 只读工具、文章 Markdown 导出、OpenAPI 描述和构建期分享卡片。
-- **零配置集成**：`stalux()` 一行注入 sitemap、Expressive Code 和 Markdown 插件；站点信息全部走 YAML。
-- **可定制**：`accentColor` 一键换色，30+ 组件可覆盖，支持英文 / 中文界面。
-
 ## 快速开始
 
-### 插件模式（推荐）
+### 安装到 Astro 项目
 
 ```bash
 bun create astro                    # 选择 minimal 空模板
@@ -68,7 +54,7 @@ bun run dev   # http://localhost:4321
 
 `stalux init` 只生成 `stalux/` 下的配置和示例内容，不会覆盖已有的 `package.json`、`astro.config.ts` 或 `src/content.config.ts`。
 
-### 源码模板模式
+### 从源码运行
 
 ```bash
 git clone https://github.com/xingwangzhe/stalux.git my-blog

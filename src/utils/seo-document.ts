@@ -1,5 +1,5 @@
 import type { AuthorData, SiteData } from "@schemas/config";
-import type { SEOProps } from "astro-seo";
+import type { LinkTag, MetaTag, SEOProps, Twitter } from "astro-seo-kit/types";
 import { langToOpenGraphLocale } from "./i18n";
 import { getMarkdownPath, getRouteKind, normalizePublicPath, toPublicUrl } from "./public-routes";
 import type { SocialImage } from "./social-image";
@@ -12,8 +12,8 @@ export interface SeoPageInput {
     cover?: string;
     socialImage?: SocialImage;
     isArticle?: boolean;
-    date?: string;
-    updated?: string;
+    date?: string | undefined;
+    updated?: string | undefined;
     tags?: string[];
     categories?: string[];
     author?: string;
@@ -38,9 +38,9 @@ export interface SeoDocument {
     nofollow: boolean;
     noindex: boolean;
     openGraph: NonNullable<SEOProps["openGraph"]>;
-    twitter: NonNullable<SEOProps["twitter"]>;
-    links: NonNullable<NonNullable<SEOProps["extend"]>["link"]>;
-    meta: NonNullable<NonNullable<SEOProps["extend"]>["meta"]>;
+    twitter: Twitter;
+    links: LinkTag[];
+    meta: MetaTag[];
     schema: Record<string, unknown>;
     fallbackImage?: string;
 }
@@ -82,24 +82,21 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     const isCollection = routeKind.endsWith("-index") || routeKind.endsWith("-detail");
 
     const openGraph: NonNullable<SEOProps["openGraph"]> = {
-        basic: {
-            title: contentTitle,
-            type: isArticle ? "article" : "website",
-            image,
-            url: canonical,
-        },
-        optional: {
-            description: page.description,
-            locale: langToOpenGraphLocale(site.lang),
-            siteName,
-        },
-        image: {
-            url: image,
-            alt: contentTitle,
-            ...(page.socialImage?.width ? { width: page.socialImage.width } : {}),
-            ...(page.socialImage?.height ? { height: page.socialImage.height } : {}),
-            ...(page.socialImage?.type ? { type: page.socialImage.type } : {}),
-        },
+        title: contentTitle,
+        type: isArticle ? "article" : "website",
+        url: canonical,
+        description: page.description,
+        locale: langToOpenGraphLocale(site.lang),
+        siteName,
+        images: [
+            {
+                url: image,
+                alt: contentTitle,
+                ...(page.socialImage?.width ? { width: page.socialImage.width } : {}),
+                ...(page.socialImage?.height ? { height: page.socialImage.height } : {}),
+                ...(page.socialImage?.type ? { type: page.socialImage.type } : {}),
+            },
+        ],
     };
     if (isArticle) {
         openGraph.article = {
@@ -121,7 +118,7 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
         imageAlt: contentTitle,
         ...(site.twitterSite ? { site: site.twitterSite } : {}),
     };
-    const links: NonNullable<NonNullable<SEOProps["extend"]>["link"]> = [
+    const links: LinkTag[] = [
         { rel: "icon", href: favicon },
         {
             rel: "alternate",

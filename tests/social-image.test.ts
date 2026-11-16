@@ -116,8 +116,8 @@ describe("article social images", () => {
             version: "test",
         });
         const url = `https://example.com${socialImage.url}`;
-        expect(seo.openGraph.basic.image).toBe(url);
-        expect(seo.openGraph.image).toMatchObject({
+        expect(seo.openGraph.images?.[0]?.url).toBe(url);
+        expect(seo.openGraph.images?.[0]).toMatchObject({
             url,
             width: 1200,
             height: 630,

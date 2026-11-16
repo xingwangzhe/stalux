@@ -15,6 +15,7 @@
             "!**/licenses.txt",
             "!**/.astro",
             "!public/background",
+            "!src/assets/background/*.svg",
             "!src/internal/style-names.generated.ts",
             "!**/*.md",
             "!stalux",

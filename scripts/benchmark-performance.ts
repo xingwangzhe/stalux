@@ -14,10 +14,12 @@ const server = await createServer({
             name: "benchmark-content-stub",
             resolveId(id) {
                 if (id === "astro:content") return "\0benchmark-content";
+                return undefined;
             },
             load(id) {
                 if (id === "\0benchmark-content")
                     return "export const getCollection = async () => [];";
+                return undefined;
             },
         },
     ],
@@ -72,7 +74,7 @@ try {
         path.join(root, "src/internal/font-slices.ts"),
     );
     const font = Buffer.from(
-        await Bun.file(path.join(root, "src/assets/fonts/LXGWWenKai-Regular.ttf")).bytes(),
+        await Bun.file(path.join(root, "src/assets/fonts/LXGWWenKai-Regular.woff2")).bytes(),
     );
     const cache = path.join(Bun.env.TMPDIR ?? "/tmp", "stalux-perf-font-benchmark");
     const sentinel = path.join(cache, ".keep");

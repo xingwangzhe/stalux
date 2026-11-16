@@ -9,7 +9,7 @@ import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
     entry: CollectionEntry<"words">;
-    timezone?: string;
+    timezone?: string | undefined;
 }
 
 const { entry, timezone } = Astro.props;

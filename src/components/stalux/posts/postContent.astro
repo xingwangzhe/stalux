@@ -10,19 +10,19 @@ import { toMachineDateTime } from "@utils/semantic-time";
 import ArticleSummary from "./ArticleSummary.astro";
 
 interface Props {
-    postId?: string | number;
+    postId?: string | number | undefined;
     title: string;
-    description?: string;
-    searchKeywords?: string[];
+    description?: string | undefined;
+    searchKeywords?: string[] | undefined;
     // Kept for downstream overrides of this component; the theme's own render
     // path no longer turns them into any view-transition CSS (Swup owns cues).
     transitionName?: string;
     transitionScope?: "article" | "about";
-    date?: string;
-    updated?: string;
-    readingMinutes?: number;
-    wordCount?: number;
-    hasImage?: boolean;
+    date?: string | undefined;
+    updated?: string | undefined;
+    readingMinutes?: number | undefined;
+    wordCount?: number | undefined;
+    hasImage?: boolean | undefined;
 }
 
 const props = Astro.props as Props;

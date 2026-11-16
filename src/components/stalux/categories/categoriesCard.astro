@@ -5,6 +5,7 @@ import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 
 interface Props {
+    lang?: string;
     category: {
         name: string;
         count: number;
@@ -12,12 +13,11 @@ interface Props {
 }
 
 const props = Astro.props as Props;
-const configEntries = await getCollection("config");
-const siteConfig = (configEntries.find((e) => e.id === "site")?.data ?? {}) as Record<
-    string,
-    unknown
->;
-const { t } = createTranslator((siteConfig.lang as string) || "zh-CN");
+const lang =
+    props.lang ??
+    (await getCollection("config")).map(({ data }) => data).find((data) => data.id === "site")
+        ?.lang;
+const { t } = createTranslator(lang || "zh-CN");
 ---
 
 <!-- Modern Web Guidance (html): 分类卡本身即 <article>；外层曾经的 <div class="stalux-category-shell">

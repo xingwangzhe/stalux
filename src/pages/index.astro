@@ -7,6 +7,7 @@ const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const siteTitle = siteConfig.title;
 const siteDescription = siteConfig.description;
+const exportMarkdown = getPromoteData(configEntries)?.export_md === true;
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
 import ToArchive from "@components/stalux/archives/toArchive.astro";
@@ -16,7 +17,7 @@ import TextType from "@components/stalux/common/textType.astro";
 import SocialMedia from "@components/stalux/links/socialMedia.astro";
 import Stalux from "@layouts/Stalux.astro";
 
-import { getSiteData } from "@utils/config-utils";
+import { getPromoteData, getSiteData } from "@utils/config-utils";
 ---
 
 <Stalux title={siteTitle} description={siteDescription}>
@@ -46,13 +47,17 @@ import { getSiteData } from "@utils/config-utils";
                 This is a personal, public, read-only knowledge base for developers and AI agents
                 looking for published technical articles, practical notes, project investigations,
                 and reproducible web engineering details. Start with the
-                <a href="/index.md">Markdown home page</a>,
+                {exportMarkdown && (
+                    <>
+                        <a href="/index.md">Markdown home page</a>,{" "}
+                    </>
+                )}
                 <a href="/api/posts.json">published post index</a>,
                 <a href="/openapi.json">read API description</a>, or
-                <a href="/llms.txt">agent guidance</a>. Individual posts are available as HTML and
-                Markdown, and the <a href="/rss.xml">RSS feed</a> provides a machine-readable update
-                stream. The site does not require an account and these discovery endpoints do not
-                mutate data.
+                <a href="/llms.txt">agent guidance</a>. Individual posts are available as HTML{exportMarkdown &&
+                    " and Markdown"}. The <a href="/rss.xml">RSS feed</a> provides a
+                machine-readable update stream. The site does not require an account and these
+                discovery endpoints do not mutate data.
             </p>
         </section>
         <section data-stalux-home-content data-stalux-motion-content>

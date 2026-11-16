@@ -7,7 +7,7 @@ export interface SocialCardData {
     tags: string[];
     date: string;
     category: string;
-    cover?: string;
+    cover?: string | undefined;
 }
 
 export type SocialCardFormat = "jpg" | "png";

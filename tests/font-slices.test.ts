@@ -37,7 +37,7 @@ describe("page-specific font subsets", () => {
             removePageFontStyles(document);
             const result = await writePageFontSubsetIntoDocumentAsync(
                 document,
-                readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf"),
+                readFileSync("src/assets/fonts/LXGWWenKai-Regular.woff2"),
                 root,
             );
             expect(result).toBeDefined();
@@ -62,7 +62,7 @@ describe("page-specific font subsets", () => {
     it("preserves synchronous output when the async native worker processes pages", async () => {
         const root = mkdtempSync(join(tmpdir(), "stalux-async-font-"));
         try {
-            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf");
+            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.woff2");
             const html = "<html><head></head><body>中文 café 123</body></html>";
             const expected = writePageFontSubset(html, font, join(root, "sync"));
             const actual = await writePageFontSubsetAsync(html, font, join(root, "async"));
@@ -88,7 +88,7 @@ describe("page-specific font subsets", () => {
             );
             const html =
                 '<!doctype html><html><head><meta name="description" content="描述中文 snippet <body></body>"><style>@font-face{font-family:"LXGW WenKai-hash";src:url("/ascii.woff2");unicode-range:U+0020-007E}@font-face{font-family:"LXGW WenKai-hash";src:url("/large.woff2");unicode-range:U+4E00-9FFF}@font-face{font-family:"LXGW WenKai-hash";src:url("/large-2.woff2");unicode-range:U+5200-52FF}:root{--font-body:"Original Font",system-ui,sans-serif}.agent-home-summary{clip:rect(0,0,0,0);position:absolute;width:1px;height:1px;overflow:hidden}h1::after{content:"— “© ✓"}</style></head><body><button aria-label="属性导航" title="属性提示" placeholder="属性占位"></button><p>Homepage首页性能 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz café</p><details><summary>折叠标题</summary><p>展开后内容</p></details><div class="agent-home-summary">机器隐藏摘要</div><div hidden>显式隐藏文字</div><div style="display:none">样式隐藏文字</div><!-- 注释文字 --><pre>&lt;body&gt;可见代码内容&lt;/body&gt;</pre><svg><text>可见图中文字</text><title>不可见 SVG 标题</title></svg><script>脚本内容</script><template>模板内容</template><style>.隐藏样式内容{}</style></body></html>';
-            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf");
+            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.woff2");
             const linkedText = await readLinkedStylesheetText(
                 '<html><head><link rel="stylesheet" href="/_astro/site.css"></head><body></body></html>',
                 pagePath,
@@ -179,7 +179,7 @@ describe("page-specific font subsets", () => {
         try {
             const html =
                 "<html><head><meta name=description content=metadata></head><body><p>English café — © 2026</p></body></html>";
-            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf");
+            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.woff2");
             const subset = writePageFontSubset(html, font, join(root, "cache"));
             expect(subset).toBeDefined();
             expect(subset?.html).toContain("U+0045");
@@ -193,7 +193,7 @@ describe("page-specific font subsets", () => {
     it("reserves Arabic digits in every page subset even when the page has none", () => {
         const root = mkdtempSync(join(tmpdir(), "stalux-digit-font-"));
         try {
-            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.ttf");
+            const font = readFileSync("src/assets/fonts/LXGWWenKai-Regular.woff2");
             const digitless =
                 "<html><head></head><body><p>无数字页面</p><span>abc</span></body></html>";
             const withExtra = writePageFontSubset(

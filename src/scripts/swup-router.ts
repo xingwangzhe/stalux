@@ -26,22 +26,22 @@ interface NavigationContext {
     to: URL;
     direction: string;
     navigationType: "push" | "replace" | "traverse";
-    sourceElement?: Element;
+    sourceElement?: Element | undefined;
     preset: RouteMotionPreset;
     browserMotion: boolean;
     motion?: RouteMotion;
     executeScripts?: (signal?: AbortSignal) => Promise<void>;
-    scriptsReady?: Promise<void>;
+    scriptsReady?: Promise<void> | undefined;
     outgoingReady?: Promise<void>;
     incomingDocument?: Document;
     removeOutgoing?: () => void;
     obsoleteStyles: Element[];
     pruneObsoleteStyles?: () => void;
     glide?: PageGlide;
-    releaseOutgoing?: () => void;
+    releaseOutgoing?: (() => void) | undefined;
 }
 
-type Position = { top: number; left: number; focus?: string };
+type Position = { top: number; left: number; focus?: string | undefined };
 const MAIN = "#swup-main";
 
 function abortObsoleteVisit(visit: Visit): void {

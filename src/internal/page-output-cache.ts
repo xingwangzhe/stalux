@@ -2,7 +2,7 @@ import path from "node:path";
 
 export interface CachedPageOutput {
     html: string;
-    font?: { filename: string; sourcePath: string };
+    font?: { filename: string; sourcePath: string } | undefined;
 }
 
 const digest = (value: string | Uint8Array) =>

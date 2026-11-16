@@ -6,9 +6,7 @@
 
 # Stalux
 
-**A modern, dark, glassmorphism-styled Astro blog theme.**
-
-Built for content-first reading: per-page CJK font subsets, Pagefind full-text search, PhotoSwipe lightbox, Mermaid and math rendering, Waline comments, Swup view transitions, plus AI-friendly endpoints such as `llms.txt` and WebMCP. Use it as an npm plugin in an existing project or as a source template for deeper customization.
+Astro blog theme with CJK font subsetting, Pagefind search, Markdown rendering, Waline comments and Swup navigation.
 
 [Live demo](https://stalux.needhelp.icu) · [Documentation](./docs/README.md) · [Quick start](#quick-start) · [Issues](https://github.com/xingwangzhe/stalux/issues)
 
@@ -18,21 +16,9 @@ Built for content-first reading: per-page CJK font subsets, Pagefind full-text s
   </a>
 </p>
 
-## Features
-
-- **Dark glassmorphism design** with 42 switchable maximalist backgrounds and a consistent glass surface across navigation, cards and footer.
-- **Per-page CJK font subsets** built with Rust / N-API: each page gets a content-addressed WOFF2 subset, and pages with the same character set share the file.
-- **Search that handles Chinese** via a Pagefind full-text index plus a sharded CJK substring index with single-character, NFKC and multi-word queries.
-- **Markdown, ready to go**: PhotoSwipe lightbox, image captions, Mermaid, Temml math and Expressive Code line numbers are injected by the theme integration.
-- **Comments and feeds**: Waline comments, RSS / Atom, sitemap, `llms.txt` / `llms-full.txt`.
-- **Smooth navigation**: Swup owns soft navigation, replaces only the main content area, and keeps background, navigation and footer stable.
-- **AI-friendly**: read-only in-page WebMCP tools, Markdown post export, an OpenAPI description and build-time social cards.
-- **Zero-config integrations**: one `stalux()` call bundles sitemap, Expressive Code and Markdown plugins; site metadata lives in YAML.
-- **Customizable**: one `accentColor` changes the theme color, 30+ components can be overridden, and the UI ships in English and Chinese.
-
 ## Quick start
 
-### Plugin mode (recommended)
+### Install in an Astro project
 
 ```bash
 bun create astro                    # Choose the minimal template
@@ -68,7 +54,7 @@ bun run dev   # http://localhost:4321
 
 `stalux init` only creates configuration and sample content under `stalux/`; it never overwrites an existing `package.json`, `astro.config.ts` or `src/content.config.ts`.
 
-### Source template mode
+### Run from source
 
 ```bash
 git clone https://github.com/xingwangzhe/stalux.git my-blog

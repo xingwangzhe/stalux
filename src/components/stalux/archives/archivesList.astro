@@ -3,9 +3,8 @@ import "../../../styles/generated-archives.css";
 import { type CollectionEntry, getCollection } from "astro:content";
 
 import { getSiteData } from "@utils/config-utils";
-import { formatInTimeZone, parseDate, toTimestamp, zonedCalendarParts } from "@utils/dayjs";
+import { formatInTimeZone, parseDate, zonedCalendarParts } from "@utils/dayjs";
 import { createTranslator } from "@utils/i18n";
-import { toMachineDateTime } from "@utils/semantic-time";
 
 interface Props {
     posts?: CollectionEntry<"posts">[];
@@ -20,7 +19,8 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 // 归档按“站点时区的日历”分组：无时区的 date 串按站点时区解析，
 // 分组也按站点时区取年月，构建机器时区（UTC CI）不再影响归档归属。
 const timezone = siteConfig.timezone || "Asia/Shanghai";
-const archivesByYearMonth = new Map<number, Map<number, CollectionEntry<"posts">[]>>();
+type ArchivePost = { post: CollectionEntry<"posts">; date: Date };
+const archivesByYearMonth = new Map<number, Map<number, ArchivePost[]>>();
 
 posts.forEach((post) => {
     if (!post.data.date) return;
@@ -28,20 +28,14 @@ posts.forEach((post) => {
     const { year, month } = zonedCalendarParts(date, timezone);
     const months = archivesByYearMonth.get(year) ?? new Map();
     const monthPosts = months.get(month) ?? [];
-    monthPosts.push(post);
+    monthPosts.push({ post, date });
     months.set(month, monthPosts);
     archivesByYearMonth.set(year, months);
 });
 
-// 每个 post 只解析一次时间，供排序比较器复用，避免比较器里反复 new Date()
-const tsCache = new Map<CollectionEntry<"posts">, number>(
-    posts.map((p) => [p, toTimestamp(p.data.date || 0, timezone)]),
-);
-
-// 对每个月内的文章按 date 字段降序排序（用缓存时间戳做纯数字比较）
 for (const months of archivesByYearMonth.values()) {
     for (const monthPosts of months.values()) {
-        monthPosts.sort((a, b) => (tsCache.get(b) ?? 0) - (tsCache.get(a) ?? 0));
+        monthPosts.sort((a, b) => b.date.getTime() - a.date.getTime());
     }
 }
 
@@ -79,23 +73,20 @@ const archiveYears = [...archivesByYearMonth.entries()]
                                 monthPosts.slice(index * 12, (index + 1) * 12),
                             ).map((group) => (
                                 <ul class="stalux-archive-post-list" data-stalux-reveal>
-                                    {group.map((post) => (
+                                    {group.map(({ post, date }) => (
                                         <li
                                             class="stalux-archive-post-item"
                                             data-stalux-reveal-item
                                         >
                                             <time
                                                 class="stalux-archive-post-date"
-                                                datetime={toMachineDateTime(
-                                                    post.data.date,
+                                                datetime={formatInTimeZone(
+                                                    date,
                                                     timezone,
+                                                    "yyyy-MM-dd'T'HH:mm:ssXXX",
                                                 )}
                                             >
-                                                {formatInTimeZone(
-                                                    parseDate(post.data.date, timezone),
-                                                    timezone,
-                                                    "yyyy-MM-dd",
-                                                )}
+                                                {formatInTimeZone(date, timezone, "yyyy-MM-dd")}
                                             </time>
                                             <a
                                                 href={`/posts/${post.data.abbrlink}/`}

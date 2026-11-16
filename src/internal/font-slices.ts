@@ -33,7 +33,7 @@ import {
 // ---------------------------------------------------------------------------
 
 /** Full font input path (relative to project root or package) */
-const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.ttf";
+const FONT_INPUT = "src/assets/fonts/LXGWWenKai-Regular.woff2";
 
 /** Code font input paths (variable fonts, registered as-is, no slicing) */
 const CODE_FONT_INPUT = "src/assets/fonts/GoogleSansCode.woff2";
@@ -65,7 +65,7 @@ export interface FontInputs {
     /** Absolute path to the code font woff2 */
     codeNormal: string;
     /** Absolute path to the code italic woff2, if present */
-    codeItalic?: string;
+    codeItalic?: string | undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -101,7 +101,10 @@ export async function resolveFontInputs(
     const started = performance.now();
     logger.debug("locating font inputs");
     // 1. Locate fonts (check project root first, then stalux package dir)
-    const fontPath = await findFont(projectRoot, FONT_INPUT);
+    const legacyFontPath = resolve(projectRoot, FONT_INPUT.replace(/\.woff2$/u, ".ttf"));
+    const fontPath = (await Bun.file(legacyFontPath).exists())
+        ? legacyFontPath
+        : await findFont(projectRoot, FONT_INPUT);
     if (!fontPath) {
         logger.warn(`Body font not found at ${FONT_INPUT}, skipping font injection`);
         return null;

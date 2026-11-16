@@ -11,13 +11,13 @@ export interface RouteMotionEvent {
 }
 
 export interface RouteMotionOptions {
-    skip?: boolean;
+    skip?: boolean | undefined;
     /** Animate the route's own content stage instead of a bounded heading area. */
     content?: boolean;
     preset?: RouteMotionPreset;
     browserMotion?: boolean;
     /** Releases the outgoing fill effect inside the entry cue's sync block. */
-    releaseOutgoing?: () => void;
+    releaseOutgoing?: (() => void) | undefined;
 }
 
 export interface RouteMotion {

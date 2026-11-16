@@ -399,7 +399,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     publicDir,
                     cacheDir: Bun.fileURLToPath(new URL("stalux-social-cards/", config.cacheDir)),
                     base: config.base,
-                    fontPath: path.join(srcDir, "assets/fonts/LXGWWenKai-Regular.ttf"),
+                    fontPath: path.join(srcDir, "assets/fonts/LXGWWenKai-Regular.woff2"),
                 });
                 coverCacheDir = Bun.fileURLToPath(new URL("stalux-post-covers/", config.cacheDir));
                 const assetsLogger = logger.fork("stalux/assets");

@@ -8,7 +8,7 @@ interface RuntimeTarget extends EventTarget {
 }
 
 interface RuntimeRegistration {
-    disposePage?: PageDisposer;
+    disposePage?: PageDisposer | undefined;
     unregister: PageDisposer;
 }
 

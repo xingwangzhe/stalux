@@ -1,7 +1,7 @@
 ---
 interface Props {
-    showPoweredBy?: boolean;
-    showThemeInfo?: boolean;
+    showPoweredBy?: boolean | undefined;
+    showThemeInfo?: boolean | undefined;
 }
 
 const { showPoweredBy = true, showThemeInfo = true } = Astro.props;

@@ -9,14 +9,14 @@ import { logFailure } from "./diagnostics";
 export interface BadgeOptions {
     label: string;
     message: string;
-    color?: string;
-    style?: "plastic" | "flat" | "flat-square" | "for-the-badge" | "social";
+    color?: string | undefined;
+    style?: "plastic" | "flat" | "flat-square" | "for-the-badge" | "social" | undefined;
     labelColor?: string;
     logo?: string;
     logoWidth?: number;
-    alt?: string;
-    href?: string;
-    rel?: string;
+    alt?: string | undefined;
+    href?: string | undefined;
+    rel?: string | undefined;
 }
 
 export interface BadgeGroup {
@@ -74,7 +74,7 @@ export function svgToDataUrl(svg: string): string {
     return `data:image/svg+xml,${encoded}`;
 }
 
-type BadgeInput = Omit<BadgeOptions, "style"> & { style?: string };
+type BadgeInput = Omit<BadgeOptions, "style"> & { style?: string | undefined };
 type BadgeConfig = BadgeInput | { title: string; items: BadgeInput[] };
 const assetCache = new WeakMap<readonly BadgeConfig[], Map<string, string>>();
 

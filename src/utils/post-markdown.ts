@@ -2,16 +2,16 @@ import { Document } from "yaml";
 
 interface MarkdownPostData {
     title: string;
-    tags?: string[];
-    categories?: string[];
+    tags?: string[] | undefined;
+    categories?: string[] | undefined;
     date: string;
-    updated?: string;
+    updated?: string | undefined;
     desc: string;
     abbrlink: string | number;
     draft?: boolean;
-    cc?: string;
-    cover?: string;
-    "og:image"?: string;
+    cc?: string | undefined;
+    cover?: string | undefined;
+    "og:image"?: string | undefined;
 }
 
 /** Serialize the collection's parsed metadata as YAML AST; preserve the original Markdown body. */

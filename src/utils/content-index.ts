@@ -15,8 +15,8 @@ export interface TaxonomyBucket<T> {
 }
 
 export interface PostNeighbors<T> {
-    previous?: T;
-    next?: T;
+    previous?: T | undefined;
+    next?: T | undefined;
 }
 
 export interface PostContentIndex<T> {
@@ -31,9 +31,9 @@ interface IndexablePost {
     data: {
         abbrlink: string | number;
         date: string;
-        updated?: string;
-        tags?: string[];
-        categories?: string[];
+        updated?: string | undefined;
+        tags?: string[] | undefined;
+        categories?: string[] | undefined;
     };
 }
 

@@ -6,9 +6,9 @@ interface PostData {
     title: string;
     date: string;
     abbrlink: string;
-    cover?: string;
-    categories?: string[];
-    tags?: string[];
+    cover?: string | undefined;
+    categories?: string[] | undefined;
+    tags?: string[] | undefined;
 }
 
 export function createSocialCardData(

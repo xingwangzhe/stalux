@@ -78,10 +78,10 @@ describe("SEO document", () => {
                 },
             }),
         );
-        expect(document.openGraph.basic).toMatchObject({
+        expect(document.openGraph).toMatchObject({
             title: "Article",
             type: "article",
-            image: "https://example.com/cover.webp",
+            images: [expect.objectContaining({ url: "https://example.com/cover.webp" })],
         });
         expect(document.twitter.card).toBe("summary_large_image");
         const graph = document.schema["@graph"] as Array<Record<string, unknown>>;
@@ -115,7 +115,7 @@ describe("SEO document", () => {
             }),
         );
         expect(document.canonical).toBe("https://canonical.example/about/");
-        expect(document.openGraph.basic.image).toBe("https://cdn.example/a.webp");
+        expect(document.openGraph.images?.[0]?.url).toBe("https://cdn.example/a.webp");
         const graph = document.schema["@graph"] as Array<Record<string, unknown>>;
         expect(graph).toContainEqual(expect.objectContaining({ "@type": "AboutPage" }));
     });
@@ -237,7 +237,7 @@ describe("SEO document", () => {
 
     it("uses the avatar and a compact Twitter card when no cover exists", () => {
         const document = buildSeoDocument(input({ pathname: "/archives/" }));
-        expect(document.openGraph.basic.image).toBe("https://example.com/avatar.png");
+        expect(document.openGraph.images?.[0]?.url).toBe("https://example.com/avatar.png");
         expect(document.twitter.card).toBe("summary");
         expect(document.schema["@graph"]).toEqual(
             expect.arrayContaining([expect.objectContaining({ "@type": "WebPage" })]),

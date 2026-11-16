@@ -1,7 +1,7 @@
 import type { CommentData } from "@schemas/config";
 
 export interface WalineComponentProps {
-    serverURL?: string;
+    serverURL?: string | undefined;
     lang?: string;
     locale?: unknown;
     emoji?: string[];
@@ -11,8 +11,8 @@ export interface WalineComponentProps {
     wordLimit?: number;
     pageSize?: number;
     login?: string;
-    recaptchaV3Key?: string;
-    turnstileKey?: string;
+    recaptchaV3Key?: string | undefined;
+    turnstileKey?: string | undefined;
     dark?: string | boolean;
     noCopyright?: boolean;
     commentSorting?: string;

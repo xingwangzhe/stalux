@@ -25,7 +25,7 @@ import {
 import type { SocialCardData } from "../src/utils/social-image";
 
 const fontPath = fileURLToPath(
-    new URL("../src/assets/fonts/LXGWWenKai-Regular.ttf", import.meta.url),
+    new URL("../src/assets/fonts/LXGWWenKai-Regular.woff2", import.meta.url),
 );
 const artwork = await readFile(new URL("../public/avatar.png", import.meta.url));
 const data: SocialCardData = {

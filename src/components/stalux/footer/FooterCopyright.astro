@@ -5,7 +5,7 @@ import { createTranslator } from "@utils/i18n";
 
 interface Props {
     author?: string;
-    startYear?: number;
+    startYear?: number | undefined;
 }
 
 const props = Astro.props as Props;

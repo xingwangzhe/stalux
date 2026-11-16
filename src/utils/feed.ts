@@ -9,9 +9,11 @@ import { toPublicUrl } from "./public-routes";
 interface FeedConfig {
     url: string;
     timezone: string;
-    rss?: {
-        limit?: number;
-    };
+    rss?:
+        | {
+              limit?: number | undefined;
+          }
+        | undefined;
 }
 
 interface FeedItem {
