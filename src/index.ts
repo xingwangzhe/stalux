@@ -445,7 +445,14 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const parserEntry = resolveModule("parse5");
                 const imageSizeEntry = resolveModule("image-size");
                 const nativeEntry = resolveModule("@xingwangzhe/cjk-font-split-native");
-                const pageEntries = htmlFiles.filter((entry) => entry.endsWith(".html"));
+                const pageEntries: string[] = [];
+                for (const entry of htmlFiles) {
+                    if (!entry.endsWith(".html")) continue;
+                    // Static verification files and other public HTML are served verbatim.
+                    if (await Bun.file(path.join(socialCardPaths.publicDir, entry)).exists())
+                        continue;
+                    pageEntries.push(entry);
+                }
                 let sharedFonts: Awaited<ReturnType<typeof writeSharedFontSubsetsAsync>> = [];
                 let sharedFontKey = "";
                 if (pageFontData) {
