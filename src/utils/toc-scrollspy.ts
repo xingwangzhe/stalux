@@ -31,6 +31,7 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
 
     // 鼠标悬停在侧边栏上时跳过自动滚动，避免跟用户手动操作冲突
     const sidebar = tocLinks[0]?.closest<HTMLElement>("[data-toc-active-class]");
+    const scrollPane = sidebar?.closest<HTMLElement>("[data-stalux-scroll-pane]");
     if (sidebar) {
         sidebar.addEventListener(
             "mouseenter",
@@ -52,32 +53,28 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
     const setActive = (link: HTMLAnchorElement | null) => {
         if (activeLink === link) return;
         activeLink?.classList.remove(activeClass);
+        activeLink?.removeAttribute("aria-current");
         activeLink = link;
-        if (link && !sidebarHovered) {
-            link.classList.add(activeClass);
+        link?.classList.add(activeClass);
+        link?.setAttribute("aria-current", "location");
+        if (link && scrollPane && !sidebarHovered) {
             // Scroll only the TOC pane. scrollIntoView also scrolls the page,
             // fighting anchor navigation and the reader's wheel/touch input.
-            const scrollPane = sidebar?.closest<HTMLElement>("[data-stalux-scroll-pane]");
-            if (scrollPane) {
-                const item = link.getBoundingClientRect();
-                const pane = scrollPane.getBoundingClientRect();
-                const delta =
-                    item.top < pane.top
-                        ? item.top - pane.top
-                        : item.bottom > pane.bottom
-                          ? item.bottom - pane.bottom
-                          : 0;
-                if (delta)
-                    scrollPane.scrollTo({
-                        top: scrollPane.scrollTop + delta,
-                        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-                            ? "instant"
-                            : "smooth",
-                    });
-            }
-        } else if (link) {
-            // 用户正在操作侧边栏时只高亮，不自动滚动
-            link.classList.add(activeClass);
+            const item = link.getBoundingClientRect();
+            const pane = scrollPane.getBoundingClientRect();
+            const delta =
+                item.top < pane.top
+                    ? item.top - pane.top
+                    : item.bottom > pane.bottom
+                      ? item.bottom - pane.bottom
+                      : 0;
+            if (delta)
+                scrollPane.scrollTo({
+                    top: scrollPane.scrollTop + delta,
+                    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                        ? "instant"
+                        : "smooth",
+                });
         }
     };
 
@@ -133,6 +130,6 @@ export function initTocScrollSpy(activeClass: string): (() => void) | undefined 
         observer.disconnect();
         visibleHeadings.clear();
         if (frameId) cancelAnimationFrame(frameId);
-        activeLink?.classList.remove(activeClass);
+        setActive(null);
     };
 }

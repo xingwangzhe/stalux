@@ -70,7 +70,7 @@ export const articleStyles: StyleSpec[] = [
     ],
     [".stalux-toc-item:hover", "", { background: "var(--white-05p)" }],
     [
-        ".stalux-toc-item:active, .stalux-toc-item.stalux-toc-active",
+        ".stalux-toc-item:active, .stalux-toc-item.stalux-toc-active, .stalux-toc-item[aria-current=location]",
         "",
         {
             color: "var(--accent-90p)",

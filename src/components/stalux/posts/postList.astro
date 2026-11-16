@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import PostCard from "@components/stalux/posts/postCard.astro";
+import { getSiteData } from "@utils/config-utils";
 
 interface Props {
     posts?: CollectionEntry<"posts">[];
@@ -9,6 +10,7 @@ interface Props {
 const props = Astro.props as Props;
 // Allow callers to pass filtered posts to avoid re-fetching the full list.
 const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.draft));
+const timezone = posts.length ? getSiteData(await getCollection("config")).timezone : undefined;
 ---
 
 <!-- Modern Web Guidance (html): 文章列表是内容分组 => <section> + <ul>/<li>。 -->
@@ -21,7 +23,7 @@ const posts = props.posts ?? (await getCollection("posts", ({ data }) => !data.d
     <ul class="post-list" data-stalux-reveal>
         {posts.map((post, index) => (
             <li data-stalux-reveal-item>
-                <PostCard post={post} priority={index === 0} />
+                <PostCard post={post} priority={index === 0} timezone={timezone} />
             </li>
         ))}
     </ul>

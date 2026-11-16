@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.60.0",
+    "version": "1.60.1",
     "description": "A powerful, modern Astro blog theme — use as template or install as plugin",
     "keywords": [
         "astro",
@@ -142,7 +142,7 @@
         "parse5": "^8.1.1",
         "photoswipe": "^5.4.4",
         "satteri": "^0.11.7",
-        "simple-icons": "^16.37.0",
+        "simple-icons": "^16.38.0",
         "swup": "^4.10.0",
         "temml": "^0.14.0",
         "webmcp-types": "^0.1.11",
@@ -150,7 +150,7 @@
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.12",
-        "@biomejs/biome": "^2.6.7",
+        "@biomejs/biome": "^2.6.8",
         "@swup/debug-plugin": "^4.1.0",
         "@types/bun": "^1.4.4",
         "@types/css-tree": "^3.2.0",

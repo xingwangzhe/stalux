@@ -33,6 +33,8 @@ describe("TOC observer candidates", () => {
                 getAttribute: () => `#${heading.id}`,
                 closest: () => null,
                 classList: { add: vi.fn(), remove: vi.fn() },
+                setAttribute: vi.fn(),
+                removeAttribute: vi.fn(),
                 scrollIntoView: vi.fn(),
             }),
         );
@@ -74,6 +76,8 @@ describe("TOC observer candidates", () => {
         frame?.(0);
         expect(links[51]?.classList.add).toHaveBeenCalledWith("active");
         expect(links[50]?.classList.remove).toHaveBeenCalledWith("active");
+        expect(links[50]?.removeAttribute).toHaveBeenCalledWith("aria-current");
+        expect(links[51]?.setAttribute).toHaveBeenCalledWith("aria-current", "location");
         emit([[51, false]]);
         cleanup?.();
         expect(cancel).toHaveBeenCalledWith(1);
@@ -95,6 +99,8 @@ it("keeps directory tracking inside its scroll pane and leaves anchor clicks to 
         getAttribute: () => "#part",
         closest: () => sidebar,
         classList: { add: vi.fn(), remove: vi.fn() },
+        setAttribute: vi.fn(),
+        removeAttribute: vi.fn(),
         getBoundingClientRect: () => ({ top: 350, bottom: 380 }),
         scrollIntoView: vi.fn(),
     });

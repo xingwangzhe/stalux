@@ -9,12 +9,11 @@ import { toMachineDateTime } from "@utils/semantic-time";
 interface Props {
     post: CollectionEntry<"posts">;
     priority?: boolean;
+    timezone?: string;
 }
 
-const { post, priority = false } = Astro.props;
-const configEntries = await getCollection("config");
-const siteConfig = getSiteData(configEntries);
-const timezone = siteConfig.timezone;
+const { post, priority = false, timezone: suppliedTimezone } = Astro.props;
+const timezone = suppliedTimezone ?? getSiteData(await getCollection("config")).timezone;
 
 // 描述：使用文章自身的 desc
 const description = post.data.desc || "";
@@ -34,7 +33,7 @@ const description = post.data.desc || "";
                     alt={post.data.title}
                     loading={priority ? "eager" : "lazy"}
                     decoding="async"
-                    fetchpriority={priority ? "high" : "auto"}
+                    fetchpriority={priority ? "high" : undefined}
                     width="640"
                     height="360"
                     data-stalux-cover
