@@ -21,9 +21,9 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const typeKey = props.typeKey || props.type;
 let typeUrl = "";
 if (typeKey === "category" || typeKey === "categories" || typeKey === "分类") {
-    typeUrl = "/categories/";
+    typeUrl = "/categories";
 } else if (typeKey === "tag" || typeKey === "tags" || typeKey === "标签") {
-    typeUrl = "/tags/";
+    typeUrl = "/tags";
 }
 ---
 

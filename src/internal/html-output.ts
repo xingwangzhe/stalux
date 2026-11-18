@@ -10,6 +10,7 @@ type Element = DefaultTreeAdapterMap["element"];
 export function createHtmlMutationEmitter(
     source: string,
     document: DefaultTreeAdapterMap["document"],
+    origin?: string,
 ) {
     const snapshots: Array<{
         node: Element;
@@ -59,7 +60,7 @@ export function createHtmlMutationEmitter(
             const raw = source.slice(start, end);
             const parsed = /^(href\s*=\s*["'])([^"']*)(["'])$/u.exec(raw);
             if (!parsed) continue;
-            const next = normalizeRouteHref(parsed[2] ?? "");
+            const next = normalizeRouteHref(parsed[2] ?? "", origin);
             if (next === parsed[2]) continue;
             edits.push({ start, end, value: `${parsed[1]}${next}${parsed[3]}` });
         }
