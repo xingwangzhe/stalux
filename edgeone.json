@@ -1,12 +1,40 @@
 {
     "rewrites": [
         {
-            "source": "/:level1/",
-            "destination": "/:level1/index.html"
+            "source": "/about/",
+            "destination": "/about/index.html"
         },
         {
-            "source": "/:level1/:level2/",
-            "destination": "/:level1/:level2/index.html"
+            "source": "/archives/",
+            "destination": "/archives/index.html"
+        },
+        {
+            "source": "/categories/",
+            "destination": "/categories/index.html"
+        },
+        {
+            "source": "/links/",
+            "destination": "/links/index.html"
+        },
+        {
+            "source": "/tags/",
+            "destination": "/tags/index.html"
+        },
+        {
+            "source": "/words/",
+            "destination": "/words/index.html"
+        },
+        {
+            "source": "/categories/*/",
+            "destination": "/categories/:splat/index.html"
+        },
+        {
+            "source": "/posts/*/",
+            "destination": "/posts/:splat/index.html"
+        },
+        {
+            "source": "/tags/*/",
+            "destination": "/tags/:splat/index.html"
         }
     ],
     "installCommand": "bunx --bun bun@1.4.4 install --frozen-lockfile",
