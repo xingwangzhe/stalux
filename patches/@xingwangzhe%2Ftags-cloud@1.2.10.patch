@@ -1,10 +1,13 @@
 diff --git a/src/TagCloud.ts b/src/TagCloud.ts
-index f7651074dca4633c4fb6d610444f9b82f40b4eb6..7486d2e57c108e4aaebc67e6c287aea85cbdc08a 100644
+index f765107..7486d2e 100644
 --- a/src/TagCloud.ts
 +++ b/src/TagCloud.ts
-@@ -205,4 +205,4 @@ export class TagCloud {
+@@ -205,7 +205,7 @@ export class TagCloud {
    #container: HTMLElement;
    #resizeObserver?: ResizeObserver;
    #handlers!: { down: EventListener; move: EventListener; up: EventListener };
 -  #clickHandler?: EventListener;
 +  #clickHandler: EventListener | undefined;
+
+   // 内置 Canvas
+   #canvas?: HTMLCanvasElement;
