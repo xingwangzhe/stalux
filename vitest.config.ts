@@ -5,6 +5,7 @@ import { getViteConfig } from "astro/config";
 export default getViteConfig({
     test: {
         include: ["tests/**/*.test.ts"],
+        pool: "threads",
         coverage: {
             provider: "v8",
             reporter: ["text", "json-summary", "html"],
