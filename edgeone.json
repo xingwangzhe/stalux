@@ -46,7 +46,7 @@
         },
         {
             "source": "/archives/",
-            "destination": "/archives"
+            "destination": "/archives/index.html"
         },
         {
             "source": "/about",
