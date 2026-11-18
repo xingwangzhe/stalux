@@ -16,8 +16,8 @@ const label = lang.startsWith("zh") ? "回到顶部" : "Back to top";
     <ArrowUp size={20} aria-hidden="true" />
 </button>
 
-<style is:global>
-.stalux-back-to-top {
+<style>
+:global(.stalux-back-to-top) {
     position: static;
     margin: 12px auto 0;
     flex-shrink: 0;
@@ -33,15 +33,15 @@ const label = lang.startsWith("zh") ? "回到顶部" : "Back to top";
     box-shadow: 0 2px 12px #0006;
     cursor: pointer;
 }
-.stalux-back-to-top[hidden] {
+:global(.stalux-back-to-top[hidden]) {
     display: none;
 }
-.stalux-back-to-top:focus-visible {
+:global(.stalux-back-to-top:focus-visible) {
     outline: 2px solid white;
     outline-offset: 3px;
 }
 @media (hover: hover) {
-    .stalux-back-to-top:hover {
+    :global(.stalux-back-to-top:hover) {
         background: #353535;
     }
 }

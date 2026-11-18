@@ -11,7 +11,7 @@ const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
-export async function getStaticPaths() {
+export function getStaticPaths() {
     return buildTaxonomyStaticPaths("tags");
 }
 

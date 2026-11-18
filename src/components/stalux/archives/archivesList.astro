@@ -22,8 +22,8 @@ const timezone = siteConfig.timezone || "Asia/Shanghai";
 type ArchivePost = { post: CollectionEntry<"posts">; date: Date };
 const archivesByYearMonth = new Map<number, Map<number, ArchivePost[]>>();
 
-posts.forEach((post) => {
-    if (!post.data.date) return;
+for (const post of posts) {
+    if (!post.data.date) continue;
     const date = parseDate(post.data.date, timezone);
     const { year, month } = zonedCalendarParts(date, timezone);
     const months = archivesByYearMonth.get(year) ?? new Map();
@@ -31,7 +31,7 @@ posts.forEach((post) => {
     monthPosts.push({ post, date });
     months.set(month, monthPosts);
     archivesByYearMonth.set(year, months);
-});
+}
 
 for (const months of archivesByYearMonth.values()) {
     for (const monthPosts of months.values()) {

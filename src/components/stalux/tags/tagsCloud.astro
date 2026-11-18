@@ -14,10 +14,10 @@ const tagGroups = Array.from({ length: Math.ceil(tagList.length / 32) }, (_, ind
     tagList.slice(index * 32, (index + 1) * 32),
 );
 const cloudDensity = Math.sqrt(Math.max(tagList.length, 100) / 100);
-const tagLinks = tagList.map((t) => ({
+const tagLinks = tagList.map((tag) => ({
     type: "link" as const,
-    text: t.name,
-    url: `/tags/${t.name}/`,
+    text: tag.name,
+    url: `/tags/${tag.name}/`,
 }));
 ---
 
