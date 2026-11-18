@@ -1,8 +1,12 @@
 {
     "rewrites": [
         {
-            "source": "/:path/",
-            "destination": "/:path/index.html"
+            "source": "/:level1/",
+            "destination": "/:level1/index.html"
+        },
+        {
+            "source": "/:level1/:level2/",
+            "destination": "/:level1/:level2/index.html"
         }
     ],
     "installCommand": "bunx --bun bun@1.4.4 install --frozen-lockfile",
