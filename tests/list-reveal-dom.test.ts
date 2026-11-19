@@ -1,153 +1,92 @@
 // @vitest-environment happy-dom
 
-/**
- * Real-DOM checks for the unroll cue.
- *
- * The rest of the suite drives `list-reveal` through hand-built stubs, which
- * cannot answer questions like "does this selector actually match" or "is the
- * thing the observer hands back a real element". happy-dom gives a real
- * document, real elements and a real Web Animations implementation, so this file
- * exercises the module the way a browser would: build markup, mount, deliver an
- * observer entry, then look at the animations that exist on the actual rows.
- *
- * It also pins the reason the module types its targets as `Element`: the target
- * the observer delivers IS an HTMLElement, so no assertion is needed anywhere.
- */
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { mountListReveal } from "../src/scripts/list-reveal";
 
-import { afterEach, beforeAll, expect, it, vi } from "vitest";
-import type { mountListReveal } from "../src/scripts/list-reveal";
-
-type ListRevealModule = {
-    mountListReveal: typeof mountListReveal;
-    primeListReveal: () => void;
-};
-
-let module: ListRevealModule;
 let deliver: IntersectionObserverCallback;
-let observed: Element[];
+let preference: { matches: boolean };
+const observe = vi.fn();
+const unobserve = vi.fn();
+const disconnect = vi.fn();
 
-class ManualObserver {
-    constructor(callback: IntersectionObserverCallback) {
-        deliver = callback;
-    }
-    observe(target: Element): void {
-        observed.push(target);
-    }
-    unobserve(): void {}
-    disconnect(): void {}
-}
-
-/** One group with `rows` real rows, laid out at `top` in the viewport. */
-function buildGroup(rows: number, top = 100): Element {
-    const group = document.createElement("ul");
-    group.setAttribute("data-stalux-reveal", "");
-    for (let index = 0; index < rows; index += 1) {
-        const row = document.createElement("li");
-        row.setAttribute("data-stalux-reveal-item", "");
-        row.textContent = `row ${index}`;
-        // happy-dom has no layout engine, so give the group and rows a box the
-        // module's near-viewport test can reason about. A real DOMRect keeps the
-        // stub honest (top/bottom are derived, not hand-written).
-        row.getBoundingClientRect = () => new DOMRect(0, top, 800, 40);
-        group.append(row);
-    }
-    group.getBoundingClientRect = () => new DOMRect(0, top, 800, rows * 40);
-    document.body.append(group);
-    return group;
-}
-
-function animationsOn(element: Element): Animation[] {
-    return element.getAnimations();
-}
-
-beforeAll(async () => {
-    // The observer is replaced before the module mounts so this file decides when
-    // entries are delivered; everything else is happy-dom's real implementation.
-    vi.stubGlobal("IntersectionObserver", ManualObserver);
-    module = (await import("../src/scripts/list-reveal")) as ListRevealModule;
+beforeEach(() => {
+    vi.clearAllMocks();
+    preference = { matches: false };
+    vi.stubGlobal(
+        "IntersectionObserver",
+        class {
+            constructor(callback: IntersectionObserverCallback) {
+                deliver = callback;
+            }
+            observe = observe;
+            unobserve = unobserve;
+            disconnect = disconnect;
+        },
+    );
+    vi.spyOn(window, "matchMedia").mockImplementation(() => preference as MediaQueryList);
+    vi.spyOn(document, "hidden", "get").mockReturnValue(false);
 });
 
 afterEach(() => {
-    deliver = undefined as unknown as IntersectionObserverCallback;
-    observed = [];
-    document.body.innerHTML = "";
+    document.body.replaceChildren();
     delete document.documentElement.dataset.staluxVtPreset;
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
 });
 
-it("matches real markup and holds every row on the wipe's first frame", () => {
-    observed = [];
-    const group = buildGroup(3);
-
-    // Reached through the router's own event, not by calling prime() directly.
-    document.dispatchEvent(new Event("astro:after-swap"));
-
-    const rows = [...group.children];
-    expect(rows).toHaveLength(3);
-    // The selector matched real elements, and what it matched is an HTMLElement.
-    expect(rows[0]).toBeInstanceOf(HTMLElement);
-    for (const row of rows) {
-        const [animation] = animationsOn(row);
-        expect(animation).toBeDefined();
-        expect(animation?.playState).toBe("paused");
-        const effect = animation?.effect as KeyframeEffect;
-        expect(effect.getTiming().delay).toBe(0);
-        // The paused frame is the start of the wipe, not the finished row.
-        const [first] = effect.getKeyframes();
-        expect(String(first?.clipPath)).toContain("100%");
-        expect(Number(first?.opacity)).toBeLessThan(1);
+function group(count: number): HTMLUListElement {
+    const list = document.createElement("ul");
+    list.setAttribute("data-stalux-reveal", "");
+    for (let index = 0; index < count; index++) {
+        const row = document.createElement("li");
+        row.setAttribute("data-stalux-reveal-item", "");
+        list.append(row);
     }
-});
+    document.body.append(list);
+    return list;
+}
 
-it("starts the wipe from that same frame once the group is in view", () => {
-    observed = [];
-    const group = buildGroup(3);
-    document.dispatchEvent(new Event("astro:after-swap"));
-    const rows = [...group.children];
+function enter(target: Element, isIntersecting = true) {
+    deliver([{ target, isIntersecting } as IntersectionObserverEntry], {} as IntersectionObserver);
+}
 
-    const dispose = module.mountListReveal();
-    expect(observed).toEqual([group]);
-
-    // Deliver the entry the way the browser would: the target is the real group.
-    const entry = {
-        target: group,
-        isIntersecting: true,
-        boundingClientRect: group.getBoundingClientRect(),
-    } as unknown as IntersectionObserverEntry;
-    expect(entry.target).toBeInstanceOf(HTMLElement);
-    deliver([entry], {} as IntersectionObserver);
-
-    rows.forEach((row, index) => {
-        const [animation] = animationsOn(row);
-        if (!animation) throw new Error(`row ${index} has no animation`);
-        expect(animation.playState).toBe("running");
-        // The stagger counts from the moment the group is on screen.
-        const effect = animation.effect;
-        if (!(effect instanceof KeyframeEffect)) throw new Error("expected a keyframe effect");
-        expect(effect.getTiming().delay).toBe(index * 22);
-    });
+it("sets bounded CSS delays only when a real group enters and cleans up after swap", () => {
+    const list = group(20);
+    const dispose = mountListReveal();
+    expect(observe).toHaveBeenCalledWith(list);
+    enter(list, false);
+    expect(list.querySelector("[data-stalux-revealing]")).toBeNull();
+    enter(list);
+    expect(unobserve).toHaveBeenCalledWith(list);
+    expect(list.querySelectorAll("[data-stalux-revealing]")).toHaveLength(16);
+    expect(list.children[1]?.getAttribute("style")).toContain("22ms");
+    expect(list.children[15]?.getAttribute("style")).toContain("200ms");
     dispose?.();
+    expect(disconnect).toHaveBeenCalledOnce();
+    expect(list.querySelector("[data-stalux-revealing]")).toBeNull();
 });
 
-it("leaves an off-screen group alone and keeps it readable", () => {
-    observed = [];
-    const far = buildGroup(2, 32_000);
-    document.dispatchEvent(new Event("astro:after-swap"));
-
-    // Holding a group nobody can see would only add paused effects to the swap
-    // frame; it starts its own wipe when it scrolls in instead.
-    for (const row of far.children) expect(animationsOn(row)).toHaveLength(0);
+it("leaves rows in the route cue visible and still animates later groups", () => {
+    const aboveFold = group(2);
+    const belowFold = group(2);
+    document.documentElement.dataset.staluxVtPreset = "paper";
+    mountListReveal();
+    enter(aboveFold);
+    expect(aboveFold.querySelector("[data-stalux-revealing]")).toBeNull();
+    delete document.documentElement.dataset.staluxVtPreset;
+    enter(belowFold);
+    expect(belowFold.querySelectorAll("[data-stalux-revealing]")).toHaveLength(2);
 });
 
-it("does nothing at all under reduced motion", () => {
-    observed = [];
-    const group = buildGroup(2);
-    const matchMedia = vi
-        .spyOn(window, "matchMedia")
-        .mockReturnValue({ matches: true } as MediaQueryList);
-    try {
-        expect(module.mountListReveal()).toBeUndefined();
-        for (const row of group.children) expect(animationsOn(row)).toHaveLength(0);
-    } finally {
-        matchMedia.mockRestore();
-    }
+it("skips retained content, restores and reduced motion", () => {
+    const list = group(2);
+    list.setAttribute("data-swup-persist", "");
+    expect(mountListReveal()).toBeUndefined();
+    list.setAttribute("data-stalux-shell-fresh", "");
+    document.documentElement.dataset.staluxVtPreset = "restore";
+    expect(mountListReveal()).toBeUndefined();
+    delete document.documentElement.dataset.staluxVtPreset;
+    preference.matches = true;
+    expect(mountListReveal()).toBeUndefined();
+    expect(observe).not.toHaveBeenCalled();
 });

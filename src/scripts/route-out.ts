@@ -46,7 +46,7 @@ export function playStageExit(
     // viewports cross-fades in place, and the lead region carries the offset.
     const oversized = distance !== 0 && isOversizedStage(target);
     const stageDistance = oversized ? 0 : distance;
-    const duration = Math.max(0, mobile ? Math.round(spec.duration * 0.85) : spec.duration);
+    const duration = Math.max(0, mobile ? Math.round(spec.duration * 0.75) : spec.duration);
     // Article-to-article has no distance: the column fades out in place, matching
     // the entry fade, so the shell stays put and only the content disappears.
     const frames: PropertyIndexedKeyframes = { opacity: [1, 0] };

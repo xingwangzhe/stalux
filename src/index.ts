@@ -216,7 +216,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             alias: createViteAliases(srcDir),
                         },
                         plugins: [
-                            swupDebugPlugin(command === "dev"),
+                            swupDebugPlugin(command === "dev" || Bun.env.STALUX_SWUP_DEBUG === "1"),
                             searchStylePlugin(command === "dev", config.base),
                             ...(command === "build"
                                 ? [markdownPropagationPlugin(), compactStylesPlugin(srcDir)]
@@ -224,6 +224,9 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             staluxComponentsAlias(opt.components, logger.fork("stalux/components")),
                         ],
                         define: {
+                            "import.meta.env.STALUX_SWUP_DEBUG": JSON.stringify(
+                                Bun.env.STALUX_SWUP_DEBUG === "1",
+                            ),
                             __STALUX_TRAILING_SLASH__: JSON.stringify(trailingSlash),
                             __STALUX_COMPACT_STYLES__: JSON.stringify(command === "build"),
                             __STALUX_DEBUG__: JSON.stringify(

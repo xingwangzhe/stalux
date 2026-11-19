@@ -68,16 +68,13 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-badges": "gap-2",
         "stalux-badge": "w-auto",
         "stalux-nav-container": "relative max-w-full overflow-hidden box-border",
-        "stalux-nav-list":
-            "max-w-full box-border gap-8 [transform:scale(var(--nav-scale,_1))] [transform-origin:center] [transition:transform_220ms_cubic-bezier(0.22,_0.72,_0.22,_1)] [overflow:visible]",
+        "stalux-nav-list": "max-w-full box-border gap-8",
         "stalux-nav-scroll-btn":
             "hidden absolute rounded-full cursor-pointer pointer-events-none p-0 [top:50%] [transform:translateY(-50%)] z-10 w-[36px] h-[36px] [border:none] [background:var(--black-30p)] [backdrop-filter:blur(8px)] text-ink-full opacity-0 [transition:opacity_0.25s_ease] [box-shadow:var(--shadow-md)]",
         "stalux-nav-item": "shrink-0 text-[1.3em] mr-[1em] ml-[1em] stalux-glow",
         "stalux-nav-text": "whitespace-nowrap text-ink-full",
         "stalux-nav-toggle":
             "hidden text-inherit cursor-pointer [background:none] [border:none] p-3 z-[998] min-w-[48px] min-h-[48px]",
-        "stalux-nav-overlay":
-            "hidden fixed h-full pointer-events-none top-0 left-0 [background:rgba(0,_0,_0,_0.6)] z-[999] opacity-0 [transition:opacity_0.3s_ease]",
         "stalux-page-title": "stalux-glow mt-[1.5em] text-[2.5em]",
         "stalux-page-description": "mt-0 mb-[1.5em] text-[1.2em] text-ink-60",
         "stalux-home-body":

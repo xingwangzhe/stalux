@@ -1,18 +1,17 @@
-import { registerPageLifecycle } from "./page-runtime";
-
-registerPageLifecycle("footer-badges", () => {
-    const controller = new AbortController();
-    for (const element of document.querySelectorAll<HTMLDetailsElement>(".badge-group")) {
-        const key = `badge-${element.id}`;
+// The footer sits outside Swup's containers and keeps these details nodes.
+for (const element of document.querySelectorAll<HTMLDetailsElement>(".badge-group")) {
+    const key = `badge-${element.id}`;
+    try {
         const saved = localStorage.getItem(key);
-        element.open = saved
-            ? saved === "open"
-            : element.getAttribute("data-default-open") === "true";
-        element.addEventListener(
-            "toggle",
-            () => localStorage.setItem(key, element.open ? "open" : "closed"),
-            { signal: controller.signal },
-        );
+        if (saved !== null) element.open = saved === "open";
+    } catch {
+        // The native disclosure remains usable when storage is blocked.
     }
-    return () => controller.abort();
-});
+    element.addEventListener("toggle", () => {
+        try {
+            localStorage.setItem(key, element.open ? "open" : "closed");
+        } catch {
+            // The current disclosure state still belongs to the document.
+        }
+    });
+}

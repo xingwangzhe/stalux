@@ -560,15 +560,15 @@ describe("route stage entry motion", () => {
         stubStage({ article: article.node, region: region.node, mainPersist: true });
         const motion = prepareRouteMotion({});
         motion.start(null, { content: true, preset: "enter" });
-        // Phones scale the throw to 60% and the duration to 90%; the column is
+        // Phones scale the throw to 60% and the duration to 75%; the column is
         // still too tall to layer, so the bounded region carries the offset.
         expect(article.animate).toHaveBeenCalledWith(
             { opacity: [0, 1] },
-            expect.objectContaining({ duration: 153 }),
+            expect.objectContaining({ duration: 128 }),
         );
         expect(region.animate).toHaveBeenCalledWith(
             { transform: ["translate3d(0, 34px, 0)", "translate3d(0, 0, 0)"] },
-            expect.objectContaining({ duration: 153 }),
+            expect.objectContaining({ duration: 128 }),
         );
         article.done.resolve();
         region.done.resolve();

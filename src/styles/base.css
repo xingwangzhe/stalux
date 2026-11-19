@@ -379,7 +379,7 @@
         }
     }
 
-    body:has([data-ref="stalux-nav-list"][data-state="open"]) {
+    body:has(#stalux-mobile-navigation[open]) {
         overflow: hidden;
     }
 

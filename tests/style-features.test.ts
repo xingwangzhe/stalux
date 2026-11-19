@@ -48,7 +48,7 @@ describe("precompiled feature styles", () => {
         expect(css.indexOf("@media (max-width: 900px)")).toBeLessThan(
             css.indexOf("@media (max-width: 600px)"),
         );
-        expect(css).toContain('.stalux-nav-list[data-state="open"]');
+        expect(css).toContain(".stalux-nav-toggle[data-scrolled]");
         expect(css).toContain("font-size:0.9em");
         expect(css).not.toContain(".stalux-post-layout");
     });

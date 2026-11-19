@@ -9,6 +9,7 @@ import { getLucideIcon } from "@utils/lucide-icons";
 
 const MenuIcon = getLucideIcon("menu", Astro.logger);
 const SearchIcon = getLucideIcon("search", Astro.logger);
+const CloseIcon = getLucideIcon("x", Astro.logger);
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
 const navsConfig = getNavsData(configEntries);
@@ -24,13 +25,11 @@ const navs = navsConfig?.items ?? [];
         class="stalux-nav-toggle"
         aria-label={t("nav.menu")}
         aria-expanded="false"
+        aria-haspopup="dialog"
         aria-controls="stalux-mobile-navigation"
     >
         {MenuIcon && <MenuIcon size={20} stroke-width={2} class="nav-icon" />}
     </button>
-
-    <!-- 侧边栏遮罩 -->
-    <div data-ref="stalux-nav-overlay" class="stalux-nav-overlay stalux-u-w-full"></div>
 
     <!-- 导航列表 -->
     <div class="stalux-nav-container stalux-u-w-full stalux-u-min-w-0">
@@ -47,9 +46,8 @@ const navs = navsConfig?.items ?? [];
         </button>
 
         <ul
-            id="stalux-mobile-navigation"
             data-ref="stalux-nav-list"
-            class="stalux-nav-list stalux-u-flex stalux-u-items-center stalux-u-justify-center stalux-u-flex-wrap stalux-u-w-full stalux-u-min-w-0"
+            class="stalux-nav-list stalux-u-flex stalux-u-items-center stalux-u-w-full stalux-u-min-w-0"
         >
             {navs.map((item) => {
                 const NavIcon = item.icon ? getLucideIcon(item.icon, Astro.logger) : null;
@@ -92,5 +90,84 @@ const navs = navsConfig?.items ?? [];
             </svg>
         </button>
     </div>
+    <dialog id="stalux-mobile-navigation" aria-label={t("nav.main")}>
+        <div class="stalux-mobile-nav-panel" data-ref="stalux-mobile-nav-panel">
+            <form method="dialog">
+                <button class="stalux-nav-link" aria-label={t("nav.close")} autofocus>
+                    {CloseIcon && <CloseIcon size={20} aria-hidden="true" />}
+                </button>
+            </form>
+        </div>
+    </dialog>
 </nav>
 <Search />
+
+<style>
+.stalux-nav-list {
+    overflow-x: auto;
+    scroll-padding-inline: 40px;
+}
+.stalux-nav-list > :first-child {
+    margin-inline-start: auto;
+}
+.stalux-nav-list > :last-child {
+    margin-inline-end: auto;
+}
+.stalux-nav-scroll-btn[data-visible] {
+    display: inline-flex;
+}
+.stalux-nav-scroll-btn:focus-visible {
+    outline: 2px solid var(--stalux-accent-color);
+    outline-offset: -2px;
+}
+.stalux-nav-scroll-btn:not([data-visible]):focus {
+    display: inline-flex;
+    opacity: 1;
+}
+#stalux-mobile-navigation {
+    position: fixed;
+    inset: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    overflow: hidden;
+}
+#stalux-mobile-navigation::backdrop {
+    background: rgb(0 0 0 / 0.6);
+}
+.stalux-mobile-nav-panel {
+    box-sizing: border-box;
+    width: min(220px, calc(100% - 1rem));
+    height: 100%;
+    padding: 0.5rem 1rem 2rem;
+    overflow-y: auto;
+    background: rgb(24 24 24 / 0.84);
+    backdrop-filter: blur(20px);
+}
+@media (prefers-reduced-motion: no-preference) {
+    #stalux-mobile-navigation[open] .stalux-mobile-nav-panel {
+        animation: stalux-nav-slide-in 160ms ease-out;
+    }
+}
+@keyframes stalux-nav-slide-in {
+    from { transform: translateX(-100%); }
+}
+@media (max-width: 600px) {
+    .stalux-nav-container {
+        display: none;
+    }
+    .stalux-nav-list {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        overflow: visible;
+    }
+}
+</style>

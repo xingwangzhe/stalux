@@ -14,6 +14,7 @@ import Link from "@lucide/astro/icons/link";
 import Menu from "@lucide/astro/icons/menu";
 import Quote from "@lucide/astro/icons/quote";
 import Search from "@lucide/astro/icons/search";
+import Shell from "@lucide/astro/icons/shell";
 import Tag from "@lucide/astro/icons/tag";
 import TrainFront from "@lucide/astro/icons/train-front";
 import User from "@lucide/astro/icons/user";
@@ -31,6 +32,7 @@ const iconMap: Record<string, AstroComponent> = {
     link: Link,
     user: User,
     "train-front": TrainFront,
+    wormhole: Shell,
     menu: Menu,
     search: Search,
     x: X,

@@ -5,16 +5,17 @@ const { lang = "zh-CN" } = Astro.props;
 const label = lang.startsWith("zh") ? "回到顶部" : "Back to top";
 ---
 
-<button
-    type="button"
-    class="stalux-back-to-top"
+<a
+    href="#top"
+    data-no-swup
+    class="stalux-back-to-top a-none"
     data-stalux-back-to-top
     aria-label={label}
     title={label}
     hidden
 >
     <ArrowUp size={20} aria-hidden="true" />
-</button>
+</a>
 
 <style>
 .stalux-back-to-top {

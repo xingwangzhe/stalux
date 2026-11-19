@@ -22,7 +22,16 @@ export function markRetainedShells(): void {
     for (const element of document.querySelectorAll("[data-swup-persist]")) retained.add(element);
 }
 
-export function hydrateShells(next: Document | undefined): number {
+/** ParallelPlugin adopts its incoming containers, so preserve only the slots. */
+export function snapshotShellSlots(next: Document): DocumentFragment | undefined {
+    const slots = next.querySelectorAll(SLOT);
+    if (!slots.length) return;
+    const snapshot = next.createDocumentFragment();
+    for (const slot of slots) snapshot.append(slot.cloneNode(true));
+    return snapshot;
+}
+
+export function hydrateShells(next: ParentNode | undefined): number {
     if (!next || typeof next.querySelector !== "function") return 0;
     let hydrated = 0;
     for (const live of document.querySelectorAll<HTMLElement>(SLOT)) {

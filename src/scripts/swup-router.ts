@@ -17,7 +17,7 @@ import "./navigation-client";
 import { navigationScripts, prepareNavigationScripts } from "./navigation-scripts";
 import { prepareRouteMotion, type RouteMotion } from "./route-motion";
 import { animateRouteOut, playStageExit } from "./route-out";
-import { hydrateShells, markRetainedShells } from "./shell-hydration";
+import { hydrateShells, markRetainedShells, snapshotShellSlots } from "./shell-hydration";
 import { cancelPageScroll, glideToTop, type PageGlide, scrollPage } from "./smooth-scroll";
 
 interface NavigationContext {
@@ -33,7 +33,7 @@ interface NavigationContext {
     executeScripts?: (signal?: AbortSignal) => Promise<void>;
     scriptsReady?: Promise<void> | undefined;
     outgoingReady?: Promise<void>;
-    incomingDocument?: Document;
+    incomingSlots?: DocumentFragment | undefined;
     removeOutgoing?: () => void;
     obsoleteStyles: Element[];
     pruneObsoleteStyles?: () => void;
@@ -41,7 +41,6 @@ interface NavigationContext {
     releaseOutgoing?: (() => void) | undefined;
 }
 
-type Position = { top: number; left: number; focus?: string | undefined };
 const MAIN = "#swup-main";
 
 function abortObsoleteVisit(visit: Visit): void {
@@ -86,7 +85,7 @@ function once(effect: () => void): () => void {
 export function installSwupRouter(): Swup {
     if (window.swup) return window.swup;
     const contexts = new WeakMap<Visit, NavigationContext>();
-    const historyPositions = new Map<number, Position>();
+    const historyFocus = new Map<number, string>();
     let authoredStyles = [...document.head.querySelectorAll("style,link[rel=stylesheet]")];
     let activeContext: NavigationContext | undefined;
     const background = document.querySelector<HTMLElement>("[data-stalux-background]");
@@ -212,7 +211,7 @@ export function installSwupRouter(): Swup {
             }),
         ],
     });
-    if (import.meta.env.DEV) {
+    if (import.meta.env.DEV || import.meta.env.STALUX_SWUP_DEBUG) {
         void import("virtual:stalux-swup-debug").then(({ default: Debug }) => {
             if (Debug) swup.use(new Debug());
         });
@@ -240,14 +239,11 @@ export function installSwupRouter(): Swup {
             focused instanceof HTMLAnchorElement
                 ? (focused.getAttribute("href") ?? undefined)
                 : undefined;
-        historyPositions.set(visibleHistoryIndex, {
-            top: window.scrollY,
-            left: window.scrollX,
-            focus,
-        });
-        if (historyPositions.size > 64) {
-            const oldest = historyPositions.keys().next();
-            if (!oldest.done) historyPositions.delete(oldest.value);
+        historyFocus.delete(visibleHistoryIndex);
+        if (focus !== undefined) historyFocus.set(visibleHistoryIndex, focus);
+        if (historyFocus.size > 64) {
+            const oldest = historyFocus.keys().next();
+            if (!oldest.done) historyFocus.delete(oldest.value);
         }
         const from = new URL(visit.from.url + (visit.from.hash ?? ""), window.location.origin);
         const to = new URL(visit.to.url + (visit.to.hash ?? ""), window.location.origin);
@@ -296,7 +292,7 @@ export function installSwupRouter(): Swup {
         const context = contexts.get(visit);
         if (!context) return;
         context.motion = prepareRouteMotion(
-            dispatchNavigation("astro:before-swap", context, context.incomingDocument),
+            dispatchNavigation("astro:before-swap", context, visit.to.document),
         );
         markRetainedShells();
         // Parallel visits put the incoming container *behind* a pinned copy of
@@ -357,7 +353,7 @@ export function installSwupRouter(): Swup {
                 abortObsoleteVisit(visit);
                 return;
             }
-            context.incomingDocument = next.cloneNode(true) as Document;
+            if (visit.animation.parallel) context.incomingSlots = snapshotShellSlots(next);
             const incoming = [...next.head.querySelectorAll("style,link[rel=stylesheet]")];
             context.obsoleteStyles = authoredStyles.filter(
                 (el) => !incoming.some((other) => el.isEqualNode(other)),
@@ -405,10 +401,8 @@ export function installSwupRouter(): Swup {
             context.motion = prepareRouteMotion(
                 dispatchNavigation("astro:before-swap", context, next),
             );
+            markRetainedShells();
         }
-        // Remember which shells exist now: after the swap only those slots need
-        // refilling, because only those nodes came from the previous document.
-        markRetainedShells();
         await replace(visit, args);
         // The stage node survives the swap, so the filled exit effect still holds
         // the incoming document at zero opacity. It is released inside
@@ -442,7 +436,7 @@ export function installSwupRouter(): Swup {
         // Kept shells whose contents belong to the page (the article sidebars'
         // lists) take their children from the incoming document now, before any
         // page module mounts, so nothing needs to re-render or re-measure later.
-        hydrateShells(context.incomingDocument ?? next);
+        hydrateShells(context.incomingSlots ?? next);
         dispatchNavigation("astro:after-swap", context, next);
         // The entry cue has to own the first painted frame of the new document.
         // content:scroll is an await and a rAF away, and running the incoming
@@ -474,25 +468,26 @@ export function installSwupRouter(): Swup {
         async (visit, args, defaultScroll) => {
             const context = contexts.get(visit);
             const saved = visit.history.popstate
-                ? historyPositions.get(Number(window.history.state?.index))
+                ? historyFocus.get(Number(window.history.state?.index))
                 : undefined;
             if (visit.history.popstate) {
                 // Every route change starts at the top. Restoring the exact
                 // mid-article offset on back/forward reads as "the navigation
                 // never scrolled"; keep only the focused link so keyboard users
                 // retain their place in the navigation.
-                window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                if (!scrollWord(visit.to.hash))
+                    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
                 scroll.restoreScrollContainers(visit.to.url);
-                if (saved?.focus) {
-                    const link = [...document.querySelectorAll<HTMLAnchorElement>("a[href]")].find(
-                        (el) => el.getAttribute("href") === saved.focus,
+                if (saved) {
+                    const link = document.querySelector<HTMLAnchorElement>(
+                        `a[href="${CSS.escape(saved)}"]`,
                     );
                     link?.focus({ preventScroll: true });
                 }
                 startMotion(visit);
                 return true;
             }
-            await defaultScroll?.(visit, args);
+            if (!scrollWord(visit.to.hash)) await defaultScroll?.(visit, args);
             // ScrollPlugin scrolls in rAF; finish it before heading visibility checks.
             if (!document.hidden)
                 await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
@@ -531,6 +526,46 @@ export function installSwupRouter(): Swup {
         dispatchNavigation("astro:page-load", context);
         if (!visit.animation.animate)
             context.motion?.start(null, { skip: true, releaseOutgoing: context.releaseOutgoing });
+    });
+    // Swup replaces same-page history entries without recomputing :target.
+    function scrollWord(hash = "", smooth = false): boolean {
+        if (!hash.startsWith("#word-")) return false;
+        const word = swup.getAnchorElement(hash);
+        if (!word?.matches('[data-stalux-module="word"]')) return false;
+        const previous = document.querySelector("[data-stalux-word-target]");
+        if (previous !== word) {
+            previous?.removeAttribute("data-stalux-word-target");
+            if (!word.matches(":target")) word.setAttribute("data-stalux-word-target", "");
+        }
+        word.scrollIntoView({
+            block: "center",
+            behavior: smooth ? "smooth" : "instant",
+        });
+        return true;
+    }
+
+    swup.hooks.replace(
+        "scroll:anchor",
+        (visit, args, scrollToAnchor) => {
+            if (
+                scrollWord(
+                    args.hash,
+                    !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+                )
+            )
+                return true;
+            document
+                .querySelector("[data-stalux-word-target]")
+                ?.removeAttribute("data-stalux-word-target");
+            return scrollToAnchor?.(visit, args) ?? false;
+        },
+        { priority: 10 },
+    );
+
+    window.addEventListener("hashchange", () => {
+        const word = document.querySelector("[data-stalux-word-target]");
+        if (word && word !== swup.getAnchorElement(location.hash))
+            word.removeAttribute("data-stalux-word-target");
     });
     swup.hooks.replace("link:self", () => undefined);
 

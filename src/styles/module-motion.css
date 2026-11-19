@@ -70,6 +70,28 @@ pagefind-modal dialog::backdrop {
         opacity: 1;
     }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+    [data-stalux-module-entering] {
+        animation: stalux-module-fade 70ms var(--stalux-motion-ease);
+    }
+    [data-stalux-revealing]:not(:focus-within) {
+        animation: stalux-row-unroll 190ms cubic-bezier(0.23, 1, 0.32, 1)
+            var(--stalux-reveal-delay, 0ms) backwards;
+    }
+}
+@keyframes stalux-row-unroll {
+    from {
+        clip-path: inset(-10px -10px 100%);
+        opacity: 0.4;
+        transform: translateY(-10px);
+    }
+    to {
+        clip-path: inset(-10px);
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 @keyframes stalux-module-backdrop {
     from {
         opacity: 0;
@@ -99,7 +121,6 @@ pagefind-modal dialog::backdrop {
     [data-stalux-module],
     [data-stalux-module] *,
     [data-ref="stalux-nav-list"],
-    [data-ref="stalux-nav-overlay"],
     pagefind-modal#search dialog[open],
     pagefind-modal#search dialog::backdrop {
         animation: none !important;
@@ -136,7 +157,8 @@ pagefind-modal dialog::backdrop {
     opacity: 0;
     pointer-events: none;
 }
-[data-stalux-module="word"]:is(:target, [data-glow])::after {
+html:not(:has([data-stalux-word-target])) [data-stalux-module="word"]:target::after,
+[data-stalux-word-target]::after {
     animation: stalux-module-locate 1200ms ease-out;
 }
 @keyframes stalux-module-locate {

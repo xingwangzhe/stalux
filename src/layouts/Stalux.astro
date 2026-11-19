@@ -69,9 +69,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
     />
     <script>
     import "../scripts/view-transitions.ts";
-    // Every page type has at least one list, so the unroll cue is registered
-    // once in the shared layout instead of per page. Page-runtime dedupes it
-    // against the article and archive components that also request it.
+    // Group visibility is observed once per page. CSS owns the row animation.
     import { mountListReveal } from "../scripts/list-reveal";
     import { registerPageLifecycle } from "../scripts/page-runtime";
     import "../scripts/route-prefetch";
@@ -92,6 +90,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
         data-stalux-umami-id={headConfig?.umami?.id}
         data-stalux-umami-url={headConfig?.umami?.url}
     >
+        <div id="top" tabindex="-1"></div>
         <header class="stalux-site-header" data-stalux-font-group="header">
             <Navs />
         </header>

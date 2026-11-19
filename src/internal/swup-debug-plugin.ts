@@ -4,10 +4,10 @@ import { dirname, resolve } from "node:path";
 import type { Plugin } from "vite";
 
 /** Keep a source-only devDependency optional in published consumer projects. */
-export function swupDebugPlugin(development: boolean): Plugin {
+export function swupDebugPlugin(enabled: boolean): Plugin {
     const id = "virtual:stalux-swup-debug";
     let entry: string | undefined;
-    if (development) {
+    if (enabled) {
         try {
             // require.resolve honours the "require" condition and returns the CJS
             // build. Re-exporting that from a virtual ESM module makes the browser

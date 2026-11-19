@@ -1,6 +1,5 @@
 import { createClientLogger } from "./logger";
 
-import { registerPageLifecycle } from "./page-runtime";
 import { ensureSearchStyles, upgradeAndOpenSearchDialog } from "./search-dialog";
 
 const logger = createClientLogger("navigation");
@@ -30,211 +29,119 @@ async function openSearchDialog(signal: AbortSignal): Promise<void> {
     );
 }
 
-registerPageLifecycle("navigation", () => {
-    const siteNav = document.querySelector<HTMLElement>("[data-ref='stalux-site-nav']");
-    const siteHeader = document.querySelector<HTMLElement>(".stalux-site-header");
-    const navList = document.querySelector<HTMLElement>("[data-ref='stalux-nav-list']");
-    const navToggle = document.querySelector<HTMLElement>("[data-ref='stalux-nav-toggle']");
-    const navOverlay = document.querySelector<HTMLElement>("[data-ref='stalux-nav-overlay']");
-    const buttonLeft = document.querySelector<HTMLElement>("[data-ref='stalux-nav-scroll-left']");
-    const buttonRight = document.querySelector<HTMLElement>("[data-ref='stalux-nav-scroll-right']");
-    if (!(navList && buttonLeft && buttonRight)) return;
+const siteNav = document.querySelector<HTMLElement>("[data-ref='stalux-site-nav']");
+const siteHeader = document.querySelector<HTMLElement>(".stalux-site-header");
+const navList = document.querySelector<HTMLElement>("[data-ref='stalux-nav-list']");
+const navToggle = document.querySelector<HTMLButtonElement>("[data-ref='stalux-nav-toggle']");
+const drawer = document.querySelector<HTMLDialogElement>("#stalux-mobile-navigation");
+const panel = drawer?.querySelector("[data-ref='stalux-mobile-nav-panel']");
+const buttonLeft = document.querySelector<HTMLButtonElement>("[data-ref='stalux-nav-scroll-left']");
+const buttonRight = document.querySelector<HTMLButtonElement>(
+    "[data-ref='stalux-nav-scroll-right']",
+);
+const mobileNav = window.matchMedia("(max-width: 600px)");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let search = new AbortController();
 
+if (siteNav && siteHeader && navList && navToggle && drawer && panel && buttonLeft && buttonRight) {
+    const desktopContainer = navList.parentElement;
     const sentinel = document.querySelector("[data-stalux-nav-sentinel]");
-    const setScrolled = (scrolled: boolean) => {
-        siteNav?.toggleAttribute("data-scrolled", scrolled);
-        navToggle?.toggleAttribute("data-scrolled", scrolled);
-    };
-    const surfaceObserver =
-        sentinel && typeof IntersectionObserver === "function"
-            ? new IntersectionObserver((entries) => {
-                  for (const entry of entries) setScrolled(!entry.isIntersecting);
-              })
-            : undefined;
-    if (sentinel) surfaceObserver?.observe(sentinel);
-
-    const controller = new AbortController();
-    const listenerOptions = { signal: controller.signal };
-    let frameId = 0;
-    let lastScale = navList.style.getPropertyValue("--nav-scale") || "1";
-    let needsButtons = true;
-    let needsSurface = !surfaceObserver;
-    let needsResize = false;
-    let needsScale = true;
-    let pendingHeaderHeight = siteHeader ? undefined : 0;
-    const mobileNav = window.matchMedia("(max-width: 600px)");
-
-    const closeNav = () => {
-        navList.removeAttribute("data-state");
-        navToggle?.removeAttribute("data-state");
-        navToggle?.setAttribute("aria-expanded", "false");
-        navOverlay?.removeAttribute("data-state");
-    };
-    const openNav = () => {
-        navList.dataset.state = "open";
-        navToggle?.setAttribute("data-state", "open");
-        navToggle?.setAttribute("aria-expanded", "true");
-        navOverlay?.setAttribute("data-state", "show");
-    };
-    const updateButtons = () => {
-        frameId = 0;
-        // Collect every layout read before changing attributes or inherited
-        // root variables. Even scrollY can force style calculation after a swap.
-        const scrolled = needsSurface ? window.scrollY > 24 : undefined;
-        const isMobile = mobileNav.matches;
-        const shouldCloseNav = needsResize && !isMobile;
-        const updateNav = needsButtons;
-        const updateOverflow = updateNav && !isMobile;
-        const clientWidth = updateOverflow ? navList.clientWidth : 0;
-        const scrollWidth = updateOverflow ? navList.scrollWidth : 0;
-        const scrollLeft = updateOverflow ? navList.scrollLeft : 0;
-        const headerHeight = pendingHeaderHeight;
-        pendingHeaderHeight = undefined;
-        let nextScale = lastScale;
-        if (needsScale) {
-            if (isMobile) {
-                nextScale = "1";
-            } else {
-                const style = getComputedStyle(navList);
-                const baseFontSize = Number.parseFloat(style.fontSize) || 16;
-                const gap = Number.parseFloat(style.gap) || 0;
-                let estimatedWidth = gap * Math.max(0, navList.children.length - 1);
-                for (const item of navList.children) {
-                    // offsetWidth excludes the existing transform, avoiding
-                    // scale feedback during repeated resize notifications.
-                    if (item instanceof HTMLElement) estimatedWidth += item.offsetWidth;
-                }
-                nextScale = String(
-                    estimatedWidth > clientWidth
-                        ? Math.max(12 / baseFontSize, clientWidth / estimatedWidth)
-                        : 1,
-                );
-            }
-        }
-        needsButtons = false;
-        needsSurface = false;
-        needsResize = false;
-        needsScale = false;
-
-        if (headerHeight !== undefined) {
-            const rootStyle = document.documentElement.style;
-            const headerHeightValue = `${headerHeight}px`;
-            if (
-                siteHeader &&
-                rootStyle.getPropertyValue("--stalux-site-header-height") !== headerHeightValue
-            ) {
-                rootStyle.setProperty("--stalux-site-header-height", headerHeightValue);
-            }
-            const navOffsetValue = `${headerHeight + 16}px`;
-            if (rootStyle.getPropertyValue("--stalux-nav-offset") !== navOffsetValue) {
-                rootStyle.setProperty("--stalux-nav-offset", navOffsetValue);
-            }
-        }
-        if (nextScale !== lastScale) {
-            navList.style.setProperty("--nav-scale", nextScale);
-            lastScale = nextScale;
-        }
-        if (scrolled !== undefined) setScrolled(scrolled);
-        if (updateNav) {
-            const hasOverflow = updateOverflow && scrollWidth > clientWidth;
-            buttonLeft.toggleAttribute("data-visible", hasOverflow && scrollLeft > 1);
-            buttonRight.toggleAttribute(
-                "data-visible",
-                hasOverflow && scrollLeft + clientWidth < scrollWidth - 1,
-            );
-        }
-        if (shouldCloseNav) closeNav();
-    };
-    const scheduleFrame = () => {
-        if (!frameId) frameId = requestAnimationFrame(updateButtons);
-    };
-    const scheduleUpdate = () => {
-        needsButtons = true;
-        scheduleFrame();
-    };
-    const scheduleSurface = () => {
-        needsSurface = true;
-        scheduleFrame();
-    };
-    const scheduleResize = () => {
-        needsButtons = true;
-        needsSurface = !surfaceObserver;
-        needsResize = true;
-        needsScale = true;
-        scheduleFrame();
-    };
-
-    document.querySelector("[data-ref='stalux-search-btn']")?.addEventListener(
-        "click",
-        async (event) => {
-            event.preventDefault();
-            closeNav();
-            try {
-                await openSearchDialog(controller.signal);
-                logger.debug("search dialog opened");
-            } catch (error) {
-                logger.error("search dialog failed to open; next click can retry", error);
-                throw error;
-            }
-        },
-        listenerOptions,
-    );
-    navToggle?.addEventListener("click", openNav, listenerOptions);
-    navOverlay?.addEventListener("click", closeNav, listenerOptions);
-    for (const link of document.querySelectorAll("[data-ref='stalux-nav-link']")) {
-        link.addEventListener("click", closeNav, listenerOptions);
+    if (sentinel) {
+        new IntersectionObserver(([entry]) => {
+            if (!entry) return;
+            siteNav.toggleAttribute("data-scrolled", !entry.isIntersecting);
+            navToggle.toggleAttribute("data-scrolled", !entry.isIntersecting);
+        }).observe(sentinel);
     }
-    buttonLeft.addEventListener(
-        "click",
-        () => navList.scrollBy({ left: -300, behavior: "smooth" }),
-        listenerOptions,
-    );
-    buttonRight.addEventListener(
-        "click",
-        () => navList.scrollBy({ left: 300, behavior: "smooth" }),
-        listenerOptions,
-    );
-    navList.addEventListener("scroll", scheduleUpdate, {
-        passive: true,
-        signal: controller.signal,
+
+    navToggle.addEventListener("click", () => {
+        panel.append(navList);
+        drawer.showModal();
+        navToggle.setAttribute("aria-expanded", "true");
     });
-    if (!surfaceObserver) {
-        window.addEventListener("scroll", scheduleSurface, {
-            passive: true,
-            signal: controller.signal,
+    drawer.addEventListener("close", () => {
+        if (drawer.open) return;
+        desktopContainer?.insertBefore(navList, buttonRight);
+        navToggle.setAttribute("aria-expanded", "false");
+    });
+    // The dialog fills the viewport; the panel is its only interactive child.
+    // A pointer drag beginning inside the panel must not dismiss the dialog.
+    let pressedOutside = false;
+    drawer.addEventListener("pointerdown", (event) => {
+        pressedOutside = event.target === drawer;
+    });
+    drawer.addEventListener("click", (event) => {
+        if (pressedOutside && event.target === drawer) drawer.close();
+        pressedOutside = false;
+        if (event.target instanceof Element) {
+            const link = event.target.closest<HTMLAnchorElement>("a[data-ref='stalux-nav-link']");
+            if (link?.pathname === location.pathname) drawer.close();
+        }
+    });
+    mobileNav.addEventListener("change", () => {
+        if (!mobileNav.matches) drawer.close();
+    });
+
+    const updateButtons = () => {
+        if (mobileNav.matches || drawer.open) return;
+        const { scrollLeft, scrollWidth, clientWidth } = navList;
+        const left = scrollLeft > 1;
+        const right = scrollLeft + clientWidth < scrollWidth - 1;
+        buttonLeft.toggleAttribute("data-visible", left);
+        buttonRight.toggleAttribute("data-visible", right);
+        buttonLeft.setAttribute("aria-disabled", String(!left));
+        buttonRight.setAttribute("aria-disabled", String(!right));
+    };
+    let frame = 0;
+    const scheduleButtons = () => {
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+            frame = 0;
+            updateButtons();
+        });
+    };
+    navList.addEventListener("scroll", scheduleButtons, { passive: true });
+    for (const [button, direction] of [
+        [buttonLeft, -1],
+        [buttonRight, 1],
+    ] as const) {
+        button.addEventListener("click", () => {
+            if (button.getAttribute("aria-disabled") === "true") return;
+            navList.scrollBy({
+                left: direction * 300,
+                behavior: reducedMotion.matches ? "instant" : "smooth",
+            });
         });
     }
-    window.addEventListener("resize", scheduleResize, {
-        passive: true,
-        signal: controller.signal,
-    });
-
-    document.fonts.addEventListener("loadingdone", scheduleResize, listenerOptions);
-
-    const resizeObserver = new ResizeObserver((entries) => {
+    const resize = new ResizeObserver((entries) => {
         const header = entries.find(({ target }) => target === siteHeader);
-        if (header) {
-            // The observer already has layout results. Use them for the next
-            // animation frame instead of asking the browser to lay out again.
-            pendingHeaderHeight = Math.round(
-                header.borderBoxSize?.[0]?.blockSize ?? siteHeader?.offsetHeight ?? 0,
-            );
+        const height = header?.borderBoxSize[0]?.blockSize;
+        if (height !== undefined) {
+            const style = document.documentElement.style;
+            style.setProperty("--stalux-site-header-height", `${Math.round(height)}px`);
+            style.setProperty("--stalux-nav-offset", `${Math.round(height) + 16}px`);
         }
-        scheduleResize();
+        scheduleButtons();
     });
-    resizeObserver.observe(navList);
-    if (siteHeader) resizeObserver.observe(siteHeader, { box: "border-box" });
-    if (navList.parentElement) resizeObserver.observe(navList.parentElement);
-    scheduleUpdate();
+    resize.observe(siteHeader, { box: "border-box" });
+    resize.observe(navList);
+    for (const item of navList.children) resize.observe(item, { box: "border-box" });
+}
 
-    return () => {
-        document.querySelector<SearchDialog>("pagefind-modal#search")?.close?.();
-        controller.abort();
-        surfaceObserver?.disconnect();
-        resizeObserver.disconnect();
-        if (frameId) cancelAnimationFrame(frameId);
-        closeNav();
-        // Keep --stalux-nav-offset and --stalux-site-header-height for the
-        // persisted header, avoiding inherited-style invalidation per page.
-    };
+document.querySelector("[data-ref='stalux-search-btn']")?.addEventListener("click", async () => {
+    drawer?.close();
+    try {
+        await openSearchDialog(search.signal);
+        logger.debug("search dialog opened");
+    } catch (error) {
+        logger.error("search dialog failed to open; next click can retry", error);
+        throw error;
+    }
+});
+
+document.addEventListener("astro:after-swap", () => {
+    drawer?.close();
+    search.abort();
+    search = new AbortController();
+    document.querySelector<SearchDialog>("pagefind-modal#search")?.close?.();
 });

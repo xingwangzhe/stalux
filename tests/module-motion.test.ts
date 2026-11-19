@@ -6,7 +6,7 @@ import { mountModuleMotion } from "../src/scripts/module-motion";
 
 let callback: IntersectionObserverCallback;
 let preference: EventTarget & { matches: boolean };
-let elements: Array<HTMLElement & { animate: ReturnType<typeof vi.fn> }>;
+let elements: HTMLElement[];
 let observer: {
     observe: ReturnType<typeof vi.fn>;
     unobserve: ReturnType<typeof vi.fn>;
@@ -21,8 +21,9 @@ beforeEach(() => {
         () =>
             ({
                 closest: () => null,
-                animate: vi.fn(() => ({ finished: new Promise(() => {}), cancel: vi.fn() })),
-            }) as unknown as HTMLElement & { animate: ReturnType<typeof vi.fn> },
+                setAttribute: vi.fn(),
+                removeAttribute: vi.fn(),
+            }) as unknown as HTMLElement,
     );
     observer = { observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn() };
     vi.stubGlobal(
@@ -57,13 +58,10 @@ it("bounds observation and releases each visible region immediately", () => {
     expect(observer.observe).toHaveBeenCalledTimes(12);
     enter();
     expect(observer.unobserve).toHaveBeenCalledWith(elements[0]);
-    expect(elements[0]?.animate).toHaveBeenCalledWith(
-        { opacity: [0.88, 1] },
-        expect.objectContaining({ duration: 70 }),
-    );
+    expect(elements[0]?.setAttribute).toHaveBeenCalledWith("data-stalux-module-entering", "");
     cleanup?.();
     expect(observer.disconnect).toHaveBeenCalledOnce();
-    expect(elements[0]?.animate.mock.results[0]?.value.cancel).toHaveBeenCalledOnce();
+    expect(elements[0]?.removeAttribute).toHaveBeenCalledWith("data-stalux-module-entering");
 });
 it("does not stack module cues over route motion, oversized content or lead regions", () => {
     mountModuleMotion();
@@ -75,9 +73,9 @@ it("does not stack module cues over route motion, oversized content or lead regi
     if (!lead) throw new Error("Missing fixture");
     Object.assign(lead, { closest: () => ({}) });
     enter(2);
-    expect(elements[0]?.animate).not.toHaveBeenCalled();
-    expect(elements[1]?.animate).not.toHaveBeenCalled();
-    expect(elements[2]?.animate).not.toHaveBeenCalled();
+    expect(elements[0]?.setAttribute).not.toHaveBeenCalled();
+    expect(elements[1]?.setAttribute).not.toHaveBeenCalled();
+    expect(elements[2]?.setAttribute).not.toHaveBeenCalled();
 });
 it("does not set up effects for reduced motion", () => {
     preference.matches = true;
@@ -89,6 +87,6 @@ it("cancels running effects when the user changes motion preference", () => {
     enter();
     preference.matches = true;
     preference.dispatchEvent(new Event("change"));
-    expect(elements[0]?.animate.mock.results[0]?.value.cancel).toHaveBeenCalledOnce();
+    expect(elements[0]?.removeAttribute).toHaveBeenCalledWith("data-stalux-module-entering");
     cleanup?.();
 });

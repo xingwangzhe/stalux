@@ -21,6 +21,13 @@
     top: 23px;
 }
 
+/* Only the native return-to-top fragment opts the root into smooth scrolling. */
+@media (prefers-reduced-motion: no-preference) {
+    html:not(.is-changing):has(#top:target) {
+        scroll-behavior: smooth;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .stalux-main,
     .stalux-main *,

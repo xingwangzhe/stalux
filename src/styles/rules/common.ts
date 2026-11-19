@@ -189,12 +189,6 @@ export const commonStyles: StyleSpec[] = [
         { stroke: "var(--stalux-accent-color)", color: "var(--stalux-accent-color)" },
     ],
     [
-        '.stalux-nav-toggle[data-state="open"]',
-        "",
-        { visibility: "hidden", "pointer-events": "none" },
-        "@media (max-width: 600px)",
-    ],
-    [
         ".stalux-nav-toggle[data-scrolled]",
         "",
         {
@@ -206,7 +200,6 @@ export const commonStyles: StyleSpec[] = [
         "@media (max-width: 600px)",
     ],
     [".stalux-nav-toggle svg", "w-[32px] h-[32px]", {}],
-    ['.stalux-nav-overlay[data-state="show"]', "block pointer-events-auto opacity-[1]", {}],
     [".stalux-nav-list", "gap-[1rem]", {}, "@media (max-width: 1100px)"],
     [".stalux-nav-item", "text-[1em] mr-[0.6em] ml-[0.6em]", {}, "@media (max-width: 1100px)"],
     [".stalux-nav-item", "text-[0.95em] mr-[0.25em] ml-[0.25em]", {}, "@media (max-width: 900px)"],
@@ -217,24 +210,7 @@ export const commonStyles: StyleSpec[] = [
         {},
         "@media (max-width: 600px)",
     ],
-    [".stalux-nav-container", "", { overflow: "visible" }, "@media (max-width: 600px)"],
     ["nav", "w-[auto]", {}, "@media (max-width: 600px)"],
-    [
-        ".stalux-nav-list",
-        "pointer-events-none fixed flex-col items-start justify-start overflow-y-auto top-[0] left-[0] right-[auto] w-[min(220px,_calc(100vw_-_1rem))] h-[100vh] gap-[0] p-[0.5rem_1rem_2rem_1rem] z-[1000]",
-        {
-            background: "var(--black-20p)",
-            "backdrop-filter": "blur(20px)",
-            transform: "translateX(-100%)",
-        },
-        "@media (max-width: 600px)",
-    ],
-    [
-        '.stalux-nav-list[data-state="open"]',
-        "pointer-events-auto",
-        { transform: "translateX(0)" },
-        "@media (max-width: 600px)",
-    ],
     [
         ".stalux-nav-item",
         "m-0 w-full text-[0.9em]",

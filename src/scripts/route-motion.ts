@@ -364,7 +364,7 @@ export function prepareRouteMotion(event: RouteMotionEvent): RouteMotion {
                     // Phones get a shorter throw; the same offset reads as a much
                     // larger move on a narrow viewport.
                     const distance = mobile ? Math.round(spec.distance * 0.6) : spec.distance;
-                    const duration = mobile ? Math.round(spec.duration * 0.9) : spec.duration;
+                    const duration = mobile ? Math.round(spec.duration * 0.75) : spec.duration;
                     // A stage taller than two viewports only cross-fades; the
                     // bounded title block carries the offset instead of putting
                     // a 28,000px layer on the compositor.

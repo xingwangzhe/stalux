@@ -152,7 +152,7 @@ function style(name: string) {
 }
 function nextPage() {
     return {
-        cloneNode: () => nextPage(),
+        querySelectorAll: () => [],
         querySelector: () => null,
         head: { querySelectorAll: () => [] as ReturnType<typeof style>[] },
         body: {
@@ -328,6 +328,7 @@ beforeEach(async () => {
     });
     vi.stubGlobal("document", documentMock);
     vi.stubGlobal("window", windowMock);
+    vi.stubGlobal("CSS", { escape: (value: string) => value });
     vi.stubGlobal("HTMLAnchorElement", Anchor);
     vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
         callback(0);
@@ -900,7 +901,9 @@ describe("Swup navigation bridge and persistent shell", () => {
             await settle();
             const originalLink = new Anchor("/posts/old/");
             documentMock.activeElement = originalLink;
-            documentMock.querySelectorAll = () => [originalLink];
+            const query = documentMock.querySelector;
+            documentMock.querySelector = (selector) =>
+                selector === 'a[href="/posts/old/"]' ? originalLink : query(selector);
             windowMock.scrollY = 4800;
             windowMock.scrollX = 8;
             const forward = visit();

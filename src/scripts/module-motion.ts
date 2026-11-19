@@ -13,10 +13,10 @@ export function mountModuleMotion(): (() => void) | undefined {
         return;
     const elements = [...document.querySelectorAll<Element>(SELECTOR)].slice(0, MAX_REGIONS);
     if (!elements.length) return;
-    const active = new Set<Animation>();
+    const active = new Set<Element>();
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const cancel = () => {
-        for (const animation of active) animation.cancel();
+        for (const element of active) element.removeAttribute("data-stalux-module-entering");
         active.clear();
     };
     const observer = new IntersectionObserver(
@@ -38,27 +38,11 @@ export function mountModuleMotion(): (() => void) | undefined {
                     // never rebuilt, so re-entering it would be a second cue.
                     element.closest("[data-swup-persist]") ||
                     element.closest("[data-stalux-motion-region]") ||
-                    entry.boundingClientRect.height > Math.min(420, window.innerHeight * 0.6) ||
-                    typeof element.animate !== "function"
+                    entry.boundingClientRect.height > Math.min(420, window.innerHeight * 0.6)
                 )
                     continue;
-                try {
-                    const animation = element.animate(
-                        { opacity: [0.88, 1] },
-                        {
-                            duration: 70,
-                            easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
-                        },
-                    );
-                    active.add(animation);
-                    const release = () => {
-                        active.delete(animation);
-                        animation.cancel();
-                    };
-                    void animation.finished.then(release, release);
-                } catch {
-                    /* Unsupported effects leave the authored visible state. */
-                }
+                element.setAttribute("data-stalux-module-entering", "");
+                active.add(element);
             }
         },
         { threshold: 0.08 },

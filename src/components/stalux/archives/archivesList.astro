@@ -121,10 +121,7 @@ const archiveYears = [...archivesByYearMonth.entries()]
 
 <script>
 import { mountArchiveDescriptions } from "../../../scripts/archive-descriptions";
-import { mountListReveal } from "../../../scripts/list-reveal";
 import { registerPageLifecycle } from "../../../scripts/page-runtime";
 
 registerPageLifecycle("archive-descriptions", mountArchiveDescriptions);
-// The archive cascade ships only with the archive markup it animates.
-registerPageLifecycle("list-reveal", mountListReveal);
 </script>
