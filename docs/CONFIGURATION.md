@@ -1,6 +1,6 @@
 # 配置说明
 
-所有站点配置都在内容目录的 `config/` 下（默认 `stalux/config/`），使用 YAML，不需要修改主题源码。
+站点内容与主题选项使用内容目录下的 YAML 文件（默认 `stalux/config/`）。网页路由尾斜杠在站点的 `astro.config.ts` 中配置。
 
 | 文件 | 作用 |
 | --- | --- |
@@ -25,6 +25,12 @@
 | `never` | `/posts/example` |
 | `always` | `/posts/example/` |
 | `ignore` 或省略 | `/posts/example` |
+
+### Stalux 如何读取配置
+
+- `src/index.ts` 在 Astro 集成初始化时读取站点的 `trailingSlash`，把 `always` 转成构建选项，供 Astro 页面、浏览器脚本和构建后处理使用。
+- `src/utils/public-routes.ts` 的 `toRoutePath()` 和 `toPublicUrl()` 按选项生成网页地址。导航、文章链接、canonical、Open Graph、JSON-LD、RSS/Atom、文章索引和 Waline 都使用这套路径规则。
+- 构建后处理会统一正文里的站内网页链接，sitemap 序列化也使用相同规则。相同源码可以针对不同站点生成带斜杠或不带斜杠的地址。
 
 改完站点配置后重新构建和部署站点即可。静态托管平台需要能提供对应的 URL，切换已有站点时也要核对 Waline 的历史评论路径。首页和文件端点保留各自的地址。
 

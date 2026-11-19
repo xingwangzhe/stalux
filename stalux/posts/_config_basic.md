@@ -6,7 +6,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 11:00:00"
-updated: "2026-09-27 00:00:00"
+updated: "2026-11-19 11:23:19"
 desc: Site identity configuration (site.yml, author.yml), content collection structure, frontmatter field references, and writing notes.
 abbrlink: ad81245d
 ---
@@ -33,6 +33,30 @@ canonical: "https://stalux.needhelp.icu" # Canonical URL (optional, falls back t
 `accentColor` defaults to `#EAB308` and accepts `#RRGGBB`. Stalux derives the theme's translucent accent tokens and Waline color from it. Choose a color with sufficient contrast against the site's background.
 
 This setting is optional: leave it out to keep the default, and existing `site.yml` files do not need to be edited. Stalux applies the default while reading site configuration as well as when generating color tokens, because Astro's YAML content collection may omit Zod defaults from runtime data. This compatibility fix is included in Stalux v1.29.1. In v1.29.0, a consumer build with `accentColor` omitted could fail while rendering `/404` with an `undefined` accent color.
+
+## astro.config.ts — Trailing Slashes
+
+Set `trailingSlash` in the site's existing Astro configuration. Starting with Stalux v1.61.0, the theme reads this setting when the site builds.
+
+```ts title="astro.config.ts"
+import { defineConfig } from "astro/config";
+import stalux from "@xingwangzhe/stalux";
+
+export default defineConfig({
+    trailingSlash: "never", // Use "always" to generate /archives/
+    integrations: [stalux()],
+});
+```
+
+| Setting | Canonical archive URL |
+| --- | --- |
+| `"never"` | `/archives` |
+| `"always"` | `/archives/` |
+| `"ignore"` or omitted | `/archives` |
+
+Stalux uses the same URL style for navigation and article links, canonical and Open Graph tags, structured data, RSS, sitemap, and Waline comment paths. The homepage stays at `/`, and file endpoints such as `/rss.xml` keep their own paths.
+
+Rebuild and deploy the site to apply a change. Check that your static host serves the chosen URLs. If the site already has Waline comments, check whether you need to migrate the stored paths before switching.
 
 ## author.yml — Author Information
 
