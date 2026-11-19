@@ -1,58 +1,26 @@
-/**
- * 导航等场景用到的 Lucide 图标静态映射。
- * 按需从 @lucide/astro 导入，避免整包 lucide 依赖。
- *
- * 新增图标：在下方 import 并写入 iconMap 即可（key 为 kebab-case，与 config.yml 一致）。
- * 图标列表: https://lucide.dev/icons/
- */
-import type { AstroComponent } from "@lucide/astro";
-import Airplay from "@lucide/astro/icons/airplay";
-import Archive from "@lucide/astro/icons/archive";
-import Folder from "@lucide/astro/icons/folder";
-import House from "@lucide/astro/icons/house";
-import Link from "@lucide/astro/icons/link";
-import Menu from "@lucide/astro/icons/menu";
-import Quote from "@lucide/astro/icons/quote";
-import Search from "@lucide/astro/icons/search";
-import Shell from "@lucide/astro/icons/shell";
-import Tag from "@lucide/astro/icons/tag";
-import TrainFront from "@lucide/astro/icons/train-front";
-import User from "@lucide/astro/icons/user";
-import X from "@lucide/astro/icons/x";
+import { type AstroComponent, icons } from "@lucide/astro";
 import type { AstroRuntimeLogger } from "astro";
 
-/** config.yml 中 icon 字段（kebab-case）→ Astro 图标组件 */
-const iconMap: Record<string, AstroComponent> = {
-    home: House,
-    house: House,
-    archive: Archive,
-    folder: Folder,
-    tag: Tag,
-    quote: Quote,
-    link: Link,
-    user: User,
-    "train-front": TrainFront,
-    wormhole: Shell,
-    menu: Menu,
-    search: Search,
-    x: X,
-    airplay: Airplay,
-};
-
-/**
- * 按 kebab-case 名称取图标组件；找不到时打日志并返回 null。
- */
 export function getLucideIcon(
     iconName: string | undefined | null,
     logger?: AstroRuntimeLogger,
 ): AstroComponent | null {
     if (!iconName) return null;
-    const Icon = iconMap[iconName];
-    if (!Icon) {
-        logger?.warn(
-            `[stalux/icons] lucide 图标 '${iconName}' 未找到，请在 src/utils/lucide-icons.ts 中添加映射`,
-        );
-        return null;
+
+    // Preserve legacy Stalux navigation names.
+    let slug = iconName;
+    if (iconName === "home") slug = "house";
+    if (iconName === "wormhole") slug = "shell";
+    const exportName = slug
+        .split("-")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join("");
+    if (Object.hasOwn(icons, exportName)) {
+        return icons[exportName as keyof typeof icons];
     }
-    return Icon;
+
+    logger?.warn(
+        `[stalux/icons] Unknown icon "${iconName}" in stalux/config/navs.yml. Use a name from https://lucide.dev/icons/.`,
+    );
+    return null;
 }

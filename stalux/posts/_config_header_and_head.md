@@ -58,7 +58,7 @@ File: `stalux/config/navs.yml`
 id: navs
 items:
     - title: Home
-      icon: home
+      icon: house
       link: /
     - title: Posts
       icon: archive
@@ -69,8 +69,10 @@ items:
 | Field         | Description                                               |
 | ------------- | --------------------------------------------------------- |
 | `link`        | Internal path or full external URL                        |
-| `icon`        | [Lucide Icons](https://lucide.dev/icons/) PascalCase name |
+| `icon` | Optional [Lucide icon](https://lucide.dev/icons/) name, e.g. `rocket` or `arrow-down-0-1`. |
 | Search button | Built-in, does not need a nav item                        |
+
+Copy the name from the Lucide icon page into `icon`. Stalux renders it as an inline SVG in desktop and mobile navigation. Omit `icon` for a text-only link. An unknown name logs a warning and still renders the link. The older names `home` and `wormhole` continue to resolve to `house` and `shell`.
 
 ## Common Operations
 

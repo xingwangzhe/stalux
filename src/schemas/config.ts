@@ -74,7 +74,7 @@ export const navsSchema = z.object({
     items: z.array(
         z.object({
             title: z.string().min(1, "navs[].title is required"),
-            icon: z.string().min(1, "navs[].icon is required"),
+            icon: z.string().trim().min(1).optional(),
             link: z.string().min(1, "navs[].link is required"),
         }),
     ),

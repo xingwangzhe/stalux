@@ -221,6 +221,21 @@ assert(
     /\sdata-href="/u.test(searchStyle),
     "search CSS must carry a deferred data-href for the search UI",
 );
+function containsHomeNavigationIcon(node: DefaultTreeAdapterMap["node"]): boolean {
+    if (
+        "tagName" in node &&
+        node.tagName === "svg" &&
+        node.attrs.some(
+            ({ name, value }) => name === "class" && value.split(" ").includes("lucide-house"),
+        ) &&
+        node.parentNode?.nodeName === "a"
+    ) {
+        return true;
+    }
+    return "childNodes" in node && node.childNodes.some(containsHomeNavigationIcon);
+}
+assert(containsHomeNavigationIcon(parse(pages.home)), "navs.yml home icon did not render as SVG");
+
 const eagerStyles = new Set<string>();
 let deferredSearchHref: string | undefined;
 function collectSearchLinks(node: DefaultTreeAdapterMap["node"]): void {

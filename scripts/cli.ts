@@ -43,6 +43,7 @@ bio: "Blogger & Developer"
 `,
         "navs.yml": `id: navs
 items:
+    # Optional icon uses the name from https://lucide.dev/icons/.
     - title: "Home"
       link: "/"
       icon: "house"

@@ -190,7 +190,8 @@ weather:
 
 | 文件 | 主要内容 |
 | --- | --- |
-| `navs.yml` | `items` 列表，每项含 `title` 与 `link`；同时用于顶部导航和移动端抽屉 |
+| `navs.yml` | `items` 列表，每项含 `title`、`link` 和可选的 `icon`；同时用于顶部导航和移动端抽屉 |
+在 `stalux/config/navs.yml` 的 `items[].icon` 填入 [Lucide 图标库](https://lucide.dev/icons/)中的图标名，例如 `rocket` 或 `arrow-down-0-1`。图标以 SVG 内联输出到桌面和移动导航。省略该字段时只显示链接文字。名称无效时构建输出警告，链接仍会显示。旧名称 `home`、`wormhole` 分别兼容 `house`、`shell`。
 | `footer.yml` | 徽章分组、备案信息、版权与运行时间；折叠分组使用原生懒加载，禁用 JavaScript 时仍可展开 |
 | `links.yml` | 友情链接卡片，图标只在接近视口时请求 |
 | `media-links.yml` | 首页与页脚的社交图标，支持 `simple-icons` 名称 |

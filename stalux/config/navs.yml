@@ -1,6 +1,7 @@
 id: navs
 items:
-    - icon: home
+    # Optional icon uses the Lucide icon page name, e.g. arrow-down-0-1.
+    - icon: house
       link: /
       title: Home
     - icon: archive

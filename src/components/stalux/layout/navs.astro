@@ -93,7 +93,7 @@ const navs = navsConfig?.items ?? [];
     <dialog id="stalux-mobile-navigation" aria-label={t("nav.main")}>
         <div class="stalux-mobile-nav-panel" data-ref="stalux-mobile-nav-panel">
             <form method="dialog">
-                <button class="stalux-nav-link" aria-label={t("nav.close")} autofocus>
+                <button type="submit" class="stalux-nav-link" aria-label={t("nav.close")} autofocus>
                     {CloseIcon && <CloseIcon size={20} aria-hidden="true" />}
                 </button>
             </form>
@@ -157,7 +157,9 @@ const navs = navsConfig?.items ?? [];
     }
 }
 @keyframes stalux-nav-slide-in {
-    from { transform: translateX(-100%); }
+    from {
+        transform: translateX(-100%);
+    }
 }
 @media (max-width: 600px) {
     .stalux-nav-container {
