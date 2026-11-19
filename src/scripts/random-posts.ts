@@ -36,7 +36,7 @@ function createPostItem(post: { abbrlink: string; title: string }): HTMLLIElemen
     const item = document.createElement("li");
     item.className = "random-post-item";
     const link = document.createElement("a");
-    link.href = `/posts/${encodeURIComponent(post.abbrlink)}`;
+    link.href = `/posts/${encodeURIComponent(post.abbrlink)}/`;
     link.className = "random-post-link a-none";
     link.textContent = post.title;
     item.append(link);

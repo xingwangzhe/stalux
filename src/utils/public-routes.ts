@@ -64,14 +64,24 @@ export function getMarkdownPath(pathname: string): string | undefined {
     return undefined;
 }
 
-/** Canonical path for an HTML page. */
+/**
+ * The public form of an HTML route. Every page route carries exactly one
+ * trailing slash (`/posts/x/`, `/tags/x/`, `/archives/`). Real files —
+ * Markdown exports, JSON/XML endpoints, images — are returned untouched so
+ * they keep the extension that identifies them. The static 404 document is
+ * emitted as `404.html`, so its public route remains `/404`.
+ */
 export function toRoutePath(pathname: string): string {
-    return normalizePublicPath(pathname);
+    const path = normalizePublicPath(pathname);
+    if (path === "/") return "/";
+    if (isRealPublicFile(path)) return path;
+    return `${path}/`;
 }
 
 export function toPublicUrl(site: string, pathname: string, markdown = false): string {
     const base = site.replace(/\/+$/u, "");
     const path = markdown ? getMarkdownPath(pathname) : toRoutePath(pathname);
     if (!path) return `${base}${toRoutePath(pathname)}`;
+    if (!markdown && path === "/") return base;
     return `${base}${path}`;
 }

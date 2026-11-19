@@ -15,7 +15,7 @@ const props = Astro.props as Props;
 
 // 判断当前页面是否是首页，如果是则跳转到about，否则跳转到首页
 const isHomePage = Astro.url.pathname === "/";
-const navigationHref = isHomePage ? "/about" : "/";
+const navigationHref = isHomePage ? "/about/" : "/";
 ---
 
 <article class="stalux-author stalux-u-flex stalux-u-justify-center stalux-u-flex-col">

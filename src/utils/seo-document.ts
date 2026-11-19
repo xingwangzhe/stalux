@@ -59,6 +59,8 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     const routeKind = getRouteKind(pathname);
     const siteUrl = normalizeSiteUrl(site.canonical ?? site.url);
     const normalizedPath = normalizePublicPath(pathname);
+    // Canonical mirrors the URL the router actually serves: every page route
+    // carries one trailing slash; real files keep their extension.
     const canonical = toPublicUrl(siteUrl, normalizedPath);
     const title = routeKind === "home" && site.seoTitle ? site.seoTitle : page.title;
     const siteName = site.title;
@@ -168,20 +170,20 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
         "@type": "Organization",
         "@id": `${siteUrl}/#publisher`,
         name: siteName,
-        url: toPublicUrl(siteUrl, "/"),
+        url: siteUrl,
         logo: authorImage,
     };
     const websiteEntity = {
         "@type": "WebSite",
         "@id": `${siteUrl}/#website`,
-        url: toPublicUrl(siteUrl, "/"),
+        url: siteUrl,
         name: siteName,
         description: site.description,
         inLanguage: site.lang,
         publisher: { "@id": `${siteUrl}/#publisher` },
     };
     const breadcrumbItems: Record<string, unknown>[] = [
-        { "@type": "ListItem", position: 1, name: siteName, item: toPublicUrl(siteUrl, "/") },
+        { "@type": "ListItem", position: 1, name: siteName, item: siteUrl },
     ];
     if (isArticle && page.categories?.[0]) {
         breadcrumbItems.push({

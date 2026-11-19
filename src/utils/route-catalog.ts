@@ -6,15 +6,15 @@ export interface RouteDefinition {
 /** Complete plugin-mode route catalog. Browser-safe so public route helpers can share it. */
 export const ROUTE_DEFINITIONS: readonly RouteDefinition[] = [
     { pattern: "/", source: "./pages/index.astro" },
-    { pattern: "/about", source: "./pages/about.astro" },
-    { pattern: "/archives", source: "./pages/archives.astro" },
-    { pattern: "/links", source: "./pages/links.astro" },
-    { pattern: "/words", source: "./pages/words.astro" },
+    { pattern: "/about/", source: "./pages/about.astro" },
+    { pattern: "/archives/", source: "./pages/archives.astro" },
+    { pattern: "/links/", source: "./pages/links.astro" },
+    { pattern: "/words/", source: "./pages/words.astro" },
     { pattern: "/404", source: "./pages/404.astro" },
     { pattern: "/posts/[post]", source: "./pages/posts/[post].astro" },
-    { pattern: "/tags", source: "./pages/tags/index.astro" },
+    { pattern: "/tags/", source: "./pages/tags/index.astro" },
     { pattern: "/tags/[tag]", source: "./pages/tags/[tag].astro" },
-    { pattern: "/categories", source: "./pages/categories/index.astro" },
+    { pattern: "/categories/", source: "./pages/categories/index.astro" },
     { pattern: "/categories/[category]", source: "./pages/categories/[category].astro" },
     {
         pattern: "/stalux-assets/badges/[id].svg",
