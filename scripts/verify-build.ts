@@ -127,7 +127,7 @@ for (const [route, html] of Object.entries(pages)) {
         if ("childNodes" in node) for (const child of node.childNodes) verifyRouter(child, inMain);
     }
     verifyRouter(parse(html));
-    assert(mains === 1 && backgrounds === 2, `${route} is missing its Swup container or shell`);
+    assert(mains === 1 && backgrounds === 1, `${route} is missing its Swup container or shell`);
 }
 
 assert(pages.archives.includes("data-archive-month"), "archive month groups are missing");

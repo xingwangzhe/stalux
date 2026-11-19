@@ -89,6 +89,8 @@ export function installSwupRouter(): Swup {
     const historyPositions = new Map<number, Position>();
     let authoredStyles = [...document.head.querySelectorAll("style,link[rel=stylesheet]")];
     let activeContext: NavigationContext | undefined;
+    const background = document.querySelector<HTMLElement>("[data-stalux-background]");
+    let backgroundVisit = 0;
     let visibleHistoryIndex = Number(window.history.state?.index ?? 1);
     let browserMotion = false;
     // Swup waits for the target document before it starts any animation, so a
@@ -428,8 +430,12 @@ export function installSwupRouter(): Swup {
         authoredStyles = [...document.head.querySelectorAll("style,link[rel=stylesheet]")].filter(
             (el) => incomingStyles.some((other) => el.isEqualNode(other)),
         );
-        // Main alone is replaced: header/footer/sentinel and background layers
-        // keep their node identities. Never reset live background state to SSR 0.
+        // Reseed the persistent background only after a pathname change has committed.
+        if (background && context.from.pathname !== context.to.pathname) {
+            backgroundVisit++;
+            background.style.setProperty("--stalux-bg-seed", `--site-bg-${backgroundVisit}`);
+            background.style.setProperty("--stalux-bg-visit", String(backgroundVisit % 2));
+        }
         html.dataset.staluxRoute = visit.to.route ?? getRouteKind(context.to.pathname);
         document.querySelector(MAIN)?.setAttribute("data-stalux-route", html.dataset.staluxRoute);
         visibleHistoryIndex = Number(window.history.state?.index ?? visibleHistoryIndex);

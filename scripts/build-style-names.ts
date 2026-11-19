@@ -32,6 +32,8 @@ const publicVariables = new Set([
     "--stalux-bg-image",
     // css-tree leaves if() style conditions and fallback values unparsed.
     "--stalux-bg-choice",
+    "--stalux-bg-seed",
+    "--stalux-bg-visit",
 ]);
 function collectCss(css: string) {
     walk(parse(css, { parseCustomProperty: true }), (node) => {

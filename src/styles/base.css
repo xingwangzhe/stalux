@@ -304,8 +304,18 @@
     @supports (order: random(--site-bg, 1, 42, 1)) and
         (background-image: if(style(--stalux-bg-choice: 1): none; else: none)) {
         .bg-layer {
-            /* biome-ignore lint/correctness/noUnknownFunction: The enclosing @supports tests this function. */
-            --stalux-bg-choice: random(--site-bg, 1, 42, 1);
+            --stalux-bg-choice: calc(
+                1 +
+                2 *
+                /* biome-ignore lint/correctness/noUnknownFunction: Guarded by the enclosing @supports. */
+                random(var(--stalux-bg-seed, --site-bg), 0, 20, 1) +
+                mod(
+                    /* biome-ignore lint/correctness/noUnknownFunction: Guarded by the enclosing @supports. */
+                    random(--site-bg-parity, 0, 1, 1) +
+                    var(--stalux-bg-visit, 0),
+                    2
+                )
+            );
             background-image: var(
                 --stalux-bg-image,
                 if(
