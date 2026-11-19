@@ -274,7 +274,7 @@ export async function renderWordsMd(timeZone = "Asia/Shanghai"): Promise<string>
     const lines: string[] = [];
     lines.push("# Words");
     lines.push("");
-    lines.push("URL: /words/");
+    lines.push("URL: /words");
     lines.push("");
     for (const word of words) {
         const title = word.data.title || "Untitled";

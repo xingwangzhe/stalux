@@ -706,7 +706,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             ? (parseYaml(readFileSync(sitePath, "utf8")) as { url?: string } | undefined)
             : undefined;
         const sitemapSite = opt.site ?? siteConfig?.url;
-        const sitemapHomeUrl = sitemapSite?.replace(/\/+$/u, "");
         const defaultFilter = (page: string) =>
             exportMarkdown || !new URL(page).pathname.endsWith(".md");
         const userFilter = userSitemap?.filter;
@@ -755,18 +754,12 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 ...userSitemap,
                 customPages,
                 filter,
-                // Page routes are served with one trailing slash; keep the root,
-                // the 404 document and real files (`.md`, `.json`, images) as built.
                 async serialize(item) {
                     const next = userSitemap?.serialize ? await userSitemap.serialize(item) : item;
                     if (!next) return next;
                     const url = new URL(next.url);
-                    if (url.pathname === "/") {
-                        next.url = url.origin;
-                    } else {
-                        url.pathname = toRoutePath(url.pathname);
-                        next.url = url.href;
-                    }
+                    url.pathname = toRoutePath(url.pathname);
+                    next.url = url.href;
                     return next;
                 },
             }),
@@ -778,15 +771,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         const base = userSitemap?.filenameBase ?? "sitemap";
                         const source = new URL(`${base}-0.xml`, dir);
                         if (!(await Bun.file(source).exists())) return;
-                        const normalizeHomeUrl = (xml: string) =>
-                            sitemapHomeUrl
-                                ? xml.replaceAll(
-                                      `<loc>${sitemapHomeUrl}/</loc>`,
-                                      `<loc>${sitemapHomeUrl}</loc>`,
-                                  )
-                                : xml;
-                        const sourceXml = normalizeHomeUrl(await Bun.file(source).text());
-                        await Bun.write(source, sourceXml);
+                        const sourceXml = await Bun.file(source).text();
                         // Keep every URL discoverable when a site uses multiple chunks.
                         const index = new URL(`${base}-index.xml`, dir);
                         const indexXml = await Bun.file(index).text();

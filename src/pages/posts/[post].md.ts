@@ -17,8 +17,8 @@ function generateCCFooter(post: CollectionEntry<"posts">, config: ConfigMap): st
     const baseUrl = (siteConfig.url as string) || "";
     const author = (config.get("author")?.name as string) || "";
     const postUrl = baseUrl
-        ? `${baseUrl}/posts/${post.data.abbrlink}/`
-        : `/posts/${post.data.abbrlink}/`;
+        ? `${baseUrl}/posts/${post.data.abbrlink}`
+        : `/posts/${post.data.abbrlink}`;
 
     const lines: string[] = [];
     lines.push(`**${t("post.author")}**${author}`);

@@ -34,8 +34,8 @@ describe("feed post limit", () => {
 
         expect(items.map((item) => item.title)).toEqual(["newest", "middle"]);
         expect(items.map((item) => item.link)).toEqual([
-            "https://example.com/posts/newest/",
-            "https://example.com/posts/middle/",
+            "https://example.com/posts/newest",
+            "https://example.com/posts/middle",
         ]);
     });
 

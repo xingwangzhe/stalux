@@ -64,7 +64,7 @@ describe("article social images", () => {
             tags: ["Astro", "中文"],
             category: "",
             host: "example.com",
-            postUrl: "https://example.com/posts/test/",
+            postUrl: "https://example.com/posts/test",
             author: "Tester",
         });
     });
