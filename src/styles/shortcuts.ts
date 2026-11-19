@@ -67,12 +67,10 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-badge-group-items": "pt-[0.35rem]",
         "stalux-badges": "gap-2",
         "stalux-badge": "w-auto",
-        "stalux-nav-container": "relative max-w-full overflow-hidden box-border",
-        "stalux-nav-list": "max-w-full box-border gap-8",
-        "stalux-nav-scroll-btn":
-            "hidden absolute rounded-full cursor-pointer pointer-events-none p-0 [top:50%] [transform:translateY(-50%)] z-10 w-[36px] h-[36px] [border:none] [background:var(--black-30p)] [backdrop-filter:blur(8px)] text-ink-full opacity-0 [transition:opacity_0.25s_ease] [box-shadow:var(--shadow-md)]",
-        "stalux-nav-item": "shrink-0 text-[1.3em] mr-[1em] ml-[1em] stalux-glow",
-        "stalux-nav-text": "whitespace-nowrap text-ink-full",
+        "stalux-nav-container": "relative max-w-full box-border",
+        "stalux-nav-list": "max-w-full box-border",
+        "stalux-nav-item": "shrink-0 text-[1.3em] stalux-glow",
+        "stalux-nav-text": "text-ink-full",
         "stalux-nav-toggle":
             "hidden text-inherit cursor-pointer [background:none] [border:none] p-3 z-[998] min-w-[48px] min-h-[48px]",
         "stalux-page-title": "stalux-glow mt-[1.5em] text-[2.5em]",

@@ -10,7 +10,6 @@ vi.mock("../src/scripts/search-dialog", () => search);
 vi.mock("@pagefind/component-ui", () => ({}));
 
 let onResize: ResizeObserverCallback;
-let frame: FrameRequestCallback;
 
 beforeEach(async () => {
     vi.resetModules();
@@ -21,9 +20,7 @@ beforeEach(async () => {
             <nav data-ref="stalux-site-nav">
                 <button data-ref="stalux-nav-toggle"></button>
                 <div>
-                    <button data-ref="stalux-nav-scroll-left"></button>
                     <ul data-ref="stalux-nav-list"><li><button data-ref="stalux-search-btn"></button></li></ul>
-                    <button data-ref="stalux-nav-scroll-right"></button>
                 </div>
                 <dialog id="stalux-mobile-navigation"><div data-ref="stalux-mobile-nav-panel"></div></dialog>
             </nav>
@@ -38,10 +35,6 @@ beforeEach(async () => {
             observe() {}
         },
     );
-    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
-        frame = callback;
-        return 1;
-    });
     await import("../src/scripts/navigation");
 });
 
@@ -67,15 +60,8 @@ it("moves the same list into the native dialog and restores it on close", () => 
     expect(toggle?.getAttribute("aria-expanded")).toBe("false");
 });
 
-it("consumes the resize entry and updates overflow in the scheduled frame", () => {
+it("updates the sticky offset when the header height changes", () => {
     const header = document.querySelector("header");
-    const list = document.querySelector("[data-ref='stalux-nav-list']");
-    const right = document.querySelector("[data-ref='stalux-nav-scroll-right']");
-    Object.defineProperties(list, {
-        scrollLeft: { value: 0 },
-        scrollWidth: { value: 420 },
-        clientWidth: { value: 300 },
-    });
     onResize(
         [
             {
@@ -89,8 +75,4 @@ it("consumes the resize entry and updates overflow in the scheduled frame", () =
         {} as ResizeObserver,
     );
     expect(document.documentElement.style.getPropertyValue("--stalux-nav-offset")).toBe("78px");
-    expect(right?.hasAttribute("data-visible")).toBe(false);
-    frame(0);
-    expect(right?.hasAttribute("data-visible")).toBe(true);
-    expect(right?.getAttribute("aria-disabled")).toBe("false");
 });

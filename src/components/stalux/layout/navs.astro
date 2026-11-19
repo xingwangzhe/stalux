@@ -33,18 +33,6 @@ const navs = navsConfig?.items ?? [];
 
     <!-- 导航列表 -->
     <div class="stalux-nav-container stalux-u-w-full stalux-u-min-w-0">
-        <button
-            type="button"
-            data-ref="stalux-nav-scroll-left"
-            class="stalux-nav-scroll-btn stalux-u-items-center stalux-u-justify-center"
-            data-side="left"
-            aria-label={t("nav.scrollLeft")}
-        >
-            <svg aria-hidden="true" viewBox="0 0 24 24">
-                <polyline points="15 18 9 12 15 6" />
-            </svg>
-        </button>
-
         <ul
             data-ref="stalux-nav-list"
             class="stalux-nav-list stalux-u-flex stalux-u-items-center stalux-u-w-full stalux-u-min-w-0"
@@ -77,18 +65,6 @@ const navs = navsConfig?.items ?? [];
                 </button>
             </li>
         </ul>
-
-        <button
-            type="button"
-            data-ref="stalux-nav-scroll-right"
-            class="stalux-nav-scroll-btn stalux-u-items-center stalux-u-justify-center"
-            data-side="right"
-            aria-label={t("nav.scrollRight")}
-        >
-            <svg aria-hidden="true" viewBox="0 0 24 24">
-                <polyline points="9 18 15 12 9 6" />
-            </svg>
-        </button>
     </div>
     <dialog id="stalux-mobile-navigation" aria-label={t("nav.main")}>
         <div class="stalux-mobile-nav-panel" data-ref="stalux-mobile-nav-panel">
@@ -103,26 +79,21 @@ const navs = navsConfig?.items ?? [];
 <Search />
 
 <style>
+.stalux-site-nav {
+    min-width: 0;
+}
 .stalux-nav-list {
-    overflow-x: auto;
-    scroll-padding-inline: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0;
+    column-gap: clamp(0.25rem, 1.2vw, 1.25rem);
 }
-.stalux-nav-list > :first-child {
-    margin-inline-start: auto;
+.stalux-nav-item {
+    max-width: 100%;
 }
-.stalux-nav-list > :last-child {
-    margin-inline-end: auto;
-}
-.stalux-nav-scroll-btn[data-visible] {
-    display: inline-flex;
-}
-.stalux-nav-scroll-btn:focus-visible {
-    outline: 2px solid var(--stalux-accent-color);
-    outline-offset: -2px;
-}
-.stalux-nav-scroll-btn:not([data-visible]):focus {
-    display: inline-flex;
-    opacity: 1;
+.stalux-nav-text {
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 #stalux-mobile-navigation {
     position: fixed;
@@ -166,10 +137,9 @@ const navs = navsConfig?.items ?? [];
         display: none;
     }
     .stalux-nav-list {
-        flex-direction: column;
+        flex-flow: column nowrap;
         align-items: stretch;
         gap: 0;
-        overflow: visible;
     }
 }
 </style>

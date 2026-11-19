@@ -3,8 +3,6 @@
         "menu": "Open navigation menu",
         "close": "Close navigation menu",
         "main": "Main navigation",
-        "scrollLeft": "Scroll navigation left",
-        "scrollRight": "Scroll navigation right",
         "search": "Search"
     },
     "search": {

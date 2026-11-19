@@ -93,8 +93,6 @@
 | `src/styles/rules/common.ts` | `".stalux-card-post-categories a:hover .stalux-card-post-category",` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
 | `src/styles/rules/common.ts` | `".stalux-post-card-shell:hover .stalux-post-card .stalux-card-post-cover img",` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
 | `src/styles/rules/common.ts` | `".stalux-post-card-shell:hover .stalux-post-card",` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
-| `src/styles/rules/common.ts` | `[".stalux-nav-scroll-btn:hover", "", { background: "transparent" }],` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
-| `src/styles/rules/common.ts` | `[".stalux-nav-container:hover .stalux-nav-scroll-btn[data-visible]", "opacity-[1]", {}],` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
 | `src/styles/rules/common.ts` | `".stalux-nav-link:hover .nav-icon, .stalux-nav-link:hover .stalux-nav-text",` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
 | `src/styles/rules/common.ts` | `".stalux-author-figure > a:hover img",` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |
 | `src/styles/rules/common.ts` | `".stalux-404-home-btn:hover",` | 精细指针 hover；保留静态焦点反馈；边界停留验收 |

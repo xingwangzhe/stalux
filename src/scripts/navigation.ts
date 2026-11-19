@@ -35,15 +35,10 @@ const navList = document.querySelector<HTMLElement>("[data-ref='stalux-nav-list'
 const navToggle = document.querySelector<HTMLButtonElement>("[data-ref='stalux-nav-toggle']");
 const drawer = document.querySelector<HTMLDialogElement>("#stalux-mobile-navigation");
 const panel = drawer?.querySelector("[data-ref='stalux-mobile-nav-panel']");
-const buttonLeft = document.querySelector<HTMLButtonElement>("[data-ref='stalux-nav-scroll-left']");
-const buttonRight = document.querySelector<HTMLButtonElement>(
-    "[data-ref='stalux-nav-scroll-right']",
-);
 const mobileNav = window.matchMedia("(max-width: 600px)");
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let search = new AbortController();
 
-if (siteNav && siteHeader && navList && navToggle && drawer && panel && buttonLeft && buttonRight) {
+if (siteNav && siteHeader && navList && navToggle && drawer && panel) {
     const desktopContainer = navList.parentElement;
     const sentinel = document.querySelector("[data-stalux-nav-sentinel]");
     if (sentinel) {
@@ -61,7 +56,7 @@ if (siteNav && siteHeader && navList && navToggle && drawer && panel && buttonLe
     });
     drawer.addEventListener("close", () => {
         if (drawer.open) return;
-        desktopContainer?.insertBefore(navList, buttonRight);
+        desktopContainer?.append(navList);
         navToggle.setAttribute("aria-expanded", "false");
     });
     // The dialog fills the viewport; the panel is its only interactive child.
@@ -82,37 +77,6 @@ if (siteNav && siteHeader && navList && navToggle && drawer && panel && buttonLe
         if (!mobileNav.matches) drawer.close();
     });
 
-    const updateButtons = () => {
-        if (mobileNav.matches || drawer.open) return;
-        const { scrollLeft, scrollWidth, clientWidth } = navList;
-        const left = scrollLeft > 1;
-        const right = scrollLeft + clientWidth < scrollWidth - 1;
-        buttonLeft.toggleAttribute("data-visible", left);
-        buttonRight.toggleAttribute("data-visible", right);
-        buttonLeft.setAttribute("aria-disabled", String(!left));
-        buttonRight.setAttribute("aria-disabled", String(!right));
-    };
-    let frame = 0;
-    const scheduleButtons = () => {
-        if (frame) return;
-        frame = requestAnimationFrame(() => {
-            frame = 0;
-            updateButtons();
-        });
-    };
-    navList.addEventListener("scroll", scheduleButtons, { passive: true });
-    for (const [button, direction] of [
-        [buttonLeft, -1],
-        [buttonRight, 1],
-    ] as const) {
-        button.addEventListener("click", () => {
-            if (button.getAttribute("aria-disabled") === "true") return;
-            navList.scrollBy({
-                left: direction * 300,
-                behavior: reducedMotion.matches ? "instant" : "smooth",
-            });
-        });
-    }
     const resize = new ResizeObserver((entries) => {
         const header = entries.find(({ target }) => target === siteHeader);
         const height = header?.borderBoxSize[0]?.blockSize;
@@ -121,11 +85,8 @@ if (siteNav && siteHeader && navList && navToggle && drawer && panel && buttonLe
             style.setProperty("--stalux-site-header-height", `${Math.round(height)}px`);
             style.setProperty("--stalux-nav-offset", `${Math.round(height) + 16}px`);
         }
-        scheduleButtons();
     });
     resize.observe(siteHeader, { box: "border-box" });
-    resize.observe(navList);
-    for (const item of navList.children) resize.observe(item, { box: "border-box" });
 }
 
 document.querySelector("[data-ref='stalux-search-btn']")?.addEventListener("click", async () => {
