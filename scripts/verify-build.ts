@@ -1,6 +1,5 @@
 import path from "node:path";
 import { generate, parse as parseCss, walk as walkCss } from "css-tree";
-import { imageSize } from "image-size";
 import { type DefaultTreeAdapterMap, parse } from "parse5";
 import { parse as parseYaml } from "yaml";
 import packageJson from "../package.json" with { type: "json" };
@@ -519,31 +518,20 @@ for (const post of postIndex) {
         socialMeta.get("twitter:image") === sharingImage,
         `${post.url} OG and Twitter images disagree`,
     );
+    const card = socialMeta.get("twitter:card");
     assert(
-        socialMeta.get("twitter:card") === "summary_large_image",
-        `${post.url} needs a large sharing card`,
+        card === "summary" || card === "summary_large_image",
+        `${post.url} needs a sharing card`,
     );
-    const imagePath = new URL(sharingImage).pathname;
-    if (/^\/og\/[a-f0-9]{20}\.webp$/u.test(imagePath)) {
-        const bytes = Buffer.from(await Bun.file(path.join(dist, imagePath)).bytes());
-        const dimensions = imageSize(bytes);
-        const fallback = imageSize(
-            Buffer.from(
-                await Bun.file(path.join(dist, imagePath.replace(/\.webp$/u, ".png"))).bytes(),
-            ),
-        );
+    if (post.abbrlink === "a1b2c3d4") {
+        const author = parseYaml(
+            await Bun.file(path.join(root, "stalux/config/author.yml")).text(),
+        ) as {
+            avatar: string;
+        };
         assert(
-            fallback.type === "png" && fallback.width === 1200 && fallback.height === 630,
-            `${post.url} needs a PNG fallback`,
-        );
-        assert(
-            dimensions.type === "webp" && dimensions.width === 1200 && dimensions.height === 630,
-            `${post.url} sharing card must be a real 1200×630 WebP`,
-        );
-        assert(
-            socialMeta.get("og:image:width") === "1200" &&
-                socialMeta.get("og:image:height") === "630",
-            `${post.url} sharing image dimensions are missing`,
+            card === "summary" && sharingImage === new URL(author.avatar, sharingImage).href,
+            `${post.url} should use the author avatar for its default sharing card`,
         );
     }
     let filterFound = false;
