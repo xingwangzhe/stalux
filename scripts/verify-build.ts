@@ -331,15 +331,15 @@ for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
     );
     assert(
         (html.match(/data-stalux-back-to-top/gu) ?? []).length === 1,
-        `${path.relative(dist, file)} must have exactly one back-to-top button`,
+        `${path.relative(dist, file)} must have exactly one back-to-top link`,
     );
     assert(
         /<footer\b[^>]*>[\s\S]*?data-stalux-back-to-top[\s\S]*?<\/footer>/u.test(html),
-        `${path.relative(dist, file)} back-to-top button must stay inside the footer`,
+        `${path.relative(dist, file)} back-to-top link must stay inside the footer`,
     );
     assert(
-        /<button[^>]*data-stalux-back-to-top[^>]*aria-label=[^>]*hidden/u.test(html),
-        `${path.relative(dist, file)} back-to-top button must be accessible and initially hidden`,
+        /<a[^>]*href="#top"[^>]*data-stalux-back-to-top[^>]*aria-label=[^>]*hidden/u.test(html),
+        `${path.relative(dist, file)} back-to-top link must be accessible and initially hidden`,
     );
 }
 
