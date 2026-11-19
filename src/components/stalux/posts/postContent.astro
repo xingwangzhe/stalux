@@ -6,6 +6,7 @@ import "photoswipe/dist/photoswipe.css";
 import { getCollection } from "astro:content";
 import { getPromoteData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
+import { getMarkdownPath, getRouteKind } from "@utils/public-routes";
 import { toMachineDateTime } from "@utils/semantic-time";
 import ArticleSummary from "./ArticleSummary.astro";
 
@@ -34,9 +35,11 @@ const timezone = siteConfig.timezone;
 
 // 仅当开启 export_md 时，才展示“查看 Markdown 原文”按钮，并推导对应 .md 路径
 // /about 等非文章页面固定不显示 Markdown 原文按钮
-const isAboutPage = Astro.url.pathname.startsWith("/about");
-const exportMd = Boolean(promoteConfig?.export_md) && !isAboutPage;
-const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/u, "")}.md` : "";
+const pagePath = Astro.url.pathname;
+const mdSourceUrl =
+    promoteConfig?.export_md && getRouteKind(pagePath) === "article"
+        ? getMarkdownPath(pagePath)
+        : undefined;
 ---
 
 <article
@@ -99,7 +102,7 @@ const mdSourceUrl = exportMd ? `${Astro.url.pathname.replace(/\/$/u, "")}.md` : 
                 <span id="vercount_value_page_pv">Loading...</span>
             </span>
         </p>
-        {exportMd && (
+        {mdSourceUrl && (
             <p class="stalux-post-source-link-row">
                 <a
                     class="stalux-post-source-link"

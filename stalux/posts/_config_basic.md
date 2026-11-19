@@ -6,7 +6,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 11:00:00"
-updated: "2026-11-19 11:23:19"
+updated: "2026-11-19 11:26:47"
 desc: Site identity configuration (site.yml, author.yml), content collection structure, frontmatter field references, and writing notes.
 abbrlink: ad81245d
 ---
@@ -43,7 +43,8 @@ import { defineConfig } from "astro/config";
 import stalux from "@xingwangzhe/stalux";
 
 export default defineConfig({
-    trailingSlash: "never", // Use "always" to generate /archives/
+    trailingSlash: "always",
+    build: { format: "directory" },
     integrations: [stalux()],
 });
 ```
@@ -53,6 +54,8 @@ export default defineConfig({
 | `"never"` | `/archives` |
 | `"always"` | `/archives/` |
 | `"ignore"` or omitted | `/archives` |
+
+With `build.format: "directory"`, Astro writes `dist/archives/index.html` and sets `Astro.url.pathname` to `/archives/` during the build. A relative URL such as `new URL("./child", Astro.url)` resolves to `/archives/child`.
 
 Stalux uses the same URL style for navigation and article links, canonical and Open Graph tags, structured data, RSS, sitemap, and Waline comment paths. The homepage stays at `/`, and file endpoints such as `/rss.xml` keep their own paths.
 

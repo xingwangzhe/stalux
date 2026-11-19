@@ -25,7 +25,8 @@ export default defineConfig({
     output: "static",
     site,
     // 指定网页路由的尾斜杠形式
-    trailingSlash: "never",
+    trailingSlash: "always",
+    build: { format: "directory" },
     experimental: {
         collectionStorage: "chunked",
         // 增量静态构建：未变化的 getStaticPaths 页面直接复用上次输出，大幅缩短构建时间
@@ -66,16 +67,24 @@ export default defineConfig({
             pagefind: true,
             devToolbar: true,
             sitemap: {
-                filter: (page) =>
-                    (exportMarkdown || !new URL(page).pathname.endsWith(".md")) &&
-                    (page.includes("/posts/") ||
-                        page.includes("/about/") ||
-                        page.includes("/links/") ||
-                        page.includes("/words/") ||
-                        page === `${site}/` ||
-                        page === `${site}/archives/` ||
-                        page.includes("/tags/") ||
-                        page.includes("/categories/")),
+                filter(page) {
+                    const { pathname } = new URL(page);
+                    if (pathname.endsWith(".md")) {
+                        return exportMarkdown && pathname.startsWith("/posts/");
+                    }
+                    const route = pathname.replace(/\/$/u, "") || "/";
+                    return (
+                        [
+                            "/",
+                            "/about",
+                            "/archives",
+                            "/links",
+                            "/words",
+                            "/tags",
+                            "/categories",
+                        ].includes(route) || /^\/(?:posts|tags|categories)\/[^/]+$/u.test(route)
+                    );
+                },
             },
             expressiveCode: {
                 themes: ["dark-plus"],

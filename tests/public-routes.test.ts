@@ -48,7 +48,7 @@ describe("public route catalog", () => {
 
     it("builds canonical HTML and Markdown URLs from one path rule", () => {
         expect(toPublicUrl("https://example.com/", "/tags", false)).toBe(
-            "https://example.com/tags",
+            "https://example.com/tags/",
         );
         expect(toPublicUrl("https://example.com/", "/tags", true)).toBe(
             "https://example.com/tags/index.md",
@@ -59,23 +59,24 @@ describe("public route catalog", () => {
 
     it.each([
         ["/", "/"],
-        ["/archives/", "/archives"],
-        ["/posts/a1b2c3d4/", "/posts/a1b2c3d4"],
-        ["/tags/Astro", "/tags/Astro"],
-        ["/about?x=1#top", "/about"],
+        ["/archives/", "/archives/"],
+        ["/posts/a1b2c3d4/", "/posts/a1b2c3d4/"],
+        ["/tags/Astro", "/tags/Astro/"],
+        ["/about?x=1#top", "/about/"],
         ["/404", "/404"],
         ["/posts/a1b2c3d4.md", "/posts/a1b2c3d4.md"],
         ["/api/posts.json", "/api/posts.json"],
-        ["/tags/node.js", "/tags/node.js"],
-        ["/tags/Three.js", "/tags/Three.js"],
+        ["/tags/node.js", "/tags/node.js/"],
+        ["/tags/Three.js", "/tags/Three.js/"],
     ])("publishes %s as the route %s", (pathname, expected) => {
         expect(toRoutePath(pathname)).toBe(expected);
     });
 
-    it("omits the trailing slash on non-root page routes", () => {
+    it("uses one trailing slash on non-root page routes", () => {
         for (const route of ["/archives", "/posts/a1b2c3d4", "/tags/Astro", "/about"]) {
             const url = toPublicUrl("https://example.com", route, false);
-            expect(url.endsWith("/")).toBe(false);
+            expect(url.endsWith("/")).toBe(true);
+            expect(toRoutePath(`${route}/`, false)).toBe(route);
             expect(toPublicUrl("https://example.com", `${route}/`, false)).toBe(url);
         }
         expect(toPublicUrl("https://example.com", "/", false)).toBe("https://example.com/");

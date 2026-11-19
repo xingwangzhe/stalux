@@ -26,6 +26,8 @@
 | `always` | `/posts/example/` |
 | `ignore` 或省略 | `/posts/example` |
 
+演示站使用 `trailingSlash: "always"` 和 `build.format: "directory"`。例如，`/archives/` 生成 `dist/archives/index.html`，渲染时 `Astro.url.pathname` 为 `/archives/`。以它为基准的相对 URL 也按目录解析。
+
 ### Stalux 如何读取配置
 
 - `src/index.ts` 在 Astro 集成初始化时读取站点的 `trailingSlash`，把 `always` 转成构建选项，供 Astro 页面、浏览器脚本和构建后处理使用。

@@ -5,7 +5,7 @@ import PostContent from "@components/stalux/posts/postContent.astro";
 import WalineComment from "@components/stalux/posts/WalineComment.astro";
 import Stalux from "@layouts/Stalux.astro";
 import { getAuthorData, getCommentData, getSiteData } from "@utils/config-utils";
-import { toRoutePath } from "@utils/public-routes";
+import { toPublicUrl, toRoutePath } from "@utils/public-routes";
 import { buildWalineProps } from "@utils/waline";
 
 // 获取关于页面内容
@@ -42,7 +42,7 @@ const author = authorConfig.name;
             <PostCC
                 title={aboutPage.data.title}
                 author={author}
-                url={Astro.url.href}
+                url={toPublicUrl(siteConfig.canonical ?? siteConfig.url, Astro.url.pathname)}
                 cc="CC-BY-NC-SA-4.0"
                 transitionName="stalux-about-license"
             />

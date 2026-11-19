@@ -7,8 +7,8 @@ import PostLeft from "@components/stalux/posts/postLeft.astro";
 import PostNavigation from "@components/stalux/posts/postNavigation.astro";
 import PostRight from "@components/stalux/posts/postRight.astro";
 import WalineComment from "@components/stalux/posts/WalineComment.astro";
-import { getCommentData } from "@utils/config-utils";
-import { toRoutePath } from "@utils/public-routes";
+import { getCommentData, getSiteData } from "@utils/config-utils";
+import { toPublicUrl, toRoutePath } from "@utils/public-routes";
 import { buildWalineProps } from "@utils/waline";
 
 interface Props {
@@ -38,6 +38,7 @@ const headings = props.headings ?? [];
 const author = props.author ?? "Author";
 // 获取 Waline 配置
 const configEntries = await getCollection("config");
+const siteConfig = getSiteData(configEntries);
 const commentConfig = getCommentData(configEntries);
 const walineSection = commentConfig?.waline;
 const commentEnabled = commentConfig?.enabled ?? false;
@@ -73,7 +74,7 @@ const walineConfig = walineSection?.serverURL
             <PostCC
                 title={props.title}
                 author={author}
-                url={Astro.url.href}
+                url={toPublicUrl(siteConfig.canonical ?? siteConfig.url, Astro.url.pathname)}
                 cc={props.cc}
                 transitionName="stalux-article-license"
             />
