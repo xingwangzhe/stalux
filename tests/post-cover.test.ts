@@ -67,6 +67,64 @@ describe("card cover output", () => {
         expect(cover.node.attrs[0]?.value).toMatch(/\.webp$/u);
     });
 
+    it("shares an in-flight conversion across pages while tracking both dependencies", async () => {
+        const sharp = encoder();
+        const context = {
+            outDir,
+            cacheDir,
+            sharp: sharp.factory as never,
+            conversions: new Map<string, Promise<string | undefined>>(),
+        };
+        const pages = [1, 2].map(() => ({
+            cover: image("/images/cover.png"),
+            dependencies: new Set<string>(),
+        }));
+        await Promise.all(
+            pages.map(({ cover, dependencies }) =>
+                upgradeCoverImages([cover], { ...context, dependencies }),
+            ),
+        );
+        expect(sharp.factory).toHaveBeenCalledTimes(1);
+        expect(pages[0]?.cover.node.attrs[0]?.value).toBe(pages[1]?.cover.node.attrs[0]?.value);
+        for (const { dependencies } of pages) {
+            expect(dependencies).toEqual(new Set([path.join(outDir, "images/cover.png")]));
+        }
+    });
+
+    it("reduces oversized static WebP covers and preserves animation and smaller originals", async () => {
+        const input = Buffer.alloc(64 * 1024);
+        writeFileSync(path.join(outDir, "images", "large.webp"), input);
+        writeFileSync(path.join(outDir, "images", "small.webp"), Buffer.alloc(1024));
+        writeFileSync(
+            path.join(outDir, "images", "animated.webp"),
+            Buffer.concat([input, Buffer.of(1)]),
+        );
+        writeFileSync(
+            path.join(outDir, "images", "larger-output.webp"),
+            Buffer.concat([input, Buffer.of(2)]),
+        );
+        const sharp = encoder();
+        const larger = encoder(Buffer.alloc(80 * 1024));
+        const factory = vi.fn((bytes: Buffer) => ({
+            ...(bytes.at(-1) === 2 ? larger.factory() : sharp.factory()),
+            metadata: async () => ({ width: 1080, pages: bytes.at(-1) === 1 ? 2 : 1 }),
+        }));
+        const images = ["large", "small", "animated", "larger-output"].map((name) =>
+            image(`/images/${name}.webp`),
+        );
+        expect(
+            await upgradeCoverImages(images, { outDir, cacheDir, sharp: factory as never }),
+        ).toBe(1);
+        expect(sharp.resize).toHaveBeenCalledExactlyOnceWith({
+            width: 768,
+            withoutEnlargement: true,
+        });
+        expect(images[0]?.node.attrs[0]?.value).toContain(COVER_DIR);
+        for (const entry of images.slice(1)) {
+            expect(entry.node.attrs[0]?.value).toBe(entry.attributes.get("src"));
+        }
+    });
+
     it("leaves vectors, remote URLs and unmarked images alone", async () => {
         writeFileSync(path.join(outDir, "images", "logo.svg"), "<svg/>");
         const sharp = encoder();

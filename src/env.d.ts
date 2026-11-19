@@ -9,11 +9,6 @@ declare module "virtual:stalux-search-style" {
     export default href;
 }
 
-declare module "virtual:stalux-social-card-paths" {
-    const paths: import("./internal/social-card-renderer").SocialCardPaths;
-    export default paths;
-}
-
 declare module "virtual:stalux-swup-debug" {
     const Debug: (new () => import("swup").Plugin) | null;
     export default Debug;

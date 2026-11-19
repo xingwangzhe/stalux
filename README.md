@@ -99,7 +99,7 @@ The detailed documentation is currently maintained in Chinese.
 | [Performance](./docs/PERFORMANCE.md) | Visibility-based loading, first-screen CSS, route preload, backgrounds |
 | [Deployment](./docs/DEPLOYMENT.md) | Static build, EdgeOne, caches, output checks |
 | [WebMCP](./docs/WEBMCP.md) | In-page AI tools, data sources, enable/disable, polyfill |
-| [Social cards](./docs/SOCIAL-CARDS.md) | `og:image` / `cover` priority and build-time generation |
+| [Social cards](./docs/SOCIAL-CARDS.md) | Author avatar and per-post `og:image` override |
 | [Components](./docs/COMPONENTS.md) | Starlight-style component overrides |
 | [License](./docs/LICENSING.md) | MIT theme code and font license scope |
 

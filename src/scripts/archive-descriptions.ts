@@ -51,10 +51,9 @@ export function mountArchiveDescriptions() {
     };
     const hide = () => {
         clearClose();
-        if (active) {
-            if (previousDescription === null) active.removeAttribute("aria-describedby");
-            else active.setAttribute("aria-describedby", previousDescription);
-        }
+        if (!active) return;
+        if (previousDescription === null) active.removeAttribute("aria-describedby");
+        else active.setAttribute("aria-describedby", previousDescription);
         active = undefined;
         if (popoverOpen) {
             tooltip.hidePopover();
@@ -64,19 +63,21 @@ export function mountArchiveDescriptions() {
         tooltip.textContent = "";
     };
     const show = (link: HTMLAnchorElement) => {
+        if (active === link) {
+            // Delegated pointer events also fire between descendants of the same link.
+            clearClose();
+            return;
+        }
         const description = link.dataset.archiveDescription?.trim();
         if (!description) return;
-        clearClose();
-        if (active !== link) {
-            hide();
-            active = link;
-            previousDescription = link.getAttribute("aria-describedby");
-            link.setAttribute(
-                "aria-describedby",
-                [previousDescription, tooltip.id].filter(Boolean).join(" "),
-            );
-            tooltip.textContent = description;
-        }
+        hide();
+        active = link;
+        previousDescription = link.getAttribute("aria-describedby");
+        link.setAttribute(
+            "aria-describedby",
+            [previousDescription, tooltip.id].filter(Boolean).join(" "),
+        );
+        tooltip.textContent = description;
         tooltip.hidden = false;
         if (usePopover && !popoverOpen) {
             tooltip.showPopover();

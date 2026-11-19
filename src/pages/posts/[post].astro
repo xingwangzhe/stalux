@@ -1,14 +1,12 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
 import { getRuntimeCacheKey } from "@internal/runtime-cache-key";
-import { createSocialCardData } from "@internal/social-card-data";
 import PostLayout from "@layouts/PostLayout.astro";
 import Stalux from "@layouts/Stalux.astro";
 import { analyzeFeatureFlags } from "@plugins/feature-flags";
 import { getAuthorData, getSiteData } from "@utils/config-utils";
 import { getPostContentIndex } from "@utils/content-index";
 import { toRoutePath } from "@utils/public-routes";
-import { resolvePostSocialImage } from "@utils/social-image";
 
 interface Props {
     post: CollectionEntry<"posts">;
@@ -30,10 +28,11 @@ export async function getStaticPaths() {
     return index.posts.map((post) => {
         const { previous: prevPost, next: nextPost } =
             index.neighbors.get(String(post.data.abbrlink)) ?? {};
-        // 增量构建 cacheKey：含自身与 prev/next 的标识、标题和更新时间，
+        // 增量构建 cacheKey：含正文与 prev/next 的标识、标题和更新时间，
         // 任一邻居变化（文章新增/编辑导致前后链接变化）时本页也会失效重渲染
         const cacheKey = [
             post.data.updated ?? post.data.date,
+            post.digest ?? Bun.hash(post.body ?? "").toString(),
             ...[prevPost, nextPost].map((neighbor) =>
                 neighbor
                     ? JSON.stringify([
@@ -73,11 +72,7 @@ export async function getStaticPaths() {
     title={`${props.post.data.title} | ${siteConfig.title}`}
     description={autoDesc}
     cover={props.post.data.cover}
-    socialImage={resolvePostSocialImage(
-        props.post.data["og:image"],
-        createSocialCardData(props.post.data, siteConfig, authorConfig),
-        import.meta.env.BASE_URL,
-    )}
+    socialImage={props.post.data["og:image"] ? { url: props.post.data["og:image"] } : undefined}
     isArticle={true}
     date={props.post.data.date}
     updated={props.post.data.updated}

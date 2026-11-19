@@ -97,7 +97,7 @@ bun run preview   # 本地预览生产产物
 | [性能与加载](./docs/PERFORMANCE.md) | 按可见性加载、首屏 CSS、路由预热、背景资源 |
 | [部署](./docs/DEPLOYMENT.md) | 静态构建、EdgeOne、缓存目录、产物检查 |
 | [WebMCP](./docs/WEBMCP.md) | 页面内 AI 工具、数据源、启停、polyfill |
-| [文章分享卡片](./docs/SOCIAL-CARDS.md) | `og:image` / `cover` 优先级与构建期生成 |
+| [文章分享卡片](./docs/SOCIAL-CARDS.md) | 头像默认图与文章 `og:image` 覆盖 |
 | [组件覆盖](./docs/COMPONENTS.md) | Starlight 风格组件覆盖 |
 | [许可](./docs/LICENSING.md) | 主题 MIT 与字体许可范围 |
 

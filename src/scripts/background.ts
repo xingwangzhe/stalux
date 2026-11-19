@@ -61,10 +61,8 @@ export function installSessionBackground(): void {
                 // Original SVGs have only a viewBox: auto sizes them as contain.
                 // Raster files have intrinsic dimensions, so retain that sizing
                 // explicitly. Custom URLs keep the existing auto semantics.
-                if (!custom) b.style.backgroundSize = "contain";
+                if (!custom) b.dataset.staluxBgFit = "contain";
                 b.style.backgroundImage = `url('${source}')`;
-                b.style.opacity = "1";
-                a.style.opacity = "0";
                 document.body.dataset.staluxBgIndex = String(index);
                 document.body.dataset.staluxBgLayer = "b";
             },

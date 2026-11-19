@@ -8,10 +8,12 @@ let documentMock: EventTarget & {
 let layers: {
     a: {
         isConnected: boolean;
+        dataset: Record<string, string>;
         style: { opacity: string; backgroundImage: string; backgroundSize?: string };
     };
     b: {
         isConnected: boolean;
+        dataset: Record<string, string>;
         style: { opacity: string; backgroundImage: string; backgroundSize?: string };
     };
 };
@@ -27,8 +29,8 @@ beforeEach(() => {
     decodes = [];
     images = [];
     layers = {
-        a: { isConnected: true, style: { opacity: "1", backgroundImage: "" } },
-        b: { isConnected: true, style: { opacity: "0", backgroundImage: "" } },
+        a: { isConnected: true, dataset: {}, style: { opacity: "1", backgroundImage: "" } },
+        b: { isConnected: true, dataset: {}, style: { opacity: "0", backgroundImage: "" } },
     };
     documentMock = Object.assign(new EventTarget(), {
         readyState: "interactive",
@@ -87,8 +89,7 @@ it("starts one low-priority custom decode as soon as the document is parsed", as
     decodes[0]?.resolve();
     await settle();
     expect(layers.b.style.backgroundImage).toBe("url('/background/custom.svg')");
-    expect(layers.b.style.opacity).toBe("1");
-    expect(layers.a.style.opacity).toBe("0");
+    expect(documentMock.body.dataset.staluxBgLayer).toBe("b");
 });
 it("defers the decorative decode until the browser is idle", async () => {
     const pending: Array<() => void> = [];
@@ -164,13 +165,13 @@ it("uses raster companions with the original ratio-only SVG contain sizing", asy
     expect(images[0]?.src).toMatch(/^\/background\/pattern-\d+\.min\.dark\.webp$/u);
     decodes[0]?.resolve();
     await settle();
-    expect(layers.b.style.backgroundSize).toBe("contain");
+    expect(layers.b.dataset.staluxBgFit).toBe("contain");
 });
 it("keeps custom-image sizing unchanged", async () => {
     await import("../src/scripts/background");
     decodes[0]?.resolve();
     await settle();
-    expect(layers.b.style.backgroundSize).toBeUndefined();
+    expect(layers.b.dataset.staluxBgFit).toBeUndefined();
 });
 it("is harmless during an SSR import without window or document", async () => {
     vi.stubGlobal("window", undefined);

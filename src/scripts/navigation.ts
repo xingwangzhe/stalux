@@ -40,14 +40,28 @@ registerPageLifecycle("navigation", () => {
     const buttonRight = document.querySelector<HTMLElement>("[data-ref='stalux-nav-scroll-right']");
     if (!(navList && buttonLeft && buttonRight)) return;
 
+    const sentinel = document.querySelector("[data-stalux-nav-sentinel]");
+    const setScrolled = (scrolled: boolean) => {
+        siteNav?.toggleAttribute("data-scrolled", scrolled);
+        navToggle?.toggleAttribute("data-scrolled", scrolled);
+    };
+    const surfaceObserver =
+        sentinel && typeof IntersectionObserver === "function"
+            ? new IntersectionObserver((entries) => {
+                  for (const entry of entries) setScrolled(!entry.isIntersecting);
+              })
+            : undefined;
+    if (sentinel) surfaceObserver?.observe(sentinel);
+
     const controller = new AbortController();
     const listenerOptions = { signal: controller.signal };
     let frameId = 0;
     let lastScale = navList.style.getPropertyValue("--nav-scale") || "1";
     let needsButtons = true;
-    let needsSurface = true;
+    let needsSurface = !surfaceObserver;
     let needsResize = false;
     let needsScale = true;
+    let pendingHeaderHeight = siteHeader ? undefined : 0;
     const mobileNav = window.matchMedia("(max-width: 600px)");
 
     const closeNav = () => {
@@ -55,29 +69,30 @@ registerPageLifecycle("navigation", () => {
         navToggle?.removeAttribute("data-state");
         navToggle?.setAttribute("aria-expanded", "false");
         navOverlay?.removeAttribute("data-state");
-        if (document.body.style.overflow) document.body.style.overflow = "";
     };
     const openNav = () => {
         navList.dataset.state = "open";
         navToggle?.setAttribute("data-state", "open");
         navToggle?.setAttribute("aria-expanded", "true");
         navOverlay?.setAttribute("data-state", "show");
-        document.body.style.overflow = "hidden";
     };
     const updateButtons = () => {
         frameId = 0;
         // Collect every layout read before changing attributes or inherited
         // root variables. Even scrollY can force style calculation after a swap.
         const scrolled = needsSurface ? window.scrollY > 24 : undefined;
-        const shouldCloseNav = needsResize && !mobileNav.matches;
-        const updateOverflow = needsButtons;
+        const isMobile = mobileNav.matches;
+        const shouldCloseNav = needsResize && !isMobile;
+        const updateNav = needsButtons;
+        const updateOverflow = updateNav && !isMobile;
         const clientWidth = updateOverflow ? navList.clientWidth : 0;
         const scrollWidth = updateOverflow ? navList.scrollWidth : 0;
         const scrollLeft = updateOverflow ? navList.scrollLeft : 0;
-        const headerHeight = updateOverflow ? (siteHeader?.offsetHeight ?? 0) : 0;
+        const headerHeight = pendingHeaderHeight;
+        pendingHeaderHeight = undefined;
         let nextScale = lastScale;
         if (needsScale) {
-            if (mobileNav.matches) {
+            if (isMobile) {
                 nextScale = "1";
             } else {
                 const style = getComputedStyle(navList);
@@ -101,7 +116,7 @@ registerPageLifecycle("navigation", () => {
         needsResize = false;
         needsScale = false;
 
-        if (updateOverflow) {
+        if (headerHeight !== undefined) {
             const rootStyle = document.documentElement.style;
             const headerHeightValue = `${headerHeight}px`;
             if (
@@ -119,12 +134,9 @@ registerPageLifecycle("navigation", () => {
             navList.style.setProperty("--nav-scale", nextScale);
             lastScale = nextScale;
         }
-        if (scrolled !== undefined) {
-            siteNav?.toggleAttribute("data-scrolled", scrolled);
-            navToggle?.toggleAttribute("data-scrolled", scrolled);
-        }
-        if (updateOverflow) {
-            const hasOverflow = scrollWidth > clientWidth;
+        if (scrolled !== undefined) setScrolled(scrolled);
+        if (updateNav) {
+            const hasOverflow = updateOverflow && scrollWidth > clientWidth;
             buttonLeft.toggleAttribute("data-visible", hasOverflow && scrollLeft > 1);
             buttonRight.toggleAttribute(
                 "data-visible",
@@ -146,7 +158,7 @@ registerPageLifecycle("navigation", () => {
     };
     const scheduleResize = () => {
         needsButtons = true;
-        needsSurface = true;
+        needsSurface = !surfaceObserver;
         needsResize = true;
         needsScale = true;
         scheduleFrame();
@@ -186,10 +198,12 @@ registerPageLifecycle("navigation", () => {
         passive: true,
         signal: controller.signal,
     });
-    window.addEventListener("scroll", scheduleSurface, {
-        passive: true,
-        signal: controller.signal,
-    });
+    if (!surfaceObserver) {
+        window.addEventListener("scroll", scheduleSurface, {
+            passive: true,
+            signal: controller.signal,
+        });
+    }
     window.addEventListener("resize", scheduleResize, {
         passive: true,
         signal: controller.signal,
@@ -197,15 +211,26 @@ registerPageLifecycle("navigation", () => {
 
     document.fonts.addEventListener("loadingdone", scheduleResize, listenerOptions);
 
-    const resizeObserver = new ResizeObserver(scheduleResize);
+    const resizeObserver = new ResizeObserver((entries) => {
+        const header = entries.find(({ target }) => target === siteHeader);
+        if (header) {
+            // The observer already has layout results. Use them for the next
+            // animation frame instead of asking the browser to lay out again.
+            pendingHeaderHeight = Math.round(
+                header.borderBoxSize?.[0]?.blockSize ?? siteHeader?.offsetHeight ?? 0,
+            );
+        }
+        scheduleResize();
+    });
     resizeObserver.observe(navList);
-    if (siteHeader) resizeObserver.observe(siteHeader);
+    if (siteHeader) resizeObserver.observe(siteHeader, { box: "border-box" });
     if (navList.parentElement) resizeObserver.observe(navList.parentElement);
     scheduleUpdate();
 
     return () => {
         document.querySelector<SearchDialog>("pagefind-modal#search")?.close?.();
         controller.abort();
+        surfaceObserver?.disconnect();
         resizeObserver.disconnect();
         if (frameId) cancelAnimationFrame(frameId);
         closeNav();

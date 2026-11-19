@@ -12,9 +12,13 @@ const QUALITY = 82;
 const RECIPE = "v1";
 
 /** Formats worth re-encoding. Vector and icon sources stay untouched. */
-const CONVERTIBLE = /\.(?:png|jpe?g|avif|tiff?|bmp)$/iu;
+const CONVERTIBLE = /\.(?:png|jpe?g|avif|tiff?|bmp|webp)$/iu;
+const WEBP_CARD_WIDTH = 768;
+const WEBP_CARD_QUALITY = 78;
+const WEBP_MIN_BYTES = 48 * 1024;
 
 interface SharpPipeline {
+    metadata(): Promise<{ width?: number; pages?: number }>;
     resize(options: Record<string, unknown>): SharpPipeline;
     webp(options: Record<string, unknown>): SharpPipeline;
     toBuffer(): Promise<Buffer>;
@@ -46,6 +50,7 @@ export interface CoverContext {
     outDir: string;
     cacheDir: string;
     sharp: SharpFactory;
+    conversions?: Map<string, Promise<string | undefined>>;
     /** Source files this page depends on, so editing a cover invalidates it. */
     dependencies?: Set<string>;
     logger?: { warn: (message: string) => void };
@@ -77,7 +82,7 @@ export async function upgradeCoverImages(
     for (const image of images) {
         if (!image.attributes.has("data-stalux-cover")) continue;
         const src = image.attributes.get("src");
-        if (!src?.startsWith("/")) continue;
+        if (!src?.startsWith("/") || src.startsWith("//")) continue;
         let pathname: string;
         try {
             pathname = decodeURIComponent(new URL(src, "https://stalux.invalid").pathname);
@@ -87,38 +92,64 @@ export async function upgradeCoverImages(
         if (!CONVERTIBLE.test(pathname)) continue;
         const source = path.resolve(root, `.${pathname}`);
         if (!source.startsWith(`${root}${path.sep}`)) continue;
-        if (!(await Bun.file(source).exists())) continue;
         context.dependencies?.add(source);
-
-        let bytes: Buffer;
-        try {
-            bytes = Buffer.from(await Bun.file(source).bytes());
-        } catch {
-            continue;
+        let conversion = context.conversions?.get(source);
+        if (!conversion) {
+            conversion = encodeCover(source, pathname, cacheDir, context);
+            context.conversions?.set(source, conversion);
         }
-        const hash = digest([RECIPE, "webp", String(MAX_WIDTH), String(QUALITY), bytes]);
-        const filename = `${hash.slice(0, 16)}.webp`;
-        const cached = path.join(cacheDir, filename);
-        if (!(await Bun.file(cached).exists())) {
-            try {
-                const encoded = await context
-                    .sharp(bytes)
-                    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-                    .webp({ quality: QUALITY, effort: 5 })
-                    .toBuffer();
-                await Bun.write(cached, encoded);
-            } catch (error) {
-                // One malformed source must not fail the page it appears on.
-                context.logger?.warn(`封面转 WebP 失败（${pathname}）：${String(error)}`);
-                continue;
-            }
-        }
+        const filename = await conversion;
+        if (!filename) continue;
         const attribute = image.node.attrs.find((entry) => entry.name === "src");
         if (!attribute) continue;
         attribute.value = `/${COVER_DIR}/${filename}`;
         converted++;
     }
     return converted;
+}
+
+async function encodeCover(
+    source: string,
+    pathname: string,
+    cacheDir: string,
+    context: CoverContext,
+): Promise<string | undefined> {
+    const webp = /\.webp$/iu.test(pathname);
+    const input = Bun.file(source);
+    if (!(await input.exists())) return;
+    if (webp && input.size < WEBP_MIN_BYTES) return;
+
+    let bytes: Buffer;
+    try {
+        bytes = Buffer.from(await input.bytes());
+    } catch {
+        return;
+    }
+    const width = webp ? WEBP_CARD_WIDTH : MAX_WIDTH;
+    const quality = webp ? WEBP_CARD_QUALITY : QUALITY;
+    const hash = digest([RECIPE, "webp", String(width), String(quality), bytes]);
+    const filename = `${hash.slice(0, 16)}.webp`;
+    const cached = path.join(cacheDir, filename);
+    if (!(await Bun.file(cached).exists())) {
+        try {
+            const pipeline = context.sharp(bytes);
+            if (webp) {
+                const metadata = await pipeline.metadata();
+                if ((metadata.width ?? 0) <= width || (metadata.pages ?? 1) > 1) return;
+            }
+            const encoded = await pipeline
+                .resize({ width, withoutEnlargement: true })
+                .webp({ quality, effort: 5 })
+                .toBuffer();
+            if (webp && encoded.length >= bytes.length) return;
+            await Bun.write(cached, encoded);
+        } catch (error) {
+            // One malformed source must not fail the page it appears on.
+            context.logger?.warn(`封面转 WebP 失败（${pathname}）：${String(error)}`);
+            return;
+        }
+    }
+    return filename;
 }
 
 /** Copy every cached cover into the build output so cached pages still resolve. */

@@ -1,23 +1,8 @@
-export interface SocialCardData {
-    title: string;
-    siteTitle: string;
-    author: string;
-    host: string;
-    postUrl: string;
-    tags: string[];
-    date: string;
-    category: string;
-    cover?: string | undefined;
-}
-
-export type SocialCardFormat = "jpg" | "png";
-
 export interface SocialImage {
     url: string;
     width?: number;
     height?: number;
     type?: string;
-    fallbackUrl?: string;
 }
 
 /** Explicit sharing images accept web URLs and site-root paths, never executable schemes. */
@@ -32,33 +17,4 @@ export function isSocialImageUrl(value: string): boolean {
     } catch {
         return false;
     }
-}
-
-/** Artwork cards are photographic, so JPEG saves bytes; plain cards stay PNG. */
-export function socialCardFormat(data: Pick<SocialCardData, "cover">): SocialCardFormat {
-    return data.cover ? "jpg" : "png";
-}
-
-export function socialCardPath(data: SocialCardData, base = "/"): string {
-    // Bump the template revision when layout changes. Metadata changes get a fresh URL.
-    const hash = new Bun.CryptoHasher("sha256")
-        .update(JSON.stringify(["stalux-mono-v2", data]))
-        .digest("hex")
-        .slice(0, 20);
-    return `${base.replace(/\/$/u, "")}/og/${hash}.${socialCardFormat(data)}`;
-}
-
-export function resolvePostSocialImage(
-    explicit: string | undefined,
-    data: SocialCardData,
-    base = "/",
-): SocialImage {
-    if (explicit?.trim() && isSocialImageUrl(explicit.trim())) return { url: explicit.trim() };
-    const format = socialCardFormat(data);
-    return {
-        url: socialCardPath(data, base),
-        width: 1200,
-        height: 630,
-        type: format === "jpg" ? "image/jpeg" : "image/png",
-    };
 }

@@ -27,12 +27,12 @@ export const commonStyles: StyleSpec[] = [
     ["#stalux-home-show-post-list", "mt-[2em] text-[1.1em]", {}, "@media (max-width: 768px)"],
     [".stalux-post-list-container", "w-full h-[auto] m-[5px_0]", {}],
     [
-        ".stalux-post-list-container ul",
+        ".stalux-post-list-container > ul",
         "p-0 flex flex-wrap gap-[2rem] m-[3em]",
         { "list-style-type": "none" },
     ],
-    [".stalux-post-list-container ul", "m-[1rem]", {}, "@media (max-width: 768px)"],
-    [".stalux-post-list-container ul > li", "m-0 min-w-0", { flex: "1 1 min(22rem, 100%)" }],
+    [".stalux-post-list-container > ul", "m-[1rem]", {}, "@media (max-width: 768px)"],
+    [".stalux-post-list-container > ul > li", "m-0 min-w-0", { flex: "1 1 min(22rem, 100%)" }],
     [".stalux-card-post-title a", "text-inherit no-underline", {}],
     [".stalux-post-card > a:first-child", "block min-w-0 w-full", {}],
     [

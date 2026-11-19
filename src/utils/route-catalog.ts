@@ -20,7 +20,6 @@ export const ROUTE_DEFINITIONS: readonly RouteDefinition[] = [
         pattern: "/stalux-assets/badges/[id].svg",
         source: "./pages/stalux-assets/badges/[id].svg.ts",
     },
-    { pattern: "/og/[image].[format]", source: "./pages/og/[image].[format].ts" },
     { pattern: "/rss.xml", source: "./pages/rss.xml.ts" },
     { pattern: "/atom.xml", source: "./pages/atom.xml.ts" },
     { pattern: "/llms.txt", source: "./pages/llms.txt.ts" },

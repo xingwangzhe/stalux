@@ -42,7 +42,6 @@ export interface SeoDocument {
     links: LinkTag[];
     meta: MetaTag[];
     schema: Record<string, unknown>;
-    fallbackImage?: string;
 }
 
 function normalizeSiteUrl(value: string): string {
@@ -71,11 +70,7 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     const noindex = Boolean(site.noindex) || notFound || Boolean(page.noindex);
     const nofollow = Boolean(site.nofollow) || notFound;
     const favicon = site.favicon;
-    const image = absoluteUrl(
-        page.socialImage?.url ?? page.cover ?? author.avatar,
-        siteUrl,
-        input.protocol,
-    );
+    const image = absoluteUrl(page.socialImage?.url ?? author.avatar, siteUrl, input.protocol);
     const isArticle = page.isArticle ?? false;
     const isCollection = routeKind.endsWith("-index") || routeKind.endsWith("-detail");
 
@@ -89,7 +84,7 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
         images: [
             {
                 url: image,
-                alt: contentTitle,
+                alt: page.socialImage?.url ? contentTitle : author.name,
                 ...(page.socialImage?.width ? { width: page.socialImage.width } : {}),
                 ...(page.socialImage?.height ? { height: page.socialImage.height } : {}),
                 ...(page.socialImage?.type ? { type: page.socialImage.type } : {}),
@@ -107,13 +102,11 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
     }
 
     const twitter = {
-        card: (page.socialImage?.url || page.cover
-            ? "summary_large_image"
-            : "summary") as TwitterCardType,
+        card: (page.socialImage?.url ? "summary_large_image" : "summary") as TwitterCardType,
         title: contentTitle,
         description: page.description,
         image,
-        imageAlt: contentTitle,
+        imageAlt: page.socialImage?.url ? contentTitle : author.name,
         ...(site.twitterSite ? { site: site.twitterSite } : {}),
     };
     const links: LinkTag[] = [
@@ -220,7 +213,7 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
                     headline: contentTitle,
                     description: page.description,
                     url: canonical,
-                    image,
+                    image: page.cover ? absoluteUrl(page.cover, siteUrl, input.protocol) : image,
                     ...(page.date ? { datePublished: page.date } : {}),
                     ...(page.updated || page.date
                         ? { dateModified: page.updated || page.date }
@@ -280,8 +273,5 @@ export function buildSeoDocument(input: SeoDocumentInput): SeoDocument {
         links,
         meta,
         schema,
-        ...(page.socialImage?.fallbackUrl
-            ? { fallbackImage: absoluteUrl(page.socialImage.fallbackUrl, siteUrl, input.protocol) }
-            : {}),
     };
 }

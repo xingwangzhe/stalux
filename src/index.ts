@@ -33,11 +33,10 @@ import { writeCjkSearchIndex } from "./internal/cjk-search-index";
 import { staluxComponentsAlias } from "./internal/components-plugin";
 import {
     clearPageFontSubsets,
-    collectSharedFontGlyphs,
-    createSharedFontGlyphs,
     readLinkedStylesheetText,
     removePageFontStyles,
     resolveFontInputs,
+    scanSharedFontGlyphs,
     sharedFontCacheKey,
     writePageFontSubsetIntoDocumentAsync,
     writeSharedFontSubsetsAsync,
@@ -60,6 +59,7 @@ import {
     collectPluginNames,
     prepareSatteriProcessor,
 } from "./internal/satteri-config";
+import { createSearchOutputCache } from "./internal/search-output-cache";
 import { searchStylePlugin } from "./internal/search-style";
 import { createViteAliases } from "./internal/vite-aliases";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
@@ -124,12 +124,13 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
         ...options,
     };
 
-    const socialCardPaths = { publicDir: "", cacheDir: "", base: "/", fontPath: "" };
+    let publicDir = "";
     // Content-addressed card covers, kept outside the build output so a page that
     // is served from the page-output cache still finds its file on disk.
     let coverCacheDir = "";
 
     let searchBase = "/";
+    let searchCacheDir: string;
     let trailingSlash = false;
     let siteOrigin: string | undefined;
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
@@ -215,17 +216,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             alias: createViteAliases(srcDir),
                         },
                         plugins: [
-                            {
-                                name: "stalux:social-card-paths",
-                                resolveId: (id) =>
-                                    id === "virtual:stalux-social-card-paths"
-                                        ? `\0${id}`
-                                        : undefined,
-                                load: (id) =>
-                                    id === "\0virtual:stalux-social-card-paths"
-                                        ? `export default ${JSON.stringify(socialCardPaths)}`
-                                        : undefined,
-                            },
                             swupDebugPlugin(command === "dev"),
                             searchStylePlugin(command === "dev", config.base),
                             ...(command === "build"
@@ -400,14 +390,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 trailingSlash = config.trailingSlash === "always";
                 siteOrigin = config.site ? new URL(config.site).origin : undefined;
                 const srcDir = Bun.fileURLToPath(new URL(".", import.meta.url));
-                const publicDir = Bun.fileURLToPath(config.publicDir);
-                Object.assign(socialCardPaths, {
-                    publicDir,
-                    cacheDir: Bun.fileURLToPath(new URL("stalux-social-cards/", config.cacheDir)),
-                    base: config.base,
-                    fontPath: path.join(srcDir, "assets/fonts/LXGWWenKai-Regular.woff2"),
-                });
+                publicDir = Bun.fileURLToPath(config.publicDir);
                 coverCacheDir = Bun.fileURLToPath(new URL("stalux-post-covers/", config.cacheDir));
+                searchCacheDir = Bun.fileURLToPath(
+                    new URL("stalux-search-output/", config.cacheDir),
+                );
                 const assetsLogger = logger.fork("stalux/assets");
                 if (pageFontData) {
                     pageFontData.outputDir = path.join(
@@ -455,20 +442,25 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 for (const entry of htmlFiles) {
                     if (!entry.endsWith(".html")) continue;
                     // Static verification files and other public HTML are served verbatim.
-                    if (await Bun.file(path.join(socialCardPaths.publicDir, entry)).exists())
-                        continue;
+                    if (await Bun.file(path.join(publicDir, entry)).exists()) continue;
                     pageEntries.push(entry);
                 }
                 let sharedFonts: Awaited<ReturnType<typeof writeSharedFontSubsetsAsync>> = [];
                 let sharedFontKey = "";
                 if (pageFontData) {
-                    const sharedGlyphs = createSharedFontGlyphs();
-                    // The common shell is static across soft navigations; scan once, then
-                    // reuse each component's content-addressed subset on every route.
-                    await forEachBounded(pageEntries, 4, async (entry) => {
-                        const html = await Bun.file(path.join(outDir, entry)).text();
-                        collectSharedFontGlyphs(parse(html), sharedGlyphs);
-                    });
+                    const sharedScanStarted = performance.now();
+                    const sharedGlyphs = await scanSharedFontGlyphs(
+                        pageEntries,
+                        outDir,
+                        path.join(pageFontData.cacheDir, "shared-glyphs.json"),
+                        [
+                            path.join(sourceDir, "internal/font-slices.ts"),
+                            path.resolve(path.dirname(parserEntry), "../package.json"),
+                        ],
+                    );
+                    logger.info(
+                        `shared glyph scan ${(performance.now() - sharedScanStarted).toFixed(1)}ms`,
+                    );
                     sharedFonts = await writeSharedFontSubsetsAsync(
                         pageFontData.fontBuffer,
                         sharedGlyphs,
@@ -488,6 +480,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             "internal/html-styles.ts",
                             "internal/route-hrefs.ts",
                             "internal/offscreen-layout.ts",
+                            "internal/post-cover.ts",
                             "internal/page-output-cache.ts",
                             "internal/style-names.generated.ts",
                             "plugins/feature-flags.ts",
@@ -516,6 +509,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 }
                 const linkedCssTextCache = new Map<string, string>();
                 const dimensionsCache = new Map<string, Promise<ImageDimensions | undefined>>();
+                // Multiple taxonomy pages often share the same original cover.
+                const coverConversions = new Map<string, Promise<string | undefined>>();
                 const processPage = async (entry: string) => {
                     const output = path.join(outDir, entry);
                     const before = await Bun.file(output).text();
@@ -549,7 +544,11 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     );
                     promoteCodeStyles(document);
                     containMermaidSvgs(document);
-                    removePageFontStyles(document);
+                    // Fresh Astro output has no injected font markup. Restored
+                    // HTML can contain it, so only walk when a marker is present.
+                    if (/data-stalux-(?:page-font|shared-font-preload)/iu.test(before)) {
+                        removePageFontStyles(document);
+                    }
                     // 正文里手写的 /posts/x/ 也统一成路由器实际提供的形态
                     normalizeRouteHrefs(document, siteOrigin, trailingSlash);
                     const images = findHtmlImages(before, document);
@@ -567,6 +566,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                                 outDir,
                                 cacheDir: coverCacheDir,
                                 sharp: coverEncoder,
+                                conversions: coverConversions,
                                 dependencies,
                                 logger,
                             });
@@ -574,6 +574,13 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             logger.warn(`封面转 WebP 失败：${describeError(error)}`);
                         }
                     }
+                    const priorityCover = images
+                        .find(
+                            ({ attributes }) =>
+                                attributes.has("data-stalux-cover") &&
+                                attributes.get("fetchpriority") === "high",
+                        )
+                        ?.node.attrs.find(({ name }) => name === "src")?.value;
                     if (pageFontData) {
                         const linkedStylesheetText = await readLinkedStylesheetText(
                             "",
@@ -590,6 +597,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             "/_astro/fonts/",
                             linkedStylesheetText,
                             sharedFonts,
+                            Boolean(priorityCover),
                         );
                         if (pageFont) {
                             pageFontPages++;
@@ -607,7 +615,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             referencedPageFonts.add(pageFont.filename);
                         }
                     }
-                    const after = emitHtml();
+                    const after = emitHtml(priorityCover);
                     if (after !== before) {
                         await Bun.write(output, after);
                         optimizedImagePages++;
@@ -654,8 +662,42 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // 后处理：Pagefind 搜索索引。启用时任何失败都必须让构建失败，
                 // 避免发布一个页面正常但搜索已损坏的产物。
                 if (opt.pagefind) {
-                    logger.info("Running Pagefind indexer...");
                     const pagefindStarted = performance.now();
+                    const searchOutputDir = path.join(outDir, "pagefind");
+                    let cache: Awaited<ReturnType<typeof createSearchOutputCache>> | undefined;
+                    // Preserve any pagefind/ files supplied in the project's public folder.
+                    if (!existsSync(searchOutputDir)) {
+                        try {
+                            const versions = await Promise.all(
+                                [
+                                    path.join(sourceDir, "index.ts"),
+                                    path.join(sourceDir, "internal/cjk-search-index.ts"),
+                                    path.join(sourceDir, "internal/search-output-cache.ts"),
+                                    path.join(sourceDir, "utils/cjk-search.ts"),
+                                    path.resolve(path.dirname(parserEntry), "../package.json"),
+                                    path.resolve(
+                                        path.dirname(resolveModule("pagefind")),
+                                        "../package.json",
+                                    ),
+                                ].map((file) => Bun.file(file).text()),
+                            );
+                            cache = await createSearchOutputCache(
+                                searchCacheDir,
+                                outDir,
+                                htmlFiles.filter((entry) => entry.endsWith(".html")),
+                                JSON.stringify([searchBase, pageEntries, versions]),
+                            );
+                            if (await cache.restore()) {
+                                logger.info(
+                                    `restored search indexes (${(performance.now() - pagefindStarted).toFixed(1)}ms)`,
+                                );
+                                return;
+                            }
+                        } catch (error) {
+                            logger.debug(`search cache unavailable: ${describeError(error)}`);
+                        }
+                    }
+                    logger.info("Running Pagefind indexer...");
 
                     try {
                         const { index, errors } = await pagefindCreateIndex({
@@ -668,25 +710,35 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             );
                         }
 
-                        const { page_count, errors: crawlErrors } = await index.addDirectory({
-                            path: outDir,
-                        });
-                        if (crawlErrors.length) throw new Error(crawlErrors.join("; "));
-                        if (page_count === 0) {
-                            throw new Error("Pagefind did not index any pages");
-                        }
+                        // Both indexers read final HTML and write distinct files.
+                        // Wait for both writers before returning a build failure.
+                        const [pagefind, cjk] = await Promise.allSettled([
+                            (async () => {
+                                const { page_count, errors: crawlErrors } =
+                                    await index.addDirectory({ path: outDir });
+                                if (crawlErrors.length) throw new Error(crawlErrors.join("; "));
+                                if (page_count === 0) {
+                                    throw new Error("Pagefind did not index any pages");
+                                }
+                                const { outputPath, errors: writeErrors } = await index.writeFiles({
+                                    outputPath: searchOutputDir,
+                                });
+                                if (writeErrors.length) throw new Error(writeErrors.join("; "));
+                                return { page_count, outputPath };
+                            })(),
+                            writeCjkSearchIndex(outDir, pageEntries, searchBase),
+                        ]);
+                        if (pagefind.status === "rejected") throw pagefind.reason;
+                        if (cjk.status === "rejected") throw cjk.reason;
+                        logger.info(`CJK substring index: ${cjk.value} pages`);
 
-                        const { outputPath, errors: writeErrors } = await index.writeFiles({
-                            outputPath: path.join(outDir, "pagefind"),
-                        });
-
-                        if (writeErrors.length) throw new Error(writeErrors.join("; "));
-                        const cjkPages = await writeCjkSearchIndex(outDir, pageEntries, searchBase);
-                        logger.info(`CJK substring index: ${cjkPages} pages`);
-
+                        const { page_count, outputPath } = pagefind.value;
                         logger.info(
                             `indexed ${page_count} pages → ${outputPath} (${(performance.now() - pagefindStarted).toFixed(1)}ms)`,
                         );
+                        await cache?.save().catch((error) => {
+                            logger.debug(`search cache write skipped: ${describeError(error)}`);
+                        });
                     } catch (error) {
                         logger.error(`Pagefind indexing failed: ${describeError(error)}`);
                         throw error;

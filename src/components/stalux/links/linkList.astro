@@ -3,17 +3,18 @@ import "../../../styles/generated-links.css";
 import { getCollection } from "astro:content";
 import LinkCard from "@components/stalux/links/linkCard.astro";
 
-import { getLinksData } from "@utils/config-utils";
+import { getLinksData, getSiteData } from "@utils/config-utils";
 
 const configEntries = await getCollection("config");
 const linksConfig = getLinksData(configEntries);
 const links = linksConfig?.sites ?? [];
+const lang = getSiteData(configEntries).lang || "zh-CN";
 ---
 
 <ul class="stalux-links" data-stalux-motion-content data-stalux-motion-stage data-stalux-reveal>
     {links.map((link) => (
         <li class="stalux-link-list-item" data-stalux-reveal-item>
-            <LinkCard link={link} />
+            <LinkCard link={link} lang={lang} />
         </li>
     ))}
 </ul>

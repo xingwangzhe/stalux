@@ -32,10 +32,32 @@ it("does not measure skipped code and restores keyboard access when it is render
     const pre = new ElementMock();
     const code = new ElementMock();
     code.parentElement = pre;
+    let notifyIntersection: (isIntersecting: boolean) => void = () => {};
+    const disconnect = vi.fn();
+    const unobserve = vi.fn();
+    vi.stubGlobal(
+        "IntersectionObserver",
+        class {
+            constructor(callback: IntersectionObserverCallback) {
+                notifyIntersection = (isIntersecting) =>
+                    callback(
+                        [
+                            { isIntersecting, target: code },
+                        ] as unknown as IntersectionObserverEntry[],
+                        this as unknown as IntersectionObserver,
+                    );
+            }
+            observe() {}
+            unobserve = unobserve;
+            disconnect = disconnect;
+        },
+    );
     const target = Object.assign(new EventTarget(), { querySelectorAll: () => [code] });
     const dispose = mountCodeAccessibility(target as unknown as Document);
     expect(pre.widthReads).toBe(0);
     code.rendered = true;
+    notifyIntersection(false);
+    expect(pre.widthReads).toBe(0);
     const reveal = () => {
         const event = Object.assign(new Event("contentvisibilityautostatechange"), {
             skipped: false,
@@ -43,9 +65,10 @@ it("does not measure skipped code and restores keyboard access when it is render
         Object.defineProperty(event, "target", { value: code });
         target.dispatchEvent(event);
     };
-    reveal();
+    notifyIntersection(true);
     expect(pre.attrs.get("tabindex")).toBe("0");
     expect(pre.attrs.get("role")).toBe("region");
+    expect(unobserve).toHaveBeenCalledWith(code);
     pre.attrs.set("tabindex", "-1");
     pre.attrs.set("role", "note");
     reveal();
@@ -53,6 +76,7 @@ it("does not measure skipped code and restores keyboard access when it is render
     expect(pre.attrs.get("role")).toBe("note");
     pre.attrs.clear();
     dispose?.();
+    expect(disconnect).toHaveBeenCalledOnce();
     reveal();
     expect(pre.attrs.size).toBe(0);
 });

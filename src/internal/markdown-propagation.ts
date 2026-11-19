@@ -8,15 +8,15 @@ import type { Plugin } from "vite";
  *
  * Only skip this internal forwarding module, never the real content module,
  * direct imports, Markdown pages, or MDX (which owns a different pipeline).
- * The internal transform has been verified on 7.4.0 only. Future Astro versions
- * use the ordinary pipeline until their propagation contract is rechecked.
+ * The internal transform has been checked on Astro 7.4.0 and 7.4.13.
+ * Other versions use the ordinary pipeline until their contract is checked.
  */
 export function markdownPropagationPlugin(): Plugin {
+    const supported = ["7.4.0", "7.4.13"].includes(astroPackage.version);
     return {
         name: "stalux:markdown-propagation",
         enforce: "pre",
-        apply: (_, environment) =>
-            environment.command === "build" && astroPackage.version === "7.4.0",
+        apply: (_, environment) => environment.command === "build" && supported,
         load: {
             order: "pre",
             filter: { id: /\.(?:md|markdown)\?astroPropagatedAssets$/u },

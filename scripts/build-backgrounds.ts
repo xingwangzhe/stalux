@@ -18,7 +18,7 @@ for (const name of [
         // density rather than enlarging a tiny bitmap on high-DPI phones.
         .resize({ height: Math.max(metadata.height ?? 2436, 2436) })
         .flatten({ background: "#202020" })
-        .webp({ quality: 80, effort: 6 })
+        .webp({ quality: 72, effort: 6 })
         .toFile(path.join(outputDir, name.replace(/\.svg$/u, ".dark.webp")));
     count++;
 }

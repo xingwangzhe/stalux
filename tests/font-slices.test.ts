@@ -19,12 +19,31 @@ import {
     RESERVED_GLYPHS,
     readLinkedStylesheetText,
     removePageFontStyles,
+    scanSharedFontGlyphs,
     writePageFontSubset,
     writePageFontSubsetAsync,
     writePageFontSubsetIntoDocumentAsync,
 } from "../src/internal/font-slices";
 
 describe("page-specific font subsets", () => {
+    it("rescans changed pages and recovers from a damaged shared-glyph cache", async () => {
+        const root = mkdtempSync(join(tmpdir(), "stalux-shared-glyphs-"));
+        try {
+            const cache = join(root, "glyphs.json");
+            const page = join(root, "index.html");
+            const scan = () => scanSharedFontGlyphs(["index.html"], root, cache, []);
+            writeFileSync(page, '<header data-stalux-font-group="header">甲</header>');
+            expect((await scan()).header).toEqual(new Set(["甲"]));
+            expect((await scan()).header).toEqual(new Set(["甲"]));
+            writeFileSync(page, '<header data-stalux-font-group="header">乙</header>');
+            expect((await scan()).header).toEqual(new Set(["乙"]));
+            writeFileSync(cache, "{");
+            expect((await scan()).header).toEqual(new Set(["乙"]));
+        } finally {
+            rmSync(root, { recursive: true, force: true });
+        }
+    });
+
     it("mutates only real AST styles and emits no intermediate HTML", async () => {
         const root = mkdtempSync(join(tmpdir(), "stalux-ast-font-"));
         try {

@@ -31,6 +31,13 @@ export function expressiveCode(options: ExpressiveCodeOptions = {}) {
         useDarkModeMediaQuery: false,
         themeCssSelector: false,
         ...options,
+        styleOverrides: {
+            ...options.styleOverrides,
+            lineNumbers: {
+                foreground: ({ resolveSetting }) => resolveSetting("codeForeground"),
+                ...options.styleOverrides?.lineNumbers,
+            },
+        },
         plugins,
     });
 }

@@ -17,6 +17,16 @@ function addStyle(document: DefaultTreeAdapterMap["document"]) {
 }
 
 describe("AST mutation output", () => {
+    it("inserts the priority cover preload after the charset and before styles", () => {
+        const source =
+            '<html><head><meta charset="utf-8"><style>body{}</style></head><body></body></html>';
+        const document = parse(source, { sourceCodeLocationInfo: true });
+        const emit = createHtmlMutationEmitter(source, document);
+        expect(emit("/cover.webp?a=1&b=2")).toContain(
+            '<meta charset="utf-8"><link rel="preload" as="image" fetchpriority="high" href="/cover.webp?a=1&amp;b=2"><style>',
+        );
+    });
+
     it("preserves untouched source and emits changed attributes/styles once", () => {
         const untouched =
             "<DIV data-code='&lt;style data-stalux-page-font&gt;示例&lt;/style&gt;'>中文 &copy;</DIV><script>const s = \"<style data-stalux-page-font>keep</style>\";</script>";

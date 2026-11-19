@@ -150,10 +150,19 @@ async function setup(mobile = false) {
     vi.stubGlobal(
         "ResizeObserver",
         class {
-            constructor(callback: () => void) {
-                notifyResize = callback;
+            constructor(
+                callback: (
+                    entries: { target: Element; borderBoxSize: { blockSize: number }[] }[],
+                ) => void,
+            ) {
+                notifyResize = () =>
+                    callback([
+                        { target: header, borderBoxSize: [{ blockSize: header.geometry.height }] },
+                    ]);
             }
-            observe() {}
+            observe(target: Element) {
+                if (target === header) notifyResize();
+            }
             disconnect = disconnect;
         },
     );
@@ -265,6 +274,7 @@ describe("navigation layout scheduling", () => {
         page.header.geometry.height = 80;
         page.list.geometry.clientWidth = 400;
         page.window.dispatchEvent(new Event("resize"));
+        page.notifyResize();
         page.flush();
         expectReadsBeforeWrites(page.operations);
         expect(page.rootStyle.getPropertyValue("--stalux-site-header-height")).toBe("80px");
@@ -284,9 +294,13 @@ describe("navigation layout scheduling", () => {
     it("keeps mobile menu, links, horizontal scroll controls and lazy search working", async () => {
         const page = await setup(true);
         page.flush();
+        expect(page.operations.filter((operation) => operation.startsWith("read:list:"))).toEqual(
+            [],
+        );
+        expect(page.operations).not.toContain("read:header:height");
         page.toggle.dispatchEvent(new Event("click"));
         expect(page.list.hasAttribute("data-state")).toBe(true);
-        expect(page.body.style.overflow).toBe("hidden");
+        expect(page.toggle.attrs.get("aria-expanded")).toBe("true");
         page.window.dispatchEvent(new Event("resize"));
         page.flush();
         expect(page.list.hasAttribute("data-state")).toBe(true);
@@ -294,7 +308,7 @@ describe("navigation layout scheduling", () => {
         expect(page.list.hasAttribute("data-state")).toBe(false);
         page.toggle.dispatchEvent(new Event("click"));
         page.link.dispatchEvent(new Event("click"));
-        expect(page.body.style.overflow).toBe("");
+        expect(page.toggle.attrs.get("aria-expanded")).toBe("false");
         page.left.dispatchEvent(new Event("click"));
         page.right.dispatchEvent(new Event("click"));
         expect(page.list.scrollBy.mock.calls).toEqual([
@@ -306,7 +320,7 @@ describe("navigation layout scheduling", () => {
         page.search.dispatchEvent(click);
         await vi.dynamicImportSettled();
         expect(click.defaultPrevented).toBe(true);
-        expect(page.body.style.overflow).toBe("");
+        expect(page.toggle.attrs.get("aria-expanded")).toBe("false");
         expect(state.searchStyles).toHaveBeenCalledOnce();
         expect(state.openSearch).toHaveBeenCalledOnce();
         page.dispose?.();

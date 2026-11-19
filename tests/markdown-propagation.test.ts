@@ -11,6 +11,9 @@ describe("Markdown propagation compatibility gate", () => {
         ["7.4.0", "serve", false],
         ["7.3.8", "build", false],
         ["7.4.1", "build", false],
+        ["7.4.13", "build", true],
+        ["7.4.13", "serve", false],
+        ["7.4.14", "build", false],
         ["7.5.0", "build", false],
         ["8.0.0", "build", false],
     ] as const)(

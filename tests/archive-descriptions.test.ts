@@ -100,6 +100,7 @@ describe("archive description preview", () => {
 
     it("shows pure text for hover and focus, restoring previous accessibility descriptions", () => {
         const { tooltip, link, other, emit } = setup();
+        const measure = vi.spyOn(link, "getBoundingClientRect");
         link.setAttribute("aria-describedby", "existing");
         const dispose = mountArchiveDescriptions();
         emit("pointerover");
@@ -109,6 +110,7 @@ describe("archive description preview", () => {
         expect(link.getAttribute("aria-describedby")).toBe("existing archive-tooltip");
         emit("pointerover");
         expect(link.getAttribute("aria-describedby")).toBe("existing archive-tooltip");
+        expect(measure).toHaveBeenCalledTimes(1);
         emit("focusin", other);
         expect(link.getAttribute("aria-describedby")).toBe("existing");
         expect(tooltip.textContent).toBe("Another description");

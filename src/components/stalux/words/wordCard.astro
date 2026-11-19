@@ -37,7 +37,7 @@ const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
                     href={`#word-${abbrlink}`}
                     class="stalux-word-permalink a-none"
                     data-word-hash={`#word-${abbrlink}`}
-                    aria-label={`Jump to ${abbrlink}`}
+                    aria-label={`${date || "#"} · ${abbrlink}`}
                 >
                     {date ? <time datetime={machineDate}>{date}</time> : "#"}
                 </a>

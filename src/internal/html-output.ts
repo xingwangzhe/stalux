@@ -1,4 +1,10 @@
-import { type DefaultTreeAdapterMap, serialize, serializeOuter } from "parse5";
+import {
+    type DefaultTreeAdapterMap,
+    defaultTreeAdapter,
+    html,
+    serialize,
+    serializeOuter,
+} from "parse5";
 import { normalizeRouteHref } from "./route-hrefs";
 
 type Element = DefaultTreeAdapterMap["element"];
@@ -53,9 +59,46 @@ export function createHtmlMutationEmitter(
     }
     visit(document);
 
-    return () => {
+    return (priorityCover?: string) => {
         const edits: Array<{ start: number; end: number; value: string }> = [];
+        if (head && priorityCover) {
+            const preload = defaultTreeAdapter.createElement("link", html.NS.HTML, [
+                { name: "rel", value: "preload" },
+                { name: "as", value: "image" },
+                { name: "fetchpriority", value: "high" },
+                { name: "href", value: priorityCover },
+            ]);
+            const charset = head.childNodes.find(
+                (node) =>
+                    "tagName" in node &&
+                    node.tagName === "meta" &&
+                    node.attrs.some(({ name }) => name === "charset"),
+            );
+            const position =
+                charset?.sourceCodeLocation?.endOffset ??
+                head.sourceCodeLocation?.startTag?.endOffset;
+            if (position !== undefined) {
+                edits.push({ start: position, end: position, value: serializeOuter(preload) });
+            }
+        }
         for (const { node, start, end } of hrefSnapshots) {
+            const tag = node.sourceCodeLocation?.startTag;
+            if (tag) {
+                const dimensions = node.attrs.filter(
+                    ({ name, value }) =>
+                        /^data-pswp-(?:width|height)$/u.test(name) &&
+                        /^\d+$/u.test(value) &&
+                        !node.sourceCodeLocation?.attrs?.[name],
+                );
+                if (dimensions.length > 0) {
+                    const position = tag.endOffset - 1;
+                    edits.push({
+                        start: position,
+                        end: position,
+                        value: dimensions.map(({ name, value }) => ` ${name}="${value}"`).join(""),
+                    });
+                }
+            }
             const current = node.attrs.find((attribute) => attribute.name === "href")?.value;
             if (current === undefined) continue;
             const raw = source.slice(start, end);

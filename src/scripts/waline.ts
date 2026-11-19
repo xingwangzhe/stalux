@@ -71,7 +71,8 @@ registerPageLifecycle("waline", () => {
             (entries) => {
                 if (entries.some((entry) => entry.isIntersecting)) load();
             },
-            { rootMargin: `${Math.min(400, Math.round(window.innerHeight * 0.5))}px 0px` },
+            // Reading innerHeight during page mount can flush layout for the entire article.
+            { rootMargin: "400px 0px" },
         );
         observer.observe(container);
     } else {

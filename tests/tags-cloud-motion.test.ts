@@ -4,8 +4,8 @@ vi.mock("../src/scripts/page-runtime", () => ({ registerPageLifecycle: vi.fn() }
 const state = vi.hoisted(() => ({ create: vi.fn(), destroy: vi.fn() }));
 vi.mock("@xingwangzhe/tags-cloud", () => ({
     TagCloud: class {
-        constructor() {
-            state.create();
+        constructor(_container: unknown, options: unknown) {
+            state.create(options);
         }
         destroy = state.destroy;
     },
@@ -29,12 +29,17 @@ beforeEach(() => {
         "document",
         Object.assign(new EventTarget(), {
             hidden: false,
-            getElementById: () => ({
-                clientWidth: 900,
-                dataset: {
-                    tags: JSON.stringify([{ type: "link", text: "test", url: "/tags/test/" }]),
-                },
-            }),
+            getElementById: (id: string) =>
+                id === "tags-canvas"
+                    ? { clientWidth: 900 }
+                    : {
+                          querySelectorAll: () => [
+                              {
+                                  getAttribute: () => "/tags/test/",
+                                  firstElementChild: { textContent: "test" },
+                              },
+                          ],
+                      },
         }),
     );
     vi.stubGlobal(
@@ -67,6 +72,11 @@ it("destroys a live cloud when reduced motion becomes active", async () => {
     const cleanup = mountTagsCloud();
     await visible();
     expect(state.create).toHaveBeenCalledOnce();
+    expect(state.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+            tags: [expect.objectContaining({ type: "link", text: "test", url: "/tags/test/" })],
+        }),
+    );
     reduced.matches = true;
     reduced.dispatchEvent(new Event("change"));
     expect(state.destroy).toHaveBeenCalledOnce();

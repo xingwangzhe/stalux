@@ -17,11 +17,11 @@ interface LinkItem {
 
 interface Props {
     link: LinkItem;
+    lang?: string | undefined;
 }
 
-const configEntries = await getCollection("config");
-const siteConfig = getSiteData(configEntries);
-const { t } = createTranslator(siteConfig.lang || "zh-CN");
+const lang = Astro.props.lang ?? getSiteData(await getCollection("config")).lang;
+const { t } = createTranslator(lang || "zh-CN");
 const link = Astro.props.link;
 const href = link.url ?? link.link ?? "#";
 const title = link.title ?? link.name ?? t("links.defaultTitle");

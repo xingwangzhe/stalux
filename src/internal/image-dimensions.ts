@@ -74,6 +74,7 @@ async function resolveImageUpdates(
         cache?: Map<string, Promise<ImageDimensions | undefined>>;
         loadingPolicy?: boolean;
         dependencies?: Set<string>;
+        galleryDimensions?: boolean;
     } = {},
 ): Promise<Map<HtmlImage, Record<string, string>>> {
     const dimensionsCache =
@@ -84,7 +85,26 @@ async function resolveImageUpdates(
     for (const image of images) {
         const updates: Record<string, string> = { ...loading.get(image) };
         const src = image.attributes.get("src");
-        if (src && !(image.attributes.has("width") && image.attributes.has("height"))) {
+        const anchor = image.node.parentNode;
+        const gallery =
+            options.galleryDimensions &&
+            anchor &&
+            "tagName" in anchor &&
+            anchor.tagName === "a" &&
+            anchor.attrs.some(
+                ({ name, value }) =>
+                    name === "class" && value.split(/\s+/u).includes("pswp-gallery-item"),
+            ) &&
+            !anchor.attrs.some(({ name }) =>
+                /^data-pswp-(?:width|height|src|srcset)$/u.test(name),
+            ) &&
+            anchor.attrs.some(({ name, value }) => name === "href" && value === src)
+                ? anchor
+                : undefined;
+        if (
+            src &&
+            (gallery || !(image.attributes.has("width") && image.attributes.has("height")))
+        ) {
             let filePath: string | undefined;
             try {
                 const url = new URL(src, "https://stalux.invalid");
@@ -107,6 +127,10 @@ async function resolveImageUpdates(
                 if (size && size.width > 0 && size.height > 0) {
                     if (!image.attributes.has("width")) updates.width = String(size.width);
                     if (!image.attributes.has("height")) updates.height = String(size.height);
+                    gallery?.attrs.push(
+                        { name: "data-pswp-width", value: String(size.width) },
+                        { name: "data-pswp-height", value: String(size.height) },
+                    );
                 }
             }
         }
@@ -121,7 +145,10 @@ export async function updateLocalImageDimensions(
     outputDir: string,
     options: Parameters<typeof resolveImageUpdates>[2] = {},
 ): Promise<void> {
-    const changes = await resolveImageUpdates(images, outputDir, options);
+    const changes = await resolveImageUpdates(images, outputDir, {
+        ...options,
+        galleryDimensions: true,
+    });
     for (const [image, updates] of changes) {
         for (const [name, value] of Object.entries(updates)) {
             const attribute = image.node.attrs.find((attribute) => attribute.name === name);

@@ -1,6 +1,7 @@
 import type { StyleSpec } from "../rule-utils.ts";
 
 export const articleStyles: StyleSpec[] = [
+    ["[data-stalux-post-byline]", "", { "margin-block-start": "-3em" }],
     [".stalux-sidebar .stalux-author-figure", "m-0", {}],
     [".stalux-sidebar .stalux-author-figure figcaption", "text-[1.75rem]", {}],
     [
@@ -139,7 +140,7 @@ export const articleStyles: StyleSpec[] = [
     ],
     [
         ".stalux-pagination-link.stalux-pagination-disabled",
-        "pointer-events-none opacity-[0.5]",
+        "pointer-events-none",
         { cursor: "not-allowed", background: "var(--black-15p)" },
     ],
     [".stalux-pagination-link.stalux-pagination-prev-post", "text-left ml-xs", {}],

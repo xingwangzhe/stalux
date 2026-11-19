@@ -17,6 +17,7 @@ import { styleNames } from "./style-names.generated.ts";
  *     shared-header/footer-*.woff2 — persistent shell glyph subsets
  */
 
+import { rename, unlink } from "node:fs/promises";
 import { dirname, join, resolve, sep } from "node:path";
 import { FontSubsetter } from "@xingwangzhe/cjk-font-split-native";
 import type { AstroIntegrationLogger } from "astro";
@@ -27,6 +28,7 @@ import {
     parse,
     serialize,
 } from "parse5";
+import { forEachBounded } from "./bounded-tasks";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -248,11 +250,14 @@ function isHiddenElement(attrs: Array<{ name: string; value: string }>): boolean
         if (attr.name === "class") className = attr.value;
         if (attr.name === "style") style = attr.value;
     }
-    const classes = className.split(/\s+/u);
-    if (classes.some((name) => VISUALLY_HIDDEN_CLASSES.has(name))) return true;
+    if (className && className.split(/\s+/u).some((name) => VISUALLY_HIDDEN_CLASSES.has(name)))
+        return true;
 
-    return /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*hidden|content-visibility\s*:\s*hidden)\s*(?:;|$)/iu.test(
-        style,
+    return (
+        style !== "" &&
+        /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*hidden|content-visibility\s*:\s*hidden)\s*(?:;|$)/iu.test(
+            style,
+        )
     );
 }
 
@@ -269,15 +274,19 @@ function collectBodyText(node: HtmlNode, output: Set<string>, skipSharedComponen
         return;
     }
 
-    if (!("childNodes" in node)) return;
+    if (!("childNodes" in node) || node.childNodes.length === 0) return;
     if ("tagName" in node) {
-        const sharedGroup = node.attrs.find(
-            (attribute) => attribute.name === "data-stalux-font-group",
-        )?.value;
-        if (skipSharedComponents && (sharedGroup === "header" || sharedGroup === "footer")) {
+        if (NON_RENDERED_ELEMENTS.has(node.tagName)) return;
+        if (
+            skipSharedComponents &&
+            node.attrs.some(
+                ({ name, value }) =>
+                    name === "data-stalux-font-group" && (value === "header" || value === "footer"),
+            )
+        ) {
             return;
         }
-        if (NON_RENDERED_ELEMENTS.has(node.tagName) || isHiddenElement(node.attrs)) return;
+        if (node.attrs.length > 0 && isHiddenElement(node.attrs)) return;
     }
 
     for (const child of node.childNodes) collectBodyText(child, output, skipSharedComponents);
@@ -307,6 +316,66 @@ export function collectSharedFontGlyphs(
         if ("childNodes" in node) for (const child of node.childNodes) visit(child);
     }
     visit(document);
+}
+
+/** Cache glyph extraction independently of the processed HTML and asset caches. */
+export async function scanSharedFontGlyphs(
+    entries: readonly string[],
+    outputDir: string,
+    cacheFile: string,
+    cacheDependencies: readonly string[],
+): Promise<SharedFontGlyphs> {
+    const digest = (value: string) => new Bun.CryptoHasher("sha256").update(value).digest("hex");
+    const dependencySources = await Promise.all(
+        cacheDependencies.map((file) => Bun.file(file).text()),
+    );
+    const version = digest(JSON.stringify(dependencySources));
+    type Entry = [hash: string, header: string, footer: string];
+    let previous: Record<string, Entry> = {};
+    let previousChecksum: string | undefined;
+    try {
+        const cached = await Bun.file(cacheFile).json();
+        if (
+            cached.version === version &&
+            cached.digest === digest(JSON.stringify(cached.entries))
+        ) {
+            previous = cached.entries;
+            previousChecksum = cached.digest;
+        }
+    } catch {
+        // Missing or corrupt caches are rebuilt from emitted HTML.
+    }
+    const next: Record<string, Entry> = Object.create(null);
+    const shared = createSharedFontGlyphs();
+    await forEachBounded(entries, 4, async (entry) => {
+        const html = await Bun.file(join(outputDir, entry)).text();
+        const hash = digest(html);
+        let record = previous[entry];
+        if (record?.[0] !== hash) {
+            const glyphs = createSharedFontGlyphs();
+            collectSharedFontGlyphs(parse(html), glyphs);
+            record = [hash, [...glyphs.header].join(""), [...glyphs.footer].join("")];
+        }
+        next[entry] = record;
+        const [, header, footer] = record;
+        for (const glyph of header) shared.header.add(glyph);
+        for (const glyph of footer) shared.footer.add(glyph);
+    });
+    const ordered = Object.fromEntries(entries.map((entry) => [entry, next[entry]]));
+    const checksum = digest(JSON.stringify(ordered));
+    if (checksum !== previousChecksum) {
+        const temporary = `${cacheFile}.${crypto.randomUUID()}.tmp`;
+        try {
+            await Bun.write(
+                temporary,
+                JSON.stringify({ version, digest: checksum, entries: ordered }),
+            );
+            await rename(temporary, cacheFile);
+        } catch {
+            await unlink(temporary).catch(() => {});
+        }
+    }
+    return shared;
 }
 
 function sortGlyphs(glyphs: Iterable<string>): string[] {
@@ -378,7 +447,7 @@ export function writePageFontSubset(
     const result = renderPageFont(
         document,
         publicUrlPrefix,
-        input.chars,
+        input,
         input.prepared.subset(input.chars.join(""), cacheDir),
         [],
     );
@@ -398,7 +467,7 @@ export async function writePageFontSubsetAsync(
     if (!input) return undefined;
     const result = await input.prepared.subsetAsync(input.chars.join(""), cacheDir);
     return {
-        ...renderPageFont(document, publicUrlPrefix, input.chars, result, []),
+        ...renderPageFont(document, publicUrlPrefix, input, result, []),
         glyphCount: input.chars.length,
         html: serialize(document),
     };
@@ -418,8 +487,8 @@ function preparePageFont(
     addGlyphs(RESERVED_GLYPHS, glyphs);
     addGlyphs(extraChars, glyphs);
     addGlyphs(linkedStylesheetText, glyphs);
-    for (const style of collectInlineStyles(document))
-        addGlyphs(cssGeneratedText(styleText(style)), glyphs);
+    const styles = collectInlineStyles(document).map((node) => ({ node, text: styleText(node) }));
+    for (const { text } of styles) addGlyphs(cssGeneratedText(text), glyphs);
     collectBodyText(body, glyphs, true);
     for (const char of excludedChars) glyphs.delete(char);
     // Keep runtime digits available even when the shell subset does not contain them.
@@ -434,31 +503,29 @@ function preparePageFont(
         prepared = new FontSubsetter(fontBuffer);
         preparedFonts.set(fontBuffer, prepared);
     }
-    return { chars, prepared };
+    return { chars, prepared, styles };
 }
 
 function renderPageFont(
     document: DefaultTreeAdapterMap["document"],
     publicUrlPrefix: string,
-    chars: string[],
+    { chars, styles }: NonNullable<ReturnType<typeof preparePageFont>>,
     result: { hash: string; path: string; cacheHit: boolean },
     sharedFonts: readonly SharedFontSubset[],
+    prioritizeCover = false,
 ): Omit<PageFontSubset, "html"> {
     const filename = `page-${result.hash}.woff2`;
 
     const rel = `${publicUrlPrefix}${filename}`;
     // Keep Astro's broad unicode-range font out of the fallback stack; otherwise
     // a character outside this page's subset would download multiple 300 KB slices.
-    const styles = collectInlineStyles(document);
     const originalFontStack = styles
-        .map(styleText)
-        .map((css) => css.match(/--font-body:\s*([^;}]+)/u)?.[1]?.trim())
+        .map(({ text }) => text.match(/--font-body:\s*([^;}]+)/u)?.[1]?.trim())
         .find(Boolean);
     const fallbackStack =
         originalFontStack || '"Noto Sans SC","Noto Sans CJK SC",system-ui,sans-serif';
     const originalCodeStack = styles
-        .map(styleText)
-        .map((css) => css.match(/--font-code:\s*([^;}]+)/u)?.[1]?.trim())
+        .map(({ text }) => text.match(/--font-code:\s*([^;}]+)/u)?.[1]?.trim())
         .find(Boolean);
     const sharedStack = sharedFonts.map(({ family }) => `"${family}"`).join(",");
     const pageFontStack = [sharedStack, '"LXGW WenKai-Page Subset"', fallbackStack]
@@ -474,7 +541,7 @@ function renderPageFont(
         )
         .join("");
     const css = `${sharedFaces}@font-face{font-family:"LXGW WenKai-Page Subset";src:url("${rel}") format("woff2");font-style:normal;font-weight:100 900;font-display:swap;unicode-range:${formatUnicodeRange(chars)}}:root{--font-body:${pageFontStack};--font-code:${codeStack}}body{font-family:var(--font-body),${fallbackStack}}`;
-    for (const style of styles) {
+    for (const { node: style } of styles) {
         for (const node of style.childNodes) {
             if (node.nodeName !== "#text" || !("value" in node)) continue;
             node.value = node.value.replace(
@@ -507,6 +574,9 @@ function renderPageFont(
             { name: "href", value: rel },
             { name: "data-stalux-page-font-preload", value: "" },
         ]);
+        if (prioritizeCover) {
+            preload.attrs.push({ name: "fetchpriority", value: "low" });
+        }
         for (const sharedFont of sharedFonts) {
             if (sharedFont.group !== "header") continue;
             const sharedPreload = defaultTreeAdapter.createElement("link", htmlNamespaces.NS.HTML, [
@@ -582,12 +652,20 @@ export async function writePageFontSubsetIntoDocumentAsync(
     publicUrlPrefix = "/_astro/fonts/",
     linkedStylesheetText = "",
     sharedFonts: readonly SharedFontSubset[] = [],
+    prioritizeCover = false,
 ): Promise<Omit<PageFontSubset, "html"> | undefined> {
     const sharedChars = new Set(sharedFonts.flatMap(({ chars }) => chars));
     const input = preparePageFont(fontBuffer, linkedStylesheetText, "", document, sharedChars);
     if (!input) return undefined;
     const result = await input.prepared.subsetAsync(input.chars.join(""), cacheDir);
-    const rendered = renderPageFont(document, publicUrlPrefix, input.chars, result, sharedFonts);
+    const rendered = renderPageFont(
+        document,
+        publicUrlPrefix,
+        input,
+        result,
+        sharedFonts,
+        prioritizeCover,
+    );
     return {
         filename: rendered.filename,
         sourcePath: rendered.sourcePath,

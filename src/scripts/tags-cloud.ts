@@ -5,34 +5,22 @@ import { registerPageLifecycle } from "./page-runtime";
 
 const logger = createClientLogger("tags-cloud");
 
-interface LinkTag {
-    type: "link";
-    text: string;
-    url: string;
-}
-
-function parseTags(value: string | undefined): LinkTag[] {
-    try {
-        const parsed: unknown = JSON.parse(value ?? "[]");
-        if (!Array.isArray(parsed)) {
-            logger.warn("tag data is not an array; using empty list");
-            return [];
-        }
-        return parsed.filter(
-            (tag): tag is LinkTag =>
-                typeof tag === "object" &&
-                tag !== null &&
-                "type" in tag &&
-                tag.type === "link" &&
-                "text" in tag &&
-                typeof tag.text === "string" &&
-                "url" in tag &&
-                typeof tag.url === "string",
-        );
-    } catch {
-        logger.warn("tag data decoding failed; using empty list");
-        return [];
+function readTagLinks(cards: HTMLElement | null) {
+    const tags = [];
+    for (const link of cards?.querySelectorAll<HTMLAnchorElement>("[data-stalux-tag-card]") ?? []) {
+        const url = link.getAttribute("href");
+        const text = link.firstElementChild?.textContent?.trim();
+        if (!(url && text)) continue;
+        tags.push({
+            type: "link" as const,
+            text,
+            url,
+            onClick: () => {
+                void navigate(url);
+            },
+        });
     }
+    return tags;
 }
 
 export function mountTagsCloud(): (() => void) | undefined {
@@ -42,6 +30,7 @@ export function mountTagsCloud(): (() => void) | undefined {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const controller = new AbortController();
     let cloud: import("@xingwangzhe/tags-cloud").TagCloud | undefined;
+    let tags: ReturnType<typeof readTagLinks> | undefined;
     let visible = false;
     let loading = false;
     let disposed = false;
@@ -59,12 +48,7 @@ export function mountTagsCloud(): (() => void) | undefined {
         try {
             const { TagCloud } = await import("@xingwangzhe/tags-cloud");
             if (!active()) return;
-            const tags = parseTags(container.dataset.tags).map((tag) => ({
-                ...tag,
-                onClick: () => {
-                    void navigate(tag.url);
-                },
-            }));
+            tags ??= readTagLinks(document.getElementById("tags-cards"));
             if (!tags.length) return;
             const width = container.clientWidth;
             const baseRadius =

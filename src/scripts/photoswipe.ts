@@ -14,6 +14,7 @@ async function enrichPhotoSwipeData(container: Element, signal: AbortSignal): Pr
     const links = container.querySelectorAll<HTMLAnchorElement>(GALLERY_SELECTOR);
     for (const link of links) {
         if (signal.aborted) return;
+        if (Number(link.dataset.pswpWidth) > 0 && Number(link.dataset.pswpHeight) > 0) continue;
         const image = link.querySelector<HTMLImageElement>("img");
         if (!image) continue;
 

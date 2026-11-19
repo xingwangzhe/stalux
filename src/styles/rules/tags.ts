@@ -2,6 +2,12 @@ import type { StyleSpec } from "../rule-utils.ts";
 
 export const tagsStyles: StyleSpec[] = [
     [
+        ".stalux-cloud-tag-card",
+        "box-border min-h-[44px] min-w-[44px]",
+        {},
+        "@media (pointer: coarse)",
+    ],
+    [
         ".stalux-cloud-tag-card:focus-visible",
         "",
         {
@@ -9,12 +15,6 @@ export const tagsStyles: StyleSpec[] = [
             "border-color": "var(--accent-50p)",
             "box-shadow": "var(--card-box-shadow-hover)",
         },
-    ],
-    [
-        ".stalux-cloud-tag-group",
-        "",
-        { "contain-intrinsic-block-size": "auto" },
-        "@supports not (content-visibility: auto)",
     ],
     [".stalux-cloud-cards", "hidden", {}, "@media (min-width: 769px)"],
     [

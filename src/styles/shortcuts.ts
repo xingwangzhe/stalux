@@ -87,7 +87,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-card-post-description": "m-0 text-ink-70 leading-[1.6] [overflow-wrap:anywhere]",
         "stalux-post-card":
             "box-border cursor-pointer h-full bg-[var(--card-bg)] rounded-stalux-lg shadow-stalux p-lg [transition:transform_220ms_cubic-bezier(0.22,_0.72,_0.22,_1)] gap-lg",
-        "stalux-card-post-cover": "overflow-hidden shrink-0 h-[180px] rounded-stalux-md mb-2",
+        "stalux-card-post-cover": "block overflow-hidden shrink-0 h-[180px] rounded-stalux-md mb-2",
         "stalux-card-post-meta": "m-0 [gap:0.6rem]",
         "stalux-card-time": "m-0 inline-flex [gap:0.45rem]",
         "stalux-card-post-tags": "[gap:0.4rem]",
@@ -201,8 +201,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
     },
     tags: {
         "stalux-cloud-cards": "block box-border p-4",
-        "stalux-cloud-tag-group":
-            "flex flex-wrap justify-center items-start gap-3 mb-3 [content-visibility:auto] [contain-intrinsic-block-size:auto_24rem] [overflow-clip-margin:30px]",
+        "stalux-cloud-tag-group": "flex flex-wrap justify-center items-start gap-3 mb-3",
         "stalux-cloud-canvas-frame": "m-0 [container-type:inline-size]",
         "stalux-cloud-tag-card":
             "relative stalux-flex-row no-underline overflow-hidden p-[0.5rem_1rem] rounded-8 bg-ink-05 text-ink-full [border:1px_solid_var(--white-20p)] [transition:transform_var(--transition-slow),_border-color_var(--transition-slow)]",

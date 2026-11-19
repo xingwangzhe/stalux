@@ -38,6 +38,7 @@ afterEach(() => vi.unstubAllGlobals());
 describe("PhotoSwipe async lifecycle", () => {
     it("never mounts a late import into a disposed page and still opens on first click", async () => {
         class Anchor {
+            dataset: Record<string, string> = {};
             closest() {
                 return this;
             }

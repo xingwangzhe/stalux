@@ -6,7 +6,8 @@
     width: 100%;
 }
 
-[data-stalux-scroll-sentinel] {
+[data-stalux-scroll-sentinel],
+[data-stalux-nav-sentinel] {
     position: absolute;
     top: 240px;
     left: 0;
@@ -14,6 +15,10 @@
     height: 1px;
     visibility: hidden;
     pointer-events: none;
+}
+
+[data-stalux-nav-sentinel] {
+    top: 23px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -15,11 +15,6 @@ const tagGroups = Array.from({ length: Math.ceil(tagList.length / 32) }, (_, ind
     tagList.slice(index * 32, (index + 1) * 32),
 );
 const cloudDensity = Math.sqrt(Math.max(tagList.length, 100) / 100);
-const tagLinks = tagList.map((tag) => ({
-    type: "link" as const,
-    text: tag.name,
-    url: toRoutePath(`/tags/${tag.name}`),
-}));
 ---
 
 <!-- 移动端：SSR 卡片 -->
@@ -63,7 +58,7 @@ const tagLinks = tagList.map((tag) => ({
     style={{ "--cloud-density": cloudDensity }}
     data-stalux-motion-content
 >
-    <div class="stalux-cloud-canvas" id="tags-canvas" data-tags={JSON.stringify(tagLinks)}></div>
+    <div class="stalux-cloud-canvas" id="tags-canvas"></div>
 </figure>
 
 <script>

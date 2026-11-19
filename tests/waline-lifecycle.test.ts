@@ -29,7 +29,13 @@ async function setup() {
         querySelector: (s: string) => (s === "#waline-container" ? container : element),
     });
     const reload = vi.fn();
-    vi.stubGlobal("window", { IntersectionObserver: true, innerHeight: 800, location: { reload } });
+    vi.stubGlobal("window", {
+        IntersectionObserver: true,
+        get innerHeight() {
+            throw new Error("Comment registration must not force viewport layout");
+        },
+        location: { reload },
+    });
     vi.stubGlobal(
         "IntersectionObserver",
         class {

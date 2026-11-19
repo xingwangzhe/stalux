@@ -2,12 +2,39 @@ import { promises as fs } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { parse } from "parse5";
 import { describe, expect, it, vi } from "vitest";
 import { findHtmlImages } from "../src/internal/html-images";
-import { addLocalImageDimensions, readImageDimensions } from "../src/internal/image-dimensions";
+import { createHtmlMutationEmitter } from "../src/internal/html-output";
+import {
+    addLocalImageDimensions,
+    readImageDimensions,
+    updateLocalImageDimensions,
+} from "../src/internal/image-dimensions";
 import { applyHtmlImageLoadingPolicy } from "../src/plugins/feature-flags";
 
 describe("image dimensions", () => {
+    it("emits the original gallery size without changing authored thumbnail sizes", async () => {
+        const root = await mkdtemp(path.join(os.tmpdir(), "stalux-gallery-size-"));
+        try {
+            await writeFile(
+                path.join(root, "original.svg"),
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"/>',
+            );
+            const thumbnail = '<img src="/original.svg" width="320" height="180">';
+            const other = `<a href="/different.svg" class="pswp-gallery-item">${thumbnail}</a>`;
+            const html = `<a href='/original.svg' class="pswp-gallery-item">${thumbnail}</a>${other}`;
+            const document = parse(html, { sourceCodeLocationInfo: true });
+            const emit = createHtmlMutationEmitter(html, document);
+            await updateLocalImageDimensions(findHtmlImages(html, document), root);
+            expect(emit()).toBe(
+                `<a href='/original.svg' class="pswp-gallery-item" data-pswp-width="640" data-pswp-height="360">${thumbnail}</a>${other}`,
+            );
+        } finally {
+            await rm(root, { recursive: true, force: true });
+        }
+    });
+
     it("reads PNG, WebP and leading-SOF JPEG intrinsic sizes", () => {
         const png = Buffer.alloc(33);
         Buffer.from("89504e470d0a1a0a", "hex").copy(png);

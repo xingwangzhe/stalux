@@ -297,14 +297,54 @@
         color-scheme: only light;
     }
 
+    [data-stalux-bg-layer="a"] > .bg-a,
+    [data-stalux-bg-layer="b"] > .bg-b {
+        opacity: 1;
+    }
+
+    .bg-layer[data-stalux-bg-fit="contain"] {
+        background-size: contain;
+    }
+
+    @media (max-width: 600px) {
+        .bg-layer,
+        .bg-layer[data-stalux-bg-fit="contain"] {
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    }
+
+    body:has([data-ref="stalux-nav-list"][data-state="open"]) {
+        overflow: hidden;
+    }
+
+    .sr-only {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .stalux-about-content {
+        max-inline-size: 900px;
+        margin-block: 5rem 2rem;
+        margin-inline: auto;
+        padding-inline: 1rem;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .bg-layer {
             transition-duration: 0ms;
         }
     }
 
-    /* footer 基础样式，保证页脚始终可见且不覆盖内容 */
-    footer {
+    /* 站点页脚样式只作用于全站页脚组件。 */
+    footer:where([data-stalux-module="footer"]) {
         padding: var(--space-lg) var(--space-md);
         text-align: center;
         color: var(--muted-text);
