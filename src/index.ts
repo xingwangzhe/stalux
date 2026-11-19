@@ -130,6 +130,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     let coverCacheDir = "";
 
     let searchBase = "/";
+    let siteOrigin: string | undefined;
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
 
     const coreIntegration: AstroIntegration = {
@@ -393,6 +394,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             // Read final paths after every integration has finished updating configuration.
             // Public assets must exist before Astro creates its Vite server/build asset pipeline.
             "astro:config:done": async ({ config, logger }) => {
+                siteOrigin = config.site ? new URL(config.site).origin : undefined;
                 const srcDir = Bun.fileURLToPath(new URL(".", import.meta.url));
                 const publicDir = Bun.fileURLToPath(config.publicDir);
                 Object.assign(socialCardPaths, {
@@ -535,12 +537,12 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     let cachedFont: { filename: string; sourcePath: string } | undefined;
                     const dependencies = new Set<string>();
                     const document = parse(before, { sourceCodeLocationInfo: true });
-                    const emitHtml = createHtmlMutationEmitter(before, document);
+                    const emitHtml = createHtmlMutationEmitter(before, document, siteOrigin);
                     promoteCodeStyles(document);
                     containMermaidSvgs(document);
                     removePageFontStyles(document);
                     // 正文里手写的 /posts/x/ 也统一成路由器实际提供的形态
-                    normalizeRouteHrefs(document);
+                    normalizeRouteHrefs(document, siteOrigin);
                     const images = findHtmlImages(before, document);
                     await updateLocalImageDimensions(images, outDir, {
                         cache: dimensionsCache,
