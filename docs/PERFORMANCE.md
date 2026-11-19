@@ -42,7 +42,7 @@ TypeScript 使用 ESNext，主题默认将 `vite.build.target` 设为 `"esnext"`
 
 ## 背景资源
 
-内置 42 张背景默认使用预生成的深色底 WebP（quality 80），保持原分辨率，减少透明度边缘带来的首访流量。CSS 自定义底色时使用原透明 WebP，SVG 原图继续保留。
+内置 42 张背景默认使用预生成的深色底 WebP（quality 80），保持原分辨率，减少透明度边缘带来的首访流量。CSS 每个文档选一张图，软导航沿用原背景。可通过 `--stalux-bg-image` 指定透明 WebP 以搭配自定义底色。SVG 原图继续保留。
 
 修改原图后运行：
 

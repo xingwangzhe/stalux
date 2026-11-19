@@ -1,3 +1,9 @@
+@property --stalux-bg-choice {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
 @layer base {
     /* 全局设置 */
     html,
@@ -278,37 +284,86 @@
         }
     }
 
-    /* 持久背景层：完整文档首次解码后淡显，软导航保持原图。 */
+    /* Swup keeps this layer outside its replaceable container. */
     .bg-layer {
         position: fixed;
         inset: 0;
         z-index: -10;
         background-repeat: repeat;
-        background-size: auto;
+        background-size: contain;
         background-position: center;
         background-color: var(--stalux-bg-color, transparent);
         filter: var(--stalux-bg-filter, none);
         pointer-events: none;
-        opacity: 0;
-        transition: opacity 200ms ease-out;
-        /* 禁止浏览器强制色彩模式（高对比度/暗黑模式）调整背景图颜色 */
         forced-color-adjust: none;
-        /* 关键：防止 Safari/WebKit 在暗色模式下自动调整 SVG 背景图颜色 */
         color-scheme: only light;
+        background-image: var(--stalux-bg-image, url("/background/pattern-1.min.dark.webp"));
     }
 
-    [data-stalux-bg-layer="a"] > .bg-a,
-    [data-stalux-bg-layer="b"] > .bg-b {
-        opacity: 1;
+    /* biome-ignore lint/correctness/noUnknownFunction: Detect the CSS Values 5 random() function. */
+    @supports (order: random(--site-bg, 1, 42, 1)) and
+        (background-image: if(style(--stalux-bg-choice: 1): none; else: none)) {
+        .bg-layer {
+            /* biome-ignore lint/correctness/noUnknownFunction: The enclosing @supports tests this function. */
+            --stalux-bg-choice: random(--site-bg, 1, 42, 1);
+            background-image: var(
+                --stalux-bg-image,
+                if(
+                    style(--stalux-bg-choice: 2): url("/background/pattern-2.min.dark.webp");
+                    style(--stalux-bg-choice: 3): url("/background/pattern-3.min.dark.webp");
+                    style(--stalux-bg-choice: 4): url("/background/pattern-4.min.dark.webp");
+                    style(--stalux-bg-choice: 5): url("/background/pattern-5.min.dark.webp");
+                    style(--stalux-bg-choice: 6): url("/background/pattern-6.min.dark.webp");
+                    style(--stalux-bg-choice: 7): url("/background/pattern-7.min.dark.webp");
+                    style(--stalux-bg-choice: 8): url("/background/pattern-8.min.dark.webp");
+                    style(--stalux-bg-choice: 9): url("/background/pattern-9.min.dark.webp");
+                    style(--stalux-bg-choice: 10): url("/background/pattern-10.min.dark.webp");
+                    style(--stalux-bg-choice: 11): url("/background/pattern-11.min.dark.webp");
+                    style(--stalux-bg-choice: 12): url("/background/pattern-12.min.dark.webp");
+                    style(--stalux-bg-choice: 13): url("/background/pattern-13.min.dark.webp");
+                    style(--stalux-bg-choice: 14): url("/background/pattern-14.min.dark.webp");
+                    style(--stalux-bg-choice: 15): url("/background/pattern-15.min.dark.webp");
+                    style(--stalux-bg-choice: 16): url("/background/pattern-16.min.dark.webp");
+                    style(--stalux-bg-choice: 17): url("/background/pattern-17.min.dark.webp");
+                    style(--stalux-bg-choice: 18): url("/background/pattern-18.min.dark.webp");
+                    style(--stalux-bg-choice: 19): url("/background/pattern-19.min.dark.webp");
+                    style(--stalux-bg-choice: 20): url("/background/pattern-20.min.dark.webp");
+                    style(--stalux-bg-choice: 21): url("/background/pattern-21.min.dark.webp");
+                    style(--stalux-bg-choice: 22): url("/background/pattern-22.min.dark.webp");
+                    style(--stalux-bg-choice: 23): url("/background/pattern-23.min.dark.webp");
+                    style(--stalux-bg-choice: 24): url("/background/pattern-24.min.dark.webp");
+                    style(--stalux-bg-choice: 25): url("/background/pattern-25.min.dark.webp");
+                    style(--stalux-bg-choice: 26): url("/background/pattern-26.min.dark.webp");
+                    style(--stalux-bg-choice: 27): url("/background/pattern-27.min.dark.webp");
+                    style(--stalux-bg-choice: 28): url("/background/pattern-28.min.dark.webp");
+                    style(--stalux-bg-choice: 29): url("/background/pattern-29.min.dark.webp");
+                    style(--stalux-bg-choice: 30): url("/background/pattern-30.min.dark.webp");
+                    style(--stalux-bg-choice: 31): url("/background/pattern-31.min.dark.webp");
+                    style(--stalux-bg-choice: 32): url("/background/pattern-32.min.dark.webp");
+                    style(--stalux-bg-choice: 33): url("/background/pattern-33.min.dark.webp");
+                    style(--stalux-bg-choice: 34): url("/background/pattern-34.min.dark.webp");
+                    style(--stalux-bg-choice: 35): url("/background/pattern-35.min.dark.webp");
+                    style(--stalux-bg-choice: 36): url("/background/pattern-36.min.dark.webp");
+                    style(--stalux-bg-choice: 37): url("/background/pattern-37.min.dark.webp");
+                    style(--stalux-bg-choice: 38): url("/background/pattern-38.min.dark.webp");
+                    style(--stalux-bg-choice: 39): url("/background/pattern-39.min.dark.webp");
+                    style(--stalux-bg-choice: 40): url("/background/pattern-40.min.dark.webp");
+                    style(--stalux-bg-choice: 41): url("/background/pattern-41.min.dark.webp");
+                    style(--stalux-bg-choice: 42): url("/background/pattern-42.min.dark.webp");
+                    else: url("/background/pattern-1.min.dark.webp");
+                )
+            );
+        }
     }
 
-    .bg-layer[data-stalux-bg-fit="contain"] {
-        background-size: contain;
+    @media (prefers-reduced-data: reduce) {
+        .bg-layer {
+            background-image: none;
+        }
     }
 
     @media (max-width: 600px) {
-        .bg-layer,
-        .bg-layer[data-stalux-bg-fit="contain"] {
+        .bg-layer {
             background-repeat: no-repeat;
             background-size: cover;
         }
@@ -335,12 +390,6 @@
         margin-block: 5rem 2rem;
         margin-inline: auto;
         padding-inline: 1rem;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .bg-layer {
-            transition-duration: 0ms;
-        }
     }
 
     /* 站点页脚样式只作用于全站页脚组件。 */

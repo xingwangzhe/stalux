@@ -39,11 +39,6 @@ const promoteConfig = getPromoteData(configEntries);
 const aiConfig = getAiDiscoveryData(configEntries);
 const htmlLang = siteConfig.lang || "zh-CN";
 
-// 背景 SVG 以静态 URL 硬编码在 background.ts（纯客户端），
-// 集成在 config:done 时把 SVG 复制到用户项目最终的 publicDir/background/。
-// SSR 不渲染背景图，默认露出 .bg-layer 的灰墙底色（--stalux-bg-color），
-// 每个完整文档首次客户端随机选图，同一 Swup 会话复用；不经过 import.meta.glob 资源管线，
-// 保证增量构建依赖图 hash 稳定。
 const llmPromoteRaw = promoteConfig?.llm_promote ?? "";
 const llmPromote = llmPromoteRaw
     ?.replace(/\{author\}/gu, authorConfig.name)
@@ -73,7 +68,6 @@ const routeKind = getRouteKind(Astro.url.pathname);
         noindex={props.noindex}
     />
     <script>
-    import "../scripts/background.ts";
     import "../scripts/view-transitions.ts";
     // Every page type has at least one list, so the unroll cue is registered
     // once in the shared layout instead of per page. Page-runtime dedupes it
@@ -87,8 +81,6 @@ const routeKind = getRouteKind(Astro.url.pathname);
     {aiConfig?.conformance !== "disabled" && <script>import "../scripts/webmcp.ts";</script>}
     <body
         class={`stalux-root dark page-${routeKind}`}
-        data-stalux-bg-layer="a"
-        data-stalux-bg-index="0"
         data-stalux-site-title={siteConfig.title}
         data-stalux-site-url={siteConfig.url}
         data-stalux-site-description={siteConfig.description}
@@ -110,8 +102,7 @@ const routeKind = getRouteKind(Astro.url.pathname);
                 <p>{llmPromote}</p>
             </section>
         )}
-        <div class="bg-layer bg-a" data-stalux-background="a" aria-hidden="true"></div>
-        <div class="bg-layer bg-b" data-stalux-background="b" aria-hidden="true"></div>
+        <div class="bg-layer" data-stalux-background aria-hidden="true"></div>
         <main id="swup-main" class="stalux-main" data-stalux-route={routeKind}>
             <slot />
         </main>

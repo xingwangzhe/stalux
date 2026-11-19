@@ -157,8 +157,6 @@ function nextPage() {
         head: { querySelectorAll: () => [] as ReturnType<typeof style>[] },
         body: {
             attributes: [
-                { name: "data-stalux-bg-index", value: "0" },
-                { name: "data-stalux-bg-layer", value: "a" },
                 { name: "data-stalux-site-title", value: "New site title" },
                 { name: "class", value: "incoming-class" },
             ],
@@ -525,7 +523,7 @@ describe("Swup navigation bridge and persistent shell", () => {
         expect(documentMock.startViewTransition).not.toHaveBeenCalled();
     });
 
-    it("keeps live background state and prunes only obsolete authored styles", async () => {
+    it("prunes only obsolete authored styles", async () => {
         const old = style("old");
         const kept = style("kept");
         const runtime = style("runtime-sdk");
@@ -541,7 +539,7 @@ describe("Swup navigation bridge and persistent shell", () => {
         expect(old.remove).toHaveBeenCalledOnce();
         expect(kept.remove).not.toHaveBeenCalled();
         expect(runtime.remove).not.toHaveBeenCalled();
-        // Body Class Plugin owns body metadata; the bridge never resets background state.
+        // Body Class Plugin owns body metadata.
         expect(documentMock.body.setAttribute).not.toHaveBeenCalled();
     });
 
