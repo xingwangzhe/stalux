@@ -24,7 +24,7 @@ const analyzeBundle = Bun.env.SONDA === "1";
 export default defineConfig({
     output: "static",
     site,
-    // 页面路由统一带尾斜杠（/posts/x/、/archives/）；真实文件不受影响
+    // 指定网页路由的尾斜杠形式
     trailingSlash: "never",
     experimental: {
         collectionStorage: "chunked",

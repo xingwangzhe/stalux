@@ -4,6 +4,7 @@ import { type ConfigMap, isMarkdownExportEnabled, loadConfig } from "@utils/ai-d
 import { buildCCLink, buildCCName } from "@utils/cc";
 import { createTranslator } from "@utils/i18n";
 import { reconstructMarkdown } from "@utils/post-markdown";
+import { toPublicUrl } from "@utils/public-routes";
 import type { APIRoute, GetStaticPaths } from "astro";
 
 export const prerender = true;
@@ -16,9 +17,7 @@ function generateCCFooter(post: CollectionEntry<"posts">, config: ConfigMap): st
     const cc = (post.data.cc as string) || "CC-BY-NC-SA-4.0";
     const baseUrl = (siteConfig.url as string) || "";
     const author = (config.get("author")?.name as string) || "";
-    const postUrl = baseUrl
-        ? `${baseUrl}/posts/${post.data.abbrlink}`
-        : `/posts/${post.data.abbrlink}`;
+    const postUrl = toPublicUrl(baseUrl, `/posts/${post.data.abbrlink}`);
 
     const lines: string[] = [];
     lines.push(`**${t("post.author")}**${author}`);

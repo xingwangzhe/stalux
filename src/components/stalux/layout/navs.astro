@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Search from "@components/stalux/common/search.astro";
+import { normalizeRouteHref } from "@internal/route-hrefs";
 
 import { getNavsData, getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
@@ -54,7 +55,11 @@ const navs = navsConfig?.items ?? [];
                 const NavIcon = item.icon ? getLucideIcon(item.icon, Astro.logger) : null;
                 return (
                     <li class="stalux-nav-item stalux-u-flex stalux-u-items-center">
-                        <a href={item.link} class="stalux-nav-link" data-ref="stalux-nav-link">
+                        <a
+                            href={normalizeRouteHref(item.link, Astro.site?.origin)}
+                            class="stalux-nav-link"
+                            data-ref="stalux-nav-link"
+                        >
                             {NavIcon && <NavIcon size={20} stroke-width={2} class="nav-icon" />}
                             <span class="stalux-nav-text">{item.title}</span>
                         </a>

@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
+import { toRoutePath } from "@utils/public-routes";
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
@@ -11,5 +11,5 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 
 <!-- Modern Web Guidance (html): 一行“查看全部归档”文字 + 链接 => <p>。 -->
 <p id={"stalux-to-archive-archs"}>
-    <a data-stalux-control="button" href="/archives">{t("archives.viewAll")}</a>
+    <a data-stalux-control="button" href={toRoutePath("/archives")}>{t("archives.viewAll")}</a>
 </p>

@@ -1,4 +1,5 @@
 ---
+import { toRoutePath } from "@utils/public-routes";
 import "../../../styles/generated-tags.css";
 
 interface Props {
@@ -21,9 +22,9 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 const typeKey = props.typeKey || props.type;
 let typeUrl = "";
 if (typeKey === "category" || typeKey === "categories" || typeKey === "分类") {
-    typeUrl = "/categories";
+    typeUrl = toRoutePath("/categories");
 } else if (typeKey === "tag" || typeKey === "tags" || typeKey === "标签") {
-    typeUrl = "/tags";
+    typeUrl = toRoutePath("/tags");
 }
 ---
 

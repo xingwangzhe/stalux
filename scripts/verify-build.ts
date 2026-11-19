@@ -10,6 +10,11 @@ import { parseDateInZone } from "../src/utils/dayjs.ts";
 import { getRouteKind, isRealPublicFile } from "../src/utils/public-routes.ts";
 import { findMissingAssetReferences } from "./verify-build-utils.ts";
 
+const configModule = "../astro.config.ts";
+const { default: config } = (await import(configModule)) as {
+    default: { trailingSlash?: string };
+};
+const trailingSlash = config.trailingSlash === "always";
 const root = process.cwd();
 const dist = path.join(root, "dist");
 
@@ -245,7 +250,9 @@ assert(
     "home canonical is incorrect",
 );
 assert(
-    pages.post.includes('<link rel="canonical" href="https://stalux.needhelp.icu/posts/a1b2c3d4">'),
+    pages.post.includes(
+        `<link rel="canonical" href="https://stalux.needhelp.icu/posts/a1b2c3d4${trailingSlash ? "/" : ""}">`,
+    ),
     "post canonical is incorrect",
 );
 assert(
@@ -303,10 +310,10 @@ for (const file of walk(dist).filter((file) => file.endsWith(".html"))) {
                 !isRealPublicFile(href) &&
                 getRouteKind(href) !== "other",
         );
-    const slashedRoutes = pageHrefs.filter((href) => href.endsWith("/"));
+    const mismatchedRoutes = pageHrefs.filter((href) => href.endsWith("/") !== trailingSlash);
     assert(
-        slashedRoutes.length === 0,
-        `${path.relative(dist, file)} must link to routes without trailing slashes: ${slashedRoutes[0]}`,
+        mismatchedRoutes.length === 0,
+        `${path.relative(dist, file)} has a link that disagrees with trailingSlash: ${mismatchedRoutes[0]}`,
     );
     assert(
         (html.match(/data-stalux-back-to-top/gu) ?? []).length === 1,
@@ -337,19 +344,19 @@ assert(!sitemap.includes("<lastmod>"), "sitemap contains synthetic build-time la
 const sitemapLocs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/gu)].map((match) => match[1] ?? "");
 const rootLoc = sitemapLocs.find((url) => new URL(url).pathname === "/");
 assert(rootLoc === "https://stalux.needhelp.icu/", "sitemap home URL must end with a slash");
-const slashedLocs = sitemapLocs.filter((url) => {
+const mismatchedLocs = sitemapLocs.filter((url) => {
     const pathname = new URL(url).pathname;
     return (
         pathname !== "/" &&
         pathname !== "/404" &&
         !isRealPublicFile(pathname) &&
         getRouteKind(pathname) !== "other" &&
-        pathname.endsWith("/")
+        pathname.endsWith("/") !== trailingSlash
     );
 });
 assert(
-    slashedLocs.length === 0,
-    `sitemap page routes must omit trailing slashes: ${slashedLocs.slice(0, 3).join(", ")}`,
+    mismatchedLocs.length === 0,
+    `sitemap page route disagrees with trailingSlash: ${mismatchedLocs.slice(0, 3).join(", ")}`,
 );
 
 for (const feedFile of ["rss.xml", "atom.xml"]) {
@@ -362,13 +369,13 @@ for (const feedFile of ["rss.xml", "atom.xml"]) {
         (match) => match[1]?.match(/<link>([^<]+)<\/link>/u)?.[1] ?? "",
     );
     assert(itemLinks.length > 0, `${feedFile} contains no items`);
-    const slashedItemLinks = itemLinks.filter((link) => {
+    const mismatchedItemLinks = itemLinks.filter((link) => {
         const { pathname } = new URL(link);
-        return !isRealPublicFile(pathname) && pathname.endsWith("/");
+        return !isRealPublicFile(pathname) && pathname.endsWith("/") !== trailingSlash;
     });
     assert(
-        slashedItemLinks.length === 0,
-        `${feedFile} item routes must omit trailing slashes: ${slashedItemLinks[0]}`,
+        mismatchedItemLinks.length === 0,
+        `${feedFile} item route disagrees with trailingSlash: ${mismatchedItemLinks[0]}`,
     );
 }
 

@@ -64,9 +64,16 @@ export function getMarkdownPath(pathname: string): string | undefined {
     return undefined;
 }
 
+declare const __STALUX_TRAILING_SLASH__: boolean;
+
+function usesTrailingSlash(): boolean {
+    return typeof __STALUX_TRAILING_SLASH__ !== "undefined" && __STALUX_TRAILING_SLASH__;
+}
+
 /** Canonical path for an HTML page. */
-export function toRoutePath(pathname: string): string {
-    return normalizePublicPath(pathname);
+export function toRoutePath(pathname: string, trailingSlash = usesTrailingSlash()): string {
+    const path = normalizePublicPath(pathname);
+    return trailingSlash && path !== "/" && !isRealPublicFile(path) ? `${path}/` : path;
 }
 
 export function toPublicUrl(site: string, pathname: string, markdown = false): string {

@@ -16,6 +16,18 @@
 | `ai-discovery.yml` | llms.txt 等 AI 发现文件、WebMCP 启停 |
 | `typetexts.yml` | 首页打字机文案 |
 
+## 网页路由尾斜杠
+
+在站点的 `astro.config.ts` 中设置 Astro 的 `trailingSlash`。Stalux 用同一设置生成站内链接、canonical、RSS、sitemap 和 Waline 评论路径。
+
+| 设置 | 规范文章地址 |
+| --- | --- |
+| `never` | `/posts/example` |
+| `always` | `/posts/example/` |
+| `ignore` 或省略 | `/posts/example` |
+
+改完站点配置后重新构建和部署站点即可。静态托管平台需要能提供对应的 URL，切换已有站点时也要核对 Waline 的历史评论路径。首页和文件端点保留各自的地址。
+
 ## 站点：`site.yml`
 
 ```yaml title="stalux/config/site.yml"

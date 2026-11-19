@@ -7,6 +7,7 @@ import Stalux from "@layouts/Stalux.astro";
 import { analyzeFeatureFlags } from "@plugins/feature-flags";
 import { getAuthorData, getSiteData } from "@utils/config-utils";
 import { getPostContentIndex } from "@utils/content-index";
+import { toRoutePath } from "@utils/public-routes";
 import { resolvePostSocialImage } from "@utils/social-image";
 
 interface Props {
@@ -51,10 +52,16 @@ export async function getStaticPaths() {
             props: {
                 post,
                 prev: prevPost
-                    ? { url: `/posts/${prevPost.data.abbrlink}`, title: prevPost.data.title }
+                    ? {
+                          url: toRoutePath(`/posts/${prevPost.data.abbrlink}`),
+                          title: prevPost.data.title,
+                      }
                     : undefined,
                 next: nextPost
-                    ? { url: `/posts/${nextPost.data.abbrlink}`, title: nextPost.data.title }
+                    ? {
+                          url: toRoutePath(`/posts/${nextPost.data.abbrlink}`),
+                          title: nextPost.data.title,
+                      }
                     : undefined,
             },
         };

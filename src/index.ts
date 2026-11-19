@@ -130,6 +130,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     let coverCacheDir = "";
 
     let searchBase = "/";
+    let trailingSlash = false;
     let siteOrigin: string | undefined;
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
 
@@ -146,6 +147,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 logger,
             }) => {
                 searchBase = config.base;
+                trailingSlash = config.trailingSlash === "always";
                 const started = performance.now();
                 const isPluginMode = isPluginProject(config.root, new URL("../", import.meta.url));
                 const configLogger = logger.fork("stalux/config");
@@ -158,7 +160,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     path.join(srcDir, "scripts"),
                     path.resolve(srcDir, "../package.json"),
                     path.join(srcDir, "styles"),
-                    JSON.stringify([styleNames, modernCssTargets]) +
+                    JSON.stringify([styleNames, modernCssTargets, trailingSlash]) +
                         (await Bun.file(path.join(srcDir, "internal/compact-styles.ts")).text()) +
                         (await Bun.file(path.join(srcDir, "internal/offscreen-layout.ts")).text()),
                     path.resolve(
@@ -232,6 +234,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             staluxComponentsAlias(opt.components, logger.fork("stalux/components")),
                         ],
                         define: {
+                            __STALUX_TRAILING_SLASH__: JSON.stringify(trailingSlash),
                             __STALUX_COMPACT_STYLES__: JSON.stringify(command === "build"),
                             __STALUX_DEBUG__: JSON.stringify(
                                 Bun.env.STALUX_DEBUG === "1" || Bun.argv.includes("--verbose"),
@@ -394,6 +397,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
             // Read final paths after every integration has finished updating configuration.
             // Public assets must exist before Astro creates its Vite server/build asset pipeline.
             "astro:config:done": async ({ config, logger }) => {
+                trailingSlash = config.trailingSlash === "always";
                 siteOrigin = config.site ? new URL(config.site).origin : undefined;
                 const srcDir = Bun.fileURLToPath(new URL(".", import.meta.url));
                 const publicDir = Bun.fileURLToPath(config.publicDir);
@@ -496,7 +500,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     pageFontData?.fontBuffer,
                     // Track referenced files regardless of extension, including SVG/AVIF.
                     htmlFiles.map((entry) => path.join(outDir, entry)),
-                    sharedFontKey,
+                    JSON.stringify([sharedFontKey, siteOrigin, trailingSlash]),
                 );
                 let cacheHits = 0;
                 let optimizedImagePages = 0;
@@ -537,12 +541,17 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     let cachedFont: { filename: string; sourcePath: string } | undefined;
                     const dependencies = new Set<string>();
                     const document = parse(before, { sourceCodeLocationInfo: true });
-                    const emitHtml = createHtmlMutationEmitter(before, document, siteOrigin);
+                    const emitHtml = createHtmlMutationEmitter(
+                        before,
+                        document,
+                        siteOrigin,
+                        trailingSlash,
+                    );
                     promoteCodeStyles(document);
                     containMermaidSvgs(document);
                     removePageFontStyles(document);
                     // 正文里手写的 /posts/x/ 也统一成路由器实际提供的形态
-                    normalizeRouteHrefs(document, siteOrigin);
+                    normalizeRouteHrefs(document, siteOrigin, trailingSlash);
                     const images = findHtmlImages(before, document);
                     await updateLocalImageDimensions(images, outDir, {
                         cache: dimensionsCache,
@@ -758,7 +767,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                     const next = userSitemap?.serialize ? await userSitemap.serialize(item) : item;
                     if (!next) return next;
                     const url = new URL(next.url);
-                    url.pathname = toRoutePath(url.pathname);
+                    url.pathname = toRoutePath(url.pathname, trailingSlash);
                     next.url = url.href;
                     return next;
                 },

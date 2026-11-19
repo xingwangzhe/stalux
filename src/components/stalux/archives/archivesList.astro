@@ -1,4 +1,5 @@
 ---
+import { toRoutePath } from "@utils/public-routes";
 import "../../../styles/generated-archives.css";
 import { type CollectionEntry, getCollection } from "astro:content";
 
@@ -89,7 +90,7 @@ const archiveYears = [...archivesByYearMonth.entries()]
                                                 {formatInTimeZone(date, timezone, "yyyy-MM-dd")}
                                             </time>
                                             <a
-                                                href={`/posts/${post.data.abbrlink}`}
+                                                href={toRoutePath(`/posts/${post.data.abbrlink}`)}
                                                 class="stalux-archive-post-link"
                                                 data-archive-description={post.data.desc || ""}
                                             >

@@ -1,4 +1,5 @@
 ---
+import { toRoutePath } from "@utils/public-routes";
 import "../../../styles/generated-tags.css";
 import { getCollection } from "astro:content";
 
@@ -17,7 +18,7 @@ const cloudDensity = Math.sqrt(Math.max(tagList.length, 100) / 100);
 const tagLinks = tagList.map((tag) => ({
     type: "link" as const,
     text: tag.name,
-    url: `/tags/${tag.name}`,
+    url: toRoutePath(`/tags/${tag.name}`),
 }));
 ---
 
@@ -36,7 +37,7 @@ const tagLinks = tagList.map((tag) => ({
                 {group.map(({ name, count }) => (
                     <li data-stalux-reveal-item>
                         <a
-                            href={`/tags/${name}`}
+                            href={toRoutePath(`/tags/${name}`)}
                             class="stalux-cloud-tag-card"
                             data-stalux-card
                             data-stalux-tag-card
