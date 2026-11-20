@@ -241,7 +241,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
 
                 if (searchEnabled) {
                     injectRoute({
-                        pattern: "/orama/index.bin",
+                        pattern: "/orama/[artifact].bin",
                         entrypoint: new URL("./internal/orama-search-endpoint.ts", import.meta.url),
                         prerender: true,
                     });

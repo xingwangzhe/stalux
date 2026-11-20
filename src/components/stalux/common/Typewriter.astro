@@ -58,6 +58,8 @@ registerPageLifecycle("typewriter", mountTypewriters);
 }
 .stalux-typewriter-text {
     align-self: stretch;
+    /* The reserve grid sizes the track. Typing only changes layout inside this cell. */
+    contain: size layout;
 }
 .stalux-typewriter-reserve {
     display: grid;

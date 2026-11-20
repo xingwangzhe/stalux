@@ -47,7 +47,7 @@ export function createTypewriter(messages: string[], render: (frame: TypewriterF
     };
     const schedule = () => {
         clear();
-        if (!active || disposed || !texts.length) return;
+        if (!active || disposed || texts.length === 0) return;
         timer = setTimeout(() => {
             timer = undefined;
             if (reduced) {
@@ -74,14 +74,14 @@ export function createTypewriter(messages: string[], render: (frame: TypewriterF
     };
     return {
         setActive(value: boolean) {
-            if (disposed || !texts.length || active === value) return;
+            if (disposed || texts.length === 0 || active === value) return;
             active = value;
             if (value) started = true;
             paint();
             schedule();
         },
         setReducedMotion(value: boolean) {
-            if (disposed || !texts.length || reduced === value) return;
+            if (disposed || texts.length === 0 || reduced === value) return;
             reduced = value;
             count = 0;
             phase = "typing";
@@ -108,11 +108,11 @@ export function mountTypewriters() {
         } catch {
             continue;
         }
-        if (!messages.length) continue;
+        if (messages.length === 0) continue;
         const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
         const controller = createTypewriter(messages, ({ text, state }) => {
-            output.textContent = text;
-            element.dataset.typewriterState = state;
+            if (output.textContent !== text) output.textContent = text;
+            if (element.dataset.typewriterState !== state) element.dataset.typewriterState = state;
         });
         let visible = false;
         const syncVisibility = () => controller.setActive(visible && !document.hidden);
