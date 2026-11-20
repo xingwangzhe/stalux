@@ -170,7 +170,7 @@ export const commonStyles: StyleSpec[] = [
     [
         ".stalux-nav-link, .stalux-nav-link:visited",
         "flex items-center w-full cursor-pointer text-inherit no-underline p-[0.5rem_0.75rem] gap-[0.5rem] min-h-[44px]",
-        { background: "none", border: "none", font: "inherit" },
+        { background: "none", border: "none", font: "inherit", "text-shadow": "inherit" },
     ],
     [".stalux-nav-link .nav-icon", "", { stroke: "var(--white-full)" }],
     [
