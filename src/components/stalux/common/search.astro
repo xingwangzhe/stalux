@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import { Clock } from "@lucide/astro";
+import { Clock, X } from "@lucide/astro";
 import { getSiteData } from "@utils/config-utils";
 import { createTranslator } from "@utils/i18n";
 
@@ -15,7 +15,12 @@ const dictionary = {
 };
 ---
 
-<template data-stalux-search data-search-dictionary={JSON.stringify(dictionary)}>
+<template
+    data-stalux-search
+    data-search-dictionary={JSON.stringify(dictionary)}
+    data-search-close={t("search.close")}
+>
     <orama-search-box data-stalux-search></orama-search-box>
     <Clock data-search-clock aria-hidden="true" size="1em" style="flex:none" />
+    <X data-search-close-icon aria-hidden="true" size="20" />
 </template>

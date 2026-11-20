@@ -38,6 +38,75 @@ function attachResultMetadata(root: ShadowRoot) {
     observer.observe(root, { childList: true, subtree: true });
 }
 
+function enableModalClose(root: ShadowRoot, template: HTMLTemplateElement) {
+    const label = template.dataset.searchClose;
+    const icon = template.content.querySelector("svg[data-search-close-icon]");
+    const style = document.createElement("style");
+    style.textContent = `
+        orama-modal button.modal-close > svg { display: none }
+        @media (width <= 1024px) {
+            orama-modal .search-form {
+                padding-inline-end: calc(3.25rem + env(safe-area-inset-right));
+                padding-block-start: env(safe-area-inset-top);
+            }
+            orama-modal dialog.modal.open .modal-inner > button.modal-close {
+                position: fixed;
+                inset-block-start: calc(1rem + env(safe-area-inset-top));
+                inset-inline-end: calc(1rem + env(safe-area-inset-right));
+                z-index: 1;
+                display: grid;
+                place-items: center;
+                clip: auto;
+                clip-path: none;
+                inline-size: 3rem;
+                block-size: 3.125rem;
+                min-inline-size: 44px;
+                min-block-size: 44px;
+                padding: 0;
+                font: inherit;
+                color: var(--text-color-secondary, var(--text-color-primary));
+                background: var(--background-color-secondary);
+                border: 1px solid var(--border-color-primary);
+                border-radius: .75rem;
+                cursor: pointer;
+            }
+            orama-modal button.modal-close > svg { display: block }
+            orama-modal button.modal-close > span { display: none }
+            orama-modal button.modal-close:is(:hover, :focus-visible) {
+                color: var(--text-color-primary);
+                background: var(--background-color-fourth);
+            }
+        }
+    `;
+    root.append(style);
+    let restoreFocus = false;
+    root.addEventListener(
+        "modalClosed",
+        () => {
+            restoreFocus = true;
+        },
+        { capture: true },
+    );
+    const observer = new MutationObserver(() => {
+        const button = root.querySelector("orama-modal button.modal-close");
+        if (!button && restoreFocus) {
+            restoreFocus = false;
+            if (!root.host.isConnected) return;
+            const opener = document.querySelector<HTMLElement>('[data-ref="stalux-search-btn"]');
+            if (opener?.checkVisibility()) opener.focus();
+            else document.querySelector<HTMLElement>('[data-ref="stalux-nav-toggle"]')?.focus();
+        }
+        if (!button || button.hasAttribute("aria-label")) return;
+        if (!(label && icon)) return;
+        const text = document.createElement("span");
+        text.textContent = label;
+        button.setAttribute("aria-label", label);
+        button.setAttribute("title", label);
+        button.replaceChildren(text, icon.cloneNode(true));
+    });
+    observer.observe(root, { childList: true, subtree: true });
+}
+
 function highlight(text: string, terms: string[]): string {
     const escaped = terms
         .filter(Boolean)
@@ -178,7 +247,10 @@ export async function openSearchDialog(signal: AbortSignal) {
     box.resultMap = { path: "url" };
     const dictionary = anchor.dataset.searchDictionary;
     if (dictionary) box.dictionary = JSON.parse(dictionary);
-    if (box.shadowRoot) attachResultMetadata(box.shadowRoot);
+    if (box.shadowRoot) {
+        attachResultMetadata(box.shadowRoot);
+        enableModalClose(box.shadowRoot, anchor);
+    }
     box.shadowRoot?.addEventListener(
         "error",
         (event) => {
