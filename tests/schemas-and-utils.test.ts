@@ -20,7 +20,7 @@ describe("configuration schemas", () => {
             noindex: false,
             nofollow: false,
             favicon: "/favicon.ico",
-            accentColor: "#EAB308",
+            accentColor: "#FFD76A",
         });
     });
 
@@ -75,7 +75,7 @@ describe("accent color tokens", () => {
         expect(getAccentColorStyle("#3366CC")).toContain("--stalux-accent-color: #3366cc");
         expect(getAccentColorStyle("#3366CC")).toContain("--stalux-accent-rgb: 51 102 204");
         expect(getAccentColorStyle("#3366CC")).toContain("--accent-50p: rgb(51 102 204 / 0.5)");
-        expect(getAccentColorStyle(undefined)).toContain("--stalux-accent-color: #eab308");
+        expect(getAccentColorStyle(undefined)).toContain("--stalux-accent-color: #ffd76a");
         expect(() => getAccentColorStyle("#369")).toThrow();
     });
 });

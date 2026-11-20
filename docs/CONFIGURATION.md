@@ -44,7 +44,7 @@ lang: zh-CN
 title: "我的博客"
 description: "站点描述"
 url: "https://example.com"
-accentColor: "#EAB308"
+accentColor: "#FFD76A"
 timezone: "Asia/Shanghai"
 favicon: "/favicon.ico"
 canonical: "https://example.com"
@@ -57,7 +57,7 @@ rss:
 | `lang` | 站点语言，驱动界面文案与 WebMCP 工具描述（`en` / `zh-CN` 等） |
 | `title` / `description` | 站点标题与默认描述，用于 SEO、RSS 和分享卡片 |
 | `url` | 站点绝对地址，用于 canonical、feed、sitemap 和分享图 |
-| `accentColor` | 主题强调色，六位 HEX，默认 `#EAB308`；同时驱动 Waline 强调色。Markdown 原文、标签、分类、时间徽标和搜索高亮由强调色与暗底混合生成 |
+| `accentColor` | 主题强调色，六位 HEX，默认 `#FFD76A`；同时驱动 Waline 强调色。Markdown 原文、标签、分类、时间徽标和搜索高亮由强调色与暗底混合生成 |
 | `timezone` | 站点时区，用于解析无时区 frontmatter 日期和格式化输出 |
 | `favicon` | 站点图标路径 |
 | `canonical` | 可选 canonical 地址；不填时使用 `url` |
@@ -67,7 +67,7 @@ rss:
 主题颜色也可以只在 `site.yml` 里改：
 
 ```yaml
-accentColor: "#EAB308"
+accentColor: "#FFD76A"
 ```
 
 ## 作者：`author.yml`

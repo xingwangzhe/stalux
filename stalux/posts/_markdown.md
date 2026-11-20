@@ -6,7 +6,7 @@ categories:
     - Markdown
 abbrlink: 2cb4f19c
 date: "2025-05-11 20:00:00"
-updated: "2026-08-18 12:00:00"
+updated: "2026-11-20 14:05:46"
 desc: 'Inline code var example = "hello";'
 cover: http://example.com/favicon.ico
 ---
@@ -29,13 +29,20 @@ cover: http://example.com/favicon.ico
 
 ###### Heading 6
 
-### Emphasis
+### Inline formatting
 
-_Italic_ or _Italic_
-**Bold** or **Bold**
-**_Bold Italic_** or **_Bold Italic_**
-~~Strikethrough~~
-<u>Underline</u>
+These examples use the site's `accentColor`. Shape, typeface and decoration make each marker recognizable even when the colors are similar.
+
+| Marker | Source | Rendered |
+| --- | --- | --- |
+| Emphasis | `*Italic*` | *Italic* |
+| Strong | `**Bold**` | **Bold** |
+| Combined | `***Bold Italic***` | ***Bold Italic*** |
+| Removal | `~~Strikethrough~~` | ~~Strikethrough~~ |
+| Highlight | `<mark>Highlight</mark>` | <mark>Highlight</mark> |
+| Inline code | `` `const value` `` | `const value` |
+| Keyboard key | `<kbd>Esc</kbd>` | <kbd>Esc</kbd> |
+| Explicit underline | `<u>Underline</u>` | <u>Underline</u> |
 
 ### Lists
 
@@ -133,6 +140,11 @@ function example() {
 | Link    | `[link](url)` | [link](url) |
 
 ### HTML Mixing
+
+<details>
+<summary>Expand a disclosure</summary>
+The triangle shows whether the section is collapsed or expanded.
+</details>
 
 <div>
     <h4>HTML Block</h4>

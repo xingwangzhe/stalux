@@ -90,7 +90,7 @@
 
     .stalux-prose em {
         font-style: italic;
-        color: var(--white-85p);
+        color: var(--stalux-label-ink);
     }
 
     .stalux-prose strong em,
@@ -99,12 +99,17 @@
     }
 
     .stalux-prose del {
-        color: var(--white-60p);
+        color: var(--white-75p);
+        text-decoration-color: var(--accent-text);
     }
 
     .stalux-prose mark {
         color: var(--stalux-label-ink);
-        background-color: var(--category-bg-hover);
+        background-color: color-mix(
+            in oklab,
+            var(--category-bg-hover),
+            var(--stalux-accent-color) 12%
+        );
         padding: 0.1em 0.2em;
         border-radius: 2px;
     }
@@ -113,11 +118,12 @@
         font-family:
             var(--font-code), "JetBrains Mono", "Fira Code", "Consolas", "Courier New", monospace;
         font-size: 0.85em;
-        background-color: var(--white-10p);
-        border: 1px solid var(--white-20p);
+        background-color: var(--tag-bg);
+        border: 1px solid var(--stalux-label-border);
+        border-block-end-width: 3px;
         border-radius: 4px;
         padding: 0.15em 0.4em;
-        color: var(--white-85p);
+        color: var(--stalux-label-ink);
     }
 
     .stalux-prose sup,
@@ -200,6 +206,21 @@
         color: var(--white-85p);
     }
 
+    .stalux-prose li::marker {
+        color: var(--accent-text);
+    }
+
+    .stalux-prose ul li.task-list-item {
+        list-style: none;
+    }
+
+    .stalux-prose .task-list-item > input[type="checkbox"] {
+        accent-color: var(--accent-text);
+        outline: 1px solid var(--stalux-label-border);
+        outline-offset: 1px;
+        margin-inline-end: 0.45em;
+    }
+
     .stalux-prose ul li {
         list-style: disc;
     }
@@ -229,11 +250,9 @@
     .stalux-prose blockquote {
         margin: var(--space-xl) 0;
         padding: 1rem 1.5rem;
-        border-left: 4px solid var(--accent-60p);
-        background: var(--surface-glass);
-        border-top: 1px solid var(--white-10p);
-        border-right: 1px solid var(--white-10p);
-        border-bottom: 1px solid var(--white-10p);
+        border: 1px solid var(--white-10p);
+        border-inline-start: 4px solid var(--stalux-label-border);
+        background: var(--tag-bg);
         border-radius: 12px;
         box-shadow: 0 4px 16px #0002;
         color: var(--white-85p);
@@ -278,8 +297,8 @@
     .stalux-prose th {
         font-weight: 600;
         white-space: nowrap;
-        background: var(--accent-30p);
-        color: var(--white-full);
+        background: var(--category-bg-hover);
+        color: var(--stalux-label-ink);
         font-size: 0.95em;
     }
 
@@ -344,7 +363,7 @@
     .stalux-prose details {
         margin: var(--space-lg) 0;
         padding: 0.8rem 1rem;
-        background-color: var(--white-05p);
+        background-color: var(--tag-bg);
         border: 1px solid var(--white-10p);
         border-radius: 6px;
         transition: border-color var(--transition-fast);
@@ -361,7 +380,11 @@
     .stalux-prose summary {
         cursor: pointer;
         font-weight: 600;
-        color: var(--white-90p);
+        color: var(--stalux-label-ink);
+    }
+
+    .stalux-prose summary::marker {
+        color: var(--accent-text);
     }
 
     .stalux-prose details[open] summary {
@@ -410,6 +433,14 @@
 
     .stalux-prose .footnotes a {
         font-size: 0.9em;
+    }
+
+    .stalux-prose a[data-footnote-ref] {
+        padding: 0.05em 0.35em;
+        border-radius: 0.25em;
+        background-color: var(--category-bg);
+        color: var(--stalux-label-ink);
+        text-decoration: none;
     }
 
     @media (max-width: 1024px) {
