@@ -190,8 +190,7 @@ for (const file of [
 }
 assert(darkCodeBackgrounds > 0, "dark code theme is missing from generated CSS");
 
-const searchStyle = pages.home.match(/<link\b[^>]*data-stalux-search-style[^>]*>/u)?.[0];
-assert(searchStyle, "search CSS asset link is missing");
+assert(/<dialog\b[^>]*id="search"/u.test(pages.home), "search dialog shell is missing");
 const initialStyleLinks = [
     ...pages.home.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"#]+)"[^>]*>/gu),
 ];
@@ -216,11 +215,6 @@ assert(
     !initialStyles.includes(`.${cssClass("stalux-prose")}`),
     "homepage includes unused article typography CSS",
 );
-assert(!/\shref="/u.test(searchStyle), "search CSS must not be fetched before the search UI opens");
-assert(
-    /\sdata-href="/u.test(searchStyle),
-    "search CSS must carry a deferred data-href for the search UI",
-);
 function containsHomeNavigationIcon(node: DefaultTreeAdapterMap["node"]): boolean {
     if (
         "tagName" in node &&
@@ -235,29 +229,6 @@ function containsHomeNavigationIcon(node: DefaultTreeAdapterMap["node"]): boolea
     return "childNodes" in node && node.childNodes.some(containsHomeNavigationIcon);
 }
 assert(containsHomeNavigationIcon(parse(pages.home)), "navs.yml home icon did not render as SVG");
-
-const eagerStyles = new Set<string>();
-let deferredSearchHref: string | undefined;
-function collectSearchLinks(node: DefaultTreeAdapterMap["node"]): void {
-    if ("tagName" in node && node.tagName === "noscript") return;
-    if ("tagName" in node && node.tagName === "link") {
-        const attributes = new Map(node.attrs.map(({ name, value }) => [name, value]));
-        const href = attributes.get("href");
-        if (attributes.has("data-stalux-search-style"))
-            deferredSearchHref = attributes.get("data-href");
-        if (href && attributes.get("rel") === "stylesheet") eagerStyles.add(href);
-    }
-    if ("childNodes" in node) for (const child of node.childNodes) collectSearchLinks(child);
-}
-collectSearchLinks(parse(pages.home));
-assert(
-    deferredSearchHref && !eagerStyles.has(deferredSearchHref),
-    "closed search UI must not also inject its deferred CSS as a blocking stylesheet",
-);
-assert(
-    /<noscript><link[^>]+rel="stylesheet"/u.test(pages.home),
-    "search CSS needs a no-script fallback",
-);
 
 assert(
     pages.home.includes('<link rel="canonical" href="https://stalux.needhelp.icu/">'),
@@ -478,7 +449,7 @@ const missingAssetReferences = findMissingAssetReferences(assetContents, existin
 
 assert(htmlCount >= 40, `expected at least 40 HTML pages, found ${htmlCount}`);
 assert(fontCount >= 2, `expected normal and italic code fonts, found ${fontCount}`);
-assert(Bun.file(path.join(dist, "pagefind", "pagefind.js")).size > 0, "Pagefind output is missing");
+assert(Bun.file(path.join(dist, "orama", "index.bin")).size > 0, "Orama search index is missing");
 assert(
     missingAssetReferences.length === 0,
     `generated files reference missing assets:\n${missingAssetReferences.join("\n")}`,

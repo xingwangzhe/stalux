@@ -1,9 +1,6 @@
 ---
 import { Font } from "astro:assets";
 import { getCollection } from "astro:content";
-// Emit a stable asset even while the search component JavaScript stays lazy.
-// The closed search dialog does not need to block the page's first paint.
-import pagefindStyles from "virtual:stalux-search-style";
 import BingClarity from "@components/stalux/analytics/clarity.astro";
 import GoogleAnalytics from "@components/stalux/analytics/google.astro";
 import Umami from "@components/stalux/analytics/umami.astro";
@@ -66,8 +63,6 @@ const ldJson = JSON.stringify(seo.schema).replace(/<\//gu, "<\\/");
     {seo.links.map(({ href, ...attributes }) => <link {...attributes} href={href} />)}
     <!-- 代码字体由 Astro Fonts API 注入；正文按页面生成 native CJK 子集。 -->
     <Font cssVariable="--font-code" />
-    <link rel="stylesheet" data-href={pagefindStyles} data-stalux-search-style>
-    <noscript><link rel="stylesheet" href={pagefindStyles}></noscript>
     {headConfig?.anyhead && <Fragment set:html={headConfig.anyhead} />}
     {headConfig?.googleAnalyticsId && <GoogleAnalytics />}
     {headConfig?.bingClarityId && <BingClarity />}

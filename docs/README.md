@@ -10,7 +10,7 @@ README 只保留主题介绍、安装、使用和部署入口，细节都收在�
 | [配置说明](./CONFIGURATION.md) | `stalux/config/*.yml` 全量说明，accentColor、作者、天气、评论、AI 发现等 |
 | [功能行为](./FEATURES.md) | 打字机、图片图注、灯箱、代码主题、Waline、软导航、背景等运行时行为 |
 | [字体](./FONTS.md) | 中文按页字体子集、缓存、字体许可 |
-| [搜索](./SEARCH.md) | Pagefind + CJK 子串索引、`searchKeywords`、降级行为 |
+| [搜索](./SEARCH.md) | Orama、CJK 混合索引、`searchKeywords`、降级行为 |
 | [统计](./ANALYTICS.md) | Google Analytics、Clarity、Umami、Vercount 配置与注意事项 |
 | [部署](./DEPLOYMENT.md) | 静态构建、EdgeOne、缓存目录、构建产物 |
 | [性能与加载](./PERFORMANCE.md) | 按可见性加载、首屏 CSS、预加载、背景图、现代 JavaScript |

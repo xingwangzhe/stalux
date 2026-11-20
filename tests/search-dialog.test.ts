@@ -1,79 +1,35 @@
-import { describe, expect, it, vi } from "vitest";
+// @vitest-environment happy-dom
 
-import { ensureSearchStyles, upgradeAndOpenSearchDialog } from "../src/scripts/search-dialog";
+import { expect, it, vi } from "vitest";
+import { openSearchDialog } from "../src/scripts/search-dialog";
 
-describe("Pagefind search dialog", () => {
-    it("waits for a cold stylesheet before the caller can open the dialog", async () => {
-        const link = Object.assign(new EventTarget(), {
-            rel: "stylesheet",
-            href: "",
-            dataset: { href: "/search.css" },
-            media: "all",
-            sheet: null,
-        });
-        const open = vi.fn();
-        const ready = ensureSearchStyles(link as unknown as HTMLLinkElement).then(open);
-        await Promise.resolve();
-        expect(link.media).toBe("all");
-        expect(link.rel).toBe("stylesheet");
-        expect(link.href).toBe("/search.css");
-        expect(open).not.toHaveBeenCalled();
-        link.dispatchEvent(new Event("load"));
-        await ready;
-        expect(open).toHaveBeenCalledOnce();
-    });
+const setup = vi.hoisted(() => ({
+    loadOramaSearch: vi.fn(async () => ({
+        database: { beforeSearch: [], afterSearch: [] },
+        count: 3,
+        cjk: true,
+    })),
+    defineCustomElement: vi.fn(),
+}));
+vi.mock("../src/scripts/search-engine", () => ({ loadOramaSearch: setup.loadOramaSearch }));
+vi.mock("@orama/wc-components/dist/components/orama-search-box.js", () => ({
+    defineCustomElement: setup.defineCustomElement,
+}));
 
-    it("uses an already loaded stylesheet without waiting for another load event", async () => {
-        const link = Object.assign(new EventTarget(), { media: "print", sheet: {} });
-        await ensureSearchStyles(link as unknown as HTMLLinkElement);
-        expect(link.media).toBe("all");
-    });
+it("mounts the official Orama search box into an open native dialog once", async () => {
+    document.body.innerHTML = `<dialog id="search" lang="zh-CN"><p data-search-status data-loading="加载中"></p></dialog>`;
+    const dialog = document.querySelector("dialog");
+    const signal = new AbortController().signal;
+    await Promise.all([openSearchDialog(signal), openSearchDialog(signal)]);
+    expect(dialog?.open).toBe(true);
+    expect(dialog?.querySelectorAll("orama-search-box")).toHaveLength(1);
+    expect(setup.loadOramaSearch).toHaveBeenCalledTimes(1);
+    expect(setup.defineCustomElement).toHaveBeenCalledTimes(1);
+});
 
-    it("rejects a failed stylesheet instead of opening an unstyled dialog", async () => {
-        const link = Object.assign(new EventTarget(), { media: "print", sheet: null });
-        const ready = ensureSearchStyles(link as unknown as HTMLLinkElement);
-        const assertion = expect(ready).rejects.toThrow("Search stylesheet failed to load");
-        link.dispatchEvent(new Event("error"));
-        await assertion;
-    });
-
-    it("waits for the custom element, upgrades it, and then opens it", async () => {
-        const events: string[] = [];
-        const dialog = { open: vi.fn(() => events.push("open")) };
-        const registry = {
-            whenDefined: vi.fn(async () => events.push("defined")),
-            upgrade: vi.fn(() => events.push("upgrade")),
-        };
-
-        await upgradeAndOpenSearchDialog(registry, dialog);
-
-        expect(events).toEqual(["defined", "upgrade", "open"]);
-        expect(registry.whenDefined).toHaveBeenCalledWith("pagefind-modal");
-        expect(registry.upgrade).toHaveBeenCalledWith(dialog);
-    });
-
-    it("ignores an element definition that finishes after leaving the page", async () => {
-        const controller = new AbortController();
-        const dialog = { open: vi.fn() };
-        const registry = {
-            whenDefined: async () => {
-                controller.abort();
-            },
-            upgrade: vi.fn(),
-        };
-        await upgradeAndOpenSearchDialog(registry, dialog, controller.signal);
-        expect(registry.upgrade).not.toHaveBeenCalled();
-        expect(dialog.open).not.toHaveBeenCalled();
-    });
-
-    it("does not try to upgrade or open a dialog that is no longer in the page", async () => {
-        const registry = {
-            whenDefined: vi.fn(async () => undefined),
-            upgrade: vi.fn(),
-        };
-
-        await upgradeAndOpenSearchDialog(registry, null);
-
-        expect(registry.upgrade).not.toHaveBeenCalled();
-    });
+it("keeps a dialog closed when opening was cancelled by navigation", async () => {
+    document.body.innerHTML = `<dialog id="search"></dialog>`;
+    const signal = AbortSignal.abort();
+    await openSearchDialog(signal);
+    expect(document.querySelector("dialog")?.open).toBe(false);
 });

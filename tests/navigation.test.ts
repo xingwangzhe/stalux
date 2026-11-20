@@ -3,11 +3,9 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 const search = vi.hoisted(() => ({
-    ensureSearchStyles: vi.fn(async () => undefined),
-    upgradeAndOpenSearchDialog: vi.fn(async () => undefined),
+    openSearchDialog: vi.fn(async () => undefined),
 }));
 vi.mock("../src/scripts/search-dialog", () => search);
-vi.mock("@pagefind/component-ui", () => ({}));
 
 let onResize: ResizeObserverCallback;
 
@@ -25,7 +23,7 @@ beforeEach(async () => {
                 <dialog id="stalux-mobile-navigation"><div data-ref="stalux-mobile-nav-panel"></div></dialog>
             </nav>
         </header>
-        <pagefind-modal id="search"></pagefind-modal>`;
+        <dialog id="search"></dialog>`;
     vi.stubGlobal(
         "ResizeObserver",
         class {

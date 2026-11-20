@@ -45,10 +45,10 @@
 [data-stalux-module="badge-group"][open] > ul {
     animation: stalux-module-fade 140ms ease-out;
 }
-pagefind-modal#search dialog[open] {
+#search[open] {
     animation: stalux-module-arrive 160ms var(--stalux-motion-ease) !important;
 }
-pagefind-modal dialog::backdrop {
+#search::backdrop {
     background: rgb(0 0 0 / 0.65) !important;
     animation: stalux-module-backdrop 140ms ease-out !important;
 }
@@ -121,8 +121,8 @@ pagefind-modal dialog::backdrop {
     [data-stalux-module],
     [data-stalux-module] *,
     [data-ref="stalux-nav-list"],
-    pagefind-modal#search dialog[open],
-    pagefind-modal#search dialog::backdrop {
+    #search[open],
+    #search::backdrop {
         animation: none !important;
         transition: none !important;
         scroll-behavior: auto !important;
@@ -141,7 +141,7 @@ pagefind-modal dialog::backdrop {
 @media print {
     [data-stalux-module],
     [data-stalux-control],
-    pagefind-modal dialog {
+    #search {
         animation: none !important;
         transform: none !important;
     }
@@ -176,7 +176,7 @@ html:not(:has([data-stalux-word-target])) [data-stalux-module="word"]:target::af
 }
 
 @media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
-    pagefind-modal#search dialog[open] {
+    #search[open] {
         animation: stalux-module-fade 120ms ease-out !important;
     }
 }

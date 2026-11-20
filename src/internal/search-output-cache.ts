@@ -12,7 +12,7 @@ async function digestFiles(root: string, entries: readonly string[], salt = ""):
 
 async function indexDigest(indexDir: string): Promise<string> {
     const files = [...new Bun.Glob("**/*").scanSync({ cwd: indexDir, onlyFiles: true })].sort();
-    if (!(files.includes("pagefind.js") && files.includes("cjk/manifest.json"))) {
+    if (!files.includes("index.bin")) {
         throw new Error("Search output is incomplete");
     }
     return digestFiles(indexDir, files);
@@ -24,7 +24,7 @@ export async function createSearchOutputCache(
     htmlFiles: readonly string[],
     buildKey: string,
 ) {
-    const output = path.join(outDir, "pagefind");
+    const output = path.join(outDir, "orama");
     const fingerprint = await digestFiles(outDir, htmlFiles, buildKey);
     const cached = path.join(cacheDir, "latest");
     return {
@@ -33,9 +33,9 @@ export async function createSearchOutputCache(
             try {
                 const record = await Bun.file(path.join(cached, "index.json")).json();
                 if (record.fingerprint !== fingerprint) return false;
-                staging = await mkdtemp(path.join(outDir, ".pagefind-restore-"));
-                const copy = path.join(staging, "pagefind");
-                await cp(path.join(cached, "pagefind"), copy, { recursive: true });
+                staging = await mkdtemp(path.join(outDir, ".orama-restore-"));
+                const copy = path.join(staging, "orama");
+                await cp(path.join(cached, "orama"), copy, { recursive: true });
                 if ((await indexDigest(copy)) !== record.digest) return false;
                 await rename(copy, output);
                 return true;
@@ -49,7 +49,7 @@ export async function createSearchOutputCache(
             await mkdir(cacheDir, { recursive: true });
             const staging = await mkdtemp(path.join(cacheDir, "stage-"));
             try {
-                const copy = path.join(staging, "pagefind");
+                const copy = path.join(staging, "orama");
                 await cp(output, copy, { recursive: true });
                 const digest = await indexDigest(copy);
                 await Bun.write(

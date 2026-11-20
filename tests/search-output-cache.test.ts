@@ -9,12 +9,11 @@ it("restores exact indexes and rejects changed HTML, versions or damaged files",
     try {
         const cacheDir = join(root, "cache");
         const outDir = join(root, "dist");
-        const index = join(outDir, "pagefind");
+        const index = join(outDir, "orama");
         const page = join(outDir, "index.html");
-        await mkdir(join(index, "cjk"), { recursive: true });
+        await mkdir(index, { recursive: true });
         await Bun.write(page, "first article");
-        await Bun.write(join(index, "pagefind.js"), "native");
-        await Bun.write(join(index, "cjk", "manifest.json"), "substrings");
+        await Bun.write(join(index, "index.bin"), "native");
         const create = (buildKey = "v1") =>
             createSearchOutputCache(cacheDir, outDir, ["index.html"], buildKey);
         await (await create()).save();
@@ -24,12 +23,11 @@ it("restores exact indexes and rejects changed HTML, versions or damaged files",
         expect(await (await create()).restore()).toBe(false);
         await Bun.write(page, "first article");
         expect(await (await create()).restore()).toBe(true);
-        expect(await Bun.file(join(index, "pagefind.js")).text()).toBe("native");
-        expect(await Bun.file(join(index, "cjk", "manifest.json")).text()).toBe("substrings");
+        expect(await Bun.file(join(index, "index.bin")).text()).toBe("native");
         await rm(index, { recursive: true });
-        await Bun.write(join(cacheDir, "latest", "pagefind", "pagefind.js"), "broken");
+        await Bun.write(join(cacheDir, "latest", "orama", "index.bin"), "broken");
         expect(await (await create()).restore()).toBe(false);
-        expect(await Bun.file(join(index, "pagefind.js")).exists()).toBe(false);
+        expect(await Bun.file(join(index, "index.bin")).exists()).toBe(false);
     } finally {
         await rm(root, { recursive: true, force: true });
     }

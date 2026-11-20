@@ -1,7 +1,9 @@
 import path from "node:path";
+import { insert } from "@orama/orama";
+import { persist } from "@orama/plugin-data-persistence";
 import { type DefaultTreeAdapterMap, parse } from "parse5";
-import { type CjkDocument, cjkGrams, gramShard, normalizeSearch } from "../utils/cjk-search";
-import { forEachBounded } from "./bounded-tasks";
+import { createSearchIndex, type SearchDocument, searchVector } from "../utils/orama-search";
+import { toRoutePath } from "../utils/public-routes";
 
 type Node = DefaultTreeAdapterMap["node"];
 const skipped = new Set(["script", "style", "template", "noscript", "nav", "footer", "form"]);
@@ -26,7 +28,7 @@ const attr = (node: Node, name: string) =>
     "attrs" in node ? node.attrs.find((item) => item.name === name)?.value : undefined;
 
 /** Extract only real indexed DOM, preserving adjacency across inline emphasis. */
-export function extractCjkDocument(html: string, url: string) {
+export function extractSearchDocument(html: string, url: string): SearchDocument | null {
     const document = parse(html);
     let language = "";
     let title = "";
@@ -34,7 +36,11 @@ export function extractCjkDocument(html: string, url: string) {
     let description = "";
     let keywords = "";
     let hasBody = false;
-    const filters: Record<string, string[]> = {};
+    let post = "";
+    let published = Number.MIN_SAFE_INTEGER;
+    let publishedDate = "";
+    let category = "";
+    const tags: string[] = [];
     function text(node: Node): string {
         if (
             "tagName" in node &&
@@ -52,16 +58,21 @@ export function extractCjkDocument(html: string, url: string) {
                 return;
             if (node.tagName === "title") documentTitle = text(node).trim();
             if (node.tagName === "html") language = attr(node, "lang") ?? "";
+            if (node.tagName === "meta") {
+                const property = attr(node, "property");
+                const value = attr(node, "content") ?? "";
+                if (property === "article:published_time") publishedDate = value;
+                if (property === "article:section") category = value;
+                if (property === "article:tag" && value) tags.push(value);
+            }
             if (node.tagName === "h1" && !title) title = text(node).trim();
             if (attr(node, "data-stalux-search-description") !== undefined)
                 description = text(node).trim();
             if (attr(node, "data-stalux-search-keywords") !== undefined)
                 keywords = attr(node, "data-search-keywords") ?? "";
-            const filter = attr(node, "data-pagefind-filter");
-            if (filter) {
-                const match = /^([^[\]:]+)\[([^\]]+)\]$/u.exec(filter);
-                if (match) filters[match[1] as string] = [attr(node, match[2] as string) ?? ""];
-            }
+            post = attr(node, "data-stalux-post-id") ?? post;
+            const sort = attr(node, "data-pagefind-sort");
+            if (sort?.startsWith("published:")) published = Number(sort.slice("published:".length));
             const body = attr(node, "data-pagefind-body") !== undefined;
             if (body) {
                 hasBody = true;
@@ -81,47 +92,48 @@ export function extractCjkDocument(html: string, url: string) {
         title: title || documentTitle || url,
         description,
         keywords,
-        language,
-        filters,
+        language: language.toLowerCase(),
+        post,
+        published,
+        publishedDate,
+        category,
+        tags,
         content,
     };
 }
 
-/** Content-addressed shards prevent mixed old/new deployments and keep downloads query-specific. */
-export async function writeCjkSearchIndex(outDir: string, htmlFiles: string[], base: string) {
-    const directory = path.join(outDir, "pagefind", "cjk");
-    async function asset(value: unknown) {
-        const json = JSON.stringify(value);
-        const hash = new Bun.CryptoHasher("sha256").update(json).digest("hex").slice(0, 20);
-        const file = `${hash}.json`;
-        await Bun.write(path.join(directory, file), json);
-        return file;
-    }
-    const extracted = new Map<string, NonNullable<ReturnType<typeof extractCjkDocument>>>();
-    await forEachBounded(htmlFiles, 6, async (file) => {
+export async function writeOramaIndex(
+    outDir: string,
+    htmlFiles: string[],
+    base: string,
+    trailingSlash: boolean,
+    cjk: boolean,
+) {
+    const database = createSearchIndex(cjk);
+    let count = 0;
+    for (const file of htmlFiles) {
         const html = await Bun.file(path.join(outDir, file)).text();
-        // Most output pages are archives/tags: don't parse pages without indexed sections.
-        if (!html.includes("data-pagefind-body")) return;
-        const url = `${base.replace(/\/$/u, "")}/${file.replace(/index\.html$/u, "")}`;
-        const record = extractCjkDocument(html, url);
-        if (record) extracted.set(file, record);
-    });
-    const documents: CjkDocument[] = [];
-    const postings: Record<string, Record<string, number[]>> = {};
-    for (const [, record] of [...extracted].sort(([a], [b]) => a.localeCompare(b))) {
-        const { content, ...meta } = record;
-        const id = documents.length;
-        documents.push({ ...meta, file: await asset({ content }) });
-        for (const gram of cjkGrams(normalizeSearch(content))) {
-            const key = gramShard(gram);
-            postings[key] ??= {};
-            const shard = postings[key];
-            shard[gram] ??= [];
-            shard[gram].push(id);
-        }
+        if (!html.includes("data-pagefind-body")) continue;
+        const route = toRoutePath(`/${file.replace(/(?:^|\/)index\.html$/u, "")}`, trailingSlash);
+        const url = `${base.replace(/\/$/u, "")}${route}`;
+        const document = extractSearchDocument(html, url);
+        if (!document) continue;
+        insert(
+            database,
+            {
+                ...document,
+                embedding: searchVector(
+                    `${document.title} ${document.description} ${document.keywords} ${document.content}`,
+                    cjk,
+                ),
+            },
+            url,
+        );
+        count++;
     }
-    const shards: Record<string, string> = {};
-    for (const [key, value] of Object.entries(postings)) shards[key] = await asset(value);
-    await Bun.write(path.join(directory, "manifest.json"), JSON.stringify({ documents, shards }));
-    return documents.length;
+    const serialized = await persist(database, "json");
+    if (typeof serialized !== "string") throw new Error("Orama did not serialize a JSON index");
+    const asset = path.join(outDir, "orama", "index.bin");
+    await Bun.write(asset, Bun.gzipSync(`{"cjk":${cjk},"data":${serialized},"count":${count}}`));
+    return { count, asset };
 }

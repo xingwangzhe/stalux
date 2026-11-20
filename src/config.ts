@@ -50,8 +50,11 @@ export interface StaluxOptions {
     /** Analytics 配置 */
     analytics?: AnalyticsConfig;
 
-    /** 构建后是否自动运行 Pagefind 索引（默认 true） */
+    /** 构建后是否生成搜索索引（默认 true）。沿用既有配置项以兼容消费项目。 */
     pagefind?: boolean;
+
+    /** 是否启用 Orama 的 CJK 分词和字符索引（默认 true） */
+    searchCjk?: boolean;
 
     /** 开发工具栏应用（默认 true） */
     devToolbar?: boolean;

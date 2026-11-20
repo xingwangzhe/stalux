@@ -1,33 +1,8 @@
 import { createClientLogger } from "./logger";
 
-import { ensureSearchStyles, upgradeAndOpenSearchDialog } from "./search-dialog";
+import { openSearchDialog } from "./search-dialog";
 
 const logger = createClientLogger("navigation");
-
-interface SearchDialog extends HTMLElement {
-    open?: () => void;
-    close?: () => void;
-}
-
-async function openSearchDialog(signal: AbortSignal): Promise<void> {
-    logger.debug("loading search UI");
-    await Promise.all([
-        import("@pagefind/component-ui"),
-        ensureSearchStyles(
-            document.querySelector<HTMLLinkElement>("link[data-stalux-search-style]"),
-        ),
-    ]);
-    if (signal.aborted) return;
-    const dialog = document.querySelector<SearchDialog>("pagefind-modal#search");
-    await upgradeAndOpenSearchDialog(
-        {
-            whenDefined: (name) => customElements.whenDefined(name),
-            upgrade: (element) => customElements.upgrade(element),
-        },
-        dialog,
-        signal,
-    );
-}
 
 const siteNav = document.querySelector<HTMLElement>("[data-ref='stalux-site-nav']");
 const siteHeader = document.querySelector<HTMLElement>(".stalux-site-header");
@@ -104,5 +79,5 @@ document.addEventListener("astro:after-swap", () => {
     drawer?.close();
     search.abort();
     search = new AbortController();
-    document.querySelector<SearchDialog>("pagefind-modal#search")?.close?.();
+    document.querySelector<HTMLDialogElement>("dialog#search")?.close();
 });

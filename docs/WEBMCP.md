@@ -12,15 +12,15 @@ Stalux 内置页面内 WebMCP 工具：支持 WebMCP 的浏览器代理或扩展
 | `stalux_get_post` | 按 abbrlink / 标题关键词取单篇元信息 | `/api/posts.json` |
 | `stalux_current_post` | 当前正在浏览的文章元信息 | `/api/posts.json` |
 | `stalux_random_post` | 随机挑一篇文章的元信息 | `/api/posts.json` |
-| `stalux_search_posts` | 全文搜索文章 | Pagefind `/pagefind/` |
-| `stalux_read_post` | 分段读取 Markdown；未导出时读取已索引纯文本 | Markdown / Pagefind |
+| `stalux_search_posts` | 全文搜索文章 | Orama `/orama/` |
+| `stalux_read_post` | 分段读取 Markdown；未导出时读取已索引纯文本 | Markdown / Orama |
 | `stalux_site_info` | 站点信息 + `llms.txt` / `llms-full.txt` 入口 | `site.yml`（构建期） |
 
 所有工具均为 `readOnlyHint: true`，不会写入站点数据或主动导航。
 
 ## 搜索工具
 
-`stalux_search_posts` 合并已发布元信息中的标题、标签、分类和摘要匹配，以及 [Pagefind JavaScript API](https://pagefind.app/docs/api/) 的正文命中，使用 `meta.title` 和 `plain_excerpt`，附带 `abbrlink` 和完整 URL。
+`stalux_search_posts` 合并已发布元信息中的标题、标签、分类和摘要匹配，以及 [Orama](https://docs.orama.com/docs/orama-js) 的正文命中，使用 `meta.title` 和 `plain_excerpt`，附带 `abbrlink` 和完整 URL。
 
 | 行为 | 说明 |
 | --- | --- |
@@ -29,7 +29,7 @@ Stalux 内置页面内 WebMCP 工具：支持 WebMCP 的浏览器代理或扩展
 | 全文索引不可用 | 元信息匹配标记 `source: "metadata"`、`fullText: false` |
 | 无匹配且索引不可用 | 返回索引不可用错误，不把故障误报成全文无匹配 |
 | 高亮 HTML | 不作为工具摘要返回 |
-| 失败加载 | 元信息及 Pagefind 模块的失败加载不会永久占用缓存 |
+| 失败加载 | 元信息及 Orama 模块的失败加载不会永久占用缓存 |
 
 ## 读取工具
 
@@ -39,7 +39,7 @@ Stalux 内置页面内 WebMCP 工具：支持 WebMCP 的浏览器代理或扩展
 | --- | --- |
 | 偏移单位 | UTF-16 单元，不拆开 emoji 等代理对 |
 | 开启 `promote.export_md` | 返回 `format: "text/markdown"` 和 `markdown` |
-| 未开启 / Markdown 不可用 | 使用 Pagefind 的 `post` 精确过滤读取，返回 `format: "text/plain"` 和 `content`，不承诺保留 Markdown 语法或未索引内容 |
+| 未开启 / Markdown 不可用 | 使用 Orama 的 `post` 精确过滤读取，返回 `format: "text/plain"` 和 `content`，不承诺保留 Markdown 语法或未索引内容 |
 | 续读 | 返回 `totalChars`、`truncated`、`nextOffset`；`nextOffset` 非空时再次传入该偏移，直到为 `null` |
 | 都关闭 | 返回 `CONTENT_UNAVAILABLE` |
 

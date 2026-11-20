@@ -22,14 +22,10 @@ import { mermaidHast, mermaidMdast } from "@xingwangzhe/satteri-mermaid";
 import { photoswipe } from "@xingwangzhe/satteri-photoswipe";
 import type { AstroIntegration } from "astro";
 import { fontProviders } from "astro/config";
-// pagefind 是 ESM-only 包，需要在模块顶层导入
-// 因为 astro:build:done 钩子中 Vite module runner 已关闭，无法动态 import
-import { createIndex as pagefindCreateIndex } from "pagefind";
 import { parse } from "parse5";
 import { parse as parseYaml } from "yaml";
 import type { StaluxOptions } from "./config";
 import { expressiveCode } from "./expressive-code";
-import { writeCjkSearchIndex } from "./internal/cjk-search-index";
 import { staluxComponentsAlias } from "./internal/components-plugin";
 import {
     clearPageFontSubsets,
@@ -48,6 +44,7 @@ import { type ImageDimensions, updateLocalImageDimensions } from "./internal/ima
 import { createInjectedRoutes } from "./internal/injected-routes";
 import { markdownPropagationPlugin } from "./internal/markdown-propagation";
 import { containMermaidSvgs } from "./internal/offscreen-layout";
+import { writeOramaIndex } from "./internal/orama-search-index";
 import { createPageOutputCache } from "./internal/page-output-cache";
 import { loadCoverEncoder, restoreCoverFiles, upgradeCoverImages } from "./internal/post-cover";
 import { isPluginProject } from "./internal/project-mode";
@@ -60,7 +57,7 @@ import {
     prepareSatteriProcessor,
 } from "./internal/satteri-config";
 import { createSearchOutputCache } from "./internal/search-output-cache";
-import { searchStylePlugin } from "./internal/search-style";
+import { searchEntryPlugin } from "./internal/search-style";
 import { createViteAliases } from "./internal/vite-aliases";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { imageCaptions } from "./plugins/image-captions";
@@ -129,8 +126,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     // is served from the page-output cache still finds its file on disk.
     let coverCacheDir = "";
 
-    let searchBase = "/";
     let searchCacheDir: string;
+    let searchBase = "/";
     let trailingSlash = false;
     let siteOrigin: string | undefined;
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
@@ -198,7 +195,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                                 "@swup/preload-plugin",
                                 "@swup/scroll-plugin",
                                 "@microsoft/clarity",
-                                "@pagefind/component-ui",
                                 "@waline/client",
                                 "@xingwangzhe/tags-cloud",
                                 "photoswipe",
@@ -217,7 +213,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         },
                         plugins: [
                             swupDebugPlugin(command === "dev" || Bun.env.STALUX_SWUP_DEBUG === "1"),
-                            searchStylePlugin(command === "dev", config.base),
+                            searchEntryPlugin(),
                             ...(command === "build"
                                 ? [markdownPropagationPlugin(), compactStylesPlugin(srcDir)]
                                 : []),
@@ -665,21 +661,22 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // 后处理：Pagefind 搜索索引。启用时任何失败都必须让构建失败，
                 // 避免发布一个页面正常但搜索已损坏的产物。
                 if (opt.pagefind) {
-                    const pagefindStarted = performance.now();
-                    const searchOutputDir = path.join(outDir, "pagefind");
+                    const searchStarted = performance.now();
+                    const searchOutputDir = path.join(outDir, "orama");
                     let cache: Awaited<ReturnType<typeof createSearchOutputCache>> | undefined;
-                    // Preserve any pagefind/ files supplied in the project's public folder.
+                    // Preserve any orama/ files supplied in the project's public folder.
                     if (!existsSync(searchOutputDir)) {
                         try {
                             const versions = await Promise.all(
                                 [
                                     path.join(sourceDir, "index.ts"),
-                                    path.join(sourceDir, "internal/cjk-search-index.ts"),
                                     path.join(sourceDir, "internal/search-output-cache.ts"),
-                                    path.join(sourceDir, "utils/cjk-search.ts"),
+                                    path.join(sourceDir, "internal/orama-search-index.ts"),
+                                    path.join(sourceDir, "utils/orama-search.ts"),
+                                    path.join(sourceDir, "../package.json"),
                                     path.resolve(path.dirname(parserEntry), "../package.json"),
                                     path.resolve(
-                                        path.dirname(resolveModule("pagefind")),
+                                        path.dirname(resolveModule("@orama/orama")),
                                         "../package.json",
                                     ),
                                 ].map((file) => Bun.file(file).text()),
@@ -688,11 +685,16 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                                 searchCacheDir,
                                 outDir,
                                 htmlFiles.filter((entry) => entry.endsWith(".html")),
-                                JSON.stringify([searchBase, pageEntries, versions]),
+                                JSON.stringify([
+                                    searchBase,
+                                    trailingSlash,
+                                    opt.searchCjk ?? true,
+                                    versions,
+                                ]),
                             );
                             if (await cache.restore()) {
                                 logger.info(
-                                    `restored search indexes (${(performance.now() - pagefindStarted).toFixed(1)}ms)`,
+                                    `restored search indexes (${(performance.now() - searchStarted).toFixed(1)}ms)`,
                                 );
                                 return;
                             }
@@ -700,50 +702,23 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                             logger.debug(`search cache unavailable: ${describeError(error)}`);
                         }
                     }
-                    logger.info("Running Pagefind indexer...");
-
+                    logger.info("Building Orama hybrid search index...");
                     try {
-                        const { index, errors } = await pagefindCreateIndex({
-                            includeCharacters: "+#._",
-                        });
-
-                        if (!index) {
-                            throw new Error(
-                                `Pagefind failed to create index: ${errors?.join("; ") ?? "unknown error"}`,
-                            );
-                        }
-
-                        // Both indexers read final HTML and write distinct files.
-                        // Wait for both writers before returning a build failure.
-                        const [pagefind, cjk] = await Promise.allSettled([
-                            (async () => {
-                                const { page_count, errors: crawlErrors } =
-                                    await index.addDirectory({ path: outDir });
-                                if (crawlErrors.length) throw new Error(crawlErrors.join("; "));
-                                if (page_count === 0) {
-                                    throw new Error("Pagefind did not index any pages");
-                                }
-                                const { outputPath, errors: writeErrors } = await index.writeFiles({
-                                    outputPath: searchOutputDir,
-                                });
-                                if (writeErrors.length) throw new Error(writeErrors.join("; "));
-                                return { page_count, outputPath };
-                            })(),
-                            writeCjkSearchIndex(outDir, pageEntries, searchBase),
-                        ]);
-                        if (pagefind.status === "rejected") throw pagefind.reason;
-                        if (cjk.status === "rejected") throw cjk.reason;
-                        logger.info(`CJK substring index: ${cjk.value} pages`);
-
-                        const { page_count, outputPath } = pagefind.value;
+                        const { count, asset } = await writeOramaIndex(
+                            outDir,
+                            htmlFiles.filter((entry) => entry.endsWith(".html")),
+                            searchBase,
+                            trailingSlash,
+                            opt.searchCjk ?? true,
+                        );
                         logger.info(
-                            `indexed ${page_count} pages → ${outputPath} (${(performance.now() - pagefindStarted).toFixed(1)}ms)`,
+                            `indexed ${count} documents → ${asset} (${(performance.now() - searchStarted).toFixed(1)}ms)`,
                         );
                         await cache?.save().catch((error) => {
                             logger.debug(`search cache write skipped: ${describeError(error)}`);
                         });
                     } catch (error) {
-                        logger.error(`Pagefind indexing failed: ${describeError(error)}`);
+                        logger.error(`Orama indexing failed: ${describeError(error)}`);
                         throw error;
                     }
                 } else {

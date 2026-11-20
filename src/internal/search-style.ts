@@ -1,44 +1,19 @@
 import type { Plugin } from "vite";
 
-const publicId = "virtual:stalux-search-style";
-const virtualId = `\0${publicId}`;
-
-/** Astro dev treats a direct CSS ?url import as a module script; keep it a URL-only leaf. */
-export function searchStylePlugin(development: boolean, base: string): Plugin {
-    const stylesheet = Bun.resolveSync(
-        "@pagefind/component-ui/css",
-        Bun.fileURLToPath(new URL(".", import.meta.url)),
-    ).replaceAll("\\", "/");
-    let building = false;
+export function searchEntryPlugin(): Plugin {
     return {
-        name: "stalux:search-style",
-        configResolved(config) {
-            building = config.command === "build";
-        },
+        name: "stalux:search-entry",
+        apply: "build",
         buildStart() {
-            if (building && this.environment.name === "client")
-                this.emitFile({
-                    type: "chunk",
-                    id: Bun.fileURLToPath(
-                        new URL("../scripts/search-engine-entry.ts", import.meta.url),
-                    ),
-                    fileName: "pagefind-enhanced/pagefind.js",
-                    preserveSignature: "strict",
-                });
-        },
-        configureServer(server) {
-            // A linked package can be outside the consumer's workspace root.
-            server.config.server.fs.allow.push(stylesheet);
-        },
-        async resolveId(id, importer) {
-            if (id !== publicId) return;
-            return development
-                ? virtualId
-                : this.resolve(`${stylesheet}?url`, importer, { skipSelf: true });
-        },
-        load(id) {
-            if (id !== virtualId) return;
-            return `export default ${JSON.stringify(`${base.replace(/\/$/u, "")}/@fs${stylesheet}`)};`;
+            if (this.environment.name !== "client") return;
+            this.emitFile({
+                type: "chunk",
+                id: Bun.fileURLToPath(
+                    new URL("../scripts/search-engine-entry.ts", import.meta.url),
+                ),
+                fileName: "pagefind-enhanced/pagefind.js",
+                preserveSignature: "strict",
+            });
         },
     };
 }
