@@ -14,7 +14,6 @@ import { buildWalineProps } from "@utils/waline";
 interface Props {
     title: string;
     description?: string;
-    postId?: string | number;
     date?: string;
     updated?: string | undefined;
     readingMinutes?: number;
@@ -59,7 +58,6 @@ const walineConfig = walineSection?.serverURL
 
         <!-- Main Content -->
         <PostContent
-            postId={props.postId}
             title={props.title}
             description={props.description}
             date={props.date}

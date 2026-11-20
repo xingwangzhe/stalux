@@ -89,7 +89,7 @@ Markdown 特性统计继续复用 Sätteri MDAST/HAST 插件。Markdown 导出�
 
 ### 静态博客 WebMCP 与增量缓存
 
-页面工具读取静态 JSON、Markdown 和 Orama 索引。Orama 的标题是 `meta.title`，摘要使用 `plain_excerpt`。索引的 `post` 为文章 abbrlink，可用 `search(null, { filters: { post: id } })` 精确读取已索引纯文本。Markdown 未导出时不得把 HTML 404/SPA 回退当成 Markdown；分段输出必须返回格式、总长度、截断标记及续读偏移。部分元信息搜索必须明确 `fullText: false`。不得给静态端点伪造动态限流余量或不存在的 HTTP 错误协议。
+页面工具读取静态 JSON、Markdown 和 Orama 索引。工具直接读取 Orama 的 `hit.document`。索引里的 `post` 是文章 abbrlink，用它精确过滤可读取正文纯文本。Markdown 未导出时不得把 HTML 404/SPA 回退当成 Markdown；分段输出必须返回格式、总长度、截断标记及续读偏移。部分元信息搜索必须明确 `fullText: false`。不得给静态端点伪造动态限流余量或不存在的 HTTP 错误协议。
 
 主题 YAML 配置必须进入共享 `runtime-cache-key`，文章 HTML、分类/标签页及文章 Markdown 端点复用此键。只按文章日期恢复会忽略 `promote.export_md`、AI 工具启停、版权和站点配置变动。配置变动验收必须检查恢复页面里的实际开关；不能用清空真实项目缓存掩盖失效缺陷。
 

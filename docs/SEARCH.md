@@ -12,6 +12,8 @@ Stalux 从 Astro 内容集合生成 Orama PT15 索引。开发期按需响应 `/
 
 从 1.70 之前的版本升级时，把 `pagefind: false` 改为 `orama: false`，把 `searchCjk: false` 改为 `orama: { cjk: false }`。旧键会触发配置错误。原有 `searchKeywords` frontmatter 继续可用。
 
+自 v1.75 起，搜索结果和按文章读取直接使用 Orama 命中记录。文章 ID 存在索引的 `post` 字段中，文章 HTML 无需搜索专用属性。
+
 ## 索引内容
 
 | 字段 | 是否参与检索 |

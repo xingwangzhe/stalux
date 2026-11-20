@@ -9,7 +9,7 @@ import {
 import { toRoutePath } from "../utils/public-routes";
 import { sitePath } from "../utils/site-path";
 import { navigate } from "./navigation-client";
-import { loadOramaSearch } from "./search-engine";
+import { loadOramaSearch } from "./orama-client";
 
 let pending: Promise<Awaited<ReturnType<typeof loadOramaSearch>>> | undefined;
 

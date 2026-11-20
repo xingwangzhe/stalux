@@ -20,7 +20,7 @@ Stalux 内置页面内 WebMCP 工具：支持 WebMCP 的浏览器代理或扩展
 
 ## 搜索工具
 
-`stalux_search_posts` 合并已发布元信息中的标题、标签、分类和摘要匹配，以及 [Orama](https://docs.orama.com/docs/orama-js) 的正文命中，使用 `meta.title` 和 `plain_excerpt`，附带 `abbrlink` 和完整 URL。
+`stalux_search_posts` 合并已发布元信息中的标题、标签、分类和摘要匹配，以及 [Orama](https://docs.orama.com/docs/orama-js) 的正文命中，直接读取 `hit.document` 中的标题和正文，并从正文截取纯文本摘要。结果附带 `abbrlink` 和完整 URL。
 
 | 行为 | 说明 |
 | --- | --- |

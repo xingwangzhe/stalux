@@ -144,19 +144,17 @@ describe("static blog WebMCP tools", () => {
         });
     });
     it("executes all seven tools using static metadata, Markdown and real Orama field names", async () => {
-        const search = vi.fn().mockResolvedValue({
-            results: [
-                { data: async () => ({ url: "/about/", meta: { title: "About" } }) },
-                {
-                    data: async () => ({
-                        url: "/posts/a/",
-                        meta: { title: "Orama title" },
-                        plain_excerpt: "Plain excerpt",
-                        excerpt: "<mark>HTML</mark>",
-                    }),
+        const search = vi.fn().mockResolvedValue([
+            { document: { post: "", url: "/about/", title: "About", content: "" } },
+            {
+                document: {
+                    post: "a",
+                    url: "/posts/a/",
+                    title: "Orama title",
+                    content: "Plain excerpt",
                 },
-            ],
-        });
+            },
+        ]);
         state.loadOrama.mockResolvedValue({ search });
         const { fetcher } = await setup();
         expect(await call("list_posts", { page: 100, pageSize: 1 })).toMatchObject({
@@ -201,9 +199,11 @@ describe("static blog WebMCP tools", () => {
     });
 
     it("reads the exact Orama article when Markdown exports are disabled", async () => {
-        const search = vi.fn().mockResolvedValue({
-            results: [{ data: async () => ({ url: "/posts/a/", content: "Indexed plain text" }) }],
-        });
+        const search = vi
+            .fn()
+            .mockResolvedValue([
+                { document: { post: "a", url: "/posts/a/", content: "Indexed plain text" } },
+            ]);
         state.loadOrama.mockResolvedValue({ search });
         const { fetcher } = await setup(false);
         expect(await call("read_post", { id: "a" })).toMatchObject({
@@ -212,7 +212,7 @@ describe("static blog WebMCP tools", () => {
             content: "Indexed plain text",
             url: "https://blog.test/posts/a/",
         });
-        expect(search).toHaveBeenCalledWith(null, { filters: { post: "a" } });
+        expect(search).toHaveBeenCalledWith("", "a");
         expect(fetcher.mock.calls.every(([url]) => url.endsWith("posts.json"))).toBe(true);
     });
 
@@ -277,7 +277,7 @@ describe("static blog WebMCP tools", () => {
     it("reports Orama search failures and refuses HTML fallbacks masquerading as Markdown", async () => {
         const { fetcher } = await setup();
         state.loadOrama.mockResolvedValue({
-            search: vi.fn().mockRejectedValue(new Error("bad wasm")),
+            search: vi.fn().mockRejectedValue(new Error("search failed")),
         });
         expect(await call("search_posts", { keyword: "test" })).toMatchObject({
             ok: false,

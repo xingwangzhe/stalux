@@ -445,6 +445,12 @@ assert(
 const existingAssets = new Set(
     files.map((file) => `/${path.relative(dist, file).split(path.sep).join("/")}`),
 );
+for (const [file, source] of assetContents) {
+    const legacyMarker = file.endsWith(".html")
+        ? /\s(?:data-pagefind-[\w-]+|data-stalux-post-id)\s*(?:[=>]|\s)/iu
+        : /\b(?:data-pagefind-[\w-]+|data-stalux-post-id|pagefind-enhanced|plain_excerpt)\b/u;
+    assert(!legacyMarker.test(source), `${file}: obsolete search markup or client field`);
+}
 const missingAssetReferences = findMissingAssetReferences(assetContents, existingAssets);
 
 assert(htmlCount >= 40, `expected at least 40 HTML pages, found ${htmlCount}`);
@@ -453,7 +459,14 @@ const oramaIndex = Bun.file(path.join(dist, "orama", "index.bin"));
 assert(oramaIndex.size > 0, "Orama search index is missing");
 const searchArtifact = JSON.parse(
     new TextDecoder().decode(Bun.gunzipSync(new Uint8Array(await oramaIndex.arrayBuffer()))),
-) as { cjk: boolean; count: number };
+) as {
+    cjk: boolean;
+    count: number;
+    data: { docs: { docs: Record<string, { post: string; url: string }> } };
+};
+const oramaPosts = new Map(
+    Object.values(searchArtifact.data.docs.docs).map(({ post, url }) => [post, url]),
+);
 assert(searchArtifact.cjk && searchArtifact.count > 0, "Expected a populated Orama CJK index");
 assert(pages.home.includes('data-ref="stalux-search-btn"'), "Orama search button is missing");
 assert(
@@ -537,20 +550,8 @@ for (const post of postIndex) {
             `${post.url} should use the author avatar for its default sharing card`,
         );
     }
-    let filterFound = false;
-    function checkArticleFilter(node: DefaultTreeAdapterMap["node"]): void {
-        if ("tagName" in node && node.tagName === "section") {
-            const attributes = new Map(
-                node.attrs.map((attribute) => [attribute.name, attribute.value]),
-            );
-            if (attributes.has("data-stalux-gallery-body")) {
-                filterFound = attributes.get("data-stalux-post-id") === post.abbrlink;
-            }
-        }
-        if ("childNodes" in node) for (const child of node.childNodes) checkArticleFilter(child);
-    }
-    checkArticleFilter(parse(html));
-    assert(filterFound, `${post.url} is missing its article body ID`);
+    const indexedUrl = oramaPosts.get(post.abbrlink);
+    assert(indexedUrl === post.url, `${post.url} is missing from the Orama index`);
     const count = (
         html.match(new RegExp(`<aside[^>]*class="${cssClass("stalux-article-summary")}"`, "gu")) ??
         []

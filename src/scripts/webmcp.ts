@@ -479,44 +479,30 @@ function searchPostsTool(): WebMCPTool {
             options?.signal?.throwIfAborted();
             if (!orama) return fallback("INDEX_UNAVAILABLE");
             try {
-                const result = await orama.search(keyword);
-                if (!(result && Array.isArray(result.results))) return fallback("SEARCH_FAILED");
+                const hits = await orama.search(keyword);
                 const posts: Record<string, unknown>[] = [...metadataMatches];
                 const seen = new Set(metadataMatches.map((post) => post.abbrlink));
-                for (
-                    let offset = 0;
-                    offset < result.results.length && posts.length < limit;
-                    offset += MAX_SEARCH_RESULTS
-                ) {
+                const normalize = (value: string) => value.normalize("NFKC").toLowerCase();
+                const needle =
+                    normalize(keyword)
+                        .replace(/^"(.+)"$/u, "$1")
+                        .split(/\s+/u)[0] ?? "";
+                for (const { document: record } of hits) {
+                    if (posts.length >= limit) break;
                     options?.signal?.throwIfAborted();
-                    const batch = await Promise.all(
-                        result.results
-                            .slice(offset, offset + MAX_SEARCH_RESULTS)
-                            .map(async (entry) => {
-                                try {
-                                    return await entry.data();
-                                } catch {
-                                    return null;
-                                }
-                            }),
-                    );
-                    for (const data of batch) {
-                        if (!data) continue;
-                        const id = postIdFromUrl(data.url);
-                        const post = id ? findById(list, id) : undefined;
-                        if (!post || seen.has(post.abbrlink)) continue;
-                        seen.add(post.abbrlink);
-                        posts.push({
-                            abbrlink: post.abbrlink,
-                            url: new URL(data.url, location.origin).href,
-                            title:
-                                typeof data.meta?.title === "string" && data.meta.title
-                                    ? data.meta.title
-                                    : post.title,
-                            excerpt: (data.plain_excerpt ?? post.desc ?? "").slice(0, 240),
-                        });
-                        if (posts.length >= limit) break;
-                    }
+                    if (typeof record.post !== "string" || typeof record.url !== "string") continue;
+                    const post = findById(list, record.post);
+                    if (!post || seen.has(post.abbrlink)) continue;
+                    seen.add(post.abbrlink);
+                    const position = Math.max(0, normalize(record.content).indexOf(needle));
+                    const start = Math.max(0, position - 60);
+                    const end = Math.min(record.content.length, start + 180);
+                    posts.push({
+                        abbrlink: post.abbrlink,
+                        url: new URL(record.url, location.origin).href,
+                        title: record.title || post.title,
+                        excerpt: `${start ? "…" : ""}${record.content.slice(start, end)}${end < record.content.length ? "…" : ""}`,
+                    });
                 }
                 return {
                     ok: true,
@@ -622,15 +608,12 @@ function readPostTool(): WebMCPTool {
                         ),
                     );
                 try {
-                    const result = await orama.search(null, { filters: { post: id } });
-                    for (const entry of result.results) {
-                        const data = await entry.data();
-                        if (postIdFromUrl(data.url) === id && typeof data.content === "string") {
-                            content = data.content;
-                            format = "text/plain";
-                            source = new URL(data.url, location.origin).href;
-                            break;
-                        }
+                    const [hit] = await orama.search("", id);
+                    const record = hit?.document;
+                    if (record?.post === id && typeof record.url === "string") {
+                        content = record.content;
+                        format = "text/plain";
+                        source = new URL(record.url, location.origin).href;
                     }
                 } catch {
                     return err(

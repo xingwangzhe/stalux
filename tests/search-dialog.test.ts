@@ -11,7 +11,7 @@ const setup = vi.hoisted(() => ({
     })),
     defineCustomElement: vi.fn(),
 }));
-vi.mock("../src/scripts/search-engine", () => ({ loadOramaSearch: setup.loadOramaSearch }));
+vi.mock("../src/scripts/orama-client", () => ({ loadOramaSearch: setup.loadOramaSearch }));
 vi.mock("@orama/wc-components/dist/components/orama-search-box.js", () => ({
     defineCustomElement: setup.defineCustomElement,
 }));

@@ -6,7 +6,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 10:00:00"
-updated: "2026-11-20 12:44:24"
+updated: "2026-11-20 12:52:05"
 desc: Complete configuration file structure of the Stalux theme — each config section is now a separate YAML file under stalux/config/, with Zod schema validation.
 abbrlink: 0b563d42
 ---
@@ -46,7 +46,7 @@ stalux({ orama: { cjk: true } });
 | `pagefind: false` | `orama: false` |
 | `searchCjk: false` | `orama: { cjk: false }` |
 
-The old keys produce a migration error. WebMCP uses the same `/orama/index.bin` as the search dialog.
+The old keys produce a migration error. Since v1.75, WebMCP reads the Orama search hits directly from the same `/orama/index.bin` used by the search dialog. The article identifier lives in the index and requires no article HTML attribute.
 
 ## Page URL Style
 
