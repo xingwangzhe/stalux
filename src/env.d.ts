@@ -8,3 +8,5 @@ declare module "virtual:stalux-swup-debug" {
     const Debug: (new () => import("swup").Plugin) | null;
     export default Debug;
 }
+
+declare const __STALUX_ORAMA_ENABLED__: boolean;

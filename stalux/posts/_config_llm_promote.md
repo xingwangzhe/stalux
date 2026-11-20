@@ -8,7 +8,7 @@ tags:
 categories:
     - Theme Config
 date: "2026-07-10 20:00:00"
-updated: "2026-10-14 14:00:00"
+updated: "2026-11-20 12:43:16"
 desc: Configure static agent context, Markdown exports, llms discovery files and read-only browser WebMCP tools.
 abbrlink: a1b2c3d4
 ---
@@ -70,9 +70,9 @@ WebMCP runs in the page through `document.modelContext`, with a polyfill where r
 | Tool behavior | Data and limits |
 | --- | --- |
 | Metadata | `/api/posts.json`, published posts only |
-| Search | Metadata matches plus Pagefind indexed body hits; at most 10 results, title matches first |
-| Partial search | When Pagefind fails, metadata matches explicitly return `fullText: false`; a failed index is not a successful empty full-text result |
-| Article read | Markdown export first; otherwise exact Pagefind `post` filter, returning indexed plain text |
+| Search | Metadata matches plus Orama indexed body hits; at most 10 results, title matches first |
+| Partial search | When Orama fails, metadata matches explicitly return `fullText: false`; a failed index is not a successful empty full-text result |
+| Article read | Markdown export first; otherwise exact Orama `post` filter, returning indexed plain text |
 | Long reads | `offset` and `maxChars` (maximum 50000 UTF-16 units), with `totalChars`, `truncated` and `nextOffset`; surrogate pairs stay intact |
 | Lifecycle | Register on `astro:page-load`; unregister and cancel old work before swap |
 | Static HTTP | Status codes and rate limiting depend on the host; the theme exposes no dynamic quota API |
@@ -86,4 +86,4 @@ bun run validate
 rg --files dist | rg '(^|/)(llms(-full)?\.txt|openapi\.json|posts\.json)$'
 ```
 
-A route's existence alone does not prove its enabled content. Check `llms.txt` and `llms-full.txt` against the configured level, verify the context section is visually clipped, and invoke the seven tools through the actual browser API. Test both `export_md: true` and `false`: Pagefind fallback requires a production build and its search assets. Development mode may have no full-text index.
+A route's existence alone does not prove its enabled content. Check `llms.txt` and `llms-full.txt` against the configured level, verify the context section is visually clipped, and invoke the seven tools through the actual browser API. Test both `export_md: true` and `false`: Orama serves the index on demand in development and writes `/orama/index.bin` during a production build. Set `orama: false` to disable the index.

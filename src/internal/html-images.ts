@@ -22,7 +22,7 @@ export function findHtmlImages(
             const location = node.sourceCodeLocation;
             if (
                 node.tagName === "section" &&
-                node.attrs.some((attr) => attr.name === "data-pagefind-body")
+                node.attrs.some((attr) => attr.name === "data-stalux-gallery-body")
             )
                 body = location?.startOffset;
             if (node.tagName === "img" && location?.startTag) {

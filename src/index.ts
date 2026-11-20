@@ -55,7 +55,6 @@ import {
     collectPluginNames,
     prepareSatteriProcessor,
 } from "./internal/satteri-config";
-import { searchEntryPlugin } from "./internal/search-style";
 import { createViteAliases } from "./internal/vite-aliases";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
 import { imageCaptions } from "./plugins/image-captions";
@@ -110,9 +109,13 @@ function buildFontsConfig(codeNormal: string, codeItalic?: string) {
  * ```
  */
 export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
+    if ("pagefind" in options || "searchCjk" in options) {
+        throw new Error("Stalux 1.70: replace pagefind with orama and searchCjk with orama.cjk");
+    }
+    const searchEnabled = options.orama !== false;
+    const searchCjk = typeof options.orama === "object" ? (options.orama.cjk ?? true) : true;
     const opt: StaluxOptions = {
         contentDir: options.contentDir ?? "stalux",
-        pagefind: options.pagefind ?? true,
         devToolbar: options.devToolbar ?? true,
         sitemap: options.sitemap ?? true,
         expressiveCode: options.expressiveCode ?? true,
@@ -208,7 +211,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         },
                         plugins: [
                             swupDebugPlugin(command === "dev" || Bun.env.STALUX_SWUP_DEBUG === "1"),
-                            searchEntryPlugin(),
                             ...(command === "build"
                                 ? [markdownPropagationPlugin(), compactStylesPlugin(srcDir)]
                                 : []),
@@ -219,7 +221,8 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                                 Bun.env.STALUX_SWUP_DEBUG === "1",
                             ),
                             __STALUX_TRAILING_SLASH__: JSON.stringify(trailingSlash),
-                            __STALUX_SEARCH_CJK__: JSON.stringify(opt.searchCjk ?? true),
+                            __STALUX_ORAMA_ENABLED__: JSON.stringify(searchEnabled),
+                            __STALUX_SEARCH_CJK__: JSON.stringify(searchCjk),
                             __STALUX_COMPACT_STYLES__: JSON.stringify(command === "build"),
                             __STALUX_DEBUG__: JSON.stringify(
                                 Bun.env.STALUX_DEBUG === "1" || Bun.argv.includes("--verbose"),
@@ -236,7 +239,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 injectScript("page-ssr", `import "${srcDir}/styles/generated.css";`);
                 injectScript("page", `import "${srcDir}/scripts/core-runtime.ts";`);
 
-                if (opt.pagefind) {
+                if (searchEnabled) {
                     injectRoute({
                         pattern: "/orama/index.bin",
                         entrypoint: new URL("./internal/orama-search-endpoint.ts", import.meta.url),
@@ -269,7 +272,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 }
 
                 configLogger.debug(
-                    `contentDir=${opt.contentDir}; toolbar=${opt.devToolbar}; pagefind=${opt.pagefind}`,
+                    `contentDir=${opt.contentDir}; toolbar=${opt.devToolbar}; orama=${searchEnabled}`,
                 );
 
                 // 5. 注入 satteri 插件（Mermaid/字数统计/特性标记/数学公式/PhotoSwipe），按插件 name 去重

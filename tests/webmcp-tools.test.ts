@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createOramaIndex } from "../src/internal/orama-search-index";
 
 type Tool = {
     name: string;
@@ -10,10 +11,10 @@ type Tool = {
 const state = vi.hoisted(() => ({
     tools: new Map<string, Tool>(),
     mount: undefined as undefined | (() => () => void),
-    loadPagefind: vi.fn(),
+    loadOrama: vi.fn(),
 }));
 vi.mock("@w3c/webmcp-polyfill", () => ({ installWebMCP: vi.fn() }));
-vi.mock("../src/scripts/pagefind-api", () => ({ loadPagefind: state.loadPagefind }));
+vi.mock("../src/scripts/orama-api", () => ({ loadOrama: state.loadOrama }));
 vi.mock("../src/scripts/page-runtime", () => ({
     registerPageLifecycle: (_key: string, mount: () => () => void) => {
         state.mount = mount;
@@ -37,6 +38,7 @@ let cleanup: (() => void) | undefined;
 async function setup(markdownExport = true) {
     state.tools.clear();
     const document = {
+        documentElement: { lang: "zh-CN" },
         body: {
             dataset: {
                 staluxSiteTitle: "Test Blog",
@@ -76,12 +78,63 @@ afterEach(() => {
     cleanup = undefined;
     vi.unstubAllGlobals();
     vi.resetModules();
-    state.loadPagefind.mockReset();
+    state.loadOrama.mockReset();
 });
 
 describe("static blog WebMCP tools", () => {
+    it("uses the Orama artifact for body search and exact article reads, and respects the off switch", async () => {
+        const { fetcher } = await setup(false);
+        const { loadOrama } = await vi.importActual<typeof import("../src/scripts/orama-api")>(
+            "../src/scripts/orama-api",
+        );
+        state.loadOrama.mockImplementation(loadOrama);
+        vi.stubGlobal("__STALUX_ORAMA_ENABLED__", false);
+        expect(await call("search_posts", { keyword: "Astro" })).toMatchObject({
+            source: "metadata",
+            fullText: false,
+        });
+        expect(fetcher.mock.calls.every(([url]) => url.endsWith("posts.json"))).toBe(true);
+
+        const bytes = await createOramaIndex(
+            [
+                {
+                    url: "/posts/a/",
+                    post: "a",
+                    language: "zh-cn",
+                    title: "First article",
+                    description: "",
+                    keywords: "",
+                    content: "正文里写了一看好家伙",
+                    published: 1,
+                },
+            ],
+            true,
+        );
+        vi.stubGlobal("__STALUX_ORAMA_ENABLED__", true);
+        fetcher.mockResolvedValueOnce(new Response(null, { status: 503 }));
+        expect(await call("search_posts", { keyword: "好家伙" })).toMatchObject({
+            ok: false,
+            code: "INDEX_UNAVAILABLE",
+        });
+        fetcher.mockResolvedValueOnce(new Response(bytes));
+        expect(await call("search_posts", { keyword: "好家伙" })).toMatchObject({
+            ok: true,
+            source: "orama+metadata",
+            fullText: true,
+            posts: [{ abbrlink: "a" }],
+        });
+        expect(await call("read_post", { id: "a" })).toMatchObject({
+            ok: true,
+            format: "text/plain",
+            content: "正文里写了一看好家伙",
+        });
+        expect(fetcher.mock.calls.filter(([url]) => url.endsWith("/orama/index.bin"))).toHaveLength(
+            2,
+        );
+    });
+
     it("labels metadata-only search when the full-text index is unavailable", async () => {
-        state.loadPagefind.mockResolvedValue(null);
+        state.loadOrama.mockResolvedValue(null);
         await setup();
         expect(await call("search_posts", { keyword: "Astro" })).toMatchObject({
             ok: true,
@@ -90,21 +143,21 @@ describe("static blog WebMCP tools", () => {
             posts: [{ abbrlink: "a" }],
         });
     });
-    it("executes all seven tools using static metadata, Markdown and real Pagefind field names", async () => {
+    it("executes all seven tools using static metadata, Markdown and real Orama field names", async () => {
         const search = vi.fn().mockResolvedValue({
             results: [
                 { data: async () => ({ url: "/about/", meta: { title: "About" } }) },
                 {
                     data: async () => ({
                         url: "/posts/a/",
-                        meta: { title: "Pagefind title" },
+                        meta: { title: "Orama title" },
                         plain_excerpt: "Plain excerpt",
                         excerpt: "<mark>HTML</mark>",
                     }),
                 },
             ],
         });
-        state.loadPagefind.mockResolvedValue({ search });
+        state.loadOrama.mockResolvedValue({ search });
         const { fetcher } = await setup();
         expect(await call("list_posts", { page: 100, pageSize: 1 })).toMatchObject({
             ok: true,
@@ -124,7 +177,7 @@ describe("static blog WebMCP tools", () => {
             posts: [
                 {
                     abbrlink: "a",
-                    title: "Pagefind title",
+                    title: "Orama title",
                     excerpt: "Plain excerpt",
                     url: "https://blog.test/posts/a/",
                 },
@@ -147,11 +200,11 @@ describe("static blog WebMCP tools", () => {
         expect(fetcher.mock.calls.filter(([url]) => url.endsWith("posts.json"))).toHaveLength(1);
     });
 
-    it("reads the exact Pagefind article when Markdown exports are disabled", async () => {
+    it("reads the exact Orama article when Markdown exports are disabled", async () => {
         const search = vi.fn().mockResolvedValue({
             results: [{ data: async () => ({ url: "/posts/a/", content: "Indexed plain text" }) }],
         });
-        state.loadPagefind.mockResolvedValue({ search });
+        state.loadOrama.mockResolvedValue({ search });
         const { fetcher } = await setup(false);
         expect(await call("read_post", { id: "a" })).toMatchObject({
             ok: true,
@@ -221,9 +274,9 @@ describe("static blog WebMCP tools", () => {
         expect(await call("current_post")).toMatchObject({ ok: false, code: "NOT_ON_POST_PAGE" });
     });
 
-    it("reports Pagefind search failures and refuses HTML fallbacks masquerading as Markdown", async () => {
+    it("reports Orama search failures and refuses HTML fallbacks masquerading as Markdown", async () => {
         const { fetcher } = await setup();
-        state.loadPagefind.mockResolvedValue({
+        state.loadOrama.mockResolvedValue({
             search: vi.fn().mockRejectedValue(new Error("bad wasm")),
         });
         expect(await call("search_posts", { keyword: "test" })).toMatchObject({
@@ -241,7 +294,7 @@ describe("static blog WebMCP tools", () => {
             ok: false,
             code: "CONTENT_UNAVAILABLE",
         });
-        state.loadPagefind.mockResolvedValue(null);
+        state.loadOrama.mockResolvedValue(null);
         expect(await call("search_posts", { keyword: "test" })).toMatchObject({
             ok: false,
             code: "INDEX_UNAVAILABLE",

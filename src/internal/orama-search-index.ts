@@ -30,7 +30,7 @@ export function searchablePostBody(rendered: string | undefined, body: string | 
         if (
             "tagName" in node &&
             (skipped.has(node.tagName) ||
-                node.attrs.some(({ name }) => name === "data-pagefind-ignore"))
+                node.attrs.some(({ name }) => name === "data-orama-ignore"))
         )
             return "";
         if ("value" in node) return node.value;

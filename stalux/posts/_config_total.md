@@ -6,7 +6,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 10:00:00"
-updated: "2026-11-19 11:26:47"
+updated: "2026-11-20 12:44:24"
 desc: Complete configuration file structure of the Stalux theme — each config section is now a separate YAML file under stalux/config/, with Zod schema validation.
 abbrlink: 0b563d42
 ---
@@ -31,6 +31,22 @@ stalux/config/
 ```
 
 The schema definitions are in `src/schemas/config.ts`, using `z.discriminatedUnion("id")` to join them into a single `config` collection.
+
+## Orama search
+
+Starting with Stalux 1.70, configure Orama in `astro.config.ts`. Search and CJK are enabled by default.
+
+```typescript title="astro.config.ts · Orama settings"
+stalux({ orama: { cjk: true } });
+```
+
+| Before 1.70 | Stalux 1.70 |
+| --- | --- |
+| `pagefind: true` | `orama: true` |
+| `pagefind: false` | `orama: false` |
+| `searchCjk: false` | `orama: { cjk: false }` |
+
+The old keys produce a migration error. WebMCP uses the same `/orama/index.bin` as the search dialog.
 
 ## Page URL Style
 

@@ -100,7 +100,7 @@ describe("image dimensions", () => {
             png.writeUInt32BE(360, 20);
             await writeFile(path.join(root, "local.png"), png);
             const html =
-                '<html><body><section data-pagefind-body><img src="/local.png"><img src="/local.png" width="123" fetchpriority="high"><img src="https://example.com/a.png"><img src="http://["></section><img src="/local.png"></body></html>';
+                '<html><body><section data-stalux-gallery-body><img src="/local.png"><img src="/local.png" width="123" fetchpriority="high"><img src="https://example.com/a.png"><img src="http://["></section><img src="/local.png"></body></html>';
             const expected = applyHtmlImageLoadingPolicy(await addLocalImageDimensions(html, root));
             const combined = await addLocalImageDimensions(html, root, {
                 images: findHtmlImages(html),

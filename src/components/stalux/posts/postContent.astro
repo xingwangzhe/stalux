@@ -5,7 +5,6 @@ import "photoswipe/dist/photoswipe.css";
 
 import { getCollection } from "astro:content";
 import { getPromoteData, getSiteData } from "@utils/config-utils";
-import { toTimestamp } from "@utils/dayjs";
 import { createTranslator } from "@utils/i18n";
 import { getMarkdownPath, getRouteKind } from "@utils/public-routes";
 import { toMachineDateTime } from "@utils/semantic-time";
@@ -15,7 +14,6 @@ interface Props {
     postId?: string | number | undefined;
     title: string;
     description?: string | undefined;
-    searchKeywords?: string[] | undefined;
     // Kept for downstream overrides of this component; the theme's own render
     // path no longer turns them into any view-transition CSS (Swup owns cues).
     transitionName?: string;
@@ -47,17 +45,11 @@ const mdSourceUrl =
     id="swup-article"
     class="stalux-article"
     data-stalux-motion-stage
-    data-pagefind-sort={`published:${props.date ? toTimestamp(props.date, timezone) : Number.MIN_SAFE_INTEGER}`}
     data-stalux-gallery={props.hasImage ? "true" : undefined}
 >
     <!-- Article Header -->
     <header class="stalux-post-article-header" data-stalux-motion-region>
-        <h1
-            class="stalux-post-title"
-            data-stalux-motion-focus
-            data-pagefind-body
-            data-pagefind-meta="title"
-        >
+        <h1 class="stalux-post-title" data-stalux-motion-focus>
             {props.title}
         </h1>
         <!-- Modern Web Guidance (html): 元信息、阅读统计、原文链接行都是文字行 => <p>。 -->
@@ -120,22 +112,12 @@ const mdSourceUrl =
 
     <ArticleSummary description={props.description} label={t("post.summary")} />
 
-    <span
-        hidden
-        data-pagefind-body
-        data-stalux-search-keywords
-        data-pagefind-index-attrs="data-search-keywords"
-        data-search-keywords={(props.searchKeywords ?? []).join(" ")}
-    ></span>
-
     <!-- Article Body -->
     <section
         class="stalux-post-body stalux-prose"
         data-stalux-gallery-body
         data-stalux-motion-content
-        data-pagefind-body
         data-stalux-post-id={props.postId === undefined ? undefined : String(props.postId)}
-        data-pagefind-filter={props.postId === undefined ? undefined : "post[data-stalux-post-id]"}
     >
         <slot />
     </section>

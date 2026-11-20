@@ -6,6 +6,8 @@
 
 # Stalux
 
+> **v1.70.0 破坏性更新（BREAKING CHANGE）。** 在 `astro.config.ts` 中将 `pagefind` 改为 `orama`，将 `searchCjk` 移到 `orama.cjk`。WebMCP 全文查询的 `source` 改为 `"orama+metadata"`。 [搜索迁移指南](./docs/SEARCH.md)
+
 Astro 博客主题，内置中文字体子集、Orama 搜索、Markdown 渲染、Waline 评论和 Swup 导航。
 
 [在线演示](https://stalux.needhelp.icu) · [完整文档](./docs/README.md) · [快速开始](#快速开始) · [问题反馈](https://github.com/xingwangzhe/stalux/issues)
@@ -92,7 +94,7 @@ bun run preview   # 本地预览生产产物
 | [配置说明](./docs/CONFIGURATION.md) | `stalux/config/*.yml` 全量字段、主题色、天气、评论、AI 发现 |
 | [功能行为](./docs/FEATURES.md) | 打字机、图注、灯箱、代码主题、归档、软导航、背景 |
 | [字体](./docs/FONTS.md) | 中文按页字体子集、缓存、字体许可 |
-| [搜索](./docs/SEARCH.md) | Orama、CJK 混合索引、`searchKeywords`、降级行为 |
+| [搜索](./docs/SEARCH.md) | `orama` 配置、PT15 索引、`searchKeywords` 与升级迁移 |
 | [统计](./docs/ANALYTICS.md) | Google Analytics、Clarity、Umami、Vercount |
 | [性能与加载](./docs/PERFORMANCE.md) | 按可见性加载、首屏 CSS、路由预热、背景资源 |
 | [部署](./docs/DEPLOYMENT.md) | 静态构建、EdgeOne、缓存目录、产物检查 |

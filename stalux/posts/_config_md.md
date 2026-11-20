@@ -7,7 +7,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 16:00:00"
-updated: "2026-11-19 15:16:44"
+updated: "2026-11-20 12:43:16"
 desc: This article is rewritten according to the current schema (see src/schemas/collections.ts), listing the frontmatter requirements and examples for posts, about, and words. Avoid using project-internal relative links to ensure no broken links when published to the site.
 abbrlink: f31dae4f
 ---
@@ -140,7 +140,7 @@ Note:
 - When disabled or omitted, no `.md` export files are generated.
 - Only non-draft articles get post `.md` endpoints.
 - When `promote.export_md` is `true`, published post `.md` endpoints are included in the sitemap. Other Markdown mirrors remain excluded by default.
-- Browser WebMCP reads this export when available, or falls back to Pagefind indexed plain text when export is disabled. Disabling both sources prevents full article reads.
+- Browser WebMCP reads this export when available, or falls back to Orama indexed plain text when export is disabled. Disabling both sources prevents full article reads.
 
 ## Writing and Validation
 

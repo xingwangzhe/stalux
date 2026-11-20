@@ -27,7 +27,7 @@ const machineDate = date && timezone ? toMachineDateTime(date, timezone) : date;
     <Quote class="stalux-word-mark" size={28} stroke-width={1.4} aria-hidden="true" />
     <!-- Modern Web Guidance (html): 语录正文本身就是引用 => <blockquote>；
          来源与日期是脚注性文字 => <footer> + <p>。 -->
-    <blockquote class="stalux-word-body stalux-prose" data-pagefind-body>
+    <blockquote class="stalux-word-body stalux-prose">
         <Content />
     </blockquote>
     {(date || source || sourceDate || abbrlink) && (

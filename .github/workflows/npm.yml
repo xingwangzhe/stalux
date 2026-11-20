@@ -64,4 +64,4 @@ jobs:
                   RELEASE_TAG: ${{ github.ref_name }}
               run: >-
                   gh release view "$RELEASE_TAG" >/dev/null 2>&1 ||
-                  gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --generate-notes
+                  gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --notes-from-tag

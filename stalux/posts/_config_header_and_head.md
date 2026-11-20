@@ -7,7 +7,7 @@ categories:
     - Theme Config
     - Layout Customization
 date: "2025-05-10 12:00:00"
-updated: "2026-07-22 12:00:00"
+updated: "2026-11-20 12:44:24"
 desc: Configure analytics tools (Google Analytics, Bing Clarity, Umami), custom head content, and navigation bar items.
 abbrlink: 0035a0ee
 ---
@@ -70,7 +70,7 @@ items:
 | ------------- | --------------------------------------------------------- |
 | `link`        | Internal path or full external URL                        |
 | `icon` | Optional [Lucide icon](https://lucide.dev/icons/) name, e.g. `rocket` or `arrow-down-0-1`. |
-| Search button | Built-in, does not need a nav item                        |
+| Search button | Built-in when Orama is enabled, does not need a nav item                        |
 
 Copy the name from the Lucide icon page into `icon`. Stalux renders it as an inline SVG in desktop and mobile navigation. Omit `icon` for a text-only link. An unknown name logs a warning and still renders the link. The older names `home` and `wormhole` continue to resolve to `house` and `shell`.
 

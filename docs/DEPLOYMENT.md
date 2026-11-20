@@ -17,7 +17,7 @@ bun run preview   # 本地预览生产产物
 | `styles:build` | 预编译 UnoCSS、生成生产样式名映射 |
 | `astro build` | HTML、CSS、JS、字体子集、背景与静态资源 |
 | `verify:build` | 校验构建产物、资源引用与私有类名 |
-| `astro:build:done` | 页面后处理、OG 分享图、Pagefind 索引、sitemap |
+| `astro:build:done` | 页面后处理、OG 分享图、sitemap |
 
 ## 环境要求
 
@@ -64,7 +64,7 @@ bun run preview   # 本地预览生产产物
 
 | 项 | 检查 |
 | --- | --- |
-| Pagefind | `/pagefind/pagefind.js` 可访问，搜索弹窗能返回结果 |
+| Orama | `/orama/index.bin` 可访问，搜索弹窗能返回结果 |
 | Sitemap | `/sitemap.xml` 指向实际文章 URL；`promote.export_md: true` 时包含 `/posts/*.md` |
 | Feed | `/rss.xml`、`/atom.xml` 的日期与站点时区一致 |
 | 字体 | `dist/_astro/fonts/` 含分片 WOFF2，HTML `head` 有同源 `preload` |

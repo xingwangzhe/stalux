@@ -6,7 +6,7 @@ import { defineConfig } from "astro/config";
 import Sonda from "sonda/vite";
 import { parse as parseYaml } from "yaml";
 
-// 使用本地 stalux 集成（注入路由、Vite 别名、Pagefind、satteri 插件等）
+// 使用本地 stalux 集成（注入路由、Vite 别名、Orama、satteri 插件等）
 import stalux from "./src/index.ts";
 
 const site = "https://stalux.needhelp.icu";
@@ -64,7 +64,7 @@ export default defineConfig({
         UnoCSS({ injectReset: false, injectEntry: false }),
         stalux({
             contentDir: "stalux",
-            pagefind: true,
+            orama: { cjk: true },
             devToolbar: true,
             sitemap: {
                 filter(page) {

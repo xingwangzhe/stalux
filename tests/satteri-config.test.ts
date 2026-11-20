@@ -101,9 +101,9 @@ describe("Markdown image loading policy", () => {
 
     it("sets emitted HTML image hints without changing sources or wrappers", () => {
         const input =
-            '<img src="avatar.jpg"><section data-pagefind-body><p><a href="large.jpg"><img src="small.jpg" alt="one"></a></p><img src="two.jpg" loading="eager"></section>';
+            '<img src="avatar.jpg"><section data-stalux-gallery-body><p><a href="large.jpg"><img src="small.jpg" alt="one"></a></p><img src="two.jpg" loading="eager"></section>';
         expect(applyHtmlImageLoadingPolicy(input)).toBe(
-            '<img src="avatar.jpg"><section data-pagefind-body><p><a href="large.jpg"><img src="small.jpg" alt="one" decoding="async" loading="eager" fetchpriority="high"></a></p><img src="two.jpg" loading="lazy" decoding="async"></section>',
+            '<img src="avatar.jpg"><section data-stalux-gallery-body><p><a href="large.jpg"><img src="small.jpg" alt="one" decoding="async" loading="eager" fetchpriority="high"></a></p><img src="two.jpg" loading="lazy" decoding="async"></section>',
         );
     });
 });

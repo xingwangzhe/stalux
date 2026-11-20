@@ -20,7 +20,7 @@ export default getViteConfig({
                 "src/utils/word-count-utils.ts",
                 "src/internal/satteri-config.ts",
                 "src/scripts/page-runtime.ts",
-                "src/scripts/pagefind-api.ts",
+                "src/scripts/orama-api.ts",
                 "src/utils/site-path.ts",
                 "src/scripts/back-to-top.ts",
                 "src/scripts/archive-descriptions.ts",

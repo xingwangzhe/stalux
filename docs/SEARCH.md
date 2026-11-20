@@ -1,6 +1,16 @@
 # 搜索
 
-Stalux 构建后生成 Orama 混合索引。搜索弹窗和 WebMCP 按需加载同一份静态索引。
+Stalux 从 Astro 内容集合生成 Orama PT15 索引。开发期按需响应 `/orama/index.bin`，生产构建把同一路由预渲染成静态文件。搜索弹窗和 WebMCP 都使用这份索引。
+
+## 配置与升级
+
+| Stalux 1.70 配置 | 行为 |
+| --- | --- |
+| 省略 `orama` 或设为 `true` | 启用 Orama，默认开启 CJK |
+| `orama: false` | 关闭索引、搜索按钮和 WebMCP 全文查询。WebMCP 仍可查元数据和 Markdown |
+| `orama: { cjk: false }` | 保留搜索，关闭中文分词和字符词项 |
+
+从 1.70 之前的版本升级时，把 `pagefind: false` 改为 `orama: false`，把 `searchCjk: false` 改为 `orama: { cjk: false }`。旧键会触发配置错误。原有 `searchKeywords` frontmatter 继续可用。
 
 ## 索引内容
 
@@ -17,14 +27,11 @@ Stalux 构建后生成 Orama 混合索引。搜索弹窗和 WebMCP 按需加载�
 searchKeywords: [别名, 缩写]
 ```
 
-`searchKeywords` 默认空数组。这些关键词会公开写入 HTML 和静态搜索索引，**不应用于保存私密内容**。
+`searchKeywords` 默认空数组。这些关键词会公开写入静态搜索索引，**不应用于保存私密内容**。
 
 ## 查询处理与排序
 
-默认启用 `searchCjk`。构建和查询共用 Orama 官方 `@orama/tokenizers/mandarin`、连续 CJK 字符的一字和相邻两字词项，以及英文技术词。Orama 混合模式使用 BM25 和本地字符特征向量召回候选，再用原文核对连续词。引号查询要求整句连续匹配。
-
-`stalux({ searchCjk: false })` 关闭中文分词和字符词项。既有的 `stalux({ pagefind: false })` 仍可关闭索引生成。
-
+默认启用 `orama.cjk`。构建和查询共用 Orama 官方 `@orama/tokenizers/mandarin`、连续 CJK 字符的一字和相邻两字词项，以及英文技术词。Orama 混合模式使用 PT15 全文索引和本地字符特征向量召回候选，再用原文核对连续词。引号查询要求整句连续匹配。
 
 搜索弹窗默认按文章发布时间从新到旧排序。关于页和短文列表等无文章发布时间的结果排在末尾。
 
@@ -34,7 +41,6 @@ searchKeywords: [别名, 缩写]
 | --- | --- |
 | 索引加载 | 按需加载，无外部查询服务，不新增遥测 |
 | 资源加载失败 | 可重试 |
-| 无 JavaScript | 保留 `<noscript>` 样式回退 |
 
 ## 搜索界面
 

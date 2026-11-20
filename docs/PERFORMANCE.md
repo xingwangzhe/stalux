@@ -32,7 +32,7 @@ Stalux 的加载策略以“首屏可读”为优先：首屏外内容、第三�
 
 消费项目显式设置 `build.inlineStylesheets: "always"` 可恢复内联，但会增加每页 HTML 大小。
 
-Pagefind 搜索弹窗样式单独输出为带哈希的静态文件，以 `prefetch` 提示浏览器提前获取；打开搜索时才作为样式表启用。它不阻塞正文首屏，也不依赖搜索 JavaScript 动态生成 CSS 文件。详见 [搜索](./SEARCH.md)。
+打开搜索时才加载 Orama 搜索组件、样式和索引。详见 [搜索](./SEARCH.md)。
 
 ## 现代 JavaScript
 

@@ -5,7 +5,7 @@
  * 向浏览器/代理注册工具。所有数据源均为构建期静态产物——
  * /api/posts.json（文章元信息索引）、/api/post.abbrlink.json（兼容列表）、
  * /posts/{id}.md（源码导出）、/llms.txt / /llms-full.txt（站点信息镜像）、
- * /pagefind/（全文索引）。
+ * /orama/index.bin（全文索引）。
  *
  * 工具描述跟随站点语言（site.yml 的 lang）：中文站显示中文说明，
  * 英文站显示英文说明，保证 AI 代理与评审（如 webmcp.com）能读懂。
@@ -23,8 +23,8 @@ import type { WebMCP } from "webmcp-types";
 import { createPostLookup } from "../utils/post-lookup";
 import { sitePath } from "../utils/site-path";
 import { createClientLogger } from "./logger";
+import { loadOrama } from "./orama-api";
 import { registerPageLifecycle } from "./page-runtime";
-import { loadPagefind } from "./pagefind-api";
 
 const logger = createClientLogger("webmcp");
 
@@ -415,7 +415,7 @@ function searchPostsTool(): WebMCPTool {
                 "适合「博客里写过 X 吗」「帮我找一下关于 Y 的文章」这类问题；" +
                 "定位到具体文章后再用 stalux_read_post 读正文、stalux_get_post 取元信息。",
             "Search the full text of all posts (title, tags, categories, body) by keyword, returning matching posts with title, URL and excerpt snippets. " +
-                "If Pagefind is unavailable, metadata-only matches are marked fullText: false; index failures are not treated as an empty full-text result. " +
+                "If Orama is unavailable, metadata-only matches are marked fullText: false; index failures are not treated as an empty full-text result. " +
                 "Ideal for questions like 'has the blog covered X?' or 'find posts about Y'; " +
                 "once a post is located, use stalux_read_post for the body or stalux_get_post for metadata.",
         ),
@@ -475,11 +475,11 @@ function searchPostsTool(): WebMCPTool {
                               "Full-text index unavailable and no metadata matches",
                           ),
                       );
-            const pagefind = await loadPagefind();
+            const orama = await loadOrama();
             options?.signal?.throwIfAborted();
-            if (!pagefind) return fallback("INDEX_UNAVAILABLE");
+            if (!orama) return fallback("INDEX_UNAVAILABLE");
             try {
-                const result = await pagefind.search(keyword);
+                const result = await orama.search(keyword);
                 if (!(result && Array.isArray(result.results))) return fallback("SEARCH_FAILED");
                 const posts: Record<string, unknown>[] = [...metadataMatches];
                 const seen = new Set(metadataMatches.map((post) => post.abbrlink));
@@ -523,7 +523,7 @@ function searchPostsTool(): WebMCPTool {
                     keyword,
                     count: posts.length,
                     posts,
-                    source: "pagefind+metadata",
+                    source: "orama+metadata",
                     fullText: true,
                 };
             } catch {
@@ -539,10 +539,10 @@ function readPostTool(): WebMCPTool {
         name: "stalux_read_post",
         title: pick("读取文章内容", "Read post content"),
         description: pick(
-            "按 abbrlink 读取文章。开启 Markdown 导出时返回规范化 Markdown，否则从 Pagefind 返回已索引纯文本（不含 Markdown 语法）。" +
+            "按 abbrlink 读取文章。开启 Markdown 导出时返回规范化 Markdown，否则从 Orama 返回已索引纯文本（不含 Markdown 语法）。" +
                 "format 标明格式；truncated 为 true 时用 nextOffset 续读，直到 nextOffset 为 null。只要元信息用 stalux_get_post（更便宜）。" +
                 "获取 abbrlink 可先用 stalux_list_posts 或 stalux_search_posts。",
-            "Read a post by abbrlink: normalized Markdown when exports are enabled, otherwise indexed plain text from Pagefind without Markdown syntax. " +
+            "Read a post by abbrlink: normalized Markdown when exports are enabled, otherwise indexed plain text from Orama without Markdown syntax. " +
                 "Check format; when truncated, continue with nextOffset until null. For metadata only, stalux_get_post is cheaper. " +
                 "To get an abbrlink, first use stalux_list_posts or stalux_search_posts.",
         ),
@@ -612,8 +612,8 @@ function readPostTool(): WebMCPTool {
                 }
             }
             if (content === undefined) {
-                const pagefind = await loadPagefind();
-                if (!pagefind)
+                const orama = await loadOrama();
+                if (!orama)
                     return err(
                         "CONTENT_UNAVAILABLE",
                         pick(
@@ -622,7 +622,7 @@ function readPostTool(): WebMCPTool {
                         ),
                     );
                 try {
-                    const result = await pagefind.search(null, { filters: { post: id } });
+                    const result = await orama.search(null, { filters: { post: id } });
                     for (const entry of result.results) {
                         const data = await entry.data();
                         if (postIdFromUrl(data.url) === id && typeof data.content === "string") {

@@ -39,7 +39,7 @@ it("matches continuous CJK terms and preserves publication order and post lookup
 it("indexes rendered collection content as plain text", () => {
     expect(
         searchablePostBody(
-            "<p>好<strong>家伙</strong></p><p>后续</p><span data-pagefind-ignore>不收录</span>",
+            "<p>好<strong>家伙</strong></p><p>后续</p><span data-orama-ignore>不收录</span>",
             undefined,
         ),
     ).toBe("好家伙 后续");

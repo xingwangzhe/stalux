@@ -122,9 +122,9 @@ def main():
                     record.update(postprocess_ms=float(match[1]), cache_hits=int(match[2]), pages=int(match[3]))
                 record["agent_summary_verified"] = True
                 record["vite_stages"] = re.findall(r"\[vite\] ✓ built in ([\d.]+(?:ms|s))", text)
-                indexing = re.search(r"indexed \d+ pages → .* \(([\d.]+)ms\)", text)
-                if indexing:
-                    record["pagefind_ms"] = float(indexing[1])
+                index_path = root / "dist/orama/index.bin"
+                if index_path.is_file():
+                    record["orama_index_bytes"] = index_path.stat().st_size
                 records.append(record)
                 (args.output / "results.json").write_text(json.dumps(records, indent=2))
                 print(json.dumps(record), flush=True)

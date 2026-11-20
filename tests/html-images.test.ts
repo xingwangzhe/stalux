@@ -10,7 +10,7 @@ import { applyHtmlImageLoadingPolicy } from "../src/plugins/feature-flags";
 describe("emitted HTML image processing", () => {
     it("updates the existing AST while preserving scripts and foreign content", async () => {
         const script = "const example = '<img src=\"/fake.png\">';";
-        const source = `<html><head></head><body><script>${script}</script><section data-pagefind-body><img src="https://example.com/a.png"><img src="https://example.com/b.png"></section><svg viewBox="0 0 20 10"><text>中文</text></svg><math><mi>α</mi></math></body></html>`;
+        const source = `<html><head></head><body><script>${script}</script><section data-stalux-gallery-body><img src="https://example.com/a.png"><img src="https://example.com/b.png"></section><svg viewBox="0 0 20 10"><text>中文</text></svg><math><mi>α</mi></math></body></html>`;
         const document = parse(source, { sourceCodeLocationInfo: true });
         await updateLocalImageDimensions(findHtmlImages(source, document), "/tmp", {
             loadingPolicy: true,
@@ -28,7 +28,7 @@ describe("emitted HTML image processing", () => {
         const code = '<button data-code="<img src=&quot;/fake.png&quot;>" title="copy"></button>';
         const script = "<script>const example = '<img src=\"/fake.png\">';</script>";
         const comment = '<!-- <img src="/fake.png"> -->';
-        const html = `<section data-pagefind-body>${code}${script}${comment}<img src="https://example.com/real.png"></section>`;
+        const html = `<section data-stalux-gallery-body>${code}${script}${comment}<img src="https://example.com/real.png"></section>`;
         const output = applyHtmlImageLoadingPolicy(await addLocalImageDimensions(html, "/tmp"));
         expect(output).toContain(code);
         expect(output).toContain(script);
@@ -39,7 +39,7 @@ describe("emitted HTML image processing", () => {
 
     it("handles nested sections and quoted attribute lookalikes", () => {
         const html =
-            '<section data-pagefind-body><section><img src="/a.png" alt=\'loading="keep"\' loading=\'lazy\'></section><img src="/b.png"></section>';
+            '<section data-stalux-gallery-body><section><img src="/a.png" alt=\'loading="keep"\' loading=\'lazy\'></section><img src="/b.png"></section>';
         const output = applyHtmlImageLoadingPolicy(html);
         const images = findHtmlImages(output);
         expect(images.map((image) => image.attributes.get("loading"))).toEqual(["eager", "lazy"]);

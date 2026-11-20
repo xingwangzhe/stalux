@@ -66,7 +66,7 @@
 | --- | --- |
 | `astro:config:setup` | 更新配置、注入路由与脚本、注册 Markdown 插件和 Astro Fonts 配置。此处的 `config` 不能当成所有集成都执行后的最终配置。 |
 | `astro:config:done` | 使用最终 `publicDir` 同步主题背景和数学字体，使用最终 `outDir` 确定正文字体输出位置。资源同步早于开发服务器和生产构建的资源管线，保留不变文件与用户自定义资源。 |
-| `astro:build:done` | 处理已经生成的 HTML、图片尺寸、逐页字体、页面缓存及 Pagefind 索引。 |
+| `astro:build:done` | 处理已经生成的 HTML、图片尺寸、逐页字体、页面缓存。Orama 由独立预渲染端点生成。 |
 | `astro:page-load` / 文档解析完成 | 通过 `src/scripts/page-runtime.ts` 挂载当前 DOM 的交互；WebMCP 也在此注册当前页工具。首访的 `astro:page-load` 由 `window.load` 派发，要等完所有图片、字体与第三方资源，**不能作为首屏唯一挂载点**：文档解析完成（`readyState` 为 `interactive`/`complete`）即用补偿微任务挂载本页，`page-load` 负责软导航后的新页面与同一页的重复信号（早挂载已接管时不再挂第二次）。晚加载的补偿微任务不能覆盖已经发生的导航事件，同一页也不能挂载两次。 |
 | `astro:before-swap` | 清理页面交互、注销 WebMCP 工具并中止旧页注册批次；等待中的注册完成或失败后不能继续注册后续工具。该事件由主题自带的路由器（硬接入 `new Swup()`）在 head 更新后、容器替换前派发。 |
 | `astro:after-swap` / 脚本执行 | 刷新持久侧栏 slot、剪枝过期样式、执行新页脚本；`astro:page-load` 在脚本执行完成后才派发。 |
@@ -89,7 +89,7 @@ Markdown 特性统计继续复用 Sätteri MDAST/HAST 插件。Markdown 导出�
 
 ### 静态博客 WebMCP 与增量缓存
 
-页面工具只读取静态 JSON、Markdown 和 Pagefind。Pagefind 的标题是 `meta.title`；摘要使用 `plain_excerpt`。文章页的 `post` 过滤绑定 `data-stalux-post-id`，可用 `search(null, { filters: { post: id } })` 精确读取已索引纯文本。Markdown 未导出时不得把 HTML 404/SPA 回退当成 Markdown；分段输出必须返回格式、总长度、截断标记及续读偏移。部分元信息搜索必须明确 `fullText: false`。不得给静态端点伪造动态限流余量或不存在的 HTTP 错误协议。
+页面工具读取静态 JSON、Markdown 和 Orama 索引。Orama 的标题是 `meta.title`，摘要使用 `plain_excerpt`。索引的 `post` 为文章 abbrlink，可用 `search(null, { filters: { post: id } })` 精确读取已索引纯文本。Markdown 未导出时不得把 HTML 404/SPA 回退当成 Markdown；分段输出必须返回格式、总长度、截断标记及续读偏移。部分元信息搜索必须明确 `fullText: false`。不得给静态端点伪造动态限流余量或不存在的 HTTP 错误协议。
 
 主题 YAML 配置必须进入共享 `runtime-cache-key`，文章 HTML、分类/标签页及文章 Markdown 端点复用此键。只按文章日期恢复会忽略 `promote.export_md`、AI 工具启停、版权和站点配置变动。配置变动验收必须检查恢复页面里的实际开关；不能用清空真实项目缓存掩盖失效缺陷。
 
@@ -192,7 +192,7 @@ cat /tmp/indexnow-response
 
 插件模式按项目真实根目录判断。跨文件系统的外部组件样式虚拟路径可能被 Astro 7.4 误解析，按上文工作区指南使用同文件系统的硬链接副本。
 
-Pagefind CSS 的虚拟模块只在 dev 返回已允许访问的文件 URL，避免 CSS ?url 被 Astro 当作模块脚本请求；生产仍走 Vite 正常的哈希资源管线。dev 默认不生成 Pagefind 索引，验收搜索结果时可把同内容快照的生产 pagefind 目录复制到副本 public/pagefind，不能因此改真实项目。
+Orama 的 `/orama/index.bin` 在 dev 中按需生成，在生产构建中预渲染。搜索 UI 打开时才加载组件和索引。
 
 WebMCP 使用官方 `@w3c/webmcp-polyfill`（程序式 API，不提供声明式工具），历史针对 `@mcp-b/webmcp-polyfill` 5.1.0 声明式观察器的源码补丁已移除。七个工具全部通过 `document.modelContext.registerTool()` 注册；必须在真实浏览器验证工具注册、注销与 AI 代理调用，不能只跑单元测试。
 

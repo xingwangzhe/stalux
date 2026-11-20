@@ -53,6 +53,7 @@ export function createOramaSearch(
         return pending;
     }
     return {
+        ready: index,
         async search(query: string | null, options?: SearchOptions): Promise<SearchResponse> {
             const postFilter = options?.filters?.post;
             const post = typeof postFilter === "string" ? postFilter : postFilter?.[0];

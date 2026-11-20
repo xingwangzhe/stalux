@@ -52,18 +52,20 @@ const navs = navsConfig?.items ?? [];
                     </li>
                 );
             })}
-            <li class="stalux-nav-item stalux-u-flex stalux-u-items-center">
-                <!-- Modern Web Guidance (html): 页内交互一律用 <button>，<a> 只负责 URL 导航 -->
-                <button
-                    type="button"
-                    class="stalux-nav-link"
-                    data-ref="stalux-search-btn"
-                    aria-label={t("search.title")}
-                >
-                    {SearchIcon && <SearchIcon size={20} stroke-width={2} class="nav-icon" />}
-                    <span class="stalux-nav-text">{t("nav.search")}</span>
-                </button>
-            </li>
+            {__STALUX_ORAMA_ENABLED__ && (
+                <li class="stalux-nav-item stalux-u-flex stalux-u-items-center">
+                    <!-- Modern Web Guidance (html): 页内交互一律用 <button>，<a> 只负责 URL 导航 -->
+                    <button
+                        type="button"
+                        class="stalux-nav-link"
+                        data-ref="stalux-search-btn"
+                        aria-label={t("search.title")}
+                    >
+                        {SearchIcon && <SearchIcon size={20} stroke-width={2} class="nav-icon" />}
+                        <span class="stalux-nav-text">{t("nav.search")}</span>
+                    </button>
+                </li>
+            )}
         </ul>
     </div>
     <dialog id="stalux-mobile-navigation" aria-label={t("nav.main")}>
@@ -76,7 +78,7 @@ const navs = navsConfig?.items ?? [];
         </div>
     </dialog>
 </nav>
-<Search />
+{__STALUX_ORAMA_ENABLED__ && <Search />}
 
 <style>
 .stalux-site-nav {

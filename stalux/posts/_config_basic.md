@@ -6,7 +6,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 11:00:00"
-updated: "2026-11-19 11:26:47"
+updated: "2026-11-20 12:44:24"
 desc: Site identity configuration (site.yml, author.yml), content collection structure, frontmatter field references, and writing notes.
 abbrlink: ad81245d
 ---
@@ -102,7 +102,7 @@ Optional frontmatter:
 
 | Field        | Type     | Default           | Description                              |
 | ------------ | -------- | ----------------- | ---------------------------------------- |
-| `searchKeywords` | string[] | empty | Optional public search aliases; indexed in HTML and CJK search files. Never include secrets. |
+| `searchKeywords` | string[] | empty | Optional public search aliases; indexed in the public Orama artifact. Never include secrets. |
 | `updated`    | string   | —                 | Update time                              |
 | `draft`      | boolean  | `false`           | Hide from published lists                |
 | `tags`       | string[] | —                 | Tag array (single string auto-converted) |

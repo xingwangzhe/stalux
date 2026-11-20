@@ -12,7 +12,7 @@ Stalux 内置页面内 WebMCP 工具：支持 WebMCP 的浏览器代理或扩展
 | `stalux_get_post` | 按 abbrlink / 标题关键词取单篇元信息 | `/api/posts.json` |
 | `stalux_current_post` | 当前正在浏览的文章元信息 | `/api/posts.json` |
 | `stalux_random_post` | 随机挑一篇文章的元信息 | `/api/posts.json` |
-| `stalux_search_posts` | 全文搜索文章 | Orama `/orama/` |
+| `stalux_search_posts` | 全文搜索文章 | `/orama/index.bin` |
 | `stalux_read_post` | 分段读取 Markdown；未导出时读取已索引纯文本 | Markdown / Orama |
 | `stalux_site_info` | 站点信息 + `llms.txt` / `llms-full.txt` 入口 | `site.yml`（构建期） |
 
@@ -29,7 +29,7 @@ Stalux 内置页面内 WebMCP 工具：支持 WebMCP 的浏览器代理或扩展
 | 全文索引不可用 | 元信息匹配标记 `source: "metadata"`、`fullText: false` |
 | 无匹配且索引不可用 | 返回索引不可用错误，不把故障误报成全文无匹配 |
 | 高亮 HTML | 不作为工具摘要返回 |
-| 失败加载 | 元信息及 Orama 模块的失败加载不会永久占用缓存 |
+| 失败加载 | 元信息和 Orama 索引的网络请求可重试 |
 
 ## 读取工具
 
@@ -47,7 +47,7 @@ Stalux 内置页面内 WebMCP 工具：支持 WebMCP 的浏览器代理或扩展
 
 工具在 `astro:page-load` 初始化 polyfill 并注册，在 `astro:before-swap` 注销和停止旧注册批次。只发送读取静态资源的请求；不提交搜索词给外部搜索服务、不调用模型、不新增遥测。
 
-文章 `post` 过滤值及 Markdown 导出开关会写入静态 HTML，供本地工具选择实际可用的数据源。`/api/*.json`、Markdown 和 OpenAPI 均为静态文件，不宣称动态配额或固定 `RateLimit-*` 余量。
+文章 `post` 过滤值来自 Orama 索引，Markdown 导出开关来自页面配置。`/api/*.json`、Markdown 和 OpenAPI 均为静态文件，不宣称动态配额或固定 `RateLimit-*` 余量。
 
 ## 开启 / 关闭
 
@@ -58,7 +58,9 @@ id: ai-discovery
 conformance: "essential"   # disabled 时停止注册工具
 ```
 
-`disabled` 即停止注册工具；`essential` / `recommended` / `complete` 均会启用。
+`disabled` 停止注册工具；`essential`、`recommended` 和 `complete` 均会启用。
+
+设置 `orama: false` 关闭全文索引，工具仍能查元数据并读取已导出的 Markdown。全文查询降级时返回 `fullText: false`。
 
 ## 浏览器支持
 

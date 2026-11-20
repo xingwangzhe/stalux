@@ -151,7 +151,7 @@ This is your first post. Edit or delete it, then start writing your own content.
 
 - 🌙 Dark mode with elegant glassmorphism design
 - 🔤 Per-route font subsetting — each page loads only needed characters
-- 🔍 Full-text search (Pagefind)
+- 🔍 Full-text search (Orama)
 - 📡 RSS & Atom feeds
 - 💬 Comment system (Waline)
 - 📊 Mermaid diagrams

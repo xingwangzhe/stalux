@@ -449,7 +449,17 @@ const missingAssetReferences = findMissingAssetReferences(assetContents, existin
 
 assert(htmlCount >= 40, `expected at least 40 HTML pages, found ${htmlCount}`);
 assert(fontCount >= 2, `expected normal and italic code fonts, found ${fontCount}`);
-assert(Bun.file(path.join(dist, "orama", "index.bin")).size > 0, "Orama search index is missing");
+const oramaIndex = Bun.file(path.join(dist, "orama", "index.bin"));
+assert(oramaIndex.size > 0, "Orama search index is missing");
+const searchArtifact = JSON.parse(
+    new TextDecoder().decode(Bun.gunzipSync(new Uint8Array(await oramaIndex.arrayBuffer()))),
+) as { cjk: boolean; count: number };
+assert(searchArtifact.cjk && searchArtifact.count > 0, "Expected a populated Orama CJK index");
+assert(pages.home.includes('data-ref="stalux-search-btn"'), "Orama search button is missing");
+assert(
+    !(await Bun.file(path.join(dist, "pagefind-enhanced", "pagefind.js")).exists()),
+    "Legacy search bundle must not be emitted",
+);
 assert(
     missingAssetReferences.length === 0,
     `generated files reference missing assets:\n${missingAssetReferences.join("\n")}`,
@@ -459,7 +469,14 @@ console.info(
 );
 
 for (const file of files.filter((file) => /\.(?:css|html|js|map)$/u.test(file))) {
-    const problems = styleArtifactProblems(file, await Bun.file(file).text());
+    const problems = styleArtifactProblems(file, await Bun.file(file).text()).filter(
+        // Orama's bundled schema library uses date-time as a schema format.
+        (problem) =>
+            !(
+                /^orama-search-box\..+\.js$/u.test(path.basename(file)) &&
+                problem === "uncompacted script name date-time"
+            ),
+    );
     assert(problems.length === 0, `${path.relative(dist, file)}: ${problems.join("; ")}`);
 }
 
@@ -526,16 +543,14 @@ for (const post of postIndex) {
             const attributes = new Map(
                 node.attrs.map((attribute) => [attribute.name, attribute.value]),
             );
-            if (attributes.has("data-pagefind-body")) {
-                filterFound =
-                    attributes.get("data-stalux-post-id") === post.abbrlink &&
-                    attributes.get("data-pagefind-filter") === "post[data-stalux-post-id]";
+            if (attributes.has("data-stalux-gallery-body")) {
+                filterFound = attributes.get("data-stalux-post-id") === post.abbrlink;
             }
         }
         if ("childNodes" in node) for (const child of node.childNodes) checkArticleFilter(child);
     }
     checkArticleFilter(parse(html));
-    assert(filterFound, `${post.url} is missing the exact Pagefind article filter`);
+    assert(filterFound, `${post.url} is missing its article body ID`);
     const count = (
         html.match(new RegExp(`<aside[^>]*class="${cssClass("stalux-article-summary")}"`, "gu")) ??
         []

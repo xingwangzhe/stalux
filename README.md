@@ -8,6 +8,8 @@
 
 Astro blog theme with CJK font subsetting, Orama search, Markdown rendering, Waline comments and Swup navigation.
 
+> **BREAKING CHANGE in v1.70.0.** In `astro.config.ts`, replace `pagefind` with `orama` and move `searchCjk` to `orama.cjk`. WebMCP now reports `source: "orama+metadata"` for full-text search. [Search migration guide](./docs/SEARCH.md)
+
 [Live demo](https://stalux.needhelp.icu) · [Documentation](./docs/README.md) · [Quick start](#quick-start) · [Issues](https://github.com/xingwangzhe/stalux/issues)
 
 <p align="center">
@@ -94,7 +96,7 @@ The detailed documentation is currently maintained in Chinese.
 | [Configuration](./docs/CONFIGURATION.md) | Every `stalux/config/*.yml` field, color, weather, comments, AI discovery |
 | [Features](./docs/FEATURES.md) | Typewriter, captions, lightbox, code theme, archives, soft navigation, backgrounds |
 | [Fonts](./docs/FONTS.md) | Per-page CJK subsets, caches, font licenses |
-| [Search](./docs/SEARCH.md) | Orama hybrid index, `searchKeywords`, fallbacks |
+| [Search](./docs/SEARCH.md) | `orama` settings, PT15 index, `searchKeywords` and migration |
 | [Analytics](./docs/ANALYTICS.md) | Google Analytics, Clarity, Umami, Vercount |
 | [Performance](./docs/PERFORMANCE.md) | Visibility-based loading, first-screen CSS, route preload, backgrounds |
 | [Deployment](./docs/DEPLOYMENT.md) | Static build, EdgeOne, caches, output checks |

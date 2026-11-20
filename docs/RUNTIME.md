@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `astro:config:setup` | 注入路由、集成、默认 Sätteri 插件、字体配置及 Vite 转换 | 此时配置还可能被后续集成修改 |
 | `astro:config:done` | 用最终 publicDir 同步背景、数学字体与许可；根据最终 outDir 定位输出 | 不重写不变文件，保留消费方自定义资源 |
-| `astro:build:done` | HTML 图片/字体 AST 后处理、缓存、Pagefind | 缓存命中直接复用；未命中只解析一次 HTML，变更节点统一输出 |
+| `astro:build:done` | HTML 图片/字体 AST 后处理、缓存 | 缓存命中直接复用；未命中只解析一次 HTML，变更节点统一输出 |
 | `astro:before-swap` | 清理旧页观察器、定时器、交互和 WebMCP 注册批次 | 由 Stalux 路由在 head 更新后、容器替换前派发；异步旧任务完成后不能继续挂载到新页 |
 | `astro:after-swap` | 刷新持久侧栏 slot、剪枝过期样式 | 替换完成后、任何页面模块挂载前 |
 | `astro:page-load` | 通过共享页面运行时挂载当前 DOM 交互、注册 WebMCP | 页面脚本执行完成后才派发；首屏在文档解析完成时派发一次，不等 `window.load` |
@@ -55,7 +55,7 @@ Head 插件先换好 head，随后派发 `astro:before-swap`；容器替换完�
 | 原生字体子集 | `node_modules/.astro/`，键含字体内容、字符集、face 与算法版本 |
 | 页面后处理 | `node_modules/.astro/stalux-page-output/`，跟踪 HTML、页面路径、处理代码及引用资产内容；损坏/缺失自动重建 |
 | 路由恢复 | 主题 YAML 内容进入 runtime cache key；文章 HTML、分类/标签与 Markdown 导出共享此键 |
-| Pagefind | 每次构建重新生成完整索引；浏览器成功模块复用，失败加载可重试 |
+| Orama | dev 按需生成，build 预渲染索引；浏览器失败加载可重试 |
 
 不得通过清空真实消费项目缓存掩盖配置失效问题。改 `promote.export_md` 或工具启停时，要检查恢复 HTML 中的实际开关及已生成文件。
 
@@ -67,11 +67,11 @@ Head 插件先换好 head，随后派发 `astro:before-swap`；容器替换完�
 | 博客 WebMCP | 代理打开博客页面，通过浏览器 `document.modelContext` 调用 | 7 个只读工具；元信息、全文检索、分段阅读、当前文章和站点信息 |
 | 静态机器可读文件 | HTTP GET `/api/posts.json`、`/openapi.json`、`/llms.txt` 等 | 构建产物；不处理 MCP POST、不提供动态认证/写入/限流配额 |
 
-文章搜索合并元信息与 Pagefind 正文命中，返回纯文本摘要；全文失败时明确标记降级。阅读优先 Markdown，未导出则用 Pagefind `post` 精确过滤读取纯文本；缺少两种来源时返回不可用错误。长文通过 `nextOffset` 续读，返回格式与总长度，不静默丢弃后续内容。详细参数见中英文 README 的 WebMCP 章节。
+文章搜索合并元信息与 Orama 正文命中，返回纯文本摘要；全文失败时明确标记降级。阅读优先 Markdown，未导出则用 Orama `post` 精确过滤读取纯文本；缺少两种来源时返回不可用错误。长文通过 `nextOffset` 续读，返回格式与总长度，不静默丢弃后续内容。详细参数见中英文 README 的 WebMCP 章节。
 
 ## 发布验收
 
-执行 `bun run validate` 和 `bun pm pack --dry-run`。先用原始配置和内容的独立实体消费副本构建，检查全部 HTML 的资源引用、Agent 摘要存在且被 CSS 裁切、字体、Pagefind 与 sitemap；再按仓库流程发布 1.x 包。正式包和 tarball 可读后升级 myblog，连续两次构建核对增量恢复，推送并分别确认 Cloudflare/EdgeOne 部署及线上版本。
+执行 `bun run validate` 和 `bun pm pack --dry-run`。先用原始配置和内容的独立实体消费副本构建，检查全部 HTML 的资源引用、Agent 摘要存在且被 CSS 裁切、字体、Orama 与 sitemap；再按仓库流程发布主题包。正式包和 tarball 可读后升级 myblog，连续两次构建核对增量恢复，推送并分别确认 Cloudflare/EdgeOne 部署及线上版本。
 
 CSS 维护与浏览器测量边界见 [STYLING.md](STYLING.md)。实验室 CLS、微基准、整体构建和真实用户指标分别报告；工具数量稳定不构成堆内存无泄漏的证明。
 

@@ -6,13 +6,13 @@ describe("generated asset references", () => {
     it("reports a generated file that references a missing Astro asset", () => {
         const missing = findMissingAssetReferences(
             new Map([
-                ["index.html", '<link href="/_astro/pagefind.css">'],
+                ["index.html", '<link href="/_astro/orama.css">'],
                 ["_astro/app.js", 'import "/_astro/chunk.js"'],
             ]),
             new Set(["/_astro/chunk.js"]),
         );
 
-        expect(missing).toEqual(["index.html -> /_astro/pagefind.css"]);
+        expect(missing).toEqual(["index.html -> /_astro/orama.css"]);
     });
 
     it("ignores displayed code examples and copy-button data", () => {

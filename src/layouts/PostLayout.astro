@@ -14,7 +14,6 @@ import { buildWalineProps } from "@utils/waline";
 interface Props {
     title: string;
     description?: string;
-    searchKeywords?: string[];
     postId?: string | number;
     date?: string;
     updated?: string | undefined;
@@ -63,7 +62,6 @@ const walineConfig = walineSection?.serverURL
             postId={props.postId}
             title={props.title}
             description={props.description}
-            searchKeywords={[...tags, ...categories, ...(props.searchKeywords ?? [])]}
             date={props.date}
             updated={props.updated}
             readingMinutes={props.readingMinutes}

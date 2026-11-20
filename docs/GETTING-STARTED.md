@@ -131,7 +131,7 @@ stalux/
 
 ## 开发诊断日志
 
-Stalux 使用 Astro 官方 logger 输出集成、内容加载和页面生成日志。普通模式保留初始化摘要、警告和错误；详细模式记录配置与路由注入、组件覆盖、字体分片缓存、Markdown 分析缓存、内容统计、feed、资源同步和 Pagefind 阶段信息。
+Stalux 使用 Astro 官方 logger 输出集成、内容加载和页面生成日志。普通模式保留初始化摘要、警告和错误；详细模式记录配置与路由注入、组件覆盖、字体分片缓存、Markdown 分析缓存、内容统计、feed、资源同步和 索引端点的预渲染耗时。
 
 ```bash title="Stalux 开发诊断"
 bun run dev:debug

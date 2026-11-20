@@ -24,7 +24,7 @@ describe("route href normalisation", () => {
         "/openapi.json",
         "/rss.xml",
         "/og/a1b2c3d4.jpg",
-        "/pagefind/pagefind.js",
+        "/_astro/search.js",
         // 非站内绝对路径一律不动
         "//cdn.example.com/x/",
         "https://example.com/posts/x/",
