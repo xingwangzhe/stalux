@@ -25,6 +25,15 @@ it("opens exactly one official Orama modal without a wrapper", async () => {
         layout: "modal",
         open: true,
         colorScheme: "dark",
+        themeConfig: {
+            colors: {
+                dark: {
+                    "--background-color-accent": "var(--category-bg-hover)",
+                    "--border-color-accent": "var(--stalux-label-border)",
+                    "--text-color-accent": "var(--accent-text)",
+                },
+            },
+        },
         dictionary: {
             searchPlaceholder: "Localized search",
             noResultsFound: "Localized empty state",

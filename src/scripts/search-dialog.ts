@@ -73,7 +73,12 @@ function enableModalClose(root: ShadowRoot, template: HTMLTemplateElement) {
             orama-modal button.modal-close > span { display: none }
             orama-modal button.modal-close:is(:hover, :focus-visible) {
                 color: var(--text-color-primary);
-                background: var(--background-color-fourth);
+                background: var(--background-color-accent);
+                border-color: var(--border-color-accent);
+            }
+            orama-modal button.modal-close:focus-visible {
+                outline: 2px solid var(--border-color-accent);
+                outline-offset: 2px;
             }
         }
     `;
@@ -236,6 +241,15 @@ export async function openSearchDialog(signal: AbortSignal) {
     box.layout = "modal";
     box.disableChat = true;
     box.colorScheme = "dark";
+    box.themeConfig = {
+        colors: {
+            dark: {
+                "--background-color-accent": "var(--category-bg-hover)",
+                "--border-color-accent": "var(--stalux-label-border)",
+                "--text-color-accent": "var(--accent-text)",
+            },
+        },
+    };
     box.linksTarget = "_self";
     box.clientInstance = database;
     box.searchParams = {
