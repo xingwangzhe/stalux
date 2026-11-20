@@ -8,13 +8,13 @@ import {
 } from "../utils/orama-search";
 import { toRoutePath } from "../utils/public-routes";
 import { sitePath } from "../utils/site-path";
+import { productionStyleName } from "../utils/style-name";
 import { navigate } from "./navigation-client";
 import { loadOramaSearch } from "./orama-client";
 
 let pending: Promise<Awaited<ReturnType<typeof loadOramaSearch>>> | undefined;
 
-const metadataBadge =
-    "display:inline-flex;align-items:center;max-inline-size:100%;box-sizing:border-box;padding:.2em .55em;border:1px solid var(--border-color-primary);border-radius:.45em;overflow-wrap:anywhere;color:var(--text-color-primary)";
+const metadataBadge = `display:inline-flex;align-items:center;max-inline-size:100%;box-sizing:border-box;padding:.2em .55em;border:1px solid var(${productionStyleName("--stalux-label-border")});border-radius:.45em;overflow-wrap:anywhere;color:var(${productionStyleName("--stalux-label-ink")});background:var(${productionStyleName("--tag-bg")})`;
 const metadataLink = `${metadataBadge};text-decoration:none`;
 
 function taxonomyHref(type: "categories" | "tags", value: string) {
@@ -118,7 +118,7 @@ function highlight(text: string, terms: string[]): string {
     let cursor = 0;
     for (const match of text.matchAll(pattern)) {
         html += escapeHtml(text.slice(cursor, match.index));
-        html += `<mark style="color:var(--text-color-accent);background:color-mix(in srgb,var(--text-color-accent) 18%,transparent);border-radius:.2em">${escapeHtml(match[0])}</mark>`;
+        html += `<mark style="color:var(${productionStyleName("--stalux-label-ink")});background:var(${productionStyleName("--category-bg-hover")});border-radius:.2em">${escapeHtml(match[0])}</mark>`;
         cursor = match.index + match[0].length;
     }
     return html + escapeHtml(text.slice(cursor));
@@ -175,11 +175,11 @@ async function loadSearchUi(clockIcon: string) {
                     ? `<time datetime="${escapeHtml(date)}" style="${metadataBadge};gap:.4em;font-variant-numeric:tabular-nums">${clockIcon}${escapeHtml(date.slice(0, 16).replace("T", " "))}</time>`
                     : "",
                 record.category
-                    ? `<a href="${taxonomyHref("categories", record.category)}" style="${metadataLink};--badge-bg:color-mix(in srgb,var(--background-color-fourth),var(--text-color-accent) 18%);background:var(--badge-bg);color:contrast-color(var(--badge-bg));font-weight:600">${escapeHtml(record.category)}</a>`
+                    ? `<a href="${taxonomyHref("categories", record.category)}" style="${metadataLink};background:var(${productionStyleName("--category-bg")});font-weight:600">${escapeHtml(record.category)}</a>`
                     : "",
                 ...[...new Set(record.tags ?? [])].map(
                     (tag) =>
-                        `<a href="${taxonomyHref("tags", String(tag))}" style="${metadataLink};background:var(--background-color-fourth)">#${escapeHtml(String(tag))}</a>`,
+                        `<a href="${taxonomyHref("tags", String(tag))}" style="${metadataLink}">#${escapeHtml(String(tag))}</a>`,
                 ),
             ]
                 .filter(Boolean)

@@ -87,10 +87,10 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-card-time": "m-0 inline-flex [gap:0.45rem]",
         "stalux-card-post-tags": "[gap:0.4rem]",
         "stalux-card-post-tag":
-            "inline-block p-[0.22rem_0.7rem] rounded-full [background:var(--tag-bg)] [color:#fff] text-[0.85rem] leading-none",
+            "inline-block p-[0.22rem_0.7rem] rounded-full [background:var(--tag-bg)] [color:var(--stalux-label-ink)] text-[0.85rem] leading-none",
         "stalux-card-post-categories": "[gap:0.4rem]",
         "stalux-card-post-category":
-            "inline-block p-[0.18rem_0.5rem] rounded-[6px] [background:var(--category-bg)] [color:#fff] text-[0.84rem] leading-none",
+            "inline-block p-[0.18rem_0.5rem] rounded-[6px] [background:var(--category-bg)] [color:var(--stalux-label-ink)] text-[0.84rem] leading-none",
         "stalux-card-read-more": "mt-[0.6rem] [align-self:flex-start]",
         "stalux-u-flex": "flex",
         "stalux-u-items-center": "items-center",
@@ -133,10 +133,10 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
             "m-0 font-semibold text-stalux-base text-ink-90 pb-sm [border-bottom:var(--border-thin)_solid_var(--white-20p)]",
         "stalux-post-taxonomy-list-column": "flex-col",
         "stalux-post-taxonomy-item-column":
-            "inline-flex no-underline p-[var(--space-sm)_var(--space-xs)] [background:var(--white-05p)] text-ink-80 [border-left:var(--border-thick)_solid_var(--accent-60p)] [transition:color_var(--transition-medium),_transform_var(--transition-medium)] rounded-[0_var(--radius-sm)_var(--radius-sm)_0] text-stalux-small [transform:translateX(0)]",
+            "inline-flex no-underline p-[var(--space-sm)_var(--space-xs)] [background:var(--category-bg)] [color:var(--stalux-label-ink)] [border-left:var(--border-thick)_solid_var(--stalux-label-border)] [transition:color_var(--transition-medium),_transform_var(--transition-medium)] rounded-[0_var(--radius-sm)_var(--radius-sm)_0] text-stalux-small [transform:translateX(0)]",
         "stalux-post-taxonomy-list-wrap": "flex-wrap",
         "stalux-post-taxonomy-item-pill":
-            "inline-block no-underline whitespace-nowrap p-[0.4rem_0.8rem] [background:var(--white-10p)] [border:none] rounded-stalux-full text-stalux-smaller [transition:color_var(--transition-medium),_transform_var(--transition-medium)] [transform:translateY(0)] text-ink-85",
+            "inline-block no-underline whitespace-nowrap p-[0.4rem_0.8rem] [background:var(--tag-bg)] [border:none] rounded-stalux-full text-stalux-smaller [transition:background_var(--transition-medium),_transform_var(--transition-medium)] [transform:translateY(0)] [color:var(--stalux-label-ink)]",
         "stalux-post-taxonomy-empty":
             "m-0 text-center text-ink-50 text-stalux-small p-[var(--space-md)_0]",
         "stalux-sidebar-right": "[scroll-padding-bottom:8rem]",
@@ -177,7 +177,7 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
             "max-w-full box-border [flex:1] min-w-0 w-[min(840px,_100%)] m-[0_auto] p-[0_0_2rem]",
         "stalux-post-source-link-row": "m-0 flex justify-center mt-[1.2rem]",
         "stalux-post-source-link":
-            "inline-flex items-center no-underline [gap:0.4rem] p-[0.5rem_1.1rem] text-[0.85rem] [font-weight:500] text-ink-full [background:var(--white-10p)] [border-top:1px_solid_var(--white-20p)] [border-right:1px_solid_var(--white-20p)] [border-left:1px_solid_var(--white-20p)] [border-bottom:0] rounded-[var(--radius-full,_999px)] [transition:background_var(--transition-fast),_transform_var(--transition-fast)]",
+            "inline-flex items-center no-underline [gap:0.4rem] p-[0.5rem_1.1rem] text-[0.85rem] [font-weight:500] [color:var(--stalux-label-ink)] [background:var(--category-bg)] [border:1px_solid_var(--stalux-label-border)] rounded-[var(--radius-full,_999px)] [transition:background_var(--transition-fast),_transform_var(--transition-fast)]",
         "stalux-post-article-footer": "mt-12 pt-8 [border-top:1px_solid_var(--white-10p)]",
         "stalux-post-footer-content": "stalux-stack gap-lg",
         "stalux-license-box":
@@ -199,10 +199,10 @@ export const shortcutsByFeature: Record<StyleFeature, Record<string, string>> = 
         "stalux-cloud-tag-group": "flex flex-wrap justify-center items-start gap-3 mb-3",
         "stalux-cloud-canvas-frame": "m-0 [container-type:inline-size]",
         "stalux-cloud-tag-card":
-            "relative stalux-flex-row no-underline overflow-hidden p-[0.5rem_1rem] rounded-8 bg-ink-05 text-ink-full [border:1px_solid_var(--white-20p)] [transition:transform_var(--transition-slow),_border-color_var(--transition-slow)]",
+            "relative stalux-flex-row no-underline overflow-hidden p-[0.5rem_1rem] rounded-8 [background:var(--tag-bg)] [color:var(--stalux-label-ink)] [border:1px_solid_var(--stalux-label-border)] [transition:transform_var(--transition-slow),_border-color_var(--transition-slow)]",
         "stalux-cloud-tag-name": "mr-2 z-2",
         "stalux-cloud-tag-count":
-            "text-center bg-ink-20 rounded-4 p-[0.1rem_0.4rem] text-[0.8rem] min-w-6 z-2",
+            "text-center [background:var(--category-bg-hover)] rounded-4 p-[0.1rem_0.4rem] text-[0.8rem] min-w-6 z-2",
         "stalux-cloud-no-tags": "m-0 text-center w-full text-[1.2rem] text-ink-60 p-8",
     },
     words: {

@@ -85,7 +85,7 @@
 
     .stalux-prose strong {
         font-weight: 600;
-        color: #ffd966;
+        color: var(--accent-text);
     }
 
     .stalux-prose em {
@@ -95,7 +95,7 @@
 
     .stalux-prose strong em,
     .stalux-prose em strong {
-        color: #ffd966;
+        color: var(--accent-text);
     }
 
     .stalux-prose del {
@@ -103,8 +103,8 @@
     }
 
     .stalux-prose mark {
-        color: inherit;
-        background-color: rgb(255 217 102 / 0.25);
+        color: var(--stalux-label-ink);
+        background-color: var(--category-bg-hover);
         padding: 0.1em 0.2em;
         border-radius: 2px;
     }
@@ -128,7 +128,7 @@
     /* Modern Web Guidance: native text-decoration instead of a border-bottom
        underline simulation. The visible decoration is tuned once below. */
     .stalux-prose a {
-        color: var(--accent-80p);
+        color: var(--accent-text);
         text-decoration-line: underline;
         text-decoration-color: transparent;
         text-decoration-thickness: 2px;
@@ -139,12 +139,12 @@
         overflow-wrap: anywhere;
     }
     .stalux-prose a:focus-visible {
-        color: var(--accent-90p);
+        color: var(--accent-text);
         text-decoration-color: var(--accent-60p);
     }
     @media (hover: hover) and (pointer: fine) {
         .stalux-prose a:hover {
-            color: var(--accent-90p);
+            color: var(--accent-text);
             text-decoration-color: var(--accent-60p);
         }
     }
@@ -153,11 +153,11 @@
         font-family:
             var(--font-code), "JetBrains Mono", "Fira Code", "Consolas", "Courier New", monospace;
         font-size: 0.88em;
-        color: #ff92d0;
-        background-color: rgb(255 121 198 / 0.15);
+        color: var(--stalux-label-ink);
+        background-color: var(--category-bg);
         padding: 0.2em 0.4em;
         border-radius: 4px;
-        border: 1px solid rgb(255 121 198 / 0.25);
+        border: 1px solid var(--stalux-label-border);
     }
 
     .stalux-prose pre {
@@ -249,7 +249,7 @@
     }
 
     .stalux-prose blockquote strong {
-        color: #ffd966;
+        color: var(--stalux-label-ink);
     }
 
     .stalux-prose blockquote code {

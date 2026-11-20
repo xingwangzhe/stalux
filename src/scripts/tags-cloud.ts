@@ -26,6 +26,7 @@ function readTagLinks(cards: HTMLElement | null) {
 export function mountTagsCloud(): (() => void) | undefined {
     const container = document.getElementById("tags-canvas");
     if (!container) return;
+    const cards = document.getElementById("tags-cards");
     const desktop = window.matchMedia("(min-width: 769px)");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const controller = new AbortController();
@@ -48,7 +49,7 @@ export function mountTagsCloud(): (() => void) | undefined {
         try {
             const { TagCloud } = await import("@xingwangzhe/tags-cloud");
             if (!active()) return;
-            tags ??= readTagLinks(document.getElementById("tags-cards"));
+            tags ??= readTagLinks(cards);
             if (!tags.length) return;
             const width = container.clientWidth;
             const baseRadius =
@@ -57,12 +58,13 @@ export function mountTagsCloud(): (() => void) | undefined {
                 Math.round(baseRadius * Math.sqrt(Math.max(tags.length, 100) / 100)),
                 Math.round(width * 0.6),
             );
+            const card = cards?.querySelector<HTMLElement>("[data-stalux-tag-card]");
             cloud = new TagCloud(container, {
                 tags,
                 radius,
                 spinY: 0.15,
                 fontSize: 16,
-                color: "#ffffff",
+                color: card ? getComputedStyle(card).color : "#ffffff",
                 fontFamily: "system-ui, -apple-system, sans-serif",
             });
         } catch (error) {

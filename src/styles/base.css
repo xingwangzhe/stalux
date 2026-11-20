@@ -126,6 +126,17 @@
     .stalux-root {
         min-height: 100vh;
         color: white;
+        /* Resolve the mixes here, where the configured accent is applied. */
+        --tag-bg: color-mix(in oklab, var(--stalux-bg-color), var(--stalux-accent-color) 14%);
+        --category-bg: color-mix(in oklab, var(--stalux-bg-color), var(--stalux-accent-color) 21%);
+        --tag-bg-hover: var(--category-bg);
+        --category-bg-hover: color-mix(
+            in oklab,
+            var(--stalux-bg-color),
+            var(--stalux-accent-color) 28%
+        );
+        --stalux-label-ink: color-mix(in oklab, white, var(--stalux-accent-color) 14%);
+        --stalux-label-border: color-mix(in oklab, #929292, var(--stalux-accent-color) 24%);
     }
 
     /* 主内容至少撑满顶栏下方的视口高度
@@ -148,8 +159,8 @@
         --stalux-site-header-min-height: 3.75rem;
         --stalux-site-header-height: var(--stalux-site-header-min-height);
         --stalux-text-shadow: var(--stalux-accent-color) 0.08rem 0.08rem 0.18rem;
-        --stalux-accent-color: #eab308;
-        --stalux-accent-rgb: 234 179 8;
+        --stalux-accent-color: #7dd3b6;
+        --stalux-accent-rgb: 125 211 182;
         --surface-glass: var(--black-05p);
         --surface-glass-shadow: var(--shadow-sidebar);
 
@@ -157,16 +168,6 @@
         --card-bg: var(--surface-glass);
         --card-box-shadow: 0 10px 24px rgb(0 0 0 / 0.08);
         --card-box-shadow-hover: 0 14px 28px rgb(0 0 0 / 0.12);
-
-        --tag-bg: rgb(255 255 255 / 0.12);
-        --tag-bg-hover: rgb(255 255 255 / 0.18);
-        --category-bg: rgb(255 255 255 / 0.08);
-        --category-bg-hover: rgb(255 255 255 / 0.14);
-
-        --date-bg: rgb(66 160 255 / 0.18);
-        --date-border: rgb(66 160 255 / 0.25);
-        --updated-bg: rgb(255 201 71 / 0.2);
-        --updated-border: rgb(255 201 71 / 0.3);
 
         /* 常用颜色值 */
         --white-full: #ffffff;

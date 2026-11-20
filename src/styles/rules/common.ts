@@ -49,20 +49,19 @@ export const commonStyles: StyleSpec[] = [
     [
         ".stalux-card-post-date, .stalux-card-post-updated",
         "inline-flex items-center w-[fit-content] gap-[0.35rem] p-[0.28rem_0.6rem] rounded-[10px] text-[0.9rem] leading-[1.1]",
-        { color: "#e8f2ff" },
+        { color: "var(--stalux-label-ink)" },
     ],
     [
         ".stalux-card-post-date",
         "",
-        { background: "var(--date-bg)", border: "1px solid var(--date-border)", color: "#e8f2ff" },
+        { background: "var(--tag-bg)", border: "1px solid var(--stalux-label-border)" },
     ],
     [
         ".stalux-card-post-updated",
         "",
         {
-            background: "var(--updated-bg)",
-            border: "1px solid var(--updated-border)",
-            color: "#fff7de",
+            background: "var(--category-bg)",
+            border: "1px dashed var(--stalux-label-border)",
         },
     ],
     [".stalux-card-post-tags a", "no-underline", {}],

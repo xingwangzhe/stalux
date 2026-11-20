@@ -11,8 +11,7 @@ export const tagsStyles: StyleSpec[] = [
         ".stalux-cloud-tag-card:focus-visible",
         "",
         {
-            background: "var(--white-05p)",
-            "border-color": "var(--accent-50p)",
+            background: "var(--tag-bg-hover)",
             "box-shadow": "var(--card-box-shadow-hover)",
         },
     ],
@@ -39,8 +38,7 @@ export const tagsStyles: StyleSpec[] = [
         ".stalux-cloud-tag-card:hover",
         "",
         {
-            background: "var(--white-05p)",
-            "border-color": "var(--accent-50p)",
+            background: "var(--tag-bg-hover)",
             "box-shadow": "var(--card-box-shadow-hover)",
         },
     ],
@@ -83,12 +81,12 @@ export const tagsStyles: StyleSpec[] = [
     [
         ".stalux-tag-header .stalux-tag-page-title .stalux-tag-category-icon",
         "mr-[0.8rem]",
-        { color: "var(--accent-80p)" },
+        { color: "var(--accent-text)" },
     ],
     [
         ".stalux-tag-header .stalux-tag-page-title .stalux-tag-category-name",
         "",
-        { color: "var(--accent-90p)", "font-weight": "500" },
+        { color: "var(--accent-text)", "font-weight": "500" },
     ],
     [".stalux-tag-header .stalux-tag-page-description", "text-[1rem] mb-[0.5rem] text-ink-70", {}],
     [

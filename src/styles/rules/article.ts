@@ -91,12 +91,18 @@ export const articleStyles: StyleSpec[] = [
     [
         ":is( .stalux-post-taxonomy-list, .stalux-post-taxonomy-list-column, .stalux-post-taxonomy-list-wrap )",
         "flex gap-sm",
-        {},
+        { color: "var(--stalux-label-ink)" },
     ],
-    [".stalux-post-taxonomy-item-column:hover", "", { background: "var(--white-05p)" }],
-    [".stalux-post-taxonomy-item-column:active", "", { background: "var(--white-05p)" }],
-    [".stalux-post-taxonomy-item-pill:hover", "", { background: "var(--white-05p)" }],
-    [".stalux-post-taxonomy-item-pill:active", "", { background: "var(--white-05p)" }],
+    [
+        ".stalux-post-taxonomy-item-column:hover, .stalux-post-taxonomy-item-column:focus-visible, .stalux-post-taxonomy-item-column:active",
+        "",
+        { background: "var(--category-bg-hover)" },
+    ],
+    [
+        ".stalux-post-taxonomy-item-pill:hover, .stalux-post-taxonomy-item-pill:focus-visible, .stalux-post-taxonomy-item-pill:active",
+        "",
+        { background: "var(--tag-bg-hover)" },
+    ],
     [
         ":is(.stalux-sidebar, .stalux-sidebar-right)",
         "flex flex-col sticky h-fit w-full box-border min-w-0 overflow-y-auto top-[var(--stalux-nav-offset,_20px)] max-h-[calc(100vh_-_var(--stalux-nav-offset,_20px)_-_20px)] gap-lg p-[var(--space-lg)_0]",
@@ -235,10 +241,8 @@ export const articleStyles: StyleSpec[] = [
         ".stalux-post-source-link:hover, .stalux-post-source-link:focus, .stalux-post-source-link:active",
         "no-underline",
         {
-            background: "var(--accent, #ffffff22)",
-            "border-top-color": "var(--accent, #ffffff44)",
-            "border-right-color": "var(--accent, #ffffff44)",
-            "border-left-color": "var(--accent, #ffffff44)",
+            background: "var(--category-bg-hover)",
+            color: "var(--stalux-label-ink)",
         },
     ],
     [".stalux-post-source-link::after", "", { display: "none !important" }],

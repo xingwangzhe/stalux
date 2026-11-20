@@ -1,6 +1,7 @@
 import { productionStyleName } from "./style-name.ts";
 
 const ACCENT_COLOR_PATTERN = /^#[\da-fA-F]{6}$/u;
+export const DEFAULT_ACCENT_COLOR = "#7DD3B6";
 
 const ACCENT_OPACITIES = [90, 85, 80, 70, 60, 50, 40, 30, 20] as const;
 
@@ -56,7 +57,7 @@ export function accentTextColor(accentColor: string): string {
 }
 
 /** Build the CSS custom properties shared by Stalux and its comment styles. */
-export function getAccentColorStyle(accentColor = "#EAB308"): string {
+export function getAccentColorStyle(accentColor = DEFAULT_ACCENT_COLOR): string {
     if (!ACCENT_COLOR_PATTERN.test(accentColor)) {
         throw new Error(`Invalid Stalux accent color "${accentColor}". Expected #RRGGBB.`);
     }

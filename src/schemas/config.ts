@@ -5,6 +5,7 @@
  * 通过 z.discriminatedUnion("id") 联合为 config 集合。
  */
 import { z } from "astro/zod";
+import { DEFAULT_ACCENT_COLOR } from "../utils/accent-color";
 
 // ---------------------------------------------------------------------------
 // 子 Schema（每个对应一个 config/*.yml 文件）
@@ -20,10 +21,10 @@ export const siteSchema = z.object({
         .string()
         .regex(
             /^#[\da-fA-F]{6}$/u,
-            "site.accentColor must be a six-digit HEX color such as #EAB308",
+            `site.accentColor must be a six-digit HEX color such as ${DEFAULT_ACCENT_COLOR}`,
         )
         .optional()
-        .default("#EAB308"),
+        .default(DEFAULT_ACCENT_COLOR),
     seoTitle: z.string().min(1).optional(),
     timezone: z.string().optional().default("Asia/Shanghai"),
     weather: z.object({ enabled: z.boolean().optional().default(false) }).optional(),

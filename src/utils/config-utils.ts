@@ -18,6 +18,7 @@ import type {
     SiteData,
     TypetextsData,
 } from "@schemas/config";
+import { DEFAULT_ACCENT_COLOR } from "./accent-color";
 
 // ===================================================================
 // Config 集合 (stalux/config/*.yml)
@@ -40,10 +41,10 @@ export function getSiteData(entries: CollectionEntry<"config">[]): SiteData {
     const site = findConfig(entries, "site");
     if (!site) throw new Error("Missing site config");
     // Content collection loaders may omit Zod defaults from parsed YAML data.
-    // Keep the public default stable for older consumer configs that lack this key.
+    // Astro's YAML loader may omit the schema default from collection data.
     return {
         ...site,
-        accentColor: site.accentColor ?? "#EAB308",
+        accentColor: site.accentColor ?? DEFAULT_ACCENT_COLOR,
         // 时间解析全部依赖站点时区（feed/semantic-time/archives），缺省值必须与 schema 默认一致
         timezone: site.timezone ?? "Asia/Shanghai",
         weather: { enabled: site.weather?.enabled ?? false },
