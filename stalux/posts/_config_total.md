@@ -6,14 +6,14 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 10:00:00"
-updated: "2026-11-20 14:07:35"
+updated: "2026-11-20 14:10:32"
 desc: Complete configuration file structure of the Stalux theme — each config section is now a separate YAML file under stalux/config/, with Zod schema validation.
 abbrlink: 0b563d42
 ---
 
 ## Configuration File Structure
 
-The Stalux theme uses Astro content collections. Configuration files are stored as individual YAML files under `stalux/config/`, each validated by a dedicated Zod schema. `site.yml` accepts an optional six-digit HEX `accentColor` (default `#FFD76A`) that controls the theme, dark-surface badges, and Waline accent. Leave it out to use the default. Existing config files need no migration for this option. Stalux v1.29.1 applies this default at runtime as well as in the schema, covering Astro YAML collection data that omits Zod defaults. See [_config_basic.md](/posts/ad81245d/) for the v1.29.0 compatibility incident and details:
+The Stalux theme uses Astro content collections. Configuration files are stored as individual YAML files under `stalux/config/`, each validated by a dedicated Zod schema. `site.yml` accepts an optional six-digit HEX `accentColor` (default `#FFD76A`) that controls the theme, badges with light fills on the dark theme, and Waline accent. Leave it out to use the default. Existing config files need no migration for this option. Stalux v1.29.1 applies this default at runtime as well as in the schema, covering Astro YAML collection data that omits Zod defaults. See [_config_basic.md](/posts/ad81245d/) for the v1.29.0 compatibility incident and details:
 
 ```bash
 stalux/config/

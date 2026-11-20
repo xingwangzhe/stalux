@@ -90,7 +90,7 @@
 
     .stalux-prose em {
         font-style: italic;
-        color: var(--stalux-label-ink);
+        color: var(--stalux-prose-ink);
     }
 
     .stalux-prose strong em,
@@ -105,11 +105,7 @@
 
     .stalux-prose mark {
         color: var(--stalux-label-ink);
-        background-color: color-mix(
-            in oklab,
-            var(--category-bg-hover),
-            var(--stalux-accent-color) 12%
-        );
+        background-color: var(--category-bg-hover);
         padding: 0.1em 0.2em;
         border-radius: 2px;
     }
@@ -251,8 +247,8 @@
         margin: var(--space-xl) 0;
         padding: 1rem 1.5rem;
         border: 1px solid var(--white-10p);
-        border-inline-start: 4px solid var(--stalux-label-border);
-        background: var(--tag-bg);
+        border-inline-start: 4px solid var(--tag-bg);
+        background: var(--stalux-prose-surface);
         border-radius: 12px;
         box-shadow: 0 4px 16px #0002;
         color: var(--white-85p);
@@ -268,7 +264,7 @@
     }
 
     .stalux-prose blockquote strong {
-        color: var(--stalux-label-ink);
+        color: var(--stalux-prose-ink);
     }
 
     .stalux-prose blockquote code {
@@ -363,7 +359,7 @@
     .stalux-prose details {
         margin: var(--space-lg) 0;
         padding: 0.8rem 1rem;
-        background-color: var(--tag-bg);
+        background-color: var(--stalux-prose-surface);
         border: 1px solid var(--white-10p);
         border-radius: 6px;
         transition: border-color var(--transition-fast);
@@ -380,7 +376,7 @@
     .stalux-prose summary {
         cursor: pointer;
         font-weight: 600;
-        color: var(--stalux-label-ink);
+        color: var(--stalux-prose-ink);
     }
 
     .stalux-prose summary::marker {
@@ -441,6 +437,11 @@
         background-color: var(--category-bg);
         color: var(--stalux-label-ink);
         text-decoration: none;
+    }
+
+    .stalux-prose :is(mark, th) :is(strong, em, a, del) {
+        color: var(--stalux-label-ink);
+        text-decoration-color: currentColor;
     }
 
     @media (max-width: 1024px) {

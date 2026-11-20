@@ -126,17 +126,15 @@
     .stalux-root {
         min-height: 100vh;
         color: white;
-        /* Resolve the mixes here, where the configured accent is applied. */
-        --tag-bg: color-mix(in oklab, var(--stalux-bg-color), var(--stalux-accent-color) 14%);
-        --category-bg: color-mix(in oklab, var(--stalux-bg-color), var(--stalux-accent-color) 21%);
+        /* Lift the accent before blending toward the dark canvas. */
+        --category-bg: color-mix(in oklab, white, var(--stalux-accent-color) 36%);
+        --tag-bg: color-mix(in oklab, var(--category-bg), var(--stalux-bg-color) 8%);
         --tag-bg-hover: var(--category-bg);
-        --category-bg-hover: color-mix(
-            in oklab,
-            var(--stalux-bg-color),
-            var(--stalux-accent-color) 28%
-        );
-        --stalux-label-ink: color-mix(in oklab, white, var(--stalux-accent-color) 14%);
-        --stalux-label-border: color-mix(in oklab, #929292, var(--stalux-accent-color) 24%);
+        --category-bg-hover: color-mix(in oklab, var(--category-bg), white 25%);
+        --stalux-label-ink: #121212;
+        --stalux-label-border: color-mix(in oklab, var(--stalux-bg-color), var(--category-bg) 72%);
+        --stalux-prose-ink: color-mix(in oklab, white, var(--stalux-accent-color) 14%);
+        --stalux-prose-surface: color-mix(in oklab, var(--stalux-bg-color), var(--category-bg) 12%);
     }
 
     /* 主内容至少撑满顶栏下方的视口高度

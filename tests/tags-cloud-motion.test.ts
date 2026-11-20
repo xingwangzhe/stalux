@@ -34,7 +34,6 @@ beforeEach(() => {
                 id === "tags-canvas"
                     ? { clientWidth: 900 }
                     : {
-                          querySelector: () => ({}),
                           querySelectorAll: () => [
                               {
                                   getAttribute: () => "/tags/test/",

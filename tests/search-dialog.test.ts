@@ -28,8 +28,8 @@ it("opens exactly one official Orama modal without a wrapper", async () => {
         themeConfig: {
             colors: {
                 dark: {
-                    "--background-color-accent": "var(--category-bg-hover)",
-                    "--border-color-accent": "var(--stalux-label-border)",
+                    "--background-color-accent": "var(--stalux-prose-surface)",
+                    "--border-color-accent": "var(--tag-bg)",
                     "--text-color-accent": "var(--accent-text)",
                 },
             },

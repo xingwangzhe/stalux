@@ -35,6 +35,7 @@ const publicVariables = new Set([
     "--category-bg-hover",
     "--stalux-label-ink",
     "--stalux-label-border",
+    "--stalux-prose-surface",
     "--stalux-bg-image",
     // css-tree leaves if() style conditions and fallback values unparsed.
     "--stalux-bg-choice",

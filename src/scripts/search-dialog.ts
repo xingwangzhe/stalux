@@ -13,7 +13,8 @@ import { loadOramaSearch } from "./orama-client";
 
 let pending: Promise<Awaited<ReturnType<typeof loadOramaSearch>>> | undefined;
 
-const metadataBadge = `display:inline-flex;align-items:center;max-inline-size:100%;box-sizing:border-box;padding:.2em .55em;border:1px solid var(--stalux-label-border);border-radius:.45em;overflow-wrap:anywhere;color:var(--stalux-label-ink);background:var(--tag-bg)`;
+const metadataBadge =
+    "display:inline-flex;align-items:center;max-inline-size:100%;box-sizing:border-box;padding:.2em .55em;border:1px solid var(--stalux-label-border);border-radius:.45em;overflow-wrap:anywhere;color:var(--stalux-label-ink);background:var(--tag-bg)";
 const metadataLink = `${metadataBadge};text-decoration:none`;
 
 function taxonomyHref(type: "categories" | "tags", value: string) {
@@ -244,8 +245,8 @@ export async function openSearchDialog(signal: AbortSignal) {
     box.themeConfig = {
         colors: {
             dark: {
-                "--background-color-accent": "var(--category-bg-hover)",
-                "--border-color-accent": "var(--stalux-label-border)",
+                "--background-color-accent": "var(--stalux-prose-surface)",
+                "--border-color-accent": "var(--tag-bg)",
                 "--text-color-accent": "var(--accent-text)",
             },
         },

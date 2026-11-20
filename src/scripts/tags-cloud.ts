@@ -58,13 +58,12 @@ export function mountTagsCloud(): (() => void) | undefined {
                 Math.round(baseRadius * Math.sqrt(Math.max(tags.length, 100) / 100)),
                 Math.round(width * 0.6),
             );
-            const card = cards?.querySelector<HTMLElement>("[data-stalux-tag-card]");
             cloud = new TagCloud(container, {
                 tags,
                 radius,
                 spinY: 0.15,
                 fontSize: 16,
-                color: card ? getComputedStyle(card).color : "#ffffff",
+                color: getComputedStyle(container).color,
                 fontFamily: "system-ui, -apple-system, sans-serif",
             });
         } catch (error) {

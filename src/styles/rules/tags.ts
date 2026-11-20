@@ -19,7 +19,7 @@ export const tagsStyles: StyleSpec[] = [
     [
         ".stalux-cloud-canvas",
         "relative hidden w-full h-[min(calc(var(--cloud-base-diameter)_*_var(--cloud-density)),_120cqw)] min-h-[520px]",
-        { "--cloud-base-diameter": "660px" },
+        { "--cloud-base-diameter": "660px", color: "var(--stalux-prose-ink)" },
     ],
     [".stalux-cloud-canvas", "block", {}, "@media (min-width: 769px)"],
     [
