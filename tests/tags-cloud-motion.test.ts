@@ -16,6 +16,7 @@ import { mountTagsCloud } from "../src/scripts/tags-cloud";
 let onVisibility: IntersectionObserverCallback;
 let reduced: EventTarget & { matches: boolean };
 let desktop: EventTarget & { matches: boolean };
+const labelColor = "oklab(0.92 0.01 -0.02)";
 beforeEach(() => {
     state.create.mockClear();
     state.destroy.mockClear();
@@ -33,6 +34,7 @@ beforeEach(() => {
                 id === "tags-canvas"
                     ? { clientWidth: 900 }
                     : {
+                          querySelector: () => ({}),
                           querySelectorAll: () => [
                               {
                                   getAttribute: () => "/tags/test/",
@@ -42,6 +44,7 @@ beforeEach(() => {
                       },
         }),
     );
+    vi.stubGlobal("getComputedStyle", () => ({ color: labelColor }));
     vi.stubGlobal(
         "IntersectionObserver",
         class {
@@ -75,6 +78,7 @@ it("destroys a live cloud when reduced motion becomes active", async () => {
     expect(state.create).toHaveBeenCalledWith(
         expect.objectContaining({
             tags: [expect.objectContaining({ type: "link", text: "test", url: "/tags/test/" })],
+            color: labelColor,
         }),
     );
     reduced.matches = true;

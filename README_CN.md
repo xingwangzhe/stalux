@@ -72,7 +72,7 @@ bun run dev
 站点信息、导航、作者、评论和统计都在 `stalux/config/` 的 YAML 里。换主题色只需要：
 
 ```yaml title="stalux/config/site.yml"
-accentColor: "#7DD3B6"
+accentColor: "#EAB308"
 ```
 
 `accentColor` 接受六位 HEX，同时驱动主题与 Waline 的强调色。其余字段见 [配置说明](./docs/CONFIGURATION.md)。

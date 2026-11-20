@@ -6,7 +6,7 @@ tags:
 categories:
     - Theme Config
 date: "2025-05-10 11:00:00"
-updated: "2026-11-20 13:50:25"
+updated: "2026-11-20 13:57:43"
 desc: Site identity configuration (site.yml, author.yml), content collection structure, frontmatter field references, and writing notes.
 abbrlink: ad81245d
 ---
@@ -21,7 +21,7 @@ lang: en # Language: "en" | "zh-CN"
 title: Stalux Blog Theme # Site title
 url: https://stalux.needhelp.icu # Site URL (used for canonical, RSS, OpenGraph)
 description: "Blog theme Stalux ..." # Site description (SEO, OpenGraph)
-accentColor: "#7DD3B6" # Optional shared theme and Waline accent; six-digit HEX
+accentColor: "#EAB308" # Optional shared theme and Waline accent; six-digit HEX
 timezone: "Asia/Shanghai" # IANA timezone; used for both formatting and parsing naive frontmatter dates (1.41.2+)
 favicon: "/stalux.ico" # Favicon path
 canonical: "https://stalux.needhelp.icu" # Canonical URL (optional, falls back to url)
@@ -30,7 +30,7 @@ canonical: "https://stalux.needhelp.icu" # Canonical URL (optional, falls back t
 # nofollow: false                     # Global nofollow (optional, default false)
 ```
 
-`accentColor` defaults to `#7DD3B6` and accepts `#RRGGBB`. Stalux blends this accent with the dark page background in Oklab to color article tags, categories, the Markdown source badge, and search highlights. The same setting also sets the Waline accent.
+`accentColor` defaults to `#EAB308` and accepts `#RRGGBB`. Stalux blends this accent with the dark page background in Oklab to color article tags, categories, the Markdown source badge, and search highlights. The same setting also sets the Waline accent.
 
 This setting is optional: leave it out to keep the default, and existing `site.yml` files do not need to be edited. Stalux applies the default while reading site configuration as well as when generating color tokens, because Astro's YAML content collection may omit Zod defaults from runtime data. This compatibility fix is included in Stalux v1.29.1. In v1.29.0, a consumer build with `accentColor` omitted could fail while rendering `/404` with an `undefined` accent color.
 

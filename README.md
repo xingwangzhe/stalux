@@ -72,7 +72,7 @@ bun run dev
 Site metadata, navigation, author, comments and analytics live in YAML under `stalux/config/`. Changing the theme color takes one line:
 
 ```yaml title="stalux/config/site.yml"
-accentColor: "#7DD3B6"
+accentColor: "#EAB308"
 ```
 
 `accentColor` accepts a six-digit HEX value and drives both the theme and Waline accents. See [Configuration](./docs/CONFIGURATION.md) for every field.

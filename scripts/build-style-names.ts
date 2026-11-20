@@ -29,6 +29,12 @@ const publicVariables = new Set([
     "--accent-text",
     "--accent",
     "--foreground-60p",
+    // Orama result styles consume these tokens across a shadow boundary.
+    "--tag-bg",
+    "--category-bg",
+    "--category-bg-hover",
+    "--stalux-label-ink",
+    "--stalux-label-border",
     "--stalux-bg-image",
     // css-tree leaves if() style conditions and fallback values unparsed.
     "--stalux-bg-choice",

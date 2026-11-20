@@ -159,8 +159,8 @@
         --stalux-site-header-min-height: 3.75rem;
         --stalux-site-header-height: var(--stalux-site-header-min-height);
         --stalux-text-shadow: var(--stalux-accent-color) 0.08rem 0.08rem 0.18rem;
-        --stalux-accent-color: #7dd3b6;
-        --stalux-accent-rgb: 125 211 182;
+        --stalux-accent-color: #eab308;
+        --stalux-accent-rgb: 234 179 8;
         --surface-glass: var(--black-05p);
         --surface-glass-shadow: var(--shadow-sidebar);
 
