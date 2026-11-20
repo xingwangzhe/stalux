@@ -5,6 +5,7 @@ import "photoswipe/dist/photoswipe.css";
 
 import { getCollection } from "astro:content";
 import { getPromoteData, getSiteData } from "@utils/config-utils";
+import { toTimestamp } from "@utils/dayjs";
 import { createTranslator } from "@utils/i18n";
 import { getMarkdownPath, getRouteKind } from "@utils/public-routes";
 import { toMachineDateTime } from "@utils/semantic-time";
@@ -46,6 +47,7 @@ const mdSourceUrl =
     id="swup-article"
     class="stalux-article"
     data-stalux-motion-stage
+    data-pagefind-sort={`published:${props.date ? toTimestamp(props.date, timezone) : Number.MIN_SAFE_INTEGER}`}
     data-stalux-gallery={props.hasImage ? "true" : undefined}
 >
     <!-- Article Header -->

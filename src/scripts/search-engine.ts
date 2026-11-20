@@ -31,6 +31,7 @@ export interface SearchResponse {
 }
 export interface SearchOptions {
     filters?: Record<string, string | string[]>;
+    sort?: Record<string, "asc" | "desc">;
 }
 export interface NativeSearch {
     search: (query: string | null, options?: SearchOptions) => Promise<SearchResponse>;
@@ -39,6 +40,7 @@ export interface NativeSearch {
     mergeIndex: (url: string, options?: Record<string, unknown>) => Promise<void>;
 }
 const logger = createClientLogger("search/cjk");
+const publishedSort = { published: "desc" } as const;
 function excerpt(content: string, terms: string[]) {
     const position = Math.max(0, normalizeSearch(content).indexOf(terms[0] ?? ""));
     const start = Math.max(0, position - 45);
@@ -80,6 +82,20 @@ export function createEnhancedSearch(
         return pending as Promise<T>;
     }
     const ids = new Map<string, Promise<string | undefined>>();
+    let publicationOrder: Promise<Map<string, number>> | undefined;
+    async function orderMergedResults(api: NativeSearch, results: SearchResult[]) {
+        // Pagefind already stores the chronological order. Fetch IDs without loading fragments.
+        publicationOrder ??= api.search(null, { sort: publishedSort }).then(
+            ({ results }) => new Map(results.map(({ id }, position) => [id, position])),
+            (error: unknown) => {
+                publicationOrder = undefined;
+                throw error;
+            },
+        );
+        const positions = await publicationOrder;
+        const position = (id: string) => positions.get(id) ?? positions.size;
+        return results.sort((a, b) => position(a.id) - position(b.id));
+    }
     async function nativeId(api: NativeSearch, record: CjkDocument, original: SearchResult[]) {
         const post = record.filters.post?.[0];
         if (post) {
@@ -104,7 +120,8 @@ export function createEnhancedSearch(
         const api = await getNative();
         if (query === null || !query.trim()) return api.search(query, options);
         const normalized = normalizeSearch(query);
-        let original = await api.search(query, options);
+        const sortedOptions = { ...options, sort: publishedSort };
+        let original = await api.search(query, sortedOptions);
         // Keep Pagefind's quoted phrase semantics and compound filter semantics intact.
         if (
             /["“”]/u.test(query) ||
@@ -112,13 +129,13 @@ export function createEnhancedSearch(
         )
             return original;
         if (normalized !== query) {
-            const variant = await api.search(normalized, options);
+            const variant = await api.search(normalized, sortedOptions);
             const originalIds = new Set(original.results.map((result) => result.id));
-            const results = [
-                ...original.results,
-                ...variant.results.filter((result) => !originalIds.has(result.id)),
-            ];
-            original = { ...original, results, unfilteredTotalCount: results.length };
+            const additions = variant.results.filter((result) => !originalIds.has(result.id));
+            if (additions.length) {
+                const results = await orderMergedResults(api, [...original.results, ...additions]);
+                original = { ...original, results, unfilteredTotalCount: results.length };
+            }
         }
         if (!CJK.test(normalized)) return original;
         try {
@@ -195,10 +212,11 @@ export function createEnhancedSearch(
                 });
             }
             const seen = new Set(supplemental.map((result) => result.id));
-            const results = [
+            if (!supplemental.length) return original;
+            const results = await orderMergedResults(api, [
                 ...supplemental,
                 ...original.results.filter((result) => !seen.has(result.id)),
-            ];
+            ]);
             return { ...original, results, unfilteredTotalCount: results.length };
         } catch {
             logger.warn("CJK substring index unavailable; using Pagefind");
@@ -209,7 +227,9 @@ export function createEnhancedSearch(
         search,
         options: async (options: Record<string, unknown>) => (await getNative()).options(options),
         filters: async () => (await getNative()).filters(),
-        mergeIndex: async (url: string, options?: Record<string, unknown>) =>
-            (await getNative()).mergeIndex(url, options),
+        mergeIndex: async (url: string, options?: Record<string, unknown>) => {
+            await (await getNative()).mergeIndex(url, options);
+            publicationOrder = undefined;
+        },
     };
 }

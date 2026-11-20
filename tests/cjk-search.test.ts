@@ -144,3 +144,26 @@ it("retains raw-query hits as well as normalized-query hits", async () => {
         "normalized-only",
     ]);
 });
+
+it("orders native and CJK matches together by publication without loading fragments", async () => {
+    const { engine, native } = fixture();
+    const older = page("older");
+    const newer = page("newer");
+    const loadNewer = vi.spyOn(newer, "data");
+    const loadOlder = vi.spyOn(older, "data");
+    const supplemental = page("native-target");
+    native.search = vi.fn(async (query, options) => ({
+        results:
+            query !== null
+                ? [newer, older]
+                : options?.filters
+                  ? [supplemental]
+                  : [newer, supplemental, older],
+    }));
+    const result = await engine.search("人机验证");
+    expect(result.results.map(({ id }) => id)).toEqual(["newer", "native-target", "older"]);
+    expect(native.search).toHaveBeenCalledWith("人机验证", { sort: { published: "desc" } });
+    expect(native.search).toHaveBeenCalledWith(null, { sort: { published: "desc" } });
+    expect(loadNewer).not.toHaveBeenCalled();
+    expect(loadOlder).not.toHaveBeenCalled();
+});
