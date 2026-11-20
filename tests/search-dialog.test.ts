@@ -16,20 +16,28 @@ vi.mock("@orama/wc-components/dist/components/orama-search-box.js", () => ({
     defineCustomElement: setup.defineCustomElement,
 }));
 
-it("mounts the official Orama search box into an open native dialog once", async () => {
-    document.body.innerHTML = `<dialog id="search" lang="zh-CN"><p data-search-status data-loading="加载中"></p></dialog>`;
-    const dialog = document.querySelector("dialog");
+it("opens exactly one official Orama modal without a wrapper", async () => {
+    document.body.innerHTML = `<template data-stalux-search data-search-dictionary='{"searchPlaceholder":"Localized search","noResultsFound":"Localized empty state"}'><orama-search-box data-stalux-search></orama-search-box></template>`;
     const signal = new AbortController().signal;
     await Promise.all([openSearchDialog(signal), openSearchDialog(signal)]);
-    expect(dialog?.open).toBe(true);
-    expect(dialog?.querySelectorAll("orama-search-box")).toHaveLength(1);
+    expect(document.querySelectorAll("orama-search-box")).toHaveLength(1);
+    expect(document.querySelector("orama-search-box")).toMatchObject({
+        layout: "modal",
+        open: true,
+        colorScheme: "dark",
+        dictionary: {
+            searchPlaceholder: "Localized search",
+            noResultsFound: "Localized empty state",
+        },
+    });
+    expect(document.querySelector("dialog")).toBeNull();
     expect(setup.loadOramaSearch).toHaveBeenCalledTimes(1);
     expect(setup.defineCustomElement).toHaveBeenCalledTimes(1);
 });
 
 it("keeps a dialog closed when opening was cancelled by navigation", async () => {
-    document.body.innerHTML = `<dialog id="search"></dialog>`;
+    document.body.innerHTML = "<template data-stalux-search></template>";
     const signal = AbortSignal.abort();
     await openSearchDialog(signal);
-    expect(document.querySelector("dialog")?.open).toBe(false);
+    expect(document.querySelector("orama-search-box")).toBeNull();
 });

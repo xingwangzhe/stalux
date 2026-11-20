@@ -1,4 +1,5 @@
-import { create, search } from "@orama/orama";
+import { create, type OramaPlugin, search } from "@orama/orama";
+import { pluginPT15 } from "@orama/plugin-pt15";
 import { createTokenizer } from "@orama/tokenizers/mandarin";
 
 const dimensions = 512;
@@ -10,7 +11,7 @@ export function normalizeSearch(value: string) {
     return value.normalize("NFKC").toLowerCase();
 }
 
-export function createSearchIndex(cjk: boolean) {
+export function createSearchIndex(cjk: boolean, plugins: OramaPlugin[] = [pluginPT15()]) {
     const mandarin = createTokenizer();
     return create({
         schema: {
@@ -27,6 +28,7 @@ export function createSearchIndex(cjk: boolean) {
             tags: "string[]",
             embedding: "vector[512]",
         } as const,
+        plugins,
         components: {
             tokenizer: {
                 language: cjk ? mandarin.language : "english",
@@ -105,7 +107,7 @@ export function searchInput(raw: string) {
 export function searchParameters(term: string, language: string, limit: number, post?: string) {
     return {
         term,
-        properties: [...searchableFields],
+        ...(term ? { properties: [...searchableFields] } : {}),
         where: { language: { eq: language }, ...(post ? { post: { eq: post } } : {}) },
         limit,
         boost: { title: 4, description: 2, keywords: 3 },

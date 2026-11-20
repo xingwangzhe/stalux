@@ -114,6 +114,7 @@
         "@microsoft/clarity": "^1.0.2",
         "@orama/orama": "3.1.18",
         "@orama/plugin-data-persistence": "3.1.18",
+        "@orama/plugin-pt15": "3.1.18",
         "@orama/tokenizers": "3.1.18",
         "@orama/wc-components": "0.8.1",
         "@swup/a11y-plugin": "^5.2.1",

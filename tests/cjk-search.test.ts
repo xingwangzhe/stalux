@@ -1,6 +1,6 @@
 import { insert } from "@orama/orama";
 import { expect, it } from "vitest";
-import { extractSearchDocument } from "../src/internal/orama-search-index";
+import { createOramaIndex, searchablePostBody } from "../src/internal/orama-search-index";
 import { createSearchIndex, searchDocuments, searchVector } from "../src/utils/orama-search";
 
 it("matches continuous CJK terms and preserves publication order and post lookup", async () => {
@@ -36,17 +36,34 @@ it("matches continuous CJK terms and preserves publication order and post lookup
     ).toEqual(["older"]);
 });
 
-it("extracts only the indexed article and its publication data", () => {
-    const record = extractSearchDocument(
-        `<html lang="zh-CN"><article data-pagefind-sort="published:4"><h1 data-pagefind-body>Astro</h1><section data-pagefind-body data-stalux-post-id="example">正文 <b>关键词</b><span data-pagefind-ignore>不收录</span></section></article></html>`,
-        "/posts/example",
-    );
-    expect(record).toMatchObject({
-        post: "example",
-        published: 4,
-        language: "zh-cn",
-        content: "Astro 正文 关键词",
-    });
+it("indexes rendered collection content as plain text", () => {
+    expect(
+        searchablePostBody(
+            "<p>好<strong>家伙</strong></p><p>后续</p><span data-pagefind-ignore>不收录</span>",
+            undefined,
+        ),
+    ).toBe("好家伙 后续");
+    expect(searchablePostBody(undefined, "好**家伙** `Astro`")).toBe("好家伙 Astro");
+});
+
+it("writes a reproducible search index with stable document IDs", async () => {
+    const url = "/posts/example/";
+    const documents = [
+        {
+            url,
+            post: "example",
+            language: "zh-cn",
+            title: "好家伙",
+            description: "",
+            keywords: "",
+            content: "正文",
+            published: 1,
+        },
+    ];
+    const first = await createOramaIndex(documents, true);
+    expect(await createOramaIndex(documents, true)).toEqual(first);
+    const artifact = JSON.parse(new TextDecoder().decode(Bun.gunzipSync(first)));
+    expect(artifact.data.internalDocumentIDStore.internalIdToId).toEqual([url]);
 });
 
 it("can turn off CJK indexing while preserving technical terms", async () => {

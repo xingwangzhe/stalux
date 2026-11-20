@@ -11,6 +11,9 @@
         "placeholder": "Type keywords to search...",
         "inputLabel": "Search input",
         "noResults": "No results found",
+        "noResultsFor": "for",
+        "start": "Type keywords to search posts",
+        "error": "Search failed. Please try again.",
         "typePost": "Post",
         "typeAbout": "About",
         "typeWord": "Word"

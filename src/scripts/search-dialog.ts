@@ -6,10 +6,37 @@ import {
     searchVector,
     selectSearchHits,
 } from "../utils/orama-search";
+import { toRoutePath } from "../utils/public-routes";
+import { sitePath } from "../utils/site-path";
 import { navigate } from "./navigation-client";
 import { loadOramaSearch } from "./search-engine";
 
 let pending: Promise<Awaited<ReturnType<typeof loadOramaSearch>>> | undefined;
+
+const metadataBadge =
+    "display:inline-flex;align-items:center;max-inline-size:100%;box-sizing:border-box;padding:.2em .55em;border:1px solid var(--border-color-primary);border-radius:.45em;overflow-wrap:anywhere;color:var(--text-color-primary)";
+const metadataLink = `${metadataBadge};text-decoration:none`;
+
+function taxonomyHref(type: "categories" | "tags", value: string) {
+    return escapeHtml(sitePath(toRoutePath(`/${type}/${encodeURIComponent(value)}`)));
+}
+
+function attachResultMetadata(root: ShadowRoot) {
+    const observer = new MutationObserver(() => {
+        for (const template of root.querySelectorAll<HTMLTemplateElement>(
+            "template[data-stalux-search-metadata]",
+        )) {
+            const article = template.closest("a");
+            if (!article) continue;
+            if (article.nextElementSibling?.hasAttribute("data-stalux-search-actions"))
+                article.nextElementSibling.remove();
+            // Orama wraps the excerpt in the article link. Insert independent links beside it.
+            article.after(template.content);
+            template.remove();
+        }
+    });
+    observer.observe(root, { childList: true, subtree: true });
+}
 
 function highlight(text: string, terms: string[]): string {
     const escaped = terms
@@ -22,7 +49,7 @@ function highlight(text: string, terms: string[]): string {
     let cursor = 0;
     for (const match of text.matchAll(pattern)) {
         html += escapeHtml(text.slice(cursor, match.index));
-        html += `<mark>${escapeHtml(match[0])}</mark>`;
+        html += `<mark style="color:var(--text-color-accent);background:color-mix(in srgb,var(--text-color-accent) 18%,transparent);border-radius:.2em">${escapeHtml(match[0])}</mark>`;
         cursor = match.index + match[0].length;
     }
     return html + escapeHtml(text.slice(cursor));
@@ -40,11 +67,18 @@ function excerpt(content: string, description: string, terms: string[]) {
     return `${start ? "…" : ""}${highlight(content.slice(start, end), terms)}${end < content.length ? "…" : ""}`;
 }
 
-async function loadSearchUi() {
-    const [component, index] = await Promise.all([
+async function loadSearchUi(clockIcon: string) {
+    const [component, index, { default: stylesheet }] = await Promise.all([
         import("@orama/wc-components/dist/components/orama-search-box.js"),
         loadOramaSearch(import.meta.env.BASE_URL),
+        import("@orama/wc-components/dist/orama-ui/orama-ui.css?inline"),
     ]);
+    const style = document.createElement("style");
+    style.textContent = stylesheet.replace(
+        /^\s*@import\s*(?:url\([^)]*\)|"[^"]*"|'[^']*')\s*;/u,
+        "",
+    );
+    document.head.append(style);
     const { database, cjk, count } = index;
     const searchTerms = new WeakMap<object, string[]>();
     database.beforeSearch.push((_db, params) => {
@@ -69,22 +103,27 @@ async function loadSearchUi() {
             const date = record.publishedDate;
             const metadata = [
                 date
-                    ? `<time datetime="${escapeHtml(date)}">${escapeHtml(date.slice(0, 16).replace("T", " "))}</time>`
+                    ? `<time datetime="${escapeHtml(date)}" style="${metadataBadge};gap:.4em;font-variant-numeric:tabular-nums">${clockIcon}${escapeHtml(date.slice(0, 16).replace("T", " "))}</time>`
                     : "",
-                escapeHtml(record.category ?? ""),
-                ...[...new Set(record.tags ?? [])].map((tag) => `#${escapeHtml(String(tag))}`),
+                record.category
+                    ? `<a href="${taxonomyHref("categories", record.category)}" style="${metadataLink};--badge-bg:color-mix(in srgb,var(--background-color-fourth),var(--text-color-accent) 18%);background:var(--badge-bg);color:contrast-color(var(--badge-bg));font-weight:600">${escapeHtml(record.category)}</a>`
+                    : "",
+                ...[...new Set(record.tags ?? [])].map(
+                    (tag) =>
+                        `<a href="${taxonomyHref("tags", String(tag))}" style="${metadataLink};background:var(--background-color-fourth)">#${escapeHtml(String(tag))}</a>`,
+                ),
             ]
                 .filter(Boolean)
-                .join(" · ");
+                .join("");
             return {
                 ...hit,
                 document: {
                     ...record,
-                    title: highlight(record.title, terms),
+                    title: `<span style="white-space:normal">${highlight(record.title, terms)}</span>`,
                     description:
                         `<span style="white-space:normal">${excerpt(record.content, record.description, terms)}</span>` +
                         (metadata
-                            ? `<small style="display:block;white-space:normal">${metadata}</small>`
+                            ? `<template data-stalux-search-metadata><div data-stalux-search-actions style="display:flex;flex-wrap:wrap;gap:.375rem;white-space:normal;margin:0 .75rem .65rem 2.75rem;font-size:.9375rem;line-height:1.4">${metadata}</div></template>`
                             : ""),
                 },
             };
@@ -94,85 +133,79 @@ async function loadSearchUi() {
     return index;
 }
 
+export function closeSearchDialog() {
+    const box = document.querySelector<InstanceType<typeof OramaSearchBox>>(
+        "orama-search-box[data-stalux-search]",
+    );
+    if (box) box.open = false;
+}
+
 export async function openSearchDialog(signal: AbortSignal) {
-    const dialog = document.querySelector<HTMLDialogElement>("dialog#search");
-    if (!dialog || signal.aborted) return;
-    const status = dialog.querySelector<HTMLElement>("[data-search-status]");
-    if (!dialog.open) dialog.showModal();
-    const mounted = dialog.querySelector("orama-search-box");
-    if (mounted) {
-        mounted.shadowRoot?.querySelector("input")?.focus();
+    const anchor = document.querySelector<HTMLTemplateElement>("template[data-stalux-search]");
+    if (!anchor || signal.aborted) return;
+    const existing = document.querySelector<InstanceType<typeof OramaSearchBox>>(
+        "orama-search-box[data-stalux-search]",
+    );
+    if (existing) {
+        existing.open = true;
         return;
     }
-    if (status) {
-        status.hidden = false;
-        status.textContent = status.dataset.loading ?? "";
-    }
-    try {
-        pending ??= loadSearchUi().catch((error: unknown) => {
-            pending = undefined;
-            throw error;
-        });
-        const { database } = await pending;
-        if (signal.aborted || !dialog.open || dialog.querySelector("orama-search-box")) return;
-        const box = document.createElement("orama-search-box") as InstanceType<
-            typeof OramaSearchBox
-        >;
-        box.layout = "embed";
-        box.disableChat = true;
-        box.colorScheme = "dark";
-        box.linksTarget = "_self";
-        box.clientInstance = database;
-        box.searchParams = {
-            mode: "hybrid",
-            term: "",
-            vector: { property: "embedding", value: [] },
-        };
-        box.resultMap = { path: "url" };
-        box.searchPlaceholder = dialog.dataset.searchLabel ?? "Search";
-        box.addEventListener("click", (event) => {
-            if (
-                event.defaultPrevented ||
-                event.button !== 0 ||
-                event.metaKey ||
-                event.ctrlKey ||
-                event.shiftKey ||
-                event.altKey
-            )
-                return;
-            const anchor = event.composedPath().find((node) => node instanceof HTMLAnchorElement);
-            if (!anchor || anchor.origin !== location.origin) return;
-            event.preventDefault();
-            dialog.close();
-            navigate(anchor.href);
-        });
-        if (dialog.lang.toLowerCase().startsWith("zh")) {
-            box.dictionary = {
-                noResultsFound: "未找到相关结果",
-                noResultsFoundFor: "关键词",
-                startYourSearch: "输入关键词搜索文章",
-                errorMessage: "搜索失败，请重试",
-            };
-        }
-        dialog.append(box);
-        if (status) status.hidden = true;
-        const root = box.shadowRoot;
-        if (!root) return;
-        const input = root.querySelector("input");
-        if (input) {
-            input.focus();
-            return;
-        }
-        const observer = new MutationObserver(() => {
-            const input = root.querySelector("input");
-            if (!input) return;
-            observer.disconnect();
-            if (dialog.open && dialog.contains(document.activeElement)) input.focus();
-        });
-        observer.observe(root, { childList: true, subtree: true });
-        dialog.addEventListener("close", () => observer.disconnect(), { once: true });
-    } catch (error) {
-        if (status && !signal.aborted) status.textContent = status.dataset.error ?? "";
+    const clockIcon = anchor.content.querySelector("svg[data-search-clock]")?.outerHTML ?? "";
+    pending ??= loadSearchUi(clockIcon).catch((error: unknown) => {
+        pending = undefined;
         throw error;
-    }
+    });
+    const { database } = await pending;
+    if (
+        signal.aborted ||
+        !anchor.isConnected ||
+        document.querySelector("orama-search-box[data-stalux-search]")
+    )
+        return;
+    const prototype = anchor.content.querySelector("orama-search-box");
+    if (!prototype) return;
+    const box = document.importNode(prototype, true) as InstanceType<typeof OramaSearchBox>;
+    box.layout = "modal";
+    box.disableChat = true;
+    box.colorScheme = "dark";
+    box.linksTarget = "_self";
+    box.clientInstance = database;
+    box.searchParams = {
+        mode: "hybrid",
+        term: "",
+        vector: { property: "embedding", value: [] },
+    };
+    box.resultMap = { path: "url" };
+    const dictionary = anchor.dataset.searchDictionary;
+    if (dictionary) box.dictionary = JSON.parse(dictionary);
+    if (box.shadowRoot) attachResultMetadata(box.shadowRoot);
+    box.shadowRoot?.addEventListener(
+        "error",
+        (event) => {
+            const logo = event.target;
+            if (!(logo instanceof HTMLImageElement && logo.closest("orama-footer"))) return;
+            const label = document.createElement("strong");
+            label.textContent = "Orama";
+            logo.replaceWith(label);
+        },
+        { capture: true },
+    );
+    box.addEventListener("click", (event) => {
+        if (
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey
+        )
+            return;
+        const anchor = event.composedPath().find((node) => node instanceof HTMLAnchorElement);
+        if (!anchor || anchor.origin !== location.origin) return;
+        event.preventDefault();
+        box.open = false;
+        navigate(anchor.href);
+    });
+    anchor.after(box);
+    box.open = true;
 }

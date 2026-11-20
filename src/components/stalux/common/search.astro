@@ -1,54 +1,21 @@
 ---
 import { getCollection } from "astro:content";
+import { Clock } from "@lucide/astro";
 import { getSiteData } from "@utils/config-utils";
+import { createTranslator } from "@utils/i18n";
 
 const { lang } = getSiteData(await getCollection("config"));
-const chinese = lang.toLowerCase().startsWith("zh");
-const label = chinese ? "站内搜索" : "Search this site";
+const { t } = createTranslator(lang);
+const dictionary = {
+    searchPlaceholder: t("search.placeholder"),
+    noResultsFound: t("search.noResults"),
+    noResultsFoundFor: t("search.noResultsFor"),
+    startYourSearch: t("search.start"),
+    errorMessage: t("search.error"),
+};
 ---
 
-<dialog id="search" lang={lang} aria-label={label} data-search-label={label} closedby="any">
-    <form method="dialog" class="search-dismiss">
-        <button aria-label={chinese ? "关闭搜索" : "Close search"}>×</button>
-    </form>
-    <p
-        role="status"
-        data-search-status
-        data-loading={chinese ? "正在加载搜索索引…" : "Loading search index…"}
-        data-error={chinese ? "搜索加载失败。关闭后重试。" : "Search could not load. Close and try again."}
-    ></p>
-</dialog>
-
-<style is:global>
-    #search {
-        box-sizing: border-box;
-        inline-size: min(48rem, calc(100vw - 2rem));
-        max-block-size: calc(100dvh - 2rem);
-        overscroll-behavior: contain;
-        margin: min(10vh, 5rem) auto auto;
-        padding: 0.75rem;
-        border: 1px solid #ffffff24;
-        border-radius: 1rem;
-        background: #171719;
-        color: #f4f4f5;
-    }
-    #search::backdrop {
-        overflow: hidden;
-        overscroll-behavior: contain;
-    }
-    #search .search-dismiss {
-        display: flex;
-        justify-content: flex-end;
-    }
-    #search .search-dismiss button {
-        display: grid;
-        place-items: center;
-        min-inline-size: 2.75rem;
-        min-block-size: 2.75rem;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-    #search [data-search-status]:not([hidden]) {
-        margin: 0.75rem;
-    }
-</style>
+<template data-stalux-search data-search-dictionary={JSON.stringify(dictionary)}>
+    <orama-search-box data-stalux-search></orama-search-box>
+    <Clock data-search-clock aria-hidden="true" size="1em" style="flex:none" />
+</template>

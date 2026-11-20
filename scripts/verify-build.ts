@@ -190,7 +190,7 @@ for (const file of [
 }
 assert(darkCodeBackgrounds > 0, "dark code theme is missing from generated CSS");
 
-assert(/<dialog\b[^>]*id="search"/u.test(pages.home), "search dialog shell is missing");
+assert(/<template\b[^>]*data-stalux-search/u.test(pages.home), "search dialog shell is missing");
 const initialStyleLinks = [
     ...pages.home.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"#]+)"[^>]*>/gu),
 ];

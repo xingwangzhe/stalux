@@ -44,7 +44,6 @@ import { type ImageDimensions, updateLocalImageDimensions } from "./internal/ima
 import { createInjectedRoutes } from "./internal/injected-routes";
 import { markdownPropagationPlugin } from "./internal/markdown-propagation";
 import { containMermaidSvgs } from "./internal/offscreen-layout";
-import { writeOramaIndex } from "./internal/orama-search-index";
 import { createPageOutputCache } from "./internal/page-output-cache";
 import { loadCoverEncoder, restoreCoverFiles, upgradeCoverImages } from "./internal/post-cover";
 import { isPluginProject } from "./internal/project-mode";
@@ -56,7 +55,6 @@ import {
     collectPluginNames,
     prepareSatteriProcessor,
 } from "./internal/satteri-config";
-import { createSearchOutputCache } from "./internal/search-output-cache";
 import { searchEntryPlugin } from "./internal/search-style";
 import { createViteAliases } from "./internal/vite-aliases";
 import { featureFlagsHast, featureFlagsMdast } from "./plugins/feature-flags";
@@ -126,8 +124,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
     // is served from the page-output cache still finds its file on disk.
     let coverCacheDir = "";
 
-    let searchCacheDir: string;
-    let searchBase = "/";
     let trailingSlash = false;
     let siteOrigin: string | undefined;
     let pageFontData: { fontBuffer: Buffer; outputDir: string; cacheDir: string } | undefined;
@@ -144,7 +140,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 command,
                 logger,
             }) => {
-                searchBase = config.base;
                 trailingSlash = config.trailingSlash === "always";
                 const started = performance.now();
                 const isPluginMode = isPluginProject(config.root, new URL("../", import.meta.url));
@@ -224,6 +219,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                                 Bun.env.STALUX_SWUP_DEBUG === "1",
                             ),
                             __STALUX_TRAILING_SLASH__: JSON.stringify(trailingSlash),
+                            __STALUX_SEARCH_CJK__: JSON.stringify(opt.searchCjk ?? true),
                             __STALUX_COMPACT_STYLES__: JSON.stringify(command === "build"),
                             __STALUX_DEBUG__: JSON.stringify(
                                 Bun.env.STALUX_DEBUG === "1" || Bun.argv.includes("--verbose"),
@@ -239,6 +235,14 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 // 2. 注入全局 CSS
                 injectScript("page-ssr", `import "${srcDir}/styles/generated.css";`);
                 injectScript("page", `import "${srcDir}/scripts/core-runtime.ts";`);
+
+                if (opt.pagefind) {
+                    injectRoute({
+                        pattern: "/orama/index.bin",
+                        entrypoint: new URL("./internal/orama-search-endpoint.ts", import.meta.url),
+                        prerender: true,
+                    });
+                }
 
                 // 3. 注入所有页面路由（仅插件模式，源码模式下使用文件路由）
                 if (isPluginMode) {
@@ -391,9 +395,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 const srcDir = Bun.fileURLToPath(new URL(".", import.meta.url));
                 publicDir = Bun.fileURLToPath(config.publicDir);
                 coverCacheDir = Bun.fileURLToPath(new URL("stalux-post-covers/", config.cacheDir));
-                searchCacheDir = Bun.fileURLToPath(
-                    new URL("stalux-search-output/", config.cacheDir),
-                );
                 const assetsLogger = logger.fork("stalux/assets");
                 if (pageFontData) {
                     pageFontData.outputDir = path.join(
@@ -656,73 +657,6 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                 if (coverCacheDir) {
                     const restored = await restoreCoverFiles({ outDir, cacheDir: coverCacheDir });
                     if (restored > 0) logger.debug(`restored ${restored} card covers`);
-                }
-
-                // 后处理：Pagefind 搜索索引。启用时任何失败都必须让构建失败，
-                // 避免发布一个页面正常但搜索已损坏的产物。
-                if (opt.pagefind) {
-                    const searchStarted = performance.now();
-                    const searchOutputDir = path.join(outDir, "orama");
-                    let cache: Awaited<ReturnType<typeof createSearchOutputCache>> | undefined;
-                    // Preserve any orama/ files supplied in the project's public folder.
-                    if (!existsSync(searchOutputDir)) {
-                        try {
-                            const versions = await Promise.all(
-                                [
-                                    path.join(sourceDir, "index.ts"),
-                                    path.join(sourceDir, "internal/search-output-cache.ts"),
-                                    path.join(sourceDir, "internal/orama-search-index.ts"),
-                                    path.join(sourceDir, "utils/orama-search.ts"),
-                                    path.join(sourceDir, "../package.json"),
-                                    path.resolve(path.dirname(parserEntry), "../package.json"),
-                                    path.resolve(
-                                        path.dirname(resolveModule("@orama/orama")),
-                                        "../package.json",
-                                    ),
-                                ].map((file) => Bun.file(file).text()),
-                            );
-                            cache = await createSearchOutputCache(
-                                searchCacheDir,
-                                outDir,
-                                htmlFiles.filter((entry) => entry.endsWith(".html")),
-                                JSON.stringify([
-                                    searchBase,
-                                    trailingSlash,
-                                    opt.searchCjk ?? true,
-                                    versions,
-                                ]),
-                            );
-                            if (await cache.restore()) {
-                                logger.info(
-                                    `restored search indexes (${(performance.now() - searchStarted).toFixed(1)}ms)`,
-                                );
-                                return;
-                            }
-                        } catch (error) {
-                            logger.debug(`search cache unavailable: ${describeError(error)}`);
-                        }
-                    }
-                    logger.info("Building Orama hybrid search index...");
-                    try {
-                        const { count, asset } = await writeOramaIndex(
-                            outDir,
-                            htmlFiles.filter((entry) => entry.endsWith(".html")),
-                            searchBase,
-                            trailingSlash,
-                            opt.searchCjk ?? true,
-                        );
-                        logger.info(
-                            `indexed ${count} documents → ${asset} (${(performance.now() - searchStarted).toFixed(1)}ms)`,
-                        );
-                        await cache?.save().catch((error) => {
-                            logger.debug(`search cache write skipped: ${describeError(error)}`);
-                        });
-                    } catch (error) {
-                        logger.error(`Orama indexing failed: ${describeError(error)}`);
-                        throw error;
-                    }
-                } else {
-                    logger.debug("disabled; indexing skipped");
                 }
             },
         },

@@ -14,6 +14,7 @@
         "@microsoft/clarity": "^1.0.2",
         "@orama/orama": "3.1.18",
         "@orama/plugin-data-persistence": "3.1.18",
+        "@orama/plugin-pt15": "3.1.18",
         "@orama/tokenizers": "3.1.18",
         "@orama/wc-components": "0.8.1",
         "@swup/a11y-plugin": "^5.2.1",
@@ -495,6 +496,8 @@
     "@orama/orama": ["@orama/orama@3.1.18", "", {}, "sha512-a61ljmRVVyG5MC/698C8/FfFDw5a8LOIvyOLW5fztgUXqUpc1jOfQzOitSCbge657OgXXThmY3Tk8fpiDb4UcA=="],
 
     "@orama/plugin-data-persistence": ["@orama/plugin-data-persistence@3.1.18", "", { "dependencies": { "@msgpack/msgpack": "^3.1.2", "@orama/orama": "3.1.18", "dpack": "^0.6.22", "seqproto": "^0.2.3" } }, "sha512-pfBbpK96VRW/7IkdMHn2HaW3/+4k2C9Uwyup0IONNuz5bG3L1orCNFZPBmu+zcokOU2YH+IAVuQz6MlvqOe3iw=="],
+
+    "@orama/plugin-pt15": ["@orama/plugin-pt15@3.1.18", "", { "dependencies": { "@orama/orama": "3.1.18" } }, "sha512-RSjpk8/Lleazig7DsR4s4Zg+RKa021dKvfcE6yYCDxUobYXe7NDNRlbsb3atWzZHRG7eutdGOG0mpiSkUs/uVA=="],
 
     "@orama/switch": ["@orama/switch@3.1.18", "", { "peerDependencies": { "@orama/core": "^0.0.10", "@orama/orama": "3.1.18", "@oramacloud/client": "^2.1.1" } }, "sha512-KjAHr/7qiteLWLE284EEA2ZPX9dI3kWi01Ws1paB/oYP1hGijDizqxLuXEC1TwTYvVE07eCMeqho1Ql/rFCasQ=="],
 

@@ -11,6 +11,9 @@
         "placeholder": "输入关键词搜索...",
         "inputLabel": "搜索输入",
         "noResults": "未找到相关结果",
+        "noResultsFor": "关键词",
+        "start": "输入关键词搜索文章",
+        "error": "搜索失败，请重试",
         "typePost": "文章",
         "typeAbout": "关于",
         "typeWord": "一言"

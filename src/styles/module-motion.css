@@ -45,13 +45,6 @@
 [data-stalux-module="badge-group"][open] > ul {
     animation: stalux-module-fade 140ms ease-out;
 }
-#search[open] {
-    animation: stalux-module-arrive 160ms var(--stalux-motion-ease) !important;
-}
-#search::backdrop {
-    background: rgb(0 0 0 / 0.65) !important;
-    animation: stalux-module-backdrop 140ms ease-out !important;
-}
 @keyframes stalux-module-arrive {
     from {
         opacity: 0.88;
@@ -120,9 +113,7 @@
     [data-stalux-control] *,
     [data-stalux-module],
     [data-stalux-module] *,
-    [data-ref="stalux-nav-list"],
-    #search[open],
-    #search::backdrop {
+    [data-ref="stalux-nav-list"] {
         animation: none !important;
         transition: none !important;
         scroll-behavior: auto !important;
@@ -140,8 +131,7 @@
 }
 @media print {
     [data-stalux-module],
-    [data-stalux-control],
-    #search {
+    [data-stalux-control] {
         animation: none !important;
         transform: none !important;
     }
@@ -175,11 +165,6 @@ html:not(:has([data-stalux-word-target])) [data-stalux-module="word"]:target::af
     }
 }
 
-@media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
-    #search[open] {
-        animation: stalux-module-fade 120ms ease-out !important;
-    }
-}
 [data-stalux-weather][data-weather-state="ready"] [data-weather-output] {
     animation: stalux-module-fade 140ms ease-out;
 }

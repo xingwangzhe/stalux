@@ -3,6 +3,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 const search = vi.hoisted(() => ({
+    closeSearchDialog: vi.fn(),
     openSearchDialog: vi.fn(async () => undefined),
 }));
 vi.mock("../src/scripts/search-dialog", () => search);
@@ -23,7 +24,7 @@ beforeEach(async () => {
                 <dialog id="stalux-mobile-navigation"><div data-ref="stalux-mobile-nav-panel"></div></dialog>
             </nav>
         </header>
-        <dialog id="search"></dialog>`;
+        <template data-stalux-search></template>`;
     vi.stubGlobal(
         "ResizeObserver",
         class {

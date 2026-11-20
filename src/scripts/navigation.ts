@@ -1,6 +1,6 @@
 import { createClientLogger } from "./logger";
 
-import { openSearchDialog } from "./search-dialog";
+import { closeSearchDialog, openSearchDialog } from "./search-dialog";
 
 const logger = createClientLogger("navigation");
 
@@ -79,5 +79,5 @@ document.addEventListener("astro:after-swap", () => {
     drawer?.close();
     search.abort();
     search = new AbortController();
-    document.querySelector<HTMLDialogElement>("dialog#search")?.close();
+    closeSearchDialog();
 });
