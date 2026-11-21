@@ -563,7 +563,7 @@
     .stalux-prose pre,
     .stalux-prose table,
     .stalux-prose .mermaid,
-    .stalux-prose math {
+    .stalux-prose math:is([display="block"], .tml-display) {
         max-width: 100%;
         overflow-x: auto;
         overscroll-behavior-x: contain;
