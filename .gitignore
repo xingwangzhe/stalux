@@ -35,6 +35,8 @@ coverage/
 
 # editor / tool configs
 .claude/
+.agents/
+skills-lock.json
 .obsidian/
 .trae/
 .vscode/

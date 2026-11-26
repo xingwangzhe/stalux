@@ -44,6 +44,24 @@ describe("page-specific font subsets", () => {
         }
     });
 
+    it("skips parsing pages without shared font groups", async () => {
+        const root = mkdtempSync(join(tmpdir(), "stalux-shared-glyph-skip-"));
+        try {
+            const cache = join(root, "glyphs.json");
+            const page = join(root, "index.html");
+            writeFileSync(page, "<main>甲乙丙</main>");
+            expect((await scanSharedFontGlyphs(["index.html"], root, cache, [])).header).toEqual(
+                new Set(),
+            );
+            writeFileSync(page, '<footer data-stalux-font-group="footer">丁</footer>');
+            expect((await scanSharedFontGlyphs(["index.html"], root, cache, [])).footer).toEqual(
+                new Set(["丁", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+            );
+        } finally {
+            rmSync(root, { recursive: true, force: true });
+        }
+    });
+
     it("mutates only real AST styles and emits no intermediate HTML", async () => {
         const root = mkdtempSync(join(tmpdir(), "stalux-ast-font-"));
         try {

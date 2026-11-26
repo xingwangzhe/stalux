@@ -140,6 +140,22 @@ describe("production style compaction", () => {
         expect(plugin.enforce).toBe("pre");
     });
 
+    it("skips Vite transforms for sources without compactable names", async () => {
+        const plugin = compactStylesPlugin("/theme/src");
+        const handler = (plugin.transform as { handler: (code: string, id: string) => unknown })
+            .handler;
+        const clean = '<div class="user-only">unchanged</div>';
+        expect(await handler.call({} as never, clean, "/theme/src/components/clean.astro")).toBe(
+            undefined,
+        );
+        const compactable = '<div class="stalux-main">compact</div>';
+        expect(
+            await handler.call({} as never, compactable, "/theme/src/components/theme.astro"),
+        ).toMatchObject({
+            code: `<div class="${styleNames.classes["stalux-main"]}">compact</div>`,
+        });
+    });
+
     it("ships a collision-free mapping and compiles all theme components", async () => {
         for (const table of Object.values(styleNames)) {
             expect(new Set(Object.values(table)).size).toBe(Object.keys(table).length);

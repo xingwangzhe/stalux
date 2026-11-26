@@ -20,7 +20,10 @@ const { t } = createTranslator(siteConfig.lang || "zh-CN");
 // 归档按“站点时区的日历”分组：无时区的 date 串按站点时区解析，
 // 分组也按站点时区取年月，构建机器时区（UTC CI）不再影响归档归属。
 const timezone = siteConfig.timezone || "Asia/Shanghai";
-type ArchivePost = { post: CollectionEntry<"posts">; date: Date };
+interface ArchivePost {
+    post: CollectionEntry<"posts">;
+    date: Date;
+}
 const archivesByYearMonth = new Map<number, Map<number, ArchivePost[]>>();
 
 for (const post of posts) {

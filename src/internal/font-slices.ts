@@ -352,9 +352,13 @@ export async function scanSharedFontGlyphs(
         const hash = digest(html);
         let record = previous[entry];
         if (record?.[0] !== hash) {
-            const glyphs = createSharedFontGlyphs();
-            collectSharedFontGlyphs(parse(html), glyphs);
-            record = [hash, [...glyphs.header].join(""), [...glyphs.footer].join("")];
+            if (/data-stalux-font-group/u.test(html)) {
+                const glyphs = createSharedFontGlyphs();
+                collectSharedFontGlyphs(parse(html), glyphs);
+                record = [hash, [...glyphs.header].join(""), [...glyphs.footer].join("")];
+            } else {
+                record = [hash, "", ""];
+            }
         }
         next[entry] = record;
         const [, header, footer] = record;

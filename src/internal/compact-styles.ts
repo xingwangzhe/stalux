@@ -348,6 +348,15 @@ export async function compactAstro(code: string, names: Names = styleNames): Pro
 
 export function compactStylesPlugin(srcDir: string): Plugin {
     const root = path.resolve(srcDir) + path.sep;
+    const compactable = new Set([
+        ...Object.keys(styleNames.classes),
+        ...Object.keys(styleNames.variables),
+        ...Object.keys(styleNames.animations),
+    ]);
+    const maybeCompactable = (code: string) => {
+        for (const name of compactable) if (code.includes(name)) return true;
+        return false;
+    };
     return {
         name: "stalux:compact-styles",
         enforce: "pre",
@@ -365,6 +374,7 @@ export function compactStylesPlugin(srcDir: string): Plugin {
                     return;
                 let next: string;
                 if (id.includes("astro&type=")) return;
+                if (!maybeCompactable(code)) return;
                 if (filename.endsWith(".astro")) next = await compactAstro(code);
                 else if (filename.endsWith(".css")) next = compactCss(code);
                 else if (filename.endsWith(".ts")) next = compactScript(code);
