@@ -4,6 +4,7 @@ import { compactStylesPlugin } from "./internal/compact-styles.ts";
 import { modernCssTargets } from "./internal/modern-css.ts";
 import { styleNames } from "./internal/style-names.generated.ts";
 import { swupDebugPlugin } from "./internal/swup-debug-plugin.ts";
+import { walineMarkdownSanitizerPlugin } from "./internal/waline-markdown-sanitizer.ts";
 /**
  * Stalux — Astro 博客主题集成入口
  *
@@ -211,6 +212,7 @@ export function stalux(options: StaluxOptions = {}): AstroIntegration[] {
                         },
                         plugins: [
                             swupDebugPlugin(command === "dev" || Bun.env.STALUX_SWUP_DEBUG === "1"),
+                            walineMarkdownSanitizerPlugin(),
                             ...(command === "build"
                                 ? [markdownPropagationPlugin(), compactStylesPlugin(srcDir)]
                                 : []),
