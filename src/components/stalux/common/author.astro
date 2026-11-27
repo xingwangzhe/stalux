@@ -1,10 +1,8 @@
 ---
-import { toRoutePath } from "@utils/public-routes";
-import "../../../styles/generated-author.css";
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-
 import { getAuthorData } from "@utils/config-utils";
+import { toRoutePath } from "@utils/public-routes";
 
 const configEntries = await getCollection("config");
 const authorConfig = getAuthorData(configEntries);

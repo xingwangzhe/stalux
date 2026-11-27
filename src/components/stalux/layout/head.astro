@@ -16,6 +16,8 @@ import { toMachineDateTime } from "@utils/semantic-time";
 import { buildSeoDocument, type SeoPageInput } from "@utils/seo-document";
 import { SEO } from "astro-seo-kit";
 import packageJson from "../../../../package.json" with { type: "json" };
+import authorStylesUrl from "../../../styles/generated-author.css?url";
+import socialStylesUrl from "../../../styles/generated-social.css?url";
 
 const configEntries = await getCollection("config");
 const siteConfig = getSiteData(configEntries);
@@ -29,6 +31,7 @@ const mediaLinksConfig = getMediaLinksData(configEntries);
 // 统一在这里转换为带偏移的机器时间，与 RSS pubDate、页面 <time> 保持一致。
 const seoTimezone = siteConfig.timezone || "Asia/Shanghai";
 const rawPage = Astro.props as SeoPageInput;
+const isArticle = Boolean((Astro.props as { isArticle?: boolean }).isArticle);
 const seo = buildSeoDocument({
     site: siteConfig,
     author: authorConfig,
@@ -61,6 +64,13 @@ const ldJson = JSON.stringify(seo.schema).replace(/<\//gu, "<\\/");
         additionalMetaTags={seo.meta}
     />
     {seo.links.map(({ href, ...attributes }) => <link {...attributes} href={href} />)}
+    <!-- Article sidebars are hidden through 1599px; keep their styles off the mobile render path. -->
+    {isArticle && (
+        <>
+            <link rel="stylesheet" href={authorStylesUrl} media="(min-width: 1600px)" />
+            <link rel="stylesheet" href={socialStylesUrl} media="(min-width: 1600px)" />
+        </>
+    )}
     <!-- 代码字体由 Astro Fonts API 注入；正文按页面生成 native CJK 子集。 -->
     <Font cssVariable="--font-code" />
     {headConfig?.anyhead && <Fragment set:html={headConfig.anyhead} />}

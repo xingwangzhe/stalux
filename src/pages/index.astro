@@ -1,5 +1,8 @@
 ---
 import "../styles/generated-home.css";
+// These shared components no longer import CSS themselves; the home page shows them at every width.
+import "../styles/generated-author.css";
+import "../styles/generated-social.css";
 import { getCollection } from "astro:content";
 import { createTranslator } from "@utils/i18n";
 
