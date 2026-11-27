@@ -1,6 +1,6 @@
 {
     "name": "@xingwangzhe/stalux",
-    "version": "1.78.2",
+    "version": "1.78.3",
     "description": "Astro blog theme with CJK search and font subsetting. Use from source or as an Astro integration.",
     "keywords": [
         "astro",

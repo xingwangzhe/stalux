@@ -1,6 +1,6 @@
 {
     "$schema": "https://unpkg.com/knip@6/schema.json",
     "astro": true,
-    "ignoreDependencies": ["@swup/debug-plugin"],
+    "ignoreDependencies": ["@swup/debug-plugin", "dompurify"],
     "entry": ["scripts/write-edgeone-routes.ts"]
 }
